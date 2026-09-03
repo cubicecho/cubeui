@@ -3,7 +3,18 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["components/**", "lib/**", "registry/**", "preview/**", "*.ts", "*.json", "!public/r/**"]
+    "includes": [
+      "components/**",
+      "lib/**",
+      "registry/**",
+      "preview/**",
+      "stories/**",
+      ".storybook/**",
+      "*.ts",
+      "*.json",
+      "!public/r",
+      "!storybook-static"
+    ]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "linter": {

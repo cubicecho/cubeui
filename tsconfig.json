@@ -17,8 +17,22 @@
     "esModuleInterop": true,
     "types": ["node"],
     "paths": {
+      // Temporary, and paired with the same entry in .storybook/main.ts and vitest.config.ts:
+      // dialog-layout.tsx reaches its chassis as `@/components/header-content-footer`, which
+      // `@/* -> ./*` sends to the consumer's components directory. Open question 4 decides the
+      // real import form; when it lands, delete all three.
+      "@/components/header-content-footer": ["./registry/layout/header-content-footer"],
       "@/*": ["./*"]
     }
   },
-  "include": ["components", "lib", "registry", "preview", "vite.config.ts"]
+  "include": [
+    "components",
+    "lib",
+    "registry",
+    "preview",
+    "stories",
+    ".storybook",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
 }
