@@ -263,5 +263,5 @@ packages; a fourth category means the component is doing too much.
    the naming that falls out of it: whether a two-surface slot pair is `content`/`rail` or
    `leftSide`/`rightSide`, when a region deserves a layout of its own versus a component, and
    how deep nesting is expected to go before a page should be split by route instead. Tracked in
-   the naming-and-layout-conventions issue; do not add a component that depends on the answer
-   until it is settled.
+   [#1](https://github.com/cubicecho/cubeui/issues/1); do not add a component whose slot names
+   depend on the answer until it is settled.
