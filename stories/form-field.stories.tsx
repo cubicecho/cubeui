@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
-import { expect, within } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
@@ -543,5 +543,93 @@ export const AForm: Story = {
       const control = canvasElement.ownerDocument.getElementById(label.htmlFor);
       expect(control).not.toBeNull();
     }
+  },
+};
+
+const SCHEMA_DESCRIPTION =
+  "The canonical, human-readable name for this workspace. Shown in the sidebar, in search " +
+  "results, and in every notification the workspace sends. Changing it does not change the slug.";
+
+/**
+ * The description a generated schema hands you.
+ *
+ * `task_server` reads these off GraphQL codegen output and a private project reads them off its
+ * own field definitions: they are documentation, written for a schema browser, and printing
+ * fifteen of them down a form buries the form. `descriptionPlacement="popover"` puts the
+ * paragraph one click from the label instead of two lines under the control.
+ */
+export const DescriptionInAPopover: Story = {
+  args: {
+    label: "Display name",
+    description: SCHEMA_DESCRIPTION,
+    descriptionPlacement: "popover",
+    control: <Input placeholder="Acme" />,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Nothing is printed under the control: that is the whole point of the placement.
+    expect(canvasElement.querySelector("[data-slot=field-description]")).toBeNull();
+
+    const trigger = canvas.getByRole("button", { name: "About Display name" });
+    await userEvent.click(trigger);
+
+    const popover = await screen.findByRole("dialog");
+    await waitFor(() => expect(popover).toBeVisible());
+    expect(popover).toHaveTextContent(/canonical, human-readable name/);
+  },
+};
+
+/**
+ * The bug the placement would otherwise ship with. Radix unmounts popover content on close, so a
+ * description living only in the popover is one a screen reader can never reach — the control
+ * would announce its name and stop. The text is always in the DOM; only the visible copy moves.
+ */
+export const APopoverDescriptionIsStillAnnounced: Story = {
+  args: {
+    label: "Display name",
+    description: SCHEMA_DESCRIPTION,
+    descriptionPlacement: "popover",
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    // Exact, not a regex: the help trigger is named "About Display name", and a loose match
+    // finds both. Two elements, two distinct accessible names — which is correct.
+    const control = controlFor(canvasElement, "Display name");
+
+    // Closed, never opened, never hovered.
+    expect(canvasElement.querySelector("[data-state=open]")).toBeNull();
+    expect(control).toHaveAccessibleDescription(SCHEMA_DESCRIPTION);
+  },
+};
+
+/**
+ * A help button inside a `<form>` defaults to `type="submit"`. Written by hand, this is the icon
+ * that quietly submits the form the first time anyone asks what a field means.
+ */
+export const TheHelpTriggerDoesNotSubmit: Story = {
+  args: {
+    label: "Display name",
+    description: SCHEMA_DESCRIPTION,
+    descriptionPlacement: "popover",
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole("button", { name: "About Display name" });
+    expect(trigger).toHaveAttribute("type", "button");
+  },
+};
+
+/** The placement is layout only: inline, the same sentence describes the control the same way. */
+export const InlineAndPopoverDescribeTheControlAlike: Story = {
+  args: {
+    label: "Display name",
+    description: SCHEMA_DESCRIPTION,
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const control = controlFor(canvasElement, "Display name");
+    expect(canvasElement.querySelector("[data-slot=field-description]")).not.toBeNull();
+    expect(control).toHaveAccessibleDescription(SCHEMA_DESCRIPTION);
   },
 };

@@ -83,8 +83,8 @@
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
-      "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
-      "registryDependencies": ["field", "skeleton"],
+      "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
+      "registryDependencies": ["field", "popover", "skeleton"],
       "files": [
         {
           "path": "registry/new-york/form/form-field.tsx",
@@ -109,7 +109,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, and field components that read the store and hand FormField a string \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField, SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "dependencies": ["@tanstack/react-form"],
       "registryDependencies": [
         "button",
@@ -150,6 +150,43 @@
         {
           "path": "registry/new-york/control/confirm-button.tsx",
           "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "readable-text-color",
+      "type": "registry:lib",
+      "title": "Readable Text Color",
+      "description": "Black or white ink for text on a colour the user picked, whichever has more WCAG contrast. Returns nothing it cannot parse, so a caller falls back rather than guessing.",
+      "files": [
+        {
+          "path": "registry/new-york/lib/readable-text-color.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place.",
+      "files": [
+        {
+          "path": "registry/new-york/ui/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
+      "registryDependencies": ["separator"],
+      "files": [
+        {
+          "path": "registry/new-york/ui/item.tsx",
+          "type": "registry:ui"
         }
       ]
     },
@@ -196,6 +233,14 @@
           "target": "~/.claude/skills/cubeui/SKILL.md"
         }
       ]
+    },
+    {
+      "name": "primitive",
+      "type": "registry:component",
+      "title": "Vendored Primitives",
+      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
+      "registryDependencies": ["@cubeui/empty", "@cubeui/item"],
+      "files": []
     }
   ]
 }

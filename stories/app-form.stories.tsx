@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { useAppForm } from "@/registry/new-york/form/app-form";
+import {
+  InputField,
+  SelectField,
+  SwitchField,
+  TextareaField,
+  useAppForm,
+} from "@/registry/new-york/form/app-form";
 import { FieldRow } from "@/registry/new-york/form/field-row";
 import { Button } from "@/registry/new-york/ui/button";
 
@@ -29,6 +35,11 @@ type TodoFormProps = {
 /**
  * `auto-cal`'s `TodoForm`, as it is written with these components: no ids, no `aria-describedby`,
  * no "has this been touched yet", no error plumbing. Each field is its label and its validator.
+ *
+ * And each field is one element. The same form written with `form.AppField` needs a render prop
+ * and a closing tag around every one of these — six fields, eighteen extra lines, none of which
+ * say anything about the form. The render-prop version is still there for the fields that need
+ * the `field` object; these six never did.
  */
 function TodoForm({ loading = false, onSubmit }: TodoFormProps) {
   const form = useAppForm({
@@ -51,76 +62,68 @@ function TodoForm({ loading = false, onSubmit }: TodoFormProps) {
         form.handleSubmit();
       }}
     >
-      <form.AppField
+      <InputField
+        form={form}
         name="title"
+        label="Title"
+        required
+        loading={loading}
+        placeholder="What needs to be done?"
         validators={{ onChange: ({ value }) => (value.trim() ? undefined : "Title is required") }}
-      >
-        {(field) => (
-          <field.InputField
-            label="Title"
-            required
-            loading={loading}
-            placeholder="What needs to be done?"
-          />
-        )}
-      </form.AppField>
+      />
 
-      <form.AppField name="description">
-        {(field) => (
-          <field.TextareaField
-            label="Description"
-            description="Optional. Notes, links, anything you want beside it later."
-            loading={loading}
-            rows={3}
-            placeholder="Add any notes or details…"
-          />
-        )}
-      </form.AppField>
+      <TextareaField
+        form={form}
+        name="description"
+        label="Description"
+        description="Optional. Notes, links, anything you want beside it later."
+        loading={loading}
+        rows={3}
+        placeholder="Add any notes or details…"
+      />
 
-      <form.AppField
+      <SelectField
+        form={form}
         name="list"
+        label="List"
+        required
+        loading={loading}
+        options={LISTS}
+        placeholder="Choose a list"
         validators={{
           onChange: ({ value }) =>
             value ? undefined : "Pick a list — a todo with nowhere to go is never seen again.",
         }}
-      >
-        {(field) => (
-          <field.SelectField
-            label="List"
-            required
-            loading={loading}
-            options={LISTS}
-            placeholder="Choose a list"
-          />
-        )}
-      </form.AppField>
+      />
 
       <FieldRow
         content={
           <>
-            <form.AppField name="priority">
-              {(field) => (
-                <field.SelectField label="Priority" loading={loading} options={PRIORITIES} />
-              )}
-            </form.AppField>
-            <form.AppField name="minutes">
-              {(field) => (
-                <field.SelectField label="Duration" loading={loading} options={DURATIONS} />
-              )}
-            </form.AppField>
+            <SelectField
+              form={form}
+              name="priority"
+              label="Priority"
+              loading={loading}
+              options={PRIORITIES}
+            />
+            <SelectField
+              form={form}
+              name="minutes"
+              label="Duration"
+              loading={loading}
+              options={DURATIONS}
+            />
           </>
         }
       />
 
-      <form.AppField name="schedule">
-        {(field) => (
-          <field.SwitchField
-            label="Schedule it automatically"
-            description="Finds the next free block that fits the duration."
-            loading={loading}
-          />
-        )}
-      </form.AppField>
+      <SwitchField
+        form={form}
+        name="schedule"
+        label="Schedule it automatically"
+        description="Finds the next free block that fits the duration."
+        loading={loading}
+      />
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline">

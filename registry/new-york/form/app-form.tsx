@@ -1,5 +1,6 @@
+import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
@@ -89,7 +90,7 @@ type InputFieldProps = FieldProps &
   Omit<ComponentProps<typeof Input>, "id" | "value" | "onChange" | "onBlur">;
 
 /** A text input. `type="number"` writes a number back to the store, not a numeric string. */
-export function InputField(props: InputFieldProps) {
+function BoundInputField(props: InputFieldProps) {
   const [fieldProps, input] = splitProps(props);
   const field = useFieldContext<string | number | null>();
   const error = useFieldError();
@@ -133,7 +134,7 @@ const TEXTAREA_BOX: Record<number, string | undefined> = {
 type TextareaFieldProps = FieldProps &
   Omit<ComponentProps<typeof Textarea>, "id" | "value" | "onChange" | "onBlur">;
 
-export function TextareaField(props: TextareaFieldProps) {
+function BoundTextareaField(props: TextareaFieldProps) {
   const [fieldProps, textarea] = splitProps(props);
   const field = useFieldContext<string>();
   const error = useFieldError();
@@ -172,7 +173,7 @@ type SelectFieldProps = FieldProps & {
  * these apps gets wrong, silently, leaving a trigger with no `aria-invalid` and an error message
  * nothing points at.
  */
-export function SelectField({ options, placeholder, triggerClassName, ...rest }: SelectFieldProps) {
+function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: SelectFieldProps) {
   const field = useFieldContext<string>();
   const error = useFieldError();
 
@@ -206,7 +207,7 @@ type CheckboxFieldProps = FieldProps &
   Omit<ComponentProps<typeof Checkbox>, "id" | "checked" | "onCheckedChange" | "onBlur">;
 
 /** Horizontal by default: a 16px box on a line of its own above its caption is not a field. */
-export function CheckboxField(props: CheckboxFieldProps) {
+function BoundCheckboxField(props: CheckboxFieldProps) {
   const [fieldProps, checkbox] = splitProps(props);
   const field = useFieldContext<boolean>();
   const error = useFieldError();
@@ -231,7 +232,7 @@ export function CheckboxField(props: CheckboxFieldProps) {
 type SwitchFieldProps = FieldProps &
   Omit<ComponentProps<typeof Switch>, "id" | "checked" | "onCheckedChange" | "onBlur">;
 
-export function SwitchField(props: SwitchFieldProps) {
+function BoundSwitchField(props: SwitchFieldProps) {
   const [fieldProps, control] = splitProps(props);
   const field = useFieldContext<boolean>();
   const error = useFieldError();
@@ -286,27 +287,173 @@ export function SubmitButton({
 /**
  * `useAppForm` — the hook a form calls, with these components hanging off its fields.
  *
- * ```tsx
- * const form = useAppForm({ defaultValues: { title: "" }, onSubmit: ({ value }) => save(value) });
+ * This is TanStack's own arrangement, and it is still here because it is the one that handles
+ * every case: a field that needs the `field` object itself — to read a sibling's value, to render
+ * a list, to do something no prop covers — reaches for it.
  *
+ * ```tsx
  * <form.AppField name="title">
  *   {(field) => <field.InputField label="Title" required />}
  * </form.AppField>
  * ```
  *
- * The point of the layer is that the call site above holds no id, no `aria-describedby`, no
- * "has this been touched yet" and no error plumbing — which is four lines per field, times every
- * field in every form.
+ * For the ninety percent of fields that need none of that, see {@link InputField} and the rest of
+ * the exported fields, which are the same components with the render prop already written.
  */
 export const { useAppForm, withForm } = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {
-    InputField,
-    TextareaField,
-    SelectField,
-    CheckboxField,
-    SwitchField,
+    InputField: BoundInputField,
+    TextareaField: BoundTextareaField,
+    SelectField: BoundSelectField,
+    CheckboxField: BoundCheckboxField,
+    SwitchField: BoundSwitchField,
   },
   formComponents: { SubmitButton },
 });
+
+/**
+ * What a bound field needs off a form, and nothing else — structural on purpose, so these work
+ * with a plain `useForm` as well as with `useAppForm`.
+ */
+type BindableForm = {
+  state: { values: unknown };
+  // Not `=> ReactNode`: a function component may return a promise, and TanStack types `Field`
+  // that way, so narrowing here rejects every real form.
+  Field: (props: never) => ReactNode | Promise<ReactNode>;
+};
+
+/** The shape of a form's values, recovered from the form itself, so `name` can be checked. */
+type ValuesOf<TForm extends BindableForm> = TForm extends { state: { values: infer TValues } }
+  ? TValues
+  : never;
+
+/**
+ * A validator, with its `value` already narrowed to the type of the field being validated.
+ *
+ * Anything falsy passes. A string is the message; TanStack accepts any error shape, and
+ * `messageOf` upstream turns an object with a `message` into one, so a schema issue can be
+ * returned whole.
+ */
+type Validate<TValue> = (context: {
+  value: TValue;
+  fieldApi: AnyFieldApi;
+  signal: AbortSignal;
+}) => unknown;
+
+/**
+ * The validators a field call site actually writes, spelled out rather than imported.
+ *
+ * TanStack's own `FieldValidators` carries twenty-three type parameters that exist to infer each
+ * validator's error type from the one before it. Naming them here would mean naming all of them
+ * at every use; what a call site wants is `value`, typed, and this gets that from the form and
+ * the field name. Anything beyond these seven belongs on `form.AppField`, which has the real
+ * type in full.
+ */
+type Validators<TValues, TName extends DeepKeys<TValues>> = {
+  onMount?: Validate<DeepValue<TValues, TName>>;
+  onChange?: Validate<DeepValue<TValues, TName>>;
+  onChangeAsync?: Validate<DeepValue<TValues, TName>>;
+  onBlur?: Validate<DeepValue<TValues, TName>>;
+  onBlurAsync?: Validate<DeepValue<TValues, TName>>;
+  onSubmit?: Validate<DeepValue<TValues, TName>>;
+  onSubmitAsync?: Validate<DeepValue<TValues, TName>>;
+};
+
+type FormBinding<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>> = {
+  form: TForm;
+  /** A key of the form's values. Checked: `naem` is a type error, not a field that stays empty. */
+  name: TName;
+  validators?: Validators<ValuesOf<TForm>, TName>;
+  /** How long to wait before running the async validators, in milliseconds. */
+  asyncDebounceMs?: number;
+};
+
+/**
+ * The control's props, minus the two names the binding needs for itself.
+ *
+ * `form` and `name` are both real HTML attributes on `<input>`, `<textarea>` and `<select>`, so
+ * without this the intersection is `string & BindableForm` — a type nothing satisfies, and an
+ * error message that points at the call site rather than at the collision. Neither is a loss:
+ * the `form` attribute re-parents a control to a form elsewhere in the document, which is not
+ * what a field inside its own form is doing, and `name` is the prop being taken over.
+ */
+type ControlPropsOf<TProps> = Omit<TProps, "form" | "name">;
+
+/**
+ * Writes the render prop, once, for a field that does not need one.
+ *
+ * The render prop is not ceremony for its own sake — it is how TanStack subscribes a field to the
+ * store, and the `field` object it hands back is the whole API. But most fields never touch that
+ * object: they were only ever going to pass a label through to the component underneath, and the
+ * three lines and the closure around them are three lines and a closure per field, fifteen times
+ * in one form. The components here are the same components, with the `form.Field` wrapper and the
+ * context provider already written.
+ *
+ * The context is provided directly rather than by going through `form.AppField`, which is what
+ * lets these work on a form that was never made with `useAppForm` at all.
+ */
+function bindToForm<TProps extends object>(
+  Bound: ComponentType<TProps>,
+  displayName: string,
+): <TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>>(
+  props: ControlPropsOf<TProps> & FormBinding<TForm, TName>,
+) => ReactNode {
+  function FormBoundField<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>>({
+    form,
+    name,
+    validators,
+    asyncDebounceMs,
+    ...rest
+  }: ControlPropsOf<TProps> & FormBinding<TForm, TName>) {
+    // The generic `Field` cannot be described to TypeScript without repeating twenty-three type
+    // parameters that are already correct on `form`. The cast is here, once, and `name` above is
+    // what it is protecting.
+    const Subscribe = form.Field as ComponentType<{
+      name: unknown;
+      validators?: unknown;
+      asyncDebounceMs?: number;
+      children: (field: AnyFieldApi) => ReactNode;
+    }>;
+
+    return (
+      <Subscribe name={name} validators={validators} asyncDebounceMs={asyncDebounceMs}>
+        {(field) => (
+          <fieldContext.Provider value={field}>
+            <Bound {...(rest as unknown as TProps)} />
+          </fieldContext.Provider>
+        )}
+      </Subscribe>
+    );
+  }
+
+  FormBoundField.displayName = displayName;
+  return FormBoundField;
+}
+
+/**
+ * A text input, as one line.
+ *
+ * ```tsx
+ * const form = useAppForm({ defaultValues: { title: "" }, onSubmit: ({ value }) => save(value) });
+ *
+ * <InputField form={form} name="title" label="Title" required />
+ * ```
+ *
+ * `type="number"` writes a number back to the store, not a numeric string. `name` is checked
+ * against the form's values, so a renamed field breaks the build rather than going quiet.
+ */
+export const InputField = bindToForm(BoundInputField, "InputField");
+
+/** A textarea, as one line. `rows` also sizes the loading skeleton. */
+export const TextareaField = bindToForm(BoundTextareaField, "TextareaField");
+
+/** A select, as one line. Takes its choices as `options`, not as children. */
+export const SelectField = bindToForm(BoundSelectField, "SelectField");
+
+/** A checkbox and its caption, as one line. Horizontal, because a 16px box is not a row. */
+export const CheckboxField = bindToForm(BoundCheckboxField, "CheckboxField");
+
+/** A switch and its caption, as one line. */
+export const SwitchField = bindToForm(BoundSwitchField, "SwitchField");

@@ -54,6 +54,19 @@ Read this before adding anything:
 
    The converse holds too: if a primitive covers the whole job, there is no component to write.
    `SplitPane` is not resizable partly because dragging is `resizable`, which shadcn ships.
+
+   **Re-publishing is not wrapping.** A few of shadcn's own files ship from this registry
+   unchanged, as `registry:ui` items — `empty` and `item` today. Nothing is added and nothing is
+   redrawn; the file is shadcn's, byte for byte, until someone here changes it. The point is the
+   *distribution*: a project installing `@cubeui/item` takes its list row from here, so a change
+   made once reaches all of them, where `npx shadcn add item` in eight repos is eight copies that
+   drift the moment one of them is edited. That is the same duplication rule 1 is about, one
+   level down.
+
+   The test for adding one is whether you would ever want to change it centrally. If the answer
+   is no, depend on the shadcn name and leave it alone — `popover` and `separator` are installed
+   as plain dependencies for exactly that reason. Re-publishing everything would make this
+   registry a fork of shadcn, which is a maintenance burden nobody asked for.
 4. **Compose, do not re-derive.** `HeaderContentFooter` is the only implementation of "chrome
    that stays, a middle that moves". `DialogLayout` composes it. A shell that reimplements a
    shape another shell already owns is the exact bug this registry is against.

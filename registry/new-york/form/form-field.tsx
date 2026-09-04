@@ -1,3 +1,4 @@
+import { CircleQuestionMark } from "lucide-react";
 import type { ReactNode } from "react";
 import { cloneElement, isValidElement, useId } from "react";
 import { cn } from "@/lib/utils";
@@ -8,6 +9,7 @@ import {
   FieldError,
   FieldLabel,
 } from "@/registry/new-york/ui/field";
+import { Popover, PopoverContent, PopoverTrigger } from "@/registry/new-york/ui/popover";
 import { Skeleton } from "@/registry/new-york/ui/skeleton";
 
 /**
@@ -70,8 +72,31 @@ type FormFieldProps = {
    * one is a field a screen reader announces as "edit text".
    */
   label?: ReactNode;
-  /** One line under the control on what to put in it, or on what changing it costs. */
+  /**
+   * What to put in the field, or what changing it costs.
+   *
+   * Where it goes is {@link FormFieldProps.descriptionPlacement}, not a second prop: the sentence
+   * is the same sentence either way, and it very often is not written here at all — it is a
+   * GraphQL schema description, a JSON-schema `description`, a docstring off a generated type.
+   * One prop is what lets a form pass `schema.fields[k].description` straight through and decide
+   * separately whether this particular form has room to print it.
+   */
   description?: ReactNode;
+  /**
+   * Where the description is drawn. `inline` puts it under the control; `popover` puts it behind
+   * a small button beside the label.
+   *
+   * `popover` is for descriptions that came from somewhere else and are prose. A generated
+   * schema writes a paragraph per field because it is documentation, and fifteen paragraphs
+   * stacked down a form is a form nobody reads — but the paragraph is still the best answer to
+   * "what is this?", so it should be one click away rather than deleted.
+   *
+   * It changes nothing about the wiring. The description is announced by the control either way,
+   * because the text is always in the DOM either way — see the component note.
+   */
+  descriptionPlacement?: "inline" | "popover";
+  /** The `popover` trigger's glyph. Defaults to a question mark; an `Info` reads as less of a plea. */
+  descriptionIcon?: ReactNode;
   /**
    * What is wrong with the value, as a node or a string. Falsy — `undefined`, `""`, whatever a
    * validator holds for a field that passed — draws nothing and leaves the control unmarked, so
@@ -156,6 +181,15 @@ type FormFieldProps = {
  * of the control it stands in for, and a `required` marker that is decoration to the eye and
  * `aria-required` to everything else.
  *
+ * **A description behind a popover is still a description.** `descriptionPlacement="popover"`
+ * moves the sentence out of the layout and into a button beside the label, and the trap it walks
+ * into is the one every hand-written help icon walks into: Radix unmounts popover content when it
+ * closes, so a description that exists only inside the popover is text a sighted user can open
+ * and a screen reader can never reach — the control announces its name and stops. So the text is
+ * always rendered, into an `sr-only` span carrying `descriptionId`, and the popover holds a
+ * visible copy. `aria-describedby` points at the same node in both placements, which is what
+ * makes the choice purely a layout one.
+ *
  * It stays presentational, and that is load-bearing. Every project installing this runs TanStack
  * Form, but the binding belongs one layer up — `auto-cal`'s `InputField`, `TextAreaField` and
  * `SelectField` each read `useFieldContext()`, work out whether the field has been touched yet,
@@ -169,6 +203,8 @@ export function FormField({
   control,
   label,
   description,
+  descriptionPlacement = "inline",
+  descriptionIcon,
   error,
   required = false,
   action,
@@ -259,24 +295,71 @@ export function FormField({
     </FieldLabel>
   ) : null;
 
+  // Beside the label rather than inside it: `FieldLabel` renders a real `<label>`, and a button
+  // nested in one is a button whose click the label also claims.
+  //
+  // `type="button"` is not decoration. The default for a `<button>` inside a `<form>` is
+  // `submit`, so a help icon written without it is a help icon that submits the form — which is
+  // exactly how it is written by hand, because it works fine in the story and fails in the app.
+  //
+  // Radix gives the content `role="dialog"`, and a dialog with no accessible name is an axe
+  // failure and a screen reader announcing "dialog" — so the trigger's name is reused for it
+  // rather than left to the paragraph inside, which is the description, not the name.
+  const helpName = typeof label === "string" ? `About ${label}` : "About this field";
+  const help =
+    description && descriptionPlacement === "popover" ? (
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            data-slot="form-field-description-trigger"
+            type="button"
+            aria-label={helpName}
+            className="shrink-0 rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-3.5"
+          >
+            {descriptionIcon ?? <CircleQuestionMark aria-hidden />}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          aria-label={helpName}
+          className="max-w-xs text-balance text-sm leading-relaxed"
+        >
+          {description}
+        </PopoverContent>
+      </Popover>
+    ) : null;
+
   // Only drawn when there is a second thing on the row. A label on its own is the row.
-  const header = action ? (
-    <div data-slot="form-field-label-row" className="flex min-w-0 items-center gap-2">
-      {labelNode}
-      <div data-slot="form-field-action" className="ml-auto shrink-0">
-        {action}
+  const header =
+    help || action ? (
+      <div data-slot="form-field-label-row" className="flex min-w-0 items-center gap-2">
+        {labelNode}
+        {help}
+        {action ? (
+          <div data-slot="form-field-action" className="ml-auto shrink-0">
+            {action}
+          </div>
+        ) : null}
       </div>
-    </div>
-  ) : (
-    labelNode
-  );
+    ) : (
+      labelNode
+    );
 
   const messages = (
     <>
-      {description ? (
+      {description && descriptionPlacement === "inline" ? (
         <FieldDescription id={descriptionId} className={descriptionClassName}>
           {description}
         </FieldDescription>
+      ) : null}
+      {/* Behind a popover, the text still has to exist somewhere permanent for the control to be
+          described by — Radix unmounts popover content on close, so a description living only
+          there is one a screen reader can never reach. Same span, same id, same announcement;
+          only the visible copy comes and goes. */}
+      {description && descriptionPlacement === "popover" ? (
+        <span id={descriptionId} className="sr-only">
+          {description}
+        </span>
       ) : null}
       {/* `FieldError` is already the `role="alert"` this shell used to draw by hand. Announcing
           matters more here than in shadcn's own forms: those sit downstream of react-hook-form,

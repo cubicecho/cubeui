@@ -15,6 +15,17 @@ export default mergeConfig(
     test: {
       projects: [
         {
+          // The pure functions. They are maths, not layout, so they have no business paying for
+          // a browser session — and this project is where a `registry:lib` item gets tested at
+          // all, since a story can only reach one through a component that renders it.
+          extends: true,
+          test: {
+            name: "unit",
+            environment: "node",
+            include: ["registry/**/*.test.ts"],
+          },
+        },
+        {
           extends: true,
           // No setup file: since Storybook 10.3 the addon applies `.storybook/preview.ts`
           // itself, so the stylesheet and the theme decorator are already in place here.
