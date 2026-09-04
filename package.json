@@ -5,7 +5,7 @@
   "type": "module",
   "description": "A shadcn registry of layout and form shells for the cubicecho apps.",
   "license": "MIT",
-  "homepage": "https://cubeui.cubicecho.dev",
+  "homepage": "https://cubicecho.github.io/cubeui",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cubicecho/cubeui.git"

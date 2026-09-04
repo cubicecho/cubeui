@@ -19,6 +19,6 @@
     "hooks": "@/registry/new-york/hooks"
   },
   "registries": {
-    "@cubeui": "https://cubeui.cubicecho.dev/r/{name}.json"
+    "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json"
   }
 }

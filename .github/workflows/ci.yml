@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Lint and format
+        run: npm run lint
+
+      - name: Build the registry
+        run: npm run registry:build
+
+      # `shadcn build` writes public/r. A drifted checkout means someone edited registry.json
+      # without rebuilding, and the published JSON would not match the sources it names.
+      - name: public/r is in sync with registry.json
+        run: git diff --exit-code -- public/r
+
+      - name: Install the browser the stories run in
+        run: npx playwright install --with-deps chromium
+
+      # Every story is a test, and axe runs on all of them.
+      - name: Stories
+        run: npm test

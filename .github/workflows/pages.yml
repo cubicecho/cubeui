@@ -1,0 +1,59 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The registry is what consuming projects install from, so a half-finished deploy is worse than
+# a late one: let a run finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # `npm run build` is typecheck + `shadcn build` + `vite build`, so the JSON that ships is
+      # rebuilt from registry.json here rather than trusted from the commit.
+      - run: npm run build
+
+      # A registry item that 404s is the failure that would be invisible until someone tried to
+      # install it, so the deploy refuses to publish a tree missing what registry.json promises.
+      - name: Every item in registry.json was built
+        run: |
+          missing=0
+          for name in $(node -p "require('./registry.json').items.map(i => i.name).join('\n')"); do
+            if [ ! -f "dist/r/$name.json" ]; then
+              echo "::error::registry.json names '$name', but dist/r/$name.json was not built"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

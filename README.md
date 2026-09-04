@@ -7,7 +7,7 @@ once, as components installed through the shadcn CLI.
 
 ```jsonc
 // components.json, once per project
-"registries": { "@cubeui": "https://cubeui.cubicecho.dev/r/{name}.json" }
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
 ```
 
 ```bash

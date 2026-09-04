@@ -19,7 +19,7 @@ Install from the registry, do not copy by hand:
 
 ```jsonc
 // components.json, once per project
-"registries": { "@cubeui": "https://cubeui.cubicecho.dev/r/{name}.json" }
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
 ```
 
 ```bash

@@ -238,11 +238,11 @@ packages; a fourth category means the component is doing too much.
    Grouping components under `components/layout/` with a `target` stays rejected — it assumes a
    tree shape the consumer never agreed to.
 5. ~~Namespace, and where the registry is served from.~~ **Settled:** `@cubeui/<item>` as the
-   alias, served as static files from `https://cubeui.cubicecho.dev/r/{name}.json`. Consuming
+   alias, served as static files from `https://cubicecho.github.io/cubeui/r/{name}.json`. Consuming
    projects add one line to `components.json` and need no auth:
 
    ```json
-   "registries": { "@cubeui": "https://cubeui.cubicecho.dev/r/{name}.json" }
+   "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
    ```
 
    The host is decided; publishing `public/r` to it from CI is not built yet, so today the URL is

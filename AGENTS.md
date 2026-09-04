@@ -71,13 +71,17 @@ Read this before adding anything:
    that stays, a middle that moves". `DialogLayout` composes it. A shell that reimplements a
    shape another shell already owns is the exact bug this registry is against.
 5. **Shells hold no state, no data, no routing, no toasts.** They take nodes and place them.
-   Behaviour that needs state belongs to the caller or to a form component.
+   The line is *who owns the state*: state about the shell's own interaction is the shell's, and
+   state about the app's data is the caller's. `DialogLayout` holds whether its discard question
+   is up, and is *handed* `hasUnsavedChanges` rather than reading the form. See conventions ยง8.
 6. **Port the call sites.** A component landing here without at least one app updated to use it
    is a component nobody has proven. Say which app, in the PR.
 
 ## Status
 
-Early, but scaffolded and installable. What exists today:
+Early, but scaffolded and installable. Published to <https://cubicecho.github.io/cubeui/> by
+`.github/workflows/pages.yml` on every push to `main`; the registry is the `r/` directory of that
+site. What exists today:
 
 ```
 registry/new-york/layout/header-content-footer.tsx   HeaderContentFooter, StickyHeaderContentFooter
@@ -112,6 +116,8 @@ stories/                                             Storybook, and the tests โ€
 docs/component-conventions.md                        authoring rules, and the open questions
 .claude/skills/cubeui/SKILL.md                       the usage skill: install, choosing, vocabulary
 .claude/skills/cubeui/{layout,forms,controls}.md     its references, shipped by the same item
+.github/workflows/ci.yml                             types, lint, registry drift, stories
+.github/workflows/pages.yml                          builds and publishes the registry on `main`
 ```
 
 `registry/new-york/ui/` is not ours. Every file in it arrived from `npx shadcn add` and is
