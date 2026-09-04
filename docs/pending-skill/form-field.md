@@ -17,7 +17,8 @@ Four words the form components add, and one boolean:
 
 - **`control`** — the field's body: one `<Input>`, `<Textarea>`, `<Checkbox>`, `<Switch>`. The
   only body in the set that is not `content`, because it is the only one the shell *wires* rather
-  than places. It must be a single element that forwards its props to a form control.
+  than places. Either a single element that forwards its props to a form control, or a function
+  taking those props for the cases where they belong on something nested — see below.
 - **`label`** — what the control is called. Rendered as a real `<Label htmlFor>`.
 - **`error`** — what is wrong with the value, as a string or a node. Falsy draws nothing.
 - **`orientation`** — `vertical` (default) or `horizontal`.
@@ -53,10 +54,11 @@ and the error are on screen. Do not write any of that at the call site:
 - Do not use a placeholder as a label. A placeholder leaves at the first keystroke, and a field
   wearing one is announced as "edit text".
 
-`error` takes whatever you already hold — `errors.email?.message`, a server response, a `useState`
-string. **The shell binds to no form library**, deliberately: the apps in this registry run
-react-hook-form, TanStack Form and plain `useState` between them. Keep the form library at the
-call site and hand the field a string.
+`error` takes whatever you already hold. **The shell itself binds to no form library** — but the
+projects using it all run TanStack Form, so in practice `FormField` is what a
+`field.InputField`-style wrapper renders, and that wrapper is where `useFieldContext()`, "has
+this been touched yet" and the error message live. Hand `FormField` a string; keep the form
+library one layer up.
 
 Falsy `error` draws nothing, so write `error={errors.email?.message}` plainly. Never
 `{errors.email && <p …>}`.
@@ -98,28 +100,33 @@ same ordering `CardLayout` makes between `loading` and `empty`.
 The default skeleton is input-height, which is right for `Input`, a select trigger and a date
 picker. Anything taller needs `loadingClassName` to say so, or the page jumps when the data lands.
 
-### The one case that needs `htmlFor`
+### When the props belong on something nested
 
-A `<Select>`'s id belongs on its nested `<SelectTrigger>`, and the shell can only reach the
-element you hand it. Set both:
+`Select` is the case. Its root renders no DOM, so a control the shell clones swallows the `id`,
+the `aria-describedby` and the `aria-invalid` and the field ends up wired to nothing — with no
+warning and nothing visibly wrong. Pass a **function** and put the props where they go:
 
 ```tsx
 <FormField
   label="Plan"
-  htmlFor="plan"
-  control={
+  error={errors.plan?.message}
+  control={(props) => (
     <Select value={plan} onValueChange={setPlan}>
-      <SelectTrigger id="plan" className="w-full">
+      <SelectTrigger {...props} className="w-full">
         <SelectValue placeholder="Choose one" />
       </SelectTrigger>
       <SelectContent>…</SelectContent>
     </Select>
-  }
+  )}
 />
 ```
 
-Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch`,
-`RadioGroup` — needs neither.
+Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
+element itself and needs none of this.
+
+`htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
+trigger and leaves the description and the error describing nothing. Use `htmlFor` only when you
+own the id for a separate reason — something else on the page references the control.
 
 ### Grouping fields
 

@@ -71,23 +71,10 @@
       "type": "registry:component",
       "title": "Form Field",
       "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational — it binds to no form library.",
-      "registryDependencies": ["label", "skeleton"],
+      "registryDependencies": ["field", "skeleton"],
       "files": [
         {
           "path": "registry/new-york/form/form-field.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "form-dialog",
-      "type": "registry:component",
-      "title": "Form Dialog",
-      "description": "A form in a dialog: one form element, a submit the keyboard reaches, a guard against saving twice, and a place for the form-level error. Composes the dialog shell rather than re-deriving it.",
-      "registryDependencies": ["button", "dialog", "@cubeui/dialog-layout"],
-      "files": [
-        {
-          "path": "registry/new-york/form/form-dialog.tsx",
           "type": "registry:component"
         }
       ]

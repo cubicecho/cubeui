@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ComponentProps } from "react";
 import { expect, within } from "storybook/test";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
@@ -11,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/registry/new-york/ui/select";
+import { Switch } from "@/registry/new-york/ui/switch";
 import { Textarea } from "@/registry/new-york/ui/textarea";
 
 const meta = {
@@ -27,37 +29,152 @@ type Story = StoryObj<typeof meta>;
 const controlFor = (canvasElement: HTMLElement, name: string | RegExp) =>
   within(canvasElement).getByLabelText(name);
 
-export const Default: Story = {
-  args: {
-    label: "Email",
-    description: "We only use it to send the sign-in link.",
-    control: <Input type="email" placeholder="you@example.com" />,
+type FieldProps = ComponentProps<typeof FormField>;
+
+/**
+ * The control types a form in these apps actually reaches for.
+ *
+ * Every state story below renders the whole set rather than one `<Input>`, because a state that
+ * reads right on a text input and wrong on a `<Textarea>` or a `<Checkbox>` is the state that
+ * ships broken — and this shell has exactly two things that only one control type at a time gets
+ * to be right about: the height of the loading box, and which side of the label the control sits
+ * on. Seeing them side by side is how a wrong one is noticed.
+ *
+ * A radio group is deliberately not here. Its label is not a `<label for>` — a group of radios is
+ * named by a `<legend>`, so its shell is shadcn's `FieldSet` and `FieldLegend`, not this.
+ */
+const TYPES = [
+  {
+    key: "text",
+    label: "Name",
+    description: "What the workspace is called in the switcher.",
+    control: <Input placeholder="Acme Staging" />,
   },
+  {
+    key: "number",
+    label: "Seats",
+    description: "Billed monthly, prorated when you change it.",
+    control: <Input type="number" defaultValue={3} min={1} />,
+  },
+  {
+    key: "select",
+    label: "Plan",
+    description: "Change it whenever; the difference is prorated.",
+    // The one type the shell cannot clone into: `Select`'s root renders no DOM, so the props go
+    // on the trigger and the caller is the only one who knows that. Hence the function form.
+    control: (props) => (
+      <Select>
+        <SelectTrigger {...props} className="w-full">
+          <SelectValue placeholder="Choose one" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="free">Free</SelectItem>
+          <SelectItem value="team">Team</SelectItem>
+        </SelectContent>
+      </Select>
+    ),
+  },
+  {
+    key: "textarea",
+    label: "Notes",
+    description: "Only your team sees these.",
+    control: <Textarea rows={3} />,
+    loadingClassName: "h-16",
+  },
+  {
+    key: "checkbox",
+    label: "Email me about releases",
+    description: "About one a month. Nothing else.",
+    orientation: "horizontal",
+    control: <Checkbox />,
+  },
+  {
+    key: "switch",
+    label: "Public workspace",
+    orientation: "horizontal",
+    control: <Switch />,
+    loadingClassName: "h-5 w-8 rounded-full",
+  },
+] satisfies Array<FieldProps & { key: string }>;
+
+/**
+ * One story's state, applied to every control type. The per-type props win over the story's, so
+ * a story says `error="…"` once and the textarea and the checkbox both get it.
+ */
+const AllTypes = ({ control: _control, ...args }: FieldProps) => (
+  <div className="grid w-[420px] gap-5">
+    {TYPES.map(({ key, ...type }) => (
+      <FormField key={key} {...args} {...type} />
+    ))}
+  </div>
+);
+
+export const Default: Story = {
+  args: { label: "Name", control: <Input /> },
+  render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
-    // The whole point: the label reaches the control, and the shell minted the id for it.
-    const input = controlFor(canvasElement, "Email");
-    expect(input).toHaveAttribute("data-slot", "input");
+    const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]");
+    expect(fields).toHaveLength(TYPES.length);
 
-    const label = canvasElement.querySelector<HTMLLabelElement>("[data-slot=form-field-label]");
-    expect(label?.htmlFor).toBe(input.id);
-    expect(input.id).not.toBe("");
+    const ids = new Set<string>();
+    for (const [i, type] of TYPES.entries()) {
+      // Found the way a user finds it: through the label. Which only works because the shell
+      // wired the two together — that is the whole component.
+      const control = controlFor(canvasElement, type.label);
+      expect(control.id).not.toBe("");
+      ids.add(control.id);
 
-    // And the description is not merely near the control — it describes it.
-    expect(input).toHaveAccessibleDescription("We only use it to send the sign-in link.");
+      const label = fields[i]?.querySelector<HTMLLabelElement>("[data-slot=field-label]");
+      expect(label?.htmlFor).toBe(control.id);
+
+      // And the description is not merely near the control — it describes it.
+      if ("description" in type) {
+        expect(control).toHaveAccessibleDescription(type.description);
+      }
+    }
+
+    // Every field minted its own id, so the same form rendered twice on a page does not
+    // cross-wire the second copy's labels to the first copy's controls.
+    expect(ids.size).toBe(TYPES.length);
   },
 };
 
 /**
- * A caller that already owns the id keeps it. The shell only fills the gap — which is what makes
- * a `<Select>`, whose id belongs on its nested trigger, work at all.
+ * A caller that already owns the id keeps it. The shell only fills the gap, so a control another
+ * element on the page points at keeps the name that reference uses.
  */
 export const CallerOwnsTheId: Story = {
   args: {
+    label: "Email",
+    htmlFor: "account-email",
+    control: <Input type="email" />,
+  },
+  play: async ({ canvasElement }) => {
+    expect(controlFor(canvasElement, "Email").id).toBe("account-email");
+  },
+};
+
+/**
+ * The function form of `control`, and why it exists.
+ *
+ * `Select`'s root renders nothing — it is context, not an element — so a cloned `id`,
+ * `aria-describedby` and `aria-invalid` land on a component that drops all three. The field
+ * *looks* wired and is not, which is the worst way for this to fail: no warning, no visual
+ * difference, and a screen reader that never mentions the error. Passing a function hands the
+ * caller the props and lets them land on the trigger, where they belong.
+ *
+ * An `htmlFor` does not cover this. It points the label at the trigger and leaves the
+ * description and the error describing nothing.
+ */
+export const ControlTheShellCannotReach: Story = {
+  args: {
     label: "Plan",
-    htmlFor: "plan",
-    control: (
+    description: "Change it whenever; the difference is prorated.",
+    error: "Your card was declined.",
+    required: true,
+    control: (props) => (
       <Select>
-        <SelectTrigger id="plan" className="w-full">
+        <SelectTrigger {...props} className="w-full">
           <SelectValue placeholder="Choose one" />
         </SelectTrigger>
         <SelectContent>
@@ -68,8 +185,13 @@ export const CallerOwnsTheId: Story = {
     ),
   },
   play: async ({ canvasElement }) => {
-    const trigger = controlFor(canvasElement, "Plan");
-    expect(trigger.id).toBe("plan");
+    const trigger = controlFor(canvasElement, /^Plan/);
+    expect(trigger).toHaveAttribute("data-slot", "select-trigger");
+    expect(trigger).toHaveAttribute("aria-invalid", "true");
+    expect(trigger).toHaveAttribute("aria-required", "true");
+    expect(trigger).toHaveAccessibleDescription(
+      "Change it whenever; the difference is prorated. Your card was declined.",
+    );
   },
 };
 
@@ -82,25 +204,31 @@ export const CallerOwnsTheId: Story = {
  */
 export const WithError: Story = {
   args: {
-    label: "Email",
-    description: "We only use it to send the sign-in link.",
-    error: "That address is already registered.",
-    control: <Input type="email" defaultValue="taken@example.com" />,
+    label: "Name",
+    error: "That name is already taken in this organisation.",
+    control: <Input />,
   },
+  render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
-    const input = controlFor(canvasElement, "Email");
+    const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]");
 
-    // Marked invalid, which is also what draws the primitive's red ring — nothing else does.
-    expect(input).toHaveAttribute("aria-invalid", "true");
+    for (const [i, type] of TYPES.entries()) {
+      const control = controlFor(canvasElement, type.label);
 
-    // Described by both messages, in the order they are on screen.
-    expect(input).toHaveAccessibleDescription(
-      "We only use it to send the sign-in link. That address is already registered.",
-    );
+      // Marked invalid, which is also what draws the primitive's red ring — nothing else does,
+      // and a checkbox and a select take it as readily as an input.
+      expect(control).toHaveAttribute("aria-invalid", "true");
 
-    // And announced on arrival, because no form library is here to move the focus for us.
-    const error = canvasElement.querySelector("[data-slot=form-field-error]");
-    expect(error).toHaveAttribute("role", "alert");
+      // Described by both messages, in the order they are on screen.
+      const spoken = "description" in type ? `${type.description} ` : "";
+      expect(control).toHaveAccessibleDescription(
+        `${spoken}That name is already taken in this organisation.`,
+      );
+
+      // And announced on arrival, because no form library is here to move the focus for us.
+      const error = fields[i]?.querySelector("[data-slot=field-error]");
+      expect(error).toHaveAttribute("role", "alert");
+    }
   },
 };
 
@@ -112,8 +240,8 @@ export const NoErrorLeavesNothingBehind: Story = {
     control: <Input type="email" />,
   },
   play: async ({ canvasElement }) => {
-    expect(canvasElement.querySelector("[data-slot=form-field-error]")).toBeNull();
-    expect(canvasElement.querySelector("[data-slot=form-field-description]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=field-error]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=field-description]")).toBeNull();
     // No action, so no label row wrapper either: the label is the row.
     expect(canvasElement.querySelector("[data-slot=form-field-label-row]")).toBeNull();
     expect(controlFor(canvasElement, "Email")).not.toHaveAttribute("aria-invalid");
@@ -125,6 +253,27 @@ export const NoErrorLeavesNothingBehind: Story = {
  * from the accessibility tree, so the field is still named "Password" and not "Password star".
  */
 export const Required: Story = {
+  args: { label: "Name", required: true, control: <Input /> },
+  render: (args) => <AllTypes {...args} />,
+  play: async ({ canvasElement }) => {
+    for (const type of TYPES) {
+      // The label's *text* carries the asterisk; its accessible *name* does not, which is the
+      // whole trick — so this query is by prefix and the assertion below is exact.
+      const control = controlFor(canvasElement, new RegExp(`^${type.label}`));
+      expect(control).toHaveAttribute("aria-required", "true");
+      expect(control).toHaveAccessibleName(type.label);
+      // Not the native attribute: that hands validation to a browser bubble drawn somewhere
+      // other than where this field puts its error.
+      expect(control).not.toHaveAttribute("required");
+    }
+  },
+};
+
+/**
+ * `action` is the label row's far end — "Forgot?", a character count, a reveal toggle. One field
+ * here, because the assertion is about where it lands rather than about the control beside it.
+ */
+export const LabelAction: Story = {
   args: {
     label: "Password",
     required: true,
@@ -136,17 +285,7 @@ export const Required: Story = {
     control: <Input type="password" />,
   },
   play: async ({ canvasElement }) => {
-    // The label's *text* carries the asterisk; its accessible *name* does not, which is the
-    // whole trick — so this query is by prefix and the assertion below is exact.
-    const input = controlFor(canvasElement, /^Password/);
-    expect(input).toHaveAttribute("aria-required", "true");
-    // Not the native attribute: that hands validation to a browser bubble drawn somewhere other
-    // than where this field puts its error.
-    expect(input).not.toHaveAttribute("required");
-    expect(input).toHaveAccessibleName("Password");
-
-    // `action` sits at the far end of the label row, past the label.
-    const label = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-label]");
+    const label = canvasElement.querySelector<HTMLElement>("[data-slot=field-label]");
     const action = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-action]");
     expect(label).not.toBeNull();
     expect(action).not.toBeNull();
@@ -171,7 +310,7 @@ export const Horizontal: Story = {
   },
   play: async ({ canvasElement }) => {
     const box = controlFor(canvasElement, "Email me about releases");
-    const label = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-label]");
+    const label = canvasElement.querySelector<HTMLElement>("[data-slot=field-label]");
     expect(label).not.toBeNull();
     if (!label) return;
 
@@ -185,9 +324,7 @@ export const Horizontal: Story = {
 
     // The description is held to the label's column, so its second line does not start under
     // the checkbox.
-    const description = canvasElement.querySelector<HTMLElement>(
-      "[data-slot=form-field-description]",
-    );
+    const description = canvasElement.querySelector<HTMLElement>("[data-slot=field-description]");
     expect(description?.getBoundingClientRect().left).toBeGreaterThan(boxRect.right - 1);
   },
 };
@@ -201,27 +338,36 @@ export const Horizontal: Story = {
  */
 export const Loading: Story = {
   args: {
-    label: "Email",
-    description: "We only use it to send the sign-in link.",
-    error: "This is not consulted while loading.",
+    label: "Name",
     loading: true,
-    control: <Input type="email" />,
+    error: "This is not consulted while loading.",
+    control: <Input />,
   },
+  render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
-    const skeleton = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-skeleton]");
-    expect(skeleton).not.toBeNull();
-    expect(canvasElement.querySelector("[data-slot=input]")).toBeNull();
+    const skeletons = canvasElement.querySelectorAll<HTMLElement>(
+      "[data-slot=form-field-skeleton]",
+    );
+    expect(skeletons).toHaveLength(TYPES.length);
+
+    // Every control type is gone, not only the ones that are inputs.
+    for (const slot of ["input", "textarea", "select-trigger", "checkbox", "switch"]) {
+      expect(canvasElement.querySelector(`[data-slot=${slot}]`)).toBeNull();
+    }
 
     // `loading` outranks `error`: a value that has not arrived is not one that came back wrong.
-    expect(canvasElement.querySelector("[data-slot=form-field-error]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=field-error]")).toBeNull();
 
-    // The label and the description are still on screen, and still real.
-    expect(canvasElement.textContent).toContain("Email");
-    expect(canvasElement.textContent).toContain("We only use it to send the sign-in link.");
+    for (const type of TYPES) {
+      // The labels and descriptions are still on screen, and still real — they are literals the
+      // form already knows, not data anyone is waiting for.
+      expect(canvasElement.textContent).toContain(type.label);
+    }
 
     // No control to point at, so no dangling `for` claiming there is one.
-    const label = canvasElement.querySelector<HTMLLabelElement>("[data-slot=form-field-label]");
-    expect(label?.getAttribute("for")).toBeNull();
+    for (const label of canvasElement.querySelectorAll("[data-slot=field-label]")) {
+      expect(label.getAttribute("for")).toBeNull();
+    }
   },
 };
 
@@ -251,7 +397,7 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=form-field]");
+    const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]");
     const skeletons = canvasElement.querySelectorAll<HTMLElement>(
       "[data-slot=form-field-skeleton]",
     );
@@ -294,31 +440,108 @@ export const WideControlKeepsItsFloor: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const field = canvasElement.querySelector<HTMLElement>("[data-slot=form-field]");
+    const field = canvasElement.querySelector<HTMLElement>("[data-slot=field]");
     expect(field).not.toBeNull();
     if (!field) return;
     expect(field.clientWidth).toBeLessThanOrEqual(400);
   },
 };
 
-/** The stack a real form is: several fields, one gap, nothing re-derived per field. */
+/**
+ * A real form, field for field: this is `auto-cal`'s `TodoForm` — title, description, a list
+ * select, priority and duration side by side, a due date — with its TanStack `AppField` wrappers
+ * peeled off, so what is left is the part this shell owns.
+ *
+ * Two things to read off it. The row of two is a plain `grid-cols-2` here; `auto-cal` has a
+ * `FieldRow` for it, wrapping and all, and that is the next component this registry wants rather
+ * than a prop on this one. And every field is the same call shape — label, control, done — which
+ * is what the `field.InputField` / `field.SelectField` layer above narrows to one line.
+ */
 export const AForm: Story = {
-  args: { label: "Name", control: <Input /> },
-  render: (args) => (
-    <form className="grid w-[420px] gap-5">
-      <FormField {...args} label="Name" required control={<Input />} />
+  args: { label: "Title", control: <Input /> },
+  render: () => (
+    <form className="grid w-[480px] gap-4">
+      <FormField label="Title" required control={<Input placeholder="What needs to be done?" />} />
       <FormField
-        label="Email"
-        required
-        description="We only use it to send the sign-in link."
-        error="That address is already registered."
-        control={<Input type="email" defaultValue="taken@example.com" />}
+        label="Description"
+        description="Optional. Notes, links, anything you want beside it later."
+        control={<Textarea rows={3} placeholder="Add any notes or details…" />}
       />
-      <FormField label="Notes" control={<Textarea rows={3} />} />
-      <FormField orientation="horizontal" label="Email me about releases" control={<Checkbox />} />
-      <Button type="button" className="justify-self-end">
-        Save
-      </Button>
+      <FormField
+        label="List"
+        required
+        error="Pick a list — a todo with nowhere to go is never seen again."
+        control={(props) => (
+          <Select>
+            <SelectTrigger {...props} className="w-full">
+              <SelectValue placeholder="Choose a list" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inbox">Inbox</SelectItem>
+              <SelectItem value="work">Work</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          label="Priority"
+          control={(props) => (
+            <Select defaultValue="2">
+              <SelectTrigger {...props} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Low</SelectItem>
+                <SelectItem value="2">Normal</SelectItem>
+                <SelectItem value="3">High</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        <FormField
+          label="Duration"
+          control={(props) => (
+            <Select defaultValue="30">
+              <SelectTrigger {...props} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15 minutes</SelectItem>
+                <SelectItem value="30">30 minutes</SelectItem>
+                <SelectItem value="60">1 hour</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </div>
+      <FormField label="Due date" control={<Input type="datetime-local" />} />
+      <FormField
+        orientation="horizontal"
+        label="Schedule it automatically"
+        description="Finds the next free block that fits the duration."
+        control={<Switch defaultChecked />}
+      />
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button type="button">Create Todo</Button>
+      </div>
     </form>
   ),
+  play: async ({ canvasElement }) => {
+    // Seven fields, three of them selects, and every one of them wired — which is the assertion
+    // the whole file exists to make, made once against a form the size a real one is.
+    const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]");
+    expect(fields).toHaveLength(7);
+
+    for (const field of fields) {
+      const label = field.querySelector<HTMLLabelElement>("[data-slot=field-label]");
+      expect(label).not.toBeNull();
+      if (!label) return;
+      const control = canvasElement.ownerDocument.getElementById(label.htmlFor);
+      expect(control).not.toBeNull();
+    }
+  },
 };

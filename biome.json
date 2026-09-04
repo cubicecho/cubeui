@@ -25,6 +25,12 @@
       "suspicious": { "noExplicitAny": "error" }
     }
   },
+  "overrides": [
+    {
+      "includes": ["registry/new-york/ui/**"],
+      "linter": { "enabled": false }
+    }
+  ],
   "javascript": { "formatter": { "quoteStyle": "double", "trailingCommas": "all" } },
   "css": { "parser": { "tailwindDirectives": true } },
   "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }
