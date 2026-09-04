@@ -6,7 +6,8 @@
   "registryDependencies": [
     "@cubeui/header-content-footer",
     "@cubeui/card-layout",
-    "@cubeui/dialog-layout"
+    "@cubeui/dialog-layout",
+    "@cubeui/split-pane"
   ],
   "files": [],
   "type": "registry:component"
