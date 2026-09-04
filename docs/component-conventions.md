@@ -92,6 +92,18 @@ field — because data that has not arrived is not data that came back empty or 
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 
+**List rows and query states add:**
+
+| Word | Means |
+| --- | --- |
+| `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
+| `meta` | The grey line of facts beside the title: a name, a time, a count. |
+| `open`, `onOpenChange` | A row whose body opens. Controlled, like every other pair here. |
+| `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
+| `what` | What could not be fetched, in the reader's words. |
+| `count` | How many rows the page is about to draw, which is not what came back. |
+| `rows` | How many placeholder rows stand in for a list while it loads. |
+
 Three notes on why the layering is where it is:
 
 - **`control` is the one exception to "the body is `content`",** and it earns it: it is the only
@@ -100,6 +112,9 @@ Three notes on why the layering is where it is:
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
+- **`DisclosureRow` takes `action`, not `actions`,** though it usually holds three buttons. The
+  core word already says "one control, or a fragment of them", and a second word for the same
+  place would only ever be a plural.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 

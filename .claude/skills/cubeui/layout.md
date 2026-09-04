@@ -294,3 +294,53 @@ A heading over a group of fields or rows, inside a page or a card.
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
+
+## List pages
+
+Two shells for the shape every list route is: a ladder of states, then rows.
+
+```tsx
+<QueryState query={roles} what="your roles" count={shown.length} empty={<Empty … />} />
+{shown.map((role) => (
+  <DisclosureRow
+    key={role.id}
+    open={open === role.id}
+    onOpenChange={(next) => setOpen(next ? role.id : null)}
+    badges={<Badge>{role.contract}</Badge>}
+    title={role.name}
+    meta={<span className="text-muted-foreground text-xs">{role.lanes} lanes</span>}
+    description={role.prompt}
+    action={<ActionButton label="Delete" … />}
+    content={<RolePrompt role={role} />}
+  />
+))}
+```
+
+### QueryState
+
+- The three rungs a list climbs before it is a list: the request **failed**, it has **not
+  landed**, it landed **empty**. Once there are rows it renders `null`, so the page reads as the
+  ladder and then the list rather than a nest of ternaries.
+- `count` is what the page is **about to draw**, not what came back. A search matching nothing is
+  an empty *view* over a full result, and only the page knows which of the two it is showing — so
+  pass the length of the rows you are mapping, and let `empty` say which emptiness it is.
+- `query` is structural: anything with `isPending`, `isError`, `error` and `refetch` fits, so the
+  shell names no data library. The same line `FormField` holds against form libraries.
+- It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
+  draws one object rather than a list — it is the rung most often left out, and a page that draws
+  a failure as an absence tells somebody whose server went away that they have no data.
+- `RowSkeleton` draws outlined `Item`s, the same primitive the rows are, so the page does not
+  change shape when the answer lands. Use it on `isPending` only: behind `isFetching` it flashes a
+  skeleton over a list that is perfectly good.
+
+### DisclosureRow
+
+- The **whole heading is the button**, so a row is never opened by hitting a 16-pixel chevron and
+  is operable with Space. `aria-expanded` is on it, and `aria-controls` while the body is there.
+- **`action` sits outside that button.** A control nested inside a button is invalid HTML and, in
+  practice, a delete that cannot be clicked.
+- `description` shows whether the row is open or shut; `content` is what it opens onto.
+- Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
+- It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
+  A list of rows that do **not** open needs no shell at all: use `Item`, `ItemContent`,
+  `ItemTitle`, `ItemDescription` and `ItemActions` directly.

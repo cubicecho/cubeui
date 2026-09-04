@@ -116,7 +116,7 @@ registry/new-york/control/color-picker.tsx           ColorPicker + its two helpe
 registry/new-york/control/password-input.tsx         PasswordInput
 registry/new-york/lib/readable-text-color.ts         readableTextColor
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        29 items: 21 components, a lib, two re-published
+registry.json                                        31 items: 23 components, a lib, two re-published
                                                      primitives, `layout`, `form`, `control`,
                                                      `primitive`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
@@ -288,9 +288,11 @@ Recorded so the next pass does not re-derive them:
   already uses it, and the answer is four `npx shadcn add sidebar` calls. The genuinely shared
   part between the mcp apps is auth, which is rule 5.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
-  `flex items-start justify-between` across 8 projects, and kanban has already extracted
-  `row-card.tsx`. Not built *yet*: nobody has shadcn's `item` installed, and `item` is the
-  drawing. Revisit once a project has it — the leftover wiring may be one prop (`dim`) or none.
+  `flex items-start justify-between` across 8 projects. Settled, and the answer was the one this
+  entry guessed: once kanban installed `@cubeui/item`, the plain row *was* `Item` and its
+  `row-card.tsx` was deleted rather than upstreamed — `dim` is one `className` on `ItemContent`,
+  which is not a component. What `Item` had no answer for was the row that **opens**, so
+  `DisclosureRow` is what shipped.
 - **`EmptyState`**. ~30 files hand-roll "no results". shadcn ships `empty`; `CardLayout`
   already has the slot. Install the primitive.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5 copies of a

@@ -93,6 +93,32 @@
       ]
     },
     {
+      "name": "query-state",
+      "type": "registry:component",
+      "title": "Query State",
+      "description": "The three rungs a list page climbs before it draws a row: the request failed, it has not landed, it landed empty. Ships QueryError and RowSkeleton, the two of them that are worth having on their own.",
+      "registryDependencies": ["button", "card", "skeleton", "@cubeui/item"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/query-state.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "disclosure-row",
+      "type": "registry:component",
+      "title": "Disclosure Row",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.",
+      "registryDependencies": ["@cubeui/item"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/disclosure-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
@@ -338,7 +364,9 @@
         "@cubeui/page-header",
         "@cubeui/page-layout",
         "@cubeui/split-layout",
-        "@cubeui/section"
+        "@cubeui/section",
+        "@cubeui/query-state",
+        "@cubeui/disclosure-row"
       ],
       "files": []
     },

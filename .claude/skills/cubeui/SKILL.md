@@ -41,6 +41,8 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form, control
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout.md](layout.md) |
 | A heading over a group of fields or rows | `Section` | [layout.md](layout.md) |
+| A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
+| A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
@@ -101,6 +103,16 @@ The same words mean the same thing in every component, and this is the point of 
 - **`label`** — on `ActionButton` and `ConfirmButton` it is required, and it is the accessible
   name, not a caption.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
+
+**List rows and query states add:**
+
+- **`badges`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
+- **`meta`** — the grey line of facts beside the title: a name, a time, a count.
+- **`open`**, **`onOpenChange`** — a row whose body opens. Controlled, like every other pair here.
+- **`query`** — a `{ isPending, isError, error, refetch }`, taken structurally so no shell names a
+  data library.
+- **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
+- **`count`** — how many rows the page is *about to draw*, which is not what came back.
 
 Rules that follow from the vocabulary:
 
