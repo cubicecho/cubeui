@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Children } from "react";
-
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardAction,
@@ -9,12 +9,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+} from "@/registry/new-york/ui/card";
+import { Skeleton } from "@/registry/new-york/ui/skeleton";
 
 type CardLayoutProps = {
   /** The body. */
-  children?: ReactNode;
+  content?: ReactNode;
   /** A string, a heading, whatever names the card. Absent, no header row is drawn. */
   title?: ReactNode;
   /** One line on what the card holds, or what changing it costs. */
@@ -23,8 +23,16 @@ type CardLayoutProps = {
   icon?: ReactNode;
   /** The header's far end: an add button, a menu, a switch. */
   action?: ReactNode;
-  /** Shown instead of `children` when there is nothing in them — an empty list, no results. */
+  /** Shown instead of `content` when there is nothing in it — an empty list, no results. */
   empty?: ReactNode;
+  /**
+   * Whether the body is still being fetched. On, a skeleton stands in for it and `empty` is not
+   * consulted — data that has not arrived is not data that came back empty, and a card that says
+   * "no members yet" for half a second before showing four of them is worse than one that waits.
+   *
+   * A caller wanting its own placeholder passes it as `content` and leaves this off.
+   */
+  loading?: boolean;
   /** The footer's start. A timestamp, a note, a destructive action held away from the rest. */
   footer?: ReactNode;
   /** The footer's end. The buttons. Given alone, the footer is simply right-aligned. */
@@ -44,18 +52,20 @@ type CardLayoutProps = {
  * beside the title and some under it, some give the description a `text-sm` and some a `text-xs`,
  * and a card with nothing to show says so in a different voice on every screen.
  *
- * Every slot is a node rather than a child, so a card is one element at the call site and the
- * question "where does this go?" has one answer per prop. `empty` is the exception worth naming:
- * it is not a slot the caller places, it is what the body says when `children` come back empty,
- * which is what a list rendered from a `map` does the moment its data is.
+ * Every slot is a node, `content` included, so a card is one element at the call site and the
+ * question "where does this go?" has one answer per prop. `empty` and `loading` are the two that
+ * are not slots the caller places: they are what the body says when the data came back empty, and
+ * while it has not come back at all. A list rendered from a `map` reaches the first state on its
+ * own the moment its array is empty.
  */
 export function CardLayout({
-  children,
+  content,
   title,
   description,
   icon,
   action,
   empty,
+  loading = false,
   footer,
   footerActions,
   className,
@@ -65,8 +75,8 @@ export function CardLayout({
 }: CardLayoutProps) {
   // `Children.count` rather than a truth test: `{items.map(…)}` on an empty array is an empty
   // array, not null, and it is the shape a card is nearly always handed.
-  const isEmpty = Children.count(children) === 0;
-  const body = isEmpty && empty ? empty : children;
+  const isEmpty = Children.count(content) === 0;
+  const body = loading ? <CardLayoutSkeleton /> : isEmpty && empty ? empty : content;
 
   const hasHeader = Boolean(title || description || action);
   const hasFooter = Boolean(footer || footerActions);
@@ -91,18 +101,35 @@ export function CardLayout({
         </CardHeader>
       ) : null}
 
-      {body ? (
-        <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent>
-      ) : null}
+      {/* The header keeps its real title while loading: only the part that is waiting waits. */}
+      {body ? <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent> : null}
 
       {hasFooter ? (
         <CardFooter
-          className={cn(footer && footerActions && "justify-between", !footer && "justify-end", footerClassName)}
+          className={cn(
+            footer && footerActions && "justify-between",
+            !footer && "justify-end",
+            footerClassName,
+          )}
         >
           {footer}
           {footerActions ? <div className="flex items-center gap-2">{footerActions}</div> : null}
         </CardFooter>
       ) : null}
     </Card>
+  );
+}
+
+/**
+ * Three bars at the widths a paragraph or a short list settles at, so the card holds roughly the
+ * height its content will and the page does not jump when the data lands.
+ */
+function CardLayoutSkeleton() {
+  return (
+    <div data-slot="card-layout-skeleton" className="space-y-2" aria-hidden>
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-1/2" />
+    </div>
   );
 }

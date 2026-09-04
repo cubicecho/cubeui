@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "preview/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@/registry/new-york",
+    "ui": "@/registry/new-york/ui",
+    "utils": "@/lib/utils",
+    "lib": "@/lib",
+    "hooks": "@/registry/new-york/hooks"
+  },
+  "registries": {
+    "@cubeui": "https://cubeui.cubicecho.dev/r/{name}.json"
+  }
+}

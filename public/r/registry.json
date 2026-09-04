@@ -1,0 +1,70 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cubeui",
+  "homepage": "https://github.com/vantreeseba/cubeui",
+  "items": [
+    {
+      "name": "header-content-footer",
+      "type": "registry:component",
+      "title": "Header / Content / Footer",
+      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
+      "files": [
+        {
+          "path": "registry/new-york/layout/header-content-footer.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "card-layout",
+      "type": "registry:component",
+      "title": "Card Layout",
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
+      "registryDependencies": ["card", "skeleton"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dialog-layout",
+      "type": "registry:component",
+      "title": "Dialog Layout",
+      "description": "A dialog whose body scrolls under a header that does not. Composes the header/content/footer chassis rather than owning a second copy.",
+      "registryDependencies": ["dialog", "@cubeui/header-content-footer"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/dialog-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "layout",
+      "type": "registry:component",
+      "title": "Layout Set",
+      "description": "Every cubeui layout shell in one install.",
+      "registryDependencies": [
+        "@cubeui/header-content-footer",
+        "@cubeui/card-layout",
+        "@cubeui/dialog-layout"
+      ],
+      "files": []
+    },
+    {
+      "name": "skill",
+      "type": "registry:item",
+      "title": "cubeui Agent Skill",
+      "description": "How to use these components, for agents working in a consuming project. Installs into .claude/skills/.",
+      "files": [
+        {
+          "path": ".claude/skills/cubeui/SKILL.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/cubeui/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

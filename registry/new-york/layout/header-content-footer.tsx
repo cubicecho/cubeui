@@ -14,7 +14,7 @@ export const PAGE_COLUMN = "mx-auto w-full max-w-(--breakpoint-2xl)";
 
 type HeaderContentFooterProps = {
   /** The body. The only slot that grows. */
-  children: ReactNode;
+  content: ReactNode;
   /** Page title, toolbar, filters — whatever stays above the body. Absent, no row is drawn. */
   header?: ReactNode;
   /** Paging, totals, a save bar. Absent, no row is drawn. */
@@ -56,7 +56,7 @@ type HeaderContentFooterProps = {
  * the screen instead of scrolling inside it, and `scroll` does nothing at all without the floor.
  */
 export function HeaderContentFooter({
-  children,
+  content,
   header,
   footer,
   scroll = false,
@@ -78,7 +78,10 @@ export function HeaderContentFooter({
       className={cn("flex min-h-0 min-w-0 flex-col", className)}
     >
       {header ? (
-        <div data-slot="hcf-header" className={cn("min-w-0 shrink-0", headerColumn, headerClassName)}>
+        <div
+          data-slot="hcf-header"
+          className={cn("min-w-0 shrink-0", headerColumn, headerClassName)}
+        >
           {header}
         </div>
       ) : null}
@@ -93,7 +96,7 @@ export function HeaderContentFooter({
           contentClassName,
         )}
       >
-        {children}
+        {content}
       </div>
 
       {footer ? (

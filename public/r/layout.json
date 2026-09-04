@@ -1,0 +1,13 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "layout",
+  "title": "Layout Set",
+  "description": "Every cubeui layout shell in one install.",
+  "registryDependencies": [
+    "@cubeui/header-content-footer",
+    "@cubeui/card-layout",
+    "@cubeui/dialog-layout"
+  ],
+  "files": [],
+  "type": "registry:component"
+}

@@ -47,20 +47,26 @@ Read this before adding anything:
 
 ## Status
 
-Early. What exists today:
+Early, but scaffolded and installable. What exists today:
 
 ```
-registry/layout/header-content-footer.tsx   HeaderContentFooter, StickyHeaderContentFooter
-registry/layout/card-layout.tsx             CardLayout
-registry/layout/dialog-layout.tsx           DialogLayout
-docs/component-conventions.md               authoring rules, and the open questions
-.claude/skills/cubeui/SKILL.md              the usage skill, shipped as a registry item
+registry/new-york/layout/header-content-footer.tsx   HeaderContentFooter, StickyHeaderContentFooter
+registry/new-york/layout/card-layout.tsx             CardLayout
+registry/new-york/layout/dialog-layout.tsx           DialogLayout
+registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
+registry.json                                        5 items: the three shells, a `layout` bundle, `skill`
+components.json                                      aliases point at `@/registry/new-york`
+preview/                                             Vite demo page, `npm run dev`
+docs/component-conventions.md                        authoring rules, and the open questions
+.claude/skills/cubeui/SKILL.md                       the usage skill, shipped as a registry item
 ```
 
-`registry.json`, `components.json`, the preview site and the tooling are **not scaffolded yet**,
-and the open questions at the bottom of `docs/component-conventions.md` are unsettled — most of
-all where installed files land and how registry items import each other. Do not add a build step
-that assumes an answer to those without settling it.
+Sources import each other as `@/registry/new-york/...`; the CLI rewrites those against the
+consuming project's own aliases on install. This is verified, not assumed — see open question 4
+in `docs/component-conventions.md`.
+
+Still unsettled: the **form components**, the user's other half of the first pass, and open
+questions 1, 3 and 5 in the conventions doc. Do not answer those unilaterally in code.
 
 ## Stack
 
@@ -69,7 +75,7 @@ that assumes an answer to those without settling it.
 - **shadcn** CLI for `build`; new-york is the reference style, but components must survive being
   installed into any of them
 - **Biome** for lint and format
-- **Vite** for the preview site (planned)
+- **Vite** for the preview site (`npm run dev`)
 
 Registry sources import `cn`, shadcn primitives, react, lucide, and other cubeui items — nothing
 else. Anything further is a dependency every consuming project has to be told about.
@@ -87,8 +93,13 @@ else. Anything further is a dependency every consuming project has to be told ab
   composed strings — the scanner reads source text, so a built class name is never generated
 
 The full authoring rules are [`docs/component-conventions.md`](docs/component-conventions.md).
-The slot vocabulary (`title`, `description`, `icon`, `action`, `footer`, `footerActions`,
-`empty`, `children`, `<slot>ClassName`) is the part to know before writing a prop.
+The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `footer`,
+`footerActions`, `empty`, `loading`, `<slot>ClassName`) is the part to know before writing a prop.
+
+**No shell takes `children`.** The body is `content`, a prop like every other slot, because in a
+layout every part is dynamic and none of them earns the privileged position. A component that
+accepts children is a component that has to answer "and what if both were passed?" — see rule 1
+of the conventions doc.
 
 ## Keep the skill in sync
 

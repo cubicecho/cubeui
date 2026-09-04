@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-
-import { HeaderContentFooter } from "@/components/header-content-footer";
+import { cn } from "@/lib/utils";
+import { HeaderContentFooter } from "@/registry/new-york/layout/header-content-footer";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+} from "@/registry/new-york/ui/dialog";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
 const SIZES = {
@@ -23,7 +22,7 @@ const SIZES = {
 
 type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
-  children: ReactNode;
+  content: ReactNode;
   /**
    * Required, because a dialog without a title is one no screen reader can announce. A dialog
    * whose design has no room for a heading passes `hideTitle` and keeps this.
@@ -78,7 +77,7 @@ type DialogLayoutProps = {
  * `overflow` and nothing else.
  */
 export function DialogLayout({
-  children,
+  content,
   title,
   description,
   hideTitle = false,
@@ -135,6 +134,7 @@ export function DialogLayout({
           // Four pixels of room either side, given back as padding: a focus ring is drawn
           // outside the element that owns it, and a scroll container clips at its edge.
           contentClassName={cn("-mx-1 px-1", contentClassName)}
+          content={content}
           footer={
             hasFooter ? (
               <DialogFooter
@@ -147,9 +147,7 @@ export function DialogLayout({
               </DialogFooter>
             ) : null
           }
-        >
-          {children}
-        </HeaderContentFooter>
+        />
       </DialogContent>
     </Dialog>
   );
