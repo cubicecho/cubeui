@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "description": "A shadcn registry of layout and form shells for the cubicecho apps.",
+  "license": "MIT",
+  "homepage": "https://cubeui.cubicecho.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cubicecho/cubeui.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && npm run registry:build && vite build",

@@ -22,20 +22,34 @@ runtime dependency on this package.
 
 | Item | What it is |
 | --- | --- |
-| `@cubeui/header-content-footer` | The chassis: `HeaderContentFooter` and the `StickyHeaderContentFooter` preset |
-| `@cubeui/card-layout` | `CardLayout` — icon, title, description, header action, body, split footer |
+| `@cubeui/header-content-footer` | `HeaderContentFooter` and the `StickyHeaderContentFooter` preset — the chassis: chrome that stays, a body that scrolls |
+| `@cubeui/card-layout` | `CardLayout` — icon, title, description, header action, body, split footer, and the loading/empty ordering |
 | `@cubeui/dialog-layout` | `DialogLayout` — a dialog whose body scrolls under a header that does not |
-| `@cubeui/page-header` | `PageHeader` — trail, title, description, actions, and the control row |
+| `@cubeui/page-header` | `PageHeader` — trail, title at a chosen heading level, description, actions, and the control row |
 | `@cubeui/split-pane` | `SplitPane` — a fixed rail beside a body, collapsing at a breakpoint |
 | `@cubeui/page-layout` | `PageLayout` — a whole page: a pinned title block over a body that scrolls, in a named column |
-| `@cubeui/form-field` | `FormField` — a label wired to its control, a description, an announced error, a skeleton |
+| `@cubeui/section` | `Section` — a heading over a group of fields or rows, with an action at the far end |
+| `@cubeui/form-field` | `FormField` — a label wired to its control, a description inline or behind a help icon, an announced error, a skeleton, and `asGroup` for controls a `<label>` cannot name |
 | `@cubeui/field-row` | `FieldRow` — fields side by side, wrapping rather than squeezing |
-| `@cubeui/app-form` | `useAppForm` and the TanStack-bound fields: `InputField`, `TextareaField`, `SelectField`, `CheckboxField`, `SwitchField`, `SubmitButton` |
+| `@cubeui/app-form` | `useAppForm` and the TanStack-bound fields: `InputField`, `NumberField`, `TextareaField`, `SelectField`, `CheckboxField`, `SwitchField`, `SubmitButton` |
+| `@cubeui/multi-select-field` | `MultiSelectField` — over a field the compiler checked holds a list of strings |
+| `@cubeui/date-field` | `DateField` and `DateRangeField` — over fields checked to hold a `Date` and a `DateRange` |
+| `@cubeui/color-field` | `ColorField` — over a field checked to hold a hex string |
+| `@cubeui/radio-group-field` | `RadioGroupField` — exclusive choices with the options on the page, each able to carry a line saying what it means |
+| `@cubeui/password-field` | `PasswordField` — a password with a reveal button |
 | `@cubeui/action-button` | `ActionButton` — an icon button with a required name, and a tooltip that survives being disabled |
 | `@cubeui/confirm-button` | `ConfirmButton` — a destructive button that asks first, and makes you say what is lost |
-| `@cubeui/layout` | All six layout items in one install |
-| `@cubeui/form` | All three form items in one install |
-| `@cubeui/control` | Both control items in one install |
+| `@cubeui/multi-select` | `MultiSelect` — portalled, keyboard-operable, searchable on every word, and able to create as you type |
+| `@cubeui/date-picker` | `DatePicker` and `DateRangePicker` — optionally with a time, and clearing is a real button |
+| `@cubeui/color-picker` | `ColorPicker` — a palette, the OS picker or a hex box, with a tick drawn in an ink that can be read on the swatch |
+| `@cubeui/password-input` | `PasswordInput` — the reveal button, unbound, for the gates that are not forms |
+| `@cubeui/readable-text-color` | `readableTextColor` — black or white ink for text on a colour the user picked, whichever has more WCAG contrast |
+| `@cubeui/empty` | shadcn's `empty`, re-published so the voice every project uses for "there is nothing yet" is edited in one place |
+| `@cubeui/item` | shadcn's `item`, re-published so the row shared by every list is edited in one place |
+| `@cubeui/layout` | All seven layout items in one install |
+| `@cubeui/form` | All eight form items in one install |
+| `@cubeui/control` | All six controls in one install |
+| `@cubeui/primitive` | Both re-published shadcn primitives |
 | `@cubeui/skill` | The agent skill, so an agent in a consuming project uses them correctly |
 
 ## Every slot is a prop, including the body
@@ -120,3 +134,7 @@ npm run lint            # biome
 [`AGENTS.md`](./AGENTS.md) is the guidance for anyone — human or agent — adding to this registry,
 and [`docs/component-conventions.md`](./docs/component-conventions.md) holds the authoring rules
 and the decisions behind them.
+
+## Licence
+
+[MIT](./LICENSE). Components are copied into your tree, so what you install is yours.
