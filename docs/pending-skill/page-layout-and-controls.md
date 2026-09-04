@@ -71,7 +71,9 @@ apps was unreadable on exactly the control it was explaining. Pass `hint` with t
 <ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0}>
 ```
 
-`hint` replaces `label` in the tooltip; the accessible name stays `label` either way. Pass
+`hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
+hint is read after it whether or not the tooltip is open — it is also an always-mounted
+`sr-only` span, because a tooltip's text is in the DOM only while it is showing. Pass
 `tooltip={false}` for a row that already explains itself.
 
 ## 4. Destructive buttons

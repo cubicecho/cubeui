@@ -208,6 +208,10 @@ by scroll.
 
 **This is a real defect in a shipped item.** Small fix, one new story.
 
+**Fixed.** `hint` is now also an always-mounted `sr-only` span the button is described by, with
+five stories covering it — including one that verifies opening the tooltip does not double the
+description, since `Slot` lets the child's `aria-describedby` win over the one Radix sets.
+
 ### 2. `PageHeader` has nowhere to put a long description
 
 `ListPageHeader`'s `descriptionDetail` — the rest of the explanation behind a click, when the
