@@ -194,6 +194,35 @@ Anything else is a dependency a consuming project has to be told about. `registr
 covers both the shadcn primitives and other items in this registry; `dependencies` covers npm
 packages; a fourth category means the component is doing too much.
 
+## 11. Names are plain English
+
+No vendor jargon, no house metaphors, no initialisms. A prop and a `data-slot` are both public
+API — a consumer reads them without having read the source, and reaches a slot from outside
+through `has-data-[slot=…]` (rule 6). `rail` was Material Design's word, `dirty` is Formik's, and
+`hcf-` was ours. All three were renamed once noticed, and every rename was breaking.
+
+The test: would someone who has never seen this registry guess what it holds? `sidebar` passes,
+`rail` does not. Internal metaphors stay internal — *chassis*, *floors* and *rungs* earn their
+keep in AGENTS.md and in source comments, and appear in no prop name.
+
+A bare noun is a slot (rule 1), so a boolean never gets one: `hasUnsavedChanges`, not
+`unsavedChanges`.
+
+Words for slots the set does not have yet — a toolbar, a status bar, an aside — get decided when
+the component that needs one arrives. Adding a word is a decision about the whole set (rule 2),
+not about the component that happened to need it first.
+
+## 12. A component is a domain object; a layout places it
+
+A component names something in the app's domain: a Task, an Invoice, a ServerRow. A layout names
+an arrangement and knows nothing about what it is arranging. That is the test for whether
+something belongs in this registry at all — **the registry ships layouts and controls, and the
+domain objects stay in the app.**
+
+It holds about nine times in ten. `Section` is the smallest layout that is still a layout. The
+standing exception is the controls: a `DatePicker` is not a domain object, but it is not placing
+anything either — it is a widget, and rule 8's note is where that line is drawn.
+
 ## Open questions
 
 1. ~~`children` vs `content` for the body.~~ **Settled: `content`, everywhere, and no shell takes
@@ -257,29 +286,25 @@ packages; a fourth category means the component is doing too much.
    declare `utils` as a registryDependency: `shadcn add utils` prompts to overwrite an existing
    file even under `--yes`, which would hang every install in CI.
 
-6. **What a slot is *for*, and what fills it.** Open, and the thing to nail down next.
+6. ~~What a slot is *for*, and what fills it.~~ **Settled**, and the answers are rules 11 and 12
+   plus the notes below. Original discussion in
+   [#1](https://github.com/cubicecho/cubeui/issues/1).
 
-   The working assumption is that consuming apps run GraphQL, and that the reason slots take
-   nodes rather than data is so the node itself can own a query. A slot holds a component; that
-   component holds its own loading and error state; the layout places it and knows nothing about
-   any of it. Layouts nest, so a page runs several queries at once and each region fills in as
-   its own request comes back, rather than the page holding one `isLoading` over all of them.
-
-   The composition that follows:
+   **Slots take nodes so the node can own its own async.** The working assumption is that
+   consuming apps run GraphQL. A slot holds a component; that component holds its own loading and
+   error state; the layout places it and knows nothing about either. Layouts nest, so a page runs
+   several queries at once and each region fills in as its own request lands, rather than the page
+   holding one `isLoading` across all of them.
 
    ```tsx
-   function MyComponent(props) { … }        // owns a query, or takes the data
-   function MyOtherComponent(props) { … }
-
    function MyPage() {
-     // queries / loaders here
      return (
-       <MyLayout
-         header="Some title"
+       <PageLayout
+         title="Some title"
          content={
-           <SomeNestedLayout
-             leftSide={<MyComponent {...dataFromQuery} />}
-             rightSide={<MyOtherComponent {...dataFromQuery2} />}
+           <SidebarLayout
+             content={<MyComponent {...dataFromQuery} />}
+             sidebar={<MyOtherComponent {...dataFromQuery2} />}
            />
          }
        />
@@ -287,11 +312,21 @@ packages; a fourth category means the component is doing too much.
    }
    ```
 
-   This is consistent with rule 8 and with every `loading` prop already shipped — a shell's
-   `loading` is for the part *the shell itself* would have drawn (a title, a control), never for
-   the caller's data, which is why `SidebarLayout` has no `loading` at all. What is *not* settled is
-   the naming that falls out of it: whether a two-surface slot pair is `content`/`sidebar` or
-   `leftSide`/`rightSide`, when a region deserves a layout of its own versus a component, and
-   how deep nesting is expected to go before a page should be split by route instead. Tracked in
-   [#1](https://github.com/cubicecho/cubeui/issues/1); do not add a component whose slot names
-   depend on the answer until it is settled.
+   **Most slot-filling components take their data as props; some may own a query.** Props are the
+   default and the query is the exception. The consequence for this registry: **it ships no
+   suspense or error boundary.** A component that owns a query brings its own, and a page that
+   owns the data holds its own — either way that is the app's, not a shell's, which is rule 8.
+
+   This is consistent with every `loading` prop already shipped. A shell's `loading` is for the
+   part *the shell itself* would have drawn — a title, a control — never for the caller's data,
+   which is why `SidebarLayout` has no `loading` at all.
+
+   **Nesting depth is not this library's concern.** How deep a page nests before it should be
+   split by route is an app decision; the shells nest as far as the app wants. The
+   list-and-detail note in `layout.md` stays a suggestion rather than a limit.
+
+   **Still open, and only this:** whether a symmetric two-pane split is `SidebarLayout` with
+   different defaults or a `SplitLayout` that `SidebarLayout` is a preset of — and if the latter,
+   what the two neutral slots are called. `sidebarWidth` already accepts `half` and `two-thirds`,
+   so the component supports a shape its own name denies. Tracked in
+   [#1](https://github.com/cubicecho/cubeui/issues/1).

@@ -76,6 +76,15 @@ Read this before adding anything:
    is up, and is *handed* `hasUnsavedChanges` rather than reading the form. See conventions §8.
 6. **Port the call sites.** A component landing here without at least one app updated to use it
    is a component nobody has proven. Say which app, in the PR.
+7. **A component is a domain object; a layout places it.** A component names a thing in the app's
+   domain — a Task, an Invoice, a ServerRow — and belongs in the app. A layout names an
+   arrangement and knows nothing about what it arranges. That is the test for whether something
+   belongs in this registry at all. It holds about nine times in ten; the controls are the
+   standing exception. See conventions §12.
+8. **Names are plain English.** No vendor jargon, no house metaphors, no initialisms — a prop and
+   a `data-slot` are both public API, and every rename of one has been breaking. `rail` was
+   Material's, `dirty` is Formik's, `hcf-` was ours. Internal metaphors (*chassis*, *floors*,
+   *rungs*) stay in this file and in source comments, never in a prop name. See conventions §11.
 
 ## Status
 
