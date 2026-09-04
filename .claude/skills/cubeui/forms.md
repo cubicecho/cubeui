@@ -1,0 +1,276 @@
+# cubeui forms
+
+Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
+are not repeated here.
+
+**Every project using these runs TanStack Form.** Do not introduce a second form library, and do
+not write a form with `useState` and hand-rolled validation beside one written with these.
+
+## A form
+
+A field is one line: the form, the name, and the label.
+
+```tsx
+import { useAppForm, InputField, SelectField, SubmitButton } from "@/components/form/app-form";
+
+const form = useAppForm({
+  defaultValues: { title: "", list: "", priority: "2" },
+  onSubmit: ({ value }) => createTodo({ variables: { input: value } }),
+});
+
+<form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }} className="grid gap-4">
+  <InputField
+    form={form}
+    name="title"
+    label="Title"
+    required
+    placeholder="What needs to be done?"
+    validators={{ onChange: ({ value }) => (value.trim() ? undefined : "Title is required") }}
+  />
+  <SelectField form={form} name="list" label="List" options={LISTS} />
+
+  <form.AppForm>
+    <form.SubmitButton>Create Todo</form.SubmitButton>
+  </form.AppForm>
+</form>
+```
+
+The bound fields:
+
+| Field | Writes | Comes from |
+| --- | --- | --- |
+| `InputField` | `string` | `@cubeui/app-form` |
+| `NumberField` | `number \| null` | `@cubeui/app-form` |
+| `TextareaField` | `string` | `@cubeui/app-form` |
+| `SelectField` | `string` | `@cubeui/app-form` |
+| `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/app-form` |
+| `MultiSelectField` | `string[]` | `@cubeui/multi-select-field` |
+| `DateField` | `Date \| null` | `@cubeui/date-field` |
+| `DateRangeField` | `DateRange \| null` | `@cubeui/date-field` |
+| `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
+| `ColorField` | `string` | `@cubeui/color-field` |
+| `PasswordField` | `string` | `@cubeui/password-field` |
+
+Each one takes everything `FormField` takes — `label`, `description`, `required`, `action`,
+`loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
+`validators` and `asyncDebounceMs`, in one flat list.
+
+The four in their own files are there for the weight of what they import: a form of plain inputs
+installs `@cubeui/app-form` and pulls in no cmdk, no `react-day-picker`.
+
+**A field's `name` is checked against the form's values, and against their type.**
+`<NumberField name="title">` over a string field and `<DateField name="window">` over a
+`DateRange` are both build errors. This is why `NumberField` is a component rather than a
+`type="number"` prop on `InputField`, and why `DateRangeField` is not a `range` prop on
+`DateField` — a prop cannot narrow `name`, because the constraint on `name` is fixed before the
+props are read.
+
+What you do **not** write, at any field, ever:
+
+- `id`, `htmlFor`, `aria-describedby`, `aria-invalid`, `aria-required`
+- `value`, `onChange`, `onBlur` — the field owns all three
+- Anything reading `field.state.meta.errors`, and any test of whether the field has been touched
+- `disabled={!canSubmit || isSubmitting}` on the submit — `SubmitButton` has both
+
+If you find yourself writing one of those, you are rebuilding the layer.
+
+**Errors wait.** A message appears once the field has been touched or the form has been submitted
+at least once, never before, so a form does not open covered in red. That rule lives in one hook
+and applies to every field; do not re-implement it per field, and do not pass `error` yourself.
+
+**`SelectField` is the one that used to be broken.** A `<Select>`'s root renders no DOM, so a
+hand-written select field leaves the trigger with no `aria-invalid` and an error message nothing
+points at. `SelectField` routes through `FormField`'s function form and wires the trigger. Use it
+rather than a `Select` inside a `FormField`. The same is true of every picker here.
+
+### When you need the `field` object
+
+`form.AppField` is still there, and it is the escape hatch for a field that has to read a
+sibling's value, render a list, or do something no prop covers:
+
+```tsx
+<form.AppField name="title">
+  {(field) => <field.InputField label="Title" required />}
+</form.AppField>
+```
+
+Use the one-line form everywhere else. It is the same component with the render prop already
+written.
+
+### Loading
+
+`TextareaField` sizes its own loading skeleton from `rows`. Every other bound field is
+input-height, which is right. Pass `loadingClassName` only for a control that is neither.
+
+## `FormField` on its own
+
+The presentational half: a label, a control, a hint, an error. It binds to no form library, so it
+is what a filter, a search box, or a field in a `useState` form uses.
+
+```tsx
+<FormField
+  label="Email"
+  required
+  description="We only use it to send the sign-in link."
+  error={errors.email?.message}
+  control={<Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}
+/>
+```
+
+`FormField` does the **wiring**, not only the spacing. It mints an id, points the label at the
+control, and gives the control an `aria-describedby` that reaches whichever of the description
+and the error are on screen. Do not write any of that at the call site:
+
+- Do not pass `id` or `htmlFor` unless you need the id yourself — the shell generates one, which
+  is what makes a field safe to render twice on a page.
+- Do not set `aria-invalid`, `aria-describedby` or `aria-required` on the control. The shell sets
+  all three, and it only fills a gap: a value you set yourself wins.
+- Do not put the error in a `<p>` beside the field. Pass it as `error`, and it is announced,
+  linked, and drawn in the one voice the set uses.
+- Do not use a placeholder as a label. A placeholder leaves at the first keystroke, and a field
+  wearing one is announced as "edit text".
+
+Falsy `error` draws nothing, so write `error={errors.email?.message}` plainly. Never
+`{errors.email && <p …>}`.
+
+`loading` swaps the control for a skeleton **and keeps the label and the description**, drawn for
+real: they are literals the form already knows, not data it is waiting for, so a field that hides
+them makes its label rail appear out of nowhere when the values land. `loading` outranks `error`
+— a value that has not arrived is not one that came back wrong.
+
+### Checkboxes and switches
+
+```tsx
+<FormField
+  orientation="horizontal"
+  label="Email me about releases"
+  description="About one a month."
+  control={<Checkbox checked={subscribed} onCheckedChange={setSubscribed} />}
+/>
+```
+
+`horizontal` puts the control first and the label beside it — the arrangement whose label is part
+of the control's hit target. Stacked, a 16px box sits on a line of its own above its own caption.
+
+A **settings row** — a title and a paragraph on the left, a switch pushed to the far right — is
+not this. That is a row, not a field; build it with `CardLayout` or `Section`.
+
+### When the props belong on something nested
+
+A control whose root renders no DOM — `Select`, anything built on `Popover` — swallows the `id`,
+the `aria-describedby` and the `aria-invalid` when the shell clones it, and the field ends up
+wired to nothing, with no warning and nothing visibly wrong. Pass a **function** and put the
+props where they go:
+
+```tsx
+<FormField
+  label="Plan"
+  error={errors.plan?.message}
+  control={(props) => (
+    <Select value={plan} onValueChange={setPlan}>
+      <SelectTrigger {...props} className="w-full">
+        <SelectValue placeholder="Choose one" />
+      </SelectTrigger>
+      <SelectContent>…</SelectContent>
+    </Select>
+  )}
+/>
+```
+
+Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
+element itself and needs none of this.
+
+`htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
+trigger and leaves the description and the error describing nothing. Use `htmlFor` only when you
+own the id for a separate reason.
+
+### A group of controls is still one field
+
+`asGroup` swaps the `<label htmlFor>` for a title plus an `aria-labelledby` on the control,
+because HTML will not let a `<label>` name a `<div role="radiogroup">` — the browser drops the
+association silently, so the default wiring produces a field that looks wired in the source and
+is not. Any grouped control needs it: a radio group, a segmented control, a swatch grid used as
+the field itself.
+
+`RadioGroupField` already passes it. You only reach for `asGroup` when writing a new grouped
+control by hand.
+
+```tsx
+<RadioGroupField
+  form={form}
+  name="visibility"
+  label="Visibility"
+  required
+  options={[
+    { value: "private", label: "Private", description: "Only you." },
+    { value: "team", label: "Team", description: "Anyone in the workspace." },
+  ]}
+/>
+```
+
+Each option gets a real `<label htmlFor>` of its own, so clicking the option's text chooses it.
+
+## Fields on one row
+
+```tsx
+<FieldRow
+  content={
+    <>
+      <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
+      <SelectField form={form} name="minutes" label="Duration" options={DURATIONS} />
+    </>
+  }
+/>
+```
+
+Do not write `grid grid-cols-2 gap-4` for this. A grid keeps its columns at every width, so the
+row that reads well on a settings page becomes two 140px fields inside a dialog and the values in
+them are clipped. `FieldRow` gives each cell a floor, so the row **wraps** instead — the third
+field drops to its own line at full width rather than three of them sharing one at a third each.
+
+- `content` takes a fragment. A field that renders nothing leaves no cell behind, so
+  `{isEdit && <InputField … />}` is safe to put in the middle of one.
+- `perRow` is `2` (the default) or `3`, and it only moves the floor.
+- The cells are equal width. A field that should be wider is not this component — put it on its
+  own line.
+
+## Forms in dialogs
+
+There is no `FormDialog`. A form in a dialog is `DialogLayout` with a `<form>` as its `content`
+and the submit in `footerActions`:
+
+```tsx
+<DialogLayout
+  open={open}
+  onOpenChange={onOpenChange}
+  title={isEdit ? "Edit todo" : "New todo"}
+  content={<form id="todo" onSubmit={…}>…</form>}
+  footerActions={
+    <form.AppForm>
+      <form.SubmitButton form="todo">{isEdit ? "Save changes" : "Create"}</form.SubmitButton>
+    </form.AppForm>
+  }
+/>
+```
+
+The `form="todo"` attribute is what lets the submit live outside the `<form>` in the dialog's
+footer while still submitting it.
+
+## Writing a field the registry does not ship
+
+`bindToForm`, `splitProps` and `useFieldError` are exported so a currency box or a rating control
+is written the way the ones here are, without a second copy of the render prop and without an
+opinion about the form library:
+
+```tsx
+function BoundCurrencyField(props: CurrencyFieldProps) {
+  const [fieldProps, control] = splitProps(props);
+  const field = useFieldContext<number | null>();
+  return <FormField {...fieldProps} error={useFieldError()} control={<CurrencyInput {...control} …/>} />;
+}
+
+export const CurrencyField = bindToForm<CurrencyFieldProps, number>(BoundCurrencyField, "CurrencyField");
+```
+
+`app-form.tsx` is the only file allowed to import `@tanstack/react-form`. A field it does not
+hold is still bound through it.

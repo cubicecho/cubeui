@@ -1,7 +1,9 @@
 # How a cubeui component is formed
 
-Draft. These are the rules the first four layout components were written to; the point of
-writing them down now is to argue about them once rather than per component.
+The rules every item in this registry is written to. The point of writing them down is to argue
+about them once rather than per component. They started as the rules the first four layout
+shells shared; where a later item widened one — the form layer, the controls — the rule below is
+the widened version, not the original.
 
 ## 1. Every slot is a named prop, including the body
 
@@ -33,11 +35,71 @@ underneath and re-exporting it adds nothing. The shell exists to answer "where d
 
 ## 2. One vocabulary across the set
 
-`content`, `title`, `description`, `icon`, `action`, `footer`, `footerActions`, `empty`,
-`loading`, `className`, `<slot>ClassName`. A word means the same thing in every component. `action` is
-always the header's far end; `footerActions` is always the footer's, and always the buttons.
+A word means the same thing in every component, and adding one is a decision about the whole set
+rather than about the component that wanted it. The vocabulary is layered: the core words are in
+everything that has the part, and each layer below adds only what its shape actually needs.
 
-Adding a word to the vocabulary is a decision about the whole set, not about one component.
+**Core — every shell.**
+
+| Word | Means |
+| --- | --- |
+| `content` | The body. The one slot that grows, and the one that scrolls. |
+| `title` | What the thing is called. |
+| `description` | One line, sentence case, on what it is for. |
+| `icon` | Before the title. A bare `<Plus />`; the shell sizes and colours it. |
+| `action` | The **header's** far end. One control, or a fragment of them. |
+| `footer` | The footer's start. Prose, a timestamp, a destructive action held apart. |
+| `footerActions` | The footer's end. The buttons, reading order, primary last. |
+| `empty` | What the body says when `content` is empty. Not a slot the caller places. |
+| `loading` | A boolean. The shell substitutes a skeleton for the part the request fills. |
+| `className` | The root. Every other slot is `<slot>ClassName`. |
+
+`loading` keeps its meaning while changing its target, and the target is always *the part that
+came from the request*: on `CardLayout` the body, on `PageHeader` and `PageLayout` the title, on
+`FormField` the control. It outranks whatever it competes with — `empty` on a card, `error` on a
+field — because data that has not arrived is not data that came back empty or wrong.
+
+**Page and split shells add:**
+
+| Word | Means |
+| --- | --- |
+| `breadcrumbs` | The line above the title. A trail, or a back link. Nodes, never a route. |
+| `headerContent` | The row under the title: search, filters, tabs. `PageHeader` calls it `content`, because it has no body of its own. |
+| `rail` | The second surface in a split. `content` stays the main one. |
+| `railSide`, `railWidth`, `railClassName` | The rail's, by prefix. |
+| `width` | `page` / `prose` / `full` — the column, not a number. |
+| `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
+| `trigger` | What opens a dialog, when the dialog owns its own open state. |
+
+**Form components add:**
+
+| Word | Means |
+| --- | --- |
+| `control` | The field's body — the one body in the set that is not `content`. |
+| `label` | What the control is called. A real `<label htmlFor>`. |
+| `error` | What is wrong with the value. Falsy draws nothing. |
+| `required` | The asterisk, and `aria-required`. |
+| `orientation` | `vertical` (default) or `horizontal`. |
+| `asGroup` | The label names a group of controls rather than one. |
+
+**Controls add:**
+
+| Word | Means |
+| --- | --- |
+| `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
+| `hint` | Why the control is unavailable, or what it will do. Read after the name. |
+| `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
+
+Three notes on why the layering is where it is:
+
+- **`control` is the one exception to "the body is `content`",** and it earns it: it is the only
+  body in the set the shell *wires* rather than places. Everything else that renders a body
+  renders it untouched.
+- **`label` means two different things,** and that is deliberate. On a field it is visible text
+  pointed at a control; on an icon button it is the accessible name of a control with no visible
+  text. Both answer "what is this control called", which is the test the vocabulary applies.
+- **A prefix binds a word to a slot.** `railWidth` is the rail's width and `contentClassName` is
+  the body's class, so a new prop belonging to an existing slot needs no new word at all.
 
 ## 3. Variants are literal class maps
 
@@ -87,6 +149,18 @@ caller. This is what keeps a component installable into any project in the regis
 
 Controlled/uncontrolled is the one exception, and it is delegated: pass `open`/`onOpenChange`
 straight through to Radix and let `undefined` mean uncontrolled. No mirrored state.
+
+**A control is not a shell, and this rule is about shells.** `ColorPicker` holds a half-typed hex,
+`PasswordInput` holds whether the value is showing, `MultiSelect` holds its search term — and each
+of those is state that belongs to the widget, not to the screen. The line is whether the state
+outlives the interaction: a draft the control throws away on blur is the control's, and a value
+anything else in the app can read is the caller's. The value itself is always `value` and
+`onValueChange`, never held inside; the two never mirror.
+
+The form binding is the same line seen from the other side. `FormField` takes `error` as a node
+and asks nothing about where it came from, which is what lets it be installed into a project with
+no form library at all; `app-form.tsx` is the one file that knows about TanStack. A component
+that needs the form store goes there, and one that only needs to be told goes below it.
 
 ## 9. Props carry a comment saying why, not what
 
@@ -152,3 +226,42 @@ packages; a fourth category means the component is doing too much.
 
    The host is decided; publishing `public/r` to it from CI is not built yet, so today the URL is
    the agreed target rather than a live one.
+
+6. **What a slot is *for*, and what fills it.** Open, and the thing to nail down next.
+
+   The working assumption is that consuming apps run GraphQL, and that the reason slots take
+   nodes rather than data is so the node itself can own a query. A slot holds a component; that
+   component holds its own loading and error state; the layout places it and knows nothing about
+   any of it. Layouts nest, so a page runs several queries at once and each region fills in as
+   its own request comes back, rather than the page holding one `isLoading` over all of them.
+
+   The composition that follows:
+
+   ```tsx
+   function MyComponent(props) { … }        // owns a query, or takes the data
+   function MyOtherComponent(props) { … }
+
+   function MyPage() {
+     // queries / loaders here
+     return (
+       <MyLayout
+         header="Some title"
+         content={
+           <SomeNestedLayout
+             leftSide={<MyComponent {...dataFromQuery} />}
+             rightSide={<MyOtherComponent {...dataFromQuery2} />}
+           />
+         }
+       />
+     );
+   }
+   ```
+
+   This is consistent with rule 8 and with every `loading` prop already shipped — a shell's
+   `loading` is for the part *the shell itself* would have drawn (a title, a control), never for
+   the caller's data, which is why `SplitPane` has no `loading` at all. What is *not* settled is
+   the naming that falls out of it: whether a two-surface slot pair is `content`/`rail` or
+   `leftSide`/`rightSide`, when a region deserves a layout of its own versus a component, and
+   how deep nesting is expected to go before a page should be split by route instead. Tracked in
+   the naming-and-layout-conventions issue; do not add a component that depends on the answer
+   until it is settled.

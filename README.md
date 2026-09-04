@@ -50,7 +50,7 @@ runtime dependency on this package.
 | `@cubeui/form` | All eight form items in one install |
 | `@cubeui/control` | All six controls in one install |
 | `@cubeui/primitive` | Both re-published shadcn primitives |
-| `@cubeui/skill` | The agent skill, so an agent in a consuming project uses them correctly |
+| `@cubeui/skill` | The agent skill — a router plus layout, form and control references — so an agent in a consuming project uses them correctly |
 
 ## Every slot is a prop, including the body
 

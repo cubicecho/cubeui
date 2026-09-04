@@ -110,7 +110,8 @@ components.json                                      aliases point at `@/registr
 preview/                                             Vite demo page, `npm run dev`
 stories/                                             Storybook, and the tests — every story is one
 docs/component-conventions.md                        authoring rules, and the open questions
-.claude/skills/cubeui/SKILL.md                       the usage skill, shipped as a registry item
+.claude/skills/cubeui/SKILL.md                       the usage skill: install, choosing, vocabulary
+.claude/skills/cubeui/{layout,forms,controls}.md     its references, shipped by the same item
 ```
 
 `registry/new-york/ui/` is not ours. Every file in it arrived from `npx shadcn add` and is
@@ -227,6 +228,16 @@ of the conventions doc.
 *consuming* project learns these components. A new component, a renamed prop or a changed
 default is not finished until it is in there. It ships as a registry item, so a stale skill is a
 stale skill in every project that installed it.
+
+It is four files, and the split is load-bearing. `SKILL.md` is the router — the install line, the
+choosing table, the slot vocabulary, and the rule that no component takes children — and it is
+short because it is the part that is always in context. [`layout.md`](.claude/skills/cubeui/layout.md),
+[`forms.md`](.claude/skills/cubeui/forms.md) and [`controls.md`](.claude/skills/cubeui/controls.md)
+are read when the table sends the agent to one of them. A new item goes in its reference **and**
+gets a row in the choosing table; a new slot word goes in `SKILL.md`'s vocabulary and in rule 2
+of the conventions doc, because those two are the same list and they are checked against each
+other. All four are listed in the `skill` item's `files`, so adding a fifth means editing
+`registry.json` too.
 
 ## Git
 
