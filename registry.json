@@ -42,6 +42,18 @@
       ]
     },
     {
+      "name": "split-pane",
+      "type": "registry:component",
+      "title": "Split Pane",
+      "description": "Two surfaces side by side: a main one and a rail, on a named width scale, with the floors that keep one wide child from pushing the other pane off the screen.",
+      "files": [
+        {
+          "path": "registry/new-york/layout/split-pane.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",
@@ -49,7 +61,8 @@
       "registryDependencies": [
         "@cubeui/header-content-footer",
         "@cubeui/card-layout",
-        "@cubeui/dialog-layout"
+        "@cubeui/dialog-layout",
+        "@cubeui/split-pane"
       ],
       "files": []
     },
