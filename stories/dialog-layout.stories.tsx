@@ -33,7 +33,18 @@ const openIt = async (canvasElement: HTMLElement) => {
   const canvas = within(canvasElement);
   await userEvent.click(canvas.getByRole("button", { name: /new workspace|open/i }));
   // Radix portals the content outside the canvas, so assertions read from the document.
-  return waitFor(() => within(document.body).getByRole("dialog"));
+  const dialog = await waitFor(() => within(document.body).getByRole("dialog"));
+  // The dialog zooms and fades in, and a rectangle measured part-way through that is a rectangle
+  // of a transform still in motion — `LongFormKeepsItsTitle` compares two of them for equality
+  // and was reading 59.988 against 61.447. Endless animations are skipped, or this never
+  // returns; `.finished` rejects on a cancelled one, which is not a failure here either.
+  await Promise.all(
+    dialog
+      .getAnimations({ subtree: true })
+      .filter((a) => a.effect?.getComputedTiming().iterations !== Number.POSITIVE_INFINITY)
+      .map((a) => a.finished.catch(() => {})),
+  );
+  return dialog;
 };
 
 export const Default: Story = {

@@ -42,6 +42,19 @@
       ]
     },
     {
+      "name": "form-field",
+      "type": "registry:component",
+      "title": "Form Field",
+      "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational — it binds to no form library.",
+      "registryDependencies": ["label", "skeleton"],
+      "files": [
+        {
+          "path": "registry/new-york/form/form-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-dialog",
       "type": "registry:component",
       "title": "Form Dialog",
