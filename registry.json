@@ -42,6 +42,19 @@
       ]
     },
     {
+      "name": "page-header",
+      "type": "registry:component",
+      "title": "Page Header",
+      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
+      "registryDependencies": ["skeleton"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/page-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",
@@ -49,7 +62,8 @@
       "registryDependencies": [
         "@cubeui/header-content-footer",
         "@cubeui/card-layout",
-        "@cubeui/dialog-layout"
+        "@cubeui/dialog-layout",
+        "@cubeui/page-header"
       ],
       "files": []
     },
