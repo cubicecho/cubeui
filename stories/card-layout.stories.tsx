@@ -109,3 +109,44 @@ export const ActionsOnly: Story = {
     content: <Rows />,
   },
 };
+
+/**
+ * A title too long for the card truncates rather than wrapping, because a card is one of several
+ * on a grid and a two-line title in one of them sets every other card's header height.
+ *
+ * The assertion is about the other half of that: `truncate` is `overflow: hidden`, and shadcn's
+ * `CardTitle` is `leading-none` — a line box exactly 1em tall, which is shorter than the glyphs
+ * in it. Left alone the two together shave the tops off the capitals and the tails off the
+ * descenders, which reads as a rendering fault rather than as a design. So the truncating span
+ * carries its own padding, and this checks the line box is taller than the text in it.
+ */
+export const LongTitleTruncates: Story = {
+  args: {
+    title: "Categories, subcategories, and everything filed under them",
+    description: "The description wraps; the title does not.",
+    content: <Rows />,
+  },
+  play: async ({ canvasElement }) => {
+    const title = canvasElement.querySelector<HTMLElement>("[data-slot=card-title]");
+    expect(title).not.toBeNull();
+    if (!title) return;
+
+    const span = title.querySelector<HTMLElement>(".truncate");
+    expect(span).not.toBeNull();
+    if (!span) return;
+
+    expect(span.scrollWidth).toBeGreaterThan(span.clientWidth);
+
+    // 1.2em is about where a text font's ascent and descent land together; anything at or under
+    // the em box is clipping something.
+    const fontSize = Number.parseFloat(getComputedStyle(span).fontSize);
+    expect(span.clientHeight).toBeGreaterThan(fontSize * 1.2);
+
+    // And it cost the header nothing: the padding is given back as negative margin, so the title
+    // still occupies one em of the header's grid.
+    expect(span.getBoundingClientRect().height - 2 * 4).toBeCloseTo(
+      title.getBoundingClientRect().height,
+      1,
+    );
+  },
+};

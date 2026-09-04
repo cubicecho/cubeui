@@ -92,7 +92,11 @@ export function CardLayout({
                 // passed as `<Plus className="size-4" />` land at the same size.
                 <span className="shrink-0 text-muted-foreground [&_svg]:size-4">{icon}</span>
               ) : null}
-              <span className="min-w-0 truncate">{title}</span>
+              {/* The padding is what stops `truncate` clipping the title: `CardTitle` is
+                  `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts the
+                  ascenders and descenders off it. The negative margin gives the space back, so
+                  the header keeps the height shadcn drew it at. */}
+              <span className="-my-1 min-w-0 truncate py-1">{title}</span>
             </CardTitle>
           ) : null}
           {description ? <CardDescription>{description}</CardDescription> : null}
