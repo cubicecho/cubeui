@@ -7,6 +7,7 @@
     "@cubeui/header-content-footer",
     "@cubeui/card-layout",
     "@cubeui/dialog-layout",
+    "@cubeui/page-header",
     "@cubeui/split-pane"
   ],
   "files": [],
