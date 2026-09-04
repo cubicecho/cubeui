@@ -42,6 +42,19 @@
       ]
     },
     {
+      "name": "form-dialog",
+      "type": "registry:component",
+      "title": "Form Dialog",
+      "description": "A form in a dialog: one form element, a submit the keyboard reaches, a guard against saving twice, and a place for the form-level error. Composes the dialog shell rather than re-deriving it.",
+      "registryDependencies": ["button", "dialog", "@cubeui/dialog-layout"],
+      "files": [
+        {
+          "path": "registry/new-york/form/form-dialog.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",
