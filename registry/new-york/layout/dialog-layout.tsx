@@ -1,6 +1,17 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { HeaderContentFooter } from "@/registry/new-york/layout/header-content-footer";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/registry/new-york/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -46,10 +57,24 @@ type DialogLayoutProps = {
   /** The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. */
   footerActions?: ReactNode;
   /**
-   * Whether Escape and a click on the overlay close it. Off for a dialog holding work that
-   * would be lost — but prefer asking on the way out to refusing to leave.
+   * Whether Escape and a click on the overlay close it. Off refuses to leave; prefer
+   * `hasUnsavedChanges`, which asks on the way out instead.
    */
   dismissible?: boolean;
+  /**
+   * There is work in the body that closing would throw away. Escape, a click on the overlay and
+   * the close button then ask first, and the dialog stays open if the answer is no.
+   *
+   * Asked for, never computed — only the caller knows what its fields are. A form knows: pass
+   * `form.state.isDirty`.
+   */
+  hasUnsavedChanges?: boolean;
+  /** The question that asks. Defaulted, because this one really is the same everywhere. */
+  discardTitle?: ReactNode;
+  discardDescription?: ReactNode;
+  /** The verb that throws the work away, and the one that goes back to it. */
+  discardLabel?: ReactNode;
+  keepLabel?: ReactNode;
   showCloseButton?: boolean;
   className?: string;
   headerClassName?: string;
@@ -71,6 +96,11 @@ type DialogLayoutProps = {
  * title an assistive technology needs, and the two classes that turn `DialogContent` into a
  * column that can be divided.
  *
+ * **`hasUnsavedChanges` is a prop and not a hook, and that is the whole point.** Seven dialogs in
+ * kanban_server closed through a `useDiscardGuard`; six called it and the seventh wired
+ * `onOpenChange` straight into its `onClose` and quietly lost what had been typed. A hook is a
+ * thing a caller can forget. A shell is not, because a caller cannot see it.
+ *
  * **Padding stays with the primitive.** `DialogContent` carries it (`p-6` in new-york, `p-4` in
  * others) and so do the footers that bleed to its edge with a negative margin. A shell that set
  * its own would be a shell that only fits one style, so this one overrides `display` and
@@ -88,6 +118,11 @@ export function DialogLayout({
   footer,
   footerActions,
   dismissible = true,
+  hasUnsavedChanges = false,
+  discardTitle = "Discard your changes?",
+  discardDescription = "What you have typed here will not be saved.",
+  discardLabel = "Discard",
+  keepLabel = "Keep editing",
   showCloseButton = true,
   className,
   headerClassName,
@@ -97,58 +132,105 @@ export function DialogLayout({
   const hasFooter = Boolean(footer || footerActions);
   const stop = dismissible ? undefined : (event: Event) => event.preventDefault();
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
+  // Radix is handed an `open` either way, so one `requestClose` covers Escape, the overlay and
+  // the close button alike. Uncontrolled, the state simply lives here instead of in the
+  // primitive; a caller who passes `open` still owns it, and still hears every change.
+  const [selfOpen, setSelfOpen] = useState(false);
+  const isOpen = open ?? selfOpen;
 
-      <DialogContent
-        showCloseButton={showCloseButton}
-        onEscapeKeyDown={stop}
-        onInteractOutside={stop}
-        // Radix warns when nothing describes the content. Without a description that is the
-        // intent, and an explicit `undefined` is how it is said — spread only in that case,
-        // because the prop is applied after the primitive's own and would unlink a real one.
-        {...(description ? {} : { "aria-describedby": undefined })}
-        // `flex` replaces the primitive's `grid` so the body can be handed the leftover height;
-        // `overflow-hidden` takes the scroll off the dialog so the chassis can put it on the
-        // body. The cap is the primitive's own, restated for the styles that ship without one.
-        className={cn(
-          "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
-          SIZES[size],
-          className,
-        )}
-      >
-        <HeaderContentFooter
-          scroll
-          className="min-h-0 flex-1 gap-4"
-          header={
-            <DialogHeader
-              // The close button is positioned against the dialog, not the header, so a long
-              // title runs under it without this.
-              className={cn(showCloseButton && "pr-6", headerClassName)}
-            >
-              <DialogTitle className={cn(hideTitle && "sr-only")}>{title}</DialogTitle>
-              {description ? <DialogDescription>{description}</DialogDescription> : null}
-            </DialogHeader>
-          }
-          // Four pixels of room either side, given back as padding: a focus ring is drawn
-          // outside the element that owns it, and a scroll container clips at its edge.
-          contentClassName={cn("-mx-1 px-1", contentClassName)}
-          content={content}
-          footer={
-            hasFooter ? (
-              <DialogFooter
-                className={cn(footer && footerActions && "sm:justify-between", footerClassName)}
+  const setOpenState = (next: boolean) => {
+    if (open === undefined) setSelfOpen(next);
+    onOpenChange?.(next);
+  };
+
+  const [askingToDiscard, setAskingToDiscard] = useState(false);
+
+  const requestOpenChange = (next: boolean) => {
+    if (!next && hasUnsavedChanges) {
+      setAskingToDiscard(true);
+      return;
+    }
+    setOpenState(next);
+  };
+
+  const discard = () => {
+    setAskingToDiscard(false);
+    setOpenState(false);
+  };
+
+  return (
+    <>
+      <Dialog open={isOpen} onOpenChange={requestOpenChange}>
+        {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
+
+        <DialogContent
+          showCloseButton={showCloseButton}
+          onEscapeKeyDown={stop}
+          onInteractOutside={stop}
+          // Radix warns when nothing describes the content. Without a description that is the
+          // intent, and an explicit `undefined` is how it is said — spread only in that case,
+          // because the prop is applied after the primitive's own and would unlink a real one.
+          {...(description ? {} : { "aria-describedby": undefined })}
+          // `flex` replaces the primitive's `grid` so the body can be handed the leftover height;
+          // `overflow-hidden` takes the scroll off the dialog so the chassis can put it on the
+          // body. The cap is the primitive's own, restated for the styles that ship without one.
+          className={cn(
+            "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
+            SIZES[size],
+            className,
+          )}
+        >
+          <HeaderContentFooter
+            scroll
+            className="min-h-0 flex-1 gap-4"
+            header={
+              <DialogHeader
+                // The close button is positioned against the dialog, not the header, so a long
+                // title runs under it without this.
+                className={cn(showCloseButton && "pr-6", headerClassName)}
               >
-                {footer}
-                {footerActions ? (
-                  <div className="flex items-center gap-2">{footerActions}</div>
-                ) : null}
-              </DialogFooter>
-            ) : null
-          }
-        />
-      </DialogContent>
-    </Dialog>
+                <DialogTitle className={cn(hideTitle && "sr-only")}>{title}</DialogTitle>
+                {description ? <DialogDescription>{description}</DialogDescription> : null}
+              </DialogHeader>
+            }
+            // Four pixels of room either side, given back as padding: a focus ring is drawn
+            // outside the element that owns it, and a scroll container clips at its edge.
+            contentClassName={cn("-mx-1 px-1", contentClassName)}
+            content={content}
+            footer={
+              hasFooter ? (
+                <DialogFooter
+                  className={cn(footer && footerActions && "sm:justify-between", footerClassName)}
+                >
+                  {footer}
+                  {footerActions ? (
+                    <div className="flex items-center gap-2">{footerActions}</div>
+                  ) : null}
+                </DialogFooter>
+              ) : null
+            }
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/*
+      A sibling of the dialog rather than a child of it: two modals nested in the DOM fight over
+      the focus trap, and the question has to be able to take focus from the form it is about.
+    */}
+      <AlertDialog open={askingToDiscard} onOpenChange={setAskingToDiscard}>
+        <AlertDialogContent data-slot="dialog-layout-discard">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{discardTitle}</AlertDialogTitle>
+            <AlertDialogDescription>{discardDescription}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{keepLabel}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={discard}>
+              {discardLabel}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

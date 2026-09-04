@@ -67,6 +67,8 @@ The same words mean the same thing in every component, and this is the point of 
 - **`empty`** — what the body says when `content` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `empty` is not consulted.
+- **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
+  `form.state.isDirty`.
 - **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one.
 
 **Page and split shells add:**
@@ -108,8 +110,13 @@ Rules that follow from the vocabulary:
 ## What does not belong in a shell
 
 Data fetching, form state, toasts, routing, permission checks. A shell is handed nodes and
-places them. If a screen needs "ask before discarding" or "disable save until valid", that is
-the caller's, or a form component's — not a prop on the layout.
+places them. If a screen needs "disable save until valid", that is the caller's, or a form
+component's — not a prop on the layout.
+
+The line is *who owns the state*, not *how much the shell does*. `DialogLayout` asks before
+closing on unsaved work (`hasUnsavedChanges`) because the state it holds — is the question up? —
+is about the dialog's own interaction, not the app's data. Whether the work *is* unsaved is still
+asked for, never computed: only the caller knows what its fields are.
 
 A draggable split divider is the same case: the width it drags is state, so it belongs to
 `react-resizable-panels`, not to `SidebarLayout`. A stored sidebar collapse is the same case again —

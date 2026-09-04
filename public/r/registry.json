@@ -32,8 +32,8 @@
       "name": "dialog-layout",
       "type": "registry:component",
       "title": "Dialog Layout",
-      "description": "A dialog whose body scrolls under a header that does not. Composes the header/content/footer chassis rather than owning a second copy.",
-      "registryDependencies": ["dialog", "@cubeui/header-content-footer"],
+      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
+      "registryDependencies": ["dialog", "alert-dialog", "@cubeui/header-content-footer"],
       "files": [
         {
           "path": "registry/new-york/layout/dialog-layout.tsx",

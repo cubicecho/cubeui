@@ -78,6 +78,12 @@ of thing a caller cannot forget if the shell owns it.
 not a new component. `dirty` stays *asked for* rather than computed — kanban already worked out
 why: "only the caller knows what its fields are."
 
+> **Built, as the prop alone.** `DialogLayout` takes `hasUnsavedChanges`. The hook was dropped:
+> no project in any of these surveys guards anything but a dialog, and the hook is the half of
+> kanban's design that let its seventh dialog forget. Named `hasUnsavedChanges` rather than
+> `dirty` because a bare noun is a slot everywhere else in this set. A Cancel button in
+> `footerActions` is still out of the shell's reach — [issue #2](https://github.com/cubicecho/cubeui/issues/2).
+
 Worth noting for rule 5: this holds `open` state, but so does `ConfirmButton`, and for the same
 reason — the state is about the shell's own interaction, not the app's data.
 
@@ -164,7 +170,7 @@ probably not worth the upgrade on its own.
 3. **Run `shadcn add empty` and `shadcn add item` in the five compatible projects.** Between them
    they retire four hand-written empty states and five hand-written list rows — more markup than
    any cubeui component in these surveys — and cost nothing to build.
-4. **One new candidate:** `useDiscardGuard` + `dirty` on `DialogLayout` (§2). Three projects,
-   and it closes a defect class rather than just a duplication.
+4. ~~**One new candidate:** `useDiscardGuard` + `dirty` on `DialogLayout` (§2).~~ **Done** —
+   shipped as `hasUnsavedChanges` on `DialogLayout`, without the hook. See §2.
 5. **One I am flagging but not recommending:** `ThemeToggle` (§3). Six projects, but rule 5 says
    hook, not shell. Your call.

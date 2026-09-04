@@ -240,7 +240,15 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
   something outside the trigger opens it (a row menu, a route, a keyboard shortcut).
 - The body scrolls; the header and footer do not. Do not add `max-h-*` or `overflow-y-auto` — a
   cap on the whole dialog is what takes the title off the screen on a long form.
-- `dismissible={false}` refuses Escape and outside clicks. Prefer asking on the way out.
+- **`hasUnsavedChanges` is the one to remember.** On, Escape, a click on the overlay and the
+  close button all ask before throwing the work away, and the dialog is still there behind the
+  question. Pass `form.state.isDirty` — it is asked for, never computed, because only the caller
+  knows what its fields are. `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`
+  reword the question when the dialog knows what is lost.
+- It guards the paths the dialog owns. **A Cancel button you put in `footerActions` calls your
+  own `setOpen(false)` and is not guarded** — make it a `ConfirmButton` if that matters.
+- `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
+  which asks on the way out rather than refusing to leave.
 - A form in a dialog is this component with a `<form>` as `content` — see [forms.md](forms.md).
 
 ## Sections

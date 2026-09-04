@@ -157,3 +157,127 @@ export const NoDescription: Story = {
     expect(dialog).not.toHaveAttribute("aria-describedby");
   },
 };
+
+/** Radix fades the question in, and a rectangle part-way through that is not yet visible. */
+const settle = async (el: Element) => {
+  await Promise.all(
+    el
+      .getAnimations({ subtree: true })
+      .filter((a) => a.effect?.getComputedTiming().iterations !== Number.POSITIVE_INFINITY)
+      .map((a) => a.finished.catch(() => {})),
+  );
+};
+
+/**
+ * While the question is up, the dialog behind it is deliberately out of the accessibility tree —
+ * so it is found as an element, which is the thing being asserted anyway: the work is still
+ * there.
+ */
+const dialogElement = () => document.body.querySelector('[data-slot="dialog-content"]');
+
+const askToClose = async (canvasElement: HTMLElement) => {
+  const dialog = await openIt(canvasElement);
+  await userEvent.keyboard("{Escape}");
+  const question = await waitFor(() => within(document.body).getByRole("alertdialog"));
+  await settle(question);
+  return { dialog, question };
+};
+
+/**
+ * The defect this closes. Three projects wrote a `FormDialog` and kanban_server wrote the guard
+ * as a hook — six of its seven dialogs called it, and the seventh did not. Here the guard is a
+ * prop, so Escape asks instead of throwing the work away, and the dialog is still there behind
+ * the question.
+ */
+export const UnsavedChangesAskFirst: Story = {
+  args: {
+    trigger: <Button>New workspace</Button>,
+    title: "New workspace",
+    hasUnsavedChanges: true,
+    content: <Fields />,
+    footerActions: <Button>Save</Button>,
+  },
+  play: async ({ canvasElement }) => {
+    const { question } = await askToClose(canvasElement);
+
+    expect(within(question).getByText("Discard your changes?")).toBeVisible();
+    expect(dialogElement()).not.toBeNull();
+  },
+};
+
+/** Keeping the changes puts you back in the form, with the fields as you left them. */
+export const KeepEditingReturnsToTheForm: Story = {
+  args: { ...UnsavedChangesAskFirst.args },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    await userEvent.type(within(dialog).getByLabelText("Field 1"), "half a thought");
+    await userEvent.keyboard("{Escape}");
+
+    const question = await waitFor(() => within(document.body).getByRole("alertdialog"));
+    await userEvent.click(within(question).getByRole("button", { name: "Keep editing" }));
+
+    await waitFor(() => {
+      expect(within(document.body).queryByRole("alertdialog")).toBeNull();
+    });
+    expect(within(document.body).getByRole("dialog")).toBeVisible();
+    expect(within(dialog).getByLabelText("Field 1")).toHaveValue("half a thought");
+  },
+};
+
+/** Discarding closes both. */
+export const DiscardingClosesIt: Story = {
+  args: { ...UnsavedChangesAskFirst.args },
+  play: async ({ canvasElement }) => {
+    const { question } = await askToClose(canvasElement);
+    await userEvent.click(within(question).getByRole("button", { name: "Discard" }));
+
+    await waitFor(() => {
+      expect(dialogElement()).toBeNull();
+    });
+  },
+};
+
+/** The close button is guarded on the same terms Escape is — every path Radix owns. */
+export const TheCloseButtonAsksToo: Story = {
+  args: { ...UnsavedChangesAskFirst.args },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    await userEvent.click(within(dialog).getByRole("button", { name: /close/i }));
+
+    const question = await waitFor(() => within(document.body).getByRole("alertdialog"));
+    await settle(question);
+    expect(within(question).getByText("Discard your changes?")).toBeVisible();
+    expect(dialogElement()).not.toBeNull();
+  },
+};
+
+/** With nothing unsaved, the guard is not in the way — Escape closes as it always did. */
+export const NothingUnsavedClosesStraightAway: Story = {
+  args: { ...UnsavedChangesAskFirst.args, hasUnsavedChanges: false },
+  play: async ({ canvasElement }) => {
+    await openIt(canvasElement);
+    await userEvent.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(dialogElement()).toBeNull();
+    });
+    expect(within(document.body).queryByRole("alertdialog")).toBeNull();
+  },
+};
+
+/** The copy is defaulted, not fixed — a dialog that knows what is lost can say so. */
+export const TheQuestionCanBeReworded: Story = {
+  args: {
+    ...UnsavedChangesAskFirst.args,
+    discardTitle: "Leave without publishing?",
+    discardDescription: "The draft and its three attachments are not saved anywhere yet.",
+    discardLabel: "Leave",
+    keepLabel: "Go back",
+  },
+  play: async ({ canvasElement }) => {
+    const { question } = await askToClose(canvasElement);
+
+    expect(within(question).getByText("Leave without publishing?")).toBeVisible();
+    expect(within(question).getByRole("button", { name: "Go back" })).toBeVisible();
+  },
+};

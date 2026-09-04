@@ -143,12 +143,33 @@ edge with a matching negative margin) and a shell that sets its own only fits on
 
 ## 8. Shells hold no state and no data
 
-No fetching, no form state, no toasts, no router. A shell takes nodes and places them. Behaviour
-that needs state (ask-before-discard, disable-until-valid) belongs to a form component or the
-caller. This is what keeps a component installable into any project in the registry.
+No fetching, no form state, no toasts, no router. A shell takes nodes and places them. This is
+what keeps a component installable into any project in the registry.
 
-Controlled/uncontrolled is the one exception, and it is delegated: pass `open`/`onOpenChange`
-straight through to Radix and let `undefined` mean uncontrolled. No mirrored state.
+**The line is who owns the state, not how much the shell does.** State about the shell's own
+interaction is the shell's; state about the app's data is the caller's. `ConfirmButton` holds
+whether its question is up. `DialogLayout` holds the same thing for `hasUnsavedChanges` — but
+*whether* there are unsaved changes is a boolean it is handed, because only the caller knows what
+its fields are. A shell that computed dirtiness would be reading the form, and that is the side of
+the line this rule is about.
+
+`hasUnsavedChanges` is also the case for putting behaviour in a shell rather than a hook. Three
+projects wrote a `FormDialog`; kanban_server wrote the guard as `useDiscardGuard`, and six of its
+seven dialogs called it. The seventh wired `onOpenChange` straight into `onClose` and silently
+threw away what had been typed. A hook is a thing a caller can forget. **Where a defect class can
+be closed by making the behaviour unforgettable, prefer the prop to the hook** — the guard the
+caller cannot see is the guard the caller cannot skip.
+
+The shell guards only what it owns. `DialogLayout` reaches Escape, the overlay and the close
+button; a Cancel button in `footerActions` calls the caller's own setter and is out of reach. A
+prop that closes three of four doors is still worth having, and the fourth is documented rather
+than hidden.
+
+Controlled/uncontrolled is delegated where it can be: pass `open`/`onOpenChange` straight through
+to Radix and let `undefined` mean uncontrolled. `DialogLayout` is the exception it has to be —
+guarding every close path means Radix is always handed an `open`, so an uncontrolled caller's
+state lives in the shell instead of the primitive. A caller who passes `open` still owns it, and
+still hears every change. The two never mirror.
 
 **A control is not a shell, and this rule is about shells.** `ColorPicker` holds a half-typed hex,
 `PasswordInput` holds whether the value is showing, `MultiSelect` holds its search term — and each

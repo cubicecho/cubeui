@@ -24,7 +24,7 @@ runtime dependency on this package.
 | --- | --- |
 | `@cubeui/header-content-footer` | `HeaderContentFooter` and the `StickyHeaderContentFooter` preset — chrome that stays, a body that scrolls |
 | `@cubeui/card-layout` | `CardLayout` — icon, title, description, header action, body, split footer, and the loading/empty ordering |
-| `@cubeui/dialog-layout` | `DialogLayout` — a dialog whose body scrolls under a header that does not |
+| `@cubeui/dialog-layout` | `DialogLayout` — a dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work |
 | `@cubeui/page-header` | `PageHeader` — trail, title at a chosen heading level, description, actions, and the control row |
 | `@cubeui/sidebar-layout` | `SidebarLayout` — a sidebar beside a body, stacking at a breakpoint |
 | `@cubeui/page-layout` | `PageLayout` — a whole page: a pinned title block over a body that scrolls, in a named column |
