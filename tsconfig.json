@@ -20,5 +20,13 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["components", "lib", "registry", "preview", "vite.config.ts"]
+  "include": [
+    "lib",
+    "registry",
+    "preview",
+    "stories",
+    ".storybook",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
 }

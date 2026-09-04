@@ -89,6 +89,11 @@ export function HeaderContentFooter({
       <div
         data-slot="hcf-content"
         ref={contentRef}
+        // A scrolling region a keyboard cannot reach is a region a keyboard user cannot read:
+        // the mouse wheel moves it and nothing else does, which axe reports as
+        // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
+        // nothing when the body already holds focusable children — the caret goes to them next.
+        tabIndex={scroll ? 0 : undefined}
         className={cn(
           "relative min-h-0 min-w-0 flex-1",
           scroll && "overflow-y-auto",

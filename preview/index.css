@@ -6,6 +6,7 @@
 /* Tailwind scans the CSS file's own directory by default; the components live outside it. */
 @source "../registry";
 @source "../preview";
+@source "../stories";
 
 :root {
   --radius: 0.625rem;

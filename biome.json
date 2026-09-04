@@ -4,13 +4,15 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "components/**",
       "lib/**",
       "registry/**",
       "preview/**",
+      "stories/**",
+      ".storybook/**",
       "*.ts",
       "*.json",
       "!public/r",
+      "!storybook-static",
       "!.claude"
     ]
   },
