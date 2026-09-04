@@ -65,7 +65,9 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `breadcrumbs` | The line above the title. A trail, or a back link. Nodes, never a route. |
 | `headerContent` | The row under the title: search, filters, tabs. `PageHeader` calls it `content`, because it has no body of its own. |
-| `sidebar` | The second surface in a split. `content` stays the main one. |
+| `first`, `second` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
+| `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
+| `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
@@ -319,14 +321,28 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    This is consistent with every `loading` prop already shipped. A shell's `loading` is for the
    part *the shell itself* would have drawn — a title, a control — never for the caller's data,
-   which is why `SidebarLayout` has no `loading` at all.
+   which is why `SplitLayout` has no `loading` at all.
 
    **Nesting depth is not this library's concern.** How deep a page nests before it should be
    split by route is an app decision; the shells nest as far as the app wants. The
    list-and-detail note in `layout.md` stays a suggestion rather than a limit.
 
-   **Still open, and only this:** whether a symmetric two-pane split is `SidebarLayout` with
-   different defaults or a `SplitLayout` that `SidebarLayout` is a preset of — and if the latter,
-   what the two neutral slots are called. `sidebarWidth` already accepts `half` and `two-thirds`,
-   so the component supports a shape its own name denies. Tracked in
-   [#1](https://github.com/cubicecho/cubeui/issues/1).
+   **Settled, and this is the last of it:** the symmetric split is `SplitLayout`, and
+   `SidebarLayout` is a preset of it — the same shape as `StickyHeaderContentFooter` over
+   `HeaderContentFooter`, and settled the same way. The evidence was already in the component:
+   `sidebarWidth` accepted `half` and `two-thirds` because four of the eleven call sites it
+   replaced were `60%`, `2fr`, `3fr/2fr` and `1fr/4fr` — comparable columns, not sidebars. It had
+   been doing two jobs since it shipped; only its name was single-purpose.
+
+   The two neutral slots are **`first` and `second`**. Numbered rather than named, because neither
+   alternative survives what the component already does: a role pair (`content`/`sidebar`) is a
+   lie about a genuinely even split, and a side pair (`left`/`right`) is a lie below `stackBelow`,
+   where the panes are one above the other, and again under RTL. `first` and `second` are true in
+   all of those — first in reading order, wherever reading is going. `section_1`/`section_2` was
+   the instinct behind them and was right about the equality; the numbering survived, the
+   snake_case did not (nothing else in the API has it) and neither did the word `section` (rule 2
+   — it is already the `Section` component).
+
+   The preset emits the base's `data-slot` values, exactly as `StickyHeaderContentFooter` emits
+   `header-content-footer-*`. A preset is a set of defaults, not a second component, so it does
+   not get a second set of public slot names to keep in step.

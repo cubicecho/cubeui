@@ -147,6 +147,27 @@ caller's.
 `content` is the main surface and `sidebar` is the second one. Everything else is where the sidebar
 sits, how wide it is, when it stops sitting there, and what is between them.
 
+**`SidebarLayout` is a preset of `SplitLayout`**, which is the same shape with the roles taken out:
+
+```tsx
+<SplitLayout
+  first={<Original />}
+  second={<Translation />}
+  stackBelow="md"
+  firstWidth="two-thirds"
+/>
+```
+
+Reach for the base when the two panes are genuinely comparable — a diff, two lists abreast, a form
+beside its preview. Its slots are numbered because neither alternative stays true: `content` /
+`sidebar` claims a ranking an even split does not have, and `left` / `right` is wrong below
+`stackBelow`, where the panes are one above the other, and wrong again right-to-left. `first` is
+first in reading order, wherever reading is going.
+
+Either pane can carry the width — `firstWidth` **or** `secondWidth`, the same scale, never both.
+Neither set is an even split. Everything below applies to both, and every prop but the widths and
+the slots is spelled the same on each.
+
 - **`sidebarWidth` is a scale, not a number.** `auto` (an icon strip, as wide as its contents),
   `sm` / `md` / `lg` (an inspector, sized by what is in it), and `fifth` / `two-fifths` / `half`
   / `two-thirds` (a second working surface, sized by the window). Pick the nearest one. A width
@@ -166,7 +187,7 @@ sits, how wide it is, when it stops sitting there, and what is between them.
 
 ### The things it deliberately does not do
 
-- **It does not resize.** There is no draggable divider and no `sidebarWidth`, because a stored
+- **It does not resize.** There is no draggable divider and no `onWidthChange`, because a stored
   width is state and shells hold none. The divider is a rule, not a control: `aria-hidden`, no
   role, no tab stop. A screen that genuinely needs a drag wants shadcn's `resizable`
   (`react-resizable-panels`) — a different component, not a prop on this one.

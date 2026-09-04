@@ -2,16 +2,23 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
 import { StickyHeaderContentFooter } from "@/registry/new-york/layout/header-content-footer";
-import { SidebarLayout, type SidebarWidth } from "@/registry/new-york/layout/sidebar-layout";
+import {
+  SidebarLayout,
+  SplitLayout,
+  type SplitWidth,
+} from "@/registry/new-york/layout/split-layout";
 
 const meta = {
-  title: "Layout/SidebarLayout",
-  component: SidebarLayout,
+  title: "Layout/SplitLayout",
+  component: SplitLayout,
   parameters: { layout: "fullscreen" },
-} satisfies Meta<typeof SidebarLayout>;
+} satisfies Meta<typeof SplitLayout>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+/** The preset, whose stories are the bulk of this file — most splits are not even ones. */
+type SidebarStory = StoryObj<typeof SidebarLayout>;
 
 const Surface = ({ label, tall = false }: { label: string; tall?: boolean }) => (
   <div className={`rounded border bg-card p-4 text-sm ${tall ? "h-64" : ""}`}>
@@ -30,7 +37,7 @@ const Nav = () => (
   </ul>
 );
 
-const RAIL_WIDTHS: SidebarWidth[] = [
+const RAIL_WIDTHS: SplitWidth[] = [
   "auto",
   "sm",
   "md",
@@ -41,8 +48,101 @@ const RAIL_WIDTHS: SidebarWidth[] = [
   "two-thirds",
 ];
 
-/** The plain split: a main surface, a sidebar beside it, and a gap between them. */
+/**
+ * The base: two panes as equals, and no width given to either.
+ *
+ * Numbered slots rather than named ones, because neither a role pair (`content`/`sidebar`) nor a
+ * side pair (`left`/`right`) is true here — the first is a lie about an even split, the second a
+ * lie the moment the panes stack or the page is read right-to-left.
+ */
 export const Default: Story = {
+  render: (args) => (
+    <div className="w-[600px] p-8">
+      <SplitLayout {...args} />
+    </div>
+  ),
+  args: {
+    first: <Surface label="First" />,
+    second: <Surface label="Second" />,
+    stackBelow: "never",
+  },
+  play: async ({ canvasElement }) => {
+    const first = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
+    const second = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-second]");
+    expect(first).not.toBeNull();
+    expect(second).not.toBeNull();
+    if (!first || !second) return;
+
+    // Neither width set is an even split. A component whose panes have no ranking should not
+    // invent one in its defaults.
+    expect(first.getBoundingClientRect().width).toBeCloseTo(
+      second.getBoundingClientRect().width,
+      0,
+    );
+  },
+};
+
+/**
+ * Either pane can carry the width, and the same rung on the other one is its mirror image.
+ *
+ * Two props rather than one because a split has no main pane to measure from — `TRACKS` reads
+ * `[the sized pane, the pane that takes the rest]`, so `secondWidth` is that row read backwards.
+ * The union type is what stops both being set at once, since the pair would then have to disagree
+ * about the leftover and one of them would silently lose.
+ */
+export const EitherPaneCanCarryTheWidth: Story = {
+  // Written out rather than spread, because the union is the point: `{...args}` carries both
+  // width keys as optional, and the compiler cannot know which arm of the union that lands in.
+  render: ({ first, second, stackBelow }) => (
+    <div className="w-[600px] space-y-6 p-8">
+      <div data-testid="sized-first">
+        <p className="mb-1 font-mono text-muted-foreground text-xs">firstWidth="two-thirds"</p>
+        <SplitLayout
+          first={first}
+          second={second}
+          stackBelow={stackBelow}
+          firstWidth="two-thirds"
+        />
+      </div>
+      <div data-testid="sized-second">
+        <p className="mb-1 font-mono text-muted-foreground text-xs">secondWidth="two-thirds"</p>
+        <SplitLayout
+          first={first}
+          second={second}
+          stackBelow={stackBelow}
+          secondWidth="two-thirds"
+        />
+      </div>
+    </div>
+  ),
+  args: {
+    first: <Surface label="First" />,
+    second: <Surface label="Second" />,
+    stackBelow: "never",
+  },
+  play: async ({ canvas }) => {
+    const widths = (testId: string) => {
+      const scope = canvas.getByTestId(testId);
+      const cell = (slot: string) =>
+        scope
+          .querySelector<HTMLElement>(`[data-slot=split-layout-${slot}]`)
+          ?.getBoundingClientRect().width ?? 0;
+      return [cell("first"), cell("second")] as const;
+    };
+
+    const [firstSized, restOfIt] = widths("sized-first");
+    const [restOfIt2, secondSized] = widths("sized-second");
+
+    // The sized pane is twice the other, whichever pane it is.
+    expect(firstSized).toBeCloseTo(restOfIt * 2, -1);
+    expect(secondSized).toBeCloseTo(restOfIt2 * 2, -1);
+    // And naming the width on the far pane is the same split, reversed.
+    expect(firstSized).toBeCloseTo(secondSized, 0);
+  },
+};
+
+/** The preset: a main surface, a sidebar beside it, and a gap between them. */
+export const Sidebar: SidebarStory = {
   render: (args) => (
     <div className="p-8">
       <SidebarLayout {...args} />
@@ -61,7 +161,7 @@ export const Default: Story = {
  * than one screen at a time. Fixed rungs size an inspector by its contents; proportional rungs
  * size a second working surface by the window.
  */
-export const WidthScale: Story = {
+export const WidthScale: SidebarStory = {
   render: (args) => (
     <div className="space-y-6 p-8">
       {RAIL_WIDTHS.map((sidebarWidth) => (
@@ -80,7 +180,7 @@ export const WidthScale: Story = {
 };
 
 /** The sidebar can lead. Stacked, it keeps this reading order rather than jumping below. */
-export const SidebarAtStart: Story = {
+export const SidebarAtStart: SidebarStory = {
   render: (args) => (
     <div className="p-8">
       <SidebarLayout {...args} />
@@ -100,7 +200,7 @@ export const SidebarAtStart: Story = {
  * `sidebar={undefined}`, and what that has to produce is one full-width column — not an empty cell,
  * not a gap still spent on the pane that is not there, and not a divider with one side.
  */
-export const NoSidebarIsOneColumn: Story = {
+export const NoSidebarIsOneColumn: SidebarStory = {
   render: (args) => (
     <div className="w-[600px] p-0">
       <SidebarLayout {...args} />
@@ -108,16 +208,16 @@ export const NoSidebarIsOneColumn: Story = {
   ),
   args: { content: <Surface label="Main, full width" />, sidebarWidth: "md", divider: "line" },
   play: async ({ canvasElement }) => {
-    const root = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout]");
-    const main = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-content]");
+    const root = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout]");
+    const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
     expect(root).not.toBeNull();
     expect(main).not.toBeNull();
     if (!root || !main) return;
 
     // Neither the cell nor the rule is drawn — even though `divider="line"` was asked for, since
     // there is nothing on the far side of it to divide.
-    expect(canvasElement.querySelector("[data-slot=sidebar-layout-sidebar]")).toBeNull();
-    expect(canvasElement.querySelector("[data-slot=sidebar-layout-divider]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=split-layout-second]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=split-layout-divider]")).toBeNull();
 
     // And the main pane has the whole width, with no gap spent on the absent sidebar.
     expect(main.getBoundingClientRect().width).toBe(root.getBoundingClientRect().width);
@@ -131,7 +231,7 @@ export const NoSidebarIsOneColumn: Story = {
  * one uses. The border is right until the layout stacks, at which point it is a line down one
  * side of the screen instead of a line between the two panes.
  */
-export const DividedByALine: Story = {
+export const DividedByALine: SidebarStory = {
   render: (args) => (
     <div className="h-[300px] w-[600px] border">
       <SidebarLayout {...args} className="h-full" />
@@ -146,9 +246,9 @@ export const DividedByALine: Story = {
     divider: "line",
   },
   play: async ({ canvasElement }) => {
-    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-sidebar]");
-    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-divider]");
-    const main = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-content]");
+    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
+    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-divider]");
+    const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-second]");
     expect(sidebar).not.toBeNull();
     expect(rule).not.toBeNull();
     expect(main).not.toBeNull();
@@ -178,7 +278,7 @@ export const DividedByALine: Story = {
  * owed by whatever *behaves*, and here that is a scrolling pane: `StickyHeaderContentFooter`
  * takes the tab stop, inside the split, exactly as it does outside one.
  */
-export const DividerIsNotAControl: Story = {
+export const DividerIsNotAControl: SidebarStory = {
   render: (args) => (
     <div className="h-[300px] w-[600px] border">
       <SidebarLayout {...args} className="h-full" />
@@ -206,8 +306,8 @@ export const DividerIsNotAControl: Story = {
     ),
   },
   play: async ({ canvasElement }) => {
-    const root = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout]");
-    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-divider]");
+    const root = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout]");
+    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-divider]");
     expect(root).not.toBeNull();
     expect(rule).not.toBeNull();
     if (!root || !rule) return;
@@ -244,7 +344,7 @@ export const DividerIsNotAControl: Story = {
  * the screen. Remove `min-w-0` from the cell, or the `minmax(0,…)` from the track, and this story
  * is how you find out: half the panes this component replaces are missing one or the other.
  */
-export const WideContentKeepsItsFloor: Story = {
+export const WideContentKeepsItsFloor: SidebarStory = {
   render: (args) => (
     <div className="w-[800px] border">
       <SidebarLayout {...args} />
@@ -261,9 +361,9 @@ export const WideContentKeepsItsFloor: Story = {
     ),
   },
   play: async ({ canvasElement }) => {
-    const root = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout]");
-    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-sidebar]");
-    const main = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-content]");
+    const root = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout]");
+    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-second]");
+    const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
     expect(root).not.toBeNull();
     expect(sidebar).not.toBeNull();
     expect(main).not.toBeNull();
@@ -289,7 +389,7 @@ export const WideContentKeepsItsFloor: Story = {
  * between the panes rather than a line down one side. This is the narrow-width answer — a phone
  * has room for one pane after the other, even when it has no room for two side by side.
  */
-export const StacksWhenNarrow: Story = {
+export const StacksWhenNarrow: SidebarStory = {
   render: (args) => (
     <div className="w-[420px] border">
       <SidebarLayout {...args} />
@@ -304,9 +404,9 @@ export const StacksWhenNarrow: Story = {
     divider: "line",
   },
   play: async ({ canvasElement }) => {
-    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-sidebar]");
-    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-divider]");
-    const main = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-content]");
+    const sidebar = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
+    const rule = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-divider]");
+    const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-second]");
     expect(sidebar).not.toBeNull();
     expect(rule).not.toBeNull();
     expect(main).not.toBeNull();

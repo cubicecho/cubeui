@@ -55,13 +55,13 @@
       ]
     },
     {
-      "name": "sidebar-layout",
+      "name": "split-layout",
       "type": "registry:component",
-      "title": "Sidebar Layout",
-      "description": "A main surface with a sidebar beside it, on a named width scale, with the floors that keep one wide child from pushing the other pane off the screen.",
+      "title": "Split Layout",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
       "files": [
         {
-          "path": "registry/new-york/layout/sidebar-layout.tsx",
+          "path": "registry/new-york/layout/split-layout.tsx",
           "type": "registry:component"
         }
       ]
@@ -337,7 +337,7 @@
         "@cubeui/dialog-layout",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/sidebar-layout",
+        "@cubeui/split-layout",
         "@cubeui/section"
       ],
       "files": []

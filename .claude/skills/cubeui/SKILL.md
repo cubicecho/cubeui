@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, MultiSelect, DatePicker, ColorPicker, PasswordInput) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, MultiSelect, DatePicker, ColorPicker, PasswordInput) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -36,6 +36,7 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form, control
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
+| Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout.md](layout.md) |
@@ -77,8 +78,11 @@ The same words mean the same thing in every component, and this is the point of 
   trail. Nodes, never a route.
 - **`headerContent`** — the row under the title: search, filters, tabs. Stacked in the order
   you pass them.
-- **`sidebar`** — the second surface in a two-pane split. `content` is still the main one, so the
+- **`sidebar`** — the second surface in a `SidebarLayout`. `content` is still the main one, so the
   pair reads the way it does everywhere else. `sidebarPosition`, `sidebarWidth` and `sidebarClassName` are its.
+- **`first`**, **`second`** — the two panes of a `SplitLayout`, as equals. Numbered rather than
+  named, because a role pair lies about an even split and a side pair lies once the panes stack or
+  the page is read right-to-left. `firstWidth` or `secondWidth` sizes one of them, never both.
 - **`level`** — not a slot: `1 | 2 | 3`, which heading element the title is. The size follows the
   element, so you never set both.
 
@@ -119,5 +123,5 @@ is about the dialog's own interaction, not the app's data. Whether the work *is*
 asked for, never computed: only the caller knows what its fields are.
 
 A draggable split divider is the same case: the width it drags is state, so it belongs to
-`react-resizable-panels`, not to `SidebarLayout`. A stored sidebar collapse is the same case again —
+`react-resizable-panels`, not to `SplitLayout`. A stored sidebar collapse is the same case again —
 `sidebar={open ? <Nav /> : undefined}` is the whole feature, and the caller already holds `open`.
