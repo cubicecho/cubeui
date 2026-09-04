@@ -90,7 +90,7 @@ export const Levels: StoryObj<typeof PageHeader> = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const headings = canvasElement.querySelectorAll("[data-slot=ph-title]");
+    const headings = canvasElement.querySelectorAll("[data-slot=page-header-title]");
     expect([...headings].map((h) => h.tagName)).toEqual(["H1", "H2", "H3"]);
   },
 };
@@ -112,8 +112,8 @@ export const WithBreadcrumbs: Story = {
     action: <Actions />,
   },
   play: async ({ canvasElement }) => {
-    const trail = canvasElement.querySelector<HTMLElement>("[data-slot=ph-breadcrumbs]");
-    const row = canvasElement.querySelector<HTMLElement>("[data-slot=ph-title-row]");
+    const trail = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-breadcrumbs]");
+    const row = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-title-row]");
     expect(trail).not.toBeNull();
     expect(row).not.toBeNull();
     if (!trail || !row) return;
@@ -150,8 +150,10 @@ export const AlignsWithTheBodyOfAPageChassis: StoryObj<typeof PageHeader> = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const row = canvasElement.querySelector<HTMLElement>("[data-slot=ph-title-row]");
-    const body = canvasElement.querySelector<HTMLElement>("[data-slot=hcf-content] > ul");
+    const row = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-title-row]");
+    const body = canvasElement.querySelector<HTMLElement>(
+      "[data-slot=header-content-footer-content] > ul",
+    );
     expect(row).not.toBeNull();
     expect(body).not.toBeNull();
     if (!row || !body) return;
@@ -234,12 +236,12 @@ export const Loading: StoryObj<typeof PageHeader> = {
 
     // The heading is still a heading with a name. A bar on its own is an empty heading, which
     // leaves a screen reader nothing to land on between the trail and the buttons.
-    const heading = waiting.querySelector<HTMLElement>("[data-slot=ph-title]");
+    const heading = waiting.querySelector<HTMLElement>("[data-slot=page-header-title]");
     expect(heading?.textContent?.trim()).not.toBe("");
 
     // The controls did not go away with the title.
-    expect(waiting.querySelector("[data-slot=ph-action] button")).not.toBeNull();
-    expect(waiting.querySelector("[data-slot=ph-content] input")).not.toBeNull();
+    expect(waiting.querySelector("[data-slot=page-header-action] button")).not.toBeNull();
+    expect(waiting.querySelector("[data-slot=page-header-content] input")).not.toBeNull();
   },
 };
 
@@ -264,8 +266,8 @@ export const NarrowContainer: StoryObj<typeof PageHeader> = {
   ),
   play: async ({ canvasElement }) => {
     const root = canvasElement.querySelector<HTMLElement>("[data-slot=page-header]");
-    const titles = canvasElement.querySelector<HTMLElement>("[data-slot=ph-titles]");
-    const action = canvasElement.querySelector<HTMLElement>("[data-slot=ph-action]");
+    const titles = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-titles]");
+    const action = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-action]");
     if (!root || !titles || !action) return;
 
     // Wrapped: the buttons are under the title block, not beside it.
@@ -277,7 +279,7 @@ export const NarrowContainer: StoryObj<typeof PageHeader> = {
     expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth + 1);
 
     // The title wrapped rather than being clipped to one line.
-    const heading = canvasElement.querySelector<HTMLElement>("[data-slot=ph-title]");
+    const heading = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-title]");
     expect(heading?.getBoundingClientRect().height).toBeGreaterThan(30);
   },
 };

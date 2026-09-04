@@ -212,7 +212,7 @@ export function ColorPicker({
           {/* Not a shadcn `Input`: `type="color"` is a swatch well, not a text box, and the
               input styles size it as one. */}
           <input
-            data-slot="color-picker-well"
+            data-slot="color-picker-native-input"
             type="color"
             aria-label={customLabel}
             value={well}

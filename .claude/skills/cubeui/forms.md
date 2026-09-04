@@ -135,7 +135,7 @@ Falsy `error` draws nothing, so write `error={errors.email?.message}` plainly. N
 
 `loading` swaps the control for a skeleton **and keeps the label and the description**, drawn for
 real: they are literals the form already knows, not data it is waiting for, so a field that hides
-them makes its label rail appear out of nowhere when the values land. `loading` outranks `error`
+them makes its column of labels appear out of nowhere when the values land. `loading` outranks `error`
 — a value that has not arrived is not one that came back wrong.
 
 ### Checkboxes and switches
@@ -225,12 +225,12 @@ Each option gets a real `<label htmlFor>` of its own, so clicking the option's t
 
 Do not write `grid grid-cols-2 gap-4` for this. A grid keeps its columns at every width, so the
 row that reads well on a settings page becomes two 140px fields inside a dialog and the values in
-them are clipped. `FieldRow` gives each cell a floor, so the row **wraps** instead — the third
+them are clipped. `FieldRow` gives each cell a minimum width, so the row **wraps** instead — the third
 field drops to its own line at full width rather than three of them sharing one at a third each.
 
 - `content` takes a fragment. A field that renders nothing leaves no cell behind, so
   `{isEdit && <InputField … />}` is safe to put in the middle of one.
-- `perRow` is `2` (the default) or `3`, and it only moves the floor.
+- `perRow` is `2` (the default) or `3`, and it only moves that minimum.
 - The cells are equal width. A field that should be wider is not this component — put it on its
   own line.
 

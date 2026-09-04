@@ -61,7 +61,7 @@ export const Default: Story = {
 export const HeaderStaysWhileTheBodyScrolls: Story = {
   args: { title: "Workspaces", action: <Actions />, content: <Rows /> },
   play: async ({ canvasElement }) => {
-    const body = canvasElement.querySelector("[data-slot=hcf-content]");
+    const body = canvasElement.querySelector("[data-slot=header-content-footer-content]");
     const header = canvasElement.querySelector("[data-slot=page-header]");
     expect(body).not.toBeNull();
     expect(header).not.toBeNull();
@@ -82,16 +82,20 @@ export const HeaderStaysWhileTheBodyScrolls: Story = {
 export const WidthIsAWordNotANumber: Story = {
   args: { title: "Settings", width: "prose", content: <Rows count={12} /> },
   play: async ({ canvasElement }) => {
-    const header = canvasElement.querySelector("[data-slot=hcf-header]") as HTMLElement;
-    const body = canvasElement.querySelector("[data-slot=hcf-content]") as HTMLElement;
+    const header = canvasElement.querySelector(
+      "[data-slot=header-content-footer-header]",
+    ) as HTMLElement;
+    const body = canvasElement.querySelector(
+      "[data-slot=header-content-footer-content]",
+    ) as HTMLElement;
     // The seam: the header carries its own px-4 and the body is given a matching one, so the
     // title sits directly above the first row rather than 16px left of it.
     expect(header.getBoundingClientRect().width).toBe(body.getBoundingClientRect().width);
     // `page-header` and `hcf-content` are the two padded boxes; what has to line up is what
     // they hold. The header's own `px-4` is the inset, and the body is given a matching one.
-    expect(canvasElement.querySelector("[data-slot=ph-title]")?.getBoundingClientRect().left).toBe(
-      canvasElement.querySelector("li")?.getBoundingClientRect().left,
-    );
+    expect(
+      canvasElement.querySelector("[data-slot=page-header-title]")?.getBoundingClientRect().left,
+    ).toBe(canvasElement.querySelector("li")?.getBoundingClientRect().left);
   },
 };
 
@@ -127,8 +131,12 @@ export const WithFooter: Story = {
     ),
   },
   play: async ({ canvasElement }) => {
-    const footer = canvasElement.querySelector("[data-slot=hcf-footer]") as HTMLElement;
-    const body = canvasElement.querySelector("[data-slot=hcf-content]") as HTMLElement;
+    const footer = canvasElement.querySelector(
+      "[data-slot=header-content-footer-footer]",
+    ) as HTMLElement;
+    const body = canvasElement.querySelector(
+      "[data-slot=header-content-footer-content]",
+    ) as HTMLElement;
     expect(footer.getBoundingClientRect().top).toBeGreaterThanOrEqual(
       body.getBoundingClientRect().bottom - 1,
     );

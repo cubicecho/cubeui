@@ -65,8 +65,8 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `breadcrumbs` | The line above the title. A trail, or a back link. Nodes, never a route. |
 | `headerContent` | The row under the title: search, filters, tabs. `PageHeader` calls it `content`, because it has no body of its own. |
-| `rail` | The second surface in a split. `content` stays the main one. |
-| `railSide`, `railWidth`, `railClassName` | The rail's, by prefix. |
+| `sidebar` | The second surface in a split. `content` stays the main one. |
+| `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |
@@ -98,7 +98,7 @@ Three notes on why the layering is where it is:
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
-- **A prefix binds a word to a slot.** `railWidth` is the rail's width and `contentClassName` is
+- **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 
 ## 3. Variants are literal class maps
@@ -126,7 +126,7 @@ over fixed grid tracks where slots are optional.
 ## 6. `data-slot` on every part
 
 Matching shadcn's own convention, so a consumer can reach a part from the outside
-(`has-data-[slot=hcf-footer]:…`) without a `className` prop for every corner.
+(`has-data-[slot=header-content-footer-footer]:…`) without a `className` prop for every corner.
 
 ## 7. One chassis, several dressed shells
 
@@ -259,8 +259,8 @@ packages; a fourth category means the component is doing too much.
 
    This is consistent with rule 8 and with every `loading` prop already shipped — a shell's
    `loading` is for the part *the shell itself* would have drawn (a title, a control), never for
-   the caller's data, which is why `SplitPane` has no `loading` at all. What is *not* settled is
-   the naming that falls out of it: whether a two-surface slot pair is `content`/`rail` or
+   the caller's data, which is why `SidebarLayout` has no `loading` at all. What is *not* settled is
+   the naming that falls out of it: whether a two-surface slot pair is `content`/`sidebar` or
    `leftSide`/`rightSide`, when a region deserves a layout of its own versus a component, and
    how deep nesting is expected to go before a page should be split by route instead. Tracked in
    [#1](https://github.com/cubicecho/cubeui/issues/1); do not add a component whose slot names

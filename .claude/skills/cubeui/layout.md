@@ -82,7 +82,7 @@ It is not a page.
 />
 ```
 
-- **The header brings its own inset, and the chassis knows.** `HeaderContentFooter` leaves its
+- **The header brings its own inset, and the shell around it knows.** `HeaderContentFooter` leaves its
   `header` slot unpadded on purpose and gives the body `px-4` to match, so the title lands above
   the body's first column. Do not pad the header slot, and do not wrap a `PageHeader` in a `div`
   to inset it — that seam is already joined, in one file.
@@ -134,61 +134,61 @@ caller's.
 ## Splits
 
 ```tsx
-<SplitPane
-  railSide="start"
-  railWidth="sm"
-  splitAt="md"
+<SidebarLayout
+  sidebarPosition="start"
+  sidebarWidth="sm"
+  stackBelow="md"
   divider="line"
-  rail={<Nav />}
+  sidebar={<Nav />}
   content={<StickyHeaderContentFooter header={<PageHeader title="Servers" />} content={rows} />}
 />
 ```
 
-`content` is the main surface and `rail` is the second one. Everything else is where the rail
+`content` is the main surface and `sidebar` is the second one. Everything else is where the sidebar
 sits, how wide it is, when it stops sitting there, and what is between them.
 
-- **`railWidth` is a scale, not a number.** `auto` (an icon strip, as wide as its contents),
+- **`sidebarWidth` is a scale, not a number.** `auto` (an icon strip, as wide as its contents),
   `sm` / `md` / `lg` (an inspector, sized by what is in it), and `fifth` / `two-fifths` / `half`
-  / `two-thirds` (a second working surface, sized by the window). Pick the nearest rung. A width
-  that falls between two of them is a call site choosing, not a case for a ninth rung — the
+  / `two-thirds` (a second working surface, sized by the window). Pick the nearest one. A width
+  that falls between two of them is a call site choosing, not a case for a ninth step — the
   scale exists because the widths it replaced were spelled `w-56`, `w-72 lg:w-80`, `lg:w-52`,
   `w-14 lg:w-56`, `2fr`, `minmax(16rem,20rem)` and `60%`, with no way to read which of those
   differences were decisions.
-- **`splitAt` is where the two stop being side by side and start being stacked** — `md`, `lg`
-  (the default), `xl`, or `always` to never stack. Stacking is the narrow-width answer: a phone
+- **`stackBelow` is the width under which the two stop sitting side by side and stack instead**
+  — `md`, `lg` (the default), `xl`, or `never` to keep them side by side at every width. Stacking is the narrow-width answer: a phone
   has room for one pane after the other even when it has none for two abreast. Do not add
   `hidden md:block` to fight it.
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
   hairline between them — the app shell), or `none` (flush, nothing drawn). Do not draw the rule
-  yourself with a `border-r` on the rail: that is a line between the panes only until the layout
+  yourself with a `border-r` on the sidebar: that is a line between the panes only until the layout
   stacks, at which point it is a line down one side of the screen. `line` puts the rule in its
   own track so it turns with the panes.
 
 ### The things it deliberately does not do
 
-- **It does not resize.** There is no draggable divider and no `railSize`, because a stored
+- **It does not resize.** There is no draggable divider and no `sidebarWidth`, because a stored
   width is state and shells hold none. The divider is a rule, not a control: `aria-hidden`, no
   role, no tab stop. A screen that genuinely needs a drag wants shadcn's `resizable`
   (`react-resizable-panels`) — a different component, not a prop on this one.
 - **It does not collapse, because it does not have to.** A closed sidebar is
-  `rail={open ? <Nav /> : undefined}`. With no rail the split is one full-width column, no cell
+  `sidebar={open ? <Nav /> : undefined}`. With no sidebar it is one full-width column, no cell
   and no rule drawn and no gap spent — which is the same thing an inspector with nothing selected
   needs. The caller already holds the toggle; there is no `collapsed` prop to keep in step with it.
 - **It has no `loading`.** A split has two panes that arrive at different times, and one boolean
-  across both would either skeleton a nav rail that was never waiting or have to be told which
+  across both would either skeleton a navigation column that was never waiting or have to be told which
   pane it meant. Each pane's content owns its own loading state.
-- **It is horizontal only.** Two zones stacked in a column with floors between them is
-  `HeaderContentFooter`, which already exists. Below `splitAt` this *is* that arrangement.
+- **It is horizontal only.** Two zones stacked in a column, each able to scroll, is
+  `HeaderContentFooter`, which already exists. Below `stackBelow` this *is* that arrangement.
 - **It does not scroll.** A pane that needs to scroll is a `StickyHeaderContentFooter` passed as
-  `content` or `rail` — which is also where the tab stop that a scrolling region owes a keyboard
-  user comes from. Do not put `overflow-y-auto` on a pane by hand; it will scroll without a floor
-  above it and without a way to reach it.
+  `content` or `sidebar` — which is also where the tab stop that a scrolling region owes a keyboard
+  user comes from. Do not put `overflow-y-auto` on a pane by hand; without a height above it to
+  divide, it will not scroll, and it gives a keyboard user no way in.
 
 ### List-and-detail
 
 A split is the right shape when both panes are on the screen together and the selection moves
 between them. It is the wrong shape when the detail is a place you *go* — if there is a
-`/things/:id` route, keep the route and let the detail be its own page. A `SplitPane` that has to
+`/things/:id` route, keep the route and let the detail be its own page. A `SidebarLayout` that has to
 be told to hide one of its panes on a phone is that decision arriving late.
 
 ## Cards
@@ -260,7 +260,7 @@ A heading over a group of fields or rows, inside a page or a card.
   get that wrong. A screen reader's heading list is how a form of thirty fields is navigated.
 - It draws **no surface** — no border, no padding box. Wrapping the group in a `Card` stays a
   decision at the call site, and `CardLayout` is the component that owns a surface.
-- `rule` adds a hairline under the heading. Off by default.
+- `divider` adds a hairline under the heading. Off by default.
 - It is the smallest thing in the registry and it exists because three projects wrote
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no

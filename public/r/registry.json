@@ -20,10 +20,7 @@
       "type": "registry:component",
       "title": "Card Layout",
       "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
-      "registryDependencies": [
-        "card",
-        "skeleton"
-      ],
+      "registryDependencies": ["card", "skeleton"],
       "files": [
         {
           "path": "registry/new-york/layout/card-layout.tsx",
@@ -36,10 +33,7 @@
       "type": "registry:component",
       "title": "Dialog Layout",
       "description": "A dialog whose body scrolls under a header that does not. Composes the header/content/footer chassis rather than owning a second copy.",
-      "registryDependencies": [
-        "dialog",
-        "@cubeui/header-content-footer"
-      ],
+      "registryDependencies": ["dialog", "@cubeui/header-content-footer"],
       "files": [
         {
           "path": "registry/new-york/layout/dialog-layout.tsx",
@@ -52,9 +46,7 @@
       "type": "registry:component",
       "title": "Page Header",
       "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
-      "registryDependencies": [
-        "skeleton"
-      ],
+      "registryDependencies": ["skeleton"],
       "files": [
         {
           "path": "registry/new-york/layout/page-header.tsx",
@@ -63,13 +55,13 @@
       ]
     },
     {
-      "name": "split-pane",
+      "name": "sidebar-layout",
       "type": "registry:component",
-      "title": "Split Pane",
-      "description": "Two surfaces side by side: a main one and a rail, on a named width scale, with the floors that keep one wide child from pushing the other pane off the screen.",
+      "title": "Sidebar Layout",
+      "description": "A main surface with a sidebar beside it, on a named width scale, with the floors that keep one wide child from pushing the other pane off the screen.",
       "files": [
         {
-          "path": "registry/new-york/layout/split-pane.tsx",
+          "path": "registry/new-york/layout/sidebar-layout.tsx",
           "type": "registry:component"
         }
       ]
@@ -79,10 +71,7 @@
       "type": "registry:component",
       "title": "Page Layout",
       "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
-      "registryDependencies": [
-        "@cubeui/header-content-footer",
-        "@cubeui/page-header"
-      ],
+      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
       "files": [
         {
           "path": "registry/new-york/layout/page-layout.tsx",
@@ -108,11 +97,7 @@
       "type": "registry:component",
       "title": "Form Field",
       "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
-      "registryDependencies": [
-        "field",
-        "popover",
-        "skeleton"
-      ],
+      "registryDependencies": ["field", "popover", "skeleton"],
       "files": [
         {
           "path": "registry/new-york/form/form-field.tsx",
@@ -138,9 +123,7 @@
       "type": "registry:component",
       "title": "App Form",
       "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
-      "dependencies": [
-        "@tanstack/react-form"
-      ],
+      "dependencies": ["@tanstack/react-form"],
       "registryDependencies": [
         "button",
         "checkbox",
@@ -162,11 +145,7 @@
       "type": "registry:component",
       "title": "Multi Select Field",
       "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/form-field",
-        "@cubeui/multi-select"
-      ],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
       "files": [
         {
           "path": "registry/new-york/form/multi-select-field.tsx",
@@ -179,11 +158,7 @@
       "type": "registry:component",
       "title": "Date Field",
       "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/form-field",
-        "@cubeui/date-picker"
-      ],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/date-picker"],
       "files": [
         {
           "path": "registry/new-york/form/date-field.tsx",
@@ -196,11 +171,7 @@
       "type": "registry:component",
       "title": "Color Field",
       "description": "A colour picker as one line, over a field the compiler checked holds a string.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/form-field",
-        "@cubeui/color-picker"
-      ],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/color-picker"],
       "files": [
         {
           "path": "registry/new-york/form/color-field.tsx",
@@ -213,12 +184,7 @@
       "type": "registry:component",
       "title": "Radio Group Field",
       "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.",
-      "registryDependencies": [
-        "radio-group",
-        "field",
-        "@cubeui/app-form",
-        "@cubeui/form-field"
-      ],
+      "registryDependencies": ["radio-group", "field", "@cubeui/app-form", "@cubeui/form-field"],
       "files": [
         {
           "path": "registry/new-york/form/radio-group-field.tsx",
@@ -231,11 +197,7 @@
       "type": "registry:component",
       "title": "Password Field",
       "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/form-field",
-        "@cubeui/password-input"
-      ],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
       "files": [
         {
           "path": "registry/new-york/form/password-field.tsx",
@@ -248,10 +210,7 @@
       "type": "registry:component",
       "title": "Action Button",
       "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
-      "registryDependencies": [
-        "button",
-        "tooltip"
-      ],
+      "registryDependencies": ["button", "tooltip"],
       "files": [
         {
           "path": "registry/new-york/control/action-button.tsx",
@@ -264,10 +223,7 @@
       "type": "registry:component",
       "title": "Confirm Button",
       "description": "A destructive button that asks first, with a required description of what is lost.",
-      "registryDependencies": [
-        "alert-dialog",
-        "@cubeui/action-button"
-      ],
+      "registryDependencies": ["alert-dialog", "@cubeui/action-button"],
       "files": [
         {
           "path": "registry/new-york/control/confirm-button.tsx",
@@ -299,12 +255,7 @@
       "type": "registry:component",
       "title": "Date Picker",
       "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
-      "registryDependencies": [
-        "button",
-        "calendar",
-        "input",
-        "popover"
-      ],
+      "registryDependencies": ["button", "calendar", "input", "popover"],
       "files": [
         {
           "path": "registry/new-york/control/date-picker.tsx",
@@ -317,12 +268,7 @@
       "type": "registry:component",
       "title": "Color Picker",
       "description": "A colour from a palette, the OS picker or a hex box, with the tick on the chosen swatch drawn in an ink that can be read on it.",
-      "registryDependencies": [
-        "button",
-        "input",
-        "popover",
-        "@cubeui/readable-text-color"
-      ],
+      "registryDependencies": ["button", "input", "popover", "@cubeui/readable-text-color"],
       "files": [
         {
           "path": "registry/new-york/control/color-picker.tsx",
@@ -335,9 +281,7 @@
       "type": "registry:component",
       "title": "Password Input",
       "description": "A password box with a reveal button that is named, changes its name, and does not submit the form.",
-      "registryDependencies": [
-        "input"
-      ],
+      "registryDependencies": ["input"],
       "files": [
         {
           "path": "registry/new-york/control/password-input.tsx",
@@ -374,9 +318,7 @@
       "type": "registry:ui",
       "title": "Item",
       "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
-      "registryDependencies": [
-        "separator"
-      ],
+      "registryDependencies": ["separator"],
       "files": [
         {
           "path": "registry/new-york/ui/item.tsx",
@@ -395,7 +337,7 @@
         "@cubeui/dialog-layout",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/split-pane",
+        "@cubeui/sidebar-layout",
         "@cubeui/section"
       ],
       "files": []
@@ -465,10 +407,7 @@
       "type": "registry:component",
       "title": "Vendored Primitives",
       "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
-      "registryDependencies": [
-        "@cubeui/empty",
-        "@cubeui/item"
-      ],
+      "registryDependencies": ["@cubeui/empty", "@cubeui/item"],
       "files": []
     }
   ]

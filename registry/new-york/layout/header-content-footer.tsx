@@ -98,7 +98,7 @@ export function HeaderContentFooter({
     >
       {header ? (
         <div
-          data-slot="hcf-header"
+          data-slot="header-content-footer-header"
           className={cn("min-w-0 shrink-0", headerColumn, headerClassName)}
         >
           {header}
@@ -106,7 +106,7 @@ export function HeaderContentFooter({
       ) : null}
 
       <div
-        data-slot="hcf-content"
+        data-slot="header-content-footer-content"
         ref={contentRef}
         // A scrolling region a keyboard cannot reach is a region a keyboard user cannot read:
         // the mouse wheel moves it and nothing else does, which axe reports as
@@ -124,7 +124,10 @@ export function HeaderContentFooter({
       </div>
 
       {footer ? (
-        <div data-slot="hcf-footer" className={cn("min-w-0 shrink-0", bodyColumn, footerClassName)}>
+        <div
+          data-slot="header-content-footer-footer"
+          className={cn("min-w-0 shrink-0", bodyColumn, footerClassName)}
+        >
           {footer}
         </div>
       ) : null}

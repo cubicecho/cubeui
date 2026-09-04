@@ -53,7 +53,7 @@ Read this before adding anything:
    *wiring* — that is where the duplication actually was.
 
    The converse holds too: if a primitive covers the whole job, there is no component to write.
-   `SplitPane` is not resizable partly because dragging is `resizable`, which shadcn ships.
+   `SidebarLayout` is not resizable partly because dragging is `resizable`, which shadcn ships.
 
    **Re-publishing is not wrapping.** A few of shadcn's own files ship from this registry
    unchanged, as `registry:ui` items — `empty` and `item` today. Nothing is added and nothing is
@@ -84,7 +84,7 @@ registry/new-york/layout/header-content-footer.tsx   HeaderContentFooter, Sticky
 registry/new-york/layout/card-layout.tsx             CardLayout
 registry/new-york/layout/dialog-layout.tsx           DialogLayout
 registry/new-york/layout/page-header.tsx             PageHeader
-registry/new-york/layout/split-pane.tsx              SplitPane
+registry/new-york/layout/sidebar-layout.tsx          SidebarLayout
 registry/new-york/layout/page-layout.tsx             PageLayout
 registry/new-york/layout/section.tsx                 Section
 registry/new-york/form/form-field.tsx                FormField

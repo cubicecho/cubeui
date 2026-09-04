@@ -10,8 +10,8 @@ type SectionProps = {
   description?: ReactNode;
   /** The heading row's far end: an add button, a count, a switch that disables the group. */
   action?: ReactNode;
-  /** A hairline under the heading. Off by default; on, the group reads as a slab. */
-  rule?: boolean;
+  /** A hairline under the heading. Off by default; on, the group reads as one block. */
+  divider?: boolean;
   className?: string;
   titleClassName?: string;
   contentClassName?: string;
@@ -39,7 +39,7 @@ export function Section({
   title,
   description,
   action,
-  rule = false,
+  divider = false,
   className,
   titleClassName,
   contentClassName,
@@ -51,7 +51,7 @@ export function Section({
       {hasHeading ? (
         <div
           data-slot="section-heading"
-          className={cn("flex min-w-0 items-center gap-2", rule && "border-b pb-1")}
+          className={cn("flex min-w-0 items-center gap-2", divider && "border-b pb-1")}
         >
           <div className="min-w-0 flex-1">
             {title ? (

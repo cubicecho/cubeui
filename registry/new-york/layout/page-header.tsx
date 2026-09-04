@@ -198,21 +198,21 @@ export function PageHeader({
       className={cn("flex min-w-0 flex-col gap-3 px-4 py-4", rule, className)}
     >
       {breadcrumbs ? (
-        <div data-slot="ph-breadcrumbs" className="min-w-0">
+        <div data-slot="page-header-breadcrumbs" className="min-w-0">
           {breadcrumbs}
         </div>
       ) : null}
 
       <div
-        data-slot="ph-title-row"
+        data-slot="page-header-title-row"
         className={cn("flex flex-wrap items-center justify-between gap-x-4 gap-y-2", rowFloor)}
       >
         {/* `basis-64` is the threshold, and the only number here that is a judgement rather than
             a measurement: the title keeps at least 16rem or the action wraps under it. `min-w-0`
             is what then lets the block shrink below its longest word. */}
-        <div data-slot="ph-titles" className="flex min-w-0 flex-1 basis-64 flex-col gap-1">
+        <div data-slot="page-header-titles" className="flex min-w-0 flex-1 basis-64 flex-col gap-1">
           <Heading
-            data-slot="ph-title"
+            data-slot="page-header-title"
             className={cn(
               "flex min-w-0 items-center gap-2 font-semibold tracking-tight",
               titleSize,
@@ -242,9 +242,13 @@ export function PageHeader({
 
           {description ? (
             loading ? (
-              <Skeleton data-slot="ph-description" className="h-5 w-72 max-w-full" aria-hidden />
+              <Skeleton
+                data-slot="page-header-description"
+                className="h-5 w-72 max-w-full"
+                aria-hidden
+              />
             ) : (
-              <p data-slot="ph-description" className="text-muted-foreground text-sm">
+              <p data-slot="page-header-description" className="text-muted-foreground text-sm">
                 {description}
               </p>
             )
@@ -252,14 +256,20 @@ export function PageHeader({
         </div>
 
         {action ? (
-          <div data-slot="ph-action" className="flex shrink-0 flex-wrap items-center gap-2">
+          <div
+            data-slot="page-header-action"
+            className="flex shrink-0 flex-wrap items-center gap-2"
+          >
             {action}
           </div>
         ) : null}
       </div>
 
       {content ? (
-        <div data-slot="ph-content" className={cn("flex min-w-0 flex-col gap-2", contentClassName)}>
+        <div
+          data-slot="page-header-content"
+          className={cn("flex min-w-0 flex-col gap-2", contentClassName)}
+        >
           {content}
         </div>
       ) : null}

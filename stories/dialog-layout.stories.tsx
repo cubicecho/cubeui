@@ -87,7 +87,7 @@ export const LongFormKeepsItsTitle: Story = {
 
     // The dialog composes HeaderContentFooter (conventions rule 7), so the scrolling body is the
     // chassis's slot — there is no dialog-specific one, which is the point of composing.
-    const body = document.querySelector<HTMLElement>("[data-slot=hcf-content]");
+    const body = document.querySelector<HTMLElement>("[data-slot=header-content-footer-content]");
     const title = within(document.body).getByRole("heading", { name: "New workspace" });
     expect(body).not.toBeNull();
     if (!body) return;

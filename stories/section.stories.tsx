@@ -69,9 +69,9 @@ export const WithAnAction: Story = {
   },
 };
 
-/** `rule` draws the hairline one of the three call sites had and the other two did not. */
+/** `divider` draws the hairline one of the three call sites had and the other two did not. */
 export const WithARule: Story = {
-  args: { title: "Danger zone", rule: true, content: <Fields /> },
+  args: { title: "Danger zone", divider: true, content: <Fields /> },
 };
 
 /**
@@ -100,7 +100,7 @@ export const Stacked: Story = {
         description="How this workspace reaches you when something needs a decision."
         content={<Fields />}
       />
-      <Section title="Danger zone" rule content={<Fields />} />
+      <Section title="Danger zone" divider content={<Fields />} />
     </div>
   ),
   play: async ({ canvasElement }) => {

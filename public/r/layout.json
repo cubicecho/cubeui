@@ -9,7 +9,7 @@
     "@cubeui/dialog-layout",
     "@cubeui/page-header",
     "@cubeui/page-layout",
-    "@cubeui/split-pane",
+    "@cubeui/sidebar-layout",
     "@cubeui/section"
   ],
   "files": [],

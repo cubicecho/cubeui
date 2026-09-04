@@ -48,8 +48,8 @@ export const Default: Story = {
 export const NoChrome: Story = {
   args: { content: <Rows count={5} /> },
   play: async ({ canvasElement }) => {
-    expect(canvasElement.querySelector("[data-slot=hcf-header]")).toBeNull();
-    expect(canvasElement.querySelector("[data-slot=hcf-footer]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=header-content-footer-header]")).toBeNull();
+    expect(canvasElement.querySelector("[data-slot=header-content-footer-footer]")).toBeNull();
   },
 };
 
@@ -65,7 +65,9 @@ export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
   ),
   args: { header: <Header />, footer: <Footer />, content: <Rows count={40} /> },
   play: async ({ canvasElement }) => {
-    const body = canvasElement.querySelector<HTMLElement>("[data-slot=hcf-content]");
+    const body = canvasElement.querySelector<HTMLElement>(
+      "[data-slot=header-content-footer-content]",
+    );
     expect(body).not.toBeNull();
     if (!body) return;
 
@@ -74,7 +76,9 @@ export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
     expect(getComputedStyle(body).overflowY).toBe("auto");
 
     // The chrome does not move when it scrolls.
-    const header = canvasElement.querySelector<HTMLElement>("[data-slot=hcf-header]");
+    const header = canvasElement.querySelector<HTMLElement>(
+      "[data-slot=header-content-footer-header]",
+    );
     const before = header?.getBoundingClientRect().top;
     body.scrollTop = body.scrollHeight;
     await new Promise((r) => requestAnimationFrame(r));
@@ -102,7 +106,9 @@ export const WideContentKeepsItsFloor: StoryObj<typeof StickyHeaderContentFooter
   },
   play: async ({ canvasElement }) => {
     const chassis = canvasElement.querySelector<HTMLElement>("[data-slot=header-content-footer]");
-    const header = canvasElement.querySelector<HTMLElement>("[data-slot=hcf-header]");
+    const header = canvasElement.querySelector<HTMLElement>(
+      "[data-slot=header-content-footer-header]",
+    );
     expect(chassis).not.toBeNull();
     if (!chassis || !header) return;
 
