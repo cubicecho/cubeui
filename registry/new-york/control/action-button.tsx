@@ -1,0 +1,104 @@
+import type { ComponentProps, MouseEvent, ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/registry/new-york/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/registry/new-york/ui/tooltip";
+
+type ActionButtonProps = Omit<ComponentProps<typeof Button>, "aria-label"> & {
+  /**
+   * The accessible name, and the tooltip when there is nothing more to say.
+   *
+   * Not optional, and that is the whole point of the component. Of the 134 icon-sized buttons
+   * across these projects, 78 have no accessible name at all — they are a `<Trash2 />` inside a
+   * `<Button size="icon">` and nothing else, which a screen reader announces as "button". Some
+   * carry a `title`, which is a hint shown on hover, not a name: it is not read in place of one,
+   * it never appears on a touch device, and it is the single most common way an icon button is
+   * *believed* to be labelled. Making this a required prop is what stops the next one arriving
+   * the same way, because the type is checked and a code review is not.
+   */
+  label: string;
+  /**
+   * Why it is unavailable, or what it will do — shown in the tooltip instead of `label`.
+   *
+   * This is the prop `disabled` exists for. See the component note.
+   */
+  hint?: ReactNode;
+  side?: ComponentProps<typeof TooltipContent>["side"];
+  /** Off, the button keeps its accessible name and drops the tooltip. */
+  tooltip?: boolean;
+};
+
+/**
+ * A button whose reason can always be read — including when it cannot be pressed.
+ *
+ * Two bugs, and the second is the one worth the file.
+ *
+ * **It has a name.** See {@link ActionButtonProps.label}.
+ *
+ * **Its reason survives being disabled.** These apps are full of `title="Empty the lane first"`
+ * on controls disabled for exactly that reason, and shadcn's `Button` sets
+ * `disabled:pointer-events-none`: the browser never fires the hover, so the one explanation a
+ * person needed is the one they cannot get. A `disabled` button is also out of the tab order
+ * entirely, so a keyboard user cannot reach the answer by any route at all — the control is
+ * simultaneously refusing and mute.
+ *
+ * So `disabled` here is `aria-disabled` instead. The control keeps its focus ring, its hover and
+ * its tooltip, the press is refused in the handler, and assistive technology reads it as
+ * unavailable either way. Pass `hint` and the tooltip says why.
+ *
+ * **The provider.** shadcn's `Tooltip` needs a `TooltipProvider` above it and throws without
+ * one, so this renders its own — a component installed from a registry cannot assume the app it
+ * lands in has already put one at the root. Radix nests providers happily. The cost is that
+ * `skipDelayDuration` no longer groups a row of these, so moving along a toolbar re-waits at
+ * each button rather than opening instantly after the first; an app that minds can still put a
+ * provider at its root and pass `delayDuration={0}` here.
+ */
+export function ActionButton({
+  label,
+  hint,
+  side = "top",
+  tooltip = true,
+  disabled,
+  className,
+  onClick,
+  children,
+  ...props
+}: ActionButtonProps) {
+  const button = (
+    <Button
+      aria-label={label}
+      // Not `disabled`: the attribute is what removes the hover and the tab stop, and with them
+      // the explanation. `opacity-50` is what `disabled:opacity-50` would have drawn.
+      aria-disabled={disabled || undefined}
+      className={cn(disabled && "opacity-50", className)}
+      onClick={(event: MouseEvent<HTMLButtonElement>) => {
+        if (disabled) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.(event);
+      }}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+
+  if (!tooltip) {
+    return button;
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent side={side}>{hint ?? label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}

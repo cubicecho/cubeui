@@ -72,11 +72,14 @@ registry/new-york/layout/card-layout.tsx             CardLayout
 registry/new-york/layout/dialog-layout.tsx           DialogLayout
 registry/new-york/layout/page-header.tsx             PageHeader
 registry/new-york/layout/split-pane.tsx              SplitPane
+registry/new-york/layout/page-layout.tsx             PageLayout
 registry/new-york/form/form-field.tsx                FormField
 registry/new-york/form/field-row.tsx                 FieldRow
 registry/new-york/form/app-form.tsx                  useAppForm + the TanStack-bound fields
+registry/new-york/control/action-button.tsx          ActionButton
+registry/new-york/control/confirm-button.tsx         ConfirmButton
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        11 items: 7 components, `layout`, `form`, `skill`
+registry.json                                        15 items: 10 components, `layout`, `form`, `control`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
 preview/                                             Vite demo page, `npm run dev`
 stories/                                             Storybook, and the tests — every story is one
@@ -92,6 +95,11 @@ overwritten by the next one, so Biome's linter is switched off for that path in 
 Sources import each other as `@/registry/new-york/...`; the CLI rewrites those against the
 consuming project's own aliases on install. This is verified, not assumed — see open question 4
 in `docs/component-conventions.md`.
+
+`registry/new-york/control/` is the third folder. A control is not a shell — it holds its own
+open state and it draws a button — so rule 5 does not reach it, but rules 1 and 3 still do:
+`ActionButton` and `ConfirmButton` are there because 78 unlabelled icon buttons and 22
+hand-written confirm dialogs are, not because a set ought to have buttons in it.
 
 Still unsettled: whether the form half needs anything beyond `FormField`, `FieldRow` and the
 bound layer — `FormDialog` was
@@ -187,3 +195,25 @@ one:
 | `~/code/cubicecho/ai_tools/mcp/mcp-router/app/src/components/` | `workspace-dialog`, `members-card`, `connect-card` |
 | `~/code/cubicecho/apps/eunomia/apps/web/src/components/` | `confirm-delete`, `rules/*-card`, `dashboard/stat-tiles` |
 | `~/code/cubicecho/apps/philotes/app/src/components/layouts/` | `section`, `header`, and `dashboard/widget` |
+| `~/code/cubicecho/ai_tools/task_server/web/components/app-shell.tsx` | `Page` — the same forty lines as kanban's, and the reason `PageLayout` exists |
+| `~/code/simiancraft/Ultrathin/app/components/ut-ui/` | the most mature version of this idea anywhere here: `fact-grid`, `list-page-header`, `field-section`, `tooltip-icon`, `ut-confirm` |
+
+## Surveyed and deliberately not built
+
+Recorded so the next pass does not re-derive them:
+
+- **`AppShell`** (sidebar + header + main). Five apps hand-roll it — kanban, task_server,
+  mcp-router, mcp-skills-manager, notes — and the two mcp apps are near-forks (their
+  `token-gate.tsx` differs by 4 lines out of 67). Not built: shadcn ships `sidebar`, Ultrathin
+  already uses it, and the answer is four `npx shadcn add sidebar` calls. The genuinely shared
+  part between the mcp apps is auth, which is rule 5.
+- **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
+  `flex items-start justify-between` across 8 projects, and kanban has already extracted
+  `row-card.tsx`. Not built *yet*: nobody has shadcn's `item` installed, and `item` is the
+  drawing. Revisit once a project has it — the leftover wiring may be one prop (`dim`) or none.
+- **`EmptyState`**. ~30 files hand-roll "no results". shadcn ships `empty`; `CardLayout`
+  already has the slot. Install the primitive.
+- **`FactGrid`** (Ultrathin's is excellent — it replaced 10 hand-rolled `<dl>`s and 5 copies of a
+  `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project bar:
+  cubicecho has 4 `<dl>` files and they are all in one app.
+- **`FormButtons`**. Too bound to Ultrathin's `isNew`/`isDeleted`/restore vocabulary to port.

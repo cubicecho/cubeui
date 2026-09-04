@@ -8,6 +8,7 @@
     "@cubeui/card-layout",
     "@cubeui/dialog-layout",
     "@cubeui/page-header",
+    "@cubeui/page-layout",
     "@cubeui/split-pane"
   ],
   "files": [],

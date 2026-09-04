@@ -27,11 +27,15 @@ runtime dependency on this package.
 | `@cubeui/dialog-layout` | `DialogLayout` — a dialog whose body scrolls under a header that does not |
 | `@cubeui/page-header` | `PageHeader` — trail, title, description, actions, and the control row |
 | `@cubeui/split-pane` | `SplitPane` — a fixed rail beside a body, collapsing at a breakpoint |
+| `@cubeui/page-layout` | `PageLayout` — a whole page: a pinned title block over a body that scrolls, in a named column |
 | `@cubeui/form-field` | `FormField` — a label wired to its control, a description, an announced error, a skeleton |
 | `@cubeui/field-row` | `FieldRow` — fields side by side, wrapping rather than squeezing |
 | `@cubeui/app-form` | `useAppForm` and the TanStack-bound fields: `InputField`, `TextareaField`, `SelectField`, `CheckboxField`, `SwitchField`, `SubmitButton` |
-| `@cubeui/layout` | All five layout items in one install |
+| `@cubeui/action-button` | `ActionButton` — an icon button with a required name, and a tooltip that survives being disabled |
+| `@cubeui/confirm-button` | `ConfirmButton` — a destructive button that asks first, and makes you say what is lost |
+| `@cubeui/layout` | All six layout items in one install |
 | `@cubeui/form` | All three form items in one install |
+| `@cubeui/control` | Both control items in one install |
 | `@cubeui/skill` | The agent skill, so an agent in a consuming project uses them correctly |
 
 ## Every slot is a prop, including the body

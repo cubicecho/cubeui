@@ -67,6 +67,19 @@
       ]
     },
     {
+      "name": "page-layout",
+      "type": "registry:component",
+      "title": "Page Layout",
+      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
+      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
+      "files": [
+        {
+          "path": "registry/new-york/layout/page-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
@@ -115,6 +128,32 @@
       ]
     },
     {
+      "name": "action-button",
+      "type": "registry:component",
+      "title": "Action Button",
+      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
+      "registryDependencies": ["button", "tooltip"],
+      "files": [
+        {
+          "path": "registry/new-york/control/action-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "confirm-button",
+      "type": "registry:component",
+      "title": "Confirm Button",
+      "description": "A destructive button that asks first, with a required description of what is lost.",
+      "registryDependencies": ["alert-dialog", "@cubeui/action-button"],
+      "files": [
+        {
+          "path": "registry/new-york/control/confirm-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",
@@ -124,6 +163,7 @@
         "@cubeui/card-layout",
         "@cubeui/dialog-layout",
         "@cubeui/page-header",
+        "@cubeui/page-layout",
         "@cubeui/split-pane"
       ],
       "files": []
@@ -134,6 +174,14 @@
       "title": "Form Set",
       "description": "Every cubeui form component in one install, TanStack binding included.",
       "registryDependencies": ["@cubeui/form-field", "@cubeui/field-row", "@cubeui/app-form"],
+      "files": []
+    },
+    {
+      "name": "control",
+      "type": "registry:component",
+      "title": "Control Set",
+      "description": "Every cubeui control in one install.",
+      "registryDependencies": ["@cubeui/action-button", "@cubeui/confirm-button"],
       "files": []
     },
     {

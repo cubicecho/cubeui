@@ -12,6 +12,23 @@ import { cn } from "@/lib/utils";
  */
 export const PAGE_COLUMN = "mx-auto w-full max-w-(--breakpoint-2xl)";
 
+/**
+ * The reading column: a page of prose, a settings screen, a form.
+ *
+ * Narrower than {@link PAGE_COLUMN} because the constraint is a line length, not a viewport.
+ * Both app shells that had grown a page component of their own defaulted to exactly this, and
+ * then disagreed about what the *other* width was called — one said `max-w-5xl` and the other
+ * `max-w-none`, both spelled `wide`. Naming the columns is what stops the third app inventing an
+ * eleventh value: across these projects there are 51 capped page columns wearing 10 widths.
+ */
+export const PROSE_COLUMN = "mx-auto w-full max-w-3xl";
+
+const COLUMNS = {
+  full: undefined,
+  page: PAGE_COLUMN,
+  prose: PROSE_COLUMN,
+} as const;
+
 type HeaderContentFooterProps = {
   /** The body. The only slot that grows. */
   content: ReactNode;
@@ -31,9 +48,10 @@ type HeaderContentFooterProps = {
    * - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and
    *   anything already inside its own column.
    * - `page` — slots share the capped, centred {@link PAGE_COLUMN}, inset to match the header.
-   *   Every list page.
+   *   Every list page, every board.
+   * - `prose` — the narrower {@link PROSE_COLUMN}. Settings, a detail page, a form.
    */
-  width?: "full" | "page";
+  width?: keyof typeof COLUMNS;
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
   contentRef?: Ref<HTMLDivElement>;
   className?: string;
@@ -69,8 +87,9 @@ export function HeaderContentFooter({
 }: HeaderContentFooterProps) {
   // The header slot stays unpadded: a page header carries its own `px-4`, and the body matches
   // it so the two edges line up.
-  const headerColumn = width === "page" ? PAGE_COLUMN : undefined;
-  const bodyColumn = width === "page" ? cn(PAGE_COLUMN, "px-4") : undefined;
+  const column = COLUMNS[width];
+  const headerColumn = column;
+  const bodyColumn = column && cn(column, "px-4");
 
   return (
     <div
