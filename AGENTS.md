@@ -92,13 +92,18 @@ registry/new-york/form/field-row.tsx                 FieldRow
 registry/new-york/form/app-form.tsx                  useAppForm + the TanStack-bound fields
 registry/new-york/form/multi-select-field.tsx        MultiSelectField
 registry/new-york/form/date-field.tsx                DateField, DateRangeField
+registry/new-york/form/color-field.tsx               ColorField
+registry/new-york/form/radio-group-field.tsx         RadioGroupField
+registry/new-york/form/password-field.tsx            PasswordField
 registry/new-york/control/action-button.tsx          ActionButton
 registry/new-york/control/confirm-button.tsx         ConfirmButton
 registry/new-york/control/multi-select.tsx           MultiSelect + its two helpers
 registry/new-york/control/date-picker.tsx            DatePicker, DateRangePicker
+registry/new-york/control/color-picker.tsx           ColorPicker + its two helpers
+registry/new-york/control/password-input.tsx         PasswordInput
 registry/new-york/lib/readable-text-color.ts         readableTextColor
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        24 items: 16 components, a lib, two re-published
+registry.json                                        29 items: 21 components, a lib, two re-published
                                                      primitives, `layout`, `form`, `control`,
                                                      `primitive`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
@@ -168,7 +173,8 @@ The split to preserve is `auto-cal`'s, and it is now in the registry as two item
 `@cubeui/form-field` is presentational: it takes `error` as a node and asks nothing about where
 it came from. `@cubeui/app-form` is the binding — the contexts, `useAppForm`, and `InputField`, `NumberField`,
 `TextareaField`, `SelectField`, `CheckboxField`, `SwitchField` and `SubmitButton`, each reading
-the store and handing `FormField` a string. `@cubeui/multi-select-field` and `@cubeui/date-field`
+the store and handing `FormField` a string. `@cubeui/multi-select-field`, `@cubeui/date-field`,
+`@cubeui/color-field`, `@cubeui/radio-group-field` and `@cubeui/password-field`
 are the same layer in their own files, for the weight of what they import. Keep new work on the right side of that line: a
 component that needs the form store goes in `app-form.tsx`, and one that only needs to be told
 goes below it. Presentational is what makes each bound field fifteen lines instead of a fork, and
@@ -186,6 +192,13 @@ takes the value type the control writes, so `<NumberField name="title">` over a 
 is not a `range` prop on `DateField` — rule 2 is about props that only change how something
 looks, and neither of these does. A prop cannot narrow `name`, because the constraint on `name`
 is fixed before the props are read.
+
+**`FormField` can name a group as well as a control.** `asGroup` swaps the `<label htmlFor>` for
+a `FieldTitle` plus an `aria-labelledby` on the control. It exists because HTML will not let a
+`<label>` name a `<div role="radiogroup">` — the browser drops the association silently, so the
+default wiring produces a field that looks wired in the source and is not. Any grouped control
+needs it: a radio group, a segmented control, a swatch grid used as the field itself.
+`RadioGroupField` is the one that forced it and is currently the only user.
 
 ## Code style
 
@@ -258,3 +271,18 @@ Recorded so the next pass does not re-derive them:
   `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project bar:
   cubicecho has 4 `<dl>` files and they are all in one app.
 - **`FormButtons`**. Too bound to private project 1's `isNew`/`isDeleted`/restore vocabulary to port.
+- **`SliderField` / a slider control.** Asked for and not built, and the grep that suggested it
+  was wrong. Of the eight files matching `<Slider`, three are `rc-slider` — a different library
+  with a `Slider.Handle`/`Slider.Range` compound API — three more are a theme demo and a story,
+  and exactly one is a real shadcn `Slider`: private project 1's `ut-ui/icon/icon-picker.tsx`, unbound,
+  in one project. One call site in one project fails rule 1 twice over. There is also a
+  blocker worth writing down: Radix names a thumb only when there are two or more of them
+  (`getLabel` returns `undefined` for a single thumb), and shadcn's `Slider` renders its thumbs
+  itself and forwards nothing to them — so a single-thumb shadcn slider has an unnamed
+  `role="slider"`, which axe reports. Naming it would mean redrawing the primitive, which is
+  rule 3. Fix it at the call site with a patched local `slider.tsx` if it ever matters.
+- **`RadioGroupField` was built on the shell, not on the evidence.** All 20 `<RadioGroup` uses
+  are private project 1's `theme-demo/kitchen-sink.tsx`, `theme-demo/forms-interactions.tsx`, its story
+  and the primitive itself; raw `type="radio"` appears once, in kanban's `theme-toggle.tsx`.
+  It ships because `asGroup` had to be built anyway and this is what proves it works. Do not cite
+  it as precedent for skipping rule 1.

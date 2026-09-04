@@ -7,7 +7,9 @@
     "@cubeui/action-button",
     "@cubeui/confirm-button",
     "@cubeui/multi-select",
-    "@cubeui/date-picker"
+    "@cubeui/date-picker",
+    "@cubeui/color-picker",
+    "@cubeui/password-input"
   ],
   "files": [],
   "type": "registry:component"

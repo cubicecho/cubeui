@@ -8,6 +8,7 @@ import {
   FieldDescription,
   FieldError,
   FieldLabel,
+  FieldTitle,
 } from "@/registry/new-york/ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "@/registry/new-york/ui/popover";
 import { Skeleton } from "@/registry/new-york/ui/skeleton";
@@ -31,6 +32,8 @@ const LOADING_BOX = {
  */
 type ControlProps = {
   id: string;
+  /** Only ever set under {@link FormFieldProps.asGroup} — otherwise the `<label>` does this job. */
+  "aria-labelledby": string | undefined;
   "aria-describedby": string | undefined;
   "aria-invalid": true | undefined;
   "aria-required": true | undefined;
@@ -140,6 +143,34 @@ type FormFieldProps = {
    */
   htmlFor?: string;
   /**
+   * Whether the control is a *group* of controls rather than one.
+   *
+   * A `RadioGroup` is a `<div role="radiogroup">`, a swatch grid is a row of buttons, a
+   * segmented control is a set of toggles. None of them is labellable, so the `<label htmlFor>`
+   * this shell draws by default points at an element the HTML spec says a label cannot name,
+   * and the browser silently drops the association — a `for` that reads as wired and is not,
+   * which is the exact failure the rest of this component exists to stop.
+   *
+   * On, the label is drawn as a `FieldTitle` — the same type, the same row, no `<label>` — and
+   * the control is handed an `aria-labelledby` pointing at it instead of an `htmlFor` pointing
+   * back. Everything else is unchanged: the description and the error still reach the group
+   * through `aria-describedby`, which is valid on any element, and `required` still marks it.
+   *
+   * It needs the function form of `control`, because the name has to land on the element that
+   * carries the `role`:
+   *
+   * ```tsx
+   * <FormField
+   *   asGroup
+   *   label="Priority"
+   *   control={(props) => (
+   *     <RadioGroup {...props} value={value} onValueChange={onValueChange}>…</RadioGroup>
+   *   )}
+   * />
+   * ```
+   */
+  asGroup?: boolean;
+  /**
    * `horizontal` puts the control first and the label beside it, for the controls whose label is
    * part of the hit target: a checkbox, a switch. Stacked, a 16px box sits on a line of its own
    * above its own caption, which is the shape every app that hand-wrote one worked around
@@ -190,6 +221,13 @@ type FormFieldProps = {
  * visible copy. `aria-describedby` points at the same node in both placements, which is what
  * makes the choice purely a layout one.
  *
+ * **A group of controls is still one field.** `asGroup` covers the controls that are not one
+ * element — a radio group, a swatch grid, a segmented control. HTML will not let a `<label>` name
+ * any of them, so the default wiring produces a `for` that resolves to nothing and does so
+ * silently; on, the label becomes a `FieldTitle` and the group is named by `aria-labelledby`
+ * instead. Nothing else about the field moves, which is the point: the same label row, the same
+ * asterisk, the same description and error rail, and the same `error` node.
+ *
  * It stays presentational, and that is load-bearing. Every project installing this runs TanStack
  * Form, but the binding belongs one layer up — `auto-cal`'s `InputField`, `TextAreaField` and
  * `SelectField` each read `useFieldContext()`, work out whether the field has been touched yet,
@@ -210,6 +248,7 @@ export function FormField({
   action,
   loading = false,
   htmlFor,
+  asGroup = false,
   orientation = "vertical",
   className,
   labelClassName,
@@ -236,10 +275,14 @@ export function FormField({
   // at the wrong element the three of them still read as one field in the DOM.
   const descriptionId = description ? `${controlId}-description` : undefined;
   const errorId = shownError ? `${controlId}-error` : undefined;
+  // Only minted in group mode: outside it the `<label htmlFor>` is the association, and a second
+  // one pointing the other way is two names for one control.
+  const labelId = asGroup && label ? `${controlId}-label` : undefined;
 
   const wired = element
     ? cloneElement(element, {
         id: controlId,
+        "aria-labelledby": element.props["aria-labelledby"] ?? labelId,
         // Appended, not replaced: a control already described by something outside this field —
         // a shared unit hint, a password policy — keeps it and gains these.
         "aria-describedby":
@@ -253,6 +296,7 @@ export function FormField({
     : renderControl
       ? renderControl({
           id: controlId,
+          "aria-labelledby": labelId,
           "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
           "aria-invalid": shownError ? true : undefined,
           "aria-required": required || undefined,
@@ -269,31 +313,35 @@ export function FormField({
     wired
   );
 
-  const labelNode = label ? (
+  // One child, so `FieldLabel`'s own `gap-2` — which is there for icons — is not spent between a
+  // word and its asterisk.
+  const labelText = required ? (
+    <span className="min-w-0">
+      {label}
+      <span data-slot="form-field-required" aria-hidden="true" className="ml-0.5 text-destructive">
+        *
+      </span>
+    </span>
+  ) : (
+    label
+  );
+
+  // `FieldTitle` in group mode: the same type in the same place, drawn as a `<div>`, because the
+  // element it names is one a `<label>` cannot name. Its `id` is what the group points back at.
+  const labelNode = !label ? null : asGroup ? (
+    <FieldTitle id={labelId} className={labelClassName}>
+      {labelText}
+    </FieldTitle>
+  ) : (
     <FieldLabel
       // No control to point at while one is being drawn for. A `for` naming an element that is
       // not there is worse than no `for`: it reads as wired and is not.
       htmlFor={loading ? undefined : controlId}
       className={labelClassName}
     >
-      {required ? (
-        // One child, so `FieldLabel`'s own `gap-2` — which is there for icons — is not spent
-        // between a word and its asterisk.
-        <span className="min-w-0">
-          {label}
-          <span
-            data-slot="form-field-required"
-            aria-hidden="true"
-            className="ml-0.5 text-destructive"
-          >
-            *
-          </span>
-        </span>
-      ) : (
-        label
-      )}
+      {labelText}
     </FieldLabel>
-  ) : null;
+  );
 
   // Beside the label rather than inside it: `FieldLabel` renders a real `<label>`, and a button
   // nested in one is a button whose click the label also claims.

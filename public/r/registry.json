@@ -167,6 +167,45 @@
       ]
     },
     {
+      "name": "color-field",
+      "type": "registry:component",
+      "title": "Color Field",
+      "description": "A colour picker as one line, over a field the compiler checked holds a string.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/color-picker"],
+      "files": [
+        {
+          "path": "registry/new-york/form/color-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "radio-group-field",
+      "type": "registry:component",
+      "title": "Radio Group Field",
+      "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.",
+      "registryDependencies": ["radio-group", "field", "@cubeui/app-form", "@cubeui/form-field"],
+      "files": [
+        {
+          "path": "registry/new-york/form/radio-group-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "password-field",
+      "type": "registry:component",
+      "title": "Password Field",
+      "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
+      "files": [
+        {
+          "path": "registry/new-york/form/password-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "action-button",
       "type": "registry:component",
       "title": "Action Button",
@@ -220,6 +259,32 @@
       "files": [
         {
           "path": "registry/new-york/control/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:component",
+      "title": "Color Picker",
+      "description": "A colour from a palette, the OS picker or a hex box, with the tick on the chosen swatch drawn in an ink that can be read on it.",
+      "registryDependencies": ["button", "input", "popover", "@cubeui/readable-text-color"],
+      "files": [
+        {
+          "path": "registry/new-york/control/color-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form.",
+      "registryDependencies": ["input"],
+      "files": [
+        {
+          "path": "registry/new-york/control/password-input.tsx",
           "type": "registry:component"
         }
       ]
@@ -287,7 +352,10 @@
         "@cubeui/field-row",
         "@cubeui/app-form",
         "@cubeui/multi-select-field",
-        "@cubeui/date-field"
+        "@cubeui/date-field",
+        "@cubeui/color-field",
+        "@cubeui/radio-group-field",
+        "@cubeui/password-field"
       ],
       "files": []
     },
@@ -300,7 +368,9 @@
         "@cubeui/action-button",
         "@cubeui/confirm-button",
         "@cubeui/multi-select",
-        "@cubeui/date-picker"
+        "@cubeui/date-picker",
+        "@cubeui/color-picker",
+        "@cubeui/password-input"
       ],
       "files": []
     },

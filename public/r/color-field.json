@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "color-field",
+  "title": "Color Field",
+  "description": "A colour picker as one line, over a field the compiler checked holds a string.",
+  "registryDependencies": [
+    "@cubeui/app-form",
+    "@cubeui/form-field",
+    "@cubeui/color-picker"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/form/color-field.tsx",
+      "content": "import type { ComponentProps } from \"react\";\nimport { ColorPicker } from \"@/registry/new-york/control/color-picker\";\nimport {\n  bindToForm,\n  type FieldProps,\n  splitProps,\n  useFieldContext,\n  useFieldError,\n} from \"@/registry/new-york/form/app-form\";\nimport { FormField } from \"@/registry/new-york/form/form-field\";\n\ntype ColorFieldProps = FieldProps &\n  Omit<\n    ComponentProps<typeof ColorPicker>,\n    \"id\" | \"value\" | \"onValueChange\" | \"aria-describedby\" | \"aria-invalid\" | \"aria-required\"\n  >;\n\nfunction BoundColorField(props: ColorFieldProps) {\n  const [fieldProps, control] = splitProps(props);\n  const field = useFieldContext<string | null>();\n  const error = useFieldError();\n\n  return (\n    <FormField\n      {...fieldProps}\n      error={error}\n      // The function form: the picker's root is a `Popover`, which draws no DOM of its own, so a\n      // clone would hand the id to nothing.\n      control={(wired) => (\n        <ColorPicker\n          {...control}\n          {...wired}\n          value={field.state.value ?? \"\"}\n          onValueChange={(next) => {\n            field.handleChange(next);\n            // Choosing is the interaction. Focus leaves for the portal and comes back, so there\n            // is no blur here that means \"done\" — the same reason `MultiSelectField` says so.\n            field.handleBlur();\n          }}\n        />\n      )}\n    />\n  );\n}\n\n/**\n * A colour, as one line, over a field holding a hex string.\n *\n * ```tsx\n * <ColorField form={form} name=\"color\" label=\"Colour\" swatches={ACTIVITY_COLORS} />\n * ```\n *\n * Its own file rather than another export from `app-form`, so a form of plain inputs does not\n * pull in the picker. See {@link ColorPicker} for what the control fixes.\n */\nexport const ColorField = bindToForm<ColorFieldProps, string>(BoundColorField, \"ColorField\");\n\nexport {\n  COLOR_SWATCHES,\n  ColorPicker,\n  isHexColor,\n  normalizeHex,\n} from \"@/registry/new-york/control/color-picker\";\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

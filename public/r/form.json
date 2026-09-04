@@ -8,7 +8,10 @@
     "@cubeui/field-row",
     "@cubeui/app-form",
     "@cubeui/multi-select-field",
-    "@cubeui/date-field"
+    "@cubeui/date-field",
+    "@cubeui/color-field",
+    "@cubeui/radio-group-field",
+    "@cubeui/password-field"
   ],
   "files": [],
   "type": "registry:component"

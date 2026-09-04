@@ -38,6 +38,7 @@ const FIELD_KEYS = new Set<string>([
   "action",
   "loading",
   "htmlFor",
+  "asGroup",
   "orientation",
   "className",
   "labelClassName",
