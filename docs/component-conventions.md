@@ -10,7 +10,7 @@ body is not an exception: it is `content`, never `children`. No cubeui shell tak
 
 ```tsx
 <CardLayout
-  title="Vendors"
+  title="Workspaces"
   action={<AddButton />}
   content={rows}
   footerActions={<SaveButton />}

@@ -25,7 +25,10 @@ runtime dependency on this package.
 | `@cubeui/header-content-footer` | The chassis: `HeaderContentFooter` and the `StickyHeaderContentFooter` preset |
 | `@cubeui/card-layout` | `CardLayout` — icon, title, description, header action, body, split footer |
 | `@cubeui/dialog-layout` | `DialogLayout` — a dialog whose body scrolls under a header that does not |
-| `@cubeui/layout` | All three in one install |
+| `@cubeui/page-header` | `PageHeader` — trail, title, description, actions, and the control row |
+| `@cubeui/split-pane` | `SplitPane` — a fixed rail beside a body, collapsing at a breakpoint |
+| `@cubeui/form-field` | `FormField` — a label wired to its control, a description, an announced error, a skeleton |
+| `@cubeui/layout` | All five layout items in one install |
 | `@cubeui/skill` | The agent skill, so an agent in a consuming project uses them correctly |
 
 ## Every slot is a prop, including the body
@@ -36,7 +39,7 @@ are props:
 ```tsx
 <StickyHeaderContentFooter
   width="page"
-  header={<PageHeader title="Vendors" />}
+  header={<PageHeader title="Workspaces" />}
   content={<DataTable columns={columns} data={rows} />}
   footer={<Pagination page={page} onPageChange={setPage} />}
 />
@@ -49,6 +52,30 @@ keeps a call site to a single self-closing element whose props read as a list of
 makes an absent body as visible as an absent header — a prop that is not there, rather than the
 absence of a nesting level. It also removes the "does this one take `content` or children?"
 question that a mixed convention forces on every call site.
+
+## The forms assume TanStack Form
+
+Every project installing these runs [TanStack Form](https://tanstack.com/form) —
+`@tanstack/react-form`, through a `useAppForm` hook and `createFormHookContexts`, the way
+`auto-cal` does. That is an assumption, deliberately, and it is the difference between a form
+component and a form-shaped one: a shell hedging across react-hook-form, TanStack and a bare
+`useState` can only take strings and nodes, so every call site still writes out the same
+"pull the error off the field, decide whether it has been touched yet, pass it down" three lines
+that were the duplication in the first place.
+
+`FormField` itself stays presentational — it takes `error` as a node and asks nothing about where
+it came from — because that is what lets a TanStack-bound wrapper be built *on* it rather than
+beside it, which is exactly `auto-cal`'s split:
+
+```tsx
+<form.AppField name="title">
+  {(field) => <field.InputField label="Title" placeholder="What needs to be done?" />}
+</form.AppField>
+```
+
+`InputField` reads `field.state.meta.errors` and whether the field has been touched, and hands
+`FormField` a string. Do not reach for a different form library in a project using these; a
+second one is a second set of these wrappers.
 
 ## Working on it
 

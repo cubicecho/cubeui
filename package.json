@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build",
     "test": "vitest run"
   },

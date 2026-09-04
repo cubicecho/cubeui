@@ -17,8 +17,8 @@ type Story = StoryObj<typeof meta>;
 
 const Header = () => (
   <div className="border-b px-4 py-3">
-    <h1 className="font-semibold text-lg">Vendors</h1>
-    <p className="text-muted-foreground text-sm">Suppliers inventory is purchased from.</p>
+    <h1 className="font-semibold text-lg">Workspaces</h1>
+    <p className="text-muted-foreground text-sm">Each one exposes the servers you choose.</p>
   </div>
 );
 

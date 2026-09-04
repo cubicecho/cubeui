@@ -38,12 +38,12 @@ is usually the thing the request returned.
   width="page"
   header={
     <PageHeader
-      title="Vendors"
-      description="Suppliers inventory is purchased from."
+      title="Workspaces"
+      description="Each one exposes the servers you choose."
       action={
         <>
           <Button size="sm" variant="outline"><Download /> Export</Button>
-          <Button size="sm"><Plus /> New vendor</Button>
+          <Button size="sm"><Plus /> New workspace</Button>
         </>
       }
       content={<SearchInput value={query} onChange={setQuery} />}
@@ -75,7 +75,7 @@ is usually the thing the request returned.
   name.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
-  anything already under a page title passes `level={2}`. Do not pass `title={<h1>Vendors</h1>}`
+  anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
   and do not restyle the title — the level carries the size, which is the whole point of it.
 
 - **`loading` stands in for the title**, at the title's exact height, so the page below does not
@@ -84,9 +84,9 @@ is usually the thing the request returned.
 
   ```tsx
   <PageHeader
-    breadcrumbs={<Link to="/vendors">Vendors</Link>}
+    breadcrumbs={<Link to="/workspaces">Workspaces</Link>}
     loading={isPending}
-    title={vendor?.name}
+    title={workspace?.name}
     action={<EditButton />}
   />
   ```

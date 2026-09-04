@@ -35,8 +35,25 @@ Read this before adding anything:
 2. **A variant prop is not a component.** When a shell needs a fourth boolean to fit a screen,
    the screen wanted a different shell. Adding `compact`, `bare`, `variant="alt"` to make one
    more call site fit is how a library becomes a worse version of the primitive underneath.
-3. **Do not wrap what shadcn already ships.** Re-exporting `Card` with a `cn` around it adds a
-   file and removes nothing. The shell exists to answer "where does this node go", once.
+3. **Do not wrap — or redraw — what shadcn already ships.** Re-exporting `Card` with a `cn`
+   around it adds a file and removes nothing. The shell exists to answer "where does this node
+   go", once.
+
+   Wrapping is the obvious version of this and it is not the one that happens. The one that
+   happens is *redrawing*: writing `<p className="text-muted-foreground text-sm">` for a field's
+   description when `FieldDescription` is one `npx shadcn add field` away, and now the registry
+   owns a second set of type scales to keep in step with a first. `FormField` shipped that way
+   and was rewritten to compose `Field`, `FieldLabel`, `FieldContent`, `FieldDescription` and
+   `FieldError` — which also handed it `orientation` and the horizontal arrangement for free.
+
+   **So check the index before you write markup:** `curl -s https://ui.shadcn.com/r/index.json`.
+   As of this writing it has 63 items, and the ones a layout or form shell is most likely to
+   redraw by accident are `field`, `empty`, `item`, `input-group`, `button-group`, `spinner`,
+   `breadcrumb` and `separator`. If a primitive covers the *drawing*, install it and add the
+   *wiring* — that is where the duplication actually was.
+
+   The converse holds too: if a primitive covers the whole job, there is no component to write.
+   `SplitPane` is not resizable partly because dragging is `resizable`, which shadcn ships.
 4. **Compose, do not re-derive.** `HeaderContentFooter` is the only implementation of "chrome
    that stays, a middle that moves". `DialogLayout` composes it. A shell that reimplements a
    shape another shell already owns is the exact bug this registry is against.
@@ -53,20 +70,32 @@ Early, but scaffolded and installable. What exists today:
 registry/new-york/layout/header-content-footer.tsx   HeaderContentFooter, StickyHeaderContentFooter
 registry/new-york/layout/card-layout.tsx             CardLayout
 registry/new-york/layout/dialog-layout.tsx           DialogLayout
+registry/new-york/layout/page-header.tsx             PageHeader
+registry/new-york/layout/split-pane.tsx              SplitPane
+registry/new-york/form/form-field.tsx                FormField
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        5 items: the three shells, a `layout` bundle, `skill`
+registry.json                                        8 items: the six shells, a `layout` bundle, `skill`
 components.json                                      aliases point at `@/registry/new-york`
 preview/                                             Vite demo page, `npm run dev`
+stories/                                             Storybook, and the tests — every story is one
 docs/component-conventions.md                        authoring rules, and the open questions
 .claude/skills/cubeui/SKILL.md                       the usage skill, shipped as a registry item
 ```
+
+`registry/new-york/ui/` is not ours. Every file in it arrived from `npx shadcn add` and is
+overwritten by the next one, so Biome's linter is switched off for that path in `biome.json`
+(the formatter stays on, so a diff of upstream's file is a diff of upstream's file). Fixing
+`noArrayIndexKey` in `field.tsx` would mean fixing it again on the next upgrade, forever.
 
 Sources import each other as `@/registry/new-york/...`; the CLI rewrites those against the
 consuming project's own aliases on install. This is verified, not assumed — see open question 4
 in `docs/component-conventions.md`.
 
-Still unsettled: the **form components**, the user's other half of the first pass, and open
-questions 1, 3 and 5 in the conventions doc. Do not answer those unilaterally in code.
+Still unsettled: whether the form half needs anything beyond `FormField` — `FormDialog` was
+written and then removed, because a form in a dialog is `DialogLayout` with a `<form>` in its
+`content` and the shell around that was carrying a `useState` and two booleans to save nobody
+four lines. Also open questions 1, 3 and 5 in the conventions doc. Do not answer those
+unilaterally in code.
 
 ## Stack
 
@@ -78,7 +107,28 @@ questions 1, 3 and 5 in the conventions doc. Do not answer those unilaterally in
 - **Vite** for the preview site (`npm run dev`)
 
 Registry sources import `cn`, shadcn primitives, react, lucide, and other cubeui items — nothing
-else. Anything further is a dependency every consuming project has to be told about.
+else. Anything further is a dependency every consuming project has to be told about. The one
+sanctioned exception is `@tanstack/react-form`, and only in a form item that binds to it.
+
+## The forms assume TanStack Form
+
+**Every project these components are installed into runs [TanStack Form](https://tanstack.com/form).**
+Assume it. `auto-cal` is the reference — `createFormHookContexts`, a `useAppForm` hook, and
+`<form.AppField name="title">{(field) => <field.InputField label="Title" />}</form.AppField>` at
+the call site — and its `client/src/components/ui/form.tsx` is the file to read before adding
+anything here.
+
+This is a decision, not an observation, and it is the one that lets a form component be worth
+installing. A shell hedging across react-hook-form, TanStack and a bare `useState` can only
+accept strings and nodes, so every call site keeps writing the three lines that pull the error
+off the field, decide whether it has been touched yet, and pass it down — which is the
+duplication. Do not add a prop, a branch or a doc sentence accommodating another form library.
+
+The split to preserve is `auto-cal`'s. `FormField` is presentational: it takes `error` as a node
+and asks nothing about where it came from. The binding is a thin layer *on* it — `InputField`,
+`TextAreaField`, `SelectField`, each reading `useFieldContext()` and handing `FormField` a
+string — rather than a second component beside it. Presentational is what makes that layer three
+lines instead of a fork.
 
 ## Code style
 

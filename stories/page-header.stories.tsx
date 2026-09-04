@@ -21,18 +21,18 @@ const Actions = () => (
       <Download /> Export
     </Button>
     <Button size="sm">
-      <Plus /> New vendor
+      <Plus /> New workspace
     </Button>
   </>
 );
 
-const Search = () => <Input aria-label="Search vendors" placeholder="Search vendors" />;
+const Search = () => <Input aria-label="Search workspaces" placeholder="Search workspaces" />;
 
 const Rows = ({ count = 6 }: { count?: number }) => (
   <ul className="divide-y">
     {Array.from({ length: count }, (_, i) => i + 1).map((n) => (
       <li key={n} className="py-3 text-sm">
-        Vendor {n}
+        Workspace {n}
       </li>
     ))}
   </ul>
@@ -40,8 +40,8 @@ const Rows = ({ count = 6 }: { count?: number }) => (
 
 export const Default: Story = {
   args: {
-    title: "Vendors",
-    description: "Suppliers inventory is purchased from.",
+    title: "Workspaces",
+    description: "Each one exposes the servers you choose.",
     action: <Actions />,
     content: <Search />,
   },
@@ -49,7 +49,7 @@ export const Default: Story = {
 
 /** Rule 5 — an absent slot draws nothing. No trail, no description, no action, no control row. */
 export const TitleOnly: Story = {
-  args: { title: "Vendors" },
+  args: { title: "Workspaces" },
   play: async ({ canvasElement }) => {
     for (const slot of ["ph-breadcrumbs", "ph-description", "ph-action", "ph-content"]) {
       expect(canvasElement.querySelector(`[data-slot=${slot}]`)).toBeNull();
@@ -65,7 +65,7 @@ export const TitleOnly: Story = {
 export const WithIcon: Story = {
   args: {
     icon: <Users />,
-    title: "Vendors",
+    title: "Workspaces",
     description: "The icon arrives unsized and leaves at the level's size.",
   },
   play: async ({ canvasElement }) => {
@@ -100,15 +100,15 @@ export const WithBreadcrumbs: Story = {
   args: {
     breadcrumbs: (
       <nav aria-label="Breadcrumb" className="text-muted-foreground text-sm">
-        <a className="underline underline-offset-4" href="#vendors">
-          Vendors
+        <a className="underline underline-offset-4" href="#workspaces">
+          Workspaces
         </a>
         <span aria-hidden> / </span>
-        <span>Acme Supply</span>
+        <span>Acme Staging</span>
       </nav>
     ),
-    title: "Acme Supply",
-    description: "Vendor since 2019.",
+    title: "Acme Staging",
+    description: "Six servers, two members.",
     action: <Actions />,
   },
   play: async ({ canvasElement }) => {
@@ -140,8 +140,8 @@ export const AlignsWithTheBodyOfAPageChassis: StoryObj<typeof PageHeader> = {
         width="page"
         header={
           <PageHeader
-            title="Vendors"
-            description="Suppliers inventory is purchased from."
+            title="Workspaces"
+            description="Each one exposes the servers you choose."
             action={<Actions />}
           />
         }
@@ -178,9 +178,9 @@ export const AlignsWithTheBodyOfAPageChassis: StoryObj<typeof PageHeader> = {
 export const TheRuleFollowsTheControlRow: StoryObj<typeof PageHeader> = {
   render: () => (
     <div>
-      <PageHeader title="Edit vendor" description="Nothing between this and the first field." />
+      <PageHeader title="Edit workspace" description="Nothing between this and the first field." />
       <PageHeader
-        title="Vendors"
+        title="Workspaces"
         description="A search row already divides them."
         content={<Search />}
       />
@@ -208,14 +208,14 @@ export const Loading: StoryObj<typeof PageHeader> = {
     <div>
       <PageHeader
         loading
-        title="Acme Supply"
-        description="Vendor since 2019."
+        title="Acme Staging"
+        description="Six servers, two members."
         action={<Actions />}
         content={<Search />}
       />
       <PageHeader
-        title="Acme Supply"
-        description="Vendor since 2019."
+        title="Acme Staging"
+        description="Six servers, two members."
         action={<Actions />}
         content={<Search />}
       />
@@ -255,8 +255,8 @@ export const NarrowContainer: StoryObj<typeof PageHeader> = {
   render: () => (
     <div className="w-[360px] border">
       <PageHeader
-        title="Preferred vendors and their contract renewal dates"
-        description="Suppliers inventory is purchased from."
+        title="Workspaces and every server each one exposes"
+        description="Each one exposes the servers you choose."
         action={<Actions />}
         content={<Search />}
       />

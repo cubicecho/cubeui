@@ -47,7 +47,7 @@ type PageHeaderProps = {
    * toolbar is a row of nodes the caller can place without help. It is also the heading
    * assistive technology navigates the page by.
    *
-   * A node, not a string: a title composed from a verb and an entity ("Edit Vendor") is composed
+   * A node, not a string: a title composed from a verb and an entity ("Edit Workspace") is composed
    * by the caller. The prior art derived that inside the component from `useLocation()`, which
    * is routing in a shell — rule 8 — and it renders "Edit undefined" when the guess is wrong.
    */
