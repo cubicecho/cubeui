@@ -245,8 +245,17 @@ packages; a fourth category means the component is doing too much.
    "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
    ```
 
-   The host is decided; publishing `public/r` to it from CI is not built yet, so today the URL is
-   the agreed target rather than a live one.
+   Live: `.github/workflows/pages.yml` builds and publishes on every push to `main`, and the
+   deploy refuses to ship a tree missing anything `registry.json` names. Verified end to end by
+   installing three items into a project scaffolded by `shadcn init --template vite`, which
+   pulled two more cubeui items and five upstream primitives transitively and typechecked clean.
+
+   A project Pages site, so `vite.config.ts` sets `base: "/cubeui/"` and `public/r` rides along
+   under it. Note that upstream shadcn has since moved `cn` into an npm package — their
+   primitives import `from "cn"` and `lib/utils.ts` is now a shim that re-exports it. Our items
+   still import `@/lib/utils`, which `shadcn init` still creates, so this resolves. We do *not*
+   declare `utils` as a registryDependency: `shadcn add utils` prompts to overwrite an existing
+   file even under `--yes`, which would hang every install in CI.
 
 6. **What a slot is *for*, and what fills it.** Open, and the thing to nail down next.
 
