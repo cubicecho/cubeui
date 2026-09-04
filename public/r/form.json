@@ -1,0 +1,13 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form",
+  "title": "Form Set",
+  "description": "Every cubeui form component in one install, TanStack binding included.",
+  "registryDependencies": [
+    "@cubeui/form-field",
+    "@cubeui/field-row",
+    "@cubeui/app-form"
+  ],
+  "files": [],
+  "type": "registry:component"
+}

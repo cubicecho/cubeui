@@ -70,11 +70,46 @@
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
-      "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational — it binds to no form library.",
+      "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
       "registryDependencies": ["field", "skeleton"],
       "files": [
         {
           "path": "registry/new-york/form/form-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "field-row",
+      "type": "registry:component",
+      "title": "Field Row",
+      "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at.",
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/form/field-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "app-form",
+      "type": "registry:component",
+      "title": "App Form",
+      "description": "The TanStack Form binding: useAppForm, and field components that read the store and hand FormField a string \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField, SubmitButton.",
+      "dependencies": ["@tanstack/react-form"],
+      "registryDependencies": [
+        "button",
+        "checkbox",
+        "input",
+        "select",
+        "switch",
+        "textarea",
+        "@cubeui/form-field"
+      ],
+      "files": [
+        {
+          "path": "registry/new-york/form/app-form.tsx",
           "type": "registry:component"
         }
       ]
@@ -91,6 +126,14 @@
         "@cubeui/page-header",
         "@cubeui/split-pane"
       ],
+      "files": []
+    },
+    {
+      "name": "form",
+      "type": "registry:component",
+      "title": "Form Set",
+      "description": "Every cubeui form component in one install, TanStack binding included.",
+      "registryDependencies": ["@cubeui/form-field", "@cubeui/field-row", "@cubeui/app-form"],
       "files": []
     },
     {

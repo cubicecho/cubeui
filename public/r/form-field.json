@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "form-field",
   "title": "Form Field",
-  "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational — it binds to no form library.",
+  "description": "One field: a label wired to its control, a description, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
   "registryDependencies": [
     "field",
     "skeleton"

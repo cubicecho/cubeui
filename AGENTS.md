@@ -73,8 +73,10 @@ registry/new-york/layout/dialog-layout.tsx           DialogLayout
 registry/new-york/layout/page-header.tsx             PageHeader
 registry/new-york/layout/split-pane.tsx              SplitPane
 registry/new-york/form/form-field.tsx                FormField
+registry/new-york/form/field-row.tsx                 FieldRow
+registry/new-york/form/app-form.tsx                  useAppForm + the TanStack-bound fields
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        8 items: the six shells, a `layout` bundle, `skill`
+registry.json                                        11 items: 7 components, `layout`, `form`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
 preview/                                             Vite demo page, `npm run dev`
 stories/                                             Storybook, and the tests — every story is one
@@ -91,7 +93,8 @@ Sources import each other as `@/registry/new-york/...`; the CLI rewrites those a
 consuming project's own aliases on install. This is verified, not assumed — see open question 4
 in `docs/component-conventions.md`.
 
-Still unsettled: whether the form half needs anything beyond `FormField` — `FormDialog` was
+Still unsettled: whether the form half needs anything beyond `FormField`, `FieldRow` and the
+bound layer — `FormDialog` was
 written and then removed, because a form in a dialog is `DialogLayout` with a `<form>` in its
 `content` and the shell around that was carrying a `useState` and two booleans to save nobody
 four lines. Also open questions 1, 3 and 5 in the conventions doc. Do not answer those
@@ -124,11 +127,16 @@ accept strings and nodes, so every call site keeps writing the three lines that 
 off the field, decide whether it has been touched yet, and pass it down — which is the
 duplication. Do not add a prop, a branch or a doc sentence accommodating another form library.
 
-The split to preserve is `auto-cal`'s. `FormField` is presentational: it takes `error` as a node
-and asks nothing about where it came from. The binding is a thin layer *on* it — `InputField`,
-`TextAreaField`, `SelectField`, each reading `useFieldContext()` and handing `FormField` a
-string — rather than a second component beside it. Presentational is what makes that layer three
-lines instead of a fork.
+The split to preserve is `auto-cal`'s, and it is now in the registry as two items.
+`@cubeui/form-field` is presentational: it takes `error` as a node and asks nothing about where
+it came from. `@cubeui/app-form` is the binding — the contexts, `useAppForm`, and `InputField`,
+`TextareaField`, `SelectField`, `CheckboxField`, `SwitchField` and `SubmitButton`, each reading
+the store and handing `FormField` a string. Keep new work on the right side of that line: a
+component that needs the form store goes in `app-form.tsx`, and one that only needs to be told
+goes below it. Presentational is what makes each bound field fifteen lines instead of a fork, and
+it is what lets a field the binding does not cover yet be written by hand without leaving the set.
+
+`app-form.tsx` is the only file in the registry allowed to import `@tanstack/react-form`.
 
 ## Code style
 
