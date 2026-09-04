@@ -32,7 +32,7 @@ type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onClick"> &
  *
  * There are 22 hand-written `<AlertDialogContent>` blocks across these projects and four of them
  * are already this component, extracted independently — `kanban_server/.../confirm-button.tsx`,
- * `eunomia/.../confirm-delete.tsx`, `Ultrathin/.../ut-confirm.tsx`, and `philotes`, which wrote
+ * `eunomia/.../confirm-delete.tsx`, a private project's `confirm.tsx`, and `philotes`, which wrote
  * it inline twice. The other twelve are loose in route files. They disagree about the button
  * order, about whether the confirm is `variant="destructive"` or a `cn(buttonVariants(…))`
  * (`AlertDialogAction` takes `variant` now, so the second spelling is only ever a leftover), and

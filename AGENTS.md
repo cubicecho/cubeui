@@ -1,7 +1,7 @@
 # AGENTS.md — cubeui
 
 A custom [shadcn registry](https://ui.shadcn.com/docs/registry) of layout and form shells for the
-cubicecho and simiancraft apps. Consumers install from it with the shadcn CLI:
+cubicecho apps and private project 1. Consumers install from it with the shadcn CLI:
 
 ```bash
 npx shadcn@latest add @cubeui/dialog-layout
@@ -31,7 +31,7 @@ Read this before adding anything:
 
 1. **Show the duplication first.** Name the call sites — file and line — that the component
    replaces. Three or more, in at least two projects, or it is premature. `git grep` across
-   `~/code/cubicecho/*` and `~/code/simiancraft/Ultrathin/app` is where the evidence is.
+   `~/code/cubicecho/*` and private project 1 is where the evidence is.
 2. **A variant prop is not a component.** When a shell needs a fourth boolean to fit a screen,
    the screen wanted a different shell. Adding `compact`, `bare`, `variant="alt"` to make one
    more call site fit is how a library becomes a worse version of the primitive underneath.
@@ -190,13 +190,13 @@ one:
 
 | Path | What is there |
 | --- | --- |
-| `~/code/simiancraft/Ultrathin/app/layouts/` | `header-content-footer`, `sticky-header-content-footer`, `split-pane` — the chassis this set is built on, and the best commentary on *why* a layout is a component |
+| private project 1, `app/layouts/` | `header-content-footer`, `sticky-header-content-footer`, `split-pane` — the chassis this set is built on, and the best commentary on *why* a layout is a component |
 | `~/code/cubicecho/ai_tools/kanban_server/web/components/` | `form-dialog`, `confirm-button`, `board-card` — a shell that already exists, and what it cost to not have one |
 | `~/code/cubicecho/ai_tools/mcp/mcp-router/app/src/components/` | `workspace-dialog`, `members-card`, `connect-card` |
 | `~/code/cubicecho/apps/eunomia/apps/web/src/components/` | `confirm-delete`, `rules/*-card`, `dashboard/stat-tiles` |
 | `~/code/cubicecho/apps/philotes/app/src/components/layouts/` | `section`, `header`, and `dashboard/widget` |
 | `~/code/cubicecho/ai_tools/task_server/web/components/app-shell.tsx` | `Page` — the same forty lines as kanban's, and the reason `PageLayout` exists |
-| `~/code/simiancraft/Ultrathin/app/components/ut-ui/` | the most mature version of this idea anywhere here: `fact-grid`, `list-page-header`, `field-section`, `tooltip-icon`, `ut-confirm` |
+| private project 1, `app/components/shared/` | the most mature version of this idea anywhere here: `fact-grid`, `list-page-header`, `field-section`, `tooltip-icon`, `confirm` |
 
 ## Surveyed and deliberately not built
 
@@ -204,7 +204,7 @@ Recorded so the next pass does not re-derive them:
 
 - **`AppShell`** (sidebar + header + main). Five apps hand-roll it — kanban, task_server,
   mcp-router, mcp-skills-manager, notes — and the two mcp apps are near-forks (their
-  `token-gate.tsx` differs by 4 lines out of 67). Not built: shadcn ships `sidebar`, Ultrathin
+  `token-gate.tsx` differs by 4 lines out of 67). Not built: shadcn ships `sidebar`, private project 1
   already uses it, and the answer is four `npx shadcn add sidebar` calls. The genuinely shared
   part between the mcp apps is auth, which is rule 5.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
@@ -213,7 +213,7 @@ Recorded so the next pass does not re-derive them:
   drawing. Revisit once a project has it — the leftover wiring may be one prop (`dim`) or none.
 - **`EmptyState`**. ~30 files hand-roll "no results". shadcn ships `empty`; `CardLayout`
   already has the slot. Install the primitive.
-- **`FactGrid`** (Ultrathin's is excellent — it replaced 10 hand-rolled `<dl>`s and 5 copies of a
+- **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5 copies of a
   `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project bar:
   cubicecho has 4 `<dl>` files and they are all in one app.
-- **`FormButtons`**. Too bound to Ultrathin's `isNew`/`isDeleted`/restore vocabulary to port.
+- **`FormButtons`**. Too bound to private project 1's `isNew`/`isDeleted`/restore vocabulary to port.
