@@ -86,13 +86,21 @@ registry/new-york/layout/dialog-layout.tsx           DialogLayout
 registry/new-york/layout/page-header.tsx             PageHeader
 registry/new-york/layout/split-pane.tsx              SplitPane
 registry/new-york/layout/page-layout.tsx             PageLayout
+registry/new-york/layout/section.tsx                 Section
 registry/new-york/form/form-field.tsx                FormField
 registry/new-york/form/field-row.tsx                 FieldRow
 registry/new-york/form/app-form.tsx                  useAppForm + the TanStack-bound fields
+registry/new-york/form/multi-select-field.tsx        MultiSelectField
+registry/new-york/form/date-field.tsx                DateField, DateRangeField
 registry/new-york/control/action-button.tsx          ActionButton
 registry/new-york/control/confirm-button.tsx         ConfirmButton
+registry/new-york/control/multi-select.tsx           MultiSelect + its two helpers
+registry/new-york/control/date-picker.tsx            DatePicker, DateRangePicker
+registry/new-york/lib/readable-text-color.ts         readableTextColor
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        15 items: 10 components, `layout`, `form`, `control`, `skill`
+registry.json                                        24 items: 16 components, a lib, two re-published
+                                                     primitives, `layout`, `form`, `control`,
+                                                     `primitive`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
 preview/                                             Vite demo page, `npm run dev`
 stories/                                             Storybook, and the tests — every story is one
@@ -112,7 +120,10 @@ in `docs/component-conventions.md`.
 `registry/new-york/control/` is the third folder. A control is not a shell — it holds its own
 open state and it draws a button — so rule 5 does not reach it, but rules 1 and 3 still do:
 `ActionButton` and `ConfirmButton` are there because 78 unlabelled icon buttons and 22
-hand-written confirm dialogs are, not because a set ought to have buttons in it.
+hand-written confirm dialogs are, not because a set ought to have buttons in it. `MultiSelect` and
+`DatePicker` join them on the same evidence: three multi-selects that are not the same shape, one
+of which is not keyboard-operable at all, and three date pickers that are one file copied twice
+and then drifted.
 
 Still unsettled: whether the form half needs anything beyond `FormField`, `FieldRow` and the
 bound layer — `FormDialog` was
@@ -134,6 +145,11 @@ Registry sources import `cn`, shadcn primitives, react, lucide, and other cubeui
 else. Anything further is a dependency every consuming project has to be told about. The one
 sanctioned exception is `@tanstack/react-form`, and only in a form item that binds to it.
 
+`cmdk`, `date-fns` and `react-day-picker` do not count against that rule: they are what
+shadcn's own `command` and `calendar` are written on, so they arrive with the primitive rather
+than because of us. They are still the reason `multi-select` and `date-picker` are separate
+registry items — a form of plain inputs installs `@cubeui/app-form` and pulls in none of them.
+
 ## The forms assume TanStack Form
 
 **Every project these components are installed into runs [TanStack Form](https://tanstack.com/form).**
@@ -150,14 +166,26 @@ duplication. Do not add a prop, a branch or a doc sentence accommodating another
 
 The split to preserve is `auto-cal`'s, and it is now in the registry as two items.
 `@cubeui/form-field` is presentational: it takes `error` as a node and asks nothing about where
-it came from. `@cubeui/app-form` is the binding — the contexts, `useAppForm`, and `InputField`,
+it came from. `@cubeui/app-form` is the binding — the contexts, `useAppForm`, and `InputField`, `NumberField`,
 `TextareaField`, `SelectField`, `CheckboxField`, `SwitchField` and `SubmitButton`, each reading
-the store and handing `FormField` a string. Keep new work on the right side of that line: a
+the store and handing `FormField` a string. `@cubeui/multi-select-field` and `@cubeui/date-field`
+are the same layer in their own files, for the weight of what they import. Keep new work on the right side of that line: a
 component that needs the form store goes in `app-form.tsx`, and one that only needs to be told
 goes below it. Presentational is what makes each bound field fifteen lines instead of a fork, and
 it is what lets a field the binding does not cover yet be written by hand without leaving the set.
 
-`app-form.tsx` is the only file in the registry allowed to import `@tanstack/react-form`.
+`app-form.tsx` is the only file in the registry allowed to import `@tanstack/react-form`. A field
+it does not hold is still bound through it: `bindToForm`, `splitProps` and `useFieldError` are
+exported for exactly that, so `date-field.tsx` needs no second copy of the render prop and no
+opinion about the form library.
+
+**A field's `name` is checked against the form's values, and against their type.** `bindToForm`
+takes the value type the control writes, so `<NumberField name="title">` over a string field and
+`<DateField name="window">` over a `DateRange` are both build errors. This is the reason
+`NumberField` is a component rather than a `type="number"` prop, and the reason `DateRangeField`
+is not a `range` prop on `DateField` — rule 2 is about props that only change how something
+looks, and neither of these does. A prop cannot narrow `name`, because the constraint on `name`
+is fixed before the props are read.
 
 ## Code style
 

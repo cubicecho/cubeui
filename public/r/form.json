@@ -6,7 +6,9 @@
   "registryDependencies": [
     "@cubeui/form-field",
     "@cubeui/field-row",
-    "@cubeui/app-form"
+    "@cubeui/app-form",
+    "@cubeui/multi-select-field",
+    "@cubeui/date-field"
   ],
   "files": [],
   "type": "registry:component"

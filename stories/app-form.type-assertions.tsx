@@ -9,6 +9,7 @@
 
 import {
   InputField,
+  NumberField,
   SelectField,
   SwitchField,
   useAppForm,
@@ -23,7 +24,7 @@ export function AppFormTypeAssertions() {
   return (
     <>
       <InputField form={form} name="title" label="Title" required placeholder="hi" />
-      <InputField form={form} name="count" type="number" label="Count" />
+      <NumberField form={form} name="count" label="Count" min={0} step={5} />
       <InputField form={form} name="nested.deep" label="Deep" />
       <SwitchField form={form} name="live" label="Live" />
       <SelectField form={form} name="kind" label="Kind" options={[{ label: "A", value: "a" }]} />
@@ -34,7 +35,7 @@ export function AppFormTypeAssertions() {
         description="From the schema."
         descriptionPlacement="popover"
       />
-      <InputField
+      <NumberField
         form={form}
         name="count"
         label="Validated"
@@ -54,6 +55,12 @@ export function AppFormTypeAssertions() {
       />
       {/* @ts-expect-error a name that is not on the form is a type error */}
       <InputField form={form} name="naem" label="Typo" />
+      {/* @ts-expect-error `count` is a number, so the string fields will not take it */}
+      <InputField form={form} name="count" label="Wrong type" />
+      {/* @ts-expect-error and `title` is a string, so the number field will not take it */}
+      <NumberField form={form} name="title" label="Wrong type" />
+      {/* @ts-expect-error a boolean field is not a select either */}
+      <SelectField form={form} name="live" label="Wrong type" options={[]} />
       {/* @ts-expect-error loadingClassName is a field prop; nonsense is not */}
       <InputField form={form} name="title" nonsenseProp="x" />
     </>

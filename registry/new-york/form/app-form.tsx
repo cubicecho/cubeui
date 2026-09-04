@@ -1,6 +1,7 @@
 import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
+import { useState } from "react";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
@@ -19,7 +20,7 @@ export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 
 /** Everything `FormField` draws, minus the two parts a bound field works out for itself. */
-type FieldProps = Omit<ComponentProps<typeof FormField>, "control" | "error">;
+export type FieldProps = Omit<ComponentProps<typeof FormField>, "control" | "error">;
 
 /**
  * The keys above, as values, so a call site can spread control props and field props into one
@@ -45,7 +46,13 @@ const FIELD_KEYS = new Set<string>([
   "loadingClassName",
 ]);
 
-function splitProps<T>(props: FieldProps & T): [FieldProps, T] {
+/**
+ * Splits one flat prop list into the half `FormField` draws and the half the control takes.
+ *
+ * Exported for the same reason {@link bindToForm} is: a field this registry does not ship — a
+ * colour picker, a currency box — should be written the way the ones here are.
+ */
+export function splitProps<T>(props: FieldProps & T): [FieldProps, T] {
   const field: Record<string, unknown> = {};
   const control: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(props)) {
@@ -76,7 +83,7 @@ function messageOf(error: unknown): string | undefined {
  * exactly why it belongs in one place: it is the thing each hand-written field decided
  * differently, and the reason two fields on one screen disagree about when they turn red.
  */
-function useFieldError(): string | undefined {
+export function useFieldError(): string | undefined {
   const field = useFieldContext();
   const errors = useStore(field.store, (state) => state.meta.errors);
   const isTouched = useStore(field.store, (state) => state.meta.isTouched);
@@ -89,10 +96,10 @@ function useFieldError(): string | undefined {
 type InputFieldProps = FieldProps &
   Omit<ComponentProps<typeof Input>, "id" | "value" | "onChange" | "onBlur">;
 
-/** A text input. `type="number"` writes a number back to the store, not a numeric string. */
+/** A text input. For numbers see {@link NumberField}, which keeps the store numeric. */
 function BoundInputField(props: InputFieldProps) {
   const [fieldProps, input] = splitProps(props);
-  const field = useFieldContext<string | number | null>();
+  const field = useFieldContext<string | null>();
   const error = useFieldError();
 
   return (
@@ -104,11 +111,73 @@ function BoundInputField(props: InputFieldProps) {
           {...input}
           value={field.state.value ?? ""}
           onBlur={field.handleBlur}
+          onChange={(event) => field.handleChange(event.target.value)}
+        />
+      }
+    />
+  );
+}
+
+/**
+ * What a number input's box says, as a number — or nothing, for empty and for the half-typed
+ * states a person passes through on the way to one.
+ *
+ * `""`, `"-"` and `"1e"` are all "not a number yet", not zero: coercing them would make the
+ * store say `0` while the box says `-`, and a required-field validator pass on an empty box.
+ */
+function parseNumber(text: string): number | null {
+  const trimmed = text.trim();
+  if (trimmed === "") return null;
+  const parsed = Number(trimmed);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+type NumberFieldProps = FieldProps &
+  Omit<ComponentProps<typeof Input>, "id" | "value" | "onChange" | "onBlur" | "type">;
+
+/**
+ * A number input whose store stays numeric.
+ *
+ * Two bugs live here, and both are in every hand-written copy across these projects. The first is
+ * that `event.target.value` is a string, so `type="number"` without a cast puts `"25"` in the
+ * store, and the row goes to the API as a string or gets `parseInt`ed at the call site by
+ * whoever remembered.
+ *
+ * The second only shows up under the fingers: coercing on every keystroke and rendering the
+ * result back makes `1.` unreachable — the store rounds it to `1`, React re-renders `"1"`, and
+ * the decimal point is eaten as it is typed. `4.05` cannot be entered at all. So what was typed
+ * is kept as a draft and shown while it still *means* the stored number; anything that replaces
+ * the value from outside wins, because then it no longer does.
+ */
+function BoundNumberField(props: NumberFieldProps) {
+  const [fieldProps, input] = splitProps(props);
+  const field = useFieldContext<number | null>();
+  const error = useFieldError();
+  const [draft, setDraft] = useState<string | undefined>(undefined);
+
+  const stored = field.state.value ?? null;
+  const value = draft !== undefined && parseNumber(draft) === stored ? draft : (stored ?? "");
+
+  return (
+    <FormField
+      {...fieldProps}
+      error={error}
+      control={
+        <Input
+          // `inputMode` is what gets a phone keypad; `type` is what gets the spinners and the
+          // browser's own numeric parsing. They are not the same knob and both are wanted.
+          inputMode="decimal"
+          {...input}
+          type="number"
+          value={value}
+          onBlur={() => {
+            // The draft has served its purpose once focus leaves: `1.` should settle to `1`.
+            setDraft(undefined);
+            field.handleBlur();
+          }}
           onChange={(event) => {
-            const { value } = event.target;
-            field.handleChange(
-              input.type === "number" ? (value === "" ? null : Number(value)) : value,
-            );
+            setDraft(event.target.value);
+            field.handleChange(parseNumber(event.target.value));
           }}
         />
       }
@@ -305,6 +374,7 @@ export const { useAppForm, withForm } = createFormHook({
   formContext,
   fieldComponents: {
     InputField: BoundInputField,
+    NumberField: BoundNumberField,
     TextareaField: BoundTextareaField,
     SelectField: BoundSelectField,
     CheckboxField: BoundCheckboxField,
@@ -361,6 +431,30 @@ type Validators<TValues, TName extends DeepKeys<TValues>> = {
   onSubmitAsync?: Validate<DeepValue<TValues, TName>>;
 };
 
+/**
+ * The names of the fields whose value is a `TValue` — the whole reason `NumberField` is a file
+ * and not a `type="number"` prop.
+ *
+ * Rule 2 says a variant prop is not a component, and it is right: a number input differs from a
+ * text input by one attribute. What it cannot do is change what `name` is allowed to be. A
+ * `<NumberField name="title">` on a string field is a control that writes `42` into a `string`
+ * and a form that submits the wrong type, and no prop can make the compiler notice — the
+ * constraint on `name` is fixed before the props are read. So the narrowing has to live in the
+ * component's own signature, which means the component has to be its own signature.
+ *
+ * `NonNullable` so a `string | null` column still counts as a string field; nearly every one of
+ * these forms is editing a row that can be null.
+ *
+ * With the default `unknown` this is every key, which is what the unnarrowed fields want.
+ */
+type NamesOfType<TValues, TValue> = {
+  [TName in DeepKeys<TValues>]: NonNullable<DeepValue<TValues, TName>> extends TValue
+    ? TName
+    : never;
+  // Intersected back so the result is provably a `DeepKeys`, which `Validators` requires.
+}[DeepKeys<TValues>] &
+  DeepKeys<TValues>;
+
 type FormBinding<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>> = {
   form: TForm;
   /** A key of the form's values. Checked: `naem` is a type error, not a field that stays empty. */
@@ -393,11 +487,18 @@ type ControlPropsOf<TProps> = Omit<TProps, "form" | "name">;
  *
  * The context is provided directly rather than by going through `form.AppField`, which is what
  * lets these work on a form that was never made with `useAppForm` at all.
+ *
+ * `TValue` narrows which fields the result will accept — see {@link NamesOfType}. It is exported
+ * so a control this registry does not ship can be bound the same way:
+ *
+ * ```tsx
+ * export const ColorField = bindToForm<ColorFieldProps, string>(BoundColorField, "ColorField");
+ * ```
  */
-function bindToForm<TProps extends object>(
+export function bindToForm<TProps extends object, TValue = unknown>(
   Bound: ComponentType<TProps>,
   displayName: string,
-): <TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>>(
+): <TForm extends BindableForm, TName extends NamesOfType<ValuesOf<TForm>, TValue>>(
   props: ControlPropsOf<TProps> & FormBinding<TForm, TName>,
 ) => ReactNode {
   function FormBoundField<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>>({
@@ -444,16 +545,34 @@ function bindToForm<TProps extends object>(
  * `type="number"` writes a number back to the store, not a numeric string. `name` is checked
  * against the form's values, so a renamed field breaks the build rather than going quiet.
  */
-export const InputField = bindToForm(BoundInputField, "InputField");
+export const InputField = bindToForm<InputFieldProps, string>(BoundInputField, "InputField");
+
+/**
+ * A number input, as one line — and only over a field that holds a number.
+ *
+ * ```tsx
+ * <NumberField form={form} name="minutes" label="Duration" min={5} step={5} />
+ * ```
+ *
+ * `<NumberField form={form} name="title">` over a string field is a type error, which is the
+ * half a `type="number"` prop could never give. Empty is `null`, not `0`.
+ */
+export const NumberField = bindToForm<NumberFieldProps, number>(BoundNumberField, "NumberField");
 
 /** A textarea, as one line. `rows` also sizes the loading skeleton. */
-export const TextareaField = bindToForm(BoundTextareaField, "TextareaField");
+export const TextareaField = bindToForm<TextareaFieldProps, string>(
+  BoundTextareaField,
+  "TextareaField",
+);
 
 /** A select, as one line. Takes its choices as `options`, not as children. */
-export const SelectField = bindToForm(BoundSelectField, "SelectField");
+export const SelectField = bindToForm<SelectFieldProps, string>(BoundSelectField, "SelectField");
 
 /** A checkbox and its caption, as one line. Horizontal, because a 16px box is not a row. */
-export const CheckboxField = bindToForm(BoundCheckboxField, "CheckboxField");
+export const CheckboxField = bindToForm<CheckboxFieldProps, boolean>(
+  BoundCheckboxField,
+  "CheckboxField",
+);
 
 /** A switch and its caption, as one line. */
-export const SwitchField = bindToForm(BoundSwitchField, "SwitchField");
+export const SwitchField = bindToForm<SwitchFieldProps, boolean>(BoundSwitchField, "SwitchField");

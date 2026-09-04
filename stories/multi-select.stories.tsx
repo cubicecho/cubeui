@@ -1,0 +1,258 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import {
+  isAddableOptionName,
+  MultiSelect,
+  type MultiSelectOption,
+  mergeMultiSelectOptions,
+} from "@/registry/new-york/control/multi-select";
+
+const TAGS: MultiSelectOption[] = [
+  { value: "backend", label: "Backend infrastructure" },
+  { value: "frontend", label: "Frontend" },
+  { value: "work", label: "Work", color: "#1d4ed8" },
+  { value: "workshop", label: "Workshop", color: "#fbbf24" },
+  { value: "urgent", label: "Urgent", color: "#dc2626" },
+  { value: "someday", label: "Someday", disabled: true },
+];
+
+function Harness({
+  options = TAGS,
+  initial = [],
+  ...props
+}: Partial<React.ComponentProps<typeof MultiSelect>> & {
+  options?: MultiSelectOption[];
+  initial?: string[];
+}) {
+  const [value, setValue] = useState<string[]>(initial);
+  const [extra, setExtra] = useState<MultiSelectOption[]>([]);
+
+  return (
+    <div className="w-80">
+      <MultiSelect
+        aria-label="Tags"
+        {...props}
+        options={[...options, ...extra]}
+        value={value}
+        onValueChange={setValue}
+        onCreateOption={
+          props.onCreateOption === undefined
+            ? undefined
+            : (name) => {
+                const created = { value: name.toLowerCase(), label: name };
+                setExtra((all) => [...all, created]);
+                setValue((all) => [...all, created.value]);
+              }
+        }
+      />
+    </div>
+  );
+}
+
+const meta = {
+  title: "Control/MultiSelect",
+  component: Harness,
+  parameters: { layout: "centered" },
+} satisfies Meta<typeof Harness>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = { args: {} };
+
+export const WithSelection: Story = { args: { initial: ["work", "urgent"] } };
+
+/**
+ * The one the hand-rolled version cannot do. Tab to it, Enter to open, arrow, Enter to choose,
+ * Escape to close — none of which the `div`-with-an-outside-click-listener version supports,
+ * although it announces itself as a combobox.
+ */
+export const ItWorksFromTheKeyboard: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+    trigger.focus();
+    await userEvent.keyboard("{Enter}");
+
+    await screen.findByRole("listbox");
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    // Radix supplies this through `asChild`, so it points at a popover that exists.
+    const controls = trigger.getAttribute("aria-controls");
+    expect(document.getElementById(controls as string)).not.toBeNull();
+
+    // cmdk highlights the first option on open, so one ArrowDown lands on the second.
+    await userEvent.keyboard("{ArrowDown}{Enter}");
+    await waitFor(() => expect(trigger).toHaveTextContent("Frontend"));
+
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+  },
+};
+
+/**
+ * Chosen options say so on the option itself, where a screen reader reads it — as `aria-checked`
+ * rather than `aria-selected`, because cmdk spends `aria-selected` on which option is
+ * *highlighted* and overwrites whatever it is handed.
+ */
+export const SelectionIsAnnounced: Story = {
+  args: { initial: ["work"] },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    const work = await screen.findByRole("option", { name: "Work" });
+    expect(work).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("option", { name: "Frontend" })).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
+  },
+};
+
+/** Choosing again removes it — the whole difference between this and a select. */
+export const ChoosingTwiceDeselects: Story = {
+  args: { initial: ["work"] },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("option", { name: "Work" }));
+    await waitFor(() => expect(trigger).not.toHaveTextContent("Work"));
+  },
+};
+
+/**
+ * Search matches every word, in any order. cmdk's default is a fuzzy ranker built for a command
+ * palette; "back end" finding "Backend infrastructure" is what a list of tags actually needs.
+ */
+export const SearchMatchesEveryWord: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    await userEvent.type(await screen.findByRole("combobox", { name: /Search/i }), "infra back");
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("option")).toHaveLength(1);
+    });
+    expect(screen.getByRole("option")).toHaveTextContent("Backend infrastructure");
+  },
+};
+
+/**
+ * "Work" stays creatable while "Workshop" exists. The version in one of these apps tests with
+ * `.includes`, so a tag whose name is a prefix of another can never be created — and the button
+ * simply is not there, with nothing to say why.
+ */
+export const APrefixOfAnExistingNameIsStillAddable: Story = {
+  args: { onCreateOption: () => {} },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    await userEvent.click(trigger);
+    const search = await screen.findByRole("combobox", { name: /Search/i });
+
+    await userEvent.type(search, "Works");
+    expect(await screen.findByRole("option", { name: /Add .Works./ })).toBeVisible();
+
+    // An exact name, case and space aside, is not addable — that is the duplicate.
+    await userEvent.clear(search);
+    await userEvent.type(search, "  workshop ");
+    await waitFor(() => {
+      expect(screen.queryByRole("option", { name: /Add / })).toBeNull();
+    });
+  },
+};
+
+/**
+ * The create row is a row, not a keydown handler. cmdk consumes Enter to choose the highlighted
+ * option, so a listener on the input races it — and loses whenever anything is highlighted.
+ */
+export const CreatingAddsAndSelects: Story = {
+  args: { onCreateOption: () => {} },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    await userEvent.click(trigger);
+    await userEvent.type(await screen.findByRole("combobox", { name: /Search/i }), "Roadmap");
+    await userEvent.click(await screen.findByRole("option", { name: /Add .Roadmap./ }));
+
+    await waitFor(() => expect(trigger).toHaveTextContent("Roadmap"));
+  },
+};
+
+/**
+ * A value the options do not cover still draws, and can still be removed. It is a tag that was
+ * deleted, or a page of options that has not arrived — and without this the chip is invisible,
+ * still submitted, and impossible to take off.
+ */
+export const AValueWithNoOptionIsStillShown: Story = {
+  args: { initial: ["work", "ghost-id"] },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    expect(trigger).toHaveTextContent("ghost-id");
+
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("option", { name: "ghost-id" }));
+    await waitFor(() => expect(trigger).not.toHaveTextContent("ghost-id"));
+  },
+};
+
+/** Past `maxDisplay` the chips become a count, so the trigger cannot grow without bound. */
+export const ManySelectionsCollapse: Story = {
+  args: { initial: ["backend", "frontend", "work", "workshop", "urgent"], maxDisplay: 2 },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("combobox", { name: "Tags" })).toHaveTextContent("+3");
+  },
+};
+
+/**
+ * Clear lives in the popover's footer. Inside the trigger it would be a `<button>` inside a
+ * `<button>` — invalid markup, and unreachable by keyboard in every browser.
+ */
+export const ClearIsReachable: Story = {
+  args: { initial: ["work", "urgent"] },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    expect(trigger.querySelectorAll("button")).toHaveLength(0);
+
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("button", { name: "Clear" }));
+    await waitFor(() => expect(trigger).toHaveTextContent("Select…"));
+  },
+};
+
+/** With few options the search box is only in the way. */
+export const WithoutSearch: Story = {
+  args: { searchable: false },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    await screen.findByRole("listbox");
+    expect(screen.queryByRole("combobox", { name: /Search/i })).toBeNull();
+  },
+};
+
+/** Coloured chips read their own text colour rather than assuming white. */
+export const ColouredOptions: Story = {
+  args: { initial: ["work", "workshop", "urgent"] },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const amber = canvas.getByText("Workshop");
+    // `#fbbf24` is a light background: white text on it is 1.8:1, so the chip goes dark.
+    expect(amber).toHaveStyle({ color: "rgb(0, 0, 0)" });
+    expect(canvas.getByText("Urgent")).toHaveStyle({ color: "rgb(255, 255, 255)" });
+  },
+};
+
+/** The two helpers, checked directly — they are exported because call sites need them too. */
+export const TheHelpersHoldUp: Story = {
+  args: {},
+  play: async () => {
+    expect(mergeMultiSelectOptions(TAGS, ["work", "nope"]).at(-1)).toEqual({
+      value: "nope",
+      label: "nope",
+    });
+    expect(mergeMultiSelectOptions(TAGS, ["work"])).toHaveLength(TAGS.length);
+
+    expect(isAddableOptionName("Works", TAGS)).toBe(true);
+    expect(isAddableOptionName(" WORKSHOP ", TAGS)).toBe(false);
+    expect(isAddableOptionName("   ", TAGS)).toBe(false);
+  },
+};

@@ -5,7 +5,9 @@
   "description": "Every cubeui control in one install.",
   "registryDependencies": [
     "@cubeui/action-button",
-    "@cubeui/confirm-button"
+    "@cubeui/confirm-button",
+    "@cubeui/multi-select",
+    "@cubeui/date-picker"
   ],
   "files": [],
   "type": "registry:component"

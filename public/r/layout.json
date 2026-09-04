@@ -9,7 +9,8 @@
     "@cubeui/dialog-layout",
     "@cubeui/page-header",
     "@cubeui/page-layout",
-    "@cubeui/split-pane"
+    "@cubeui/split-pane",
+    "@cubeui/section"
   ],
   "files": [],
   "type": "registry:component"

@@ -80,6 +80,19 @@
       ]
     },
     {
+      "name": "section",
+      "type": "registry:component",
+      "title": "Section",
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable.",
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/layout/section.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
@@ -128,6 +141,32 @@
       ]
     },
     {
+      "name": "multi-select-field",
+      "type": "registry:component",
+      "title": "Multi Select Field",
+      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
+      "files": [
+        {
+          "path": "registry/new-york/form/multi-select-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "date-field",
+      "type": "registry:component",
+      "title": "Date Field",
+      "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/date-picker"],
+      "files": [
+        {
+          "path": "registry/new-york/form/date-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "action-button",
       "type": "registry:component",
       "title": "Action Button",
@@ -149,6 +188,38 @@
       "files": [
         {
           "path": "registry/new-york/control/confirm-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "multi-select",
+      "type": "registry:component",
+      "title": "Multi Select",
+      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.",
+      "registryDependencies": [
+        "badge",
+        "button",
+        "command",
+        "popover",
+        "@cubeui/readable-text-color"
+      ],
+      "files": [
+        {
+          "path": "registry/new-york/control/multi-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "registryDependencies": ["button", "calendar", "input", "popover"],
+      "files": [
+        {
+          "path": "registry/new-york/control/date-picker.tsx",
           "type": "registry:component"
         }
       ]
@@ -201,7 +272,8 @@
         "@cubeui/dialog-layout",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/split-pane"
+        "@cubeui/split-pane",
+        "@cubeui/section"
       ],
       "files": []
     },
@@ -210,7 +282,13 @@
       "type": "registry:component",
       "title": "Form Set",
       "description": "Every cubeui form component in one install, TanStack binding included.",
-      "registryDependencies": ["@cubeui/form-field", "@cubeui/field-row", "@cubeui/app-form"],
+      "registryDependencies": [
+        "@cubeui/form-field",
+        "@cubeui/field-row",
+        "@cubeui/app-form",
+        "@cubeui/multi-select-field",
+        "@cubeui/date-field"
+      ],
       "files": []
     },
     {
@@ -218,7 +296,12 @@
       "type": "registry:component",
       "title": "Control Set",
       "description": "Every cubeui control in one install.",
-      "registryDependencies": ["@cubeui/action-button", "@cubeui/confirm-button"],
+      "registryDependencies": [
+        "@cubeui/action-button",
+        "@cubeui/confirm-button",
+        "@cubeui/multi-select",
+        "@cubeui/date-picker"
+      ],
       "files": []
     },
     {
