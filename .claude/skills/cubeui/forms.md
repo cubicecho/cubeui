@@ -84,10 +84,15 @@ a hand-written `<Button type="submit">` to get it.
 at least once, never before, so a form does not open covered in red. That rule lives in one hook
 and applies to every field; do not re-implement it per field, and do not pass `error` yourself.
 
-**`SelectField` is the one that used to be broken.** A `<Select>`'s root renders no DOM, so a
-hand-written select field leaves the trigger with no `aria-invalid` and an error message nothing
-points at. `SelectField` routes through `FormField`'s function form and wires the trigger. Use it
-rather than a `Select` inside a `FormField`. The same is true of every picker here.
+**`SelectField` is the one that used to be broken.** Radix's `Select` root renders no DOM, so a
+select field assembled out of the shadcn primitives leaves the trigger with no `aria-invalid` and
+an error message nothing points at. `SelectField` routes through `FormField`'s function form and
+wires the trigger. Use it rather than assembling `SelectTrigger` and `SelectContent` inside a
+`FormField`. The same is true of every picker here.
+
+Outside a form the answer is the control it renders — `Select` from `@cubeui/select`, in
+[controls.md](controls.md), taking the same `options` array. Do not hand-write the primitives
+there either.
 
 **An option that is not a peer says so in the options array.** `group` puts a heading over the
 rows that share it, and a `{ separator: true }` entry draws a rule between them:
@@ -185,10 +190,10 @@ not this. That is a row, not a field; build it with `CardLayout` or `Section`.
 
 ### When the props belong on something nested
 
-A control whose root renders no DOM — `Select`, anything built on `Popover` — swallows the `id`,
-the `aria-describedby` and the `aria-invalid` when the shell clones it, and the field ends up
-wired to nothing, with no warning and nothing visibly wrong. Pass a **function** and put the
-props where they go:
+A control whose root renders no DOM — shadcn's `Select` primitive, anything built on `Popover` —
+swallows the `id`, the `aria-describedby` and the `aria-invalid` when the shell clones it, and
+the field ends up wired to nothing, with no warning and nothing visibly wrong. Pass a **function**
+and put the props where they go:
 
 ```tsx
 <FormField
@@ -207,6 +212,11 @@ props where they go:
 
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
 element itself and needs none of this.
+
+Every cubeui picker already knows where its own trigger is: `Select`, `MultiSelect`, `DatePicker`
+and `ColorPicker` take the rest of a `<button>`'s props and put them there, so the function form
+spreads onto the control and stops — `control={(props) => <Select {...props} options={LISTS} … />}`.
+The primitive version above is what that saves.
 
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
 trigger and leaves the description and the error describing nothing. Use `htmlFor` only when you
