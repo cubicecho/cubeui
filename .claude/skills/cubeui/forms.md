@@ -103,6 +103,59 @@ sibling's value, render a list, or do something no prop covers:
 Use the one-line form everywhere else. It is the same component with the render prop already
 written.
 
+### A form value that contains itself
+
+```
+web/routes/task-edit.tsx(240,11): error TS2589: Type instantiation is excessively deep and
+possibly infinite.
+```
+
+**Line 240 is the first field in the form, and it is not the field at fault.** `DeepKeys` is
+computed once for the whole store and reported at the first position that asks for it, so a
+`<InputField name="name">` over a `string` is where a recursive value three fields down surfaces.
+Do not go looking at the field the error names.
+
+The cause is a default value whose type contains itself — a flow of steps where a step has
+branches and a branch has steps, a comment tree, a nested menu:
+
+```ts
+interface DraftStep { …; branches: DraftBranch[] }
+interface DraftBranch { case: string; steps: DraftStep[] }
+```
+
+`DeepKeysAndValuesImpl` in `@tanstack/form-core` walks objects and arrays structurally with no
+depth limiter and no seen-set, so a type that contains itself does not terminate. This is not
+about the bound fields: `form.AppField` with a render prop fails identically, because both ask
+`DeepKeys` the same question.
+
+**Hold the recursive value opaquely and cast at the one place it is read.** `unknown` is the
+first branch of that walk, so it stops there and every other field keeps its checked name:
+
+```ts
+interface Form {
+  name: string;
+  …
+  /** `unknown`, not `DraftStep[]`: a step contains steps, and `DeepKeys` cannot walk that. */
+  steps: unknown;
+}
+
+// Annotated, not `satisfies` — see below.
+const defaults: Form = { …, steps: toDraft(task?.steps ?? []) };
+const form = useAppForm({ defaultValues: defaults, … });
+
+<form.Field name="steps">
+  {(field) => <StepList steps={field.state.value as DraftStep[]} onChange={field.handleChange} />}
+</form.Field>
+```
+
+**`satisfies Form` does not do this.** It checks the literal and then infers from the literal, so
+the form's values are still the recursive type however `Form` declares the field — the error does
+not move. The declaration only takes effect when the object is *annotated*.
+
+Do not answer this by splitting the recursive part into a second form. One form, one `isDirty`,
+one submit; the subtree keeps its real type everywhere it is actually edited, and the cost is one
+cast with a comment on it.
+
 ### Loading
 
 `TextareaField` sizes its own loading skeleton from `rows`. Every other bound field is
