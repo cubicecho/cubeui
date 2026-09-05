@@ -35,6 +35,14 @@ hint is read after it whether or not the tooltip is open — it is also an alway
 `sr-only` span, because a tooltip's text is in the DOM only while it is showing. Pass
 `tooltip={false}` for a row that already explains itself, and `side` to move the tooltip.
 
+**A root `TooltipProvider` does not reach these buttons.** `ActionButton` renders its own, and
+a nested provider replaces the one above it rather than merging with it — so an app with
+`<TooltipProvider delayDuration={300}>` at its root gets 300ms everywhere except here, where
+the tooltip opens the instant the pointer crosses. Pass `delayDuration` (and
+`skipDelayDuration`, which is what makes a toolbar of them feel like one control) to match it.
+Radix offers no way to read the outer provider, so the number has to be said twice; a project
+that minds should say it once in a wrapper.
+
 ## Destructive buttons
 
 ```tsx
