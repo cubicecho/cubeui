@@ -66,3 +66,55 @@ export function AppFormTypeAssertions() {
     </>
   );
 }
+
+/**
+ * The workaround for a form value that contains itself, pinned.
+ *
+ * A store whose type is recursive — a step with branches, a branch with steps — makes
+ * `DeepKeys<TFormData>` fail to terminate, and TypeScript reports the TS2589 at the *first field
+ * in the form* rather than at the recursive value. Declaring that one value `unknown` stops the
+ * walk, and this whole file failing to compile is what says so: if the shape stops working, or
+ * stops being necessary, the note in `forms.md` is wrong and this is the build error saying it.
+ */
+interface DraftStep {
+  id: string;
+  branches: DraftBranch[];
+}
+interface DraftBranch {
+  case: string;
+  steps: DraftStep[];
+}
+
+interface FlowValues {
+  name: string;
+  live: boolean;
+  /** `unknown`, not `DraftStep[]`: a step contains steps, and `DeepKeys` cannot walk that. */
+  steps: unknown;
+}
+
+export function RecursiveValueAssertions() {
+  // Annotated rather than `satisfies FlowValues`. `satisfies` checks the literal and then infers
+  // from the literal, so the form's values would still be the recursive type and the error would
+  // not move — the declaration only takes effect through the annotation.
+  const defaults: FlowValues = { name: "", live: false, steps: [] as DraftStep[] };
+
+  const form = useAppForm({
+    defaultValues: defaults,
+    onSubmit: ({ value }) => console.log(value),
+  });
+
+  return (
+    <>
+      {/* The rest of the store keeps its checked names — this is what `unknown` buys. */}
+      <InputField form={form} name="name" label="Name" required />
+      <SwitchField form={form} name="live" label="Live" />
+      {/* @ts-expect-error and a typo is still a typo beside a recursive value */}
+      <InputField form={form} name="nmae" label="Typo" />
+
+      {/* The subtree keeps its real type at the one place it is edited, behind one cast. */}
+      <form.Field name="steps">
+        {(field) => <span>{(field.state.value as DraftStep[]).length} steps</span>}
+      </form.Field>
+    </>
+  );
+}
