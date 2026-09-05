@@ -73,6 +73,46 @@ is always destructive; a confirm that is *not* destructive is a question, and a 
 Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
+## Select
+
+```tsx
+<Select options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
+```
+
+`options` is `{ value, label, group? }[]`, plus `{ separator: true }` for a rule — the same array
+`SelectField` takes, because `SelectField` renders this. Reach for it in a filter bar, a toolbar,
+or a `useState` screen; inside a TanStack form use `SelectField` and never wire this by hand.
+
+**This is not shadcn's `Select`.** That one is the primitive at `@/components/ui/select` and
+takes children; this one takes `options`. The import path is what tells them apart, and picking
+the wrong one is a type error rather than a quiet bug.
+
+- The trigger is what carries the wiring. Radix's `Select` root renders no DOM, so an `id` or an
+  `aria-invalid` put on it goes nowhere — this takes the rest of a `<button>`'s props and spreads
+  them on the trigger, which is why it drops straight into `FormField`'s **function form**:
+  `control={(wired) => <Select {...wired} options={…} … />}`.
+- Full width by default, because a column of selects that each shrink to their longest option is
+  ragged. Pass `className="w-40"` for a toolbar; the later width wins.
+- `contentClassName` is the dropdown's class. `className` is the trigger's, which is the control.
+
+An option that is not a peer of the others says so in the array rather than in its own label:
+
+```tsx
+<Select
+  options={[
+    { value: "stay", label: "Stay here" },
+    ...lanes.map((lane) => ({ value: lane.id, label: lane.name, group: "Lanes" })),
+    { separator: true },
+    { value: "archive", label: "Archive it" },
+  ]}
+  value={destination}
+  onValueChange={setDestination}
+/>
+```
+
+Drawn in the order given, never sorted — a board's lanes are ordered and alphabetical would be
+wrong. A flat `{ value, label }[]` draws flat.
+
 ## Multi-select
 
 A tag picker: a trigger showing what is chosen, a searchable list behind it.
