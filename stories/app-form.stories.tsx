@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   InputField,
   SelectField,
@@ -96,6 +96,15 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
           onChange: ({ value }) =>
             value ? undefined : "Pick a list — a todo with nowhere to go is never seen again.",
         }}
+        listeners={{
+          onChange: ({ value }) => {
+            // Filing something under Work answers a question the form was about to ask again.
+            // Guarded on the other field having been left alone, because a listener that writes
+            // over a choice somebody made is not a convenience, it is the form arguing back.
+            if (form.state.fieldMeta.priority?.isTouched) return;
+            form.setFieldValue("priority", value === "work" ? "3" : "2");
+          },
+        }}
       />
 
       <FieldRow
@@ -137,6 +146,21 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
       </div>
     </form>
   );
+}
+
+/**
+ * Choose an option from a `SelectField`, and wait for the popover to actually be gone.
+ *
+ * The wait is not politeness. Radix animates the list out and holds `pointer-events: none` on the
+ * body until it has finished, so the next click in a story lands on nothing — and the axe run
+ * every story gets catches the closing listbox on its way out and reports it as one with no name.
+ */
+async function choose(trigger: HTMLElement, option: string | RegExp) {
+  await userEvent.click(trigger);
+  await userEvent.click(await screen.findByRole("option", { name: option }));
+  await waitFor(() => {
+    expect(screen.queryByRole("listbox")).toBeNull();
+  });
 }
 
 const meta = {
@@ -268,5 +292,42 @@ export const ItCannotBeUsedToEnableAnInvalidForm: Story = {
     });
 
     expect(submit).toBeDisabled();
+  },
+};
+
+/**
+ * A field that has to *do* something when it changes is still one line. `listeners` rides along
+ * beside `validators` — the two are the same kind of field-level option, and both are handed
+ * straight to the field underneath.
+ *
+ * Without it forwarded, this field alone would have to be written as a `form.AppField` with a
+ * render prop around it, purely to reach a prop the wrapper had not passed on: three extra lines
+ * and a closure, at every field with a side effect, in every form.
+ */
+export const AFieldCanActOnAChange: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByLabelText(/^Priority/)).toHaveTextContent("Normal");
+
+    await choose(canvas.getByLabelText(/^List/), "Work");
+
+    expect(canvas.getByLabelText(/^Priority/)).toHaveTextContent("High");
+  },
+};
+
+/**
+ * And the listener is the caller's, so the guard in it is too. This one checks whether the field
+ * it is about to write to has been touched, which is the difference between a form that fills
+ * something in for you and a form that undoes what you just chose.
+ */
+export const AListenerDoesNotOverwriteAChoice: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    await choose(canvas.getByLabelText(/^Priority/), "Low");
+    expect(canvas.getByLabelText(/^Priority/)).toHaveTextContent("Low");
+
+    await choose(canvas.getByLabelText(/^List/), "Work");
+
+    expect(canvas.getByLabelText(/^Priority/)).toHaveTextContent("Low");
   },
 };
