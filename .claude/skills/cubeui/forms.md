@@ -144,6 +144,32 @@ real: they are literals the form already knows, not data it is waiting for, so a
 them makes its column of labels appear out of nowhere when the values land. `loading` outranks `error`
 — a value that has not arrived is not one that came back wrong.
 
+### A description that came out of a schema
+
+`description` takes a `ReactNode` so a form can pass `schema.fields[k].description` straight
+through — a GraphQL description, a JSON-schema `description`, a docstring off a generated type.
+Those strings have two readers, and they are marked up for the one that reads markdown:
+
+```
+Whether tool definitions are sent up front (`eager`) or loaded as the run asks for
+them (`ondemand`). `inherit` takes the server's answer.
+```
+
+A model needs the backticks — they are the only thing saying `ondemand` is a value and not a
+word. A person reads them as punctuation. **Wrap the string in `ticks`**, exported beside
+`FormField`, and the marker is spent on a `<code>` instead of printed:
+
+```tsx
+<FormField label="Tool discovery" description={ticks(describe("Agent", "toolDiscovery"))} … />
+```
+
+Do not fix this by rewriting the description without backticks — the other reader is the one that
+loses. Do not fix it by keeping a second, human copy of the sentence beside the schema's; two
+sentences that mean the same thing are two sentences that drift.
+
+`ticks` is backticks and nothing else, it leaves a string with none alone, and an unpaired one
+stays the character it is. Anything more is a markdown renderer and belongs behind a library.
+
 ### Checkboxes and switches
 
 ```tsx
