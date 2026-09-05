@@ -89,6 +89,28 @@ hand-written select field leaves the trigger with no `aria-invalid` and an error
 points at. `SelectField` routes through `FormField`'s function form and wires the trigger. Use it
 rather than a `Select` inside a `FormField`. The same is true of every picker here.
 
+**An option that is not a peer says so in the options array.** `group` puts a heading over the
+rows that share it, and a `{ separator: true }` entry draws a rule between them:
+
+```tsx
+<SelectField
+  form={form}
+  name="onSuccess"
+  label="On success"
+  options={[
+    { value: "stay", label: "Stay here" },
+    ...lanes.map((lane) => ({ value: lane.id, label: lane.name, group: "Lanes" })),
+    { separator: true },
+    { value: "archive", label: "Archive it" },
+  ]}
+/>
+```
+
+Groups are drawn in the order given, not sorted — a board's lanes are ordered and alphabetical
+would be wrong. A flat `{ value, label }[]` still draws flat, so nothing is written until an
+option is not a peer. Do not put the distinction in the label instead: `"Archive it — off the
+board"` is a sentence doing a divider's job, and it does not survive a long list.
+
 ### When you need the `field` object
 
 `form.AppField` is still there, and it is the escape hatch for a field that has to read a
