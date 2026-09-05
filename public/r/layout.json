@@ -10,7 +10,9 @@
     "@cubeui/page-header",
     "@cubeui/page-layout",
     "@cubeui/split-layout",
-    "@cubeui/section"
+    "@cubeui/section",
+    "@cubeui/query-state",
+    "@cubeui/disclosure-row"
   ],
   "files": [],
   "type": "registry:component"
