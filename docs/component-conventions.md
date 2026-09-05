@@ -280,7 +280,10 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    So the CLI rewrites both our `@/registry/...` cross-references and `@/lib/utils` against the
    consumer's own aliases, and the transitive `@cubeui/header-content-footer` dependency resolves.
    The `skill` item is the one exception: it sets `target: "~/.claude/skills/cubeui/SKILL.md"`,
-   and `~` is the consumer's project root, so it lands at `.claude/skills/cubeui/SKILL.md`.
+   and `~` is the consumer's project root, so it lands at `.claude/skills/cubeui/SKILL.md`. Its
+   *source* is `registry/skill/`, not `.claude/` — a payload living under a directory people
+   routinely gitignore is one line away from shipping empty, and the target is the only half of
+   that path that has to be `.claude`.
    Grouping components under `components/layout/` with a `target` stays rejected — it assumes a
    tree shape the consumer never agreed to.
 5. ~~Namespace, and where the registry is served from.~~ **Settled:** `@cubeui/<item>` as the
