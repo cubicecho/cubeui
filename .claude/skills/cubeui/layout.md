@@ -246,12 +246,12 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
   description="A workspace exposes the servers you choose at its own URL."
   size="lg"
   content={<WorkspaceFields value={draft} onChange={setDraft} />}
-  footerActions={
+  footerActions={(close) => (
     <>
       <Button variant="ghost" onClick={close}>Cancel</Button>
       <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
     </>
-  }
+  )}
 />
 ```
 
@@ -266,8 +266,22 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
   question. Pass `form.state.isDirty` — it is asked for, never computed, because only the caller
   knows what its fields are. `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`
   reword the question when the dialog knows what is lost.
-- It guards the paths the dialog owns. **A Cancel button you put in `footerActions` calls your
-  own `setOpen(false)` and is not guarded** — make it a `ConfirmButton` if that matters.
+- **Take `close` from `footerActions` rather than closing the dialog yourself.** Pass a function
+  and it is handed the dialog's own close — the same one Escape, the overlay and the close button
+  go through, so `hasUnsavedChanges` asks on the way through Cancel too. A Cancel wired to your
+  own `setOpen(false)` goes around the shell, and that is the door people actually click:
+
+  ```tsx
+  footerActions={(close) => (
+    <>
+      <Button variant="ghost" onClick={close}>Cancel</Button>
+      <Button onClick={save}>Save</Button>
+    </>
+  )}
+  ```
+
+  The node form still works and is right for a footer that closes nothing. Only `footerActions`
+  takes the function; `footer` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
 - A form in a dialog is this component with a `<form>` as `content` — see [forms.md](forms.md).
