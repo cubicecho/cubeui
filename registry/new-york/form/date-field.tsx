@@ -1,8 +1,10 @@
 import type { ComponentProps } from "react";
 import {
+  combineDateAndTime,
   DatePicker,
   type DateRange,
   DateRangePicker,
+  setTime,
 } from "@/registry/new-york/control/date-picker";
 import {
   bindToForm,
@@ -97,10 +99,8 @@ export const DateRangeField = bindToForm<DateRangeFieldProps, DateRange>(
   "DateRangeField",
 );
 
-export type { DateRange } from "@/registry/new-york/control/date-picker";
-export {
-  combineDateAndTime,
-  DatePicker,
-  DateRangePicker,
-  setTime,
-} from "@/registry/new-york/control/date-picker";
+export type { DateRange };
+// Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
+// install and leaves re-export declarations alone, so the `from` form would ship a path into
+// `control/` that does not exist in a consumer's tree. See AGENTS.md.
+export { combineDateAndTime, DatePicker, DateRangePicker, setTime };
