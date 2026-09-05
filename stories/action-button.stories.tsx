@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Pencil, Trash2 } from "lucide-react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { ActionButton } from "@/registry/new-york/control/action-button";
+import { TooltipProvider } from "@/registry/new-york/ui/tooltip";
 
 const meta = {
   title: "Control/ActionButton",
@@ -182,5 +183,49 @@ export const WithoutTooltipTheHintSurvives: Story = {
     expect(document.getElementById(describedBy as string)).toHaveTextContent(
       "Empty the lane first",
     );
+  },
+};
+
+/**
+ * The delay can be matched to the app's, because the button renders its own provider and a
+ * nested provider *replaces* the one above it rather than merging with it.
+ *
+ * Without the prop there is no way to say this: `delayDuration` would fall into `...props`,
+ * reach the `Button`, and arrive at the DOM as an unknown attribute React warns about — a
+ * workaround that silently did nothing.
+ */
+export const TheDelayCanMatchTheApp: Story = {
+  args: { label: "Delete workspace", children: <Trash2 />, delayDuration: 600 },
+  play: async ({ canvas }) => {
+    await userEvent.hover(canvas.getByRole("button", { name: "Delete workspace" }));
+
+    // Still shut immediately after the pointer arrives — which is the whole assertion, since
+    // shadcn's provider default is `0` and this would otherwise already be open.
+    expect(screen.queryByRole("tooltip")).toBeNull();
+
+    await waitFor(() => expect(screen.getByRole("tooltip")).toBeVisible(), { timeout: 3000 });
+  },
+};
+
+/**
+ * And the limitation the prop exists for, pinned so it cannot be mistaken for a fix.
+ *
+ * A root provider does **not** reach these buttons. Radix exposes no way to ask whether a
+ * provider is already above you, so the button can neither skip rendering its own nor read what
+ * the outer one was set to — it takes shadcn's `0` and opens at once while every other control
+ * under the same root waits. Saying the number twice is the only remedy there is.
+ */
+export const ARootProviderDoesNotReachIt: Story = {
+  args: { label: "Delete workspace", children: <Trash2 /> },
+  render: (args) => (
+    <TooltipProvider delayDuration={3000}>
+      <ActionButton {...args} />
+    </TooltipProvider>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.hover(canvas.getByRole("button", { name: "Delete workspace" }));
+
+    // Open well inside the root's 3s, because the root's 3s never applied to it.
+    await waitFor(() => expect(screen.getByRole("tooltip")).toBeVisible(), { timeout: 400 });
   },
 };
