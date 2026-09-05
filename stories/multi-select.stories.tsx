@@ -256,3 +256,69 @@ export const TheHelpersHoldUp: Story = {
     expect(isAddableOptionName("   ", TAGS)).toBe(false);
   },
 };
+
+const DEPENDENCIES: MultiSelectOption[] = [
+  { value: "api", label: "Ship the API" },
+  { value: "docs", label: "Write the docs" },
+  {
+    value: "deploy",
+    label: "Deploy",
+    disabled: true,
+    hint: "Waiting on this would close a loop: Deploy → Test → this card",
+  },
+];
+
+/**
+ * kanban-server's dependency picker, and the case the prop is for: a card that already leads back
+ * to this one is offered disabled, because choosing it would close a cycle.
+ *
+ * Greyed out on its own reads as a bug in the picker. The reason is knowable when the options are
+ * built and unreachable by the time somebody wonders — and it cannot be a tooltip, because a
+ * disabled row fires no hover, which is the same trap `ActionButton` was written for.
+ */
+export const ADisabledOptionCanSayWhy: Story = {
+  args: { options: DEPENDENCIES },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+
+    const deploy = await screen.findByRole("option", { name: "Deploy" });
+    expect(deploy).toHaveAttribute("aria-disabled", "true");
+
+    // Drawn, not hovered for: the reason is on the screen the whole time the row is. Waited on
+    // rather than read straight away, because Radix fades the popover in and a rectangle part-way
+    // through that is not yet visible.
+    await waitFor(() => {
+      expect(within(deploy).getByText(/would close a loop/)).toBeVisible();
+    });
+  },
+};
+
+/**
+ * And it is a *description*, not part of the name.
+ *
+ * Rendered inside the row, the hint would otherwise be swept into the accessible name by the
+ * contents — so the option would announce as "Deploy Waiting on this would close a loop…" and
+ * then read the same sentence again as its description. `aria-label` pins the name to the label
+ * and `aria-describedby` carries the reason, which is `ActionButton`'s arrangement exactly.
+ */
+export const TheHintIsADescriptionNotAName: Story = {
+  args: { options: DEPENDENCIES },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+
+    // The name is the label alone — an exact match, so any of the hint leaking in fails here.
+    const deploy = await screen.findByRole("option", { name: "Deploy" });
+
+    const describedBy = deploy.getAttribute("aria-describedby");
+    expect(describedBy).toBeTruthy();
+    const hint = document.getElementById(describedBy ?? "");
+    expect(hint).toHaveTextContent(/would close a loop/);
+    expect(hint).toHaveAttribute("data-slot", "multi-select-option-hint");
+
+    // An option with nothing to explain points at nothing, so it is not described by an empty
+    // node — the same rule `ActionButton` follows for a missing hint.
+    expect(screen.getByRole("option", { name: "Ship the API" })).not.toHaveAttribute(
+      "aria-describedby",
+    );
+  },
+};

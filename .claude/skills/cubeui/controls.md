@@ -79,7 +79,7 @@ A tag picker: a trigger showing what is chosen, a searchable list behind it.
 
 ```tsx
 <MultiSelect
-  options={TAGS}                       // { value, label, keywords?, color?, disabled? }[]
+  options={TAGS}                       // { value, label, keywords?, color?, disabled?, hint? }[]
   value={tags}
   onValueChange={setTags}
   placeholder="No tags"
@@ -92,6 +92,11 @@ A tag picker: a trigger showing what is chosen, a searchable list behind it.
   offers to create. Without it, a search that matches nothing says `emptyMessage`.
 - `maxDisplay` caps the chips on the trigger and the rest become a count.
 - `color` on an option draws a dot, and the tick on a chosen swatch picks its own contrast.
+- **`hint` on an option says why it is the way it is** — most often why it is `disabled`. Drawn
+  under the label and read after it, never as part of the name. A disabled row fires no hover,
+  so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
+  picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
+  Same argument as `ActionButton`'s `hint`.
 
 Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
 inside a `FormField` — but pass them through the **function form** of `control`, since its root
