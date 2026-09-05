@@ -30,6 +30,8 @@ const LISTS = [
 type TodoFormProps = {
   loading?: boolean;
   onSubmit?: (value: unknown) => void;
+  /** A reason not to submit that the form store cannot know. See the stories at the bottom. */
+  submitDisabled?: boolean;
 };
 
 /**
@@ -41,7 +43,7 @@ type TodoFormProps = {
  * say anything about the form. The render-prop version is still there for the fields that need
  * the `field` object; these six never did.
  */
-function TodoForm({ loading = false, onSubmit }: TodoFormProps) {
+function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) {
   const form = useAppForm({
     defaultValues: {
       title: "",
@@ -130,7 +132,7 @@ function TodoForm({ loading = false, onSubmit }: TodoFormProps) {
           Cancel
         </Button>
         <form.AppForm>
-          <form.SubmitButton>Create Todo</form.SubmitButton>
+          <form.SubmitButton disabled={submitDisabled}>Create Todo</form.SubmitButton>
         </form.AppForm>
       </div>
     </form>
@@ -228,5 +230,43 @@ export const Loading: Story = {
     // The labels are still there and still real — they are literals, not data being waited on.
     expect(canvasElement.textContent).toContain("Title");
     expect(canvasElement.textContent).toContain("Schedule it automatically");
+  },
+};
+
+/**
+ * A reason not to submit that lives outside the form.
+ *
+ * `canSubmit` and `isSubmitting` are the two the store knows, and they are not all of them: a
+ * composer whose other tab has a mutation in flight, a settings form that is valid but identical
+ * to the row it was opened from. Without a way to say those, the whole component gets dropped for
+ * a hand-written `<Button type="submit">` that re-derives the two it did know — which is the
+ * duplication this exists to remove.
+ */
+export const AnOutsideReasonCanDisableIt: Story = {
+  args: { submitDisabled: true },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("button", { name: "Create Todo" })).toBeDisabled();
+  },
+};
+
+/**
+ * And it is OR-ed, so it only ever *tightens*. `disabled={false}` is a caller saying it has no
+ * objection of its own, not a caller overruling the store — an invalid form stays refused.
+ *
+ * The ordering matters as much as the OR: `disabled` is written after `{...props}` rather than
+ * before it, so nothing spread in can land on top of the store's answer.
+ */
+export const ItCannotBeUsedToEnableAnInvalidForm: Story = {
+  args: { submitDisabled: false },
+  play: async ({ canvas, canvasElement }) => {
+    const submit = canvas.getByRole("button", { name: "Create Todo" });
+
+    // Nothing is filled in, so submitting fails validation and the store closes the form.
+    await userEvent.click(submit);
+    await waitFor(() => {
+      expect(canvasElement.querySelectorAll("[data-slot=field-error]").length).toBeGreaterThan(0);
+    });
+
+    expect(submit).toBeDisabled();
   },
 };
