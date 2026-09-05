@@ -79,7 +79,7 @@ A tag picker: a trigger showing what is chosen, a searchable list behind it.
 
 ```tsx
 <MultiSelect
-  options={TAGS}                       // { value, label, keywords?, color?, disabled?, hint? }[]
+  options={TAGS}          // { value, label, keywords?, color?, disabled?, hint?, meta?, group? }[]
   value={tags}
   onValueChange={setTags}
   placeholder="No tags"
@@ -97,6 +97,18 @@ A tag picker: a trigger showing what is chosen, a searchable list behind it.
   so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
   picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
   Same argument as `ActionButton`'s `hint`.
+- **`meta` on an option is the end of the row** — a status badge, a count, a date. Read after the
+  name, never as part of it, and never on the chip: the chip is the label and stays a string. Do
+  not reach for `color` for this. That is the chip's colour, and pointing it at a status mints a
+  second colour vocabulary beside the app's own.
+- **`group` on an option is a heading over the rows that share it.** Drawn in the order given,
+  not sorted — a board's lanes are ordered and alphabetical would be wrong. The heading is
+  searched along with the row, so typing a lane's name still finds the cards in it, and a group
+  whose rows are all filtered out hides itself.
+
+`label` is still the row, the chip and what the search matches, so anything that is not the name
+goes in one of those three rather than into the label. `"Fix billing (archived)"` is a row saying
+its status by having it typed into its name, and it says it on the chip too.
 
 Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
 inside a `FormField` — but pass them through the **function form** of `control`, since its root
