@@ -52,6 +52,32 @@ runtime dependency on this package.
 | `@cubeui/primitive` | Both re-published shadcn primitives |
 | `@cubeui/skill` | The agent skill — a router plus layout, form and control references — so an agent in a consuming project uses them correctly |
 
+## The agent skill is a per-developer install
+
+`npx shadcn@latest add @cubeui/skill` writes four Markdown files into your project's
+`.claude/skills/cubeui/`, which is where an agent looks for them. Most projects gitignore
+`.claude/`, so by default the skill is installed **per developer**: the person who ran the command
+has it, their teammates and CI do not, and each of them re-runs it for themselves — and re-runs it
+again when this registry changes.
+
+That is deliberate, and it is the same deal as any other tool a developer installs into their own
+working directory. A team that would rather share one copy un-ignores the one directory:
+
+```gitignore
+.claude/*
+!.claude/skills/
+```
+
+Then the skill is reviewed and updated like any other file in the repo, and `shadcn add` is run
+once by whoever is upgrading rather than by everyone.
+
+What the skill will not do is live somewhere tracked *and* be found automatically — the agent
+looks in `.claude/skills/`, and a copy in `docs/` is a copy somebody has to remember to point at.
+
+In this repository the four files live in [`registry/skill/`](registry/skill), which is what the
+`skill` item ships and what `.claude/skills/cubeui/SKILL.md` points at, so there is one copy of
+each rather than two that drift.
+
 ## Every slot is a prop, including the body
 
 cubeui components take no children. The body is `content`, exactly like `header` and `footer`

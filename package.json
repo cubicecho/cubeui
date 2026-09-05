@@ -12,9 +12,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run typecheck && npm run registry:build && vite build",
+    "build": "npm run typecheck && npm run registry:build && npm run registry:check && vite build",
     "preview": "vite preview",
     "registry:build": "shadcn build",
+    "registry:check": "node scripts/check-registry-build.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
