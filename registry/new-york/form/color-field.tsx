@@ -1,5 +1,10 @@
 import type { ComponentProps } from "react";
-import { ColorPicker } from "@/registry/new-york/control/color-picker";
+import {
+  COLOR_SWATCHES,
+  ColorPicker,
+  isHexColor,
+  normalizeHex,
+} from "@/registry/new-york/control/color-picker";
 import {
   bindToForm,
   type FieldProps,
@@ -55,9 +60,7 @@ function BoundColorField(props: ColorFieldProps) {
  */
 export const ColorField = bindToForm<ColorFieldProps, string>(BoundColorField, "ColorField");
 
-export {
-  COLOR_SWATCHES,
-  ColorPicker,
-  isHexColor,
-  normalizeHex,
-} from "@/registry/new-york/control/color-picker";
+// Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
+// install and leaves re-export declarations alone, so the `from` form would ship a path into
+// `control/` that does not exist in a consumer's tree. See AGENTS.md.
+export { COLOR_SWATCHES, ColorPicker, isHexColor, normalizeHex };

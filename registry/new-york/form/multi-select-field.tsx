@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { MultiSelect } from "@/registry/new-york/control/multi-select";
+import { MultiSelect, type MultiSelectOption } from "@/registry/new-york/control/multi-select";
 import {
   bindToForm,
   type FieldProps,
@@ -59,5 +59,8 @@ export const MultiSelectField = bindToForm<MultiSelectFieldProps, readonly strin
   "MultiSelectField",
 );
 
-export type { MultiSelectOption } from "@/registry/new-york/control/multi-select";
-export { MultiSelect } from "@/registry/new-york/control/multi-select";
+export type { MultiSelectOption };
+// Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
+// install and leaves re-export declarations alone, so the `from` form would ship a path into
+// `control/` that does not exist in a consumer's tree. See AGENTS.md.
+export { MultiSelect };

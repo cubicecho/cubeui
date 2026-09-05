@@ -225,6 +225,9 @@ needs it: a radio group, a segmented control, a swatch grid used as the field it
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error
 - Comments explain **why**, not what. A comment that restates the line below it is noise. The
   comments worth writing here are the ones that say what went wrong without the line
+- Re-export with `import` + `export { … }`, never `export … from` — the shadcn CLI rewrites
+  import declarations against a consumer's aliases and leaves re-export declarations alone, so
+  the `from` form installs pointing at a directory the consumer does not have
 - Tailwind variants are literal class maps (`const SIZES = { sm: "sm:max-w-sm" }`), never
   composed strings — the scanner reads source text, so a built class name is never generated
 
