@@ -18,6 +18,48 @@ npx shadcn@latest add @cubeui/skill    # the agent skill, into .claude/skills/
 Components are copied into your tree and rewritten against your own path aliases; there is no
 runtime dependency on this package.
 
+## The shadcn primitives bring their own `cn`
+
+Eighteen items here list bare shadcn primitives — `card`, `dialog`, `command`, `field` and the
+rest — and the CLI resolves those from `ui.shadcn.com`, not from this repo. All eighteen of them
+now import `cn` from an npm package of that name, and declare it as a dependency:
+
+```console
+$ curl -s https://ui.shadcn.com/r/styles/new-york-v4/dialog.json | jq -r '.dependencies[], (.files[].content | match("import \\{ cn \\}.*").string)'
+cn
+radix-ui
+import { cn } from "cn"
+```
+
+cubeui's own files import `cn` from your `utils` alias, the way a copied-into-your-tree component
+should. So after an install your `components/` is split down the middle: the shells call one
+`cn`, the primitives under them call another, and both are in the tree.
+
+Two things follow, and the second is the quiet one:
+
+- **A customised `cn` is customised for half your components.** A different `twMerge` config, a
+  class prefix — nothing errors, and nothing looks wrong until a class that should have been
+  merged is not.
+- **`cn` arrives in `dependencies`.** Not `devDependencies`, and the CLI puts it there without
+  asking. A server image built with `npm ci --omit=dev` carries it, because `dependencies` is the
+  one section that survives the prune.
+
+The fixup, after an install:
+
+```bash
+sed -i 's|from "cn"|from "@/lib/utils"|' src/components/ui/*.tsx   # your ui path, your utils alias
+npm pkg delete dependencies.cn
+```
+
+Or go the other way deliberately and point your own `utils` alias at the package, so there is one
+`cn` and it is that one — at the cost of a runtime dependency under every shell, which is the
+opposite of what "the file is yours to edit" is for.
+
+This repo does not see the problem because its own vendored copies in `registry/new-york/ui/` are
+on `@/lib/utils`. Whether it should publish those as `@cubeui/*` items and depend on them instead,
+making an install one dialect, is open — it would mean this registry owning shadcn's update
+cadence for twenty-one files.
+
 ## What is here
 
 | Item | What it is |
