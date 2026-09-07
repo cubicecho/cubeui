@@ -39,6 +39,7 @@ runtime dependency on this package.
 | `@cubeui/password-field` | `PasswordField` — a password with a reveal button |
 | `@cubeui/action-button` | `ActionButton` — an icon button with a required name, and a tooltip that survives being disabled |
 | `@cubeui/confirm-button` | `ConfirmButton` — a destructive button that asks first, and makes you say what is lost |
+| `@cubeui/select` | `Select` — the choices as an `options` array rather than seven primitives, with headings and rules, and the wiring landing on the trigger |
 | `@cubeui/multi-select` | `MultiSelect` — portalled, keyboard-operable, searchable on every word, and able to create as you type |
 | `@cubeui/date-picker` | `DatePicker` and `DateRangePicker` — optionally with a time, and clearing is a real button |
 | `@cubeui/color-picker` | `ColorPicker` — a palette, the OS picker or a hex box, with a tick drawn in an ink that can be read on the swatch |
