@@ -86,7 +86,8 @@ disabled `ConfirmButton` does not open the dialog.
 <OptionSelect options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
 ```
 
-`options` is `{ value, label, group? }[]`, plus `{ separator: true }` for a rule — the same array
+`options` is `{ value, label, group?, className? }[]`, plus `{ separator: true }` for a rule and
+`{ note }` for a row that is not a choice — the same array
 `SelectField` takes, because `SelectField` renders this. Reach for it in a filter bar, a toolbar,
 or a `useState` screen; inside a TanStack form use `SelectField` and never wire this by hand.
 
@@ -103,6 +104,10 @@ primitive and broke the install.
 - Full width by default, because a column of selects that each shrink to their longest option is
   ragged. Pass `className="w-40"` for a toolbar; the later width wins.
 - `contentClassName` is the dropdown's class. `className` is the trigger's, which is the control.
+- `className` **on an option** is the row's, on the `SelectItem`. Reach for it when the values are
+  identifiers rather than prose — model ids, SHA prefixes, file paths are `font-mono`. Wrapping
+  the label in a `<span className="font-mono">` styles the text and leaves the row's padding,
+  tick and highlight in the body face.
 
 An option that is not a peer of the others says so in the array rather than in its own label:
 
@@ -121,6 +126,38 @@ An option that is not a peer of the others says so in the array rather than in i
 
 Drawn in the order given, never sorted — a board's lanes are ordered and alphabetical would be
 wrong. A flat `{ value, label }[]` draws flat.
+
+### A menu that fills when it opens
+
+A list the server owns should not be fetched on mount: a form of twenty fields would ask for
+eighteen lists nobody opens. `onOpenChange` is what makes that possible, and `{ note }` is where
+the menu says it is still working.
+
+```tsx
+const [opened, setOpened] = useState(false);
+const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, enabled: opened });
+
+<OptionSelect
+  value={model}
+  onValueChange={setModel}
+  onOpenChange={setOpened}
+  placeholder="Choose a model"
+  options={[
+    ...(models.data ?? []).map((m) => ({ value: m.id, label: m.id, className: "font-mono" })),
+    ...(models.isFetching && !models.data ? [{ note: "Loading…" }] : []),
+    ...(models.error ? [{ note: models.error.message, className: "text-destructive" }] : []),
+  ]}
+/>
+```
+
+- `onOpenChange` is the root's, so it is a prop here rather than something spread on the trigger.
+  Pass it alone to be told; pass `open` with it to drive the menu yourself.
+- **A note is not a disabled option.** That is the workaround every hand-written version reaches
+  for, and it is a row the keyboard walks onto and a reader hears as a choice they may not have.
+  A note is `role="status"`: unreachable, and announced when it appears — which is the case
+  exactly, since the menu opens before the list exists.
+- `SelectField` takes `onOpenChange` too, so a fetched list inside a form does not have to drop
+  to `FormField`'s function form to get one word through.
 
 ## Multi-select
 
