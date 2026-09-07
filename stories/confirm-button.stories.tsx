@@ -92,3 +92,30 @@ export const NamingTheVerb: Story = {
     await waitFor(() => expect(revoke).toBeVisible());
   },
 };
+
+/**
+ * The trigger is an `ActionButton`, so it inherits its `type="button"` — a "Delete" that asks
+ * first no longer submits the form behind it while the question is still on screen.
+ */
+export const ItDoesNotSubmitTheFormAroundIt: Story = {
+  args: { onSubmit: fn() },
+  render: ({ onSubmit, ...args }) => (
+    <form
+      className="grid w-80 gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        (onSubmit as () => void)();
+      }}
+    >
+      <label htmlFor="lane">Lane name</label>
+      <input id="lane" defaultValue="Review" className="border px-2 py-1" />
+      <ConfirmButton {...args} />
+    </form>
+  ),
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Delete lane" }));
+
+    await within(document.body).findByRole("alertdialog");
+    expect(args.onSubmit).not.toHaveBeenCalled();
+  },
+};

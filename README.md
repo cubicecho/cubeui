@@ -18,6 +18,73 @@ npx shadcn@latest add @cubeui/skill    # the agent skill, into .claude/skills/
 Components are copied into your tree and rewritten against your own path aliases; there is no
 runtime dependency on this package.
 
+## Installing into a Biome project
+
+Several of these items pull in shadcn primitives — `ui/field`, `ui/item`, `ui/input-group` and a
+handful of others — and **the primitives do not pass Biome's recommended preset**. An install
+that went fine ends in a red `biome check`, on files nobody here wrote, which reads as though the
+component just added is at fault.
+
+They are vendored, so the fix is an override rather than an edit: correcting them is editing
+shadcn, and the next `shadcn add` overwrites the correction.
+
+```jsonc
+// biome.json
+"overrides": [
+  { "includes": ["src/components/ui/**"], "linter": { "enabled": false } }
+]
+```
+
+That is what this repo does with its own copies, and it is the form to prefer. The narrower
+version — the offending rules off rather than the linter off — is reasonable for a `ui/` folder
+that also holds code you wrote, but the list is not stable: it moves with the shadcn version and
+with which primitives you happen to install. Between this repo's copies and one consuming
+project's, the set has included `a11y/useSemanticElements`, `a11y/useKeyWithClickEvents`,
+`style/useImportType`, `suspicious/noArrayIndexKey` and `suspicious/noDoubleEquals`, and there is
+no reason to think that is all of them.
+
+## The shadcn primitives bring their own `cn`
+
+Eighteen items here list bare shadcn primitives — `card`, `dialog`, `command`, `field` and the
+rest — and the CLI resolves those from `ui.shadcn.com`, not from this repo. All eighteen of them
+now import `cn` from an npm package of that name, and declare it as a dependency:
+
+```console
+$ curl -s https://ui.shadcn.com/r/styles/new-york-v4/dialog.json | jq -r '.dependencies[], (.files[].content | match("import \\{ cn \\}.*").string)'
+cn
+radix-ui
+import { cn } from "cn"
+```
+
+cubeui's own files import `cn` from your `utils` alias, the way a copied-into-your-tree component
+should. So after an install your `components/` is split down the middle: the shells call one
+`cn`, the primitives under them call another, and both are in the tree.
+
+Two things follow, and the second is the quiet one:
+
+- **A customised `cn` is customised for half your components.** A different `twMerge` config, a
+  class prefix — nothing errors, and nothing looks wrong until a class that should have been
+  merged is not.
+- **`cn` arrives in `dependencies`.** Not `devDependencies`, and the CLI puts it there without
+  asking. A server image built with `npm ci --omit=dev` carries it, because `dependencies` is the
+  one section that survives the prune.
+
+The fixup, after an install:
+
+```bash
+sed -i 's|from "cn"|from "@/lib/utils"|' src/components/ui/*.tsx   # your ui path, your utils alias
+npm pkg delete dependencies.cn
+```
+
+Or go the other way deliberately and point your own `utils` alias at the package, so there is one
+`cn` and it is that one — at the cost of a runtime dependency under every shell, which is the
+opposite of what "the file is yours to edit" is for.
+
+This repo does not see the problem because its own vendored copies in `registry/new-york/ui/` are
+on `@/lib/utils`. Whether it should publish those as `@cubeui/*` items and depend on them instead,
+making an install one dialect, is open — it would mean this registry owning shadcn's update
+cadence for twenty-one files.
+
 ## What is here
 
 | Item | What it is |
@@ -39,6 +106,7 @@ runtime dependency on this package.
 | `@cubeui/password-field` | `PasswordField` — a password with a reveal button |
 | `@cubeui/action-button` | `ActionButton` — an icon button with a required name, and a tooltip that survives being disabled |
 | `@cubeui/confirm-button` | `ConfirmButton` — a destructive button that asks first, and makes you say what is lost |
+| `@cubeui/select` | `Select` — the choices as an `options` array rather than seven primitives, with headings and rules, and the wiring landing on the trigger |
 | `@cubeui/multi-select` | `MultiSelect` — portalled, keyboard-operable, searchable on every word, and able to create as you type |
 | `@cubeui/date-picker` | `DatePicker` and `DateRangePicker` — optionally with a time, and clearing is a real button |
 | `@cubeui/color-picker` | `ColorPicker` — a palette, the OS picker or a hex box, with a tick drawn in an ink that can be read on the swatch |
@@ -51,6 +119,32 @@ runtime dependency on this package.
 | `@cubeui/control` | All six controls in one install |
 | `@cubeui/primitive` | Both re-published shadcn primitives |
 | `@cubeui/skill` | The agent skill — a router plus layout, form and control references — so an agent in a consuming project uses them correctly |
+
+## The agent skill is a per-developer install
+
+`npx shadcn@latest add @cubeui/skill` writes four Markdown files into your project's
+`.claude/skills/cubeui/`, which is where an agent looks for them. Most projects gitignore
+`.claude/`, so by default the skill is installed **per developer**: the person who ran the command
+has it, their teammates and CI do not, and each of them re-runs it for themselves — and re-runs it
+again when this registry changes.
+
+That is deliberate, and it is the same deal as any other tool a developer installs into their own
+working directory. A team that would rather share one copy un-ignores the one directory:
+
+```gitignore
+.claude/*
+!.claude/skills/
+```
+
+Then the skill is reviewed and updated like any other file in the repo, and `shadcn add` is run
+once by whoever is upgrading rather than by everyone.
+
+What the skill will not do is live somewhere tracked *and* be found automatically — the agent
+looks in `.claude/skills/`, and a copy in `docs/` is a copy somebody has to remember to point at.
+
+In this repository the four files live in [`registry/skill/`](registry/skill), which is what the
+`skill` item ships and what `.claude/skills/cubeui/SKILL.md` points at, so there is one copy of
+each rather than two that drift.
 
 ## Every slot is a prop, including the body
 

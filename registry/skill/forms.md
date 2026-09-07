@@ -53,7 +53,7 @@ The bound fields:
 
 Each one takes everything `FormField` takes — `label`, `description`, `required`, `action`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
-`validators` and `asyncDebounceMs`, in one flat list.
+`validators`, `listeners` and `asyncDebounceMs`, in one flat list.
 
 The four in their own files are there for the weight of what they import: a form of plain inputs
 installs `@cubeui/app-form` and pulls in no cmdk, no `react-day-picker`.
@@ -84,10 +84,61 @@ a hand-written `<Button type="submit">` to get it.
 at least once, never before, so a form does not open covered in red. That rule lives in one hook
 and applies to every field; do not re-implement it per field, and do not pass `error` yourself.
 
-**`SelectField` is the one that used to be broken.** A `<Select>`'s root renders no DOM, so a
-hand-written select field leaves the trigger with no `aria-invalid` and an error message nothing
-points at. `SelectField` routes through `FormField`'s function form and wires the trigger. Use it
-rather than a `Select` inside a `FormField`. The same is true of every picker here.
+**`SelectField` is the one that used to be broken.** Radix's `Select` root renders no DOM, so a
+select field assembled out of the shadcn primitives leaves the trigger with no `aria-invalid` and
+an error message nothing points at. `SelectField` routes through `FormField`'s function form and
+wires the trigger. Use it rather than assembling `SelectTrigger` and `SelectContent` inside a
+`FormField`. The same is true of every picker here.
+
+Outside a form the answer is the control it renders — `Select` from `@cubeui/select`, in
+[controls.md](controls.md), taking the same `options` array. Do not hand-write the primitives
+there either.
+
+**An option that is not a peer says so in the options array.** `group` puts a heading over the
+rows that share it, and a `{ separator: true }` entry draws a rule between them:
+
+```tsx
+<SelectField
+  form={form}
+  name="onSuccess"
+  label="On success"
+  options={[
+    { value: "stay", label: "Stay here" },
+    ...lanes.map((lane) => ({ value: lane.id, label: lane.name, group: "Lanes" })),
+    { separator: true },
+    { value: "archive", label: "Archive it" },
+  ]}
+/>
+```
+
+Groups are drawn in the order given, not sorted — a board's lanes are ordered and alphabetical
+would be wrong. A flat `{ value, label }[]` still draws flat, so nothing is written until an
+option is not a peer. Do not put the distinction in the label instead: `"Archive it — off the
+board"` is a sentence doing a divider's job, and it does not survive a long list.
+
+**A field that has to *do* something on change takes `listeners`.** Same place as `validators`,
+same shape — `onChange`, `onBlur`, `onMount`, `onUnmount`, `onSubmit`, and the two `*DebounceMs`
+numbers — and it is for the side effect, not the verdict: naming a lane after the kind you picked
+for it, filling a description from a template, clearing the fields the other transport owned.
+
+```tsx
+<SelectField
+  form={form}
+  name="roleId"
+  label="Kind"
+  options={KINDS}
+  listeners={{
+    onChange: ({ value }) => {
+      if (form.state.values.name.trim()) return;
+      form.setFieldValue("name", KINDS.find((kind) => kind.value === value)?.label ?? "");
+    },
+  }}
+/>
+```
+
+The guard is yours, and it is the part worth writing: a listener that overwrites what somebody
+already chose is the form arguing back. Check `form.state.fieldMeta.<name>?.isTouched`, or the
+value itself, before you write to a sibling.
 
 ### When you need the `field` object
 
@@ -102,6 +153,59 @@ sibling's value, render a list, or do something no prop covers:
 
 Use the one-line form everywhere else. It is the same component with the render prop already
 written.
+
+### A form value that contains itself
+
+```
+web/routes/task-edit.tsx(240,11): error TS2589: Type instantiation is excessively deep and
+possibly infinite.
+```
+
+**Line 240 is the first field in the form, and it is not the field at fault.** `DeepKeys` is
+computed once for the whole store and reported at the first position that asks for it, so a
+`<InputField name="name">` over a `string` is where a recursive value three fields down surfaces.
+Do not go looking at the field the error names.
+
+The cause is a default value whose type contains itself — a flow of steps where a step has
+branches and a branch has steps, a comment tree, a nested menu:
+
+```ts
+interface DraftStep { …; branches: DraftBranch[] }
+interface DraftBranch { case: string; steps: DraftStep[] }
+```
+
+`DeepKeysAndValuesImpl` in `@tanstack/form-core` walks objects and arrays structurally with no
+depth limiter and no seen-set, so a type that contains itself does not terminate. This is not
+about the bound fields: `form.AppField` with a render prop fails identically, because both ask
+`DeepKeys` the same question.
+
+**Hold the recursive value opaquely and cast at the one place it is read.** `unknown` is the
+first branch of that walk, so it stops there and every other field keeps its checked name:
+
+```ts
+interface Form {
+  name: string;
+  …
+  /** `unknown`, not `DraftStep[]`: a step contains steps, and `DeepKeys` cannot walk that. */
+  steps: unknown;
+}
+
+// Annotated, not `satisfies` — see below.
+const defaults: Form = { …, steps: toDraft(task?.steps ?? []) };
+const form = useAppForm({ defaultValues: defaults, … });
+
+<form.Field name="steps">
+  {(field) => <StepList steps={field.state.value as DraftStep[]} onChange={field.handleChange} />}
+</form.Field>
+```
+
+**`satisfies Form` does not do this.** It checks the literal and then infers from the literal, so
+the form's values are still the recursive type however `Form` declares the field — the error does
+not move. The declaration only takes effect when the object is *annotated*.
+
+Do not answer this by splitting the recursive part into a second form. One form, one `isDirty`,
+one submit; the subtree keeps its real type everywhere it is actually edited, and the cost is one
+cast with a comment on it.
 
 ### Loading
 
@@ -144,6 +248,32 @@ real: they are literals the form already knows, not data it is waiting for, so a
 them makes its column of labels appear out of nowhere when the values land. `loading` outranks `error`
 — a value that has not arrived is not one that came back wrong.
 
+### A description that came out of a schema
+
+`description` takes a `ReactNode` so a form can pass `schema.fields[k].description` straight
+through — a GraphQL description, a JSON-schema `description`, a docstring off a generated type.
+Those strings have two readers, and they are marked up for the one that reads markdown:
+
+```
+Whether tool definitions are sent up front (`eager`) or loaded as the run asks for
+them (`ondemand`). `inherit` takes the server's answer.
+```
+
+A model needs the backticks — they are the only thing saying `ondemand` is a value and not a
+word. A person reads them as punctuation. **Wrap the string in `ticks`**, exported beside
+`FormField`, and the marker is spent on a `<code>` instead of printed:
+
+```tsx
+<FormField label="Tool discovery" description={ticks(describe("Agent", "toolDiscovery"))} … />
+```
+
+Do not fix this by rewriting the description without backticks — the other reader is the one that
+loses. Do not fix it by keeping a second, human copy of the sentence beside the schema's; two
+sentences that mean the same thing are two sentences that drift.
+
+`ticks` is backticks and nothing else, it leaves a string with none alone, and an unpaired one
+stays the character it is. Anything more is a markdown renderer and belongs behind a library.
+
 ### Checkboxes and switches
 
 ```tsx
@@ -163,10 +293,10 @@ not this. That is a row, not a field; build it with `CardLayout` or `Section`.
 
 ### When the props belong on something nested
 
-A control whose root renders no DOM — `Select`, anything built on `Popover` — swallows the `id`,
-the `aria-describedby` and the `aria-invalid` when the shell clones it, and the field ends up
-wired to nothing, with no warning and nothing visibly wrong. Pass a **function** and put the
-props where they go:
+A control whose root renders no DOM — shadcn's `Select` primitive, anything built on `Popover` —
+swallows the `id`, the `aria-describedby` and the `aria-invalid` when the shell clones it, and
+the field ends up wired to nothing, with no warning and nothing visibly wrong. Pass a **function**
+and put the props where they go:
 
 ```tsx
 <FormField
@@ -185,6 +315,11 @@ props where they go:
 
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
 element itself and needs none of this.
+
+Every cubeui picker already knows where its own trigger is: `Select`, `MultiSelect`, `DatePicker`
+and `ColorPicker` take the rest of a `<button>`'s props and put them there, so the function form
+spreads onto the control and stops — `control={(props) => <Select {...props} options={LISTS} … />}`.
+The primitive version above is what that saves.
 
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
 trigger and leaves the description and the error describing nothing. Use `htmlFor` only when you

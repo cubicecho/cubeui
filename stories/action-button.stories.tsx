@@ -229,3 +229,78 @@ export const ARootProviderDoesNotReachIt: Story = {
     await waitFor(() => expect(screen.getByRole("tooltip")).toBeVisible(), { timeout: 400 });
   },
 };
+
+/**
+ * Where these actually live: a row of icon buttons inside a real form, beside the fields they
+ * act on. task_server's trigger editor is exactly this shape.
+ */
+function InAForm({
+  onSubmit,
+  ...props
+}: React.ComponentProps<typeof ActionButton> & { onSubmit?: () => void }) {
+  return (
+    <form
+      className="grid w-80 gap-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit?.();
+      }}
+    >
+      <label htmlFor="cron">Schedule</label>
+      <input id="cron" defaultValue="0 9 * * 1" className="border px-2 py-1" />
+      <div className="flex gap-2">
+        <ActionButton {...props} />
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  );
+}
+
+/**
+ * A `<button>` with no `type` is a submit button, so an untyped `ActionButton` inside a form both
+ * does its own job and submits — the trash icon removes the row *and* saves the form, and nothing
+ * at the call site says so.
+ */
+export const ItDoesNotSubmitTheFormAroundIt: Story = {
+  args: { label: "Remove this schedule", children: <Trash2 />, onSubmit: fn() },
+  render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Remove this schedule" }));
+
+    expect(args.onClick).toHaveBeenCalledOnce();
+    expect(args.onSubmit).not.toHaveBeenCalled();
+  },
+};
+
+/**
+ * And the half that no `onClick` guard could have covered. Enter in a text field submits through
+ * the **first submit button in tree order** — which, untyped, was the trash icon, so a stray
+ * Enter in the cron box deleted the schedule. Implicit submission never goes through a click, so
+ * the `disabled` handler that refuses the press did not stand in its way either.
+ */
+export const AStrayEnterDoesNotPressIt: Story = {
+  args: { label: "Remove this schedule", children: <Trash2 />, disabled: true, onSubmit: fn() },
+  render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
+  play: async ({ canvas, args }) => {
+    await userEvent.type(canvas.getByLabelText("Schedule"), "{Enter}");
+
+    // The form still saves — through Save, which is what the person meant.
+    await waitFor(() => {
+      expect(args.onSubmit).toHaveBeenCalledOnce();
+    });
+    expect(args.onClick).not.toHaveBeenCalled();
+  },
+};
+
+/** A caller who wants one of these to submit can still say so, and now has to. */
+export const ACallerCanStillMakeItSubmit: Story = {
+  args: { label: "Save the schedule", type: "submit", children: <Pencil />, onSubmit: fn() },
+  render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Save the schedule" }));
+
+    await waitFor(() => {
+      expect(args.onSubmit).toHaveBeenCalledOnce();
+    });
+  },
+};

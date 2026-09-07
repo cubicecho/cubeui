@@ -110,22 +110,26 @@ registry/new-york/form/radio-group-field.tsx         RadioGroupField
 registry/new-york/form/password-field.tsx            PasswordField
 registry/new-york/control/action-button.tsx          ActionButton
 registry/new-york/control/confirm-button.tsx         ConfirmButton
+registry/new-york/control/select.tsx                 Select (not shadcn's — this one takes options)
 registry/new-york/control/multi-select.tsx           MultiSelect + its two helpers
 registry/new-york/control/date-picker.tsx            DatePicker, DateRangePicker
 registry/new-york/control/color-picker.tsx           ColorPicker + its two helpers
 registry/new-york/control/password-input.tsx         PasswordInput
 registry/new-york/lib/readable-text-color.ts         readableTextColor
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        31 items: 23 components, a lib, two re-published
+registry.json                                        32 items: 24 components, a lib, two re-published
                                                      primitives, `layout`, `form`, `control`,
                                                      `primitive`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
 preview/                                             Vite demo page, `npm run dev`
 stories/                                             Storybook, and the tests — every story is one
 docs/component-conventions.md                        authoring rules, and the open questions
-.claude/skills/cubeui/SKILL.md                       the usage skill: install, choosing, vocabulary
-.claude/skills/cubeui/{layout,forms,controls}.md     its references, shipped by the same item
-scripts/check-vocabulary.mjs                         rule 2 and the skill hold the same words
+registry/skill/SKILL.md                              the usage skill: install, choosing, vocabulary
+registry/skill/{layout,forms,controls}.md            its references, shipped by the same item
+.claude/skills/cubeui/SKILL.md                       a pointer at those four, so this repo's own
+                                                     agent reads the copy that ships
+scripts/check-registry-build.mjs                     CI guard: no built item ships an empty file
+scripts/check-vocabulary.mjs                         CI guard: rule 2 and the skill hold the same words
 .github/workflows/ci.yml                             types, lint, vocabulary, registry drift, stories
 .github/workflows/pages.yml                          builds and publishes the registry on `main`
 ```
@@ -226,6 +230,9 @@ needs it: a radio group, a segmented control, a swatch grid used as the field it
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error
 - Comments explain **why**, not what. A comment that restates the line below it is noise. The
   comments worth writing here are the ones that say what went wrong without the line
+- Re-export with `import` + `export { … }`, never `export … from` — the shadcn CLI rewrites
+  import declarations against a consumer's aliases and leaves re-export declarations alone, so
+  the `from` form installs pointing at a directory the consumer does not have
 - Tailwind variants are literal class maps (`const SIZES = { sm: "sm:max-w-sm" }`), never
   composed strings — the scanner reads source text, so a built class name is never generated
 
@@ -240,22 +247,30 @@ of the conventions doc.
 
 ## Keep the skill in sync
 
-[`.claude/skills/cubeui/SKILL.md`](.claude/skills/cubeui/SKILL.md) is how an agent in a
-*consuming* project learns these components. A new component, a renamed prop or a changed
-default is not finished until it is in there. It ships as a registry item, so a stale skill is a
-stale skill in every project that installed it.
+[`registry/skill/SKILL.md`](registry/skill/SKILL.md) is how an agent in a *consuming* project
+learns these components. A new component, a renamed prop or a changed default is not finished
+until it is in there. It ships as a registry item, so a stale skill is a stale skill in every
+project that installed it.
+
+**Edit it in `registry/skill/`, never in `.claude/`.** That directory is a tool's working
+directory, not a source directory — this repo already ignores `.claude/worktrees/` and most
+projects ignore the whole thing, and a registry payload one `.gitignore` line away from
+disappearing is not a payload. `.claude/skills/cubeui/SKILL.md` is a pointer at these four files
+so that this repo's own agent reads the copy that ships, rather than a second copy that drifts
+from it.
 
 It is four files, and the split is load-bearing. `SKILL.md` is the router — the install line, the
 choosing table, the slot vocabulary, and the rule that no component takes children — and it is
-short because it is the part that is always in context. [`layout.md`](.claude/skills/cubeui/layout.md),
-[`forms.md`](.claude/skills/cubeui/forms.md) and [`controls.md`](.claude/skills/cubeui/controls.md)
-are read when the table sends the agent to one of them. A new item goes in its reference **and**
-gets a row in the choosing table; a new slot word goes in `SKILL.md`'s vocabulary and in rule 2
-of the conventions doc, because those two are the same list. `npm run docs:check` is what makes
-that true rather than intended — it compares the words layer by layer and fails CI on a word
-written into one of them and not the other. Say it in both voices: the conventions doc argues the
-word, the skill hands it to an agent. All four are listed in the `skill` item's `files`, so adding a fifth means editing
-`registry.json` too.
+short because it is the part that is always in context. [`layout.md`](registry/skill/layout.md),
+[`forms.md`](registry/skill/forms.md) and [`controls.md`](registry/skill/controls.md) are read
+when the table sends the agent to one of them. A new item goes in its reference **and** gets a
+row in the choosing table; a new slot word goes in `SKILL.md`'s vocabulary and in rule 2 of the
+conventions doc, because those two are the same list. `npm run docs:check` is what makes that
+true rather than intended — it compares the words layer by layer and fails CI on a word written
+into one of them and not the other. Say it in both voices: the conventions doc argues the word,
+the skill hands it to an agent. All four are listed in the `skill` item's `files`, so adding a
+fifth means editing `registry.json` too — and `npm run registry:check` is what notices if one of
+them ships empty.
 
 ## Git
 

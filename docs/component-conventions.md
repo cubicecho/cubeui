@@ -178,10 +178,20 @@ threw away what had been typed. A hook is a thing a caller can forget. **Where a
 be closed by making the behaviour unforgettable, prefer the prop to the hook** — the guard the
 caller cannot see is the guard the caller cannot skip.
 
-The shell guards only what it owns. `DialogLayout` reaches Escape, the overlay and the close
-button; a Cancel button in `footerActions` calls the caller's own setter and is out of reach. A
-prop that closes three of four doors is still worth having, and the fourth is documented rather
-than hidden.
+The shell guards only what it owns — and where it cannot own a path, it hands the caller the
+guard rather than a second copy of it. `DialogLayout` reaches Escape, the overlay and the close
+button, because all three arrive through Radix's `onOpenChange`. A Cancel button in
+`footerActions` does not: it is the caller's node calling the caller's setter. So `footerActions`
+takes a **function** and hands it the shell's own guarded close, which is the same close the
+other three go through.
+
+That is the smallest thing that could work, and deliberately not the shell growing its own Cancel
+button. A rendered Cancel would be unforgettable — the property the paragraph above argues for —
+but it would put the footer's contents, its word and its button order inside a shell whose whole
+job is to place nodes it did not write, and `discardLabel` is as far into a caller's vocabulary
+as this component should reach. A caller who wires Cancel to their own setter still gets today's
+behaviour; the function is right there in the prop's type, which is where a caller writing that
+line is already looking.
 
 Controlled/uncontrolled is delegated where it can be: pass `open`/`onOpenChange` straight through
 to Radix and let `undefined` mean uncontrolled. `DialogLayout` is the exception it has to be —
@@ -211,6 +221,13 @@ second sentence is the one that earns its place.
 Anything else is a dependency a consuming project has to be told about. `registryDependencies`
 covers both the shadcn primitives and other items in this registry; `dependencies` covers npm
 packages; a fourth category means the component is doing too much.
+
+**Re-export with `import` + `export { … }`, never `export … from`.** The shadcn CLI rewrites
+*import declarations* against a consumer's aliases and leaves *re-export declarations* alone, so
+`export { PasswordInput } from "@/registry/new-york/control/password-input"` ships verbatim and
+points at a directory that does not exist in the consumer's tree. Import the symbol at the top of
+the file the way everything else is imported, and export the local binding at the bottom. Same two
+lines, and the one that moves is the one the CLI knows how to move.
 
 ## 11. Names are plain English
 
@@ -280,8 +297,19 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    So the CLI rewrites both our `@/registry/...` cross-references and `@/lib/utils` against the
    consumer's own aliases, and the transitive `@cubeui/header-content-footer` dependency resolves.
+
+   **With one exception, found later: it rewrites imports, not re-exports.** The transform walks
+   the file's import string literals, so `export { X } from "@/registry/new-york/control/x"` is
+   left exactly as written and lands pointing at a `control/` directory that only exists in this
+   repo. Nothing warns; the install succeeds and `tsc` fails afterwards. Reproduced in the same
+   scratch project — installing the four bound-field items from the published registry gave six
+   `TS2307`s, and the same install with every re-export rewritten as an import plus a local
+   `export { … }` gave none. That form is §10.
    The `skill` item is the one exception: it sets `target: "~/.claude/skills/cubeui/SKILL.md"`,
-   and `~` is the consumer's project root, so it lands at `.claude/skills/cubeui/SKILL.md`.
+   and `~` is the consumer's project root, so it lands at `.claude/skills/cubeui/SKILL.md`. Its
+   *source* is `registry/skill/`, not `.claude/` — a payload living under a directory people
+   routinely gitignore is one line away from shipping empty, and the target is the only half of
+   that path that has to be `.claude`.
    Grouping components under `components/layout/` with a `target` stays rejected — it assumes a
    tree shape the consumer never agreed to.
 5. ~~Namespace, and where the registry is served from.~~ **Settled:** `@cubeui/<item>` as the

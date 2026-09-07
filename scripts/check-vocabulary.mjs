@@ -12,7 +12,7 @@
 import { readFile } from "node:fs/promises";
 
 const CONVENTIONS = "docs/component-conventions.md";
-const SKILL = ".claude/skills/cubeui/SKILL.md";
+const SKILL = "registry/skill/SKILL.md";
 
 // The layers are the same five in both files; only the first is worded differently, because
 // "Core — every shell" is how you argue it and "Everywhere" is how you use it.
