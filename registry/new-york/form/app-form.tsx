@@ -442,6 +442,34 @@ type Validators<TValues, TName extends DeepKeys<TValues>> = {
   onSubmitAsync?: Validate<DeepValue<TValues, TName>>;
 };
 
+type Listen<TValue> = (context: { value: TValue; fieldApi: AnyFieldApi }) => void;
+
+/**
+ * What the field should *do* when it changes, spelled out for the same reason
+ * {@link Validators} is.
+ *
+ * A validator answers whether the value is allowed; a listener acts on it having changed —
+ * naming a lane after the kind you picked for it, filling a description from a template,
+ * clearing the fields the other transport owned. Both are field-level options, both are handed
+ * straight to the field, and neither is a reason to fall back to `form.AppField`: the render
+ * prop is for a field that needs the `field` object to *render*, not for one that needs a
+ * callback the wrapper forgot to pass on.
+ *
+ * `onGroupSubmit` is the one omitted — it belongs to TanStack's field groups, which nothing in
+ * this registry builds.
+ */
+type Listeners<TValues, TName extends DeepKeys<TValues>> = {
+  onMount?: Listen<DeepValue<TValues, TName>>;
+  onUnmount?: Listen<DeepValue<TValues, TName>>;
+  onChange?: Listen<DeepValue<TValues, TName>>;
+  /** How long to wait after the last change before running `onChange`, in milliseconds. */
+  onChangeDebounceMs?: number;
+  onBlur?: Listen<DeepValue<TValues, TName>>;
+  /** How long to wait after the last blur before running `onBlur`, in milliseconds. */
+  onBlurDebounceMs?: number;
+  onSubmit?: Listen<DeepValue<TValues, TName>>;
+};
+
 /**
  * The names of the fields whose value is a `TValue` — the whole reason `NumberField` is a file
  * and not a `type="number"` prop.
@@ -473,6 +501,7 @@ type FormBinding<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TFo
   validators?: Validators<ValuesOf<TForm>, TName>;
   /** How long to wait before running the async validators, in milliseconds. */
   asyncDebounceMs?: number;
+  listeners?: Listeners<ValuesOf<TForm>, TName>;
 };
 
 /**
@@ -517,6 +546,7 @@ export function bindToForm<TProps extends object, TValue = unknown>(
     name,
     validators,
     asyncDebounceMs,
+    listeners,
     ...rest
   }: ControlPropsOf<TProps> & FormBinding<TForm, TName>) {
     // The generic `Field` cannot be described to TypeScript without repeating twenty-three type
@@ -526,11 +556,17 @@ export function bindToForm<TProps extends object, TValue = unknown>(
       name: unknown;
       validators?: unknown;
       asyncDebounceMs?: number;
+      listeners?: unknown;
       children: (field: AnyFieldApi) => ReactNode;
     }>;
 
     return (
-      <Subscribe name={name} validators={validators} asyncDebounceMs={asyncDebounceMs}>
+      <Subscribe
+        name={name}
+        validators={validators}
+        asyncDebounceMs={asyncDebounceMs}
+        listeners={listeners}
+      >
         {(field) => (
           <fieldContext.Provider value={field}>
             <Bound {...(rest as unknown as TProps)} />
