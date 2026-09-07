@@ -72,6 +72,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |
+| `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
 | `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
 
 **Form components add:**
@@ -99,7 +100,6 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. |
-| `open`, `onOpenChange` | A row whose body opens. Controlled, like every other pair here. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
@@ -205,6 +205,13 @@ of those is state that belongs to the widget, not to the screen. The line is whe
 outlives the interaction: a draft the control throws away on blur is the control's, and a value
 anything else in the app can read is the caller's. The value itself is always `value` and
 `onValueChange`, never held inside; the two never mirror.
+
+Delegation is the same here as it is above, and a control that wraps a primitive has to be told
+so: `OptionSelect` passes `open`/`onOpenChange` through to Radix because a menu whose list is
+fetched has nowhere else to learn that it opened. It shipped without them and the one picker in
+task-server whose options come from the server stayed hand-assembled — a control that swallows
+the primitive's own state is a control the fetching call site cannot use, and the fix is to pass
+it on rather than to grow a `loading` prop and a fetch.
 
 The form binding is the same line seen from the other side. `FormField` takes `error` as a node
 and asks nothing about where it came from, which is what lets it be installed into a project with

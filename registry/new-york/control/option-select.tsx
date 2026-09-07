@@ -22,10 +22,37 @@ export type SelectOption = {
    * alphabetical would be wrong.
    */
   group?: string;
+  /**
+   * The row's class, on the `SelectItem` itself. The only way in before this was to wrap the
+   * label, which styles the text and leaves the row's padding, tick and highlight in the body
+   * face — and model ids, SHA prefixes and file paths are `font-mono` because they are
+   * identifiers. `llama3.1:8b` beside `gpt-4o-mini` in prose is a list of sentences.
+   */
+  className?: string;
 };
 
-/** A rule across the list. The one entry that is not an option, so it has no `value`. */
+/** A rule across the list. An entry that is not an option, so it has no `value`. */
 export type SelectSeparatorEntry = { separator: true };
+
+/**
+ * A row that says something about the list rather than offering a choice: *Loading…*, or why
+ * the fetch failed.
+ *
+ * **It is not a disabled option.** That is the workaround every hand-written version reaches for,
+ * and it is a row the keyboard still walks onto and a reader still hears as a choice — one they
+ * are told they may not have — when it was never a choice at all.
+ *
+ * So the row itself is `aria-hidden`, because a listbox may own only options and groups and axe
+ * is right to say so; it is Radix's own reason for hiding its separator. The words are announced
+ * from an `sr-only` live region beside the control instead, always mounted — a live region added
+ * to the document in the same breath as its text is announced unreliably or not at all, and the
+ * whole case here is that the menu opens *before* the list exists. Same argument as
+ * `ActionButton`'s `hint`.
+ *
+ * `className` because the two of these are rarely the same colour — a wait is muted and a
+ * failure is not.
+ */
+export type SelectNoteEntry = { note: ReactNode; className?: string };
 
 /**
  * What `options` holds: the options, and the rules between them.
@@ -35,19 +62,31 @@ export type SelectSeparatorEntry = { separator: true };
  * *stay here*, then the other lanes, then *archive it*, which is not a lane at all. Without a
  * rule the last row sits flush against the lane names and reads as one of them, and the
  * workaround is a sentence doing a divider's job — `"Archive it — off the board"`.
+ *
+ * A note is the same argument for a row that is not a choice: once `{ separator: true }` proved
+ * the list can hold an entry that is not an option, a menu that is still loading has somewhere
+ * to say so.
  */
-export type SelectEntry = SelectOption | SelectSeparatorEntry;
+export type SelectEntry = SelectOption | SelectSeparatorEntry | SelectNoteEntry;
 
 /** Generic over the entry, so the same test sorts a raw list and the blocks built from one. */
 function isSeparator<T extends object>(entry: T): entry is T & SelectSeparatorEntry {
   return "separator" in entry;
 }
 
-type SelectBlock = SelectSeparatorEntry | { group?: string; options: SelectOption[] };
+/** The same, for the other entry that is not an option. */
+function isNote<T extends object>(entry: T): entry is T & SelectNoteEntry {
+  return "note" in entry;
+}
+
+type SelectBlock =
+  | SelectSeparatorEntry
+  | SelectNoteEntry
+  | { group?: string; options: SelectOption[] };
 
 /**
- * The flat list, as the runs Radix draws: a rule is its own block, and consecutive options
- * sharing a `group` are one.
+ * The flat list, as the runs Radix draws: a rule and a note are each their own block, and
+ * consecutive options sharing a `group` are one.
  *
  * Walked rather than bucketed, because the order is the caller's and a group that reappears
  * later is a caller who meant it. Options with no `group` are a block with no heading, which is
@@ -56,12 +95,13 @@ type SelectBlock = SelectSeparatorEntry | { group?: string; options: SelectOptio
 function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
   const blocks: SelectBlock[] = [];
   for (const entry of entries) {
-    if (isSeparator(entry)) {
+    if (isSeparator(entry) || isNote(entry)) {
       blocks.push(entry);
       continue;
     }
     const last = blocks.at(-1);
-    if (last && !isSeparator(last) && last.group === entry.group) {
+    // `"options" in last` rather than two negations: it is the shape being asked for.
+    if (last && "options" in last && last.group === entry.group) {
       last.options.push(entry);
     } else {
       blocks.push({ group: entry.group, options: [entry] });
@@ -79,6 +119,17 @@ type OptionSelectProps = Omit<
   onValueChange: (value: string) => void;
   /** What the trigger says with nothing chosen. */
   placeholder?: string;
+  /**
+   * Whether the menu is open, and being told when that changes. The same controlled pair as
+   * everywhere else in the set; pass `onOpenChange` on its own to be told without taking over.
+   *
+   * This is what a menu that fills when it opens needs. The fetch is `enabled: opened`, so a
+   * form of twenty fields asks the server nothing for the eighteen the reader never touches —
+   * and Radix's root is the only thing that knows, which is the one element this control does
+   * not hand back.
+   */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   /** The dropdown's class. `className` still goes to the trigger, which is the control. */
   contentClassName?: string;
 };
@@ -120,42 +171,78 @@ export function OptionSelect({
   value,
   onValueChange,
   placeholder,
+  open,
+  onOpenChange,
   className,
   contentClassName,
   disabled,
   ...props
 }: OptionSelectProps) {
   const blocks = useMemo(() => blocksOf(options), [options]);
+  const notes = useMemo(() => options.filter(isNote), [options]);
 
   return (
-    <SelectRoot value={value ?? ""} onValueChange={onValueChange} disabled={disabled}>
+    <SelectRoot
+      value={value ?? ""}
+      onValueChange={onValueChange}
+      disabled={disabled}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       {/* Full width by default, because a select in a field is one and a trigger that shrinks to
           its longest option makes a column of them ragged. `cn` lets a caller say otherwise. */}
       <SelectTrigger {...props} className={cn("w-full", className)}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
+      {/*
+        Where the notes are announced from. It sits here rather than in the menu because the menu
+        is the listbox and a listbox may own only options and groups — and because Radix unmounts
+        the menu on close, while a live region has to be in the document *before* its text is to
+        be read out at all. The root draws nothing, so this is a sibling of the trigger.
+      */}
+      <span role="status" aria-live="polite" className="sr-only">
+        {notes.map((entry, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: a message about the list has no id
+          <span key={`note-${index}`}>{entry.note}</span>
+        ))}
+      </span>
       <SelectContent className={contentClassName}>
         {/*
           Keyed by position, and it has to be: a rule has no identity of its own, and a heading
           that appears twice is a caller who meant it, so neither is unique. The list is the
           caller's and is drawn in the order given, so a position is stable enough.
         */}
-        {blocks.map((block, index) =>
-          isSeparator(block) ? (
+        {blocks.map((block, index) => {
+          if (isSeparator(block)) {
             // biome-ignore lint/suspicious/noArrayIndexKey: a rule has no identity of its own
-            <SelectSeparator key={`block-${index}`} />
-          ) : (
+            return <SelectSeparator key={`block-${index}`} />;
+          }
+          if (isNote(block)) {
+            return (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: nor does a message about the list
+                key={`block-${index}`}
+                // Hidden here and announced from the live region below. A listbox may own only
+                // options and groups, which is why Radix hides its own separator the same way.
+                aria-hidden="true"
+                className={cn("px-2 py-1.5 text-sm text-muted-foreground", block.className)}
+              >
+                {block.note}
+              </div>
+            );
+          }
+          return (
             // biome-ignore lint/suspicious/noArrayIndexKey: nor does a repeated heading
             <SelectGroup key={`block-${index}`}>
               {block.group ? <SelectLabel>{block.group}</SelectLabel> : null}
               {block.options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className={option.className}>
                   {option.label}
                 </SelectItem>
               ))}
             </SelectGroup>
-          ),
-        )}
+          );
+        })}
       </SelectContent>
     </SelectRoot>
   );
