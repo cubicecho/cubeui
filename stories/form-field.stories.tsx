@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { FormField } from "@/registry/new-york/form/form-field";
+import { FormField, ticks } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
 import { Input } from "@/registry/new-york/ui/input";
@@ -631,5 +631,137 @@ export const InlineAndPopoverDescribeTheControlAlike: Story = {
     const control = controlFor(canvasElement, "Display name");
     expect(canvasElement.querySelector("[data-slot=field-description]")).not.toBeNull();
     expect(control).toHaveAccessibleDescription(SCHEMA_DESCRIPTION);
+  },
+};
+
+/**
+ * A real one, from `task_server`'s `Agent` table. It is written once on the server, reaches the
+ * GraphQL schema through drizzle-graphql's `describeColumn`, and codegen brings it back as a map
+ * — so this string and the one an agent reads off the `/mcp` tool schema are the same string.
+ */
+const TICKED_DESCRIPTION =
+  "Whether tool definitions are sent up front (`eager`) or loaded as the run asks for them " +
+  "(`ondemand`). `inherit` takes the server's answer.";
+
+/** The same sentence with the markers spent rather than printed. */
+const TICKED_AS_READ =
+  "Whether tool definitions are sent up front (eager) or loaded as the run asks for them " +
+  "(ondemand). inherit takes the server's answer.";
+
+/**
+ * The problem, pinned first so the fix has something to be measured against.
+ *
+ * `description` is documented as the prop a form pours `schema.fields[k].description` into, and
+ * that string is marked up for the other reader it has: a model, which has no way besides the
+ * backticks of being told that `ondemand` is a value and not a word. Straight through, a person
+ * reads the markers.
+ */
+export const BackticksArriveInTheDescription: Story = {
+  args: {
+    label: "Tool discovery",
+    description: TICKED_DESCRIPTION,
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const description = canvasElement.querySelector("[data-slot=field-description]");
+
+    expect(description?.textContent).toContain("`eager`");
+    expect(description?.querySelector("code")).toBeNull();
+  },
+};
+
+/**
+ * And the adapter. `ticks` is the six lines every project that passes a schema description
+ * through was otherwise writing for itself — the marker is spent on a `<code>` instead of being
+ * printed, and the sentence is the sentence.
+ */
+export const TicksSpendsTheMarkers: Story = {
+  args: {
+    label: "Tool discovery",
+    description: ticks(TICKED_DESCRIPTION),
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const description = canvasElement.querySelector("[data-slot=field-description]");
+    const code = [...(description?.querySelectorAll("code") ?? [])].map((el) => el.textContent);
+
+    expect(code).toEqual(["eager", "ondemand", "inherit"]);
+    expect(description?.textContent).toBe(TICKED_AS_READ);
+    expect(description?.textContent).not.toContain("`");
+
+    // The three values are still part of the sentence the control is described by — they are
+    // drawn differently, not moved out of the description.
+    expect(controlFor(canvasElement, "Tool discovery")).toHaveAccessibleDescription(TICKED_AS_READ);
+  },
+};
+
+/**
+ * Nothing to spend, nothing spent. A description without backticks comes out as the string it
+ * went in as, which is what makes it safe to wrap every one of them rather than the few known to
+ * be marked up.
+ */
+export const APlainSentenceIsUnchanged: Story = {
+  args: {
+    label: "Display name",
+    description: ticks(SCHEMA_DESCRIPTION),
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const description = canvasElement.querySelector("[data-slot=field-description]");
+
+    expect(description?.querySelector("code")).toBeNull();
+    expect(description?.textContent).toBe(SCHEMA_DESCRIPTION);
+  },
+};
+
+/**
+ * The one a naive split gets wrong. A lone backtick — a shell snippet someone half-quoted, a
+ * sentence that ends mid-thought — has nothing closing it, and pairing it with the end of the
+ * string would swallow the rest of the description into a `<code>`. A description is prose that
+ * has to survive however it was written, so the stray marker stays the character it is.
+ */
+export const AnUnpairedBacktickIsLeftAlone: Story = {
+  args: {
+    label: "Command",
+    description: ticks("Runs `pnpm build` in the workspace root. Escape a ` the shell would eat."),
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    const description = canvasElement.querySelector("[data-slot=field-description]");
+    const code = [...(description?.querySelectorAll("code") ?? [])].map((el) => el.textContent);
+
+    // The pair before it still became code; only the odd one out was left as text.
+    expect(code).toEqual(["pnpm build"]);
+    expect(description?.textContent).toBe(
+      "Runs pnpm build in the workspace root. Escape a ` the shell would eat.",
+    );
+  },
+};
+
+/**
+ * It composes with the placement, because it produces the same `ReactNode` the prop already took.
+ * The popover's always-mounted `sr-only` copy carries the `<code>` spans too, so the control is
+ * described by the whole sentence with the popover shut.
+ */
+export const TicksWorksBehindAPopover: Story = {
+  args: {
+    label: "Tool discovery",
+    description: ticks(TICKED_DESCRIPTION),
+    descriptionPlacement: "popover",
+    control: <Input />,
+  },
+  play: async ({ canvasElement }) => {
+    expect(controlFor(canvasElement, "Tool discovery")).toHaveAccessibleDescription(TICKED_AS_READ);
+
+    const trigger = within(canvasElement).getByRole("button", { name: "About Tool discovery" });
+    await userEvent.click(trigger);
+
+    const popover = await screen.findByRole("dialog");
+    await waitFor(() => expect(popover).toBeVisible());
+    expect([...popover.querySelectorAll("code")].map((el) => el.textContent)).toEqual([
+      "eager",
+      "ondemand",
+      "inherit",
+    ]);
   },
 };
