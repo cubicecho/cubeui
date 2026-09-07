@@ -28,6 +28,11 @@ jobs:
       - name: Lint and format
         run: npm run lint
 
+      # Rule 2 and the skill's vocabulary section are the same list in two voices. They drifted
+      # by five words before anything compared them.
+      - name: The conventions and the skill agree on the vocabulary
+        run: npm run docs:check
+
       - name: Build the registry
         run: npm run registry:build
 

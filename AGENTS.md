@@ -125,7 +125,8 @@ stories/                                             Storybook, and the tests â€
 docs/component-conventions.md                        authoring rules, and the open questions
 .claude/skills/cubeui/SKILL.md                       the usage skill: install, choosing, vocabulary
 .claude/skills/cubeui/{layout,forms,controls}.md     its references, shipped by the same item
-.github/workflows/ci.yml                             types, lint, registry drift, stories
+scripts/check-vocabulary.mjs                         rule 2 and the skill hold the same words
+.github/workflows/ci.yml                             types, lint, vocabulary, registry drift, stories
 .github/workflows/pages.yml                          builds and publishes the registry on `main`
 ```
 
@@ -250,8 +251,10 @@ short because it is the part that is always in context. [`layout.md`](.claude/sk
 [`forms.md`](.claude/skills/cubeui/forms.md) and [`controls.md`](.claude/skills/cubeui/controls.md)
 are read when the table sends the agent to one of them. A new item goes in its reference **and**
 gets a row in the choosing table; a new slot word goes in `SKILL.md`'s vocabulary and in rule 2
-of the conventions doc, because those two are the same list and they are checked against each
-other. All four are listed in the `skill` item's `files`, so adding a fifth means editing
+of the conventions doc, because those two are the same list. `npm run docs:check` is what makes
+that true rather than intended â€” it compares the words layer by layer and fails CI on a word
+written into one of them and not the other. Say it in both voices: the conventions doc argues the
+word, the skill hands it to an agent. All four are listed in the `skill` item's `files`, so adding a fifth means editing
 `registry.json` too.
 
 ## Git

@@ -59,7 +59,7 @@ came from the request*: on `CardLayout` the body, on `PageHeader` and `PageLayou
 `FormField` the control. It outranks whatever it competes with — `empty` on a card, `error` on a
 field — because data that has not arrived is not data that came back empty or wrong.
 
-**Page and split shells add:**
+**Page, split and dialog shells add:**
 
 | Word | Means |
 | --- | --- |
@@ -72,6 +72,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |
+| `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
 
 **Form components add:**
 
