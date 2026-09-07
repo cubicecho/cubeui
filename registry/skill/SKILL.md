@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, MultiSelect, DatePicker, ColorPicker, PasswordInput) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, Select, MultiSelect, DatePicker, ColorPicker, PasswordInput) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -48,7 +48,7 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form, control
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
-| A tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
+| A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
 `className` until it is a different component. A shape that shows up three times is a case for a

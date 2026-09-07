@@ -43,6 +43,13 @@ the tooltip opens the instant the pointer crosses. Pass `delayDuration` (and
 Radix offers no way to read the outer provider, so the number has to be said twice; a project
 that minds should say it once in a wrapper.
 
+**Both of these are `type="button"`, so neither submits the form it sits in.** You do not need
+to write it at the call site, and you should not go back to a bare `<Button>` to avoid it. A
+`<button>` with no type is a submit button, which is why an icon button beside a field used to
+save the form as well as do its own job — and why Enter in that field pressed the trash, since
+implicit submission goes to the first submit button in tree order and never through a click.
+A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+
 ## Destructive buttons
 
 ```tsx
@@ -73,13 +80,53 @@ is always destructive; a confirm that is *not* destructive is a question, and a 
 Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
+## Select
+
+```tsx
+<Select options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
+```
+
+`options` is `{ value, label, group? }[]`, plus `{ separator: true }` for a rule — the same array
+`SelectField` takes, because `SelectField` renders this. Reach for it in a filter bar, a toolbar,
+or a `useState` screen; inside a TanStack form use `SelectField` and never wire this by hand.
+
+**This is not shadcn's `Select`.** That one is the primitive at `@/components/ui/select` and
+takes children; this one takes `options`. The import path is what tells them apart, and picking
+the wrong one is a type error rather than a quiet bug.
+
+- The trigger is what carries the wiring. Radix's `Select` root renders no DOM, so an `id` or an
+  `aria-invalid` put on it goes nowhere — this takes the rest of a `<button>`'s props and spreads
+  them on the trigger, which is why it drops straight into `FormField`'s **function form**:
+  `control={(wired) => <Select {...wired} options={…} … />}`.
+- Full width by default, because a column of selects that each shrink to their longest option is
+  ragged. Pass `className="w-40"` for a toolbar; the later width wins.
+- `contentClassName` is the dropdown's class. `className` is the trigger's, which is the control.
+
+An option that is not a peer of the others says so in the array rather than in its own label:
+
+```tsx
+<Select
+  options={[
+    { value: "stay", label: "Stay here" },
+    ...lanes.map((lane) => ({ value: lane.id, label: lane.name, group: "Lanes" })),
+    { separator: true },
+    { value: "archive", label: "Archive it" },
+  ]}
+  value={destination}
+  onValueChange={setDestination}
+/>
+```
+
+Drawn in the order given, never sorted — a board's lanes are ordered and alphabetical would be
+wrong. A flat `{ value, label }[]` draws flat.
+
 ## Multi-select
 
 A tag picker: a trigger showing what is chosen, a searchable list behind it.
 
 ```tsx
 <MultiSelect
-  options={TAGS}                       // { value, label, keywords?, color?, disabled?, hint? }[]
+  options={TAGS}          // { value, label, keywords?, color?, disabled?, hint?, meta?, group? }[]
   value={tags}
   onValueChange={setTags}
   placeholder="No tags"
@@ -97,6 +144,18 @@ A tag picker: a trigger showing what is chosen, a searchable list behind it.
   so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
   picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
   Same argument as `ActionButton`'s `hint`.
+- **`meta` on an option is the end of the row** — a status badge, a count, a date. Read after the
+  name, never as part of it, and never on the chip: the chip is the label and stays a string. Do
+  not reach for `color` for this. That is the chip's colour, and pointing it at a status mints a
+  second colour vocabulary beside the app's own.
+- **`group` on an option is a heading over the rows that share it.** Drawn in the order given,
+  not sorted — a board's lanes are ordered and alphabetical would be wrong. The heading is
+  searched along with the row, so typing a lane's name still finds the cards in it, and a group
+  whose rows are all filtered out hides itself.
+
+`label` is still the row, the chip and what the search matches, so anything that is not the name
+goes in one of those three rather than into the label. `"Fix billing (archived)"` is a row saying
+its status by having it typed into its name, and it says it on the chip too.
 
 Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
 inside a `FormField` — but pass them through the **function form** of `control`, since its root

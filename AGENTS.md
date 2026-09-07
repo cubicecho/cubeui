@@ -110,13 +110,14 @@ registry/new-york/form/radio-group-field.tsx         RadioGroupField
 registry/new-york/form/password-field.tsx            PasswordField
 registry/new-york/control/action-button.tsx          ActionButton
 registry/new-york/control/confirm-button.tsx         ConfirmButton
+registry/new-york/control/select.tsx                 Select (not shadcn's — this one takes options)
 registry/new-york/control/multi-select.tsx           MultiSelect + its two helpers
 registry/new-york/control/date-picker.tsx            DatePicker, DateRangePicker
 registry/new-york/control/color-picker.tsx           ColorPicker + its two helpers
 registry/new-york/control/password-input.tsx         PasswordInput
 registry/new-york/lib/readable-text-color.ts         readableTextColor
 registry/new-york/ui/*.tsx                           shadcn primitives, installed by the CLI
-registry.json                                        31 items: 23 components, a lib, two re-published
+registry.json                                        32 items: 24 components, a lib, two re-published
                                                      primitives, `layout`, `form`, `control`,
                                                      `primitive`, `skill`
 components.json                                      aliases point at `@/registry/new-york`
@@ -228,6 +229,9 @@ needs it: a radio group, a segmented control, a swatch grid used as the field it
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error
 - Comments explain **why**, not what. A comment that restates the line below it is noise. The
   comments worth writing here are the ones that say what went wrong without the line
+- Re-export with `import` + `export { … }`, never `export … from` — the shadcn CLI rewrites
+  import declarations against a consumer's aliases and leaves re-export declarations alone, so
+  the `from` form installs pointing at a directory the consumer does not have
 - Tailwind variants are literal class maps (`const SIZES = { sm: "sm:max-w-sm" }`), never
   composed strings — the scanner reads source text, so a built class name is never generated
 
