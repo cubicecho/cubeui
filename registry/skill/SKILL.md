@@ -70,23 +70,31 @@ The same words mean the same thing in every component, and this is the point of 
 - **`empty`** — what the body says when `content` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `empty` is not consulted.
-- **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
-  `form.state.isDirty`.
 - **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one.
 
-**Page and split shells add:**
+**Page, split and dialog shells add:**
 
 - **`breadcrumbs`** — the line above the title. A trail, or a back link, which is a one-step
   trail. Nodes, never a route.
 - **`headerContent`** — the row under the title: search, filters, tabs. Stacked in the order
   you pass them.
 - **`sidebar`** — the second surface in a `SidebarLayout`. `content` is still the main one, so the
-  pair reads the way it does everywhere else. `sidebarPosition`, `sidebarWidth` and `sidebarClassName` are its.
+  pair reads the way it does everywhere else.
+- **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarClassName`** — the sidebar's, by prefix. A prop
+  that belongs to a slot wears the slot's name, so it needs no word of its own.
 - **`first`**, **`second`** — the two panes of a `SplitLayout`, as equals. Numbered rather than
   named, because a role pair lies about an even split and a side pair lies once the panes stack or
-  the page is read right-to-left. `firstWidth` or `secondWidth` sizes one of them, never both.
+  the page is read right-to-left.
+- **`firstWidth`**, **`secondWidth`** — which pane carries the width. One or the other, never both;
+  the pane you do not size takes the rest.
+- **`width`** — on a page shell, its column: `page`, `prose` or `full`. A named column rather than
+  a number, so every page in an app is one of three widths instead of eleven.
 - **`level`** — not a slot: `1 | 2 | 3`, which heading element the title is. The size follows the
   element, so you never set both.
+- **`trigger`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
+  is the alternative to holding `open` yourself, not an addition to it.
+- **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
+  `form.state.isDirty`.
 
 **Form components add:**
 
@@ -103,6 +111,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`label`** — on `ActionButton` and `ConfirmButton` it is required, and it is the accessible
   name, not a caption.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
+- **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
+  swapped for another without rewriting the call site. Never `onChange`, and never a control that
+  keeps the value inside itself.
 
 **List rows and query states add:**
 
@@ -113,6 +124,8 @@ The same words mean the same thing in every component, and this is the point of 
   data library.
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
 - **`count`** — how many rows the page is *about to draw*, which is not what came back.
+- **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
+  the DOM attribute of that name and is not this word.
 
 Rules that follow from the vocabulary:
 

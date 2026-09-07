@@ -129,7 +129,8 @@ registry/skill/{layout,forms,controls}.md            its references, shipped by 
 .claude/skills/cubeui/SKILL.md                       a pointer at those four, so this repo's own
                                                      agent reads the copy that ships
 scripts/check-registry-build.mjs                     CI guard: no built item ships an empty file
-.github/workflows/ci.yml                             types, lint, registry drift, stories
+scripts/check-vocabulary.mjs                         CI guard: rule 2 and the skill hold the same words
+.github/workflows/ci.yml                             types, lint, vocabulary, registry drift, stories
 .github/workflows/pages.yml                          builds and publishes the registry on `main`
 ```
 
@@ -264,9 +265,12 @@ short because it is the part that is always in context. [`layout.md`](registry/s
 [`forms.md`](registry/skill/forms.md) and [`controls.md`](registry/skill/controls.md) are read
 when the table sends the agent to one of them. A new item goes in its reference **and** gets a
 row in the choosing table; a new slot word goes in `SKILL.md`'s vocabulary and in rule 2 of the
-conventions doc, because those two are the same list and they are checked against each other.
-All four are listed in the `skill` item's `files`, so adding a fifth means editing
-`registry.json` too — and `npm run registry:check` is what notices if one of them ships empty.
+conventions doc, because those two are the same list. `npm run docs:check` is what makes that
+true rather than intended — it compares the words layer by layer and fails CI on a word written
+into one of them and not the other. Say it in both voices: the conventions doc argues the word,
+the skill hands it to an agent. All four are listed in the `skill` item's `files`, so adding a
+fifth means editing `registry.json` too — and `npm run registry:check` is what notices if one of
+them ships empty.
 
 ## Git
 

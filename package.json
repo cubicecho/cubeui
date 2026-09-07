@@ -18,6 +18,7 @@
     "registry:check": "node scripts/check-registry-build.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
+    "docs:check": "node scripts/check-vocabulary.mjs",
     "format": "biome check --write .",
     "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build",
