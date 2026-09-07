@@ -2,17 +2,16 @@ import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { useState } from "react";
+import type {
+  SelectEntry,
+  SelectOption,
+  SelectSeparatorEntry,
+} from "@/registry/new-york/control/select";
+import { Select } from "@/registry/new-york/control/select";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
 import { Input } from "@/registry/new-york/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/registry/new-york/ui/select";
 import { Switch } from "@/registry/new-york/ui/switch";
 import { Textarea } from "@/registry/new-york/ui/textarea";
 
@@ -229,18 +228,17 @@ function BoundTextareaField(props: TextareaFieldProps) {
   );
 }
 
-type SelectOption = { label: ReactNode; value: string };
-
 type SelectFieldProps = FieldProps & {
-  options: readonly SelectOption[];
+  options: readonly SelectEntry[];
   placeholder?: string;
   triggerClassName?: string;
 };
 
 /**
- * The one that needs `FormField`'s function form. `Select`'s root renders no DOM, so the id and
- * the aria attributes go on the trigger — which is the detail every hand-written select field in
- * these apps gets wrong, silently, leaving a trigger with no `aria-invalid` and an error message
+ * The one that needs `FormField`'s function form, because `Select` is a `Popover`-shaped control
+ * whose root renders no DOM: the id and the aria attributes belong on the trigger, and the
+ * control is what knows where that is. Every hand-written select field in these apps puts them
+ * on the root instead, silently, leaving a trigger with no `aria-invalid` and an error message
  * nothing points at.
  */
 function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: SelectFieldProps) {
@@ -252,22 +250,15 @@ function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: S
       {...rest}
       error={error}
       control={(wired) => (
-        <Select value={field.state.value ?? ""} onValueChange={field.handleChange}>
-          <SelectTrigger
-            {...wired}
-            onBlur={field.handleBlur}
-            className={triggerClassName ?? "w-full"}
-          >
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Select
+          {...wired}
+          options={options}
+          value={field.state.value ?? ""}
+          onValueChange={field.handleChange}
+          onBlur={field.handleBlur}
+          placeholder={placeholder}
+          className={triggerClassName}
+        />
       )}
     />
   );
@@ -442,6 +433,34 @@ type Validators<TValues, TName extends DeepKeys<TValues>> = {
   onSubmitAsync?: Validate<DeepValue<TValues, TName>>;
 };
 
+type Listen<TValue> = (context: { value: TValue; fieldApi: AnyFieldApi }) => void;
+
+/**
+ * What the field should *do* when it changes, spelled out for the same reason
+ * {@link Validators} is.
+ *
+ * A validator answers whether the value is allowed; a listener acts on it having changed —
+ * naming a lane after the kind you picked for it, filling a description from a template,
+ * clearing the fields the other transport owned. Both are field-level options, both are handed
+ * straight to the field, and neither is a reason to fall back to `form.AppField`: the render
+ * prop is for a field that needs the `field` object to *render*, not for one that needs a
+ * callback the wrapper forgot to pass on.
+ *
+ * `onGroupSubmit` is the one omitted — it belongs to TanStack's field groups, which nothing in
+ * this registry builds.
+ */
+type Listeners<TValues, TName extends DeepKeys<TValues>> = {
+  onMount?: Listen<DeepValue<TValues, TName>>;
+  onUnmount?: Listen<DeepValue<TValues, TName>>;
+  onChange?: Listen<DeepValue<TValues, TName>>;
+  /** How long to wait after the last change before running `onChange`, in milliseconds. */
+  onChangeDebounceMs?: number;
+  onBlur?: Listen<DeepValue<TValues, TName>>;
+  /** How long to wait after the last blur before running `onBlur`, in milliseconds. */
+  onBlurDebounceMs?: number;
+  onSubmit?: Listen<DeepValue<TValues, TName>>;
+};
+
 /**
  * The names of the fields whose value is a `TValue` — the whole reason `NumberField` is a file
  * and not a `type="number"` prop.
@@ -473,6 +492,7 @@ type FormBinding<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TFo
   validators?: Validators<ValuesOf<TForm>, TName>;
   /** How long to wait before running the async validators, in milliseconds. */
   asyncDebounceMs?: number;
+  listeners?: Listeners<ValuesOf<TForm>, TName>;
 };
 
 /**
@@ -517,6 +537,7 @@ export function bindToForm<TProps extends object, TValue = unknown>(
     name,
     validators,
     asyncDebounceMs,
+    listeners,
     ...rest
   }: ControlPropsOf<TProps> & FormBinding<TForm, TName>) {
     // The generic `Field` cannot be described to TypeScript without repeating twenty-three type
@@ -526,11 +547,17 @@ export function bindToForm<TProps extends object, TValue = unknown>(
       name: unknown;
       validators?: unknown;
       asyncDebounceMs?: number;
+      listeners?: unknown;
       children: (field: AnyFieldApi) => ReactNode;
     }>;
 
     return (
-      <Subscribe name={name} validators={validators} asyncDebounceMs={asyncDebounceMs}>
+      <Subscribe
+        name={name}
+        validators={validators}
+        asyncDebounceMs={asyncDebounceMs}
+        listeners={listeners}
+      >
         {(field) => (
           <fieldContext.Provider value={field}>
             <Bound {...(rest as unknown as TProps)} />
@@ -587,3 +614,9 @@ export const CheckboxField = bindToForm<CheckboxFieldProps, boolean>(
 
 /** A switch and its caption, as one line. */
 export const SwitchField = bindToForm<SwitchFieldProps, boolean>(BoundSwitchField, "SwitchField");
+
+export type { SelectEntry, SelectOption, SelectSeparatorEntry };
+// Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
+// install and leaves re-export declarations alone, so the `from` form would ship a path into
+// `control/` that does not exist in a consumer's tree. See AGENTS.md.
+export { Select };

@@ -7,6 +7,7 @@
     "@cubeui/action-button",
     "@cubeui/confirm-button",
     "@cubeui/multi-select",
+    "@cubeui/select",
     "@cubeui/date-picker",
     "@cubeui/color-picker",
     "@cubeui/password-input"
