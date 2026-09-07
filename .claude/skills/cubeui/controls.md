@@ -43,6 +43,13 @@ the tooltip opens the instant the pointer crosses. Pass `delayDuration` (and
 Radix offers no way to read the outer provider, so the number has to be said twice; a project
 that minds should say it once in a wrapper.
 
+**Both of these are `type="button"`, so neither submits the form it sits in.** You do not need
+to write it at the call site, and you should not go back to a bare `<Button>` to avoid it. A
+`<button>` with no type is a submit button, which is why an icon button beside a field used to
+save the form as well as do its own job — and why Enter in that field pressed the trash, since
+implicit submission goes to the first submit button in tree order and never through a click.
+A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+
 ## Destructive buttons
 
 ```tsx
