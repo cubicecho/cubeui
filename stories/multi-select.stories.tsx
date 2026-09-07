@@ -322,3 +322,94 @@ export const TheHintIsADescriptionNotAName: Story = {
     );
   },
 };
+
+/**
+ * The headings on screen — `:not([hidden])` because cmdk hides a group whose rows have all been
+ * filtered out rather than removing it, which is the behaviour worth having and would otherwise
+ * make a search look like it had left three headings over one card.
+ */
+function headingsIn(list: HTMLElement): (string | null)[] {
+  return [...list.querySelectorAll("[cmdk-group]:not([hidden]) [cmdk-group-heading]")].map(
+    (heading) => heading.textContent,
+  );
+}
+
+/**
+ * kanban-server's "what does this card wait on" picker, which is where the row ran out of room:
+ * two hundred titles, and "has this one been done" is a question about where the card is.
+ *
+ * The lane is a heading and the status is a badge at the end of the row. Both used to be pushed
+ * into `keywords`, so they could be searched for and could not be seen.
+ */
+const BLOCKERS: MultiSelectOption[] = [
+  { value: "key", label: "Rotate the signing key", group: "In progress", meta: "running" },
+  { value: "billing", label: "Fix billing", group: "In progress", meta: "error" },
+  { value: "docs", label: "Write the docs", group: "Review", meta: "idle" },
+  { value: "api", label: "Ship the API", group: "Done", meta: "done" },
+  { value: "v1", label: "Drop the v1 client", group: "Done", meta: "archived" },
+];
+
+/**
+ * The groups are drawn in the order they were given. A board's lanes are ordered — In progress
+ * comes before Done because that is the way the work moves — and sorting them alphabetically
+ * would put Done first, which is the one order that is wrong.
+ */
+export const RowsAreGroupedByLane: Story = {
+  args: { options: BLOCKERS },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    const list = await screen.findByRole("listbox");
+
+    await waitFor(() => {
+      expect(headingsIn(list)).toEqual(["In progress", "Review", "Done"]);
+    });
+  },
+};
+
+/**
+ * The badge is read after the name, not as part of it. `label` is still the whole accessible
+ * name — which is also what the chip says, so a status cannot leak onto the trigger.
+ */
+export const AStatusIsReadAfterTheName: Story = {
+  args: { options: BLOCKERS, initial: ["billing"] },
+  play: async ({ canvas }) => {
+    // The chip is the label alone. An exact match, so any of the badge leaking in fails here.
+    expect(canvas.getByRole("combobox", { name: "Tags" })).toHaveTextContent("Fix billing");
+
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    const row = await screen.findByRole("option", { name: "Fix billing" });
+
+    const meta = document.getElementById(row.getAttribute("aria-describedby") ?? "");
+    expect(meta).toHaveAttribute("data-slot", "multi-select-option-meta");
+    expect(meta).toHaveTextContent("error");
+  },
+};
+
+/**
+ * The heading is searched along with the row, so a lane's name still finds the cards in it — and
+ * cmdk drops a heading whose rows have all been filtered out, so what is left is a list of one
+ * lane rather than three headings over one card.
+ */
+export const SearchingForALaneFindsItsCards: Story = {
+  args: { options: BLOCKERS },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    await userEvent.type(await screen.findByRole("combobox", { name: /Search/i }), "in progress");
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("option")).toHaveLength(2);
+    });
+    expect(headingsIn(screen.getByRole("listbox"))).toEqual(["In progress"]);
+  },
+};
+
+/** A list that has not asked for a heading still does not get one. */
+export const AnUngroupedListDrawsNoHeading: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("combobox", { name: "Tags" }));
+    const list = await screen.findByRole("listbox");
+
+    expect(headingsIn(list)).toHaveLength(0);
+  },
+};
