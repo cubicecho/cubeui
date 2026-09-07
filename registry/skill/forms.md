@@ -90,7 +90,7 @@ an error message nothing points at. `SelectField` routes through `FormField`'s f
 wires the trigger. Use it rather than assembling `SelectTrigger` and `SelectContent` inside a
 `FormField`. The same is true of every picker here.
 
-Outside a form the answer is the control it renders — `Select` from `@cubeui/select`, in
+Outside a form the answer is the control it renders — `OptionSelect` from `@cubeui/option-select`, in
 [controls.md](controls.md), taking the same `options` array. Do not hand-write the primitives
 there either.
 
@@ -316,9 +316,9 @@ and put the props where they go:
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
 element itself and needs none of this.
 
-Every cubeui picker already knows where its own trigger is: `Select`, `MultiSelect`, `DatePicker`
+Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect`, `DatePicker`
 and `ColorPicker` take the rest of a `<button>`'s props and put them there, so the function form
-spreads onto the control and stops — `control={(props) => <Select {...props} options={LISTS} … />}`.
+spreads onto the control and stops — `control={(props) => <OptionSelect {...props} options={LISTS} … />}`.
 The primitive version above is what that saves.
 
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the

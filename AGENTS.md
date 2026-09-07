@@ -110,7 +110,7 @@ registry/new-york/form/radio-group-field.tsx         RadioGroupField
 registry/new-york/form/password-field.tsx            PasswordField
 registry/new-york/control/action-button.tsx          ActionButton
 registry/new-york/control/confirm-button.tsx         ConfirmButton
-registry/new-york/control/select.tsx                 Select (not shadcn's — this one takes options)
+registry/new-york/control/option-select.tsx          OptionSelect (not shadcn's — this takes options)
 registry/new-york/control/multi-select.tsx           MultiSelect + its two helpers
 registry/new-york/control/date-picker.tsx            DatePicker, DateRangePicker
 registry/new-york/control/color-picker.tsx           ColorPicker + its two helpers
@@ -128,7 +128,7 @@ registry/skill/SKILL.md                              the usage skill: install, c
 registry/skill/{layout,forms,controls}.md            its references, shipped by the same item
 .claude/skills/cubeui/SKILL.md                       a pointer at those four, so this repo's own
                                                      agent reads the copy that ships
-scripts/check-registry-build.mjs                     CI guard: no built item ships an empty file
+scripts/check-registry-build.mjs                     CI guard: nothing ships empty, no name collides
 scripts/check-vocabulary.mjs                         CI guard: rule 2 and the skill hold the same words
 .github/workflows/ci.yml                             types, lint, vocabulary, registry drift, stories
 .github/workflows/pages.yml                          builds and publishes the registry on `main`
