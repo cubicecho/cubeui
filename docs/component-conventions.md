@@ -211,6 +211,13 @@ Anything else is a dependency a consuming project has to be told about. `registr
 covers both the shadcn primitives and other items in this registry; `dependencies` covers npm
 packages; a fourth category means the component is doing too much.
 
+**Re-export with `import` + `export { … }`, never `export … from`.** The shadcn CLI rewrites
+*import declarations* against a consumer's aliases and leaves *re-export declarations* alone, so
+`export { PasswordInput } from "@/registry/new-york/control/password-input"` ships verbatim and
+points at a directory that does not exist in the consumer's tree. Import the symbol at the top of
+the file the way everything else is imported, and export the local binding at the bottom. Same two
+lines, and the one that moves is the one the CLI knows how to move.
+
 ## 11. Names are plain English
 
 No vendor jargon, no house metaphors, no initialisms. A prop and a `data-slot` are both public
@@ -279,6 +286,14 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    So the CLI rewrites both our `@/registry/...` cross-references and `@/lib/utils` against the
    consumer's own aliases, and the transitive `@cubeui/header-content-footer` dependency resolves.
+
+   **With one exception, found later: it rewrites imports, not re-exports.** The transform walks
+   the file's import string literals, so `export { X } from "@/registry/new-york/control/x"` is
+   left exactly as written and lands pointing at a `control/` directory that only exists in this
+   repo. Nothing warns; the install succeeds and `tsc` fails afterwards. Reproduced in the same
+   scratch project — installing the four bound-field items from the published registry gave six
+   `TS2307`s, and the same install with every re-export rewritten as an import plus a local
+   `export { … }` gave none. That form is §10.
    The `skill` item is the one exception: it sets `target: "~/.claude/skills/cubeui/SKILL.md"`,
    and `~` is the consumer's project root, so it lands at `.claude/skills/cubeui/SKILL.md`.
    Grouping components under `components/layout/` with a `target` stays rejected — it assumes a
