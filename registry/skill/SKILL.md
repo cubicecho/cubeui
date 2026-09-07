@@ -93,6 +93,10 @@ The same words mean the same thing in every component, and this is the point of 
   element, so you never set both.
 - **`trigger`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
   is the alternative to holding `open` yourself, not an addition to it.
+- **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
+  because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
+  and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
+  alone to be told without taking over.
 - **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
   `form.state.isDirty`.
 
@@ -119,7 +123,6 @@ The same words mean the same thing in every component, and this is the point of 
 
 - **`badges`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
 - **`meta`** — the grey line of facts beside the title: a name, a time, a count.
-- **`open`**, **`onOpenChange`** — a row whose body opens. Controlled, like every other pair here.
 - **`query`** — a `{ isPending, isError, error, refetch }`, taken structurally so no shell names a
   data library.
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
