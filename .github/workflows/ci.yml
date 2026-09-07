@@ -31,6 +31,12 @@ jobs:
       - name: Build the registry
         run: npm run registry:build
 
+      # A file that resolves but is empty is written as `content: ""` and the build still
+      # reports success — so the one thing a consumer would install as an empty file is the one
+      # thing the build does not catch.
+      - name: Every built item carries its content
+        run: npm run registry:check
+
       # `shadcn build` writes public/r. A drifted checkout means someone edited registry.json
       # without rebuilding, and the published JSON would not match the sources it names.
       - name: public/r is in sync with registry.json
