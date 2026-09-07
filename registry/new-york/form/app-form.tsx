@@ -1,7 +1,7 @@
 import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
@@ -9,7 +9,10 @@ import { Input } from "@/registry/new-york/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/registry/new-york/ui/select";
@@ -229,10 +232,65 @@ function BoundTextareaField(props: TextareaFieldProps) {
   );
 }
 
-type SelectOption = { label: ReactNode; value: string };
+export type SelectOption = {
+  label: ReactNode;
+  value: string;
+  /**
+   * The heading this option is drawn under. Options sharing one are drawn together beneath it,
+   * in the order they were given rather than sorted — a board's lanes are ordered, and
+   * alphabetical would be wrong.
+   */
+  group?: string;
+};
+
+/** A rule across the list. The one entry that is not an option, so it has no `value`. */
+export type SelectSeparatorEntry = { separator: true };
+
+/**
+ * What `options` holds: the options, and the rules between them.
+ *
+ * A list of peers is still a list of peers — nothing here is written until an option is not one.
+ * The case that asked for it: a picker answering "where does this card go when it passes" with
+ * *stay here*, then the other lanes, then *archive it*, which is not a lane at all. Without a
+ * rule the last row sits flush against the lane names and reads as one of them, and the
+ * workaround is a sentence doing a divider's job — `"Archive it — off the board"`.
+ */
+export type SelectEntry = SelectOption | SelectSeparatorEntry;
+
+/** Generic over the entry, so the same test sorts a raw list and the blocks built from one. */
+function isSeparator<T extends object>(entry: T): entry is T & SelectSeparatorEntry {
+  return "separator" in entry;
+}
+
+type SelectBlock = SelectSeparatorEntry | { group?: string; options: SelectOption[] };
+
+/**
+ * The flat list, as the runs Radix draws: a rule is its own block, and consecutive options
+ * sharing a `group` are one.
+ *
+ * Walked rather than bucketed, because the order is the caller's and a group that reappears
+ * later is a caller who meant it. Options with no `group` are a block with no heading, which is
+ * every list that has not asked for one.
+ */
+function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
+  const blocks: SelectBlock[] = [];
+  for (const entry of entries) {
+    if (isSeparator(entry)) {
+      blocks.push(entry);
+      continue;
+    }
+    const last = blocks.at(-1);
+    if (last && !isSeparator(last) && last.group === entry.group) {
+      last.options.push(entry);
+    } else {
+      blocks.push({ group: entry.group, options: [entry] });
+    }
+  }
+  return blocks;
+}
 
 type SelectFieldProps = FieldProps & {
-  options: readonly SelectOption[];
+  options: readonly SelectEntry[];
   placeholder?: string;
   triggerClassName?: string;
 };
@@ -246,6 +304,7 @@ type SelectFieldProps = FieldProps & {
 function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: SelectFieldProps) {
   const field = useFieldContext<string>();
   const error = useFieldError();
+  const blocks = useMemo(() => blocksOf(options), [options]);
 
   return (
     <FormField
@@ -261,11 +320,27 @@ function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: S
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
+            {/*
+              Keyed by position, and it has to be: a rule has no identity of its own, and a
+              heading that appears twice is a caller who meant it, so neither is unique. The list
+              is the caller's and is drawn in the order given, so a position is stable enough.
+            */}
+            {blocks.map((block, index) =>
+              isSeparator(block) ? (
+                // biome-ignore lint/suspicious/noArrayIndexKey: a rule has no identity of its own
+                <SelectSeparator key={`block-${index}`} />
+              ) : (
+                // biome-ignore lint/suspicious/noArrayIndexKey: nor does a repeated heading
+                <SelectGroup key={`block-${index}`}>
+                  {block.group ? <SelectLabel>{block.group}</SelectLabel> : null}
+                  {block.options.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ),
+            )}
           </SelectContent>
         </Select>
       )}
