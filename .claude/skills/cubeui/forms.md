@@ -53,7 +53,7 @@ The bound fields:
 
 Each one takes everything `FormField` takes — `label`, `description`, `required`, `action`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
-`validators` and `asyncDebounceMs`, in one flat list.
+`validators`, `listeners` and `asyncDebounceMs`, in one flat list.
 
 The four in their own files are there for the weight of what they import: a form of plain inputs
 installs `@cubeui/app-form` and pulls in no cmdk, no `react-day-picker`.
@@ -115,6 +115,30 @@ Groups are drawn in the order given, not sorted — a board's lanes are ordered 
 would be wrong. A flat `{ value, label }[]` still draws flat, so nothing is written until an
 option is not a peer. Do not put the distinction in the label instead: `"Archive it — off the
 board"` is a sentence doing a divider's job, and it does not survive a long list.
+
+**A field that has to *do* something on change takes `listeners`.** Same place as `validators`,
+same shape — `onChange`, `onBlur`, `onMount`, `onUnmount`, `onSubmit`, and the two `*DebounceMs`
+numbers — and it is for the side effect, not the verdict: naming a lane after the kind you picked
+for it, filling a description from a template, clearing the fields the other transport owned.
+
+```tsx
+<SelectField
+  form={form}
+  name="roleId"
+  label="Kind"
+  options={KINDS}
+  listeners={{
+    onChange: ({ value }) => {
+      if (form.state.values.name.trim()) return;
+      form.setFieldValue("name", KINDS.find((kind) => kind.value === value)?.label ?? "");
+    },
+  }}
+/>
+```
+
+The guard is yours, and it is the part worth writing: a listener that overwrites what somebody
+already chose is the form arguing back. Check `form.state.fieldMeta.<name>?.isTouched`, or the
+value itself, before you write to a sibling.
 
 ### When you need the `field` object
 
