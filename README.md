@@ -18,6 +18,31 @@ npx shadcn@latest add @cubeui/skill    # the agent skill, into .claude/skills/
 Components are copied into your tree and rewritten against your own path aliases; there is no
 runtime dependency on this package.
 
+## Installing into a Biome project
+
+Several of these items pull in shadcn primitives — `ui/field`, `ui/item`, `ui/input-group` and a
+handful of others — and **the primitives do not pass Biome's recommended preset**. An install
+that went fine ends in a red `biome check`, on files nobody here wrote, which reads as though the
+component just added is at fault.
+
+They are vendored, so the fix is an override rather than an edit: correcting them is editing
+shadcn, and the next `shadcn add` overwrites the correction.
+
+```jsonc
+// biome.json
+"overrides": [
+  { "includes": ["src/components/ui/**"], "linter": { "enabled": false } }
+]
+```
+
+That is what this repo does with its own copies, and it is the form to prefer. The narrower
+version — the offending rules off rather than the linter off — is reasonable for a `ui/` folder
+that also holds code you wrote, but the list is not stable: it moves with the shadcn version and
+with which primitives you happen to install. Between this repo's copies and one consuming
+project's, the set has included `a11y/useSemanticElements`, `a11y/useKeyWithClickEvents`,
+`style/useImportType`, `suspicious/noArrayIndexKey` and `suspicious/noDoubleEquals`, and there is
+no reason to think that is all of them.
+
 ## What is here
 
 | Item | What it is |
