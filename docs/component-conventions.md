@@ -177,10 +177,20 @@ threw away what had been typed. A hook is a thing a caller can forget. **Where a
 be closed by making the behaviour unforgettable, prefer the prop to the hook** — the guard the
 caller cannot see is the guard the caller cannot skip.
 
-The shell guards only what it owns. `DialogLayout` reaches Escape, the overlay and the close
-button; a Cancel button in `footerActions` calls the caller's own setter and is out of reach. A
-prop that closes three of four doors is still worth having, and the fourth is documented rather
-than hidden.
+The shell guards only what it owns — and where it cannot own a path, it hands the caller the
+guard rather than a second copy of it. `DialogLayout` reaches Escape, the overlay and the close
+button, because all three arrive through Radix's `onOpenChange`. A Cancel button in
+`footerActions` does not: it is the caller's node calling the caller's setter. So `footerActions`
+takes a **function** and hands it the shell's own guarded close, which is the same close the
+other three go through.
+
+That is the smallest thing that could work, and deliberately not the shell growing its own Cancel
+button. A rendered Cancel would be unforgettable — the property the paragraph above argues for —
+but it would put the footer's contents, its word and its button order inside a shell whose whole
+job is to place nodes it did not write, and `discardLabel` is as far into a caller's vocabulary
+as this component should reach. A caller who wires Cancel to their own setter still gets today's
+behaviour; the function is right there in the prop's type, which is where a caller writing that
+line is already looking.
 
 Controlled/uncontrolled is delegated where it can be: pass `open`/`onOpenChange` straight through
 to Radix and let `undefined` mean uncontrolled. `DialogLayout` is the exception it has to be —

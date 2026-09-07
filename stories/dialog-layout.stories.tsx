@@ -281,3 +281,80 @@ export const TheQuestionCanBeReworded: Story = {
     expect(within(question).getByRole("button", { name: "Go back" })).toBeVisible();
   },
 };
+
+/**
+ * The fourth door, and the one people actually click.
+ *
+ * `hasUnsavedChanges` covers Escape, the overlay and the close button, because all three go
+ * through Radix's `onOpenChange` and the shell owns that. A Cancel in `footerActions` does not:
+ * it calls the caller's own `setOpen(false)` and never touches the shell, so the guard the
+ * feature was built for closes three doors out of four.
+ *
+ * The function form of `footerActions` hands back the shell's own close — the same one the other
+ * three go through — so wiring Cancel to it guards Cancel too.
+ */
+export const ACancelFromTheFooterIsGuardedToo: Story = {
+  args: {
+    ...UnsavedChangesAskFirst.args,
+    footerActions: (close) => (
+      <>
+        <Button variant="ghost" onClick={close}>
+          Cancel
+        </Button>
+        <Button>Save</Button>
+      </>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+
+    const question = await waitFor(() => within(document.body).getByRole("alertdialog"));
+    await settle(question);
+    expect(within(question).getByText("Discard your changes?")).toBeVisible();
+    // Still open behind the question, with what was typed still in it.
+    expect(dialogElement()).not.toBeNull();
+  },
+};
+
+/** And discarding from there closes both, the same as discarding from any other door. */
+export const DiscardingFromCancelClosesIt: Story = {
+  args: { ...ACancelFromTheFooterIsGuardedToo.args },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+
+    const question = await waitFor(() => within(document.body).getByRole("alertdialog"));
+    await userEvent.click(within(question).getByRole("button", { name: "Discard" }));
+
+    await waitFor(() => {
+      expect(dialogElement()).toBeNull();
+    });
+  },
+};
+
+/** With nothing unsaved it is a plain close, and no question is asked on the way. */
+export const CancelWithNothingUnsavedJustCloses: Story = {
+  args: { ...ACancelFromTheFooterIsGuardedToo.args, hasUnsavedChanges: false },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(dialogElement()).toBeNull();
+    });
+    expect(within(document.body).queryByRole("alertdialog")).toBeNull();
+  },
+};
+
+/**
+ * The prop is still a node, which is what every call site that does not need the close keeps
+ * passing — and a function that returns nothing leaves no empty footer behind.
+ */
+export const AFooterThatRendersNothingIsNoFooter: Story = {
+  args: { ...UnsavedChangesAskFirst.args, hasUnsavedChanges: false, footerActions: () => null },
+  play: async ({ canvasElement }) => {
+    const dialog = await openIt(canvasElement);
+    expect(dialog.querySelector("[data-slot=dialog-footer]")).toBeNull();
+  },
+};
