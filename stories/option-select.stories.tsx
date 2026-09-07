@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { Select, type SelectEntry } from "@/registry/new-york/control/select";
+import { OptionSelect, type SelectEntry } from "@/registry/new-york/control/option-select";
 import { FormField } from "@/registry/new-york/form/form-field";
 
 /**
@@ -27,7 +27,7 @@ function Harness({
   options = DESTINATIONS,
   initial = "",
   ...props
-}: Partial<ComponentProps<typeof Select>> & {
+}: Partial<ComponentProps<typeof OptionSelect>> & {
   options?: readonly SelectEntry[];
   initial?: string;
 }) {
@@ -35,7 +35,7 @@ function Harness({
 
   return (
     <div className="w-[320px]">
-      <Select
+      <OptionSelect
         aria-label="On success"
         placeholder="Pick one"
         {...props}
@@ -51,7 +51,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Control/Select",
+  title: "Control/OptionSelect",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;
@@ -107,7 +107,7 @@ export const ItIsAControlWithAValue: Story = {
 };
 
 /**
- * The detail every hand-written select field gets wrong. `Select`'s Radix root renders no DOM,
+ * The detail every hand-written select field gets wrong. `OptionSelect`'s Radix root renders no DOM,
  * so an `id` or an `aria-invalid` put on it goes nowhere at all — silently, because nothing
  * errors and the attribute simply is not in the document. They belong on the trigger, and this
  * takes the rest of a `<button>`'s props there.
