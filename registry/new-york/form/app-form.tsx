@@ -232,6 +232,13 @@ type SelectFieldProps = FieldProps & {
   options: readonly SelectEntry[];
   placeholder?: string;
   triggerClassName?: string;
+  /**
+   * Told when the menu opens, so a field whose list is fetched can ask for it then. Named here
+   * as well as on the control because a form is where most fetched lists are, and a field that
+   * had to drop to `FormField`'s function form to get one word through would be the hand-wiring
+   * this component exists to end.
+   */
+  onOpenChange?: (open: boolean) => void;
 };
 
 /**
@@ -241,7 +248,13 @@ type SelectFieldProps = FieldProps & {
  * on the root instead, silently, leaving a trigger with no `aria-invalid` and an error message
  * nothing points at.
  */
-function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: SelectFieldProps) {
+function BoundSelectField({
+  options,
+  placeholder,
+  triggerClassName,
+  onOpenChange,
+  ...rest
+}: SelectFieldProps) {
   const field = useFieldContext<string>();
   const error = useFieldError();
 
@@ -257,6 +270,7 @@ function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: S
           onValueChange={field.handleChange}
           onBlur={field.handleBlur}
           placeholder={placeholder}
+          onOpenChange={onOpenChange}
           className={triggerClassName}
         />
       )}
