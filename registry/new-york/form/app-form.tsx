@@ -6,8 +6,8 @@ import type {
   SelectEntry,
   SelectOption,
   SelectSeparatorEntry,
-} from "@/registry/new-york/control/select";
-import { Select } from "@/registry/new-york/control/select";
+} from "@/registry/new-york/control/option-select";
+import { OptionSelect } from "@/registry/new-york/control/option-select";
 import { FormField } from "@/registry/new-york/form/form-field";
 import { Button } from "@/registry/new-york/ui/button";
 import { Checkbox } from "@/registry/new-york/ui/checkbox";
@@ -235,7 +235,7 @@ type SelectFieldProps = FieldProps & {
 };
 
 /**
- * The one that needs `FormField`'s function form, because `Select` is a `Popover`-shaped control
+ * The one that needs `FormField`'s function form, because `OptionSelect` is a `Popover`-shaped control
  * whose root renders no DOM: the id and the aria attributes belong on the trigger, and the
  * control is what knows where that is. Every hand-written select field in these apps puts them
  * on the root instead, silently, leaving a trigger with no `aria-invalid` and an error message
@@ -250,7 +250,7 @@ function BoundSelectField({ options, placeholder, triggerClassName, ...rest }: S
       {...rest}
       error={error}
       control={(wired) => (
-        <Select
+        <OptionSelect
           {...wired}
           options={options}
           value={field.state.value ?? ""}
@@ -619,4 +619,4 @@ export type { SelectEntry, SelectOption, SelectSeparatorEntry };
 // Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
 // install and leaves re-export declarations alone, so the `from` form would ship a path into
 // `control/` that does not exist in a consumer's tree. See AGENTS.md.
-export { Select };
+export { OptionSelect };

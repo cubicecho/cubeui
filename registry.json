@@ -148,7 +148,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "dependencies": ["@tanstack/react-form"],
       "registryDependencies": [
         "button",
@@ -156,7 +156,7 @@
         "input",
         "switch",
         "textarea",
-        "@cubeui/select",
+        "@cubeui/option-select",
         "@cubeui/form-field"
       ],
       "files": [
@@ -258,14 +258,14 @@
       ]
     },
     {
-      "name": "select",
+      "name": "option-select",
       "type": "registry:component",
-      "title": "Select",
+      "title": "OptionSelect",
       "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.",
       "registryDependencies": ["select"],
       "files": [
         {
-          "path": "registry/new-york/control/select.tsx",
+          "path": "registry/new-york/control/option-select.tsx",
           "type": "registry:component"
         }
       ]
@@ -409,7 +409,7 @@
         "@cubeui/action-button",
         "@cubeui/confirm-button",
         "@cubeui/multi-select",
-        "@cubeui/select",
+        "@cubeui/option-select",
         "@cubeui/date-picker",
         "@cubeui/color-picker",
         "@cubeui/password-input"

@@ -243,6 +243,15 @@ keep in AGENTS.md and in source comments, and appear in no prop name.
 A bare noun is a slot (rule 1), so a boolean never gets one: `hasUnsavedChanges`, not
 `unsavedChanges`.
 
+**No item may share a file name with a shadcn primitive**, and this is a hard rule rather than a
+preference. `control/select.tsx` shipped beside `ui/select.tsx` for a day: the CLI resolves a
+cross-item import by the file's *basename*, so `app-form`'s import of the control was rewritten
+to the primitive on install. It resolved — to the wrong file — and failed on the members three
+files from the cause. The argument for shipping it as `Select` was that a reader disambiguates
+by import path, which is true and beside the point: the CLI rewrites the import path. Renaming
+the item in `registry.json` is not enough either; the file is what is matched. `npm run
+registry:check` now fails on it, and the component is `OptionSelect`.
+
 Words for slots the set does not have yet — a toolbar, a status bar, an aside — get decided when
 the component that needs one arrives. Adding a word is a decision about the whole set (rule 2),
 not about the component that happened to need it first.
