@@ -129,3 +129,28 @@ export const NothingToOpen: Story = {
     expect(header).not.toHaveAttribute("aria-controls");
   },
 };
+
+/**
+ * The opened part is a flex item in a wrapping row, so without `min-w-0` it cannot get narrower
+ * than its content: one unbroken line of output would widen it past the row, and the card with it.
+ */
+export const LongContentStaysInTheRow: Story = {
+  args: {
+    ...args,
+    content: (
+      <pre className="overflow-hidden text-ellipsis text-xs">
+        {`$ run --verbose ${"a-very-long-unbroken-token-".repeat(20)}`}
+      </pre>
+    ),
+  },
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas, canvasElement }) => {
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    await userEvent.click(header);
+    const row = canvasElement.querySelector('[data-slot="disclosure-row"]') as HTMLElement;
+    const footer = canvasElement.querySelector('[data-slot="item-footer"]') as HTMLElement;
+    expect(footer.getBoundingClientRect().width).toBeLessThanOrEqual(
+      row.getBoundingClientRect().width,
+    );
+  },
+};
