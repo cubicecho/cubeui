@@ -23,6 +23,45 @@ const LISTS: readonly SelectEntry[] = [
   { value: "work", label: "Work" },
 ];
 
+/** task-server's model list: identifiers, which is why they are `font-mono`. */
+const MODELS = ["gpt-4o-mini", "llama3.1:8b"];
+
+/**
+ * The sixth select. Its list belongs to the server, so nothing is asked for until the menu opens
+ * — and the menu opens before the list exists, which is what the note is for.
+ */
+function Fetched() {
+  const [value, setValue] = useState("");
+  const [fetches, setFetches] = useState(0);
+  const [models, setModels] = useState<readonly string[] | null>(null);
+
+  const options: readonly SelectEntry[] = models
+    ? models.map((id) => ({ value: id, label: id, className: "font-mono" }))
+    : [{ note: "Loading…" }];
+
+  return (
+    <div className="w-[320px]">
+      <OptionSelect
+        aria-label="Model"
+        placeholder="Choose a model"
+        options={options}
+        value={value}
+        onValueChange={setValue}
+        onOpenChange={(open) => {
+          if (!open || models) return;
+          setFetches((n) => n + 1);
+          // Slow enough that the story can see the menu waiting, which is the state being tested.
+          setTimeout(() => setModels(MODELS), 50);
+        }}
+      />
+      {/* How many times the server was asked, so a story can assert that a closed menu asks
+          nothing — the reason `onOpenChange` is here rather than a fetch on mount. */}
+      <p data-testid="fetches">{fetches}</p>
+      <p data-testid="value">{value === "" ? "—" : value}</p>
+    </div>
+  );
+}
+
 function Harness({
   options = DESTINATIONS,
   initial = "",
@@ -209,6 +248,100 @@ export const ItFillsItsColumnUnlessToldOtherwise: Story = {
 
     expect(narrow.className).toContain("w-40");
     expect(narrow.getBoundingClientRect().width).toBeLessThan(wide.getBoundingClientRect().width);
+  },
+};
+
+/**
+ * The case this control could not express: a menu whose list is fetched when it opens.
+ *
+ * The fetch is `enabled: opened`, so a form of twenty fields asks the server nothing for the
+ * eighteen the reader never touches — and `onOpenChange` is the only way to know, because Radix's
+ * root is what holds the open state and the root is the one element this control does not hand
+ * back. Without it, the sixth of task-server's six selects stayed on the primitives.
+ */
+export const TheMenuFillsWhenItOpens: Story = {
+  args: {},
+  render: () => <Fetched />,
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Model" });
+
+    // Nothing was asked for until it was opened.
+    expect(canvas.getByTestId("fetches")).toHaveTextContent("0");
+
+    await userEvent.click(trigger);
+    const list = await screen.findByRole("listbox");
+    expect(canvas.getByTestId("fetches")).toHaveTextContent("1");
+
+    // The menu is open and there is nothing in it yet, which is the whole point: it says so
+    // rather than standing empty.
+    expect(within(list).queryAllByRole("option")).toHaveLength(0);
+    expect(list).toHaveTextContent("Loading…");
+
+    await within(list).findByRole("option", { name: "gpt-4o-mini" });
+    expect(list).not.toHaveTextContent("Loading…");
+
+    await userEvent.click(within(list).getByRole("option", { name: "llama3.1:8b" }));
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).toBeNull();
+    });
+    expect(canvas.getByTestId("value")).toHaveTextContent("llama3.1:8b");
+  },
+};
+
+/**
+ * And a note is not an option.
+ *
+ * The workaround everywhere else is a disabled option with the message as its label, which is a
+ * row the keyboard walks onto and a reader hears as a choice they may not have. This is neither:
+ * the row in the menu is `aria-hidden`, because a listbox may own only options and groups, and
+ * the words are announced from a live region beside the control that is always mounted — a live
+ * region added to the document in the same breath as its text is announced unreliably, and here
+ * the menu opens *before* the list exists.
+ */
+export const ANoteIsNotAChoice: Story = {
+  args: { options: [...LISTS, { note: "Two more are still loading…" }] },
+  play: async ({ canvas }) => {
+    // Always mounted, and it carries the words whether or not the menu is open.
+    const live = canvas.getByRole("status");
+    expect(live).toHaveTextContent("Two more are still loading…");
+
+    await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
+      // Visible in the menu, and not a row anything can land on.
+      expect(list).toHaveTextContent("Two more are still loading…");
+      expect(within(list).getAllByRole("option")).toHaveLength(2);
+      // Present, and out of the accessibility tree — so it is neither an option nor a row the
+      // listbox owns, and it is not read twice.
+      expect(within(list).getByText("Two more are still loading…")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+    });
+  },
+};
+
+/**
+ * An option's `className` is the row's, not the label's.
+ *
+ * Model ids, SHA prefixes and file paths are identifiers and want `font-mono`. The only way in
+ * before this was to wrap the label, which styles the text and leaves the row's padding, tick and
+ * highlight in the body face.
+ */
+export const AnOptionCanCarryAClass: Story = {
+  args: {
+    options: [
+      { value: "gpt-4o-mini", label: "gpt-4o-mini", className: "font-mono" },
+      { value: "inbox", label: "Inbox" },
+    ],
+  },
+  play: async ({ canvas }) => {
+    await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
+      const identifier = within(list).getByRole("option", { name: "gpt-4o-mini" });
+      const prose = within(list).getByRole("option", { name: "Inbox" });
+
+      // On the row itself, which is what carries the padding and the highlight.
+      expect(identifier).toHaveClass("font-mono");
+      expect(getComputedStyle(identifier).fontFamily).not.toBe(getComputedStyle(prose).fontFamily);
+    });
   },
 };
 

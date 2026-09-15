@@ -94,6 +94,11 @@ Outside a form the answer is the control it renders — `OptionSelect` from `@cu
 [controls.md](controls.md), taking the same `options` array. Do not hand-write the primitives
 there either.
 
+**A field whose list is fetched takes `onOpenChange`.** Pair it with `enabled:` on the query and
+the server is asked when the menu opens, not when the form mounts — a form of twenty fields
+otherwise asks for eighteen lists nobody looks at. While it waits, a `{ note }` entry is the row
+that says so; it is not a disabled option, and [controls.md](controls.md) says why.
+
 **An option that is not a peer says so in the options array.** `group` puts a heading over the
 rows that share it, and a `{ separator: true }` entry draws a rule between them:
 
