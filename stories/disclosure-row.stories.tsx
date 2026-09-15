@@ -147,7 +147,7 @@ export const LongContentStaysInTheRow: Story = {
   play: async ({ canvas, canvasElement }) => {
     const header = canvas.getByRole("button", { name: /Rename the settings page/ });
     await userEvent.click(header);
-    const row = canvasElement.querySelector('[data-slot="item"]') as HTMLElement;
+    const row = canvasElement.querySelector('[data-slot="disclosure-row"]') as HTMLElement;
     const footer = canvasElement.querySelector('[data-slot="item-footer"]') as HTMLElement;
     expect(footer.getBoundingClientRect().width).toBeLessThanOrEqual(
       row.getBoundingClientRect().width,
