@@ -138,7 +138,7 @@ export const LongContentStaysInTheRow: Story = {
   args: {
     ...args,
     content: (
-      <pre className="overflow-x-auto text-xs">
+      <pre className="overflow-hidden text-ellipsis text-xs">
         {`$ run --verbose ${"a-very-long-unbroken-token-".repeat(20)}`}
       </pre>
     ),
