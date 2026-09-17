@@ -1,0 +1,18 @@
+{
+  "name": "@cubicecho/cubeui-rn",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A shadcn registry of React Native components and the tokens they share with the web.",
+  "scripts": {
+    "tokens:build": "node scripts/build-tokens.mjs",
+    "tokens:check": "node scripts/build-tokens.mjs --check",
+    "parity": "node scripts/check-cubeui-parity.mjs",
+    "test": "node --test scripts/",
+    "build": "npm run tokens:build",
+    "check": "npm run tokens:check && npm run parity && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
