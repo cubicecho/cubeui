@@ -8,11 +8,47 @@
     "tokens:build": "node scripts/build-tokens.mjs",
     "tokens:check": "node scripts/build-tokens.mjs --check",
     "parity": "node scripts/check-cubeui-parity.mjs",
-    "test": "node --test scripts/",
-    "build": "npm run tokens:build",
-    "check": "npm run tokens:check && npm run parity && npm test"
+    "registry:build": "shadcn build",
+    "registry:check": "node scripts/check-registry-build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "node --test scripts/ && vitest run",
+    "build": "npm run tokens:build && npm run typecheck && npm run registry:build && npm run registry:check",
+    "check": "npm run tokens:check && npm run parity && npm run typecheck && npm run registry:check && npm test"
   },
   "engines": {
     "node": ">=20"
+  },
+  "homepage": "https://cubicecho.github.io/cubeui-rn",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cubicecho/cubeui-rn.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tanstack/react-form": "^1.33.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.34.0",
+    "lucide-react-native": "^1.34.0",
+    "nativewind": "^5.0.0-rc.0",
+    "radix-ui": "^1.6.7",
+    "react": "19.1.0",
+    "react-day-picker": "^10.0.1",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-svg": "^15.13.0",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.11",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "shadcn": "^4.20.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
   }
 }

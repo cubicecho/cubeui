@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "calendar",
+  "title": "Calendar",
+  "description": "A month of single-date selection: react-day-picker on web, a date-fns grid on device.",
+  "dependencies": [
+    "date-fns@^4.4.0",
+    "react-day-picker@^10.0.1"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/icons"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/calendar-base.ts",
+      "content": "/**\n * The contract `calendar.tsx` (native) and `calendar.web.tsx` (react-day-picker)\n * both implement. Its own module because Metro resolves `./calendar` to\n * `calendar.web.tsx` on web.\n *\n * Single-date selection only. react-day-picker's `mode` is deliberately not in\n * the contract: range and multi selection have no native implementation behind\n * them, and a prop that only works on one platform is a promise half-kept.\n */\nexport type CalendarProps = {\n  selected?: Date | undefined;\n  onSelect: (date: Date | undefined) => void;\n  /** Month shown on first render; defaults to the selected date's month. */\n  defaultMonth?: Date | undefined;\n  className?: string | undefined;\n};\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/calendar.tsx",
+      "content": "/**\n * The native calendar: a month grid built from date-fns.\n *\n * Written out rather than pulling in a native calendar library: the whole\n * surface is one month of single-date selection, and a calendar library brings\n * its own theming system that would sit outside the tailwind tokens every other\n * primitive follows.\n */\nimport {\n  addMonths,\n  eachDayOfInterval,\n  endOfMonth,\n  endOfWeek,\n  format,\n  isSameDay,\n  isSameMonth,\n  startOfMonth,\n  startOfWeek,\n} from \"date-fns\";\nimport { useState } from \"react\";\nimport { Pressable, Text, View } from \"react-native\";\nimport type { CalendarProps } from \"@/components/ui/calendar-base\";\nimport { ChevronLeft, ChevronRight } from \"@/components/ui/icons\";\nimport { cn } from \"@/lib/utils\";\n\nconst WEEKDAYS = [\"Su\", \"Mo\", \"Tu\", \"We\", \"Th\", \"Fr\", \"Sa\"];\n\nexport function Calendar({ selected, onSelect, defaultMonth, className }: CalendarProps) {\n  const [month, setMonth] = useState(() => defaultMonth ?? selected ?? new Date());\n\n  // Padded out to whole weeks so every row has seven cells and the grid does\n  // not reflow as the month changes.\n  const days = eachDayOfInterval({\n    start: startOfWeek(startOfMonth(month)),\n    end: endOfWeek(endOfMonth(month)),\n  });\n\n  return (\n    <View className={cn(\"p-3\", className)}>\n      <View className=\"mb-2 flex-row items-center justify-between\">\n        <Pressable\n          onPress={() => setMonth(addMonths(month, -1))}\n          aria-label=\"Previous month\"\n          className=\"p-1\"\n        >\n          <ChevronLeft className=\"h-4 w-4 text-foreground\" />\n        </Pressable>\n        <Text className=\"text-sm font-medium text-foreground\">{format(month, \"MMMM yyyy\")}</Text>\n        <Pressable\n          onPress={() => setMonth(addMonths(month, 1))}\n          aria-label=\"Next month\"\n          className=\"p-1\"\n        >\n          <ChevronRight className=\"h-4 w-4 text-foreground\" />\n        </Pressable>\n      </View>\n\n      <View className=\"flex-row\">\n        {WEEKDAYS.map((day) => (\n          <Text key={day} className=\"flex-1 text-center text-xs text-muted-foreground\">\n            {day}\n          </Text>\n        ))}\n      </View>\n\n      <View className=\"flex-row flex-wrap\">\n        {days.map((day) => {\n          const isSelected = selected ? isSameDay(day, selected) : false;\n          return (\n            <Pressable\n              key={day.toISOString()}\n              onPress={() => onSelect(day)}\n              className={cn(\n                \"h-9 items-center justify-center rounded-md\",\n                isSelected && \"bg-primary\",\n              )}\n              // Seven per row, and `flex-wrap` needs a width it can measure.\n              // A `w-[14.2857%]` class would round to the same place; the style\n              // keeps the arithmetic visible.\n              style={{ width: `${100 / 7}%` }}\n            >\n              <Text\n                className={cn(\n                  \"text-sm\",\n                  isSelected\n                    ? \"text-primary-foreground\"\n                    : isSameMonth(day, month)\n                      ? \"text-foreground\"\n                      : \"text-muted-foreground\",\n                )}\n              >\n                {format(day, \"d\")}\n              </Text>\n            </Pressable>\n          );\n        })}\n      </View>\n    </View>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/calendar.web.tsx",
+      "content": "/**\n * The web calendar: react-day-picker, using the library's own stylesheet so we\n * do not have to track its evolving `classNames` API across versions.\n * `calendar.tsx` is the native counterpart; `calendar-base.ts` holds the\n * contract they share.\n */\nimport { DayPicker } from \"react-day-picker\";\nimport type { CalendarProps } from \"@/components/ui/calendar-base\";\nimport { cn } from \"@/lib/utils\";\nimport \"react-day-picker/style.css\";\n\nexport function Calendar({ selected, onSelect, defaultMonth, className }: CalendarProps) {\n  return (\n    <DayPicker\n      mode=\"single\"\n      selected={selected}\n      onSelect={onSelect}\n      {...(defaultMonth ? { defaultMonth } : {})}\n      className={cn(\"p-3\", className)}\n    />\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

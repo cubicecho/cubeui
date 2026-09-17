@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "utils",
+  "title": "cn",
+  "description": "The class merger every component calls, plus the one hover helper that has to be gated on platform.",
+  "dependencies": [
+    "clsx@^2.1.1",
+    "tailwind-merge@^3.6.0"
+  ],
+  "files": [
+    {
+      "path": "registry/lib/utils.ts",
+      "content": "import { type ClassValue, clsx } from \"clsx\";\nimport { Platform } from \"react-native\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport function cn(...inputs: ClassValue[]): string {\n  return twMerge(clsx(inputs));\n}\n\n/**\n * Row actions that fade in on hover.\n *\n * There is no hover off web, so the class that hides them would hide them for\n * good — on native they are simply always visible. Kept here rather than inline\n * so no component has to reach for `Platform` to express it.\n */\nexport const HOVER_REVEAL =\n  Platform.OS === \"web\" ? \"opacity-0 transition-opacity group-hover:opacity-100\" : \"\";\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

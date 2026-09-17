@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    // The reason components re-declare `className?: string | undefined` rather
+    // than inheriting nativewind's `className?: string`: under this flag the two
+    // are different types, and a call site passing `cond ? 'x' : undefined` only
+    // typechecks against the explicit one.
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    // These mirror where the shadcn CLI actually puts each file in a consumer's
+    // tree, so an import that typechecks here is the import the consumer gets:
+    // `registry:ui` lands in `components/ui/`, `registry:component` in
+    // `components/`, `registry:lib` in `lib/`.
+    "paths": {
+      // The emitted palette, mapped where a consumer installs it, so this repo
+      // imports it by the same specifier its consumers will.
+      "@/lib/theme": ["./dist/theme.ts"],
+      "@/lib/*": ["./registry/lib/*"],
+      "@/components/*": ["./registry/*", "./registry/layout/*", "./registry/ui/*"]
+    }
+  },
+  "include": ["registry", "scripts", "tokens", "nativewind-env.d.ts", "vitest.config.ts"]
+}

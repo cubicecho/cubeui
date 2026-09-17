@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form-element",
+  "title": "Form Element",
+  "description": "A real `<form>` on web so Enter submits; a `View` on native, where nothing raises a submit event.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/form-element-base.ts",
+      "content": "/**\n * The contract `form-element.tsx` (native) and `form-element.web.tsx` implement.\n *\n * Its own module because Metro resolves `./form-element` to the `.web.tsx` file\n * on web, so that file cannot import the shared pieces from `./form-element`\n * without importing itself.\n */\nimport type { ReactNode } from \"react\";\n\nexport type FormElementProps = {\n  /** Submits the form. Web wires it to the DOM submit event; native does not. */\n  onSubmit: () => void;\n  className?: string | undefined;\n  children?: ReactNode;\n};\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/form-element.tsx",
+      "content": "/**\n * The element `<Form>` renders on native: a plain `View`.\n *\n * There is no submit event to listen for off web — `SubmitButton` calls\n * `form.handleSubmit()` on press, which is the only path to submission there.\n */\nimport { View } from \"react-native\";\nimport type { FormElementProps } from \"@/components/ui/form-element-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport function FormElement({ className, children }: FormElementProps) {\n  return <View className={cn(\"flex-col\", className)}>{children}</View>;\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/form-element.web.tsx",
+      "content": "/**\n * The element `<Form>` renders on web: a real `<form>`.\n *\n * Kept for one reason — Enter inside a field raises the DOM submit event, and\n * nothing else in the tree does. `SubmitButton` is a `Pressable`, not a submit\n * control, so the two paths cannot both fire for one press.\n */\nimport type { FormElementProps } from \"@/components/ui/form-element-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport function FormElement({ onSubmit, className, children }: FormElementProps) {\n  return (\n    <form\n      className={cn(\"flex flex-col\", className)}\n      onSubmit={(e) => {\n        e.preventDefault();\n        e.stopPropagation();\n        onSubmit();\n      }}\n    >\n      {children}\n    </form>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

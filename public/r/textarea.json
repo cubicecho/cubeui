@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "textarea",
+  "title": "Textarea",
+  "description": "Multi-line text entry, one file for both platforms — react-native-web already swaps in a real textarea.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/textarea.tsx",
+      "content": "/**\n * Multi-line text entry, shared by both platforms.\n *\n * A `TextInput multiline` is a real `<textarea>` on web (react-native-web\n * swaps the element when `multiline` is set), so there is nothing left for a\n * `.web.tsx` to do.\n *\n * The placeholder colour rides in `className` as a `placeholder:` variant, the\n * same way `input-base.ts` does it. NativeWind 4's `placeholderClassName` prop\n * is gone in 5; the variant compiles to `placeholderTextColor` on device and to\n * a real `::placeholder` rule on web. The props are spelled out rather than taken from\n * `TextInputProps` for the same reason `input-base.ts` does it: callers write\n * `onChangeText`, not a DOM change event.\n */\n\nimport { TextInput } from \"react-native\";\nimport { cn } from \"@/lib/utils\";\n\nexport type TextareaProps = {\n  value?: string | undefined;\n  onChangeText?: ((text: string) => void) | undefined;\n  onBlur?: (() => void) | undefined;\n  placeholder?: string | undefined;\n  /** Visible lines; the box grows no further and scrolls instead. */\n  rows?: number | undefined;\n  maxLength?: number | undefined;\n  disabled?: boolean | undefined;\n  className?: string | undefined;\n  /** Web only: ties the control to its `<label>`. */\n  id?: string | undefined;\n};\n\nfunction Textarea({\n  value,\n  onChangeText,\n  onBlur,\n  placeholder,\n  rows,\n  maxLength,\n  disabled,\n  className,\n  id,\n}: TextareaProps) {\n  return (\n    <TextInput\n      multiline\n      textAlignVertical=\"top\"\n      value={value ?? \"\"}\n      onChangeText={onChangeText}\n      onBlur={onBlur}\n      placeholder={placeholder}\n      {...(rows !== undefined ? { numberOfLines: rows } : {})}\n      {...(maxLength !== undefined ? { maxLength } : {})}\n      editable={!disabled}\n      id={id}\n      className={cn(\n        \"border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2\",\n        disabled && \"opacity-50\",\n        className,\n      )}\n    />\n  );\n}\n\nexport { Textarea };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

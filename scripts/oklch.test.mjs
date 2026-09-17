@@ -5,8 +5,8 @@
  */
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { formatOklch, isOutOfGamut, toNativeCss } from "./oklch.mjs";
 import { dark, light, names } from "../tokens/palette.mjs";
+import { formatOklch, isOutOfGamut, toNativeCss } from "./oklch.mjs";
 
 const cases = [
   [{ l: 1, c: 0, h: 0 }, "#ffffff"],
@@ -50,6 +50,5 @@ test("only destructive is outside sRGB", () => {
 
 test("every emitted native colour is a form RN can parse", () => {
   const ok = /^(#[0-9a-f]{6}|rgba\(\d+, \d+, \d+, [\d.]+\))$/;
-  for (const n of names)
-    for (const map of [light, dark]) assert.match(toNativeCss(map[n]), ok, n);
+  for (const n of names) for (const map of [light, dark]) assert.match(toNativeCss(map[n]), ok, n);
 });

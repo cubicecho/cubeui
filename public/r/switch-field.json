@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "switch-field",
+  "title": "Switch Field",
+  "description": "A switch and its caption on one row, with the whole row in the hit target on both platforms.",
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/label",
+    "@cubeui/switch"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/switch-field.tsx",
+      "content": "/**\n * A switch with its caption on one row.\n *\n * On web this is a `<label htmlFor>` wrapping the switch, which puts the whole\n * row in the switch's hit target for free. There is no such association off web,\n * so the caption is a `Pressable` that toggles it explicitly and both platforms\n * behave the same way — one row, one target, either half.\n */\nimport { Pressable, View } from \"react-native\";\nimport { Label } from \"@/components/ui/label\";\nimport { Switch } from \"@/components/ui/switch\";\nimport { cn } from \"@/lib/utils\";\n\ntype SwitchFieldProps = {\n  id: string;\n  label: string;\n  checked: boolean;\n  onCheckedChange: (checked: boolean) => void;\n  className?: string | undefined;\n  labelClassName?: string | undefined;\n};\n\nexport function SwitchField({\n  id,\n  label,\n  checked,\n  onCheckedChange,\n  className,\n  labelClassName,\n}: SwitchFieldProps) {\n  return (\n    <View className={cn(\"flex-row items-center gap-2\", className)}>\n      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />\n      <Pressable onPress={() => onCheckedChange(!checked)}>\n        <Label htmlFor={id} className={cn(\"text-sm text-muted-foreground\", labelClassName)}>\n          {label}\n        </Label>\n      </Pressable>\n    </View>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

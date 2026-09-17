@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "query-state",
+  "title": "Query State",
+  "description": "Inline loading / error text for a query whose data may still render beside it.",
+  "files": [
+    {
+      "path": "registry/layout/query-state.tsx",
+      "content": "/**\n * Inline loading / error text for a query whose data may still render beside it.\n *\n * Deliberately not a spinner-over-the-whole-page: the case it exists for is a\n * list that already has last-fetch data on screen and is revalidating, where\n * blanking the page would be a regression. Renders the error (priority), else\n * the loading line, else nothing.\n */\nimport { Text } from \"react-native\";\n\nexport function QueryState({\n  loading,\n  error,\n  loadingLabel = \"Loading…\",\n  errorLabel = \"Error\",\n}: {\n  loading?: boolean | undefined;\n  /**\n   * Structurally typed rather than `Error`, so any client's failure shape fits\n   * without a cast — TanStack Query, a fetch wrapper, a hand-rolled reducer.\n   */\n  error?: { message: string } | null | undefined;\n  loadingLabel?: string;\n  errorLabel?: string;\n}) {\n  if (error) {\n    return (\n      <Text className=\"text-sm text-destructive\">\n        {errorLabel}: {error.message}\n      </Text>\n    );\n  }\n  if (loading) {\n    return <Text className=\"text-sm text-muted-foreground\">{loadingLabel}</Text>;\n  }\n  return null;\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

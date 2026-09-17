@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # dist/ is committed because it is the artefact consumers install. A stale
+      # one means someone changed the palette and did not re-emit, and the three
+      # encodings would no longer agree with each other.
+      - name: dist/ is in sync with tokens/palette.mjs
+        run: npm run tokens:check
+
+      # Transition-period guard: this repo's web emitter must still produce the
+      # bytes cubeui ships, for as long as both registries exist. `cubeui` is not
+      # checked out here, so this passes trivially in CI and is the local guard.
+      - name: The web emitter still matches cubeui
+        run: npm run parity
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Lint and format
+        run: npm run lint
+
+      - name: Build the registry
+        run: npm run registry:build
+
+      # Three failures that otherwise ship silently: two source files claiming
+      # one item name, a `.web.tsx` whose exports drifted from its `.tsx`, and a
+      # built item whose `content` is the empty string.
+      - name: Collisions, platform-pair drift, empty content
+        run: npm run registry:check
+
+      # `shadcn build` writes public/r. A drifted checkout means someone edited
+      # registry.json without rebuilding, and the published JSON would not match
+      # the sources it names.
+      - name: public/r is in sync with registry.json
+        run: git diff --exit-code -- public/r
+
+      - name: Tests
+        run: npm test

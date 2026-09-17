@@ -13,10 +13,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const cubeui = resolve(
-  process.env.CUBEUI_PATH ?? join(root, "..", "cubeui"),
-  "preview/index.css",
-);
+const cubeui = resolve(process.env.CUBEUI_PATH ?? join(root, "..", "cubeui"), "preview/index.css");
 
 if (!existsSync(cubeui)) {
   console.log(`  skip    cubeui not found at ${cubeui} — parity check skipped`);

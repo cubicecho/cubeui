@@ -21,9 +21,7 @@ const num = (n) => String(Number(n.toFixed(6)));
  */
 export function formatOklch(t) {
   const base = `${num(t.l)} ${num(t.c)} ${num(t.h)}`;
-  return t.a === undefined
-    ? `oklch(${base})`
-    : `oklch(${base} / ${num(t.a * 100)}%)`;
+  return t.a === undefined ? `oklch(${base})` : `oklch(${base} / ${num(t.a * 100)}%)`;
 }
 
 /**
@@ -53,8 +51,7 @@ function toLinearSrgb({ l: L, c: C, h: H }) {
 }
 
 /** The sRGB transfer function. */
-const gamma = (c) =>
-  c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+const gamma = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
 
 /**
  * True when the colour cannot be shown in sRGB and had to be clamped.
