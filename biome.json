@@ -4,8 +4,11 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
+      ".storybook/**",
+      "compiled/**",
       "registry/**",
       "scripts/**",
+      "stories/**",
       "tokens/**",
       "*.ts",
       "*.json",

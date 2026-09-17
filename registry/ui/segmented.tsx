@@ -9,7 +9,7 @@
  * they take the class instead and render their own element.
  */
 import type { ReactNode } from "react";
-import { Pressable, Text } from "react-native";
+import { Platform, Pressable, Text } from "react-native";
 import { cn } from "@/lib/utils";
 
 /**
@@ -67,6 +67,15 @@ export function SegmentedButton({
       // is what tells a screen reader which pill of the set is the current one.
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
+      // The same fact again, in the only spelling the web understands.
+      //
+      // react-native-web does not read `accessibilityState` at all — it forwards an allowlist of
+      // `aria-*` props and nothing else — so without this line the active pill is styled but
+      // silent, and a screen reader user cannot tell which of the set is current. It is
+      // `aria-pressed` rather than `aria-selected` because this is a `button`, and `aria-selected`
+      // is only defined on `option`, `tab`, `row`, `gridcell` and `treeitem`; on a button it is
+      // markup axe rejects. React Native has no `aria-pressed`, hence the platform guard.
+      {...(Platform.OS === "web" ? ({ "aria-pressed": active } as const) : {})}
       className={cn("rounded-md px-3 py-1.5", active ? "bg-primary" : "hover:bg-muted", className)}
     >
       {typeof children === "string" ? (

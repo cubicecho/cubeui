@@ -55,5 +55,17 @@ jobs:
       - name: public/r is in sync with registry.json
         run: git diff --exit-code -- public/r
 
+      # `npm test` runs two vitest projects, and the second one renders the
+      # stories in a real browser. Without this step it fails at launch rather
+      # than skipping, which is the intended behaviour: a silently-skipped
+      # a11y suite is worse than a red build.
+      - name: Chromium, for the story tests
+        run: npx playwright install --with-deps chromium
+
       - name: Tests
         run: npm test
+
+      # The stories are the compiler's evidence. If one stops building, the
+      # Stage 0 verdict in the README is no longer backed by anything.
+      - name: Storybook builds
+        run: npm run build-storybook

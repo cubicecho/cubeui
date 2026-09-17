@@ -7,7 +7,7 @@
  * native does not inherit it.
  */
 import type { ReactNode } from "react";
-import { Pressable, Text } from "react-native";
+import { Platform, Pressable, Text } from "react-native";
 import { cn } from "@/lib/utils";
 
 type ToggleChipProps = {
@@ -46,6 +46,13 @@ export function ToggleChip({
       // reader needs — the border and fill say it to everyone else.
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
+      // The same two facts in the spelling the web understands. react-native-web does not read
+      // `accessibilityState` — it forwards an allowlist of `aria-*` props and nothing else — so
+      // without these the chip is styled but silent to a screen reader. `aria-pressed` and not
+      // `aria-selected` because this is a `button`, where `aria-selected` is markup axe rejects.
+      {...(Platform.OS === "web"
+        ? ({ "aria-pressed": selected, "aria-disabled": disabled } as const)
+        : {})}
       {...(accessibilityLabel ? { accessibilityLabel } : {})}
       className={cn(
         "rounded-md border",

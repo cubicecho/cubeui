@@ -7,7 +7,7 @@
  * works on both: the swatch row is what a native sheet would offer anyway, and
  * the hex field is still the way to enter a colour that is not on the list.
  */
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 import { Input } from "@/components/ui/input";
 import { readableTextColor } from "@/lib/readable-text-color";
 import { cn } from "@/lib/utils";
@@ -56,7 +56,12 @@ export function ColorPicker({
 }: ColorPickerProps) {
   return (
     <View className={cn("gap-3", className)}>
-      <View className="flex-row flex-wrap gap-2">
+      {/*
+        The group the swatches are radios *of*. A `radio` with no `radiogroup` around it is an
+        incomplete control to an assistive technology and an axe violation on web, and the role
+        is the same word on both platforms.
+      */}
+      <View accessibilityRole="radiogroup" className="flex-row flex-wrap gap-2">
         {colors.map((color) => {
           const selected = value.toLowerCase() === color.toLowerCase();
           return (
@@ -67,6 +72,10 @@ export function ColorPicker({
               // the label is the colour itself, which nothing else conveys.
               accessibilityRole="radio"
               accessibilityState={{ selected }}
+              // The same fact in the spelling the web understands — react-native-web forwards an
+              // allowlist of `aria-*` props and ignores `accessibilityState` entirely. A radio
+              // says its state with `aria-checked`, not `aria-selected`.
+              {...(Platform.OS === "web" ? ({ "aria-checked": selected } as const) : {})}
               accessibilityLabel={color}
               className={cn(
                 "h-9 w-9 items-center justify-center rounded-full border-2",

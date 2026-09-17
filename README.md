@@ -14,8 +14,12 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **in progress** — 42 items, pipeline green |
-| 3 | `rn2web` — the RN→web compiler | not started (spike first) |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 41 items, pipeline green |
+| 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
+| 3 | `rn2web` — the RN→web compiler | not started |
+
+Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
+needed a real component set to have anything to compile.
 
 ## Stage 1 — tokens
 
@@ -133,6 +137,79 @@ travels together, `@/` rewrites to the consumer's own alias in every file, a `re
 at its `target` (`cubeui-tokens.css` at the project root) while a `registry:lib` lands under the
 `lib` alias, and the npm dependencies that arrive are the versions intended.
 
+## Stage 0 — the spike, and its verdict
+
+**Verdict: go.** The compiler is worth building. The evidence is in `compiled/`, `stories/` and the
+assertions those stories carry, not in this paragraph — the point of the spike was to make the claim
+falsifiable.
+
+Three components were compiled **by hand-running the transform a compiler would run** —
+`section-heading` (one `Text`), `card` (nested `View`/`Text`, a conditional `Pressable` root, a
+`role="heading"`/`aria-level` title) and `segmented` (variants, press state, a selected pill) — plus
+`color-bar`, which `card` needs. Each is rendered in Storybook **beside its React Native original**,
+running through react-native-web, and each story asserts that the two halves agree.
+
+### What it proved
+
+**1. The reset gap closes.** This was open risk #1, the one that decides the whole stage. A compiled
+plain-DOM component loses react-native-web's per-component base class, and RN source legitimately
+omits classes web then needs because Yoga supplies those defaults. `compiled/cube-rn-reset.css`
+carries them — the values lifted from react-native-web's own source, in `@layer base` so unlayered
+Tailwind utilities still win. With it, the two halves of the card story measure **identically**:
+100 / 98 / 24 / 20 px on both sides, asserted at `<= 1px`.
+
+**2. Level-2 ARIA inference is not speculative — react-native-web already does it.** The plan
+proposed inferring `<h3>` from `role="heading" aria-level={3}` and `<button>` from `role="button"`.
+The spike found react-native-web *already performs that inference at runtime*: a `Pressable` with
+`accessibilityRole="button"` renders a real `<button type="button">`, which is why the card story
+asserts both halves are `BUTTON`. Compiling does not invent the semantics; it removes the runtime
+that was deriving them on every render. The story asserts two `<h3>`s, one per half, for the same
+reason.
+
+**3. The one real divergence found was a bug in the RN source, not a limit of the compiler.**
+`aria-selected` came back `null` on the native segmented pill. The cause: **react-native-web drops
+`accessibilityState` entirely** — it forwards an allowlist of `aria-*` props and nothing else — so
+the active pill was styled but silent to a screen reader. That is a live a11y bug in three shipped
+registry files, and it was fixed in the RN source rather than papered over in the compiled output:
+
+| Item | Was | Now also emits, on web |
+|---|---|---|
+| `segmented` | `accessibilityState={{ selected }}` | `aria-pressed` |
+| `toggle-chip` | `accessibilityState={{ selected, disabled }}` | `aria-pressed`, `aria-disabled` |
+| `color-picker` | `accessibilityState={{ selected }}` | `aria-checked`, inside a `radiogroup` |
+
+`aria-pressed` rather than the naive `aria-selected`, because `aria-selected` is only defined on
+`option`, `tab`, `row`, `gridcell` and `treeitem`; on a button axe rejects it as `aria-allowed-attr`.
+That is the mapping the compiler's inference table has to encode, and the spike is what found it.
+
+**4. The residual cost, stated rather than hidden.** The spread-props type diverges: the RN component
+takes `ComponentProps<typeof View>` and the compiled one `ComponentPropsWithoutRef<"div">`. An escape
+hatch used on one platform does not typecheck on the other. This is recorded in
+`compiled/card.tsx`'s header, and it is the honest price of the transform.
+
+### How the harness is kept honest
+
+Two things, because a comparison harness that renders both halves unstyled agrees with itself
+perfectly.
+
+- **Every story asserts a computed value, not just a render.** `section-heading.stories.tsx` asserts
+  the literal colour `text-muted-foreground` emits — `rgb(115, 115, 115)`. That single assertion
+  caught three separate failures of the className polyfill that all looked correct in source.
+- **axe is live and negative-tested.** `.storybook/preview.ts` sets `a11y: { test: "error" }`, so a
+  violation fails the run. That setting was verified by deliberately writing the naive
+  `aria-selected`-on-a-button markup and confirming the run went red with `aria-allowed-attr` —
+  rather than assumed from the config.
+
+### The one piece of harness machinery worth knowing about
+
+`.storybook/rn-classname.ts` rewrites `from "react-native"` to `from "react-native-css/components"`
+in this repo's own files only. NativeWind 5's `className` support on bare `react-native` components
+is a **Metro-only** polyfill; Storybook runs on Vite, so without this the RN half renders with no
+Tailwind classes at all. The file's header records the two shapes that do **not** work — a
+`resolveId` hook (Vite's alias plugin runs ahead of every user plugin, including `enforce: "pre"`)
+and an aliased `export *` shim (this bundler does not honour local-export shadowing) — so neither
+gets retried.
+
 ## Commands
 
 ```sh
@@ -144,13 +221,17 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run parity         # fail if the web emitter diverged from cubeui
 npm run registry:build # shadcn build → public/r
 npm run registry:check # collisions, platform-pair drift, empty content
-npm test               # colour maths (node --test) + registry libs (vitest)
+npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
+
+npm run storybook      # the RN-vs-compiled comparison, on :3001
+npm run build-storybook
 ```
 
 Two test runners on purpose: `scripts/` is the token pipeline — plain node ESM, no JSX, no bundler —
-and runs under `node --test` so it stays runnable with nothing installed. `registry/` runs under
-vitest, the way cubeui's does and the way Storybook will want.
+and runs under `node --test` so it stays runnable with nothing installed. Everything else runs under
+vitest, in two projects: `unit` in node for the registry libs, and `storybook` in a headless Chromium
+for the stories, because an axe run and a `getComputedStyle` assertion both need a real browser.
 
 `dist/` is committed on purpose — the emitted tokens are the artefact consumers install, and committing
 them is what lets `tokens:check` catch drift, the way cubeui catches registry drift with
@@ -168,10 +249,11 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 2. **Sidebar tokens.** cubeui has 18 tokens; `min-agent/mobile` added four `sidebar-*` ones that
    upstream shadcn also ships. Adding them here would break byte-parity with cubeui, which is currently
    load-bearing as a correctness proof. Deferred until cubeui adoption, when parity stops mattering.
-3. **Whether the `.web.tsx` split survives Stage 3.** Every web half kept so far is one the compiler
-   could not have produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx`
-   for the radix `htmlFor` association. That is the intended split. Whether the *rest* of the set
-   needs one is what the Stage 0 spike decides.
+3. ~~**Whether the `.web.tsx` split survives Stage 3.**~~ **Settled by the spike: it survives, as the
+   escape hatch it already is.** Every web half kept so far is one the compiler could not have
+   produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx` for the radix
+   `htmlFor` association — and the spike found nothing in the plain set that needs one. Level 4 of
+   the plan (an existing `X.web.tsx` is emitted verbatim and codegen is skipped) stands unchanged.
 4. **`status-chip` and cubeui's `badge`.** They are the same component seen from two sides — a
    toned pill around a word. cubeui's `badge` has not been ported yet; when it is, one of the two
    names has to go, and the vocabulary check is what should make that impossible to forget.
