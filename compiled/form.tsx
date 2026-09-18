@@ -1,4 +1,14 @@
 /**
+ * Compiled from `registry/ui/form.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
+ *
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
+ */
+
+/**
  * Bound form fields — the glue between TanStack Form and this registry's inputs.
  *
  * Every component here reads its state from form context rather than taking it
@@ -19,29 +29,22 @@ import { createFormHookContexts, useStore } from "@tanstack/react-form";
 import { Slot } from "radix-ui";
 import type { ReactNode } from "react";
 import * as React from "react";
-import { View } from "react-native";
-import { Button } from "@/components/ui/button";
+import type { FormElementProps } from "@/components/ui/form-element-base";
+import type { InputProps } from "@/components/ui/input-base";
+import type { TextareaProps } from "@/components/ui/textarea-base";
+import { cn } from "@/lib/utils";
+import { Button } from "./button";
 import {
   FieldDescription as FieldDescriptionPrimitive,
   FieldError as FieldErrorPrimitive,
   FieldLabel as FieldLabelPrimitive,
   Field as FieldPrimitive,
-} from "@/components/ui/field";
-import { FormElement } from "@/components/ui/form-element";
-import type { FormElementProps } from "@/components/ui/form-element-base";
-import { Input } from "@/components/ui/input";
-import type { InputProps } from "@/components/ui/input-base";
-import type { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import type { TextareaProps } from "@/components/ui/textarea-base";
-import { cn } from "@/lib/utils";
+} from "./field";
+import { FormElement } from "./form-element";
+import { Input } from "./input";
+import type { Label } from "./label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import { Textarea } from "./textarea";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
@@ -171,13 +174,13 @@ function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitiv
  */
 function FieldRow({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <View className={cn("flex-row flex-wrap gap-4", className)}>
+    <div className={cn("cube-rn-view", "flex-row flex-wrap gap-4", className)}>
       {React.Children.map(children, (child) =>
         child == null || child === false ? null : (
-          <View className="min-w-[45%] flex-1">{child}</View>
+          <div className="cube-rn-view min-w-[45%] flex-1">{child}</div>
         ),
       )}
-    </View>
+    </div>
   );
 }
 
@@ -321,7 +324,7 @@ function SubmitButton({
   return (
     <Button
       disabled={!canSubmit || isSubmitting}
-      onPress={() => {
+      onClick={() => {
         form.handleSubmit();
       }}
       {...props}

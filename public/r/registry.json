@@ -217,11 +217,19 @@
       "name": "textarea",
       "type": "registry:ui",
       "title": "Textarea",
-      "description": "Multi-line text entry, one file for both platforms \u2014 react-native-web already swaps in a real textarea.",
+      "description": "Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
+          "path": "registry/ui/textarea-base.ts",
+          "type": "registry:ui"
+        },
+        {
           "path": "registry/ui/textarea.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/textarea.web.tsx",
           "type": "registry:ui"
         }
       ]

@@ -190,6 +190,23 @@
       ]
     },
     {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/textarea-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/textarea.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
@@ -415,6 +432,29 @@
         },
         {
           "path": "compiled/form-element.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "form",
+      "type": "registry:ui",
+      "title": "Form",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms.",
+      "dependencies": ["@tanstack/react-form@^1.33.5", "radix-ui@^1.6.7"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/field",
+        "@cubeui/form-element",
+        "@cubeui/input",
+        "@cubeui/label",
+        "@cubeui/select",
+        "@cubeui/textarea"
+      ],
+      "files": [
+        {
+          "path": "compiled/form.tsx",
           "type": "registry:ui"
         }
       ]

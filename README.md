@@ -16,7 +16,7 @@ every build.
 | 1 | `tokens` — one palette, three emitters | **done** |
 | 2 | the component registry, ported from `auto-cal/client` | **done** — 41 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — 37 of 39 files compile, 40 of 42 items published |
+| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — all 39 files have a web half, all 42 items published |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -57,7 +57,7 @@ line to `components.json` and install with the stock shadcn CLI; there is no bes
 because the CLI already does the copying and the import-alias rewriting.
 
 The registry is organised **by item, not by platform**. An item is one component and ships whichever
-files it needs: `textarea` is a single file, `input` is three (`input-base.ts` + `input.tsx` +
+files it needs: `card` is a single file, `input` is three (`input-base.ts` + `input.tsx` +
 `input.web.tsx`). `tsconfig.json`'s `paths` deliberately mirror where the CLI actually puts each file
 in a consumer's tree, so an import that typechecks here is the import the consumer gets.
 
@@ -224,9 +224,9 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **37 of the 39 files have a web half — 25 generated, 12
-hand-written, 2 refused** — and `registry.web.json`, derived from `registry.json` in the same run,
-publishes **40 of the 42 items**. `scripts/rn2web/` is about 1400 lines, of which `tables.mjs` is all
+react-native-web anywhere in the output. **All 39 files have a web half — 26 generated, 13
+hand-written** — and `registry.web.json`, derived from `registry.json` in the same run, publishes
+**all 42 items**. `scripts/rn2web/` is about 1400 lines, of which `tables.mjs` is all
 of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
@@ -277,14 +277,15 @@ textarea — no web half (registry/ui/textarea.tsx)
   this item instead.
 ```
 
-That is the entire refusal list today: `textarea`, and `form` because it imports `textarea`. Both
-want a hand-written web half, which is exactly what the other twelve already have. They are the two
-items missing from `registry.web.json`: the derivation drops them rather than publish an item that
-cannot install.
+**The refusal list is empty today**, and that diagnostic is why — it is the last one, and writing the
+file it asked for is what closed it. `textarea` was the only real refusal; `form` was refused solely
+because it imports `textarea`, since a compiled tree cannot reach back into a React Native component.
+Had either been published half-compiled, the failure would have surfaced in a consumer's app as a
+`<div>` nobody could type into.
 
 ### What refusing bought
 
-The interesting result of Stage 3 is not the 24 generated files. It is that **three defects in the
+The interesting result of Stage 3 is not the 26 generated files. It is that **four defects in the
 React Native source were found by trying to compile it**, none of which any RN tooling would report:
 
 - **`card` picked its container at runtime.** `const Container = onPress ? Pressable : View` refuses,
@@ -300,6 +301,12 @@ React Native source were found by trying to compile it**, none of which any RN t
   permanent compiler guard: every key in an `accessibilityState` must also be said with an `aria-*`
   the web will actually read, checked against `ACCESSIBILITY_STATE_ARIA`, or the item is refused.
   The bug class cannot come back.
+- **`textarea` rested on a premise that had quietly expired.** Its header said a `TextInput multiline`
+  *is* a `<textarea>` on web, so a `.web.tsx` would be pure duplication. True — under
+  react-native-web. The whole point of the compiled registry is that react-native-web is not there,
+  and nothing else was going to notice, because the file still typechecked, still rendered in
+  Storybook (which runs on RNW) and still worked in every Expo app. The compiler is what read the
+  premise back and found it no longer held. It is now three files, like `input`.
 
 ### The four levels, as built
 

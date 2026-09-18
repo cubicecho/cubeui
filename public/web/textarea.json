@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "textarea",
+  "title": "Textarea",
+  "description": "Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/textarea-base.ts",
+      "content": "/**\n * The contract both `textarea.tsx` (native) and `textarea.web.tsx` implement.\n *\n * It lives in its own module for the same reason `input-base.ts` does: Metro\n * resolves `./textarea` to `textarea.web.tsx` on web, so the web file importing\n * the shared pieces from `./textarea` would be importing itself.\n *\n * The props are spelled out rather than taken from `TextInputProps` because\n * callers write `onChangeText`, not a DOM change event — the same contract\n * `input-base.ts` holds, so a bound field looks identical whichever it wraps.\n */\n\nexport type TextareaProps = {\n  value?: string | undefined;\n  onChangeText?: ((text: string) => void) | undefined;\n  onBlur?: (() => void) | undefined;\n  placeholder?: string | undefined;\n  /** Visible lines; the box grows no further and scrolls instead. */\n  rows?: number | undefined;\n  maxLength?: number | undefined;\n  disabled?: boolean | undefined;\n  className?: string | undefined;\n  /** Web only: ties the control to its `<label>`. */\n  id?: string | undefined;\n};\n\n/**\n * The placeholder colour rides here as a `placeholder:` variant, the same way\n * `INPUT_CLASS` does it. NativeWind 4's `placeholderClassName` prop is gone in\n * 5; the variant compiles to `placeholderTextColor` on device and to a real\n * `::placeholder` rule on web.\n */\nexport const TEXTAREA_CLASS =\n  \"border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "compiled/textarea.tsx",
+      "content": "/**\n * Copied from `registry/ui/textarea.web.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The\n * same passes still ran over it, and for a file already written against the DOM they find nothing\n * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one\n * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one\n * speak the same prop vocabulary, instead of the two drifting where nobody is looking.\n */\n\n/**\n * The web implementation — see `textarea.tsx` for why this one is split, and\n * `textarea-base.ts` for the contract both sides implement.\n *\n * It is hand-written rather than compiled because nothing `TextInput` does here\n * survives a rename table: `editable={!disabled}` inverts, `onChangeText(text)`\n * and `onChange(event)` are different signatures, and the element itself depends\n * on the value of `multiline`. Each of those is the compiler guessing at\n * semantics the source never stated, which is the one thing it is built not to\n * do — so it refuses, and this file is the answer it asks for.\n */\n\nimport { TEXTAREA_CLASS, type TextareaProps } from \"@/components/ui/textarea-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Textarea({\n  value,\n  onChangeText,\n  onBlur,\n  placeholder,\n  rows,\n  maxLength,\n  disabled,\n  className,\n  id,\n}: TextareaProps) {\n  return (\n    <textarea\n      id={id}\n      value={value ?? \"\"}\n      onChange={(e) => onChangeText?.(e.target.value)}\n      onBlur={onBlur}\n      placeholder={placeholder}\n      rows={rows}\n      maxLength={maxLength}\n      disabled={disabled}\n      className={cn(\n        TEXTAREA_CLASS,\n        // `resize-y` is the browser's own affordance and has no native\n        // counterpart; `disabled:` is the DOM attribute doing what the native\n        // half spells out as `disabled && \"opacity-50\"`.\n        \"resize-y disabled:cursor-not-allowed disabled:opacity-50\",\n        className,\n      )}\n    />\n  );\n}\n\nexport type { TextareaProps } from \"@/components/ui/textarea-base\";\nexport { Textarea };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
