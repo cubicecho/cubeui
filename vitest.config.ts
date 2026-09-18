@@ -28,6 +28,15 @@ export default defineConfig({
         // No setup file: since Storybook 10.3 the addon applies `.storybook/preview.ts` itself,
         // so the stylesheet and the theme decorator are already in place here.
         plugins: [storybookTest({ configDir: resolve(root, ".storybook") })],
+        // Pre-bundled up front rather than on discovery. Vite finds `react-native-css/components`
+        // only when the first story imports a registry component — by which point the run is
+        // already going, so it optimizes, invalidates the dep URLs and reloads mid-test. The
+        // stories that lost that race failed with "Failed to fetch dynamically imported module"
+        // pointing at a stale pre-bundle, which reads like a component fault and is not one.
+        // Naming it here is what vitest's own "please add mentioned dependencies" message asks
+        // for; the import is the plugin in `.storybook/rn-classname.ts`, which rewrites every
+        // `from "react-native"` in this repo's files to it.
+        optimizeDeps: { include: ["react-native-css/components"] },
         test: {
           name: "storybook",
           // One browser session at a time. Run in parallel, a session drops its websocket partway
