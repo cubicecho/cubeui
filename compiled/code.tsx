@@ -1,5 +1,5 @@
 /**
- * Compiled from `registry/layout/section-heading.tsx` by `scripts/rn2web`.
+ * Compiled from `registry/ui/code.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
  * The prose below is the source's own, carried across untouched, which is the property that makes
@@ -8,24 +8,27 @@
  * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
+/**
+ * An inline monospace span. `<code>` has no native counterpart and it appeared
+ * inline inside a sentence, so this has to be a `Text` — a `View` cannot be
+ * nested in one.
+ */
+
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type SectionHeadingProps = {
-  /** `overline` is the smaller uppercase label; `default` is a plain section label. */
-  variant?: "default" | "overline";
-  className?: string;
+export function Code({
+  className,
+  children,
+}: {
+  className?: string | undefined;
   children: ReactNode;
-};
-
-// A small muted heading above a section of content.
-export function SectionHeading({ variant = "default", className, children }: SectionHeadingProps) {
+}) {
   return (
     <span
       className={cn(
         "cube-rn-text",
-        "font-semibold text-muted-foreground",
-        variant === "overline" ? "text-xs uppercase tracking-wide" : "text-sm",
+        "rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground",
         className,
       )}
     >

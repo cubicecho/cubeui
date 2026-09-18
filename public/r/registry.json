@@ -24,11 +24,15 @@
       "name": "utils",
       "type": "registry:lib",
       "title": "cn",
-      "description": "The class merger every component calls, plus the one hover helper that has to be gated on platform.",
+      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN\u2192web compiler reads.",
       "dependencies": ["clsx@^2.1.1", "tailwind-merge@^3.6.0"],
       "files": [
         {
           "path": "registry/lib/utils.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/lib/web-as.d.ts",
           "type": "registry:lib"
         }
       ]

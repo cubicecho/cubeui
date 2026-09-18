@@ -1,4 +1,14 @@
 /**
+ * Compiled from `registry/ui/toast.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
+ *
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
+ */
+
+/**
  * Transient messages for mutations fired outside a form.
  *
  * A dialog can show a failure in `FormDialogFooter`, and a card can show one in
@@ -12,8 +22,7 @@
  */
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import type { ViewStyle } from "react-native";
-import { Platform, Pressable, Text, View } from "react-native";
+import { cn } from "@/lib/utils";
 
 export type ToastTone = "error" | "success";
 
@@ -47,16 +56,12 @@ const TONE_TEXT_CLASS: Record<ToastTone, string> = {
  * admits, hence the cast. Native gets `absolute`, which resolves against the
  * router's full-screen container.
  */
-const VIEWPORT_STYLE = Platform.select({
-  web: { position: "fixed", right: 16, bottom: 16, zIndex: 50 },
-  default: {
-    position: "absolute",
-    left: 16,
-    right: 16,
-    bottom: 32,
-    zIndex: 50,
-  },
-}) as unknown as ViewStyle;
+const VIEWPORT_STYLE = {
+  position: "fixed",
+  right: 16,
+  bottom: 16,
+  zIndex: 50,
+} as unknown as React.CSSProperties;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -98,7 +103,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={show}>
       {children}
       {toasts.length > 0 && (
-        <View pointerEvents="box-none" style={VIEWPORT_STYLE} className="gap-2">
+        <div style={VIEWPORT_STYLE} className="cube-rn-view cube-rn-pe-box-none gap-2">
           {/*
            * The announcement and the dismiss target are two elements, not one. They were one — a
            * `Pressable` with `accessibilityRole="alert"` — and `rn2web` is what showed that to be
@@ -108,25 +113,35 @@ export function ToastProvider({ children }: { children: ReactNode }) {
            * message and not at something to activate.
            */}
           {toasts.map((toast) => (
-            <View
+            <div
               key={toast.id}
-              accessibilityRole="alert"
-              className={`max-w-sm flex-row items-start gap-3 rounded-lg px-4 py-3 shadow-lg ${TONE_CLASS[toast.tone]}`}
+              role="alert"
+              className={cn(
+                "cube-rn-view",
+                `max-w-sm flex-row items-start gap-3 rounded-lg px-4 py-3 shadow-lg ${TONE_CLASS[toast.tone]}`,
+              )}
             >
-              <Text className={`flex-1 text-sm ${TONE_TEXT_CLASS[toast.tone]}`}>
+              <span className={cn("cube-rn-text", `flex-1 text-sm ${TONE_TEXT_CLASS[toast.tone]}`)}>
                 {toast.message}
-              </Text>
-              <Pressable
-                onPress={() => dismiss(toast.id)}
-                accessibilityRole="button"
-                accessibilityLabel="Dismiss"
-                className="shrink-0"
+              </span>
+              <button
+                type="button"
+                onClick={() => dismiss(toast.id)}
+                aria-label="Dismiss"
+                className="cube-rn-view cube-rn-pressable shrink-0"
               >
-                <Text className={`text-sm font-medium ${TONE_TEXT_CLASS[toast.tone]}`}>×</Text>
-              </Pressable>
-            </View>
+                <span
+                  className={cn(
+                    "cube-rn-text",
+                    `text-sm font-medium ${TONE_TEXT_CLASS[toast.tone]}`,
+                  )}
+                >
+                  ×
+                </span>
+              </button>
+            </div>
           ))}
-        </View>
+        </div>
       )}
     </ToastContext.Provider>
   );

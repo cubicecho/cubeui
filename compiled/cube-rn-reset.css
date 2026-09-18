@@ -81,3 +81,45 @@
     text-align: inherit;
   }
 }
+
+/*
+ * `pointerEvents`, which is a prop on native and a style on the web, and whose two "box" values
+ * describe a view and its children disagreeing — something CSS says with two rules, not one value.
+ *
+ * Lifted rule for rule from `react-native-web/dist/cjs/exports/StyleSheet/compiler/index.js`,
+ * including the `!important`, which is the one place this stylesheet copies react-native-web
+ * rather than improving on it. The reason it is there: `pointerEvents` is written as a prop
+ * precisely when the author needs it to win, and a utility class in the same `className` would
+ * otherwise beat it. That is also why these four sit outside `@layer base` while everything above
+ * sits inside it — a reset should lose to a utility, and this is not a reset.
+ */
+.cube-rn-pe-auto {
+  pointer-events: auto !important;
+}
+
+.cube-rn-pe-none {
+  pointer-events: none !important;
+}
+
+.cube-rn-pe-none > * {
+  pointer-events: none;
+}
+
+/* Transparent to the pointer itself, while its children are not — a toast viewport, a tooltip
+ * layer, anything that covers the screen to position something small. */
+.cube-rn-pe-box-none {
+  pointer-events: none !important;
+}
+
+.cube-rn-pe-box-none > * {
+  pointer-events: auto;
+}
+
+/* The inverse: the view takes the pointer and its children do not. */
+.cube-rn-pe-box-only {
+  pointer-events: auto !important;
+}
+
+.cube-rn-pe-box-only > * {
+  pointer-events: none;
+}

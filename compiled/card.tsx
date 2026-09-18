@@ -1,42 +1,33 @@
 /**
- * Compiled from `registry/ui/card.tsx` — Stage 0 spike, hand-run.
+ * Compiled from `registry/ui/card.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
  *
- * The interesting one. Three things happened here that a rename could not do:
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
+ */
+
+/**
+ * One card for both platforms — see `ui/button.tsx` for the conversion rules.
  *
- * 1. **`CardTitle` became an `<h3>`.** The source says `role="heading" aria-level={3}` because
- *    that is what a screen reader reads on device. On the DOM those two attributes *are* an
- *    `<h3>`, so the element map reads them and emits one — and then drops them, because
- *    `role="heading" aria-level="3"` on an `<h3>` is the same thing said twice. This is level 2
- *    of the plan's four: the semantics were already in the React Native source, and the compiler
- *    only had to notice.
+ * `CardTitle` and `CardDescription` are `<Text>`, which is not optional on
+ * native: a bare string inside a `<View>` throws there while rendering fine on
+ * web, so the two platforms disagree silently unless the text nodes are typed.
  *
- * 2. **A pressable `Card` became a real `<button>`.** The source already switches its container
- *    on `onPress` and adds `role="button"`, for the reason its own comment gives: an `onClick` on
- *    a plain `div` is not reachable by keyboard. Emitting `<button>` is what makes that true
- *    rather than merely announced — focus, Enter, Space and the focus ring all arrive with the
- *    element. `role="button"` is dropped for the same reason `aria-level` was.
- *
- *    Worth being precise about, because it is the spike's main result: react-native-web *already*
- *    emits a `<button>` here, `type="button"` included. `stories/card.stories.tsx` asserts that on
- *    both halves. So this inference is not a bet the compiler is taking — it is the behaviour the
- *    web target has today, and compiling only drops the runtime that was performing it.
- *
- * 3. **The class list grew a reset.** See `cube-rn-reset.css`: without `.cube-rn-view` these
- *    `<div>`s are `display: block`, and `CardFooter`'s `flex-row items-center` silently stops
- *    meaning anything.
- *
- * What did **not** survive, and is the first honest cost of compiling: the props type. The source
- * spreads `React.ComponentProps<typeof View>`, so a caller can pass `onLayout` or `pointerEvents`;
- * the compiled one spreads `React.ComponentPropsWithoutRef<"div">`, so a caller can pass `title`
- * or `onMouseEnter`. The overlap is large and the *component's own* props are identical, but the
- * escape hatch is a different escape hatch on each platform. A single shared `.d.ts` cannot
- * describe both, so this is something the compiler has to state, not something it can hide.
+ * The `role`/`aria-level` on `CardTitle` and the `role="button"` on a pressable
+ * card are not decoration. They are what a screen reader reads on device, and
+ * on web react-native-web turns them into the matching ARIA attributes — which
+ * is also what lets a compiled DOM version know this `<Text>` is an `<h3>`.
  */
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ColorBar } from "./color-bar";
 
+// `className` is re-declared rather than inherited: nativewind types it as
+// `className?: string`, which under `exactOptionalPropertyTypes` rejects the
+// conditional `cond ? 'x' : undefined` several call sites pass.
 type ViewProps = Omit<React.ComponentPropsWithoutRef<"div">, "className"> & {
   className?: string | undefined;
 };
@@ -50,22 +41,20 @@ type CardProps = ViewProps & {
   /** What the accent colour stands for, for anyone who cannot see it. */
   accentLabel?: string | undefined;
   /**
-   * Makes the whole card a target. A card that takes this renders a `<button>` instead of a
-   * `<div>` — an `onClick` on a plain `div` is not reachable by keyboard.
+   * Makes the whole card a target. A card that takes this renders a
+   * `Pressable` instead of a `View` — a `View` has no press handling on
+   * native, and an `onClick` on a plain `div` is not reachable by keyboard.
    */
-  onPress?: (() => void) | undefined;
+  onClick?: React.ComponentPropsWithoutRef<"button">["onClick"] | undefined;
 };
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, accentColor, accentLabel, onPress, children, ...props }, ref) => {
+  ({ className, accentColor, accentLabel, onClick: onPress, children, ...props }, ref) => {
     const classes = cn(
-      "cube-rn-view",
-      onPress && "cube-rn-pressable",
       "rounded-lg border bg-card text-card-foreground shadow-sm",
       accentColor && "relative overflow-hidden",
       className,
     );
-
     const inner = (
       <>
         <ColorBar color={accentColor} label={accentLabel} />
@@ -73,26 +62,29 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       </>
     );
 
+    // The two containers are written out rather than picked with `const Container = onPress ?
+    // Pressable : View`. They do not actually share a prop list — only one of them takes a press
+    // handler — and `rn2web` refuses an element chosen at runtime, because the tag it emits, the
+    // reset class it carries and the role it infers all follow from knowing which one it is.
     if (onPress) {
       return (
-        // `type="button"` is not in the source and has no React Native counterpart: a `<button>`
-        // with no type submits the form it happens to be inside, which a `Pressable` never does.
-        // react-native-web emits it for that same reason, so this is the compiler matching the
-        // web target's existing behaviour rather than inventing a rule.
         <button
-          ref={ref as React.Ref<HTMLButtonElement>}
           type="button"
+          ref={ref as React.Ref<HTMLButtonElement>}
           onClick={onPress}
-          className={classes}
+          className={cn("cube-rn-view cube-rn-pressable", classes)}
           {...(props as React.ComponentPropsWithoutRef<"button">)}
         >
           {inner}
         </button>
       );
     }
-
     return (
-      <div ref={ref} className={classes} {...props}>
+      <div
+        ref={ref as React.Ref<HTMLDivElement>}
+        className={cn("cube-rn-view", classes)}
+        {...(props as React.ComponentPropsWithoutRef<"div">)}
+      >
         {inner}
       </div>
     );
@@ -102,49 +94,51 @@ Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
   <div
-    ref={ref}
+    ref={ref as React.Ref<HTMLDivElement>}
     className={cn("cube-rn-view", "flex flex-col gap-1.5 p-6", className)}
-    {...props}
+    {...(props as React.ComponentPropsWithoutRef<"div">)}
   />
 ));
 CardHeader.displayName = "CardHeader";
 
-const CardTitle = React.forwardRef<HTMLHeadingElement, TextProps>(
-  ({ className, ...props }, ref) => (
-    <h3
-      ref={ref}
-      className={cn(
-        "cube-rn-text",
-        "text-2xl font-semibold leading-none tracking-tight text-card-foreground",
-        className,
-      )}
-      {...(props as React.ComponentPropsWithoutRef<"h3">)}
-    />
-  ),
-);
+const CardTitle = React.forwardRef<HTMLSpanElement, TextProps>(({ className, ...props }, ref) => (
+  <h3
+    ref={ref as React.Ref<HTMLHeadingElement>}
+    className={cn(
+      "cube-rn-text",
+      "text-2xl font-semibold leading-none tracking-tight text-card-foreground",
+      className,
+    )}
+    {...(props as React.ComponentPropsWithoutRef<"h3">)}
+  />
+));
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLSpanElement, TextProps>(
   ({ className, ...props }, ref) => (
     <span
-      ref={ref}
+      ref={ref as React.Ref<HTMLSpanElement>}
       className={cn("cube-rn-text", "text-sm text-muted-foreground", className)}
-      {...props}
+      {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
   ),
 );
 CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("cube-rn-view", "p-6 pt-0", className)} {...props} />
+  <div
+    ref={ref as React.Ref<HTMLDivElement>}
+    className={cn("cube-rn-view", "p-6 pt-0", className)}
+    {...(props as React.ComponentPropsWithoutRef<"div">)}
+  />
 ));
 CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
   <div
-    ref={ref}
+    ref={ref as React.Ref<HTMLDivElement>}
     className={cn("cube-rn-view", "flex flex-row items-center p-6 pt-0", className)}
-    {...props}
+    {...(props as React.ComponentPropsWithoutRef<"div">)}
   />
 ));
 CardFooter.displayName = "CardFooter";

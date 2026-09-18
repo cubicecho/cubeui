@@ -34,6 +34,13 @@ jobs:
       - name: The web emitter still matches cubeui
         run: npm run parity
 
+      # compiled/ is committed for the same reason dist/ is: it is what a DOM app
+      # installs. This step re-runs the compiler and fails if the checked-in
+      # output moved, which is also the only thing that catches a compiler change
+      # that silently stops emitting for an item.
+      - name: compiled/ is in sync with registry/
+        run: npm run compile:check
+
       - name: Types
         run: npm run typecheck
 

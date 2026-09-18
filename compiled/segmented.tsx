@@ -1,31 +1,23 @@
 /**
- * Compiled from `registry/ui/segmented.tsx` — Stage 0 spike, hand-run.
+ * Compiled from `registry/ui/segmented.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
  *
- * The two class helpers compile to themselves: they are `cn()` calls over string literals with no
- * JSX in them, so the transform has nothing to do and the web item exports the identical function.
- * That is worth noting because it is the cheap half of the registry — every `*-base.ts` and every
- * class helper crosses for free.
- *
- * `SegmentedButton` is where the transform has to make a judgement:
- *
- *   accessibilityRole="button"              ->  <button type="button">
- *   accessibilityState={{ selected }}       ->  (nothing — see below)
- *   aria-pressed={active}                   ->  aria-pressed={active}
- *
- * The middle line is what the spike found, and it was a live bug in `registry/ui/segmented.tsx`
- * rather than a question about compiling. react-native-web does not read `accessibilityState` at
- * all — it forwards an allowlist of `aria-*` props and drops everything else — so the active pill
- * was styled and silent, with nothing telling a screen reader which of the set was current. The
- * fix belongs in the React Native source, and that is where it went: the source now also passes
- * `aria-pressed` under `Platform.OS === "web"`, and the compiled output is a translation of it
- * again rather than an improvement on it.
- *
- * `aria-pressed` and not `aria-selected`, which is the naive mapping of the word `selected`:
- * `aria-selected` is only defined on `option`, `tab`, `row`, `gridcell` and `treeitem`, and on a
- * button it is markup axe rejects. `stories/segmented.stories.tsx` is the evidence for all of
- * this rather than the assertion of it.
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
+/**
+ * A pill in a segmented control — a row of mutually exclusive options.
+ *
+ * Ships a component *and* two class helpers, which is unusual and deliberate.
+ * The same pill is often a router link rather than a button (a nav bar is a
+ * segmented control whose items navigate), and a link is a host component the
+ * app owns — expo-router's `<Link>`, react-router's `<NavLink>`. Those cannot
+ * take a `Pressable` wrapper without losing the router's press handling, so
+ * they take the class instead and render their own element.
+ */
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -63,18 +55,17 @@ export function segmentedTextClass(active: boolean, className?: string) {
  * A pressable pill.
  *
  * `children` is passed through untouched unless it is a bare string, in which
- * case it is wrapped in a `<span>` carrying the active colour. On native that
- * wrapper is not optional — a bare string inside a `Pressable` throws — and on
- * the DOM it is what carries the colour the container cannot inherit down.
+ * case it is wrapped in a `<Text>` carrying the active colour — the common case,
+ * and the one where forgetting the wrapper is a runtime error on native.
  */
 export function SegmentedButton({
   active,
-  onPress,
+  onClick: onPress,
   className,
   children,
 }: {
   active: boolean;
-  onPress: () => void;
+  onClick: () => void;
   className?: string | undefined;
   children: ReactNode;
 }) {
@@ -82,6 +73,14 @@ export function SegmentedButton({
     <button
       type="button"
       onClick={onPress}
+      // The same fact again, in the only spelling the web understands.
+      //
+      // react-native-web does not read `accessibilityState` at all — it forwards an allowlist of
+      // `aria-*` props and nothing else — so without this line the active pill is styled but
+      // silent, and a screen reader user cannot tell which of the set is current. It is
+      // `aria-pressed` rather than `aria-selected` because this is a `button`, and `aria-selected`
+      // is only defined on `option`, `tab`, `row`, `gridcell` and `treeitem`; on a button it is
+      // markup axe rejects. React Native has no `aria-pressed`, hence the platform guard.
       aria-pressed={active}
       className={cn(
         "cube-rn-view cube-rn-pressable",

@@ -41,21 +41,33 @@ type CardProps = ViewProps & {
 
 const Card = React.forwardRef<React.ElementRef<typeof View>, CardProps>(
   ({ className, accentColor, accentLabel, onPress, children, ...props }, ref) => {
-    const Container = onPress ? Pressable : View;
-    return (
-      <Container
-        ref={ref}
-        {...(onPress ? ({ onPress, role: "button" } as const) : {})}
-        className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm",
-          accentColor && "relative overflow-hidden",
-          className,
-        )}
-        {...props}
-      >
+    const classes = cn(
+      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      accentColor && "relative overflow-hidden",
+      className,
+    );
+    const inner = (
+      <>
         <ColorBar color={accentColor} label={accentLabel} />
         {children}
-      </Container>
+      </>
+    );
+
+    // The two containers are written out rather than picked with `const Container = onPress ?
+    // Pressable : View`. They do not actually share a prop list — only one of them takes a press
+    // handler — and `rn2web` refuses an element chosen at runtime, because the tag it emits, the
+    // reset class it carries and the role it infers all follow from knowing which one it is.
+    if (onPress) {
+      return (
+        <Pressable ref={ref} onPress={onPress} role="button" className={classes} {...props}>
+          {inner}
+        </Pressable>
+      );
+    }
+    return (
+      <View ref={ref} className={classes} {...props}>
+        {inner}
+      </View>
     );
   },
 );

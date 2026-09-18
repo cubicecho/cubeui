@@ -1,10 +1,11 @@
 /**
- * Compiled from `registry/ui/color-bar.tsx` — Stage 0 spike, hand-run.
+ * Compiled from `registry/ui/color-bar.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
  *
- * Here because `card` renders it, and a compiled tree that reaches back into a React Native
- * component would not be a compiled tree. `<View>` -> `<div class="cube-rn-view">`, and the
- * `role`/`aria-label`/`aria-hidden` pass through untouched — React Native and the DOM spell those
- * the same, which is the whole basis of level 2 of the plan's inference.
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
 import { hexToAccent } from "@/lib/color";

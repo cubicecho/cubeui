@@ -16,7 +16,7 @@ every build.
 | 1 | `tokens` — one palette, three emitters | **done** |
 | 2 | the component registry, ported from `auto-cal/client` | **done** — 41 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler | not started |
+| 3 | `rn2web` — the RN→web compiler | **done — 36 of 38 items compile**; not yet published as registry items |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -210,6 +210,107 @@ Tailwind classes at all. The file's header records the two shapes that do **not*
 and an aliased `export *` shim (this bundler does not honour local-export shadowing) — so neither
 gets retried.
 
+## Stage 3 — `rn2web`, the compiler
+
+`npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
+react-native-web anywhere in the output. **36 of the 38 items have a web half — 24 generated, 12
+hand-written, 2 refused.** 1300 lines in `scripts/rn2web/`, of which `tables.mjs` is all of the
+judgement and `compile.mjs` is the ts-morph that applies it.
+
+The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
+the spike's assertions became the compiler's regression test without anything being rewritten.
+
+### The rule the whole thing is built on: refuse, never guess
+
+Every construct with no table entry produces a `file:line` diagnostic and the item gets **no web
+half** — a partially-transformed file is the one output worse than none. `npm run compile` prints its
+refusals and exits 0, because a refusal is not a failure. It is the compiler saying which of the
+plan's four levels an item belongs to:
+
+```
+textarea — no web half (registry/ui/textarea.tsx)
+  registry/ui/textarea.tsx:16  `TextInput` is out of scope for the compiler — an input's type,
+  keyboard and placeholder vocabulary do not survive a table. Ship a hand-written `.web.tsx` for
+  this item instead.
+```
+
+That is the entire refusal list today: `textarea`, and `form` because it imports `textarea`. Both
+want a hand-written web half, which is exactly what the other twelve already have.
+
+### What refusing bought
+
+The interesting result of Stage 3 is not the 24 generated files. It is that **three defects in the
+React Native source were found by trying to compile it**, none of which any RN tooling would report:
+
+- **`card` picked its container at runtime.** `const Container = onPress ? Pressable : View` refuses,
+  because the tag, the reset class and the inferred role all follow from knowing which one it is. The
+  source now branches explicitly. It reads better — the two containers never shared a prop list.
+- **`toast` shipped an alert nobody could dismiss with a keyboard.** It was a `Pressable` with
+  `accessibilityRole="alert"`. A role *replaces* an element's semantics rather than adding to them,
+  so that markup is an alert with a press handler that is not exposed — on web *and* on device,
+  where the screen reader was told it was looking at a message rather than at something to activate.
+  Compiled to markup a linter understands, biome's `useKeyWithClickEvents` said so immediately. The
+  announcement and the dismiss target are now two elements.
+- **`accessibilityState` is dropped by react-native-web**, which Stage 0 found by hand. It is now a
+  permanent compiler guard: every key in an `accessibilityState` must also be said with an `aria-*`
+  the web will actually read, checked against `ACCESSIBILITY_STATE_ARIA`, or the item is refused.
+  The bug class cannot come back.
+
+### The four levels, as built
+
+| Level | Mechanism | Where |
+|---|---|---|
+| 1 | element map — `View`→`div`, `Text`→`span`, `Pressable`→`button`, `ScrollView`→`div[overflow-auto]` | `ELEMENTS` |
+| 2 | inference from ARIA already present — `role="heading"`+`aria-level={3}`→`<h3>`, `role="list"`→`<ul>` | `NATIVE_TAG_FOR_ROLE` |
+| 3 | `webAs` — an explicit tag for what ARIA cannot say | `registry/lib/web-as.d.ts` |
+| 4 | an existing `X.web.tsx` supplies the web half and nothing is generated | `passthroughSource` |
+
+Level 3 exists because levels 1 and 2 cannot reach the markup whose semantics *are* the element:
+`<section>`, `<nav>`, `<aside>`, `<figure>` have no ARIA role a `<View>` could have carried.
+`registry/lib/web-as.d.ts` augments React Native's `ViewProps` and `TextProps` with an optional
+`webAs`, which the compiler reads and removes; on device React Native drops the unknown prop, so it
+costs one type declaration and no runtime. **Nothing in the registry needs it yet** — every item so
+far was reachable from ARIA it already had — so it is built and typed but unexercised.
+
+Level 4 still runs the same passes. That surfaced the second reason it has to: `file-picker.web.tsx`
+reaches for a React Native `<Text>`, which is free inside an Expo app on web and would have been the
+one import dragging react-native-web back into a DOM app. It compiles to the `<span>`
+react-native-web would have rendered anyway.
+
+### Four things the compiler knows that a rename would not
+
+- **The reset.** `compiled/cube-rn-reset.css` carries what react-native-web's per-component base class
+  carried, because Yoga's defaults are not CSS's. It also carries the four `pointer-events` classes,
+  transcribed rule for rule from react-native-web's style compiler — including the `!important`,
+  because `box-none` and `box-only` describe a view and its children disagreeing, which CSS says with
+  two rules and not one value.
+- **A `<button>` may not carry any role.** `BUTTON_ROLES` is the list it legitimately takes — the
+  ARIA checkbox, radio, switch, tab and menu-item patterns are all built on a real `<button>`. Any
+  other role and the `Pressable` compiles to the generic box with the role on it, which is what
+  react-native-web renders too. This is what the toast finding became.
+- **A `ScrollView` is two boxes.** The viewport and the content container, which is what
+  `contentContainerClassName` styles. The compiler emits both; collapsing them would put the padding
+  on the scroller, where it scrolls away instead of surrounding the content. It is the only element
+  the compiler emits that the source did not write.
+- **`Platform.OS` is a constant here.** `Platform.OS === "web"` folds to `true`, the ternary around it
+  collapses, `Platform.select({ web, default })` resolves, and the import goes. That is what lets a
+  source file carry web-only ARIA behind a platform guard and have the compiled half come out clean.
+
+### Where the compiled half is not a drop-in
+
+**Props use DOM names.** `onPress` becomes `onClick`, `testID` becomes `data-slot`, and the prop
+*types* change with them — the RN component takes `ComponentProps<typeof View>` and the compiled one
+`ComponentPropsWithoutRef<"div">`. Both directions were possible and this is a real fork; see open
+decision 6. The stories carry a note at each of the two places it shows.
+
+**`useSemanticElements` is off for `compiled/**` and only there** (`biome.json`, which is strict JSON
+and cannot hold the comment, hence this paragraph). The rule asks for `<input type="checkbox">` where
+the compiled tree writes `role="checkbox"` on a `<button>`, and `<fieldset>` where it writes
+`role="group"`. Both are valid ARIA and both are the only thing the RN source could have said: there
+is no `<input>` on a phone, so those patterns are built from a `Pressable` and a role. Every other
+a11y rule stays on, and they earn more here than anywhere else in the repo, because a generated file
+is the one nobody reads — the toast is the proof.
+
 ## Commands
 
 ```sh
@@ -219,6 +320,8 @@ npm run check          # the same, read-only: nothing is regenerated
 npm run tokens:build   # emit dist/
 npm run tokens:check   # fail if dist/ is stale (CI)
 npm run parity         # fail if the web emitter diverged from cubeui
+npm run compile        # registry/ → compiled/, the DOM half
+npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r
 npm run registry:check # collisions, platform-pair drift, empty content
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
@@ -232,6 +335,9 @@ Two test runners on purpose: `scripts/` is the token pipeline — plain node ESM
 and runs under `node --test` so it stays runnable with nothing installed. Everything else runs under
 vitest, in two projects: `unit` in node for the registry libs, and `storybook` in a headless Chromium
 for the stories, because an axe run and a `getComputedStyle` assertion both need a real browser.
+
+`compiled/` is committed for the same reason `dist/` is, and `compile:check` is what catches a
+compiler change that silently stops emitting for an item.
 
 `dist/` is committed on purpose — the emitted tokens are the artefact consumers install, and committing
 them is what lets `tokens:check` catch drift, the way cubeui catches registry drift with
@@ -257,7 +363,19 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 4. **`status-chip` and cubeui's `badge`.** They are the same component seen from two sides — a
    toned pill around a word. cubeui's `badge` has not been ported yet; when it is, one of the two
    names has to go, and the vocabulary check is what should make that impossible to forget.
-5. **Native dark mode wiring.** The native stylesheet emits `:root` and `.dark` in parallel with the
+5. **Publishing `compiled/` as registry items.** The compiler runs and its output is committed, but
+   nothing in `registry.json` points at it yet, and the blocker is a name. `registry/ui/button.tsx`
+   and `compiled/button.tsx` share a basename, and the shadcn CLI resolves cross-item imports **by
+   basename** — which is what `check-registry-build.mjs` already guards against. So the two halves
+   need distinct item *and* file names (`web-button.tsx`, with the compiler rewriting its own sibling
+   imports to match) and that spelling lands in every DOM consumer's file tree permanently. It is the
+   same decision as 1 and should be taken with it.
+6. **`onPress` or `onClick` on the compiled half.** It is `onClick` today, on the argument that a DOM
+   app installing a DOM component should not be handed React Native's vocabulary. The cost is that
+   the two halves are not interchangeable at the call site, which the side-by-side stories show
+   directly. Keeping `onPress` on both would make them swappable and would make the web half the only
+   component in a DOM app that does not take `onClick`. **Reversible — it is one line in `PROP_MAP`.**
+7. **Native dark mode wiring.** The native stylesheet emits `:root` and `.dark` in parallel with the
    web one, but how NativeWind 5 selects between them on device is **not yet verified on a device or
    simulator** — it is asserted from the file shape, not observed. The Stage 2 install test is where
    that gets settled.
@@ -266,7 +384,9 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 
 `.github/workflows/ci.yml` runs the same `npm run check` steps one at a time, so a failure names
 itself, plus `git diff --exit-code -- public/r` — a drifted checkout means someone edited
-`registry.json` without rebuilding, and the published JSON would not match the sources it names.
+`registry.json` without rebuilding, and the published JSON would not match the sources it names. The
+same argument covers `compile:check`: `compiled/` is committed, so a stale one means someone changed a
+component and shipped the old DOM half.
 
 `.github/workflows/pages.yml` rebuilds the registry from source and publishes `public/`, then
 refuses to deploy a tree missing anything `registry.json` promises: an item that 404s is invisible

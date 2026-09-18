@@ -26,6 +26,16 @@
       "suspicious": { "noExplicitAny": "error" }
     }
   },
+  "overrides": [
+    {
+      "includes": ["compiled/cube-rn-reset.css"],
+      "linter": { "rules": { "complexity": { "noImportantStyles": "off" } } }
+    },
+    {
+      "includes": ["compiled/**"],
+      "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
+    }
+  ],
   "javascript": { "formatter": { "quoteStyle": "double", "trailingCommas": "all" } },
   "css": { "parser": { "tailwindDirectives": true } },
   "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }

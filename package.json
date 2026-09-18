@@ -8,6 +8,8 @@
     "tokens:build": "node scripts/build-tokens.mjs",
     "tokens:check": "node scripts/build-tokens.mjs --check",
     "parity": "node scripts/check-cubeui-parity.mjs",
+    "compile": "node scripts/rn2web/index.mjs",
+    "compile:check": "node scripts/rn2web/index.mjs --check",
     "registry:build": "shadcn build",
     "registry:check": "node scripts/check-registry-build.mjs",
     "typecheck": "tsc --noEmit",
@@ -16,8 +18,8 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "node --test scripts/ && vitest run",
-    "build": "npm run tokens:build && npm run typecheck && npm run registry:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run parity && npm run typecheck && npm run registry:check && npm test"
+    "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run registry:check",
+    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm test"
   },
   "engines": {
     "node": ">=20"
@@ -60,6 +62,7 @@
     "shadcn": "^4.20.1",
     "storybook": "^10.6.0",
     "tailwindcss": "^4.3.3",
+    "ts-morph": "^26.0.0",
     "typescript": "^5.9.3",
     "vite": "^8.3.0",
     "vitest": "^4.1.11"

@@ -125,7 +125,9 @@ export const Pressable: Story = {
         </Native>
       }
       compiled={
-        <Compiled onPress={() => {}} data-testid="compiled-card">
+        // `onClick`, not `onPress`. The compiled half speaks DOM prop names — see the compiler's
+        // `renamePublicProps` — so this is the one place the two halves are not interchangeable.
+        <Compiled onClick={() => {}} data-testid="compiled-card">
           <CompiledHeader>
             <CompiledTitle>Open the review</CompiledTitle>
           </CompiledHeader>

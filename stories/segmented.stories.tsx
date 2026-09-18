@@ -34,7 +34,8 @@ export const Row: Story = {
       compiled={
         <div className="flex flex-row gap-1">
           {OPTIONS.map((option) => (
-            <Compiled key={option} active={option === "Week"} onPress={() => {}}>
+            // `onClick` on this half; see the note in `card.stories.tsx`.
+            <Compiled key={option} active={option === "Week"} onClick={() => {}}>
               {option}
             </Compiled>
           ))}
