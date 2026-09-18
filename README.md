@@ -285,6 +285,14 @@ because it imports `textarea`, since a compiled tree cannot reach back into a Re
 Had either been published half-compiled, the failure would have surfaced in a consumer's app as a
 `<div>` nobody could type into.
 
+**Where the rule stops, and what catches the rest.** A prop with no entry in either table is *not*
+refused — `transformElement` passes it through onto the host element, which looks like the one hole
+in "refuse, never guess". It is not, because `compiled/` is on the typechecked path: every one of the
+17 errors in open decision 6 was tsc's, on generated code, before anything could ship. The compiler
+does not need its own DOM attribute allowlist when the type system already holds one. All 27 props
+that reach a host element in `compiled/` today are valid DOM or React (`aria-*`, `className`,
+`disabled`, `onChange`, `ref`, `role`, `type`, …).
+
 ### What refusing bought
 
 The interesting result of Stage 3 is not the 26 generated files. It is that **four defects in the
@@ -442,11 +450,28 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    halves in one registry, not of the halves. `public/r` and `public/web` are built from the same
    sources, hold the same item names, and a consumer picks one by URL. No DOM app ever types
    `web-button`. Verified by installing from it, not only by building it.
-6. **`onPress` or `onClick` on the compiled half.** It is `onClick` today, on the argument that a DOM
-   app installing a DOM component should not be handed React Native's vocabulary. The cost is that
-   the two halves are not interchangeable at the call site, which the side-by-side stories show
-   directly. Keeping `onPress` on both would make them swappable and would make the web half the only
-   component in a DOM app that does not take `onClick`. **Reversible — it is one line in `PROP_MAP`.**
+6. ~~**`onPress` or `onClick` on the compiled half.**~~ **Settled: `onClick`** — a DOM app installing
+   a DOM component is not handed React Native's vocabulary, and gets the whole `<button>` prop
+   surface with it: `onMouseEnter`, `onFocus`, `type`, `form`, and whatever `userEvent.click` expects.
+
+   This entry used to claim the choice was *reversible in one line of `PROP_MAP`*. It is not, and
+   deleting the line to find out is what settled it: **17 type errors across 14 files**, in two
+   populations. Eight compiled files put `onPress` on a real `<button>`. Five more, plus a story,
+   fail on `<Button onPress>` — and that group is the actual reason, because `ButtonProps` is
+   `React.ComponentProps<typeof Pressable>` on native and `React.ComponentPropsWithoutRef<"button">`
+   on web. It is not a renamed type, it is a different one, so removing the map entry does not give
+   the compiled `Button` an `onPress`; it gives it no press prop at all. Offering `onPress` on the web
+   half would mean the compiler **synthesizing an adapter** per component — declaring the prop, wiring
+   it to the host's `onClick`, and narrowing the DOM prop surface so `onClick` is not also there.
+   That is codegen of an API shim, not a table entry.
+
+   The cost — the two halves are not interchangeable at the call site, which the side-by-side stories
+   show directly — is smaller than it reads. The halves are never installed into the same app: an
+   Expo app installs from `public/r` and a DOM app from `public/web`, so no call site ever sees both
+   vocabularies. And only three items expose a press handler as public API at all (`card`,
+   `segmented`, `toggle-chip`); the other 27 `onPress` occurrences are internal wiring on a
+   `Pressable` that becomes a `<button>` either way. No `-base.ts` declares a press prop, so nothing
+   in the shared contracts had to move.
 7. **Native dark mode wiring.** The native stylesheet emits `:root` and `.dark` in parallel with the
    web one, but how NativeWind 5 selects between them on device is **not yet verified on a device or
    simulator** — it is asserted from the file shape, not observed. The Stage 2 install test is where
