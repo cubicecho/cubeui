@@ -1,4 +1,4 @@
-// Four things that have to be true before a built registry is installable.
+// Five things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -42,6 +42,21 @@
 // written with `content: ""`, the build reports success, and the only symptom is a consumer
 // installing a file with nothing in it.
 //
+// ## 5. Every cross-item dependency names this registry, and an item that is in it
+//
+// `registryDependencies` are resolved against the **consumer's** `components.json`, not against
+// the registry the item came from. That is the whole trick behind the two-registry split — one
+// `@cubeui/utils` reaches the React Native `utils` in an Expo app and the compiled one in a DOM
+// app — and it is also the trap, because the string is checked by nobody until a consumer runs
+// `shadcn add`.
+//
+// Two ways it goes wrong. A namespace other than `@cubeui` silently asks the consumer to have
+// configured a key nobody told them about. And a dependency on an item this registry does not
+// hold resolves to a 404 mid-install, after files have already been written. The second is not
+// hypothetical: it is what `registry.web.json`'s fixed-point drop exists to prevent, since an item
+// whose web half was refused takes its dependents with it, and this is the assertion that the
+// drop actually happened.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -53,7 +68,12 @@ import path from "node:path";
 const BUILT = ["public/r", "public/web"];
 const SOURCES = "registry";
 
+// Settled in the README's open decision 1, and asserted here so it cannot drift back. Both
+// registries answer to this one string; the consumer's URL behind it is what picks a platform.
+const NAMESPACE = "@cubeui";
+
 const collisions = [];
+const unreachable = [];
 const unpinned = [];
 const drift = [];
 const empties = [];
@@ -151,12 +171,22 @@ for (const dir of dirs) {
 
 for (const built of BUILT) {
   const basenames = new Map();
+  const present = new Set();
+  const wanted = [];
 
   for (const entry of (await readdir(built).catch(() => [])).sort()) {
     if (!entry.endsWith(".json") || entry === "registry.json") continue;
 
     const where = path.join(built, entry);
     const item = JSON.parse(await readFile(where, "utf8"));
+    present.add(item.name);
+
+    for (const dependency of item.registryDependencies ?? []) {
+      // A bare name is upstream shadcn's own registry and is not ours to check; a full URL
+      // resolves on its own. Only a namespaced one goes through the consumer's map.
+      if (!dependency.startsWith("@")) continue;
+      wanted.push({ from: item.name, dependency });
+    }
 
     for (const dependency of item.dependencies ?? []) {
       // A scoped name is `@scope/name`, so the `@` that separates the range is
@@ -181,6 +211,18 @@ for (const built of BUILT) {
         collisions.push(`${built}: items "${owner}" and "${item.name}" both ship \`${name}\``);
       }
       basenames.set(name, item.name);
+    }
+  }
+
+  for (const { from, dependency } of wanted) {
+    const [namespace, ...rest] = dependency.slice(1).split("/");
+    const name = rest.join("/");
+    if (namespace !== NAMESPACE.slice(1)) {
+      unreachable.push(`${built}: "${from}" depends on \`${dependency}\` — not \`${NAMESPACE}\``);
+    } else if (!present.has(name)) {
+      unreachable.push(
+        `${built}: "${from}" depends on \`${dependency}\`, which ${built} does not hold`,
+      );
     }
   }
 }
@@ -226,12 +268,26 @@ if (empties.length > 0) {
   );
 }
 
-if (collisions.length + drift.length + unpinned.length + empties.length > 0) process.exit(1);
+if (unreachable.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length > 0 ? "\n" : ""}A cross-item dependency does not resolve:\n`,
+  );
+  for (const one of unreachable) console.error(`  ${one}`);
+  console.error(
+    `\nA \`registryDependencies\` entry resolves against the *consumer's* \`components.json\`, so` +
+      `\n${NAMESPACE} has to be the namespace and the item has to be in this registry. Otherwise the` +
+      "\ninstall 404s partway through, after files have already been written into their tree.",
+  );
+}
+
+if (collisions.length + drift.length + unpinned.length + empties.length + unreachable.length > 0) {
+  process.exit(1);
+}
 
 const pairs = [...seen.keys()].length;
 console.log(
   `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
     `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
-    "names, every platform pair exports the same set, and every npm dependency carries a version " +
-    "range.",
+    "names, every platform pair exports the same set, every npm dependency carries a version " +
+    `range, and every cross-item dependency names ${NAMESPACE} and an item its own registry holds.`,
 );

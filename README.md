@@ -253,7 +253,9 @@ permanent `web-card` in every DOM consumer's file tree. Split in two, the basena
 `registryDependencies` need no rewriting at all, which is what makes this cheap. They are already
 written `@cubeui/utils`, and `@cubeui` resolves against the **consumer's** `components.json` — so one
 string reaches the React Native `utils` in an Expo app and the compiled one in a DOM app, with
-nothing in this repo knowing which.
+nothing in this repo knowing which. The flip side is that it only works while `@cubeui` points here:
+an item installed through some *other* key still resolves its own dependencies through `@cubeui`, and
+lands in whatever registry that key names. See open decision 1 for what that costs a migration.
 
 `registry.web.json` is **derived, not maintained** (`scripts/rn2web/registry.mjs`), because a second
 `registry.json` is a second place to forget. It collapses `X.tsx` and `X.web.tsx` to the one
@@ -400,12 +402,30 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 
 ## Open decisions
 
-1. **Registry namespace.** The repo is `cubeui-rn`, but since it eventually serves web apps too, `-rn`
-   becomes a misnomer and `@cubeuirn` would be a permanent wart in every consumer's `components.json`
-   and every Pages URL. Taking `@cubeui` outright is the clean end state and is available now, because
-   no app is wired up yet so the two registries never have to coexist in one app. The platform split
-   does not reopen this: both registries answer to the *same* namespace string, because the URL
-   behind it is what differs. **Not yet decided.**
+1. ~~**Registry namespace.**~~ **Settled: `@cubeui`, permanently.** Nothing in the repo changes — it
+   is already the string in all 42 items' `registryDependencies`. It was never really contested:
+   ten consumers map `@cubeui` today, so adoption is a one-line *URL* edit each, not a rename. The
+   platform split does not reopen it, because both registries answer to the same string and the URL
+   behind it is what differs. `@cubeuirn` would have been a permanent wart — `-rn` stops being true
+   the moment a DOM app installs from it, which it already does.
+
+   What *did* need settling is whether the two registries can coexist in one consumer during the
+   migration, and installing from both says **only for leaf items**. Two registries in one
+   `components.json` works, and the CLI's key format (`^@[a-zA-Z0-9][a-zA-Z0-9-_]*$`) allows a
+   `@cubeui-legacy`. But `registryDependencies` resolve against the *consumer's* map, and cubeui's
+   own items name `@cubeui` internally — so with `@cubeui` repointed here, `@cubeui-legacy/query-state`
+   fetches cubeui's item, reads its `@cubeui/item` dependency, and goes looking for `item` in **this**
+   registry, which has none. It fails. `@cubeui-legacy/split-layout` installs fine, because it
+   declares no dependencies at all. The trap is symmetric — all 42 items here name `@cubeui` too, so
+   whichever registry does not hold the key breaks its own cross-item imports.
+
+   Of cubeui's 28 un-ported items, exactly **14 survive a renamed key** and 14 do not, split precisely
+   on whether they carry an `@`-namespaced dependency. So the sequencing is: **port first, then flip
+   once.** Do not plan a dual-registry window — it is only usable for leaves, and it is not needed if
+   the porting lands before the consumer moves, which is the order this plan already has. If
+   coexistence ever does become necessary, the fix belongs in the derivation and not in the namespace:
+   `registry.mjs` can rewrite intra-registry dependencies to absolute URLs and make each registry
+   self-contained, at the cost of the property directly below.
 2. **Sidebar tokens.** cubeui has 18 tokens; `min-agent/mobile` added four `sidebar-*` ones that
    upstream shadcn also ships. Adding them here would break byte-parity with cubeui, which is currently
    load-bearing as a correctness proof. Deferred until cubeui adoption, when parity stops mattering.
