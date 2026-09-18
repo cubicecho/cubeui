@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "popover",
+  "title": "Popover",
+  "description": "Radix anchored to its trigger on web; a centred native sheet on device, because anchoring is a pointer-era affordance.",
+  "dependencies": [
+    "radix-ui@^1.6.7"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/popover-base.ts",
+      "content": "/**\n * The contract `popover.tsx` (native) and `popover.web.tsx` (radix) both\n * implement. Its own module for the usual reason: Metro resolves `./popover`\n * to `popover.web.tsx` on web, so the web file cannot import shared types from\n * `./popover` without importing itself.\n *\n * Narrower than radix's props on purpose: a controlled popover, an `asChild`\n * trigger, and one content pane. That is the shape both platforms can honour —\n * everything radix offers beyond it (collision handling, side flipping, nested\n * anchors) has no native counterpart, so exposing it would be a promise only\n * one platform keeps.\n */\nimport type { ReactNode } from \"react\";\n\nexport type PopoverProps = {\n  open: boolean;\n  onOpenChange: (open: boolean) => void;\n  children: ReactNode;\n};\n\nexport type PopoverTriggerProps = {\n  /**\n   * Hand the press handler to the single child element rather than wrapping it.\n   * Always pass it: a `Pressable` wrapping a `Button` never fires on native,\n   * because the inner pressable claims the touch responder.\n   */\n  asChild?: boolean | undefined;\n  children: ReactNode;\n};\n\nexport type PopoverContentProps = {\n  className?: string | undefined;\n  /** Web only — the native sheet is centred and has nothing to align to. */\n  align?: \"start\" | \"center\" | \"end\" | undefined;\n  children?: ReactNode;\n};\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "compiled/popover.tsx",
+      "content": "/**\n * Copied from `registry/ui/popover.web.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The\n * same passes still ran over it, and for a file already written against the DOM they find nothing\n * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one\n * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one\n * speak the same prop vocabulary, instead of the two drifting where nobody is looking.\n */\n\n/**\n * The web popover: radix, anchored to its trigger. `popover.tsx` is the native\n * counterpart and `popover-base.ts` holds the contract they share.\n */\n\nimport { Popover as PopoverPrimitive } from \"radix-ui\";\nimport type {\n  PopoverContentProps,\n  PopoverProps,\n  PopoverTriggerProps,\n} from \"@/components/ui/popover-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Popover({ open, onOpenChange, children }: PopoverProps) {\n  return (\n    <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>\n      {children}\n    </PopoverPrimitive.Root>\n  );\n}\n\nfunction PopoverTrigger({ asChild, children }: PopoverTriggerProps) {\n  return <PopoverPrimitive.Trigger asChild={asChild ?? false}>{children}</PopoverPrimitive.Trigger>;\n}\n\nfunction PopoverContent({ className, align = \"center\", children }: PopoverContentProps) {\n  return (\n    <PopoverPrimitive.Portal>\n      <PopoverPrimitive.Content\n        align={align}\n        sideOffset={4}\n        className={cn(\n          \"z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95\",\n          className,\n        )}\n      >\n        {children}\n      </PopoverPrimitive.Content>\n    </PopoverPrimitive.Portal>\n  );\n}\n\nexport { Popover, PopoverContent, PopoverTrigger };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

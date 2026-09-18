@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "switch-field",
+  "title": "Switch Field",
+  "description": "A switch and its caption on one row, with the whole row in the hit target on both platforms.",
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/label",
+    "@cubeui/switch"
+  ],
+  "files": [
+    {
+      "path": "compiled/switch-field.tsx",
+      "content": "/**\n * Compiled from `registry/ui/switch-field.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * The prose below is the source's own, carried across untouched, which is the property that makes\n * a compiled registry worth having: this is the same component, not a second one to keep in step\n * by hand. Where a comment names a React Native component it is describing the source; the\n * element map in `scripts/rn2web/tables.mjs` says what that became here.\n */\n\nimport { cn } from \"@/lib/utils\";\nimport { Label } from \"./label\";\nimport { Switch } from \"./switch\";\n\ntype SwitchFieldProps = {\n  id: string;\n  label: string;\n  checked: boolean;\n  onCheckedChange: (checked: boolean) => void;\n  className?: string | undefined;\n  labelClassName?: string | undefined;\n};\n\nexport function SwitchField({\n  id,\n  label,\n  checked,\n  onCheckedChange,\n  className,\n  labelClassName,\n}: SwitchFieldProps) {\n  return (\n    <div className={cn(\"cube-rn-view\", \"flex-row items-center gap-2\", className)}>\n      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />\n      <button\n        type=\"button\"\n        onClick={() => onCheckedChange(!checked)}\n        className=\"cube-rn-view cube-rn-pressable\"\n      >\n        <Label htmlFor={id} className={cn(\"text-sm text-muted-foreground\", labelClassName)}>\n          {label}\n        </Label>\n      </button>\n    </div>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

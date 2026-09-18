@@ -1,0 +1,594 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cubeui",
+  "homepage": "https://cubicecho.github.io/cubeui-rn/web",
+  "items": [
+    {
+      "name": "tokens",
+      "type": "registry:file",
+      "title": "Tokens",
+      "description": "The palette as a Tailwind stylesheet, emitted from the same source as the native one so the two cannot drift.",
+      "files": [
+        {
+          "path": "dist/tokens.web.css",
+          "type": "registry:file",
+          "target": "~/cubeui-tokens.css"
+        }
+      ]
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn",
+      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN→web compiler reads.",
+      "dependencies": ["clsx@^2.1.1", "tailwind-merge@^3.6.0"],
+      "files": [
+        {
+          "path": "compiled/utils.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "color",
+      "type": "registry:lib",
+      "title": "Color Helpers",
+      "description": "Derives an accent and a desaturated tint from a user-chosen hex colour.",
+      "files": [
+        {
+          "path": "registry/lib/color.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "readable-text-color",
+      "type": "registry:lib",
+      "title": "Readable Text Color",
+      "description": "Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast. Ships with its tests.",
+      "files": [
+        {
+          "path": "registry/lib/readable-text-color.ts",
+          "type": "registry:lib"
+        },
+        {
+          "path": "registry/lib/readable-text-color.test.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "icons",
+      "type": "registry:ui",
+      "title": "Icons",
+      "description": "The icon set, per-icon imports on native and a tree-shaken barrel on web, with the context that gives native icons a colour to inherit.",
+      "dependencies": ["lucide-react@^1.34.0"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/icons-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/icons.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
+      "dependencies": ["class-variance-authority@^0.7.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A card with typed text slots, an optional accent bar, and a whole-card press target that stays reachable by keyboard.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/color-bar"],
+      "files": [
+        {
+          "path": "compiled/card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "A checkbox from a Pressable, announced through role and aria-checked rather than a DOM input.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/checkbox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "code",
+      "type": "registry:ui",
+      "title": "Code",
+      "description": "Monospaced inline code and blocks.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/code.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "color-bar",
+      "type": "registry:ui",
+      "title": "Color Bar",
+      "description": "The left-edge accent stripe a card wears, readable in both themes and labelled for anyone who cannot see it.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/color"],
+      "files": [
+        {
+          "path": "compiled/color-bar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "color-dot",
+      "type": "registry:ui",
+      "title": "Color Dot",
+      "description": "A small swatch standing in for a colour-coded thing in a list.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/color-dot.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Single-line text entry. Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/input-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "A caption for a control. Radix on web so clicking it focuses the control; plain text on native, where that association does not exist.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/label-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/dialog-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Radix anchored to its trigger on web; a centred native sheet on device, because anchoring is a pointer-era affordance.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/popover-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/popover.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A radix listbox under its trigger on web; the options in a Modal sheet on device, which is what every native platform does.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/select-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Radix on web; a Pressable track with a moving thumb on device, rather than RN's Switch, whose raw colour props would not follow the theme.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/switch-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/switch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Radix on web; a row of Pressables over a context on device. Uncontrolled on both.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/tabs-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
+      "dependencies": ["radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/tooltip-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "section-heading",
+      "type": "registry:component",
+      "title": "Section Heading",
+      "description": "The small muted heading above a section of content.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/section-heading.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "segmented",
+      "type": "registry:ui",
+      "title": "Segmented",
+      "description": "A pill in a segmented control, as a component and as the two class helpers a router link needs instead.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/segmented.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle-chip",
+      "type": "registry:ui",
+      "title": "Toggle Chip",
+      "description": "A small on/off pill — a filter chip, a day toggle, a swatch — with its colour split across container and label.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/toggle-chip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "status-chip",
+      "type": "registry:ui",
+      "title": "Status Chip",
+      "description": "A pill stating the state a record is in, toned by meaning rather than by the app's own vocabulary.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/status-chip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "Label, description and error chrome around a control. The unbound half of the form set.",
+      "dependencies": ["class-variance-authority@^0.7.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/label"],
+      "files": [
+        {
+          "path": "compiled/field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "switch-field",
+      "type": "registry:ui",
+      "title": "Switch Field",
+      "description": "A switch and its caption on one row, with the whole row in the hit target on both platforms.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/label", "@cubeui/switch"],
+      "files": [
+        {
+          "path": "compiled/switch-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "confirm-dialog",
+      "type": "registry:ui",
+      "title": "Confirm Dialog",
+      "description": "A destructive-action confirmation dialog: Cancel plus one destructive button.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/dialog"],
+      "files": [
+        {
+          "path": "compiled/confirm-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "confirm",
+      "type": "registry:ui",
+      "title": "Confirm",
+      "description": "One confirmation prompt for both platforms, as a promise: `if (await confirm({…})) remove()`.",
+      "registryDependencies": ["@cubeui/confirm-dialog"],
+      "files": [
+        {
+          "path": "compiled/confirm.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "form-element",
+      "type": "registry:ui",
+      "title": "Form Element",
+      "description": "A real `<form>` on web so Enter submits; a `View` on native, where nothing raises a submit event.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/form-element-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/form-element.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "form-dialog",
+      "type": "registry:ui",
+      "title": "Form Dialog",
+      "description": "Dialog chrome for a form, with a footer that leaves the submit control to the caller.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/dialog"],
+      "files": [
+        {
+          "path": "compiled/form-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
+      "files": [
+        {
+          "path": "compiled/toast.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month of single-date selection: react-day-picker on web, a date-fns grid on device.",
+      "dependencies": ["date-fns@^4.4.0", "react-day-picker@^10.0.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/calendar-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/calendar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-time-input",
+      "type": "registry:ui",
+      "title": "Date Time Input",
+      "description": "A date popover and a time field that always commit one Date back.",
+      "dependencies": ["date-fns@^4.4.0"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/icons",
+        "@cubeui/input",
+        "@cubeui/popover"
+      ],
+      "files": [
+        {
+          "path": "compiled/date-time-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "Swatches plus a hex field, replacing `<input type=\"color\">` — which has no native counterpart.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/readable-text-color"],
+      "files": [
+        {
+          "path": "compiled/color-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-picker",
+      "type": "registry:ui",
+      "title": "File Picker",
+      "description": "A drop zone over a hidden file input on web. The native half is a placeholder, not an implementation.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/file-picker-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/file-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "inline-number-edit",
+      "type": "registry:ui",
+      "title": "Inline Number Edit",
+      "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit.",
+      "registryDependencies": ["@cubeui/input"],
+      "files": [
+        {
+          "path": "compiled/inline-number-edit.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "query-state",
+      "type": "registry:component",
+      "title": "Query State",
+      "description": "Inline loading / error text for a query whose data may still render beside it.",
+      "files": [
+        {
+          "path": "compiled/query-state.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page",
+      "type": "registry:component",
+      "title": "Page",
+      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/page.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "detail-page",
+      "type": "registry:component",
+      "title": "Detail Page",
+      "description": "The page shell plus a loading / not-found guard that narrows the entity for its children.",
+      "registryDependencies": ["@cubeui/page"],
+      "files": [
+        {
+          "path": "compiled/detail-page.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "detail-header",
+      "type": "registry:component",
+      "title": "Detail Header",
+      "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/color-dot", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/detail-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "route-error",
+      "type": "registry:component",
+      "title": "Route Error",
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/route-error.tsx",
+          "type": "registry:component"
+        }
+      ]
+    }
+  ]
+}

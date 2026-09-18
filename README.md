@@ -16,7 +16,7 @@ every build.
 | 1 | `tokens` — one palette, three emitters | **done** |
 | 2 | the component registry, ported from `auto-cal/client` | **done** — 41 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler | **done — 36 of 38 items compile**; not yet published as registry items |
+| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — 37 of 39 files compile, 40 of 42 items published |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -129,13 +129,24 @@ over HTTP, point a throwaway project's `components.json` at it, and `shadcn add`
 
 ```sh
 python3 -m http.server 8731 --directory public   # in this repo
-npx shadcn@latest add @cubeui/form @cubeui/page @cubeui/tokens --yes   # in a scratch project
+
+# in a scratch Expo project, "@cubeui": "http://localhost:8731/r/{name}.json"
+npx shadcn@latest add @cubeui/form @cubeui/page @cubeui/tokens --yes
+
+# in a scratch DOM project, "@cubeui": "http://localhost:8731/web/{name}.json"
+npx shadcn@latest add @cubeui/page @cubeui/select @cubeui/toast @cubeui/tokens --yes
 ```
 
 What that proves, and nothing else does: every `-base.ts` / `.tsx` / `.web.tsx` of a split item
 travels together, `@/` rewrites to the consumer's own alias in every file, a `registry:file` lands
 at its `target` (`cubeui-tokens.css` at the project root) while a `registry:lib` lands under the
 `lib` alias, and the npm dependencies that arrive are the versions intended.
+
+The web registry was verified the same way, and the four things worth checking there all held: not
+one line of react-native or nativewind in anything installed, `cubeui-tokens.css` arriving as the
+**oklch** encoding rather than the hex one, `lucide-react` and `radix-ui` installed where the Expo
+side would have taken `lucide-react-native` and `nativewind`, and `@cubeui/select` pulling the
+compiled `select` — the same item name the Expo project used for the `Modal` sheet.
 
 ## Stage 0 — the spike, and its verdict
 
@@ -213,12 +224,44 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **36 of the 38 items have a web half — 24 generated, 12
-hand-written, 2 refused.** 1300 lines in `scripts/rn2web/`, of which `tables.mjs` is all of the
-judgement and `compile.mjs` is the ts-morph that applies it.
+react-native-web anywhere in the output. **37 of the 39 files have a web half — 25 generated, 12
+hand-written, 2 refused** — and `registry.web.json`, derived from `registry.json` in the same run,
+publishes **40 of the 42 items**. `scripts/rn2web/` is about 1400 lines, of which `tables.mjs` is all
+of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
 the spike's assertions became the compiler's regression test without anything being rewritten.
+
+### Two registries, one repo
+
+The compiled half is published as a **second registry built from the same sources**. A consumer
+points `@cubeui` at whichever one matches the platform it is:
+
+```jsonc
+// an Expo app
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui-rn/r/{name}.json" }
+// a DOM app
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui-rn/web/{name}.json" }
+```
+
+**The item names are the same on both sides** — `card` is `card`, and `shadcn add @cubeui/card`
+installs the right one because of the URL, not because of the name. One registry could not do that:
+the shadcn CLI resolves a cross-item import by the source file's *basename*, so `registry/ui/card.tsx`
+and `compiled/card.tsx` in one registry would be ambiguous, and the way out would have been a
+permanent `web-card` in every DOM consumer's file tree. Split in two, the basenames never meet.
+
+`registryDependencies` need no rewriting at all, which is what makes this cheap. They are already
+written `@cubeui/utils`, and `@cubeui` resolves against the **consumer's** `components.json` — so one
+string reaches the React Native `utils` in an Expo app and the compiled one in a DOM app, with
+nothing in this repo knowing which.
+
+`registry.web.json` is **derived, not maintained** (`scripts/rn2web/registry.mjs`), because a second
+`registry.json` is a second place to forget. It collapses `X.tsx` and `X.web.tsx` to the one
+`compiled/X.tsx`, keeps `-base.ts` where it is, swaps `dist/tokens.native.css` for the oklch one,
+drops the npm dependencies only an Expo app needs, and drops an item whose web half was refused —
+then drops whatever depended on *that*, to a fixed point. `check-registry-build.mjs` checks both
+built registries, and asserts the basename rule **per registry, on the built output**, rather than
+inferring it from the fact that the split happened.
 
 ### The rule the whole thing is built on: refuse, never guess
 
@@ -235,7 +278,9 @@ textarea — no web half (registry/ui/textarea.tsx)
 ```
 
 That is the entire refusal list today: `textarea`, and `form` because it imports `textarea`. Both
-want a hand-written web half, which is exactly what the other twelve already have.
+want a hand-written web half, which is exactly what the other twelve already have. They are the two
+items missing from `registry.web.json`: the derivation drops them rather than publish an item that
+cannot install.
 
 ### What refusing bought
 
@@ -322,7 +367,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run parity         # fail if the web emitter diverged from cubeui
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
-npm run registry:build # shadcn build → public/r
+npm run registry:build # shadcn build → public/r and public/web
 npm run registry:check # collisions, platform-pair drift, empty content
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
@@ -336,8 +381,8 @@ and runs under `node --test` so it stays runnable with nothing installed. Everyt
 vitest, in two projects: `unit` in node for the registry libs, and `storybook` in a headless Chromium
 for the stories, because an axe run and a `getComputedStyle` assertion both need a real browser.
 
-`compiled/` is committed for the same reason `dist/` is, and `compile:check` is what catches a
-compiler change that silently stops emitting for an item.
+`compiled/` and `registry.web.json` are committed for the same reason `dist/` is, and
+`compile:check` is what catches a compiler change that silently stops emitting for an item.
 
 `dist/` is committed on purpose — the emitted tokens are the artefact consumers install, and committing
 them is what lets `tokens:check` catch drift, the way cubeui catches registry drift with
@@ -351,7 +396,9 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 1. **Registry namespace.** The repo is `cubeui-rn`, but since it eventually serves web apps too, `-rn`
    becomes a misnomer and `@cubeuirn` would be a permanent wart in every consumer's `components.json`
    and every Pages URL. Taking `@cubeui` outright is the clean end state and is available now, because
-   no app is wired up yet so the two registries never have to coexist in one app. **Not yet decided.**
+   no app is wired up yet so the two registries never have to coexist in one app. The platform split
+   does not reopen this: both registries answer to the *same* namespace string, because the URL
+   behind it is what differs. **Not yet decided.**
 2. **Sidebar tokens.** cubeui has 18 tokens; `min-agent/mobile` added four `sidebar-*` ones that
    upstream shadcn also ships. Adding them here would break byte-parity with cubeui, which is currently
    load-bearing as a correctness proof. Deferred until cubeui adoption, when parity stops mattering.
@@ -363,13 +410,11 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 4. **`status-chip` and cubeui's `badge`.** They are the same component seen from two sides — a
    toned pill around a word. cubeui's `badge` has not been ported yet; when it is, one of the two
    names has to go, and the vocabulary check is what should make that impossible to forget.
-5. **Publishing `compiled/` as registry items.** The compiler runs and its output is committed, but
-   nothing in `registry.json` points at it yet, and the blocker is a name. `registry/ui/button.tsx`
-   and `compiled/button.tsx` share a basename, and the shadcn CLI resolves cross-item imports **by
-   basename** — which is what `check-registry-build.mjs` already guards against. So the two halves
-   need distinct item *and* file names (`web-button.tsx`, with the compiler rewriting its own sibling
-   imports to match) and that spelling lands in every DOM consumer's file tree permanently. It is the
-   same decision as 1 and should be taken with it.
+5. ~~**Publishing `compiled/` as registry items, and the `web-button` name it seemed to need.**~~
+   **Settled: two registries from one repo.** The basename collision was a property of putting both
+   halves in one registry, not of the halves. `public/r` and `public/web` are built from the same
+   sources, hold the same item names, and a consumer picks one by URL. No DOM app ever types
+   `web-button`. Verified by installing from it, not only by building it.
 6. **`onPress` or `onClick` on the compiled half.** It is `onClick` today, on the argument that a DOM
    app installing a DOM component should not be handed React Native's vocabulary. The cost is that
    the two halves are not interchangeable at the call site, which the side-by-side stories show
@@ -383,7 +428,7 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 ## CI
 
 `.github/workflows/ci.yml` runs the same `npm run check` steps one at a time, so a failure names
-itself, plus `git diff --exit-code -- public/r` — a drifted checkout means someone edited
+itself, plus `git diff --exit-code -- public/r public/web` — a drifted checkout means someone edited
 `registry.json` without rebuilding, and the published JSON would not match the sources it names. The
 same argument covers `compile:check`: `compiled/` is committed, so a stale one means someone changed a
 component and shipped the old DOM half.

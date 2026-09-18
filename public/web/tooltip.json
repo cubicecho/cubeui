@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tooltip",
+  "title": "Tooltip",
+  "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
+  "dependencies": [
+    "radix-ui@^1.6.7"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/tooltip-base.ts",
+      "content": "/**\n * The contract `tooltip.tsx` (native) and `tooltip.web.tsx` (radix) both\n * implement. Its own module because Metro resolves `./tooltip` to\n * `tooltip.web.tsx` on web.\n */\nimport type { ReactNode } from \"react\";\n\nexport type TooltipProviderProps = { children: ReactNode };\n\nexport type TooltipProps = { children: ReactNode };\n\nexport type TooltipTriggerProps = {\n  /** Hand the handlers to the single child rather than wrapping it. */\n  asChild?: boolean | undefined;\n  children: ReactNode;\n};\n\nexport type TooltipContentProps = {\n  className?: string | undefined;\n  children: ReactNode;\n};\n\nexport const TOOLTIP_CONTENT_CLASS = \"overflow-hidden rounded-md border bg-popover px-3 py-1.5\";\nexport const TOOLTIP_TEXT_CLASS = \"text-sm text-popover-foreground\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "compiled/tooltip.tsx",
+      "content": "/**\n * Copied from `registry/ui/tooltip.web.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The\n * same passes still ran over it, and for a file already written against the DOM they find nothing\n * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one\n * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one\n * speak the same prop vocabulary, instead of the two drifting where nobody is looking.\n */\n\n/**\n * The web tooltip: radix, shown on hover and focus. `tooltip.tsx` is the\n * native counterpart and `tooltip-base.ts` holds the contract they share.\n */\n\nimport { Tooltip as TooltipPrimitive } from \"radix-ui\";\nimport {\n  TOOLTIP_CONTENT_CLASS,\n  TOOLTIP_TEXT_CLASS,\n  type TooltipContentProps,\n  type TooltipProps,\n  type TooltipProviderProps,\n  type TooltipTriggerProps,\n} from \"@/components/ui/tooltip-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction TooltipProvider({ children }: TooltipProviderProps) {\n  return <TooltipPrimitive.Provider>{children}</TooltipPrimitive.Provider>;\n}\n\nfunction Tooltip({ children }: TooltipProps) {\n  return <TooltipPrimitive.Root>{children}</TooltipPrimitive.Root>;\n}\n\nfunction TooltipTrigger({ asChild, children }: TooltipTriggerProps) {\n  return <TooltipPrimitive.Trigger asChild={asChild ?? false}>{children}</TooltipPrimitive.Trigger>;\n}\n\nfunction TooltipContent({ className, children }: TooltipContentProps) {\n  return (\n    <TooltipPrimitive.Portal>\n      <TooltipPrimitive.Content\n        sideOffset={4}\n        className={cn(\n          \"z-50 shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2\",\n          TOOLTIP_CONTENT_CLASS,\n          TOOLTIP_TEXT_CLASS,\n          className,\n        )}\n      >\n        {children}\n      </TooltipPrimitive.Content>\n    </TooltipPrimitive.Portal>\n  );\n}\n\nexport { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

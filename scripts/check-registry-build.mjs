@@ -47,7 +47,10 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-const BUILT = "public/r";
+// Both built registries. `public/r` is the React Native half and `public/web` the compiled one;
+// they hold the same item names on purpose, and the checks below run over each on its own, because
+// "no two items claim this basename" is a question about one registry and not about the repo.
+const BUILT = ["public/r", "public/web"];
 const SOURCES = "registry";
 
 const collisions = [];
@@ -146,30 +149,44 @@ for (const dir of dirs) {
   }
 }
 
-for (const entry of (await readdir(BUILT).catch(() => [])).sort()) {
-  if (!entry.endsWith(".json") || entry === "registry.json") continue;
+for (const built of BUILT) {
+  const basenames = new Map();
 
-  const where = path.join(BUILT, entry);
-  const item = JSON.parse(await readFile(where, "utf8"));
+  for (const entry of (await readdir(built).catch(() => [])).sort()) {
+    if (!entry.endsWith(".json") || entry === "registry.json") continue;
 
-  for (const dependency of item.dependencies ?? []) {
-    // A scoped name is `@scope/name`, so the `@` that separates the range is
-    // never the first character.
-    if (!dependency.slice(1).includes("@")) {
-      unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
+    const where = path.join(built, entry);
+    const item = JSON.parse(await readFile(where, "utf8"));
+
+    for (const dependency of item.dependencies ?? []) {
+      // A scoped name is `@scope/name`, so the `@` that separates the range is
+      // never the first character.
+      if (!dependency.slice(1).includes("@")) {
+        unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
+      }
     }
-  }
 
-  for (const file of item.files ?? []) {
-    checked += 1;
-    if (typeof file.content !== "string" || file.content.trim() === "") {
-      empties.push(`${where}: ${file.path ?? "(unnamed file)"} has no content`);
+    for (const file of item.files ?? []) {
+      checked += 1;
+      if (typeof file.content !== "string" || file.content.trim() === "") {
+        empties.push(`${where}: ${file.path ?? "(unnamed file)"} has no content`);
+      }
+
+      // The same rule as the source scan above, asked of what actually shipped. It is what the
+      // two-registry split exists to keep true, so it is checked on the built output rather than
+      // inferred from the fact that the split happened.
+      const name = path.basename(file.path);
+      const owner = basenames.get(name);
+      if (owner && owner !== item.name) {
+        collisions.push(`${built}: items "${owner}" and "${item.name}" both ship \`${name}\``);
+      }
+      basenames.set(name, item.name);
     }
   }
 }
 
 if (collisions.length > 0) {
-  console.error("Two source files claim the same item name:\n");
+  console.error("Two files claim one name:\n");
   for (const collision of collisions) console.error(`  ${collision}`);
   console.error(
     "\nThe CLI resolves a cross-item import by the file's basename, so an import of one is" +
@@ -213,7 +230,8 @@ if (collisions.length + drift.length + unpinned.length + empties.length > 0) pro
 
 const pairs = [...seen.keys()].length;
 console.log(
-  `${checked} built files all carry content; ${pairs} items across ${dirs.length} directories ` +
-    "hold distinct names, every platform pair exports the same set, and every npm dependency " +
-    "carries a version range.",
+  `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
+    `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
+    "names, every platform pair exports the same set, and every npm dependency carries a version " +
+    "range.",
 );

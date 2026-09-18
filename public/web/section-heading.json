@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "section-heading",
+  "title": "Section Heading",
+  "description": "The small muted heading above a section of content.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "compiled/section-heading.tsx",
+      "content": "/**\n * Compiled from `registry/layout/section-heading.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * The prose below is the source's own, carried across untouched, which is the property that makes\n * a compiled registry worth having: this is the same component, not a second one to keep in step\n * by hand. Where a comment names a React Native component it is describing the source; the\n * element map in `scripts/rn2web/tables.mjs` says what that became here.\n */\n\nimport type { ReactNode } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\ntype SectionHeadingProps = {\n  /** `overline` is the smaller uppercase label; `default` is a plain section label. */\n  variant?: \"default\" | \"overline\";\n  className?: string;\n  children: ReactNode;\n};\n\n// A small muted heading above a section of content.\nexport function SectionHeading({ variant = \"default\", className, children }: SectionHeadingProps) {\n  return (\n    <span\n      className={cn(\n        \"cube-rn-text\",\n        \"font-semibold text-muted-foreground\",\n        variant === \"overline\" ? \"text-xs uppercase tracking-wide\" : \"text-sm\",\n        className,\n      )}\n    >\n      {children}\n    </span>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

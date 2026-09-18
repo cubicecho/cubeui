@@ -34,11 +34,11 @@ jobs:
       - name: The web emitter still matches cubeui
         run: npm run parity
 
-      # compiled/ is committed for the same reason dist/ is: it is what a DOM app
-      # installs. This step re-runs the compiler and fails if the checked-in
-      # output moved, which is also the only thing that catches a compiler change
-      # that silently stops emitting for an item.
-      - name: compiled/ is in sync with registry/
+      # compiled/ and registry.web.json are committed for the same reason dist/ is:
+      # they are what a DOM app installs. This step re-runs the compiler and the
+      # derivation and fails if either moved, which is also the only thing that
+      # catches a compiler change that silently stops emitting for an item.
+      - name: compiled/ and registry.web.json are in sync with registry/
         run: npm run compile:check
 
       - name: Types
@@ -59,8 +59,8 @@ jobs:
       # `shadcn build` writes public/r. A drifted checkout means someone edited
       # registry.json without rebuilding, and the published JSON would not match
       # the sources it names.
-      - name: public/r is in sync with registry.json
-        run: git diff --exit-code -- public/r
+      - name: public/ is in sync with the two registry.json files
+        run: git diff --exit-code -- public/r public/web
 
       # `npm test` runs two vitest projects, and the second one renders the
       # stories in a real browser. Without this step it fails at launch rather

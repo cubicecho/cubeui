@@ -31,10 +31,20 @@ import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compileSource, passthroughSource } from "./compile.mjs";
+import { deriveWebRegistry } from "./registry.mjs";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const OUT = join(root, "compiled");
 const SOURCES = ["registry/ui", "registry/layout"];
+
+/**
+ * `registry/lib` is not a component directory, and only the files in it that reach for React Native
+ * need a web half at all. `utils.ts` does: `HOVER_REVEAL` is gated on `Platform.OS`, which folds to
+ * a constant here and takes the `react-native` import with it. The rest — `color.ts`,
+ * `readable-text-color.ts` — is arithmetic on strings and installs unchanged on both platforms,
+ * which is why this is a list and not a directory scan.
+ */
+const LIB = ["registry/lib/utils.ts"];
 
 /**
  * Biome, as a filter.
@@ -73,6 +83,10 @@ const NEUTRAL = neutral();
 /** Every item that has, or could have, a web half — and which of the two it gets it from. */
 function items() {
   const found = [];
+  for (const rel of LIB) {
+    const file = basename(rel);
+    found.push({ name: basename(file, ".ts"), kind: "compile", rel, out: file });
+  }
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir)).sort()) {
       if (!file.endsWith(".tsx")) continue;
@@ -81,6 +95,7 @@ function items() {
           name: basename(file, ".web.tsx"),
           kind: "passthrough",
           rel: `${dir}/${file}`,
+          out: `${basename(file, ".web.tsx")}.tsx`,
         });
         continue;
       }
@@ -89,7 +104,7 @@ function items() {
       // Radix anchored popper and `select.tsx` is a native `Modal` sheet; there is no transform
       // between those two, and pretending otherwise is what would sink this.
       if (existsSync(join(root, dir, `${name}.web.tsx`))) continue;
-      found.push({ name, kind: "compile", rel: `${dir}/${file}` });
+      found.push({ name, kind: "compile", rel: `${dir}/${file}`, out: file });
     }
   }
   return found;
@@ -127,10 +142,11 @@ function assemble() {
     refusals.push({ ...item, diagnostics: emit(item, tree).diagnostics });
   }
 
+  const out = new Map(all.map((i) => [i.name, i.out]));
   const emitted = new Map(
     [...results]
       .filter(([, r]) => r.code !== null)
-      .map(([name, r]) => [name, format(r.code, `compiled/${name}.tsx`)]),
+      .map(([name, r]) => [out.get(name), format(r.code, `compiled/${out.get(name)}`)]),
   );
   return { emitted, refusals, all };
 }
@@ -139,11 +155,11 @@ const check = process.argv.includes("--check");
 const { emitted, refusals, all } = assemble();
 
 let drift = 0;
-for (const [name, code] of emitted) {
-  const out = join(OUT, `${name}.tsx`);
+for (const [file, code] of emitted) {
+  const out = join(OUT, file);
   if ((existsSync(out) ? readFileSync(out, "utf8") : null) === code) continue;
   drift += 1;
-  if (check) console.error(`  drift: compiled/${name}.tsx is not what its source compiles to`);
+  if (check) console.error(`  drift: compiled/${file} is not what its source compiles to`);
   else writeFileSync(out, code);
 }
 
@@ -151,11 +167,26 @@ for (const [name, code] of emitted) {
 // started refusing. Stale output keeps shipping from the registry, so it is removed rather than
 // reported — except under `--check`, where removing it would be the thing being checked for.
 const stale = readdirSync(OUT)
-  .filter((f) => f.endsWith(".tsx") && !emitted.has(basename(f, ".tsx")))
+  .filter((f) => /\.tsx?$/.test(f) && !emitted.has(f))
   .sort();
 for (const file of stale) {
   if (check) console.error(`  stale: compiled/${file} has no item behind it`);
   else unlinkSync(join(OUT, file));
+}
+
+// The second registry, derived from the first rather than kept beside it. See `registry.mjs` for
+// why there are two and why the item names are the same in both.
+const WEB_REGISTRY = join(root, "registry.web.json");
+const source = JSON.parse(readFileSync(join(root, "registry.json"), "utf8"));
+const { registry: web, dropped } = deriveWebRegistry(source, emitted);
+// Through biome for the same reason the `.tsx` output is: `--check` has to compare what this writes
+// against what the repo's formatter would leave behind, or every file drifts the moment it is
+// tidied.
+const webJson = format(`${JSON.stringify(web, null, 2)}\n`, "registry.web.json");
+if ((existsSync(WEB_REGISTRY) ? readFileSync(WEB_REGISTRY, "utf8") : null) !== webJson) {
+  drift += 1;
+  if (check) console.error("  drift: registry.web.json is not what registry.json derives to");
+  else writeFileSync(WEB_REGISTRY, webJson);
 }
 
 for (const { name, kind, rel, diagnostics } of refusals) {
@@ -165,11 +196,15 @@ for (const { name, kind, rel, diagnostics } of refusals) {
   for (const d of diagnostics) console.error(`  ${d.file}:${d.line}  ${d.message}`);
 }
 
-const byKind = (k) => all.filter((i) => i.kind === k && emitted.has(i.name)).length;
+const byKind = (k) => all.filter((i) => i.kind === k && emitted.has(i.out)).length;
 console.log(
   `\ncompiled/: ${emitted.size} of ${all.length} items — ` +
     `${byKind("compile")} transformed, ${byKind("passthrough")} hand-written, ` +
     `${refusals.length} refused${check ? `, ${drift} drifted, ${stale.length} stale` : ""}.`,
+);
+console.log(
+  `registry.web.json: ${web.items.length} of ${source.items.length} items` +
+    `${dropped.length ? ` — no web half for ${dropped.join(", ")}` : ""}.`,
 );
 
 if (check && (drift || stale.length)) process.exit(1);

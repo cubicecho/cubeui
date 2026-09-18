@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "icons",
+  "title": "Icons",
+  "description": "The icon set, per-icon imports on native and a tree-shaken barrel on web, with the context that gives native icons a colour to inherit.",
+  "dependencies": [
+    "lucide-react@^1.34.0"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/icons-base.ts",
+      "content": "/**\n * What `icons.tsx` and `icons.web.tsx` share. Separate module for the usual\n * reason: Metro resolves `./icons` to `icons.web.tsx` on web, so the web file\n * cannot import the shared pieces from `./icons` without importing itself.\n */\nimport type { ComponentType } from \"react\";\nimport { createContext } from \"react\";\n\n/**\n * What a component that takes an icon *as a prop* should ask for. The two\n * implementations produce structurally different components — a lucide\n * forwardRef on web, a `styled` wrapper on native — and this is the part\n * they have in common.\n */\nexport type IconComponent = ComponentType<{ className?: string | undefined }>;\n\n/**\n * The text colour class an icon should take from its container.\n *\n * Native-only machinery. On web an `<svg>` picks up `currentColor` from its\n * parent, including hover states, so `icons.web.tsx` ignores this entirely —\n * pinning an explicit colour on the icon there would freeze it through the\n * container's `hover:text-*`. Native has no inheritance at all, so a container\n * that sets its own text colour (a `Button` variant, a destructive row)\n * publishes that class here and every icon below merges it in.\n *\n * Merged *before* the icon's own `className`, so an explicit `text-*` at the\n * call site still wins.\n */\nexport const IconClassContext = createContext<string | undefined>(undefined);\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "compiled/icons.tsx",
+      "content": "/**\n * Copied from `registry/ui/icons.web.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The\n * same passes still ran over it, and for a file already written against the DOM they find nothing\n * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one\n * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one\n * speak the same prop vocabulary, instead of the two drifting where nobody is looking.\n */\n\n/**\n * The icon set, web implementation — see `icons.tsx` for the native one and why\n * this module exists at all.\n *\n * Web needs no wrapper: an `<svg>` already takes `className`, and its colour\n * comes from `currentColor` on the container, hover states included. Pinning a\n * colour here — the way the native file has to — would break exactly that. So\n * this is a plain re-export, and the barrel is fine because the web bundler does\n * tree-shake.\n *\n * The exported names must stay in step with `icons.tsx`. TypeScript will not\n * check it, because it only ever resolves the native file; `scripts/check-registry-build.mjs`\n * does.\n */\nexport {\n  ArrowLeft,\n  ArrowRight,\n  Calendar,\n  Check,\n  ChevronDown,\n  ChevronLeft,\n  ChevronRight,\n  ChevronUp,\n  CircleAlert,\n  CircleCheck,\n  Clock,\n  Copy,\n  Download,\n  LoaderCircle,\n  Pencil,\n  Plus,\n  RefreshCw,\n  Search,\n  Settings,\n  Trash2,\n  TriangleAlert,\n  Undo2,\n  Upload,\n  X,\n} from \"lucide-react\";\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

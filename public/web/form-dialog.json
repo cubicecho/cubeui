@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form-dialog",
+  "title": "Form Dialog",
+  "description": "Dialog chrome for a form, with a footer that leaves the submit control to the caller.",
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/button",
+    "@cubeui/dialog"
+  ],
+  "files": [
+    {
+      "path": "compiled/form-dialog.tsx",
+      "content": "/**\n * Compiled from `registry/ui/form-dialog.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * The prose below is the source's own, carried across untouched, which is the property that makes\n * a compiled registry worth having: this is the same component, not a second one to keep in step\n * by hand. Where a comment names a React Native component it is describing the source; the\n * element map in `scripts/rn2web/tables.mjs` says what that became here.\n */\n\n/**\n * Dialog chrome shared by every form dialog: `Dialog` + sized content + header.\n *\n * The caller keeps ownership of the form body and the footer (via\n * `FormDialogFooter`) rather than passing them as props. A form's generics flow\n * from its schema through every bound field, and a wrapper that owns the form\n * has to re-declare them at each layer — more trouble than the wrapper saves.\n */\nimport type { ReactNode } from \"react\";\nimport { cn } from \"@/lib/utils\";\nimport { Button } from \"./button\";\nimport {\n  Dialog,\n  DialogContent,\n  DialogDescription,\n  DialogFooter,\n  DialogHeader,\n  DialogTitle,\n} from \"./dialog\";\n\ntype FormDialogProps = {\n  open: boolean;\n  onOpenChange: (open: boolean) => void;\n  title: ReactNode;\n  description?: ReactNode;\n  className?: string;\n  children: ReactNode;\n};\n\nexport function FormDialog({\n  open,\n  onOpenChange,\n  title,\n  description,\n  className,\n  children,\n}: FormDialogProps) {\n  return (\n    <Dialog open={open} onOpenChange={onOpenChange}>\n      <DialogContent className={cn(\"sm:max-w-[480px]\", className)}>\n        <DialogHeader>\n          <DialogTitle>{title}</DialogTitle>\n          {description ? <DialogDescription>{description}</DialogDescription> : null}\n        </DialogHeader>\n        {children}\n      </DialogContent>\n    </Dialog>\n  );\n}\n\ntype FormDialogFooterProps = {\n  onCancel: () => void;\n  cancelLabel?: string;\n  /** Left-aligned action — a Delete or a Mark complete. Drawn only when set. */\n  secondary?: ReactNode;\n  /**\n   * A rejected mutation's message, shown above the buttons. Field validation\n   * stays inline beneath its field — this is for what only the server knows,\n   * such as a delete the database refuses on a foreign key.\n   */\n  error?: string | null;\n  /** The submit control — typically `<form.SubmitButton />`. */\n  children: ReactNode;\n};\n\nexport function FormDialogFooter({\n  onCancel,\n  cancelLabel = \"Cancel\",\n  secondary,\n  error,\n  children,\n}: FormDialogFooterProps) {\n  return (\n    <>\n      {error ? (\n        <span role=\"alert\" className=\"cube-rn-text text-sm text-destructive\">\n          {error}\n        </span>\n      ) : null}\n      <DialogFooter className={cn(\"items-center\", secondary && \"sm:justify-between\")}>\n        {secondary ? <div className=\"cube-rn-view\">{secondary}</div> : null}\n        <div className=\"cube-rn-view flex-row gap-2\">\n          <Button variant=\"outline\" onClick={onCancel}>\n            {cancelLabel}\n          </Button>\n          {children}\n        </div>\n      </DialogFooter>\n    </>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
