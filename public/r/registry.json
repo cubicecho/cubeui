@@ -406,14 +406,14 @@
       ]
     },
     {
-      "name": "status-chip",
+      "name": "badge",
       "type": "registry:ui",
-      "title": "Status Chip",
-      "description": "A pill stating the state a record is in, toned by meaning rather than by the app's own vocabulary.",
+      "title": "Badge",
+      "description": "A pill naming what something is or what state it is in \u2014 and, with no label, the dot that says the same thing in a tighter row.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/status-chip.tsx",
+          "path": "registry/ui/badge.tsx",
           "type": "registry:ui"
         }
       ]

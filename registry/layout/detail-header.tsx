@@ -32,7 +32,7 @@ type DetailHeaderProps = {
   title: string;
   /** Small muted line under the title. */
   subtitle?: ReactNode;
-  /** Rendered next to the title — typically a `StatusChip`. */
+  /** Rendered next to the title — typically a `Badge`. */
   badge?: ReactNode;
   /** Trailing actions. */
   actions?: ReactNode;

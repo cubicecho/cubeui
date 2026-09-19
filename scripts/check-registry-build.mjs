@@ -1,4 +1,4 @@
-// Five things that have to be true before a built registry is installable.
+// Six things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -57,6 +57,18 @@
 // whose web half was refused takes its dependents with it, and this is the assertion that the
 // drop actually happened.
 //
+// ## 6. Every item file in a built registry is still an item of that registry
+//
+// `shadcn build` writes an item file per item and never removes one. Rename `status-chip` to
+// `badge` and the index loses `status-chip`, `badge.json` appears beside it — and
+// `status-chip.json` stays exactly where it was, still complete, still served at its URL. A
+// consumer who installed it before the rename, or who pasted the URL from anywhere, keeps
+// getting the old component indefinitely, and nothing upstream of here notices: the index is
+// correct, every remaining item is correct, and the orphan collides with nothing.
+//
+// `compiled/` already treats its own version of this as garbage and deletes it. This cannot,
+// because `public/` is committed, so it reports and the fix is `git rm`.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -74,6 +86,7 @@ const NAMESPACE = "@cubeui";
 
 const collisions = [];
 const unreachable = [];
+const orphans = [];
 const unpinned = [];
 const drift = [];
 const empties = [];
@@ -174,12 +187,21 @@ for (const built of BUILT) {
   const present = new Set();
   const wanted = [];
 
+  // The index is the registry's own account of what it holds; the item files beside it are what
+  // actually gets served. Section 6 is the gap between those two.
+  const index = await readFile(path.join(built, "registry.json"), "utf8").catch(() => null);
+  const listed = index === null ? null : new Set(JSON.parse(index).items.map((i) => i.name));
+
   for (const entry of (await readdir(built).catch(() => [])).sort()) {
     if (!entry.endsWith(".json") || entry === "registry.json") continue;
 
     const where = path.join(built, entry);
     const item = JSON.parse(await readFile(where, "utf8"));
     present.add(item.name);
+
+    if (listed && !listed.has(item.name)) {
+      orphans.push(`${where}: "${item.name}" is not in ${built}/registry.json`);
+    }
 
     for (const dependency of item.registryDependencies ?? []) {
       // A bare name is upstream shadcn's own registry and is not ours to check; a full URL
@@ -280,7 +302,27 @@ if (unreachable.length > 0) {
   );
 }
 
-if (collisions.length + drift.length + unpinned.length + empties.length + unreachable.length > 0) {
+if (orphans.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length > 0 ? "\n" : ""}A built item outlived its registry entry:\n`,
+  );
+  for (const one of orphans) console.error(`  ${one}`);
+  console.error(
+    "\n`shadcn build` writes item files and never removes one, so a renamed or deleted item keeps" +
+      "\nserving its old self at its old URL forever. The index is right and the orphan collides" +
+      "\nwith nothing, so only this says so. Delete it: `git rm` the file named above.",
+  );
+}
+
+if (
+  collisions.length +
+    drift.length +
+    unpinned.length +
+    empties.length +
+    unreachable.length +
+    orphans.length >
+  0
+) {
   process.exit(1);
 }
 
@@ -289,5 +331,6 @@ console.log(
   `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
     `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
     "names, every platform pair exports the same set, every npm dependency carries a version " +
-    `range, and every cross-item dependency names ${NAMESPACE} and an item its own registry holds.`,
+    `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, and ` +
+    "every built item file is still listed by the index beside it.",
 );

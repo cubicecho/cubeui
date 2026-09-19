@@ -67,7 +67,7 @@ in a consumer's tree, so an import that typechecks here is the import the consum
 | lib | `utils`, `color`, `readable-text-color` |
 | primitives | `icons`, `button`, `card`, `checkbox`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
-| pills and swatches | `segmented`, `toggle-chip`, `status-chip`, `color-bar`, `color-dot`, `color-picker` |
+| pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `page`, `detail-page`, `detail-header`, `section-heading` |
@@ -75,7 +75,8 @@ in a consumer's tree, so an import that typechecks here is the import the consum
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
 `inline-number-edit` (a value, a range and a formatter, rather than minutes clamped to 1440), and
-`status-chip` became a tone rather than a project's three lifecycle states.
+`status-chip` stopped naming a project's three lifecycle states — first as a tone, and then, in
+open decision 4, as `badge`.
 
 **`file-picker` is web-only.** Its native half draws the zone and says so on screen; it does not
 pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
@@ -102,7 +103,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces four things, and each one is a failure that otherwise
+`scripts/check-registry-build.mjs` enforces six things, and each one is a failure that otherwise
 ships silently:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -118,9 +119,20 @@ ships silently:
    came out; the check is what stops it coming back.
 4. **Every built file carries content.** `shadcn build` writes `content: ""` for an empty file and
    reports success.
+5. **Every cross-item dependency names `@cubeui`, and an item its own registry holds.** A
+   `registryDependencies` entry resolves against the *consumer's* `components.json`, never against
+   the registry the item came from — which is the whole trick behind the two-registry split and
+   equally the trap. A stray namespace asks the consumer to have configured a key nobody mentioned,
+   and a dependency on a missing item 404s *mid-install*, after files are already in their tree.
+6. **Every built item file is still listed by the index beside it.** `shadcn build` writes an item
+   file per item and never removes one. Renaming `status-chip` to `badge` left
+   `public/r/status-chip.json` in place, complete and still served at its URL, with the index
+   already correct and the orphan colliding with nothing — so every other check here passed. Since
+   `public/` is committed, this one reports rather than deleting, and the fix is `git rm`.
 
-All three novel checks are negative-tested: breaking one export, duplicating one basename and
-leaving one dependency bare each make it exit non-zero and name the cause.
+All five novel checks are negative-tested: breaking one export, duplicating one basename, leaving
+one dependency bare, pointing one at an item that does not exist, and stranding one built file each
+make it exit non-zero and name the cause.
 
 ### The install test
 
@@ -442,9 +454,48 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx` for the radix
    `htmlFor` association — and the spike found nothing in the plain set that needs one. Level 4 of
    the plan (an existing `X.web.tsx` is emitted verbatim and codegen is skipped) stands unchanged.
-4. **`status-chip` and cubeui's `badge`.** They are the same component seen from two sides — a
-   toned pill around a word. cubeui's `badge` has not been ported yet; when it is, one of the two
-   names has to go, and the vocabulary check is what should make that impossible to forget.
+4. ~~**`status-chip` and cubeui's `badge`.**~~ **Settled: one item, named `badge`.**
+
+   This entry began from a false premise. It said "cubeui's `badge` has not been ported yet", and
+   cubeui has no `badge` to port: the only mention of the name in its whole `registry.json` is a
+   *bare* `"badge"` in `multi-select`'s dependencies, which resolves to upstream shadcn's registry
+   and not to cubeui. There was never a clash between the two repos to settle.
+
+   The second argument against the name did not survive either. Taking `badge` collides with
+   upstream shadcn's own `badge`, which installs to the same `components/ui/badge.tsx` — but this
+   registry already claims 15 of upstream's names on the same terms (`button`, `card`, `input`,
+   `select`, `dialog`, `switch`, `tabs`, `textarea`, `form` among them). It replaces the primitive
+   layer rather than sitting beside it, so `badge` is no more of a collision than `button` was.
+
+   So the real question was vocabulary, and the fold is a strict superset. Upstream's four variant
+   names keep upstream's meanings, which is what lets a DOM call site port unchanged and what makes
+   cubeui's `multi-select` — `variant="secondary"` plus a per-option colour — land here verbatim
+   when its turn comes. The old `tone` values map onto them without an orphan: `neutral` →
+   `secondary`, `info` → `default`, `danger` → `destructive`, leaving `success` and `warning` as the
+   only two additions.
+
+   **The token cost this entry was expected to pay did not come due.** Promoting `success` and
+   `warning` to `--success` / `--warning` would put this repo's `:root` block out of step with
+   cubeui's, which is open decision 2's whole reason for being deferred. They ship as palette
+   colours instead, exactly as `status-chip` already shipped them, so `npm run parity` stays green
+   and nothing outside this repo is touched. The promotion stays available and reaches no call
+   site when it happens — it is an edit to `tokens/palette.mjs` and one class map.
+
+   **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
+   does not overlap `color-dot`: that one takes a literal colour for a category whose hue is
+   user-chosen data, this one takes a semantic variant. The dot is also the one form with no text
+   to be named by, so it is named outright (`role="img"` + `aria-label`) or hidden
+   (`aria-hidden`), and `stories/accessible-state.stories.tsx` holds that rather than this
+   paragraph.
+
+   That story earned its place immediately. `success` shipped as `green-600`, which is **3.22:1**
+   against white — short of the 4.5:1 that 12px text needs — and the axe pass caught it, not
+   review. Both semantic fills are now the 700s (4.95 and 5.03), which puts them beside
+   `destructive`'s own 4.77.
+
+   One thing this rename exposed: `shadcn build` writes item files and never removes one, so
+   `public/r/status-chip.json` kept serving the old component at its old URL with the index
+   already correct and nothing colliding. `check-registry-build.mjs` grew a sixth rule for it.
 5. ~~**Publishing `compiled/` as registry items, and the `web-button` name it seemed to need.**~~
    **Settled: two registries from one repo.** The basename collision was a property of putting both
    halves in one registry, not of the halves. `public/r` and `public/web` are built from the same

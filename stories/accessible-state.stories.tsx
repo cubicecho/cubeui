@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
+import { Badge } from "../registry/ui/badge";
 import { ColorPicker } from "../registry/ui/color-picker";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 
@@ -65,5 +66,43 @@ export const Swatches: Story = {
       "#3b82f6",
     );
     await expect(within(group).getAllByRole("radio", { checked: false }).length).toBeGreaterThan(0);
+  },
+};
+
+/**
+ * A badge with no label collapses to a dot, and the dot is the one form with no text to be named
+ * by. So it is named outright or it is hidden, and the case this story exists to forbid is the
+ * one in between: a coloured node sitting in the accessibility tree with nothing to say about
+ * itself. The pill needs none of this — the word it shows is already its name.
+ *
+ * Every variant is rendered with a label as well, because the axe pass covers the whole canvas
+ * and contrast is the thing this component's colour choices are most likely to get wrong. It
+ * already caught one: `success` shipped as `green-600`, which is 3.22:1 against white.
+ */
+export const Badges: Story = {
+  render: () => (
+    <div className="flex flex-row flex-wrap items-center gap-2 bg-background p-6">
+      <Badge>Default</Badge>
+      <Badge variant="secondary">Secondary</Badge>
+      <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="outline">Outline</Badge>
+      <Badge variant="success">Active</Badge>
+      <Badge variant="warning">Overdue</Badge>
+      <Badge variant="warning" label="Paused" />
+      <Badge variant="secondary" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Active").textContent).toBe("Active");
+    // The labelled dot: `role="img"` because it is a graphic standing for a word, and the label
+    // is the word. Without the role the name has nothing to attach to.
+    await expect(canvas.getByRole("img", { name: "Paused" }).getAttribute("aria-label")).toBe(
+      "Paused",
+    );
+    // And the unlabelled one is decoration, so it is out of the tree entirely rather than in it
+    // unnamed — one `img`, not two.
+    await expect(canvas.queryAllByRole("img").length).toBe(1);
+    await expect(canvasElement.querySelectorAll('[aria-hidden="true"]').length).toBe(1);
   },
 };
