@@ -53,6 +53,16 @@ export const dark = {
 export type ColorName = keyof typeof light;
 export type Palette = Record<ColorName, string>;
 
-/** Pick a palette from RN's `useColorScheme()`, which returns null before it resolves. */
+/**
+ * Pick a palette from RN's `useColorScheme()`, which returns null before it resolves.
+ *
+ * Which scheme that hook reports follows the **system** appearance, because the
+ * stylesheet beside this file keys its dark palette off
+ * `@media (prefers-color-scheme: dark)` — the only form react-native-css honours on
+ * device. An in-app theme toggle is therefore
+ * `Appearance.setColorScheme("dark")` from react-native, which moves both this and
+ * the stylesheet together. It is *not* a `.dark` class on a wrapper: that is the web
+ * mechanism, and on native it silently styles nothing.
+ */
 export const paletteFor = (scheme /*: "light" | "dark" | null | undefined */) =>
   scheme === "dark" ? dark : light;

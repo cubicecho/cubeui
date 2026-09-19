@@ -40,25 +40,49 @@
   --ring: #a1a1a1;
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #171717;
-  --card-foreground: #fafafa;
-  --popover: #262626;
-  --popover-foreground: #fafafa;
-  --primary: #e5e5e5;
-  --primary-foreground: #171717;
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a1a1a1;
-  --accent: #404040;
-  --accent-foreground: #fafafa;
-  --destructive: #ff6467;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.15);
-  --ring: #737373;
+/*
+ * A media query and not `.dark`, which is what the web build emits and what every
+ * shadcn stylesheet has — because on native it silently does nothing.
+ *
+ * There is no DOM and no root element to carry a class, so react-native-css only
+ * recognises a dark *variable* block written as `@media (prefers-color-scheme: dark)`.
+ * A bare `.dark { }` compiles without complaint into an ordinary class style named
+ * `dark`: variables scoped to whatever subtree you hand `className="dark"`, rather
+ * than the root set. Running the committed file through the compiler says it plainly
+ * — 18 root variables, 0 of them carrying a dark value — and every app installing it
+ * would render light for ever with nothing in the build to say so. That is what
+ * `tokens.dark.test.mjs` now holds.
+ *
+ * `.dark:root` looks like the fix and is not: the compiler rejects it outright with
+ * "Class-qualified :root selectors are unsupported on native", even though its own
+ * `selectors.ts` still carries a matcher for that spelling.
+ *
+ * The consequence for consumers is that native follows the **system** appearance.
+ * An in-app theme toggle is `Appearance.setColorScheme("dark")` from react-native,
+ * not a class on a wrapper — a different mechanism from web's `.dark` on `<html>`,
+ * and the one place the two platforms' theming does not look alike.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+    --card: #171717;
+    --card-foreground: #fafafa;
+    --popover: #262626;
+    --popover-foreground: #fafafa;
+    --primary: #e5e5e5;
+    --primary-foreground: #171717;
+    --secondary: #262626;
+    --secondary-foreground: #fafafa;
+    --muted: #262626;
+    --muted-foreground: #a1a1a1;
+    --accent: #404040;
+    --accent-foreground: #fafafa;
+    --destructive: #ff6467;
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.15);
+    --ring: #737373;
+  }
 }
 
 @theme inline {

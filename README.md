@@ -38,6 +38,15 @@ variable. The conversion is real colour maths (`scripts/oklch.mjs`, OKLCH → OK
 gamma), not a lookup table, so changing a value in the palette produces a correct hex with nobody
 hand-converting anything.
 
+**The two stylesheets do not spell dark mode the same way, and cannot.** The web build emits `.dark
+{ … }`, which is what every shadcn stylesheet has and what cubeui's byte-parity requires. The native
+build emits `@media (prefers-color-scheme: dark) { :root { … } }`, because on device there is no DOM
+and no root element to carry a class: react-native-css reads a bare `.dark` as an ordinary class
+style, scoping the variables to whatever subtree gets `className="dark"` rather than to the root. So
+native follows the **system** appearance, and an in-app toggle is `Appearance.setColorScheme("dark")`
+rather than a class on a wrapper. That is the one place these two platforms' theming does not look
+alike, and open decision 7 is where it was found.
+
 ### Why this exists, in one table
 
 Hand conversion is how the tree drifted. `ai_tools/min-agent/mobile/global.css` converted the same
@@ -446,9 +455,25 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    coexistence ever does become necessary, the fix belongs in the derivation and not in the namespace:
    `registry.mjs` can rewrite intra-registry dependencies to absolute URLs and make each registry
    self-contained, at the cost of the property directly below.
-2. **Sidebar tokens.** cubeui has 18 tokens; `min-agent/mobile` added four `sidebar-*` ones that
-   upstream shadcn also ships. Adding them here would break byte-parity with cubeui, which is currently
-   load-bearing as a correctness proof. Deferred until cubeui adoption, when parity stops mattering.
+2. ~~**Sidebar tokens.**~~ **Closed: not a decision, a trigger — and it has not fired.** This entry
+   said the blocker was byte-parity with cubeui, which framed it as a timing problem: wait for
+   archival, then add them. It is a YAGNI problem instead, and those end differently.
+
+   **Nothing in either repo consumes a sidebar token.** cubeui's stylesheet has none. The `sidebar`
+   hits in cubeui's shells are a *prop* — `split-layout`'s `sidebar` / `sidebarPosition` /
+   `sidebarWidth` slot — not a colour, and `page-layout` says outright that it does not own the
+   sidebar and leaves the drawing to shadcn's own `sidebar` component. This registry ships no
+   sidebar item either. Parity was never what stood in the way; there was simply nothing to theme.
+
+   Two corrections to the entry while it is being closed. Upstream ships **eight** sidebar tokens
+   (`--sidebar`, `-foreground`, `-primary`, `-primary-foreground`, `-accent`, `-accent-foreground`,
+   `-border`, `-ring`), not four. `min-agent/mobile` defined four of them — and it is a dark-only
+   app whose `:root` *is* the dark palette, so it is not evidence of what a themed set needs.
+
+   **What reopens it:** a sidebar-shaped item landing here, which belongs to the "port cubeui's 23
+   web-only shells" work. At that point the choice is the main palette (byte-parity is gone by then,
+   or the check has been) or a separate `tokens-sidebar` item, which keeps the main blocks untouched
+   and is the cheaper answer if only one app wants a sidebar. Not before.
 3. ~~**Whether the `.web.tsx` split survives Stage 3.**~~ **Settled by the spike: it survives, as the
    escape hatch it already is.** Every web half kept so far is one the compiler could not have
    produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx` for the radix
@@ -523,10 +548,36 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    `segmented`, `toggle-chip`); the other 27 `onPress` occurrences are internal wiring on a
    `Pressable` that becomes a `<button>` either way. No `-base.ts` declares a press prop, so nothing
    in the shared contracts had to move.
-7. **Native dark mode wiring.** The native stylesheet emits `:root` and `.dark` in parallel with the
-   web one, but how NativeWind 5 selects between them on device is **not yet verified on a device or
-   simulator** — it is asserted from the file shape, not observed. The Stage 2 install test is where
-   that gets settled.
+7. ~~**Native dark mode wiring.**~~ **Settled: it was broken, and it needed no device to find out.**
+   The entry was right to be suspicious and wrong about what it was waiting for.
+   `react-native-css/compiler` is the same transform Metro runs and it imports in Node, so the
+   committed stylesheet can simply be put through it:
+
+   | `dist/tokens.native.css` | root variables | …carrying a dark value | stray class styles |
+   |---|---|---|---|
+   | as it shipped | 18 | **0** | `dark` |
+   | after the fix | 18 | **18** | none |
+
+   `.dark { … }` is correct on web and a silent no-op on native. There is no DOM and no root element
+   to carry a class, so the compiler reads it as an ordinary class style — variables scoped to
+   whatever subtree gets `className="dark"`, never the root set. It does not warn, the build stays
+   green, and every Expo app installing the tokens renders light for ever. `--background` compiled to
+   `[["#fff"]]`, with the whole dark palette parked in an unreachable class.
+
+   The fix is one line in the native emitter: `@media (prefers-color-scheme: dark) { :root { … } }`.
+   The web emitter keeps `.dark`, which is right for the DOM and is what cubeui parity requires — so
+   this is the first place the two encodings differ by more than colour syntax.
+
+   Two things worth keeping. `.dark:root` looks like the obvious fix and is rejected outright —
+   *"Class-qualified :root selectors are unsupported on native"* — even though react-native-css's own
+   `selectors.ts` still carries a matcher for that spelling, so reading the source rather than running
+   it gives the wrong answer. And native now follows the **system** appearance: an in-app toggle is
+   `Appearance.setColorScheme("dark")`, not a class on a wrapper.
+
+   `scripts/tokens-dark.test.mjs` holds both halves — every token carries a dark value, and the
+   stylesheet defines no classes — asserted against the compiler's output rather than our own, so an
+   RC that changes which spelling it honours fails here instead of on someone's phone. Negative-tested
+   by restoring the old `.dark` block: both assertions fire.
 
 ## CI
 
