@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "code",
+  "title": "Code",
+  "description": "Monospaced inline code and blocks.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/code.tsx",
+      "content": "/**\n * An inline monospace span. `<code>` has no native counterpart and it appeared\n * inline inside a sentence, so this has to be a `Text` — a `View` cannot be\n * nested in one.\n */\n\nimport type { ReactNode } from \"react\";\nimport { Text } from \"react-native\";\nimport { cn } from \"@/lib/utils\";\n\nexport function Code({\n  className,\n  children,\n}: {\n  className?: string | undefined;\n  children: ReactNode;\n}) {\n  return (\n    <Text\n      className={cn(\"rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground\", className)}\n    >\n      {children}\n    </Text>\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

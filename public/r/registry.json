@@ -1,22 +1,18 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "cubeui",
-  "homepage": "https://cubicecho.github.io/cubeui-rn",
+  "homepage": "https://cubicecho.github.io/cubeui-rn/web",
   "items": [
     {
       "name": "tokens",
       "type": "registry:file",
       "title": "Tokens",
-      "description": "The palette as a NativeWind stylesheet and as TypeScript, both emitted from one source so they cannot drift.",
+      "description": "The palette as a Tailwind stylesheet, emitted from the same source as the native one so the two cannot drift.",
       "files": [
         {
-          "path": "dist/tokens.native.css",
+          "path": "dist/tokens.web.css",
           "type": "registry:file",
           "target": "~/cubeui-tokens.css"
-        },
-        {
-          "path": "dist/theme.ts",
-          "type": "registry:lib"
         }
       ]
     },
@@ -24,15 +20,11 @@
       "name": "utils",
       "type": "registry:lib",
       "title": "cn",
-      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN\u2192web compiler reads.",
+      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN→web compiler reads.",
       "dependencies": ["clsx@^2.1.1", "tailwind-merge@^3.6.0"],
       "files": [
         {
-          "path": "registry/lib/utils.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/lib/web-as.d.ts",
+          "path": "compiled/utils.ts",
           "type": "registry:lib"
         }
       ]
@@ -70,11 +62,7 @@
       "type": "registry:ui",
       "title": "Icons",
       "description": "The icon set, per-icon imports on native and a tree-shaken barrel on web, with the context that gives native icons a colour to inherit.",
-      "dependencies": [
-        "lucide-react@^1.34.0",
-        "lucide-react-native@^1.34.0",
-        "nativewind@^5.0.0-rc.0"
-      ],
+      "dependencies": ["lucide-react@^1.34.0"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -82,11 +70,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/icons.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/icons.web.tsx",
+          "path": "compiled/icons.tsx",
           "type": "registry:ui"
         }
       ]
@@ -100,7 +84,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
-          "path": "registry/ui/button.tsx",
+          "path": "compiled/button.tsx",
           "type": "registry:ui"
         }
       ]
@@ -113,7 +97,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/color-bar"],
       "files": [
         {
-          "path": "registry/ui/card.tsx",
+          "path": "compiled/card.tsx",
           "type": "registry:ui"
         }
       ]
@@ -126,7 +110,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
-          "path": "registry/ui/checkbox.tsx",
+          "path": "compiled/checkbox.tsx",
           "type": "registry:ui"
         }
       ]
@@ -139,7 +123,7 @@
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/code.tsx",
+          "path": "compiled/code.tsx",
           "type": "registry:ui"
         }
       ]
@@ -152,7 +136,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/color"],
       "files": [
         {
-          "path": "registry/ui/color-bar.tsx",
+          "path": "compiled/color-bar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -165,7 +149,7 @@
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/color-dot.tsx",
+          "path": "compiled/color-dot.tsx",
           "type": "registry:ui"
         }
       ]
@@ -182,11 +166,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/input.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/input.web.tsx",
+          "path": "compiled/input.tsx",
           "type": "registry:ui"
         }
       ]
@@ -204,11 +184,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/label.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/label.web.tsx",
+          "path": "compiled/label.tsx",
           "type": "registry:ui"
         }
       ]
@@ -225,11 +201,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/textarea.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/textarea.web.tsx",
+          "path": "compiled/textarea.tsx",
           "type": "registry:ui"
         }
       ]
@@ -247,11 +219,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/dialog.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/dialog.web.tsx",
+          "path": "compiled/dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -269,11 +237,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/popover.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/popover.web.tsx",
+          "path": "compiled/popover.tsx",
           "type": "registry:ui"
         }
       ]
@@ -291,11 +255,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/select.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/select.web.tsx",
+          "path": "compiled/select.tsx",
           "type": "registry:ui"
         }
       ]
@@ -313,11 +273,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/switch.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/switch.web.tsx",
+          "path": "compiled/switch.tsx",
           "type": "registry:ui"
         }
       ]
@@ -335,11 +291,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/tabs.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/tabs.web.tsx",
+          "path": "compiled/tabs.tsx",
           "type": "registry:ui"
         }
       ]
@@ -357,11 +309,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/tooltip.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/tooltip.web.tsx",
+          "path": "compiled/tooltip.tsx",
           "type": "registry:ui"
         }
       ]
@@ -374,7 +322,7 @@
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/layout/section-heading.tsx",
+          "path": "compiled/section-heading.tsx",
           "type": "registry:component"
         }
       ]
@@ -387,7 +335,7 @@
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/segmented.tsx",
+          "path": "compiled/segmented.tsx",
           "type": "registry:ui"
         }
       ]
@@ -396,11 +344,11 @@
       "name": "toggle-chip",
       "type": "registry:ui",
       "title": "Toggle Chip",
-      "description": "A small on/off pill \u2014 a filter chip, a day toggle, a swatch \u2014 with its colour split across container and label.",
+      "description": "A small on/off pill — a filter chip, a day toggle, a swatch — with its colour split across container and label.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/toggle-chip.tsx",
+          "path": "compiled/toggle-chip.tsx",
           "type": "registry:ui"
         }
       ]
@@ -409,11 +357,11 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A pill naming what something is or what state it is in \u2014 and, with no label, the dot that says the same thing in a tighter row.",
+      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/badge.tsx",
+          "path": "compiled/badge.tsx",
           "type": "registry:ui"
         }
       ]
@@ -427,7 +375,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/label"],
       "files": [
         {
-          "path": "registry/ui/field.tsx",
+          "path": "compiled/field.tsx",
           "type": "registry:ui"
         }
       ]
@@ -440,7 +388,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/label", "@cubeui/switch"],
       "files": [
         {
-          "path": "registry/ui/switch-field.tsx",
+          "path": "compiled/switch-field.tsx",
           "type": "registry:ui"
         }
       ]
@@ -453,7 +401,7 @@
       "registryDependencies": ["@cubeui/button", "@cubeui/dialog"],
       "files": [
         {
-          "path": "registry/ui/confirm-dialog.tsx",
+          "path": "compiled/confirm-dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -462,11 +410,11 @@
       "name": "confirm",
       "type": "registry:ui",
       "title": "Confirm",
-      "description": "One confirmation prompt for both platforms, as a promise: `if (await confirm({\u2026})) remove()`.",
+      "description": "One confirmation prompt for both platforms, as a promise: `if (await confirm({…})) remove()`.",
       "registryDependencies": ["@cubeui/confirm-dialog"],
       "files": [
         {
-          "path": "registry/ui/confirm.tsx",
+          "path": "compiled/confirm.tsx",
           "type": "registry:ui"
         }
       ]
@@ -483,11 +431,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/form-element.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/form-element.web.tsx",
+          "path": "compiled/form-element.tsx",
           "type": "registry:ui"
         }
       ]
@@ -510,7 +454,7 @@
       ],
       "files": [
         {
-          "path": "registry/ui/form.tsx",
+          "path": "compiled/form.tsx",
           "type": "registry:ui"
         }
       ]
@@ -523,7 +467,7 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/dialog"],
       "files": [
         {
-          "path": "registry/ui/form-dialog.tsx",
+          "path": "compiled/form-dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -532,10 +476,10 @@
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
-      "description": "Transient messages for mutations fired outside a form \u2014 the failures that otherwise reach only the console.",
+      "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
       "files": [
         {
-          "path": "registry/ui/toast.tsx",
+          "path": "compiled/toast.tsx",
           "type": "registry:ui"
         }
       ]
@@ -553,11 +497,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/calendar.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/calendar.web.tsx",
+          "path": "compiled/calendar.tsx",
           "type": "registry:ui"
         }
       ]
@@ -578,7 +518,7 @@
       ],
       "files": [
         {
-          "path": "registry/ui/date-time-input.tsx",
+          "path": "compiled/date-time-input.tsx",
           "type": "registry:ui"
         }
       ]
@@ -587,11 +527,11 @@
       "name": "color-picker",
       "type": "registry:ui",
       "title": "Color Picker",
-      "description": "Swatches plus a hex field, replacing `<input type=\"color\">` \u2014 which has no native counterpart.",
+      "description": "Swatches plus a hex field, replacing `<input type=\"color\">` — which has no native counterpart.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/readable-text-color"],
       "files": [
         {
-          "path": "registry/ui/color-picker.tsx",
+          "path": "compiled/color-picker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -608,11 +548,7 @@
           "type": "registry:ui"
         },
         {
-          "path": "registry/ui/file-picker.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/file-picker.web.tsx",
+          "path": "compiled/file-picker.tsx",
           "type": "registry:ui"
         }
       ]
@@ -625,7 +561,7 @@
       "registryDependencies": ["@cubeui/input"],
       "files": [
         {
-          "path": "registry/ui/inline-number-edit.tsx",
+          "path": "compiled/inline-number-edit.tsx",
           "type": "registry:ui"
         }
       ]
@@ -637,7 +573,7 @@
       "description": "Inline loading / error text for a query whose data may still render beside it.",
       "files": [
         {
-          "path": "registry/layout/query-state.tsx",
+          "path": "compiled/query-state.tsx",
           "type": "registry:component"
         }
       ]
@@ -646,11 +582,11 @@
       "name": "page",
       "type": "registry:component",
       "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state \u2014 the four pieces every route repeats.",
+      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
-          "path": "registry/layout/page.tsx",
+          "path": "compiled/page.tsx",
           "type": "registry:component"
         }
       ]
@@ -663,7 +599,7 @@
       "registryDependencies": ["@cubeui/page"],
       "files": [
         {
-          "path": "registry/layout/detail-page.tsx",
+          "path": "compiled/detail-page.tsx",
           "type": "registry:component"
         }
       ]
@@ -676,7 +612,7 @@
       "registryDependencies": ["@cubeui/button", "@cubeui/color-dot", "@cubeui/icons"],
       "files": [
         {
-          "path": "registry/layout/detail-header.tsx",
+          "path": "compiled/detail-header.tsx",
           "type": "registry:component"
         }
       ]
@@ -689,7 +625,7 @@
       "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
       "files": [
         {
-          "path": "registry/layout/route-error.tsx",
+          "path": "compiled/route-error.tsx",
           "type": "registry:component"
         }
       ]

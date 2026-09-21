@@ -18,6 +18,6 @@
     "lib": "@/lib"
   },
   "registries": {
-    "@cubeui": "https://cubicecho.github.io/cubeui-rn/r/{name}.json"
+    "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json"
   }
 }

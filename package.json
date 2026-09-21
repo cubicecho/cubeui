@@ -10,7 +10,7 @@
     "parity": "node scripts/check-cubeui-parity.mjs",
     "compile": "node scripts/rn2web/index.mjs",
     "compile:check": "node scripts/rn2web/index.mjs --check",
-    "registry:build": "shadcn build && shadcn build registry.web.json -o public/web",
+    "registry:build": "shadcn build registry.web.json -o public/r && shadcn build -o public/r/native",
     "registry:check": "node scripts/check-registry-build.mjs",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 3001",

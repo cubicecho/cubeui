@@ -56,11 +56,11 @@ jobs:
       - name: Collisions, platform-pair drift, empty content
         run: npm run registry:check
 
-      # `shadcn build` writes public/r. A drifted checkout means someone edited
-      # registry.json without rebuilding, and the published JSON would not match
-      # the sources it names.
+      # `shadcn build` writes both registries under public/r. A drifted checkout
+      # means someone edited registry.json without rebuilding, and the published
+      # JSON would not match the sources it names.
       - name: public/ is in sync with the two registry.json files
-        run: git diff --exit-code -- public/r public/web
+        run: git diff --exit-code -- public/r
 
       # `npm test` runs two vitest projects, and the second one renders the
       # stories in a real browser. Without this step it fails at launch rather

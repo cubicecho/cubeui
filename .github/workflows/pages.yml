@@ -38,16 +38,21 @@ jobs:
 
       # A registry item that 404s is the failure that stays invisible until
       # someone tries to install it, so the deploy refuses to publish a tree
-      # missing what registry.json promises.
-      - name: Every item in registry.json was built
+      # missing what either registry promises. Both are checked: `/r` is what
+      # every DOM consumer already maps, and a gap there breaks a live install.
+      - name: Every item in both registries was built
         run: |
           missing=0
-          for name in $(node -p "require('./registry.json').items.map(i => i.name).join('\n')"); do
-            if [ ! -f "public/r/$name.json" ]; then
-              echo "::error::registry.json names '$name', but public/r/$name.json was not built"
-              missing=1
-            fi
-          done
+          check() {
+            for name in $(node -p "require('./$1').items.map(i => i.name).join('\n')"); do
+              if [ ! -f "$2/$name.json" ]; then
+                echo "::error::$1 names '$name', but $2/$name.json was not built"
+                missing=1
+              fi
+            done
+          }
+          check registry.web.json public/r
+          check registry.json public/r/native
           exit $missing
 
       - uses: actions/configure-pages@v5

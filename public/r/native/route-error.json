@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "route-error",
+  "title": "Route Error",
+  "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause.",
+  "registryDependencies": [
+    "@cubeui/button",
+    "@cubeui/icons"
+  ],
+  "files": [
+    {
+      "path": "registry/layout/route-error.tsx",
+      "content": "/**\n * What shows when the tree below a route has thrown.\n *\n * Deliberately dependency-free beyond `ui/`: it must not rely on the data\n * client, the router, or theme state, since any of those could be what failed.\n */\nimport { Text, View } from \"react-native\";\nimport { Button } from \"@/components/ui/button\";\nimport { CircleAlert } from \"@/components/ui/icons\";\n\ntype RouteErrorProps = {\n  error: unknown;\n  reset: () => void;\n  /**\n   * Turns a thrown value into a line worth reading. The default recognises the\n   * two failures every networked app has; extend it with the ones yours has\n   * rather than letting a stack-trace message reach the screen.\n   */\n  describe?: (error: unknown) => string;\n};\n\nfunction friendlyMessage(error: unknown): string {\n  if (error instanceof Error) {\n    if (\n      error.message.includes(\"Failed to fetch\") ||\n      error.message.includes(\"NetworkError\") ||\n      error.message.includes(\"network\")\n    ) {\n      return \"Could not reach the server. Check your connection and try again.\";\n    }\n    if (error.message.includes(\"Not authenticated\")) {\n      return \"Your session has expired. Please sign in again.\";\n    }\n    return error.message;\n  }\n  return \"An unexpected error occurred.\";\n}\n\nexport function RouteError({ error, reset, describe = friendlyMessage }: RouteErrorProps) {\n  return (\n    <View className=\"flex-1 items-center justify-center gap-4 px-8 py-20\">\n      <View className=\"rounded-full bg-destructive/10 p-4\">\n        <CircleAlert className=\"h-7 w-7 text-destructive\" />\n      </View>\n      <View className=\"max-w-sm items-center\">\n        <Text className=\"font-semibold text-foreground\">Failed to load</Text>\n        <Text className=\"mt-1 text-center text-sm text-muted-foreground\">{describe(error)}</Text>\n      </View>\n      <Button variant=\"outline\" size=\"sm\" onPress={reset}>\n        Try again\n      </Button>\n    </View>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

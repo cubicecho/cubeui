@@ -8,8 +8,8 @@
   ],
   "files": [
     {
-      "path": "registry/ui/code.tsx",
-      "content": "/**\n * An inline monospace span. `<code>` has no native counterpart and it appeared\n * inline inside a sentence, so this has to be a `Text` — a `View` cannot be\n * nested in one.\n */\n\nimport type { ReactNode } from \"react\";\nimport { Text } from \"react-native\";\nimport { cn } from \"@/lib/utils\";\n\nexport function Code({\n  className,\n  children,\n}: {\n  className?: string | undefined;\n  children: ReactNode;\n}) {\n  return (\n    <Text\n      className={cn(\"rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground\", className)}\n    >\n      {children}\n    </Text>\n  );\n}\n",
+      "path": "compiled/code.tsx",
+      "content": "/**\n * Compiled from `registry/ui/code.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * The prose below is the source's own, carried across untouched, which is the property that makes\n * a compiled registry worth having: this is the same component, not a second one to keep in step\n * by hand. Where a comment names a React Native component it is describing the source; the\n * element map in `scripts/rn2web/tables.mjs` says what that became here.\n */\n\n/**\n * An inline monospace span. `<code>` has no native counterpart and it appeared\n * inline inside a sentence, so this has to be a `Text` — a `View` cannot be\n * nested in one.\n */\n\nimport type { ReactNode } from \"react\";\nimport { cn } from \"@/lib/utils\";\n\nexport function Code({\n  className,\n  children,\n}: {\n  className?: string | undefined;\n  children: ReactNode;\n}) {\n  return (\n    <span\n      className={cn(\n        \"cube-rn-text\",\n        \"rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground\",\n        className,\n      )}\n    >\n      {children}\n    </span>\n  );\n}\n",
       "type": "registry:ui"
     }
   ],

@@ -74,10 +74,12 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-// Both built registries. `public/r` is the React Native half and `public/web` the compiled one;
-// they hold the same item names on purpose, and the checks below run over each on its own, because
-// "no two items claim this basename" is a question about one registry and not about the repo.
-const BUILT = ["public/r", "public/web"];
+// Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
+// one; they hold the same item names on purpose, and the checks below run over each on its own,
+// because "no two items claim this basename" is a question about one registry and not about the
+// repo. Nesting one inside the other is safe here only because the walk takes `.json` files and
+// skips `registry.json`, so `public/r`'s pass never sees the `native/` directory as an item.
+const BUILT = ["public/r", "public/r/native"];
 const SOURCES = "registry";
 
 // Settled in the README's open decision 1, and asserted here so it cannot drift back. Both

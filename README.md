@@ -151,10 +151,10 @@ over HTTP, point a throwaway project's `components.json` at it, and `shadcn add`
 ```sh
 python3 -m http.server 8731 --directory public   # in this repo
 
-# in a scratch Expo project, "@cubeui": "http://localhost:8731/r/{name}.json"
+# in a scratch DOM project, "@cubeui": "http://localhost:8731/r/{name}.json"
 npx shadcn@latest add @cubeui/form @cubeui/page @cubeui/tokens --yes
 
-# in a scratch DOM project, "@cubeui": "http://localhost:8731/web/{name}.json"
+# in a scratch Expo project, "@cubeui": "http://localhost:8731/r/native/{name}.json"
 npx shadcn@latest add @cubeui/page @cubeui/select @cubeui/toast @cubeui/tokens --yes
 ```
 
@@ -259,11 +259,17 @@ The compiled half is published as a **second registry built from the same source
 points `@cubeui` at whichever one matches the platform it is:
 
 ```jsonc
-// an Expo app
-"registries": { "@cubeui": "https://cubicecho.github.io/cubeui-rn/r/{name}.json" }
 // a DOM app
-"registries": { "@cubeui": "https://cubicecho.github.io/cubeui-rn/web/{name}.json" }
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
+// an Expo app
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json" }
 ```
+
+The web half holds the shorter URL even though this registry is React Native first. That is not an
+accident of which came first: `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
+`@cubeui` **today**, and this branch becomes that repo. Keeping `/r/` meaning "web" is what makes the
+flip a no-op for every consumer that already exists. Pointing it at the native half instead would
+have handed React Native source to ten DOM apps, silently, on merge day.
 
 **The item names are the same on both sides** — `card` is `card`, and `shadcn add @cubeui/card`
 installs the right one because of the URL, not because of the name. One registry could not do that:
@@ -405,7 +411,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run parity         # fail if the web emitter diverged from cubeui
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
-npm run registry:build # shadcn build → public/r and public/web
+npm run registry:build # shadcn build → public/r (web) and public/r/native
 npm run registry:check # collisions, platform-pair drift, empty content
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
@@ -523,8 +529,8 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    already correct and nothing colliding. `check-registry-build.mjs` grew a sixth rule for it.
 5. ~~**Publishing `compiled/` as registry items, and the `web-button` name it seemed to need.**~~
    **Settled: two registries from one repo.** The basename collision was a property of putting both
-   halves in one registry, not of the halves. `public/r` and `public/web` are built from the same
-   sources, hold the same item names, and a consumer picks one by URL. No DOM app ever types
+   halves in one registry, not of the halves. `public/r` and `public/r/native` are built from the
+   same sources, hold the same item names, and a consumer picks one by URL. No DOM app ever types
    `web-button`. Verified by installing from it, not only by building it.
 6. ~~**`onPress` or `onClick` on the compiled half.**~~ **Settled: `onClick`** — a DOM app installing
    a DOM component is not handed React Native's vocabulary, and gets the whole `<button>` prop
@@ -543,7 +549,7 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 
    The cost — the two halves are not interchangeable at the call site, which the side-by-side stories
    show directly — is smaller than it reads. The halves are never installed into the same app: an
-   Expo app installs from `public/r` and a DOM app from `public/web`, so no call site ever sees both
+   Expo app installs from `public/r/native` and a DOM app from `public/r`, so no call site sees both
    vocabularies. And only three items expose a press handler as public API at all (`card`,
    `segmented`, `toggle-chip`); the other 27 `onPress` occurrences are internal wiring on a
    `Pressable` that becomes a `<button>` either way. No `-base.ts` declares a press prop, so nothing
@@ -582,7 +588,7 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 ## CI
 
 `.github/workflows/ci.yml` runs the same `npm run check` steps one at a time, so a failure names
-itself, plus `git diff --exit-code -- public/r public/web` — a drifted checkout means someone edited
+itself, plus `git diff --exit-code -- public/r` — a drifted checkout means someone edited
 `registry.json` without rebuilding, and the published JSON would not match the sources it names. The
 same argument covers `compile:check`: `compiled/` is committed, so a stale one means someone changed a
 component and shipped the old DOM half.

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "label",
+  "title": "Label",
+  "description": "A caption for a control. Radix on web so clicking it focuses the control; plain text on native, where that association does not exist.",
+  "dependencies": [
+    "radix-ui@^1.6.7"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/label-base.ts",
+      "content": "/**\n * The contract `label.tsx` and `label.web.tsx` both implement. Separate module\n * for the usual reason — Metro resolves `./label` to `label.web.tsx` on web, so\n * the web file cannot import shared types from `./label` without importing\n * itself.\n */\nimport type { ReactNode } from \"react\";\n\nexport type LabelProps = {\n  /**\n   * Associates the label with a control's `id`, so clicking it focuses the\n   * control. Web only — there is no native equivalent, and the native file\n   * ignores it rather than pretending otherwise.\n   */\n  htmlFor?: string | undefined;\n  className?: string | undefined;\n  children?: ReactNode;\n};\n\n/**\n * Shared between both implementations so the two cannot drift on type size or\n * weight. `peer-disabled:` is a DOM-only variant and simply does not apply on\n * native, where a disabled control does not dim its label.\n */\nexport const LABEL_CLASS =\n  \"text-foreground text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/label.tsx",
+      "content": "/**\n * The native label: just text. `htmlFor` is accepted and ignored — there is no\n * label/control association on native, and a `TextInput` is focused by tapping\n * it rather than its caption.\n */\n\nimport { Text } from \"react-native\";\nimport { LABEL_CLASS, type LabelProps } from \"@/components/ui/label-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Label({ className, children }: LabelProps) {\n  return <Text className={cn(LABEL_CLASS, className)}>{children}</Text>;\n}\n\nexport { Label };\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/label.web.tsx",
+      "content": "/**\n * The web label: radix, which is here for one thing — clicking the label\n * focuses the control named by `htmlFor`. That association has no native\n * counterpart, which is the whole reason for the split.\n */\n\nimport { Label as LabelPrimitive } from \"radix-ui\";\nimport { LABEL_CLASS, type LabelProps } from \"@/components/ui/label-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Label({ htmlFor, className, children }: LabelProps) {\n  return (\n    <LabelPrimitive.Root htmlFor={htmlFor} className={cn(LABEL_CLASS, className)}>\n      {children}\n    </LabelPrimitive.Root>\n  );\n}\n\nexport { Label };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

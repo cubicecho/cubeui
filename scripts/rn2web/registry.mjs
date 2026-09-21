@@ -1,11 +1,19 @@
 /**
  * `registry.web.json`, derived from `registry.json`.
  *
- * Two registries, one repo, one source. The React Native half builds to `public/r` and the compiled
- * half to `public/web`, and a consumer points `@cubeui` at whichever one matches the platform it is:
+ * Two registries, one repo, one source. The compiled web half builds to `public/r` and the React
+ * Native half to `public/r/native`, and a consumer points `@cubeui` at whichever one matches the
+ * platform it is:
  *
- *   Expo app   "@cubeui": "https://cubicecho.github.io/cubeui-rn/r/{name}.json"
- *   DOM app    "@cubeui": "https://cubicecho.github.io/cubeui-rn/web/{name}.json"
+ *   DOM app    "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json"
+ *   Expo app   "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json"
+ *
+ * The web half holds the shorter URL even though this registry is React Native first, and that is
+ * the whole point of the layout. `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
+ * `@cubeui` today, and this repo is the branch that becomes that repo — so keeping `/r/` meaning
+ * "web" makes the flip a no-op for every consumer that already exists. The Expo apps are new
+ * consumers with no mapping to preserve, so they take the longer URL. Pointing `/r/` at the native
+ * half instead would have silently handed React Native source to ten DOM apps.
  *
  * The item names are the same on both sides — `card` is `card` — which is the whole point. A single
  * registry could not do that: the shadcn CLI resolves a cross-item import by the source file's
