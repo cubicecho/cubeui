@@ -96,8 +96,6 @@ function SelectItem({ value, className, children }: SelectItemProps) {
       className={cn(
         SELECT_ITEM_CLASS,
         SELECT_ITEM_TEXT_CLASS,
-        SELECT_LABEL_CLASS,
-        SELECT_SEPARATOR_CLASS,
         "focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
