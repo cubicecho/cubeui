@@ -80,7 +80,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
-      "dependencies": ["class-variance-authority@^0.7.1"],
+      "dependencies": ["class-variance-authority@^0.7.1", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -364,7 +364,8 @@
           "path": "compiled/badge.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "dependencies": ["class-variance-authority@^0.7.1"]
     },
     {
       "name": "field",
@@ -489,7 +490,7 @@
       "type": "registry:ui",
       "title": "Calendar",
       "description": "A month of single-date selection: react-day-picker on web, a date-fns grid on device.",
-      "dependencies": ["date-fns@^4.4.0", "react-day-picker@^10.0.1"],
+      "dependencies": ["react-day-picker@^10.0.1"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -690,7 +691,8 @@
           "path": "compiled/app-form.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["@tanstack/react-form@^1.33.5"]
     },
     {
       "name": "card-layout",
@@ -777,7 +779,8 @@
           "path": "compiled/date-picker.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
     },
     {
       "name": "dialog-layout",
@@ -808,7 +811,8 @@
           "path": "compiled/disclosure-row.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "empty",
@@ -821,7 +825,8 @@
           "path": "compiled/empty.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "dependencies": ["class-variance-authority@^0.7.1"]
     },
     {
       "name": "field-row",
@@ -847,7 +852,8 @@
           "path": "compiled/form-field.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "form-set",
@@ -890,7 +896,8 @@
           "path": "compiled/item.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "dependencies": ["class-variance-authority@^0.7.1", "radix-ui@^1.6.7"]
     },
     {
       "name": "layout",
@@ -928,7 +935,8 @@
           "path": "compiled/multi-select.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "multi-select-field",
@@ -1006,7 +1014,8 @@
           "path": "compiled/password-input.tsx",
           "type": "registry:component"
         }
-      ]
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "primitive",

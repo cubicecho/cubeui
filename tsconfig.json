@@ -38,6 +38,11 @@
   "exclude": ["registry/web", "vendor"],
   "include": [
     ".storybook",
+    // The emitted palette. It is not authored here, but it is *installed* by every consumer of
+    // `@cubeui/tokens`, and an Expo app's tsconfig has `strict` on — so a type the emitter left
+    // out is that consumer's error, in a file they did not write. `paletteFor`'s annotation sat
+    // inside a `/* */` for exactly as long as this line was missing.
+    "dist",
     "registry",
     "scripts",
     "stories",

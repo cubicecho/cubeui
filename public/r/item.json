@@ -3,6 +3,10 @@
   "name": "item",
   "title": "Item",
   "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
+  "dependencies": [
+    "class-variance-authority@^0.7.1",
+    "radix-ui@^1.6.7"
+  ],
   "registryDependencies": [
     "@cubeui/utils",
     "separator"

@@ -3,6 +3,9 @@
   "name": "disclosure-row",
   "title": "Disclosure Row",
   "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.",
+  "dependencies": [
+    "lucide-react@^1.34.0"
+  ],
   "registryDependencies": [
     "@cubeui/item",
     "@cubeui/utils"

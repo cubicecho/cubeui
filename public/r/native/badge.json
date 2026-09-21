@@ -3,6 +3,9 @@
   "name": "badge",
   "title": "Badge",
   "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.",
+  "dependencies": [
+    "class-variance-authority@^0.7.1"
+  ],
   "registryDependencies": [
     "@cubeui/utils"
   ],

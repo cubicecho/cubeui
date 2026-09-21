@@ -3,6 +3,9 @@
   "name": "app-form",
   "title": "App Form",
   "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+  "dependencies": [
+    "@tanstack/react-form@^1.33.5"
+  ],
   "registryDependencies": [
     "@cubeui/button",
     "@cubeui/checkbox",

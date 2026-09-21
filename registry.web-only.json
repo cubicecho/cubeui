@@ -39,6 +39,9 @@
           "path": "registry/web/app-form.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "@tanstack/react-form@^1.33.5"
       ]
     },
     {
@@ -141,6 +144,10 @@
           "path": "registry/web/date-picker.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "date-fns@^4.4.0",
+        "lucide-react@^1.34.0"
       ]
     },
     {
@@ -175,6 +182,9 @@
           "path": "registry/web/disclosure-row.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "lucide-react@^1.34.0"
       ]
     },
     {
@@ -190,6 +200,9 @@
           "path": "registry/web/ui/empty.tsx",
           "type": "registry:ui"
         }
+      ],
+      "dependencies": [
+        "class-variance-authority@^0.7.1"
       ]
     },
     {
@@ -223,6 +236,9 @@
           "path": "registry/web/form-field.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "lucide-react@^1.34.0"
       ]
     },
     {
@@ -271,6 +287,10 @@
           "path": "registry/web/ui/item.tsx",
           "type": "registry:ui"
         }
+      ],
+      "dependencies": [
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
       ]
     },
     {
@@ -309,6 +329,9 @@
           "path": "registry/web/multi-select.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "lucide-react@^1.34.0"
       ]
     },
     {
@@ -407,6 +430,9 @@
           "path": "registry/web/password-input.tsx",
           "type": "registry:component"
         }
+      ],
+      "dependencies": [
+        "lucide-react@^1.34.0"
       ]
     },
     {

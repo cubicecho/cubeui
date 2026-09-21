@@ -4,7 +4,6 @@
   "title": "Calendar",
   "description": "A month of single-date selection: react-day-picker on web, a date-fns grid on device.",
   "dependencies": [
-    "date-fns@^4.4.0",
     "react-day-picker@^10.0.1"
   ],
   "registryDependencies": [

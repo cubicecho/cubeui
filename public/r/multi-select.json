@@ -3,6 +3,9 @@
   "name": "multi-select",
   "title": "Multi Select",
   "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.",
+  "dependencies": [
+    "lucide-react@^1.34.0"
+  ],
   "registryDependencies": [
     "@cubeui/badge",
     "@cubeui/button",

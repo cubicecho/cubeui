@@ -3,6 +3,9 @@
   "name": "empty",
   "title": "Empty",
   "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place.",
+  "dependencies": [
+    "class-variance-authority@^0.7.1"
+  ],
   "registryDependencies": [
     "@cubeui/utils"
   ],

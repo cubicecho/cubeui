@@ -31,22 +31,45 @@
  * `npm run compile` writes it and `compile:check` fails if it is stale.
  */
 
-import { basename } from "node:path";
+import { readFileSync } from "node:fs";
+import { basename, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { isSource, packageName, packagesIn } from "../imports.mjs";
+
+const root = fileURLToPath(new URL("../..", import.meta.url));
 
 /**
- * Packages only an Expo app needs. Everything else an item declares is kept, including the ones only
- * its web half uses — `radix-ui`, `react-day-picker` — because in the web registry that half is the
- * whole item.
+ * The packages an item's *web* files import, which is what the web half of it declares.
+ *
+ * Computed rather than listed, and that is the point. The hand-written version of this was a
+ * `NATIVE_ONLY` set — `nativewind`, `react-native-svg`, the `expo-*` pair — subtracted from
+ * whatever the item declared. It answered the question it was asked and missed the one it was
+ * not: `calendar` declared `date-fns@^4.4.0` for the hand-written native calendar, `date-fns`
+ * is not native-only, and so the web half went on asking every DOM consumer to install a date
+ * library its `react-day-picker` calendar never imports.
+ *
+ * The subtraction was also the wrong shape. "Which packages does React Native need" is a fact
+ * about npm that a list here has to keep up with; "which packages does this file import" is a
+ * fact about the file, and the file is right here. So the web dependency list is filtered to
+ * what the web files actually reach for, and a package drops out of it by no longer being
+ * imported rather than by being remembered.
+ *
+ * `registry.json` is the union of both halves as a result — every package either half imports,
+ * each with its range — and each registry is that union narrowed to itself. Rule 7 of
+ * `check-registry-build.mjs` is the assertion that the narrowing came out exact, on both sides.
  */
-const NATIVE_ONLY = new Set([
-  "expo-document-picker",
-  "expo-file-system",
-  "lucide-react-native",
-  "nativewind",
-  "react-native-css",
-  "react-native-safe-area-context",
-  "react-native-svg",
-]);
+function webPackages(files, emitted) {
+  const used = new Set();
+  for (const file of files) {
+    if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
+    // A compiled file's text is the transform's output, which is the only place it exists — it
+    // is what the consumer installs, and its imports are not the React Native source's.
+    const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
+    const text = compiled ?? readFileSync(join(root, file.path), "utf8");
+    for (const name of packagesIn(text)) used.add(name);
+  }
+  return used;
+}
 
 /**
  * Files that exist only to serve React Native, and so are not in the web half of the item that
@@ -68,9 +91,6 @@ const DESCRIPTIONS = {
     "The palette as a Tailwind stylesheet, emitted from the same source as the native one so the " +
     "two cannot drift.",
 };
-
-/** `nativewind@^5.0.0-rc.0` -> `nativewind`. */
-const packageName = (spec) => spec.replace(/@[\^~><=\d].*$/, "");
 
 /**
  * Where an item's file comes from in the web registry.
@@ -147,7 +167,8 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
 
     const next = { ...item, files };
     if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
-    const deps = (item.dependencies ?? []).filter((d) => !NATIVE_ONLY.has(packageName(d)));
+    const used = webPackages(files, emitted);
+    const deps = (item.dependencies ?? []).filter((d) => used.has(packageName(d)));
     if (deps.length) next.dependencies = deps;
     else delete next.dependencies;
     items.push(next);

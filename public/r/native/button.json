@@ -4,7 +4,8 @@
   "title": "Button",
   "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
   "dependencies": [
-    "class-variance-authority@^0.7.1"
+    "class-variance-authority@^0.7.1",
+    "radix-ui@^1.6.7"
   ],
   "registryDependencies": [
     "@cubeui/utils",

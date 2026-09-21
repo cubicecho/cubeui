@@ -1,4 +1,4 @@
-// Six things that have to be true before a built registry is installable.
+// Seven things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -69,10 +69,51 @@
 // `compiled/` already treats its own version of this as garbage and deletes it. This cannot,
 // because `public/` is committed, so it reports and the fix is `git rm`.
 //
+// ## 7. An item declares exactly the packages its own files import
+//
+// Rule 3 checks that a declared dependency carries a range. This checks that the list is the
+// right list, in both directions, and both directions shipped here before it existed.
+//
+// *Undeclared.* `button.tsx` imports `radix-ui` for `Slot`, and `registry.json` said only
+// `class-variance-authority`. The CLI installs what the item declares and copies the file either
+// way, so the consumer ends up with a file importing a package that is not in their tree — and
+// the failure is a resolve error at import time, in a file they did not write, naming a package
+// they never asked for. `badge` did the same with `class-variance-authority`, and eight of the
+// ported web-only shells declared nothing at all.
+//
+// *Unimported.* The mirror, and the more expensive one, because it succeeds. `calendar` declared
+// `date-fns` on both halves; only the native calendar uses it, the web half is `react-day-picker`,
+// and so every DOM consumer installed a date library nothing imports. Nothing fails, so nothing
+// says so — it is only visible by reading the `package.json` that comes out of an install.
+//
+// The two registries hold different files for the same item name, so this is asked of each on its
+// own, against the `content` that actually shipped. `registry.json` is the union of both halves
+// and each registry narrows it; this is the assertion that the narrowing came out exact.
+//
+// A `.test.ts` is exempt. `readable-text-color` ships its tests on purpose, and the runner they
+// import is the consumer's to choose — declaring `vitest` would install a test framework into an
+// app that may not use one.
+//
+// *Peers.* An import is not the only way a package reaches the consumer. `icons` imports
+// `lucide-react-native`, which lists `react-native-svg` as a required *peer* — npm does not
+// install a peer, so the item installed into an Expo app that then could not draw a single icon,
+// and `icons` is a dependency of most of this registry. `nativewind` did the same with
+// `react-native-css` and `tailwindcss`; the first of those is what made the install test's own
+// `npx expo install` fail with ERESOLVE before any of this was visible.
+//
+// So an item also declares the required peers of whatever it declares, and those peers are exempt
+// from the "no file imports it" half above — nothing imports `react-native-svg` here, and it still
+// has to be in the consumer's tree. An optional peer is not required and is left alone.
+//
+// It also checks that a package declared by more than one item carries the *same* range in all of
+// them. Two items asking for two ranges of one package is a single install whose result depends on
+// which item the consumer added last.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { isSource, packageName, packagesIn } from "./imports.mjs";
 
 // Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
 // one; they hold the same item names on purpose, and the checks below run over each on its own,
@@ -86,12 +127,49 @@ const SOURCES = "registry";
 // registries answer to this one string; the consumer's URL behind it is what picks a platform.
 const NAMESPACE = "@cubeui";
 
+/**
+ * The packages `name` requires alongside itself.
+ *
+ * Read from this repo's own `node_modules`, which is the only copy of that fact there is — a peer
+ * range lives in the dependency's manifest and nowhere in this registry. A package this repo does
+ * not have installed is skipped rather than guessed at; it would have to be a devDependency here
+ * to typecheck anything that uses it, so in practice the lookup succeeds.
+ */
+/**
+ * Packages the consumer has before it installs anything from here, and which therefore satisfy a
+ * peer without any item declaring it.
+ *
+ * The framework itself — `react` with `react-native` in an Expo app, `react` with `react-dom` in a
+ * DOM one — plus the two that arrive inside `expo`. `@expo/metro-config` is a direct dependency of
+ * `expo` and brings `lightningcss` with it, which is how `react-native-css` finds both; asking an
+ * app to install its own copy of its own bundler's config would be worse than the gap.
+ */
+const PROVIDED = new Set([
+  "react",
+  "react-native",
+  "react-dom",
+  "expo",
+  "@expo/metro-config",
+  "lightningcss",
+]);
+
+async function requiredPeers(name) {
+  const manifest = await readFile(`node_modules/${name}/package.json`, "utf8").catch(() => null);
+  if (manifest === null) return [];
+  const pkg = JSON.parse(manifest);
+  const meta = pkg.peerDependenciesMeta ?? {};
+  return Object.keys(pkg.peerDependencies ?? {}).filter((peer) => !meta[peer]?.optional);
+}
+
 const collisions = [];
 const unreachable = [];
 const orphans = [];
 const unpinned = [];
 const drift = [];
 const empties = [];
+const mismatched = [];
+const ranges = [];
+const peerless = [];
 let checked = 0;
 
 /** `input.web.tsx` and `input-base.ts` are both the `input` item. */
@@ -186,6 +264,7 @@ for (const dir of dirs) {
 
 for (const built of BUILT) {
   const basenames = new Map();
+  const pinned = new Map();
   const present = new Set();
   const wanted = [];
 
@@ -218,6 +297,50 @@ for (const built of BUILT) {
       if (!dependency.slice(1).includes("@")) {
         unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
       }
+      const name = packageName(dependency);
+      const seenRange = pinned.get(name);
+      if (seenRange && seenRange.spec !== dependency) {
+        ranges.push(
+          `${built}: "${seenRange.from}" wants \`${seenRange.spec}\` and ` +
+            `"${item.name}" wants \`${dependency}\``,
+        );
+      } else if (!seenRange) {
+        pinned.set(name, { spec: dependency, from: item.name });
+      }
+    }
+
+    // Rule 7. What the item's own files reach for, against what it tells the CLI to install.
+    const imported = new Set();
+    for (const file of item.files ?? []) {
+      if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
+      for (const name of packagesIn(file.content ?? "")) imported.add(name);
+    }
+    const declared = (item.dependencies ?? []).map(packageName);
+    for (const name of imported) {
+      if (declared.includes(name)) continue;
+      mismatched.push(`${built}: "${item.name}" imports \`${name}\` and does not declare it`);
+    }
+
+    // A required peer of something declared belongs in the list too, and is not expected to be
+    // imported by anything here — `react-native-svg` is what draws every lucide icon and appears
+    // in no source file in this repo.
+    const peers = new Set();
+    for (const name of declared) {
+      for (const peer of await requiredPeers(name)) {
+        if (PROVIDED.has(peer)) continue;
+        peers.add(peer);
+        if (!declared.includes(peer)) {
+          peerless.push(
+            `${built}: "${item.name}" declares \`${name}\`, which requires \`${peer}\` — ` +
+              "and no item declares that",
+          );
+        }
+      }
+    }
+
+    for (const name of declared) {
+      if (imported.has(name) || peers.has(name)) continue;
+      mismatched.push(`${built}: "${item.name}" declares \`${name}\` and no file imports it`);
     }
 
     for (const file of item.files ?? []) {
@@ -316,13 +439,52 @@ if (orphans.length > 0) {
   );
 }
 
+if (mismatched.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length > 0 ? "\n" : ""}An item's dependencies are not the ones its files import:\n`,
+  );
+  for (const one of mismatched) console.error(`  ${one}`);
+  console.error(
+    "\nThe CLI installs what the item declares and copies the files either way, so an undeclared" +
+      "\nimport reaches the consumer as a resolve error in a file they did not write — and a" +
+      "\ndeclared package nothing imports installs silently and forever. `registry.json` is the" +
+      "\nunion of both halves; each registry narrows it to the files that registry ships.",
+  );
+}
+
+if (peerless.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length > 0 ? "\n" : ""}A required peer reaches no consumer:\n`,
+  );
+  for (const one of peerless) console.error(`  ${one}`);
+  console.error(
+    "\nnpm does not install a peer dependency. `icons` declared `lucide-react-native` and not its" +
+      "\n`react-native-svg` peer, so it installed into an Expo app that could then draw no icon at" +
+      "\nall — and nothing failed to say so. Declare the peer on the item that declares the package.",
+  );
+}
+
+if (ranges.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length > 0 ? "\n" : ""}One package, two version ranges:\n`,
+  );
+  for (const one of ranges) console.error(`  ${one}`);
+  console.error(
+    "\nA consumer installing both items runs one install, and which range wins depends on which" +
+      "\nitem they added last. Pick one range and use it in every item that names the package.",
+  );
+}
+
 if (
   collisions.length +
     drift.length +
     unpinned.length +
     empties.length +
     unreachable.length +
-    orphans.length >
+    orphans.length +
+    mismatched.length +
+    peerless.length +
+    ranges.length >
   0
 ) {
   process.exit(1);
@@ -333,6 +495,7 @@ console.log(
   `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
     `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
     "names, every platform pair exports the same set, every npm dependency carries a version " +
-    `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, and ` +
-    "every built item file is still listed by the index beside it.",
+    `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
+    "every built item file is still listed by the index beside it, and every item declares exactly " +
+    "the packages its own files import plus their required peers, at one range per package.",
 );

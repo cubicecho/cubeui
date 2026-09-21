@@ -4,9 +4,12 @@
   "title": "Icons",
   "description": "The icon set, per-icon imports on native and a tree-shaken barrel on web, with the context that gives native icons a colour to inherit.",
   "dependencies": [
-    "lucide-react@^1.34.0",
     "lucide-react-native@^1.34.0",
-    "nativewind@^5.0.0-rc.0"
+    "lucide-react@^1.34.0",
+    "nativewind@^5.0.0-rc.0",
+    "react-native-css@3.1.0-rc.0",
+    "react-native-svg@^15.13.0",
+    "tailwindcss@^4.3.3"
   ],
   "registryDependencies": [
     "@cubeui/utils"

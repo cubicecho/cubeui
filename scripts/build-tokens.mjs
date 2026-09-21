@@ -130,7 +130,7 @@ export type Palette = Record<ColorName, string>;
  * the stylesheet together. It is *not* a \`.dark\` class on a wrapper: that is the web
  * mechanism, and on native it silently styles nothing.
  */
-export const paletteFor = (scheme /*: "light" | "dark" | null | undefined */) =>
+export const paletteFor = (scheme: "light" | "dark" | null | undefined): Palette =>
   scheme === "dark" ? dark : light;
 `;
 };
