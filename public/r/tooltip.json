@@ -4,6 +4,7 @@
   "title": "Tooltip",
   "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

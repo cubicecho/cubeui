@@ -4,6 +4,7 @@
   "title": "Select",
   "description": "A radix listbox under its trigger on web; the options in a Modal sheet on device, which is what every native platform does.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

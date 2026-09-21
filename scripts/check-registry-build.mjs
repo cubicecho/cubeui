@@ -103,7 +103,27 @@
 //
 // So an item also declares the required peers of whatever it declares, and those peers are exempt
 // from the "no file imports it" half above — nothing imports `react-native-svg` here, and it still
-// has to be in the consumer's tree. An optional peer is not required and is left alone.
+// has to be in the consumer's tree.
+//
+// An *optional* peer has to be declared too, which is the part that reads wrong until it bites.
+// npm installs an optional peer when it can, and an unpinned one floats to its newest version:
+// `radix-ui` optionally peers `@types/react-dom@*`, npm takes 19.3.0, and 19.3.0 requires
+// `@types/react@^19.3.0`. An app whose lockfile holds `@types/react` at 19.2.x — which is every
+// Expo 57 app with a committed `package-lock.json` — then fails the install outright with
+// ERESOLVE, and the half it was failing to install is the `.web.tsx` half that makes Expo Web
+// work. Declaring `@types/react-dom@~19.2.0` is what lets `shadcn add` run there without
+// `--legacy-peer-deps`.
+//
+// The tilde is the point and `^19.2.0` does not work: a caret still admits 19.3.0, npm still
+// takes it, and the conflict is unchanged. This is a pin on a minor line and it needs moving
+// when the Expo SDK's own `@types/react` moves — `npm run registry:check` says so when the peer
+// stops resolving, and that is the whole reason this rule reads the real manifests.
+//
+// It goes in `dependencies`, not `devDependencies`, which is not where it belongs: the shadcn
+// CLI builds the Expo path's dev flag as a single malformed argument — `npx expo install
+// '-- -D' -- '@types/react-dom@...'` — and `expo install` rejects it, so `devDependencies` does
+// not install at all for an Expo consumer. A type package in `dependencies` is inert; a registry
+// item that cannot install is not.
 //
 // It also checks that a package declared by more than one item carries the *same* range in all of
 // them. Two items asking for two ranges of one package is a single install whose result depends on
@@ -128,7 +148,7 @@ const SOURCES = "registry";
 const NAMESPACE = "@cubeui";
 
 /**
- * The packages `name` requires alongside itself.
+ * The packages `name` wants alongside itself, and whether each one is optional.
  *
  * Read from this repo's own `node_modules`, which is the only copy of that fact there is — a peer
  * range lives in the dependency's manifest and nowhere in this registry. A package this repo does
@@ -151,14 +171,20 @@ const PROVIDED = new Set([
   "expo",
   "@expo/metro-config",
   "lightningcss",
+  // Any app with a `.tsx` in it already has this, and both an Expo app and a DOM one pin their
+  // own — Expo 57 to `~19.2`. Declaring a second range is how the conflict above starts.
+  "@types/react",
 ]);
 
-async function requiredPeers(name) {
+async function peersOf(name) {
   const manifest = await readFile(`node_modules/${name}/package.json`, "utf8").catch(() => null);
   if (manifest === null) return [];
   const pkg = JSON.parse(manifest);
   const meta = pkg.peerDependenciesMeta ?? {};
-  return Object.keys(pkg.peerDependencies ?? {}).filter((peer) => !meta[peer]?.optional);
+  return Object.keys(pkg.peerDependencies ?? {}).map((peer) => ({
+    peer,
+    optional: Boolean(meta[peer]?.optional),
+  }));
 }
 
 const collisions = [];
@@ -291,7 +317,7 @@ for (const built of BUILT) {
       wanted.push({ from: item.name, dependency });
     }
 
-    for (const dependency of item.dependencies ?? []) {
+    for (const dependency of [...(item.dependencies ?? []), ...(item.devDependencies ?? [])]) {
       // A scoped name is `@scope/name`, so the `@` that separates the range is
       // never the first character.
       if (!dependency.slice(1).includes("@")) {
@@ -315,7 +341,11 @@ for (const built of BUILT) {
       if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
       for (const name of packagesIn(file.content ?? "")) imported.add(name);
     }
-    const declared = (item.dependencies ?? []).map(packageName);
+    // `devDependencies` is where an optional peer goes — `@types/react-dom` is not a runtime
+    // dependency — so both lists count as "declared" for every question below.
+    const declared = [...(item.dependencies ?? []), ...(item.devDependencies ?? [])].map(
+      packageName,
+    );
     for (const name of imported) {
       if (declared.includes(name)) continue;
       mismatched.push(`${built}: "${item.name}" imports \`${name}\` and does not declare it`);
@@ -326,15 +356,14 @@ for (const built of BUILT) {
     // in no source file in this repo.
     const peers = new Set();
     for (const name of declared) {
-      for (const peer of await requiredPeers(name)) {
+      for (const { peer, optional } of await peersOf(name)) {
         if (PROVIDED.has(peer)) continue;
         peers.add(peer);
-        if (!declared.includes(peer)) {
-          peerless.push(
-            `${built}: "${item.name}" declares \`${name}\`, which requires \`${peer}\` — ` +
-              "and no item declares that",
-          );
-        }
+        if (declared.includes(peer)) continue;
+        peerless.push(
+          `${built}: "${item.name}" declares \`${name}\`, which ` +
+            `${optional ? "optionally peers" : "requires"} \`${peer}\` — and it is declared nowhere`,
+        );
       }
     }
 
@@ -458,9 +487,12 @@ if (peerless.length > 0) {
   );
   for (const one of peerless) console.error(`  ${one}`);
   console.error(
-    "\nnpm does not install a peer dependency. `icons` declared `lucide-react-native` and not its" +
-      "\n`react-native-svg` peer, so it installed into an Expo app that could then draw no icon at" +
-      "\nall — and nothing failed to say so. Declare the peer on the item that declares the package.",
+    "\nnpm does not install a required peer, and floats an optional one to its newest version." +
+      "\n`icons` declared `lucide-react-native` without `react-native-svg`, so it installed into an" +
+      "\nExpo app that could then draw no icon at all. `radix-ui` optionally peers `@types/react-dom`," +
+      "\nwhose newest wants an `@types/react` ahead of the one Expo pins, which fails the install" +
+      "\noutright. Declare it on the item that declares the package — an optional peer in" +
+      "\n`devDependencies`, a required one in `dependencies`.",
   );
 }
 

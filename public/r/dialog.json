@@ -4,6 +4,7 @@
   "title": "Dialog",
   "description": "A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

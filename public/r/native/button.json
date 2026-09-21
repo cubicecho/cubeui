@@ -4,6 +4,7 @@
   "title": "Button",
   "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "class-variance-authority@^0.7.1",
     "radix-ui@^1.6.7"
   ],

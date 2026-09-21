@@ -4,6 +4,7 @@
   "title": "Tabs",
   "description": "Radix on web; a row of Pressables over a context on device. Uncontrolled on both.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

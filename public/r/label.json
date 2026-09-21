@@ -4,6 +4,7 @@
   "title": "Label",
   "description": "A caption for a control. Radix on web so clicking it focuses the control; plain text on native, where that association does not exist.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

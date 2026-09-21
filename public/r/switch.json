@@ -4,6 +4,7 @@
   "title": "Switch",
   "description": "Radix on web; a Pressable track with a moving thumb on device, rather than RN's Switch, whose raw colour props would not follow the theme.",
   "dependencies": [
+    "@types/react-dom@~19.2.0",
     "radix-ui@^1.6.7"
   ],
   "registryDependencies": [

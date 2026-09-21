@@ -80,7 +80,11 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
-      "dependencies": ["class-variance-authority@^0.7.1", "radix-ui@^1.6.7"],
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
+      ],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -176,7 +180,7 @@
       "type": "registry:ui",
       "title": "Label",
       "description": "A caption for a control. Radix on web so clicking it focuses the control; plain text on native, where that association does not exist.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -211,7 +215,7 @@
       "type": "registry:ui",
       "title": "Dialog",
       "description": "A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -229,7 +233,7 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "Radix anchored to its trigger on web; a centred native sheet on device, because anchoring is a pointer-era affordance.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -247,7 +251,7 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "A radix listbox under its trigger on web; the options in a Modal sheet on device, which is what every native platform does.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -265,7 +269,7 @@
       "type": "registry:ui",
       "title": "Switch",
       "description": "Radix on web; a Pressable track with a moving thumb on device, rather than RN's Switch, whose raw colour props would not follow the theme.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -283,7 +287,7 @@
       "type": "registry:ui",
       "title": "Tabs",
       "description": "Radix on web; a row of Pressables over a context on device. Uncontrolled on both.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -301,7 +305,7 @@
       "type": "registry:ui",
       "title": "Tooltip",
       "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
-      "dependencies": ["radix-ui@^1.6.7"],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -442,7 +446,11 @@
       "type": "registry:ui",
       "title": "Form",
       "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms.",
-      "dependencies": ["@tanstack/react-form@^1.33.5", "radix-ui@^1.6.7"],
+      "dependencies": [
+        "@tanstack/react-form@^1.33.5",
+        "@types/react-dom@~19.2.0",
+        "radix-ui@^1.6.7"
+      ],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
@@ -897,7 +905,11 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": ["class-variance-authority@^0.7.1", "radix-ui@^1.6.7"]
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
+      ]
     },
     {
       "name": "layout",
