@@ -38,6 +38,23 @@ const OUT = join(root, "compiled");
 const SOURCES = ["registry/ui", "registry/layout"];
 
 /**
+ * Web-only items: hand-written DOM components with no React Native half at all.
+ *
+ * This is the third of the three classes the plan names — universal, native-only, web-only — and it
+ * is where cubeui's shells live. `split-layout` is CSS grid tracks driven by a custom property,
+ * `page-header` is `max-w-(--breakpoint-2xl)` and `[&_svg]:size-5`; Yoga has no grid and NativeWind
+ * has no arbitrary variants, so there is nothing to author natively and nothing for the compiler to
+ * transform. They are copied into `compiled/` verbatim, exactly like a `.web.tsx` override.
+ *
+ * The directory *is* the declaration. A `.web.tsx` inside `registry/ui` or `registry/layout` must
+ * have a `.tsx` beside it — that rule is what catches a native half that was deleted or never
+ * written — so a web-only item cannot live there without either weakening the rule or carrying a
+ * marker field that has to be kept honest. Its own directory needs neither: every file in it is
+ * web-only because of where it is.
+ */
+const WEB_ONLY = "registry/web";
+
+/**
  * `registry/lib` is not a component directory, and only the files in it that reach for React Native
  * need a web half at all. `utils.ts` does: `HOVER_REVEAL` is gated on `Platform.OS`, which folds to
  * a constant here and takes the `react-native` import with it. The rest — `color.ts`,
@@ -86,6 +103,15 @@ function items() {
   for (const rel of LIB) {
     const file = basename(rel);
     found.push({ name: basename(file, ".ts"), kind: "compile", rel, out: file });
+  }
+  for (const file of readdirSync(join(root, WEB_ONLY)).sort()) {
+    if (!file.endsWith(".tsx")) continue;
+    found.push({
+      name: basename(file, ".tsx"),
+      kind: "passthrough",
+      rel: `${WEB_ONLY}/${file}`,
+      out: file,
+    });
   }
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir)).sort()) {
@@ -178,7 +204,8 @@ for (const file of stale) {
 // why there are two and why the item names are the same in both.
 const WEB_REGISTRY = join(root, "registry.web.json");
 const source = JSON.parse(readFileSync(join(root, "registry.json"), "utf8"));
-const { registry: web, dropped } = deriveWebRegistry(source, emitted);
+const webOnly = JSON.parse(readFileSync(join(root, "registry.web-only.json"), "utf8"));
+const { registry: web, dropped } = deriveWebRegistry(source, webOnly, emitted);
 // Through biome for the same reason the `.tsx` output is: `--check` has to compare what this writes
 // against what the repo's formatter would leave behind, or every file drifts the moment it is
 // tidied.
@@ -203,7 +230,7 @@ console.log(
     `${refusals.length} refused${check ? `, ${drift} drifted, ${stale.length} stale` : ""}.`,
 );
 console.log(
-  `registry.web.json: ${web.items.length} of ${source.items.length} items` +
+  `registry.web.json: ${web.items.length} of ${source.items.length + webOnly.items.length} items` +
     `${dropped.length ? ` — no web half for ${dropped.join(", ")}` : ""}.`,
 );
 

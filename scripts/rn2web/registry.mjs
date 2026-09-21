@@ -108,12 +108,20 @@ function webPath(path, emitted) {
   return path;
 }
 
-/** The web registry, as an object ready to be written. */
-export function deriveWebRegistry(registry, emitted) {
+/**
+ * The web registry, as an object ready to be written.
+ *
+ * Two inputs, because there are two ways an item can reach the DOM. Most are *derived*: they exist
+ * natively, and the compiler produced a web half for them. The rest are *declared* in
+ * `registry.web-only.json` — cubeui's shells, which have no native half to derive from. Only the
+ * second list is hand-maintained, and it stays short by construction: an item belongs on it only if
+ * it cannot be authored in React Native at all.
+ */
+export function deriveWebRegistry(registry, webOnly, emitted) {
   const items = [];
   const dropped = [];
 
-  for (const item of registry.items) {
+  for (const item of [...registry.items, ...webOnly.items]) {
     const files = [];
     let drop = false;
 
@@ -162,7 +170,7 @@ export function deriveWebRegistry(registry, emitted) {
     registry: {
       $schema: registry.$schema,
       name: registry.name,
-      homepage: `${registry.homepage}/web`,
+      homepage: registry.homepage,
       items,
     },
     dropped: dropped.sort(),
