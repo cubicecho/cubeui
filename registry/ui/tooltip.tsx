@@ -24,6 +24,7 @@ import {
 import { Pressable, Text, View } from "react-native";
 import {
   TOOLTIP_CONTENT_CLASS,
+  TOOLTIP_SIDE_CLASS,
   TOOLTIP_TEXT_CLASS,
   type TooltipContentProps,
   type TooltipProps,
@@ -39,7 +40,13 @@ const TooltipContext = createContext<TooltipState>({
   setOpen: () => {},
 });
 
-/** Nothing to provide on native; kept so call sites need not branch. */
+/**
+ * Nothing to provide on native; kept so call sites need not branch.
+ *
+ * `delayDuration` and `skipDelayDuration` are accepted and ignored. They describe
+ * hover timing, and there is no hover here — the delay a touch user experiences is
+ * the long press itself, which the platform already times.
+ */
 function TooltipProvider({ children }: TooltipProviderProps) {
   return children;
 }
@@ -67,7 +74,7 @@ function TooltipTrigger({ asChild, children }: TooltipTriggerProps) {
 /** How long the bubble stays up before dismissing itself. */
 const VISIBLE_MS = 2500;
 
-function TooltipContent({ className, children }: TooltipContentProps) {
+function TooltipContent({ side = "top", className, children }: TooltipContentProps) {
   const { open, setOpen } = useContext(TooltipContext);
 
   useEffect(() => {
@@ -79,7 +86,7 @@ function TooltipContent({ className, children }: TooltipContentProps) {
   if (!open) return null;
   return (
     <View
-      className={cn("absolute bottom-full z-50 mb-1 self-center", TOOLTIP_CONTENT_CLASS, className)}
+      className={cn("absolute z-50", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}
       pointerEvents="none"
     >
       <Text className={TOOLTIP_TEXT_CLASS}>{children}</Text>

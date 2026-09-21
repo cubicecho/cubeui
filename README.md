@@ -14,12 +14,17 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 41 items, pipeline green |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 43 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — all 39 files have a web half, all 42 items published |
+| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
+| 4 | cubeui's own items ported in as the web-only tier | **done** — 28 web-only items, cubeui fully covered |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
+
+**This repo is cubeui's `next` branch.** The web registry is published at the URL cubeui's ten DOM
+consumers already map, so the flip is a merge rather than a migration — see
+[Stage 4](#stage-4--cubeuis-own-items-the-web-only-tier).
 
 ## Stage 1 — tokens
 
@@ -70,6 +75,10 @@ files it needs: `card` is a single file, `input` is three (`input-base.ts` + `in
 `input.web.tsx`). `tsconfig.json`'s `paths` deliberately mirror where the CLI actually puts each file
 in a consumer's tree, so an import that typechecks here is the import the consumer gets.
 
+The **web-only** tier — cubeui's shells — is declared separately in `registry.web-only.json` and
+lives in `registry/web/`; see [Stage 4](#stage-4--cubeuis-own-items-the-web-only-tier). This table is
+the React Native set.
+
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
@@ -80,6 +89,7 @@ in a consumer's tree, so an import that typechecks here is the import the consum
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `page`, `detail-page`, `detail-header`, `section-heading` |
+| docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
@@ -152,7 +162,7 @@ over HTTP, point a throwaway project's `components.json` at it, and `shadcn add`
 python3 -m http.server 8731 --directory public   # in this repo
 
 # in a scratch DOM project, "@cubeui": "http://localhost:8731/r/{name}.json"
-npx shadcn@latest add @cubeui/form @cubeui/page @cubeui/tokens --yes
+npx shadcn@latest add @cubeui/form-set @cubeui/page-layout @cubeui/tokens --yes
 
 # in a scratch Expo project, "@cubeui": "http://localhost:8731/r/native/{name}.json"
 npx shadcn@latest add @cubeui/page @cubeui/select @cubeui/toast @cubeui/tokens --yes
@@ -245,10 +255,10 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **All 39 files have a web half — 26 generated, 13
-hand-written** — and `registry.web.json`, derived from `registry.json` in the same run, publishes
-**all 42 items**. `scripts/rn2web/` is about 1400 lines, of which `tables.mjs` is all
-of the judgement and `compile.mjs` is the ts-morph that applies it.
+react-native-web anywhere in the output. **Every file has a web half — 26 generated, 37
+hand-written** — and `registry.web.json`, derived from `registry.json` and `registry.web-only.json`
+in the same run, publishes **all 71 items**. `scripts/rn2web/` is about 1400 lines, of which
+`tables.mjs` is all of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
 the spike's assertions became the compiler's regression test without anything being rewritten.
@@ -399,6 +409,101 @@ the compiled tree writes `role="checkbox"` on a `<button>`, and `<fieldset>` whe
 is no `<input>` on a phone, so those patterns are built from a `Pressable` and a role. Every other
 a11y rule stays on, and they earn more here than anywhere else in the repo, because a generated file
 is the one nobody reads — the toast is the proof.
+
+## Stage 4 — cubeui's own items, the web-only tier
+
+cubeui's 28 items are now here, and with them this registry covers everything cubeui published. They
+are the plan's **third class**: web-only, hand-written, no React Native half and nothing for the
+compiler to do. `SplitLayout` is CSS grid tracks driven by a custom property, `PageHeader` is
+`max-w-(--breakpoint-2xl)` and `[&_svg]:size-5`; Yoga has no grid and NativeWind has no arbitrary
+variants, so there was never an RN source for these to come from.
+
+| Class | Files | Declared by | Example |
+|---|---|---|---|
+| universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
+| native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `SplitLayout`, `PageHeader`, `FormField` |
+
+**The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
+it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
+without either weakening the rule or carrying a marker field that has to be kept honest.
+`registry/web/` needs neither: every file in it is web-only because of where it is, and
+`registry/web/ui/` mirrors `registry:ui` vs `registry:component` so `item` still installs to
+`components/ui/` where cubeui's consumers already have it.
+
+### The port was an API reconciliation, not a copy
+
+This is the part worth reading before the next one of these. cubeui's shells were written against
+**radix's and shadcn's full prop surface**; this registry's primitives are RN-derived and narrower,
+because a `Pressable` honours none of `ComponentProps<"button">`. So roughly a dozen primitives had
+to be **widened on both halves** before a single shell would typecheck — `select`, `card`, `field`,
+`dialog`, `popover`, `tooltip`, `input`, `checkbox`, `switch`, `button`, `color-picker`, `calendar`.
+
+The governing rule was that **the RN vocabulary wins**: a ported shell is rewritten to it
+(`onChangeText`, not a DOM `onChange`; `backgroundColor`, not a `style` object), rather than the
+primitive being widened to accept a DOM shape it cannot honour. What *was* added on both halves is
+the list of genuine capability gaps the port found:
+
+| Gap | Filled with |
+|---|---|
+| `Select` had no grouping | `SelectGroup`, `SelectLabel`, `SelectSeparator` |
+| `Card` had no trailing header slot | `CardAction` — absolute on native, `col-start-2` on web |
+| `Dialog` could not be opened by its own child | `DialogTrigger`, and `onEscapeKeyDown` wired to Android back |
+| `Popover` was controlled-only | `defaultOpen`, and uncontrolled state on the native half |
+| `Tooltip` had no placement | `side`, and a shared `TOOLTIP_SIDE_CLASS` map |
+| `Input` could not be a password, a time or a colour | `InputType` widened, plus `inputMode` |
+| `Calendar` was single-date only | **a native range implementation**: matchers, disabled days, multi-month |
+
+The calendar is the one that was real work rather than a prop: `calendar-base.ts` now declares
+`DateRange` and `DateMatcher` itself, discriminated on `mode`, so the shared type does not come from
+react-day-picker — a library only one platform has — and `date-picker` no longer type-depends on it.
+`calendar.tsx` evaluates the matchers and draws the range; `calendar.web.tsx` passes both branches
+through to `DayPicker`.
+
+### Two names that could not come across unchanged
+
+- **`form` → `form-set`.** cubeui's `form` is a bundle of the eight bound-field items; this
+  registry's `form` is the React Native `Form` component. The shadcn CLI resolves a cross-item
+  import by *basename*, so the two cannot share the name. The bundle is `@cubeui/form-set`, and it
+  is the one rename a migrating consumer has to make.
+- **`color-picker`.** cubeui installs it to `components/color-picker.tsx` and this registry to
+  `components/ui/color-picker.tsx`, because here it is a primitive rather than a shell. A consumer
+  flipping over gets a second file rather than an overwrite; delete the old one and fix the import.
+
+### Upstream shadcn, vendored for the typechecker
+
+Five items — `separator`, `skeleton`, `command`, `radio-group`, `alert-dialog` — are upstream
+shadcn's, declared as **bare** `registryDependencies` so the consumer's CLI fetches them from
+ui.shadcn.com. Nothing here ships them. `vendor/shadcn/` holds a copy anyway, for one reason: the
+web half has to typecheck, and `@/components/ui/separator` has to resolve to *something*.
+
+That directory doubles as the compiler's list. An import of a vendored basename is left alone rather
+than rewritten to `./`, because it resolves in the installed tree and not in this one — a name is
+upstream because a file is there, which keeps the two from drifting. Before that rule the compiler
+refused nine items, `item` and `multi-select` among them, on the grounds that a compiled tree cannot
+reach back into a React Native component. `separator` is not one; it is already a DOM component.
+
+### Two tsconfig projects, split by platform
+
+`tsconfig.json` is React Native — `registry/{ui,layout,lib}`, `stories`, `scripts`, `tokens`.
+`tsconfig.web.json` is everything DOM — `compiled/`, `registry/web/`, `vendor/`. They are split by
+**platform, not by directory-under-test**, because `@/components/ui/button` has to mean the compiled
+web half in one and the React Native one in the other.
+
+Leaving `compiled/` in both is how `compiled/multi-select-field.tsx` came to be typechecked against a
+React Native `Badge` — silently, for the whole of stage 3. `npx tsc --explainFiles` is what found it:
+`exclude` does not stop a file being pulled in by an import. The Stage 0 stories need the same split
+at runtime, so `.storybook/main.ts` adds a second `vite-tsconfig-paths` naming `tsconfig.web.json` —
+the framework's own only ever loads a file called `tsconfig.json`.
+
+### The skill
+
+`@cubeui/skill` installs `SKILL.md` plus `layout.md`, `forms.md` and `controls.md` into
+`.claude/skills/cubeui/`, using shadcn's `files[].target` (`~` is the project root there, not
+`$HOME`). It came across with cubeui's three references nearly unchanged — they describe the
+web-only tier, which did not change — and a rewritten `SKILL.md`, because the one thing an agent now
+has to know first is **which half it is in**: the shells are a 404 in an Expo project, and the native
+set is its own smaller vocabulary rather than a port of this one.
 
 ## Commands
 

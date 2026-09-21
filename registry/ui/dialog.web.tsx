@@ -7,7 +7,12 @@
  */
 
 import { Dialog as DialogPrimitive } from "radix-ui";
-import type { DialogProps, DialogSectionProps } from "@/components/ui/dialog-base";
+import type {
+  DialogContentProps,
+  DialogProps,
+  DialogSectionProps,
+  DialogTriggerProps,
+} from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
@@ -19,21 +24,37 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   );
 }
 
-function DialogContent({ className, children }: DialogSectionProps) {
+function DialogTrigger({ asChild, children }: DialogTriggerProps) {
+  return <DialogPrimitive.Trigger asChild={asChild ?? false}>{children}</DialogPrimitive.Trigger>;
+}
+
+function DialogContent({
+  className,
+  showCloseButton = true,
+  onEscapeKeyDown,
+  onInteractOutside,
+  "aria-describedby": describedBy,
+  children,
+}: DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80" />
       <DialogPrimitive.Content
+        {...(onEscapeKeyDown === undefined ? {} : { onEscapeKeyDown })}
+        {...(onInteractOutside === undefined ? {} : { onInteractOutside })}
+        aria-describedby={describedBy}
         className={cn(
           "bg-background text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg",
           className,
         )}
       >
         {children}
-        <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        {showCloseButton ? (
+          <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        ) : null}
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
   );
@@ -73,4 +94,12 @@ function DialogDescription({ className, children }: DialogSectionProps) {
   );
 }
 
-export { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle };
+export {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+};

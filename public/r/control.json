@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "control",
+  "title": "Control Set",
+  "description": "Every cubeui control in one install.",
+  "registryDependencies": [
+    "@cubeui/action-button",
+    "@cubeui/color-picker",
+    "@cubeui/confirm-button",
+    "@cubeui/date-picker",
+    "@cubeui/multi-select",
+    "@cubeui/option-select",
+    "@cubeui/password-input"
+  ],
+  "files": [],
+  "type": "registry:component"
+}

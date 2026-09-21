@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 function Input({
   className,
   type = "text",
+  inputMode,
   value,
   onChangeText,
   onBlur,
@@ -49,6 +50,7 @@ function Input({
       ref={inner}
       id={id}
       type={type}
+      inputMode={inputMode}
       value={value}
       onChange={(e) => onChangeText?.(e.target.value)}
       onBlur={onBlur}

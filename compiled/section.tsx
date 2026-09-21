@@ -14,18 +14,18 @@ import { cn } from "@/lib/utils";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
-  content?: ReactNode;
+  content?: ReactNode | undefined;
   /** The overline. A short noun phrase — "Pomodoro", "Danger zone", "Notifications". */
-  title?: ReactNode;
+  title?: ReactNode | undefined;
   /** One line under the title, in sentence case, on what the group is for. */
-  description?: ReactNode;
+  description?: ReactNode | undefined;
   /** The heading row's far end: an add button, a count, a switch that disables the group. */
-  action?: ReactNode;
+  action?: ReactNode | undefined;
   /** A hairline under the heading. Off by default; on, the group reads as one block. */
-  divider?: boolean;
-  className?: string;
-  titleClassName?: string;
-  contentClassName?: string;
+  divider?: boolean | undefined;
+  className?: string | undefined;
+  titleClassName?: string | undefined;
+  contentClassName?: string | undefined;
 };
 
 /**

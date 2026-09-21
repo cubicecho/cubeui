@@ -1,6 +1,10 @@
+import { resolve } from "node:path";
 import type { StorybookConfig } from "@storybook/react-native-web-vite";
 import tailwind from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 import { reactNativeClassName } from "./rn-classname.ts";
+
+const root = resolve(import.meta.dirname, "..");
 
 const config: StorybookConfig = {
   // Stories live outside `registry/` on purpose, the same reason cubeui's do: a registry source
@@ -37,7 +41,22 @@ const config: StorybookConfig = {
   },
 
   viteFinal: (config) => {
-    config.plugins = [reactNativeClassName(), tailwind(), ...(config.plugins ?? [])];
+    config.plugins = [
+      reactNativeClassName(),
+      tailwind(),
+      // The web project's path aliases, for the Stage 0 stories that render a compiled
+      // component beside the React Native one it came from.
+      //
+      // `@/lib/utils` means two different files depending on which half is asking — the
+      // React Native `registry/lib/utils.ts` or the compiled `compiled/utils.ts` — which is
+      // exactly what two tsconfig projects are for. The framework adds its own
+      // `vite-tsconfig-paths`, but that one only ever loads a file named `tsconfig.json`, so
+      // `tsconfig.web.json` has to be named. Without it a compiled file's `@/lib/utils`
+      // resolves to nothing and the story fails to import, which reads like a broken story
+      // and is a missing project.
+      tsconfigPaths({ projects: [resolve(root, "tsconfig.web.json")] }),
+      ...(config.plugins ?? []),
+    ];
     return config;
   },
 };

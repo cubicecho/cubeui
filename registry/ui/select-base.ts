@@ -13,10 +13,26 @@ import type { ReactNode } from "react";
 export type SelectProps = {
   value: string;
   onValueChange: (value: string) => void;
+  disabled?: boolean | undefined;
   children: ReactNode;
 };
 
+/**
+ * The trigger takes the wiring a bound field hands its control, and nothing else.
+ *
+ * `option-select` was written against `ComponentProps<"button">`, which is every DOM
+ * attribute — none of which a `Pressable` honours. This is the subset that means the
+ * same thing on both platforms: React Native takes `id` and the `aria-*` props as
+ * cross-platform props and react-native-web renders them as the DOM attributes.
+ */
 export type SelectTriggerProps = {
+  id?: string | undefined;
+  disabled?: boolean | undefined;
+  "aria-labelledby"?: string | undefined;
+  "aria-describedby"?: string | undefined;
+  "aria-invalid"?: boolean | undefined;
+  "aria-required"?: boolean | undefined;
+  "aria-label"?: string | undefined;
   className?: string | undefined;
   onBlur?: (() => void) | undefined;
   children: ReactNode;
@@ -38,8 +54,23 @@ export type SelectItemProps = {
   children: ReactNode;
 };
 
+export type SelectGroupProps = {
+  children: ReactNode;
+};
+
+export type SelectLabelProps = {
+  className?: string | undefined;
+  children: ReactNode;
+};
+
+export type SelectSeparatorProps = {
+  className?: string | undefined;
+};
+
 export const SELECT_TRIGGER_CLASS =
   "border-input bg-background h-10 w-full flex-row items-center justify-between rounded-md border px-3 py-2";
 export const SELECT_TRIGGER_TEXT_CLASS = "text-foreground text-sm";
 export const SELECT_ITEM_CLASS = "w-full flex-row items-center rounded-sm py-1.5 pl-8 pr-2";
 export const SELECT_ITEM_TEXT_CLASS = "text-sm text-popover-foreground";
+export const SELECT_LABEL_CLASS = "px-2 py-1.5 text-muted-foreground text-xs";
+export const SELECT_SEPARATOR_CLASS = "-mx-1 my-1 h-px bg-border";

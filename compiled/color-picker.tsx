@@ -38,6 +38,27 @@ export const COLOR_SWATCHES = [
   "#ec4899",
 ] as const;
 
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/**
+ * A typed colour with its `#` put back, and nothing else changed.
+ *
+ * People paste `2563eb` out of a design tool and type `#2563EB` from memory, and both are
+ * the colour they meant. Case is left alone on purpose: the value goes to a database, and a
+ * picker that silently rewrites `#2563EB` to `#2563eb` shows up as a dirty form and an
+ * audit-log entry for an edit nobody made.
+ */
+export function normalizeHex(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed === "") return "";
+  return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
+}
+
+/** Whether a string is a `#rgb` or `#rrggbb` colour. */
+export function isHexColor(value: string): boolean {
+  return HEX.test(value);
+}
+
 type ColorPickerProps = {
   value: string;
   onChange: (color: string) => void;

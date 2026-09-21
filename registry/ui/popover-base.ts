@@ -4,8 +4,8 @@
  * to `popover.web.tsx` on web, so the web file cannot import shared types from
  * `./popover` without importing itself.
  *
- * Narrower than radix's props on purpose: a controlled popover, an `asChild`
- * trigger, and one content pane. That is the shape both platforms can honour —
+ * Narrower than radix's props on purpose: an `asChild` trigger and one content
+ * pane. That is the shape both platforms can honour —
  * everything radix offers beyond it (collision handling, side flipping, nested
  * anchors) has no native counterpart, so exposing it would be a promise only
  * one platform keeps.
@@ -13,8 +13,15 @@
 import type { ReactNode } from "react";
 
 export type PopoverProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  /**
+   * Both optional, together: pass neither and the popover keeps its own open
+   * state. `form-field` opens a hint popover from a trigger and never reads the
+   * state back, and requiring the pair there meant a `useState` at every call
+   * site that existed only to be handed straight back.
+   */
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  defaultOpen?: boolean | undefined;
   children: ReactNode;
 };
 

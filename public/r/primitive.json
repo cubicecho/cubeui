@@ -1,0 +1,12 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "primitive",
+  "title": "Vendored Primitives",
+  "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
+  "registryDependencies": [
+    "@cubeui/empty",
+    "@cubeui/item"
+  ],
+  "files": [],
+  "type": "registry:component"
+}

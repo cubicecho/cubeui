@@ -136,7 +136,11 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
       files.push({ ...file, path });
     }
 
-    if (drop || files.length === 0) {
+    // A bundle item — `control`, `layout`, `primitive` — is `files: []` and nothing but
+    // `registryDependencies`, so "no files survived" is its normal state rather than a
+    // dropped web half. It still leaves with the rest if one of those dependencies is
+    // missing: that is the fixed point below, which is where the check belongs.
+    if (drop || (files.length === 0 && item.files.length > 0)) {
       dropped.push(item.name);
       continue;
     }

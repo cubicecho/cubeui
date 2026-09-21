@@ -10,7 +10,14 @@
  * `stopPropagation`, so the card must not be nested inside it).
  */
 
-import { cloneElement, createContext, isValidElement, type ReactElement, useContext } from "react";
+import {
+  cloneElement,
+  createContext,
+  isValidElement,
+  type ReactElement,
+  useContext,
+  useState,
+} from "react";
 import { Modal, Pressable, View } from "react-native";
 import type {
   PopoverContentProps,
@@ -26,11 +33,17 @@ const PopoverContext = createContext<PopoverState>({
   setOpen: () => {},
 });
 
-function Popover({ open, onOpenChange, children }: PopoverProps) {
+function Popover({ open, onOpenChange, defaultOpen = false, children }: PopoverProps) {
+  // Uncontrolled state kept unconditionally — hooks cannot be conditional — and
+  // read only when the caller passed no `open`.
+  const [uncontrolled, setUncontrolled] = useState(defaultOpen);
+  const isOpen = open ?? uncontrolled;
+  const setOpen = (next: boolean) => {
+    if (open === undefined) setUncontrolled(next);
+    onOpenChange?.(next);
+  };
   return (
-    <PopoverContext.Provider value={{ open, setOpen: onOpenChange }}>
-      {children}
-    </PopoverContext.Provider>
+    <PopoverContext.Provider value={{ open: isOpen, setOpen }}>{children}</PopoverContext.Provider>
   );
 }
 

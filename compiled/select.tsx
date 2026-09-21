@@ -18,29 +18,40 @@ import { Select as SelectPrimitive } from "radix-ui";
 import {
   SELECT_ITEM_CLASS,
   SELECT_ITEM_TEXT_CLASS,
+  SELECT_LABEL_CLASS,
+  SELECT_SEPARATOR_CLASS,
   SELECT_TRIGGER_CLASS,
   SELECT_TRIGGER_TEXT_CLASS,
   type SelectContentProps,
+  type SelectGroupProps,
   type SelectItemProps,
+  type SelectLabelProps,
   type SelectProps,
+  type SelectSeparatorProps,
   type SelectTriggerProps,
   type SelectValueProps,
 } from "@/components/ui/select-base";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "./icons";
 
-function Select({ value, onValueChange, children }: SelectProps) {
+function Select({ value, onValueChange, disabled, children }: SelectProps) {
   return (
-    <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
+    <SelectPrimitive.Root
+      value={value}
+      onValueChange={onValueChange}
+      {...(disabled === undefined ? {} : { disabled })}
+    >
       {children}
     </SelectPrimitive.Root>
   );
 }
 
-function SelectTrigger({ className, onBlur, children }: SelectTriggerProps) {
+function SelectTrigger({ className, onBlur, disabled, children, ...aria }: SelectTriggerProps) {
   return (
     <SelectPrimitive.Trigger
       onBlur={onBlur}
+      disabled={disabled}
+      {...aria}
       className={cn(
         SELECT_TRIGGER_CLASS,
         SELECT_TRIGGER_TEXT_CLASS,
@@ -85,6 +96,8 @@ function SelectItem({ value, className, children }: SelectItemProps) {
       className={cn(
         SELECT_ITEM_CLASS,
         SELECT_ITEM_TEXT_CLASS,
+        SELECT_LABEL_CLASS,
+        SELECT_SEPARATOR_CLASS,
         "focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
@@ -99,4 +112,33 @@ function SelectItem({ value, className, children }: SelectItemProps) {
   );
 }
 
-export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };
+function SelectGroup({ children }: SelectGroupProps) {
+  return <SelectPrimitive.Group>{children}</SelectPrimitive.Group>;
+}
+
+function SelectLabel({ className, children }: SelectLabelProps) {
+  return (
+    <SelectPrimitive.Label className={cn(SELECT_LABEL_CLASS, className)}>
+      {children}
+    </SelectPrimitive.Label>
+  );
+}
+
+function SelectSeparator({ className }: SelectSeparatorProps) {
+  return (
+    <SelectPrimitive.Separator
+      className={cn(SELECT_SEPARATOR_CLASS, "pointer-events-none", className)}
+    />
+  );
+}
+
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+};

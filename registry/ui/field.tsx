@@ -73,4 +73,31 @@ function FieldGroup({ className, children }: SectionProps) {
   return <View className={cn("flex-col gap-4", className)}>{children}</View>;
 }
 
-export { Field, FieldDescription, FieldError, FieldGroup, FieldLabel };
+/**
+ * The label column of a horizontal field: label, description and error stacked
+ * beside the control rather than under it, so a description's second line starts
+ * under the label and not under the checkbox.
+ */
+function FieldContent({ id, className, children }: SectionProps) {
+  return (
+    <View id={id} className={cn("min-w-0 flex-1 flex-col gap-1.5", className)}>
+      {children}
+    </View>
+  );
+}
+
+/**
+ * A field's name where a `<label>` would be wrong — a radio group or a checkbox
+ * set, where the name belongs to the group and each control has its own label.
+ * Same type as `FieldLabel`, no `htmlFor`: the group is named by
+ * `aria-labelledby` pointing at this `id`.
+ */
+function FieldTitle({ id, className, children }: SectionProps) {
+  return (
+    <Text id={id} className={cn("text-foreground text-sm font-medium", className)}>
+      {children}
+    </Text>
+  );
+}
+
+export { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldTitle };

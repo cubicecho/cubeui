@@ -30,9 +30,14 @@
       "@/components/*": ["./registry/*", "./registry/layout/*", "./registry/ui/*"]
     }
   },
+  // The two projects split by platform, not by directory-under-test. Everything DOM —
+  // `compiled/`, the web-only items in `registry/web`, the vendored upstream shadcn files —
+  // is `tsconfig.web.json`'s, because `@/components/ui/button` has to mean the compiled web
+  // half there and the React Native one here. Leaving `compiled/` in both was how
+  // `compiled/multi-select-field.tsx` came to be checked against a React Native `Badge`.
+  "exclude": ["registry/web", "vendor"],
   "include": [
     ".storybook",
-    "compiled",
     "registry",
     "scripts",
     "stories",

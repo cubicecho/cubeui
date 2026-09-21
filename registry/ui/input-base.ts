@@ -8,8 +8,15 @@
 
 import type { Ref } from "react";
 
-/** Everything but `text` and `number` falls back to plain text entry off web. */
-export type InputType = "text" | "number" | "time" | "datetime-local" | "color";
+/**
+ * Everything but `text`, `number` and `password` falls back to plain text entry off web.
+ *
+ * `password` is here because it is the one non-web type native implements properly:
+ * `secureTextEntry` masks the field and tells the platform keyboard to leave it out of
+ * autocorrect and the suggestion strip. `time`, `datetime-local` and `color` are real
+ * DOM controls with no native counterpart, and degrade to a text box.
+ */
+export type InputType = "text" | "number" | "password" | "time" | "datetime-local" | "color";
 
 /**
  * What a caller may do to an input imperatively. `select` is web-only —
@@ -28,6 +35,12 @@ export type InputProps = {
   onSubmitEditing?: (() => void) | undefined;
   placeholder?: string | undefined;
   type?: InputType | undefined;
+  /**
+   * Which keyboard to raise. Not the same knob as `type`: `type="number"` is what
+   * gets the DOM spinners and the browser's numeric parsing, `inputMode="decimal"`
+   * is what gets a phone keypad, and a number field wants both.
+   */
+  inputMode?: "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url" | undefined;
   maxLength?: number | undefined;
   /** Web only; the native keyboard has no equivalent constraint. */
   min?: number | undefined;

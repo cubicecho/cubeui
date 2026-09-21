@@ -143,4 +143,21 @@ const CardFooter = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
+/**
+ * The header's trailing slot — a menu button, a status chip.
+ *
+ * shadcn's web `CardHeader` is a grid and `CardAction` places itself in its second
+ * column with `col-start-2 row-span-2 self-start justify-self-end`. Yoga has no grid,
+ * so the same position is a self-aligned absolute box: the header already reserves its
+ * right padding, and the action is the only thing that sits there.
+ */
+const CardAction = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
+  <div
+    ref={ref as React.Ref<HTMLDivElement>}
+    className={cn("cube-rn-view", "absolute right-6 top-6 items-end", className)}
+    {...(props as React.ComponentPropsWithoutRef<"div">)}
+  />
+));
+CardAction.displayName = "CardAction";
+
+export { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };

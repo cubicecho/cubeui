@@ -11,9 +11,16 @@ import type {
 } from "@/components/ui/popover-base";
 import { cn } from "@/lib/utils";
 
-function Popover({ open, onOpenChange, children }: PopoverProps) {
+function Popover({ open, onOpenChange, defaultOpen, children }: PopoverProps) {
+  // Spread rather than passed: radix switches to uncontrolled on `open === undefined`,
+  // but only if the prop is absent, and `exactOptionalPropertyTypes` is what makes the
+  // difference expressible.
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <PopoverPrimitive.Root
+      {...(open === undefined ? {} : { open })}
+      {...(onOpenChange === undefined ? {} : { onOpenChange })}
+      {...(defaultOpen === undefined ? {} : { defaultOpen })}
+    >
       {children}
     </PopoverPrimitive.Root>
   );

@@ -22,6 +22,7 @@
  */
 
 import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
 import * as React from "react";
 import { Pressable, Text } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -98,31 +99,32 @@ export type ButtonProps = Omit<
     // `className?: string`, which under `exactOptionalPropertyTypes` rejects the
     // conditional `cond ? 'x' : undefined` that call sites pass.
     className?: string | undefined;
+    /**
+     * Render the single child with the button's look and behaviour instead of a
+     * `Pressable` around it.
+     *
+     * radix's `Slot` on both platforms, for the reason `ui/form.tsx` gives: it only
+     * clones its child with merged props, so there is no DOM in it and it works under
+     * React Native unchanged. Upstream shadcn components that wrap this Button — the
+     * `alert-dialog` action and cancel buttons — are written against it.
+     */
+    asChild?: boolean | undefined;
     children?: React.ReactNode;
   };
 
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant, size, disabled, children, ...props }, ref) => (
-    <Pressable
-      ref={ref}
-      // A `Pressable` is a plain `<div>` on web unless it is given a role. This
-      // is what gets the tab stop, the Enter/Space activation and the screen
-      // reader announcement back that the `<button>` element gave for free.
-      // (No `useSemanticElements` suppression needed: a `<button>` has no native counterpart,
-      // and the rule does not reach a `Pressable` anyway.)
-      role="button"
-      disabled={disabled}
-      className={cn(
-        buttonVariants({ variant, size, className }),
-        // `disabled:` has no pseudo-class to hang off a Pressable on either
-        // platform, so the disabled look is applied directly.
-        disabled && "opacity-50",
-      )}
-      {...props}
-    >
-      {/* Icons inside a button take the variant's text colour. On web they
-          already inherit it, so `icons.web.tsx` ignores this; native has no
-          inheritance and this is where the colour comes from. */}
+  ({ className, variant, size, disabled, asChild, children, ...props }, ref) => {
+    const styling = cn(
+      buttonVariants({ variant, size, className }),
+      // `disabled:` has no pseudo-class to hang off a Pressable on either
+      // platform, so the disabled look is applied directly.
+      disabled && "opacity-50",
+    );
+
+    const body = (
+      // Icons inside a button take the variant's text colour. On web they
+      // already inherit it, so `icons.web.tsx` ignores this; native has no
+      // inheritance and this is where the colour comes from.
       <IconClassContext.Provider value={buttonTextVariants({ variant, size })}>
         {React.Children.map(children, (child) =>
           typeof child === "string" || typeof child === "number" ? (
@@ -132,8 +134,45 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           ),
         )}
       </IconClassContext.Provider>
-    </Pressable>
-  ),
+    );
+
+    // Two returns rather than one variable element: `Slot.Root` is typed for the DOM
+    // and `Pressable` for a `View`, and a union of the two types nothing usefully —
+    // every prop below would have to satisfy both. Written out, each branch is checked
+    // against the element it actually renders.
+    if (asChild) {
+      return (
+        // `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
+        // for the DOM, but it renders nothing itself — it clones its child with these
+        // props merged in. The element that receives them is the caller's, so the DOM
+        // typing describes neither side, and the cast is the honest way to say so.
+        <Slot.Root
+          className={styling}
+          {...({ ...props, disabled } as unknown as React.HTMLAttributes<HTMLElement>)}
+          ref={ref as unknown as React.Ref<HTMLElement>}
+        >
+          {body}
+        </Slot.Root>
+      );
+    }
+
+    return (
+      <Pressable
+        ref={ref}
+        // A `Pressable` is a plain `<div>` on web unless it is given a role. This
+        // is what gets the tab stop, the Enter/Space activation and the screen
+        // reader announcement back that the `<button>` element gave for free.
+        // (No `useSemanticElements` suppression needed: a `<button>` has no native counterpart,
+        // and the rule does not reach a `Pressable` anyway.)
+        role="button"
+        disabled={disabled}
+        className={styling}
+        {...props}
+      >
+        {body}
+      </Pressable>
+    );
+  },
 );
 Button.displayName = "Button";
 

@@ -14,7 +14,13 @@ import { Check } from "./icons";
 type CheckboxProps = {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
+  /**
+   * Fired when the control loses focus. A bound field marks itself touched from
+   * this, which is what decides whether an error is shown yet — so a checkbox
+   * without one is a required field that never reports itself as unfilled.
+   */
+  onBlur?: (() => void) | undefined;
   /** Required: the box carries no visible label of its own. */
   "aria-label": string;
   className?: string | undefined;
@@ -24,6 +30,7 @@ export function Checkbox({
   checked,
   onCheckedChange,
   disabled = false,
+  onBlur,
   "aria-label": accessibilityLabel,
   className,
 }: CheckboxProps) {
@@ -37,6 +44,7 @@ export function Checkbox({
       aria-label={accessibilityLabel}
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
+      onBlur={onBlur}
       className={cn(
         "cube-rn-view cube-rn-pressable",
         "h-4 w-4 items-center justify-center rounded border",

@@ -97,6 +97,27 @@ function neutral() {
 
 const NEUTRAL = neutral();
 
+/**
+ * The upstream shadcn components this registry builds on but does not ship: `separator`,
+ * `skeleton`, `command`, `radio-group`, `alert-dialog`.
+ *
+ * They are declared as bare `registryDependencies`, which the consumer's CLI resolves against
+ * ui.shadcn.com and installs into that consumer's own `components/ui/` — so an import of
+ * `@/components/ui/separator` resolves in the installed tree without this registry emitting
+ * anything for it. The copies in `vendor/shadcn/` exist so the web half typechecks here, and
+ * they double as the list: a name is upstream because a file is there.
+ */
+function upstream() {
+  const dir = join(root, "vendor/shadcn");
+  return new Set(
+    readdirSync(dir)
+      .filter((file) => file.endsWith(".tsx"))
+      .map((file) => basename(file, ".tsx")),
+  );
+}
+
+const UPSTREAM = upstream();
+
 /** Every item that has, or could have, a web half — and which of the two it gets it from. */
 function items() {
   const found = [];
@@ -104,14 +125,21 @@ function items() {
     const file = basename(rel);
     found.push({ name: basename(file, ".ts"), kind: "compile", rel, out: file });
   }
-  for (const file of readdirSync(join(root, WEB_ONLY)).sort()) {
-    if (!file.endsWith(".tsx")) continue;
-    found.push({
-      name: basename(file, ".tsx"),
-      kind: "passthrough",
-      rel: `${WEB_ONLY}/${file}`,
-      out: file,
-    });
+  // `registry/web/ui` mirrors `registry:ui` vs `registry:component`, which is what decides whether
+  // the CLI installs to `components/ui/` or `components/`. cubeui's consumers already have these
+  // files at those paths, so the split is preserved rather than flattened: moving `item` out of
+  // `components/ui/` would be a breaking change dressed up as tidying. Output is flat either way —
+  // `compiled/` holds one file per item and the basename check is what guards that.
+  for (const dir of [WEB_ONLY, `${WEB_ONLY}/ui`]) {
+    for (const file of readdirSync(join(root, dir)).sort()) {
+      if (!file.endsWith(".tsx")) continue;
+      found.push({
+        name: basename(file, ".tsx"),
+        kind: "passthrough",
+        rel: `${dir}/${file}`,
+        out: file,
+      });
+    }
   }
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir)).sort()) {
@@ -138,7 +166,13 @@ function items() {
 
 function emit(item, tree) {
   const text = readFileSync(join(root, item.rel), "utf8");
-  const args = { filePath: item.rel, text, compiledNames: tree, neutralNames: NEUTRAL };
+  const args = {
+    filePath: item.rel,
+    text,
+    compiledNames: tree,
+    neutralNames: NEUTRAL,
+    upstreamNames: UPSTREAM,
+  };
   return item.kind === "compile" ? compileSource(args) : passthroughSource(args);
 }
 

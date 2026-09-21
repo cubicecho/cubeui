@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 function Input({
   className,
   type = "text",
+  inputMode,
   value,
   onChangeText,
   onBlur,
@@ -45,7 +46,8 @@ function Input({
       maxLength={maxLength}
       editable={!disabled}
       autoFocus={autoFocus}
-      keyboardType={type === "number" ? "numeric" : "default"}
+      inputMode={inputMode ?? (type === "number" ? "numeric" : "text")}
+      secureTextEntry={type === "password"}
       className={cn(INPUT_CLASS, disabled && "opacity-50", className)}
     />
   );

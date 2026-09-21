@@ -16,17 +16,23 @@ import { Check, ChevronDown } from "@/components/ui/icons";
 import {
   SELECT_ITEM_CLASS,
   SELECT_ITEM_TEXT_CLASS,
+  SELECT_LABEL_CLASS,
+  SELECT_SEPARATOR_CLASS,
   SELECT_TRIGGER_CLASS,
   SELECT_TRIGGER_TEXT_CLASS,
   type SelectContentProps,
+  type SelectGroupProps,
   type SelectItemProps,
+  type SelectLabelProps,
   type SelectProps,
+  type SelectSeparatorProps,
   type SelectTriggerProps,
   type SelectValueProps,
 } from "@/components/ui/select-base";
 import { cn } from "@/lib/utils";
 
 type SelectState = {
+  disabled: boolean;
   value: string;
   onValueChange: (value: string) => void;
   open: boolean;
@@ -36,32 +42,38 @@ type SelectState = {
 const SelectContext = createContext<SelectState>({
   value: "",
   onValueChange: () => {},
+  disabled: false,
   open: false,
   setOpen: () => {},
 });
 
-function Select({ value, onValueChange, children }: SelectProps) {
+function Select({ value, onValueChange, disabled = false, children }: SelectProps) {
   const [open, setOpen] = useState(false);
   return (
-    <SelectContext.Provider value={{ value, onValueChange, open, setOpen }}>
+    <SelectContext.Provider
+      value={{ value, onValueChange, disabled, open, setOpen: disabled ? () => {} : setOpen }}
+    >
       {children}
     </SelectContext.Provider>
   );
 }
 
-function SelectTrigger({ className, onBlur, children }: SelectTriggerProps) {
-  const { setOpen } = useContext(SelectContext);
+function SelectTrigger({ className, onBlur, disabled, children, ...aria }: SelectTriggerProps) {
+  const select = useContext(SelectContext);
+  const isDisabled = disabled ?? select.disabled;
   return (
     <Pressable
       // The `role` is hand-written because a `<button>` has no native counterpart.
       role="button"
+      disabled={isDisabled}
+      {...aria}
       onPress={() => {
-        setOpen(true);
+        select.setOpen(true);
         // A native sheet takes focus away from the trigger the way a blur
         // would on web, and a form depends on that to mark the field touched.
         onBlur?.();
       }}
-      className={cn(SELECT_TRIGGER_CLASS, className)}
+      className={cn(SELECT_TRIGGER_CLASS, isDisabled && "opacity-50", className)}
     >
       {children}
       <ChevronDown className="h-4 w-4 opacity-50" />
@@ -136,4 +148,30 @@ function SelectItem({ value, className, children }: SelectItemProps) {
   );
 }
 
-export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };
+/**
+ * A heading and the items under it. Radix builds a real `aria-labelledby` between
+ * `SelectPrimitive.Group` and its `Label`; there is no equivalent on native, so the
+ * grouping is a `role="group"` container and the label is read as its first child.
+ */
+function SelectGroup({ children }: SelectGroupProps) {
+  return <View role="group">{children}</View>;
+}
+
+function SelectLabel({ className, children }: SelectLabelProps) {
+  return <Text className={cn(SELECT_LABEL_CLASS, className)}>{children}</Text>;
+}
+
+function SelectSeparator({ className }: SelectSeparatorProps) {
+  return <View role="separator" className={cn(SELECT_SEPARATOR_CLASS, className)} />;
+}
+
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+};

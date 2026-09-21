@@ -103,6 +103,13 @@ type BadgeProps = {
    * when the label has to stay legible on an arbitrary hue.
    */
   backgroundColor?: string | undefined;
+  /**
+   * Overrides the label's colour, for the same case as `backgroundColor`: with an
+   * arbitrary hue behind it, neither the variant's label colour nor the
+   * `text-foreground` fallback is guaranteed to be legible. `readableTextColor`
+   * is what computes the value to pass.
+   */
+  textColor?: string | undefined;
   className?: string | undefined;
   /**
    * What the dot stands for, exposed as its accessible name. Ignored in the
@@ -116,6 +123,7 @@ type BadgeProps = {
 export function Badge({
   variant = "default",
   backgroundColor,
+  textColor,
   className,
   label,
   children,
@@ -142,6 +150,7 @@ export function Badge({
               ? "text-xs font-medium text-foreground"
               : badgeTextVariants({ variant }),
           )}
+          {...(textColor ? { style: { color: textColor } } : {})}
         >
           {children}
         </span>

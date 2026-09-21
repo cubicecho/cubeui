@@ -18,6 +18,33 @@ export type DialogProps = {
   children: ReactNode;
 };
 
+export type DialogTriggerProps = {
+  /**
+   * Hand the press handler to the single child rather than wrapping it. Always
+   * pass it, for the reason `popover-base.ts` gives: a `Pressable` wrapping a
+   * `Button` never fires on native, because the inner pressable claims the touch.
+   */
+  asChild?: boolean | undefined;
+  children: ReactNode;
+};
+
+/**
+ * `DialogContent` takes three things the section slots do not.
+ *
+ * `onEscapeKeyDown` and `onInteractOutside` are the two ways a dialog closes without
+ * the caller asking, and a form dialog with unsaved edits needs to intercept both.
+ * Native has one of each — the hardware back button and the backdrop press — so they
+ * are honoured there too rather than being web-only.
+ */
+export type DialogContentProps = DialogSectionProps & {
+  /** Draw the corner close button. Default `true`. */
+  showCloseButton?: boolean | undefined;
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
+  onInteractOutside?: ((event: Event) => void) | undefined;
+  /** `undefined` passed explicitly is how "nothing describes this" is said to radix. */
+  "aria-describedby"?: string | undefined;
+};
+
 /** Every part inside a `Dialog` — content, header, footer, title, description. */
 export type DialogSectionProps = {
   className?: string | undefined;

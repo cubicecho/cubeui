@@ -16,13 +16,14 @@ import {
 } from "@/components/ui/switch-base";
 import { cn } from "@/lib/utils";
 
-function Switch({ checked, onCheckedChange, disabled, className }: SwitchProps) {
+function Switch({ checked, onCheckedChange, disabled, onBlur, className }: SwitchProps) {
   return (
     <Pressable
       role="switch"
       aria-checked={checked}
       disabled={disabled}
       onPress={() => onCheckedChange(!checked)}
+      onBlur={onBlur}
       className={cn(
         SWITCH_TRACK_CLASS,
         checked ? "bg-primary" : "bg-input",

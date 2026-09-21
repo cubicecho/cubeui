@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/switch-base";
 import { cn } from "@/lib/utils";
 
-function Switch({ checked, onCheckedChange, id, disabled, className }: SwitchProps) {
+function Switch({ checked, onCheckedChange, id, disabled, onBlur, className }: SwitchProps) {
   return (
     <SwitchPrimitive.Root
       id={id}
       checked={checked}
       onCheckedChange={onCheckedChange}
       disabled={disabled}
+      onBlur={onBlur}
       className={cn(
         SWITCH_TRACK_CLASS,
         "peer inline-flex cursor-pointer shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",

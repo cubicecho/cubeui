@@ -9,6 +9,8 @@ export type SwitchProps = {
   /** Web only: what a `<label htmlFor>` points at. */
   id?: string | undefined;
   disabled?: boolean | undefined;
+  /** See `checkbox.tsx`: a bound field marks itself touched from this. */
+  onBlur?: (() => void) | undefined;
   className?: string | undefined;
 };
 
