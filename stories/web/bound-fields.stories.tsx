@@ -88,6 +88,8 @@ export const EveryFieldIsLabelled: Story = {
     expect(canvas.getByRole("textbox", { name: "Name" })).toBeVisible();
     // The label names the hex box: next's picker is inline, and the box is where its id lands.
     expect(canvas.getByRole("textbox", { name: /Colour/ })).toBeVisible();
+    // And the swatch row, which a `<label for>` cannot name, points back at the same label.
+    expect(canvas.getByRole("radiogroup", { name: "Colour" })).toBeVisible();
     expect(canvas.getByRole("radiogroup", { name: /Visibility/ })).toBeVisible();
     expect(canvas.getByLabelText("Share token")).toBeVisible();
   },
@@ -130,6 +132,7 @@ export const TheColourFieldIsARealControl: Story = {
     const hex = canvas.getByRole("textbox", { name: /Colour/ });
     // The description reaches the swatch group, which is where the picker puts `aria-describedby`.
     const swatch = canvas.getByRole("radio", { name: "#f59e0b" });
+    expect(swatch.closest("[role=radiogroup]")).toHaveAccessibleName("Colour");
     expect(swatch.closest("[role=radiogroup]")).toHaveAccessibleDescription(
       "Shown on the tag itself.",
     );

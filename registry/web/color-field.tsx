@@ -34,10 +34,20 @@ function BoundColorField(props: ColorFieldProps) {
       error={error}
       // The function form, so the wiring lands on the picker itself: it puts `id` on its hex box,
       // which the label then names, and the description and error on the swatch group.
-      control={(wired) => (
+      control={(wired, { labelId }) => (
         <ColorPicker
           {...control}
           {...wired}
+          // The label is a `<label htmlFor>` on the hex box, and a `<label>` cannot also name the
+          // swatch row — a `radiogroup` with no name is an axe failure and a screen reader saying
+          // "radio group" and nothing else. So the row points back at the label, unless the
+          // caller named it some other way.
+          aria-labelledby={
+            control["aria-labelledby"] ??
+            (control["aria-label"] === undefined && control.swatchesLabel === undefined
+              ? labelId
+              : undefined)
+          }
           value={field.state.value ?? ""}
           onChange={(next: string) => {
             field.handleChange(next);

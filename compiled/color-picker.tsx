@@ -21,7 +21,7 @@
  * <ColorPicker value={color} onValueChange={setColor} swatches={ACTIVITY_COLORS} clearable />
  * ```
  */
-import { useId } from "react";
+import { useId, useState } from "react";
 import { readableTextColor } from "@/lib/readable-text-color";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
@@ -70,7 +70,12 @@ export function normalizeHex(value: string): string {
   return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
 }
 
-/** Whether a string is a `#rgb` or `#rrggbb` colour. */
+/**
+ * Whether a string is a `#rgb` or `#rrggbb` colour.
+ *
+ * No `#rgba`/`#rrggbbaa`: a swatch is opaque, and an alpha channel nothing here can show is a
+ * colour the picker would accept and then draw wrong.
+ */
 export function isHexColor(value: string): boolean {
   return HEX.test(value);
 }
@@ -99,7 +104,12 @@ function sameColor(a: string, b: string): boolean {
  * to name and no OS colour well to label.
  */
 type ColorPickerProps = {
-  /** The colour, as `#rgb`/`#rrggbb`. `null` and `""` are both "no colour". */
+  /**
+   * The colour, as `#rgb`/`#rrggbb`. `null` and `""` are both "no colour".
+   *
+   * The hex box only ever hands back one of those, or `""`: what is typed there is a draft until it
+   * is a whole colour, gets its `#` put back if it was typed without one, and keeps its case.
+   */
   value?: string | null | undefined;
   /** Called with the colour picked or typed; `""` when cleared. */
   onChange?: ((color: string) => void) | undefined;
@@ -176,6 +186,27 @@ export function ColorPicker({
   const emit = (color: string) => {
     onChange?.(color);
     onValueChange?.(color);
+  };
+
+  // The hex box's own text. It is not `value`: `#fffaa` is on its way to a colour, not one, and a
+  // box bound straight to `value` either hands that to the caller — a form saves it, a swatch
+  // background draws nothing — or snaps back on every keystroke that is not yet a colour.
+  const [draft, setDraft] = useState(current);
+  // Adopt a value that arrives from outside — a swatch, Clear, a form reset — unless it is the
+  // colour already typed, in whatever spelling it was typed.
+  const [seen, setSeen] = useState(current);
+  if (seen !== current) {
+    setSeen(current);
+    const typed = normalizeHex(draft);
+    if (typed !== current && !sameColor(typed, current)) setDraft(current);
+  }
+
+  const onChangeText = (text: string) => {
+    setDraft(text);
+    const typed = normalizeHex(text);
+    // Emptying the box is an answer — the same "no colour" Clear gives — and a whole colour is
+    // one. Everything between is a draft, and stays in the box.
+    if ((typed === "" || isHexColor(typed)) && typed !== current) emit(typed);
   };
 
   return (
@@ -257,10 +288,17 @@ export function ColorPicker({
           // A format hint rather than a colour by default: the field's job is the colour that
           // is *not* in the row above, so showing one of them would mislead.
           placeholder={placeholder}
-          value={current}
-          onChangeText={emit}
-          onBlur={onBlur}
-          maxLength={7}
+          value={draft}
+          onChangeText={onChangeText}
+          onBlur={() => {
+            // A draft left unfinished is not the value, so the box stops claiming it is; a colour
+            // typed without its `#` gets it back, so the box reads as what was saved.
+            setDraft(current);
+            onBlur?.();
+          }}
+          // Room for a pasted `#rrggbb` with the spaces a design tool copies around it, which
+          // `normalizeHex` trims.
+          maxLength={9}
           disabled={disabled}
           className="flex-1 font-mono"
         />
