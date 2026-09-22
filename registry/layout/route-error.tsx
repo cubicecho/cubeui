@@ -3,8 +3,24 @@
  *
  * Deliberately dependency-free beyond `ui/`: it must not rely on the data
  * client, the router, or theme state, since any of those could be what failed.
+ *
+ * It is the whole screen and says everything an error boundary needs said, so
+ * the boundary renders it and nothing around it: the root is `role="alert"`,
+ * the raw message for a bug report is `details`, and a second way out (a
+ * reload, a restart) is `actions`.
+ *
+ * ```tsx
+ * <RouteError
+ *   error={error}
+ *   reset={retry}
+ *   describe={describeError}
+ *   details
+ *   actions={<Button variant="ghost" size="sm" onPress={reload}>Reload</Button>}
+ * />
+ * ```
  */
-import { Text, View } from "react-native";
+import type { ReactNode } from "react";
+import { Platform, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { CircleAlert } from "@/components/ui/icons";
 
@@ -17,6 +33,21 @@ type RouteErrorProps = {
    * rather than letting a stack-trace message reach the screen.
    */
   describe?: (error: unknown) => string;
+  /**
+   * The heading. The default fits a failed fetch and a render crash alike,
+   * which is why it is not "Failed to load" — a boundary catches both.
+   */
+  title?: string;
+  /**
+   * The raw message, in a muted monospace block the user can select and paste
+   * into a bug report. `true` shows `error.message`; a node replaces the block's
+   * contents. Left out when it would say exactly what `describe` already said.
+   * Selectable on device too (`selectable`), where text is not by default. The
+   * block is bordered rather than filled: muted text on `bg-muted` fails contrast.
+   */
+  details?: ReactNode | boolean;
+  /** More buttons beside "Try again" — a reload is the usual one. */
+  actions?: ReactNode;
 };
 
 function friendlyMessage(error: unknown): string {
@@ -36,19 +67,61 @@ function friendlyMessage(error: unknown): string {
   return "An unexpected error occurred.";
 }
 
-export function RouteError({ error, reset, describe = friendlyMessage }: RouteErrorProps) {
+/** What `details={true}` shows: the message as thrown, for whoever files the bug. */
+function rawMessage(error: unknown): string | undefined {
+  if (error instanceof Error) return error.message || undefined;
+  if (typeof error === "string") return error || undefined;
+  return undefined;
+}
+
+export function RouteError({
+  error,
+  reset,
+  describe = friendlyMessage,
+  title = "Something went wrong",
+  details,
+  actions,
+}: RouteErrorProps) {
+  const summary = describe(error);
+  const detail = details === true ? rawMessage(error) : details || undefined;
+  // A plain `Error` is described by its own message, so the default block would print it twice.
+  const shown = detail === summary ? undefined : detail;
+
   return (
-    <View className="flex-1 items-center justify-center gap-4 px-8 py-20">
+    <View
+      role="alert"
+      testID="route-error"
+      className="flex-1 items-center justify-center gap-4 px-8 py-20"
+    >
       <View className="rounded-full bg-destructive/10 p-4">
         <CircleAlert className="h-7 w-7 text-destructive" />
       </View>
       <View className="max-w-sm items-center">
-        <Text className="font-semibold text-foreground">Failed to load</Text>
-        <Text className="mt-1 text-center text-sm text-muted-foreground">{describe(error)}</Text>
+        <Text testID="route-error-title" className="font-semibold text-foreground">
+          {title}
+        </Text>
+        <Text className="mt-1 text-center text-sm text-muted-foreground">{summary}</Text>
       </View>
-      <Button variant="outline" size="sm" onPress={reset}>
-        Try again
-      </Button>
+      {shown ? (
+        <View testID="route-error-details" className="w-full max-w-md rounded-md border px-3 py-2">
+          {typeof shown === "string" ? (
+            <Text
+              {...(Platform.OS === "web" ? {} : { selectable: true })}
+              className="font-mono text-xs text-muted-foreground"
+            >
+              {shown}
+            </Text>
+          ) : (
+            shown
+          )}
+        </View>
+      ) : null}
+      <View className="flex-row flex-wrap items-center justify-center gap-2">
+        <Button variant="outline" size="sm" onPress={reset}>
+          Try again
+        </Button>
+        {actions}
+      </View>
     </View>
   );
 }

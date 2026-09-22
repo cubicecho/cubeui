@@ -146,3 +146,35 @@ test("a platform && in a class list folds to its operand", () => {
   assert.match(code, /"a", "w", false/);
   assert.equal(code.includes('"n"'), false, code);
 });
+
+/**
+ * A heading whose rank the caller picks. A literal `aria-level` is an `<hN>`; an expression cannot
+ * be one, because the tag is written once at compile time, so the element keeps `role="heading"`
+ * and `aria-level` — which is a heading of that rank to assistive technology, and what
+ * react-native-web renders for the same source.
+ */
+test("a literal aria-level on a heading becomes that heading element", () => {
+  const code = ok('export const A = () => <Text role="heading" aria-level={3}>a</Text>;', "Text");
+  assert.match(code, /<h3 className="cube-rn-text">a<\/h3>/);
+});
+
+test("an expression aria-level on a heading keeps the role and the level", () => {
+  const code = ok(
+    "export const A = ({ level }: { level: 1 | 2 | 3 }) =>\n" +
+      '  <Text role="heading" aria-level={level}>a</Text>;',
+    "Text",
+  );
+  assert.match(
+    code,
+    /<span role="heading" aria-level=\{level\} className="cube-rn-text">a<\/span>/,
+  );
+});
+
+test("a heading with no aria-level is still refused", () => {
+  const { code, diagnostics } = compile(
+    'export const A = () => <Text role="heading">a</Text>;',
+    "Text",
+  );
+  assert.equal(code, null);
+  assert.match(diagnostics[0].message, /needs an `aria-level`/);
+});

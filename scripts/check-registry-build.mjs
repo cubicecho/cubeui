@@ -695,7 +695,6 @@ const LAYOUT_BUNDLE = "layout";
 // Layouts in the web bundle with no React Native half yet, and why. Each one is a named debt, not
 // a category: when the reason goes, so does the line.
 const WEB_ONLY_LAYOUTS = {
-  section: "#61 converts it",
   "disclosure-row": "built on the web-only `item`",
 };
 const namesIn = async (built) => {

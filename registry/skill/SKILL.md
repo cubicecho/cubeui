@@ -41,11 +41,11 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `CardLayout` and `DialogLayout` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `CardLayout`, `DialogLayout` and `Section` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
-**Some web shells are still web-only.** `Section`, `FormField`, `useAppForm` and the bound fields,
+**Some web shells are still web-only.** `FormField`, `useAppForm` and the bound fields,
 `ActionButton`, `MultiSelect` and the rest of the controls lean on CSS grid tracks and arbitrary
 variants, which Yoga and NativeWind do not have. In an Expo project those items are a 404, and
 that is the registry telling you the truth rather than shipping a shell that lays out wrong. Use
@@ -196,14 +196,17 @@ views and there is no shell wrapping to hide.
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
-| A heading over a group of fields or rows | `SectionHeading` | `@cubeui/section-heading` |
+| A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
+| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A form of any size | `Form` and its bound fields | `@cubeui/form` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
+| Three or four exclusive choices, all on screen (a theme, a visibility) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
+| The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
-| A route that threw | `RouteError` | `@cubeui/route-error` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 
 One name means different things across the halves, and it is worth knowing before you grep:
 
