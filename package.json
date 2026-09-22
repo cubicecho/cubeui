@@ -7,7 +7,6 @@
   "scripts": {
     "tokens:build": "node scripts/build-tokens.mjs",
     "tokens:check": "node scripts/build-tokens.mjs --check",
-    "parity": "node scripts/check-cubeui-parity.mjs",
     "compile": "node scripts/rn2web/index.mjs",
     "compile:check": "node scripts/rn2web/index.mjs --check",
     "registry:build": "shadcn build registry.web.json -o public/r && shadcn build -o public/r/native",
@@ -22,7 +21,7 @@
     "format": "biome check --write .",
     "test": "node --test 'scripts/**/*.test.mjs' && vitest run",
     "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run page:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run docs:check && npm run lint && npm test"
+    "check": "npm run tokens:check && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run docs:check && npm run lint && npm test"
   },
   "engines": {
     "node": ">=20"

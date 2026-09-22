@@ -28,12 +28,6 @@ jobs:
       - name: dist/ is in sync with tokens/palette.mjs
         run: npm run tokens:check
 
-      # Transition-period guard: this repo's web emitter must still produce the
-      # bytes cubeui ships, for as long as both registries exist. `cubeui` is not
-      # checked out here, so this passes trivially in CI and is the local guard.
-      - name: The web emitter still matches cubeui
-        run: npm run parity
-
       # compiled/ and registry.web.json are committed for the same reason dist/ is:
       # they are what a DOM app installs. This step re-runs the compiler and the
       # derivation and fails if either moved, which is also the only thing that

@@ -1,5 +1,5 @@
 /**
- * The single source of truth for colour in cubeui-rn.
+ * The single source of truth for colour in cubeui.
  *
  * Values are stored as OKLCH components rather than strings because the three
  * emitters need different encodings of the same colour, and a string would force
@@ -15,11 +15,11 @@
  *   (`placeholderTextColor`, icon tints, navigator chrome, SVG fills) are strings
  *   and cannot read a CSS variable.
  *
- * Order is significant: the web emitter reproduces `cubeui/preview/index.css`
- * byte for byte for the tokens that file has, and lists them in its order.
- * `destructive-foreground` and the eight `sidebar-*` tokens are this repo's
- * additions — shadcn's own set, which cubeui never carried — and
- * `check-cubeui-parity.mjs` compares around them.
+ * Order is significant: it is the order of the stylesheet the pre-native cubeui
+ * shipped (`preview/index.css`), which the web emitter reproduced byte for byte
+ * until the two registries merged. `destructive-foreground` and the eight
+ * `sidebar-*` tokens were added here — shadcn's own set, which that stylesheet
+ * never carried.
  *
  * `a` is alpha in [0,1] and is omitted when opaque.
  */

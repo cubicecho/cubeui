@@ -36,7 +36,7 @@ export function reactNativeClassName(): Plugin {
   const ours = ["compiled", "registry", "stories"].map((dir) => `${root}${dir}/`);
 
   return {
-    name: "cubeui-rn:classname-polyfill",
+    name: "cubeui:classname-polyfill",
     // Before the framework's Babel and Flow passes, so they see the final specifier.
     enforce: "pre",
     transform(code, id) {

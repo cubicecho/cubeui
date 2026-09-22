@@ -2,9 +2,13 @@ node_modules/
 .expo/
 *.log
 
+# Agent worktrees. The rest of .claude/ is tracked on purpose: .claude/skills/cubeui/ is the
+# pointer that makes this repo's own agent read the skill that ships.
+.claude/worktrees/
+
 # dist/ is committed on purpose: the emitted tokens are the artefact consumers
 # install, and committing them is what lets `tokens:check` catch drift in CI the
-# way cubeui catches registry drift with `git diff --exit-code -- public/r`.
+# way `git diff --exit-code -- public/r` catches registry drift.
 
 storybook-static/
 
