@@ -28,5 +28,5 @@
   },
   // The base config excludes these two; this project is the one that checks them.
   "exclude": [],
-  "include": ["compiled/**/*", "registry/web/**/*", "vendor/**/*"]
+  "include": ["compiled/**/*", "registry/web/**/*", "vendor/**/*", "stories/web/**/*"]
 }

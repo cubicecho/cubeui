@@ -266,9 +266,16 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
   cap on the whole dialog is what takes the title off the screen on a long form.
 - **`hasUnsavedChanges` is the one to remember.** On, Escape, a click on the overlay and the
   close button all ask before throwing the work away, and the dialog is still there behind the
-  question. Pass `form.state.isDirty` — it is asked for, never computed, because only the caller
-  knows what its fields are. `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`
-  reword the question when the dialog knows what is lost.
+  question. It is asked for, never computed, because only the caller knows what its fields are.
+  `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel` reword the question when
+  the dialog knows what is lost.
+- **Pass it as a function when the answer is not something you render.** The question is asked
+  once, at a click — nothing in the dialog draws the answer — so a boolean makes you keep a value
+  in render that only a handler reads, and work held outside the form's fields has to be lifted
+  into state to answer at all. `hasUnsavedChanges={() => !form.state.isDefaultValue ||
+  picker.hasEdits()}` runs at the click and subscribes to nothing. `isDefaultValue` and not
+  `isDirty`: `isDirty` stays true for a field typed into and then back out of, so the dialog asks
+  about a form identical to how it opened.
 - **Take `close` from `footerActions` rather than closing the dialog yourself.** Pass a function
   and it is handed the dialog's own close — the same one Escape, the overlay and the close button
   go through, so `hasUnsavedChanges` asks on the way through Cancel too. A Cancel wired to your

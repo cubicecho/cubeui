@@ -93,13 +93,29 @@ type DialogLayoutProps = {
    */
   dismissible?: boolean | undefined;
   /**
-   * There is work in the body that closing would throw away. Escape, a click on the overlay and
-   * the close button then ask first, and the dialog stays open if the answer is no.
+   * There is work in the body that closing would throw away. Escape, a click on the overlay, the
+   * close button and a `footerActions` Cancel then ask first, and the dialog stays open if the
+   * answer is no.
    *
-   * Asked for, never computed — only the caller knows what its fields are. A form knows: pass
-   * `form.state.isDirty`.
+   * Asked for, never computed — only the caller knows what its fields are.
+   *
+   * **Pass a function when the answer is not something you render.** The question is asked once,
+   * at a click: nothing here draws the answer, there is no dirty dot and no Save reading off it.
+   * A boolean makes the caller maintain, in render, a value only a handler consumes — which for
+   * a TanStack form means `useStore(form.store, …)` and a re-render on the transition to keep a
+   * boolean this looks at once, and for work that is *not* a form field means lifting a knowable
+   * fact into state as a second source of truth. The thunk runs at the click, so neither is
+   * needed:
+   *
+   * ```tsx
+   * hasUnsavedChanges={() => !form.state.isDefaultValue || picker.hasEdits()}
+   * ```
+   *
+   * `isDefaultValue` and not `isDirty`, when it is a form. `isDirty` stays true for a field
+   * typed into and then typed back out of, so the dialog asks whether to throw away changes to a
+   * form identical to how it opened.
    */
-  hasUnsavedChanges?: boolean | undefined;
+  hasUnsavedChanges?: boolean | (() => boolean) | undefined;
   /** The question that asks. Defaulted, because this one really is the same everywhere. */
   discardTitle?: ReactNode | undefined;
   discardDescription?: ReactNode | undefined;
@@ -176,7 +192,12 @@ export function DialogLayout({
   const [askingToDiscard, setAskingToDiscard] = useState(false);
 
   const requestOpenChange = (next: boolean) => {
-    if (!next && hasUnsavedChanges) {
+    // Evaluated here and nowhere else, which is the whole of what the function form buys: it runs
+    // on the paths that can close and never during a render, so a caller can read a store or ask
+    // a child without subscribing to either.
+    const unsaved =
+      typeof hasUnsavedChanges === "function" ? hasUnsavedChanges() : hasUnsavedChanges;
+    if (!next && unsaved) {
       setAskingToDiscard(true);
       return;
     }

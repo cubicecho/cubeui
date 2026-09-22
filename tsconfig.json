@@ -35,7 +35,11 @@
   // is `tsconfig.web.json`'s, because `@/components/ui/button` has to mean the compiled web
   // half there and the React Native one here. Leaving `compiled/` in both was how
   // `compiled/multi-select-field.tsx` came to be checked against a React Native `Badge`.
-  "exclude": ["registry/web", "vendor"],
+  // `stories/web` joins them: a story for a web-only item imports `compiled/`, and the shells
+  // reach for the vendored upstream primitives (`alert-dialog`, `command`, `skeleton`) that only
+  // the web project can resolve. Under this one `compiled/dialog-layout`'s
+  // `@/components/ui/alert-dialog` resolves to nothing at all.
+  "exclude": ["registry/web", "vendor", "stories/web"],
   "include": [
     ".storybook",
     // The emitted palette. It is not authored here, but it is *installed* by every consumer of

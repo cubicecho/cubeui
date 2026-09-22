@@ -120,8 +120,9 @@ The same words mean the same thing in every component, and this is the point of 
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
   and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
-- **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
-  `form.state.isDirty`.
+- **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
+  called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
+  is not something the caller renders.
 
 **Form components add:**
 
