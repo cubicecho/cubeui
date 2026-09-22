@@ -12,6 +12,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { HeaderContentFooter } from "@/components/header-content-footer";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,8 +22,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
+} from "./alert-dialog";
 import {
   Dialog,
   DialogContent,

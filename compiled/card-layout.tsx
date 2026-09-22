@@ -11,7 +11,6 @@
 
 import type { ReactNode } from "react";
 import { Children } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -22,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./card";
+import { Skeleton } from "./skeleton";
 
 type CardLayoutProps = {
   /** The body. */

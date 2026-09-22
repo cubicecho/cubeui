@@ -97,27 +97,6 @@ function neutral() {
 
 const NEUTRAL = neutral();
 
-/**
- * The upstream shadcn components this registry builds on but does not ship: `separator`,
- * `skeleton`, `command`, `radio-group`, `alert-dialog`.
- *
- * They are declared as bare `registryDependencies`, which the consumer's CLI resolves against
- * ui.shadcn.com and installs into that consumer's own `components/ui/` — so an import of
- * `@/components/ui/separator` resolves in the installed tree without this registry emitting
- * anything for it. The copies in `vendor/shadcn/` exist so the web half typechecks here, and
- * they double as the list: a name is upstream because a file is there.
- */
-function upstream() {
-  const dir = join(root, "vendor/shadcn");
-  return new Set(
-    readdirSync(dir)
-      .filter((file) => file.endsWith(".tsx"))
-      .map((file) => basename(file, ".tsx")),
-  );
-}
-
-const UPSTREAM = upstream();
-
 /** Every item that has, or could have, a web half — and which of the two it gets it from. */
 function items() {
   const found = [];
@@ -171,7 +150,6 @@ function emit(item, tree) {
     text,
     compiledNames: tree,
     neutralNames: NEUTRAL,
-    upstreamNames: UPSTREAM,
   };
   return item.kind === "compile" ? compileSource(args) : passthroughSource(args);
 }

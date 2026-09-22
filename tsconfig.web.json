@@ -6,27 +6,16 @@
   // every Button in every shell, which is true and useless. Here the same specifiers resolve to
   // `compiled/`, which is what a DOM consumer actually installs, so a mismatch reported here is a
   // real gap between what cubeui's shells expect and what this registry's web half provides.
-  //
-  // `vendor/shadcn/` is the handful of upstream shadcn components these shells import and this
-  // registry does not ship — `skeleton`, `alert-dialog`, `command`, `radio-group`, `separator`.
-  // They are declared as bare `registryDependencies` so the consumer's CLI fetches them from
-  // upstream; they are vendored here only so there is something to typecheck against. cubeui does
-  // the same thing for the same reason. Nothing under `vendor/` is a registry item or ships.
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
       "@/lib/theme": ["./dist/theme.ts"],
       "@/lib/*": ["./compiled/*", "./registry/lib/*"],
-      "@/components/ui/*": [
-        "./compiled/*",
-        "./vendor/shadcn/*",
-        "./registry/ui/*",
-        "./registry/web/ui/*"
-      ],
+      "@/components/ui/*": ["./compiled/*", "./registry/ui/*", "./registry/web/ui/*"],
       "@/components/*": ["./compiled/*", "./registry/web/*"]
     }
   },
-  // The base config excludes these two; this project is the one that checks them.
+  // The base config excludes these; this project is the one that checks them.
   "exclude": [],
-  "include": ["compiled/**/*", "registry/web/**/*", "vendor/**/*", "stories/web/**/*"]
+  "include": ["compiled/**/*", "registry/web/**/*", "stories/web/**/*"]
 }

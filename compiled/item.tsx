@@ -12,8 +12,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import type * as React from "react";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { Separator } from "./separator";
 
 /**
  * Upstream ships this with `role="list"`, and it is dropped here on purpose: nothing in this

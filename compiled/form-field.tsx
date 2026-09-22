@@ -12,10 +12,10 @@
 import { CircleQuestionMark } from "lucide-react";
 import type { ReactNode } from "react";
 import { cloneElement, isValidElement, useId } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldTitle } from "./field";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Skeleton } from "./skeleton";
 
 /**
  * The box the absent control leaves behind while it is loading, per orientation: a `vertical`

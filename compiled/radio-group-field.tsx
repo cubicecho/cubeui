@@ -18,8 +18,8 @@ import {
   useFieldError,
 } from "@/components/app-form";
 import { FormField } from "@/components/form-field";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FieldDescription, FieldLabel } from "./field";
+import { RadioGroup, RadioGroupItem } from "./radio-group";
 
 /** One choice. `description` is the line under it — what picking this one means. */
 export type RadioOption = {

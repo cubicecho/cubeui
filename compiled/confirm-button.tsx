@@ -22,7 +22,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "./alert-dialog";
 
 type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onClick"> & {
   /** The question, as a heading. "Delete this workspace?" */

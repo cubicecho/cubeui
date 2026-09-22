@@ -1,15 +1,19 @@
+/**
+ * Copied from `registry/web/ui/command.tsx` by `scripts/rn2web`.
+ * Do not edit — edit the source and re-run `npm run compile`.
+ *
+ * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
+ * same passes still ran over it, and for a file already written against the DOM they find nothing
+ * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one
+ * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one
+ * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
+ */
+
 import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
-import * as React from "react";
+import type * as React from "react";
 import { cn } from "@/lib/utils";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./dialog";
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (

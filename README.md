@@ -17,7 +17,7 @@ every build.
 | 2 | the component registry, ported from `auto-cal/client` | **done** — 43 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
 | 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
-| 4 | cubeui's own items ported in as the web-only tier | **done** — 28 web-only items, cubeui fully covered |
+| 4 | cubeui's own items ported in as the web-only tier | **done** — 33 web-only items, cubeui fully covered |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -419,7 +419,9 @@ is the one nobody reads — the toast is the proof.
 
 ## Stage 4 — cubeui's own items, the web-only tier
 
-cubeui's 28 items are now here, and with them this registry covers everything cubeui published. They
+cubeui's 28 items are now here — plus the five upstream shadcn primitives they depend on, published
+from here for the reason [below](#the-five-upstream-primitives-now-published-from-here) — and with
+them this registry covers everything cubeui published. They
 are the plan's **third class**: web-only, hand-written, no React Native half and nothing for the
 compiler to do. `SplitLayout` is CSS grid tracks driven by a custom property, `PageHeader` is
 `max-w-(--breakpoint-2xl)` and `[&_svg]:size-5`; Yoga has no grid and NativeWind has no arbitrary
@@ -442,7 +444,7 @@ without either weakening the rule or carrying a marker field that has to be kept
 no native half, `card` does, and their item JSON was the same shape down to both shipping one file
 out of `compiled/` — so the only ways to tell were installing it and reading the file header,
 probing `/r/native/<name>.json` for a 404, or reading this table. `registry.mjs` now appends
-*"Web-only: no React Native half."* to each of the 28 descriptions in the web registry, which is
+*"Web-only: no React Native half."* to each of the 33 descriptions in the web registry, which is
 the one field already published and already printed by the CLI at install time. It is appended
 rather than written into `registry.web-only.json`, so the 29th item cannot be the one that forgets.
 In the native registry the item simply is not there, which says it more plainly.
@@ -486,23 +488,32 @@ through to `DayPicker`.
   `components/ui/color-picker.tsx`, because here it is a primitive rather than a shell. A consumer
   flipping over gets a second file rather than an overwrite; delete the old one and fix the import.
 
-### Upstream shadcn, vendored for the typechecker
+### The five upstream primitives, now published from here
 
-Five items — `separator`, `skeleton`, `command`, `radio-group`, `alert-dialog` — are upstream
-shadcn's, declared as **bare** `registryDependencies` so the consumer's CLI fetches them from
-ui.shadcn.com. Nothing here ships them. `vendor/shadcn/` holds a copy anyway, for one reason: the
-web half has to typecheck, and `@/components/ui/separator` has to resolve to *something*.
+`separator`, `skeleton`, `command`, `radio-group` and `alert-dialog` were the last bare
+`registryDependencies` in this registry: names the consumer's CLI resolved against ui.shadcn.com
+rather than against this repo. `vendor/shadcn/` held a copy of each so the web half had something to
+typecheck against, and that directory doubled as the compiler's "leave this import alone" list.
 
-That directory doubles as the compiler's list. An import of a vendored basename is left alone rather
-than rewritten to `./`, because it resolves in the installed tree and not in this one — a name is
-upstream because a file is there, which keeps the two from drifting. Before that rule the compiler
-refused nine items, `item` and `multi-select` among them, on the grounds that a compiled tree cannot
-reach back into a React Native component. `separator` is not one; it is already a DOM component.
+They are `@cubeui/*` items now, out of `registry/web/ui/` beside `item` and `empty`, and `vendor/`
+is gone. **The reason is `cn`.** Upstream's published primitives import it from an npm package
+called `cn`; every file this registry ships imports it from `@/lib/utils`. Installing anything from
+here therefore split a consumer's `components/` down the middle — the shells calling one `cn`, the
+primitives under them calling another, both in the tree, and `cn` added to `dependencies` in
+`package.json` by the CLI. Nothing errors. A project that has customised `cn` has customised it for
+half its components, and the first sign is a class that should have been merged and was not.
+
+The cost is owning shadcn's update cadence for five files, which is the price of the install being
+one dialect. It is the same trade `item` and `empty` were already published on.
+
+With no upstream names left, the compiler's third case for an import specifier goes too: every
+`@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
+rewritten to `./` like any other.
 
 ### Two tsconfig projects, split by platform
 
 `tsconfig.json` is React Native — `registry/{ui,layout,lib}`, `stories`, `scripts`, `tokens`.
-`tsconfig.web.json` is everything DOM — `compiled/`, `registry/web/`, `vendor/`. They are split by
+`tsconfig.web.json` is everything DOM — `compiled/`, `registry/web/`, `stories/web/`. They are split by
 **platform, not by directory-under-test**, because `@/components/ui/button` has to mean the compiled
 web half in one and the React Native one in the other.
 

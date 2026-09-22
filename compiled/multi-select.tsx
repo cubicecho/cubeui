@@ -12,6 +12,10 @@
 import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { useId, useMemo, useState } from "react";
+import { readableTextColor } from "@/lib/readable-text-color";
+import { cn } from "@/lib/utils";
+import { Badge } from "./badge";
+import { Button } from "./button";
 import {
   Command,
   CommandEmpty,
@@ -19,11 +23,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { readableTextColor } from "@/lib/readable-text-color";
-import { cn } from "@/lib/utils";
-import { Badge } from "./badge";
-import { Button } from "./button";
+} from "./command";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 export type MultiSelectOption = {

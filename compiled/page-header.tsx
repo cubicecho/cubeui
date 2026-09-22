@@ -10,8 +10,8 @@
  */
 
 import type { ReactNode } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "./skeleton";
 
 /**
  * How each heading level is drawn.

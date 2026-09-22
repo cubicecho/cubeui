@@ -50,12 +50,20 @@
 // app — and it is also the trap, because the string is checked by nobody until a consumer runs
 // `shadcn add`.
 //
-// Two ways it goes wrong. A namespace other than `@cubeui` silently asks the consumer to have
-// configured a key nobody told them about. And a dependency on an item this registry does not
-// hold resolves to a 404 mid-install, after files have already been written. The second is not
-// hypothetical: it is what `registry.web.json`'s fixed-point drop exists to prevent, since an item
-// whose web half was refused takes its dependents with it, and this is the assertion that the
-// drop actually happened.
+// Three ways it goes wrong. A namespace other than `@cubeui` silently asks the consumer to have
+// configured a key nobody told them about. A dependency on an item this registry does not hold
+// resolves to a 404 mid-install, after files have already been written — not hypothetical: it is
+// what `registry.web.json`'s fixed-point drop exists to prevent, since an item whose web half was
+// refused takes its dependents with it, and this is the assertion that the drop actually happened.
+//
+// And a *bare* name — `separator`, `skeleton` — resolves against ui.shadcn.com instead of against
+// anything here, which is a second registry's files arriving inside an install of this one. That
+// reads like a saving until you look at what comes down: upstream's published primitives import
+// `cn` from an npm package, every file this registry ships imports it from `@/lib/utils`, and a
+// consumer who installs one item ends up with both — two functions with one name, half their
+// components calling each, and nothing erroring. The five that used to be bare are published from
+// `registry/web/ui/` now, so the rule can be what it always meant: every cross-item dependency
+// names this registry.
 //
 // ## 6. Every item file in a built registry is still an item of that registry
 //
@@ -421,9 +429,9 @@ for (const built of BUILT) {
     }
 
     for (const dependency of item.registryDependencies ?? []) {
-      // A bare name is upstream shadcn's own registry and is not ours to check; a full URL
-      // resolves on its own. Only a namespaced one goes through the consumer's map.
-      if (!dependency.startsWith("@")) continue;
+      // A full URL resolves on its own and names its own registry. Everything else goes through
+      // the consumer's map, including a bare name — which goes through it to ui.shadcn.com.
+      if (/^https?:\/\//.test(dependency)) continue;
       wanted.push({ from: item.name, dependency });
     }
 
@@ -501,6 +509,12 @@ for (const built of BUILT) {
   }
 
   for (const { from, dependency } of wanted) {
+    if (!dependency.startsWith("@")) {
+      unreachable.push(
+        `${built}: "${from}" depends on \`${dependency}\` — a bare name, which is ui.shadcn.com's`,
+      );
+      continue;
+    }
     const [namespace, ...rest] = dependency.slice(1).split("/");
     const name = rest.join("/");
     if (namespace !== NAMESPACE.slice(1)) {
@@ -562,7 +576,9 @@ if (unreachable.length > 0) {
   console.error(
     `\nA \`registryDependencies\` entry resolves against the *consumer's* \`components.json\`, so` +
       `\n${NAMESPACE} has to be the namespace and the item has to be in this registry. Otherwise the` +
-      "\ninstall 404s partway through, after files have already been written into their tree.",
+      "\ninstall 404s partway through, after files have already been written into their tree — or," +
+      "\nfor a bare name, quietly succeeds and brings upstream shadcn's own files in beside ours," +
+      "\nimporting `cn` from a package rather than from `@/lib/utils`.",
   );
 }
 

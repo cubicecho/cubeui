@@ -747,7 +747,7 @@ function rewriteTypes(sourceFile, types, diagnostics) {
  * sibling import is rewritten to the sibling's compiled file — and refused if that file is not
  * being produced.
  */
-function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, upstreamNames, diagnostics) {
+function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics) {
   for (const decl of sourceFile.getImportDeclarations()) {
     const spec = decl.getModuleSpecifierValue();
 
@@ -768,19 +768,6 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, upstreamName
      * alone and the shadcn CLI rewrites the alias at install time as usual.
      */
     if (neutralNames.has(name)) continue;
-
-    /**
-     * An upstream shadcn component — `separator`, `skeleton`, `command`. It is not compiled
-     * here and never will be: it is already a DOM component, the item declares it as a bare
-     * `registryDependency`, and the consumer's CLI fetches it from ui.shadcn.com and writes it
-     * to that consumer's own `components/ui/`. So `@/components/ui/separator` resolves in the
-     * installed tree — leaving it alone is what makes it resolve, and rewriting it to `./`
-     * would point at a file this registry does not ship.
-     *
-     * `vendor/shadcn/` is the list, because that is where the copies used to typecheck the web
-     * half live. A name is upstream because a file is there, which keeps the two from drifting.
-     */
-    if (upstreamNames.has(name)) continue;
 
     if (!compiledNames.has(name)) {
       refuse(
@@ -853,7 +840,6 @@ export function compileSource({
   text,
   compiledNames = new Set(),
   neutralNames = new Set(),
-  upstreamNames = new Set(),
   origin = "compile",
 }) {
   const project = new Project({ useInMemoryFileSystem: true, skipAddingFilesFromTsConfig: true });
@@ -880,7 +866,7 @@ export function compileSource({
   checkElementLeaks(sourceFile, elements, diagnostics);
   checkNativePropLeaks(sourceFile, diagnostics);
   checkNestedInteractive(sourceFile, diagnostics);
-  rewriteSpecifiers(sourceFile, compiledNames, neutralNames, upstreamNames, diagnostics);
+  rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics);
   if (diagnostics.length) return { code: null, diagnostics };
 
   return { code: `${HEADER[origin](filePath)}\n${sourceFile.getFullText()}`, diagnostics };
