@@ -43,6 +43,19 @@ type ControlProps = {
   "aria-required": true | undefined;
 };
 
+/**
+ * The ids of the field's own parts, handed to the function form of `control` beside the props.
+ *
+ * Not spread with them, because they are not attributes of the control: they are for a control
+ * with a second element to name. A `ColorPicker` is one — the `<label htmlFor>` names its hex box,
+ * and its swatch row is a `radiogroup` that the label, being a `<label>`, cannot also name, so the
+ * row points back at the label's `id` with `aria-labelledby`.
+ */
+type FieldParts = {
+  /** The label's `id`, whenever there is a label; the `FieldTitle`'s under `asGroup`. */
+  labelId: string | undefined;
+};
+
 type FormFieldProps = {
   /**
    * The control itself — one `<Input>`, `<Textarea>`, `<Checkbox>`, `<Switch>`.
@@ -72,7 +85,7 @@ type FormFieldProps = {
    * )}
    * ```
    */
-  control: ReactNode | ((props: ControlProps) => ReactNode);
+  control: ReactNode | ((props: ControlProps, parts: FieldParts) => ReactNode);
   /**
    * What the control is called, as a real `<FieldLabel htmlFor>`. Most of why this component
    * exists: a placeholder is not a label — it leaves at the first keystroke, and a field wearing
@@ -279,14 +292,17 @@ export function FormField({
   // at the wrong element the three of them still read as one field in the DOM.
   const descriptionId = description ? `${controlId}-description` : undefined;
   const errorId = shownError ? `${controlId}-error` : undefined;
-  // Only minted in group mode: outside it the `<label htmlFor>` is the association, and a second
-  // one pointing the other way is two names for one control.
-  const labelId = asGroup && label ? `${controlId}-label` : undefined;
+  // Minted whenever there is a label, but only *wired* in group mode: outside it the
+  // `<label htmlFor>` is the association, and a second one pointing the other way is two names for
+  // one control. The function form of `control` is handed it regardless, for a control with a
+  // second part to name (see `FieldParts`).
+  const labelId = label ? `${controlId}-label` : undefined;
+  const groupLabelId = asGroup ? labelId : undefined;
 
   const wired = element
     ? cloneElement(element, {
         id: controlId,
-        "aria-labelledby": element.props["aria-labelledby"] ?? labelId,
+        "aria-labelledby": element.props["aria-labelledby"] ?? groupLabelId,
         // Appended, not replaced: a control already described by something outside this field —
         // a shared unit hint, a password policy — keeps it and gains these.
         "aria-describedby":
@@ -298,13 +314,16 @@ export function FormField({
         "aria-required": element.props["aria-required"] ?? (required || undefined),
       })
     : renderControl
-      ? renderControl({
-          id: controlId,
-          "aria-labelledby": labelId,
-          "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
-          "aria-invalid": shownError ? true : undefined,
-          "aria-required": required || undefined,
-        })
+      ? renderControl(
+          {
+            id: controlId,
+            "aria-labelledby": groupLabelId,
+            "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
+            "aria-invalid": shownError ? true : undefined,
+            "aria-required": required || undefined,
+          },
+          { labelId },
+        )
       : control;
 
   const body = loading ? (
@@ -338,6 +357,7 @@ export function FormField({
     </FieldTitle>
   ) : (
     <FieldLabel
+      id={labelId}
       // No control to point at while one is being drawn for. A `for` naming an element that is
       // not there is worse than no `for`: it reads as wired and is not.
       htmlFor={loading ? undefined : controlId}

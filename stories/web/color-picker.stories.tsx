@@ -95,14 +95,69 @@ export const ShorthandMatchesTheSwatch: Story = {
 export const AColourNotOnTheListCanBeTyped: Story = {
   args: { swatches: ACTIVITY_COLORS },
   play: async ({ canvas }) => {
-    // TODO(color-picker): type it without the `#`. `main`'s picker put the `#` back — people paste
-    // out of design tools without one — and committed only a whole colour; next's hands the box's
-    // text to `onValueChange` as typed, so `#fffaa` reaches the value too.
-    await userEvent.type(canvas.getByLabelText("Hex"), "#2563eb");
-    await waitFor(() => expect(canvas.getByTestId("value")).toHaveTextContent("#2563eb"));
+    // Without the `#`, as it comes out of a design tool: the picker puts it back.
+    const hex = canvas.getByLabelText("Hex");
+    await userEvent.type(hex, "2563EB");
+    await waitFor(() => expect(canvas.getByTestId("value")).toHaveTextContent("#2563EB"));
+    // The box keeps what was typed while it is being typed in, and the case is left alone.
+    expect(hex).toHaveValue("2563EB");
     for (const swatch of canvas.getAllByRole("radio")) {
       expect(swatch).toHaveAttribute("aria-checked", "false");
     }
+    // Leaving it shows the colour as it was saved.
+    await userEvent.tab();
+    expect(hex).toHaveValue("#2563EB");
+  },
+};
+
+/** A colour on the list, typed in any spelling, is that swatch. */
+export const TypingASwatchChoosesIt: Story = {
+  args: { swatches: ACTIVITY_COLORS },
+  play: async ({ canvas }) => {
+    await userEvent.type(canvas.getByLabelText("Hex"), "#F59E0B");
+    await waitFor(() =>
+      expect(canvas.getByRole("radio", { name: "#f59e0b" })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      ),
+    );
+  },
+};
+
+/**
+ * Half a colour is not a colour. `#fffaa` is on its way somewhere, so it stays in the box and
+ * never reaches the value — which holds the last whole colour typed, here the shorthand `#fff`
+ * the box passed through on the way.
+ */
+export const APartlyTypedColourIsNotTheValue: Story = {
+  args: { initial: "#10b981" },
+  play: async ({ canvas }) => {
+    const hex = canvas.getByLabelText("Hex");
+    await userEvent.clear(hex);
+    await userEvent.type(hex, "#ff");
+    expect(canvas.getByTestId("value")).toHaveTextContent("No colour");
+    await userEvent.type(hex, "faa");
+    expect(hex).toHaveValue("#fffaa");
+    expect(canvas.getByTestId("value")).toHaveTextContent("#fff");
+    expect(canvas.getByTestId("value")).not.toHaveTextContent("#fffaa");
+
+    // Leaving an unfinished draft puts the value back in the box rather than claiming the draft.
+    await userEvent.tab();
+    expect(hex).toHaveValue("#fff");
+  },
+};
+
+/** Something that is not hex at all never reaches the value either. */
+export const NotAColourIsNotTheValue: Story = {
+  args: { initial: "#10b981" },
+  play: async ({ canvas }) => {
+    const hex = canvas.getByLabelText("Hex");
+    await userEvent.clear(hex);
+    await userEvent.type(hex, "red");
+    expect(canvas.getByTestId("value")).toHaveTextContent("No colour");
+    await userEvent.clear(hex);
+    await userEvent.type(hex, "#12345g");
+    expect(canvas.getByTestId("value")).toHaveTextContent("#123");
   },
 };
 
@@ -149,6 +204,11 @@ export const TheHelpersHoldUp: Story = {
     expect(isHexColor("#fff")).toBe(true);
     expect(isHexColor("#ffffff")).toBe(true);
     expect(isHexColor("#ff")).toBe(false);
+    expect(isHexColor("#fffaa")).toBe(false);
+    // No alpha: a swatch is opaque, so a colour with a channel it cannot show is not taken.
+    expect(isHexColor("#ffff")).toBe(false);
+    expect(isHexColor("#ffffff80")).toBe(false);
+    expect(isHexColor("ffffff")).toBe(false);
     expect(isHexColor("rebeccapurple")).toBe(false);
 
     expect(new Set(COLOR_SWATCHES).size).toBe(COLOR_SWATCHES.length);

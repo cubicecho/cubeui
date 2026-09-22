@@ -40,11 +40,15 @@ import { cn } from "@/lib/utils";
 /**
  * The shared contract, widened to everything a DOM `<input>` takes.
  *
- * `onBlur` and `min`/`max` take the DOM's wider types — a `() => void` is still one — and `type`
- * is every DOM input type, of which `InputType` is the cross-platform part.
+ * `onBlur`, `min`/`max`, `value` and `defaultValue` take the DOM's wider types — a `() => void` is
+ * still one, and a `string` is still a `string | number | readonly string[]` — and `type` is every
+ * DOM input type, of which `InputType` is the cross-platform part.
  */
 export type InputProps = Omit<ComponentPropsWithoutRef<"input">, "type" | "className"> &
-  Omit<SharedInputProps, "type" | "ref" | "onBlur" | "min" | "max" | "inputMode" | "value"> & {
+  Omit<
+    SharedInputProps,
+    "type" | "ref" | "onBlur" | "min" | "max" | "inputMode" | "value" | "defaultValue"
+  > & {
     type?: HTMLInputTypeAttribute | undefined;
     ref?: Ref<HTMLInputElement> | Ref<InputHandle> | undefined;
   };
