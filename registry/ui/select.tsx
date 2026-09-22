@@ -47,8 +47,23 @@ const SelectContext = createContext<SelectState>({
   setOpen: () => {},
 });
 
-function Select({ value, onValueChange, disabled = false, children }: SelectProps) {
-  const [open, setOpen] = useState(false);
+function Select({
+  value,
+  onValueChange,
+  disabled = false,
+  open: openProp,
+  onOpenChange,
+  children,
+}: SelectProps) {
+  // Controlled when `open` is passed and self-driving otherwise, with `onOpenChange` reported
+  // either way. The internal state is kept even while controlled rather than branched away,
+  // because the branch would be two code paths through the same sheet for no gain.
+  const [openState, setOpenState] = useState(false);
+  const open = openProp ?? openState;
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    onOpenChange?.(next);
+  };
   return (
     <SelectContext.Provider
       value={{ value, onValueChange, disabled, open, setOpen: disabled ? () => {} : setOpen }}

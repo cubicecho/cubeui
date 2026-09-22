@@ -14,6 +14,16 @@ export type SelectProps = {
   value: string;
   onValueChange: (value: string) => void;
   disabled?: boolean | undefined;
+  /**
+   * Whether the menu is open, and being told when that changes.
+   *
+   * Uncontrolled unless `open` is passed, so `onOpenChange` on its own is a caller who wants to
+   * *know* rather than to drive — which is the case that asked for this. A list the server owns
+   * should be fetched when the menu opens rather than when the screen mounts, and the opening is
+   * the one thing only this component knows.
+   */
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   children: ReactNode;
 };
 

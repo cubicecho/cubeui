@@ -34,12 +34,17 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "./icons";
 
-function Select({ value, onValueChange, disabled, children }: SelectProps) {
+function Select({ value, onValueChange, disabled, open, onOpenChange, children }: SelectProps) {
   return (
     <SelectPrimitive.Root
       value={value}
       onValueChange={onValueChange}
       {...(disabled === undefined ? {} : { disabled })}
+      // Spread conditionally rather than passed as `undefined`: radix reads the presence of
+      // `open` as the switch between controlled and uncontrolled, and an explicit `undefined`
+      // would leave a caller who passes only `onOpenChange` with a menu that never opens.
+      {...(open === undefined ? {} : { open })}
+      {...(onOpenChange === undefined ? {} : { onOpenChange })}
     >
       {children}
     </SelectPrimitive.Root>
