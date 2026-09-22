@@ -1,110 +1,90 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Plus } from "lucide-react";
+import { Text } from "react-native";
 import { expect, within } from "storybook/test";
-import { Section } from "@/registry/new-york/layout/section";
-import { Button } from "@/registry/new-york/ui/button";
-import { Input } from "@/registry/new-york/ui/input";
-import { Label } from "@/registry/new-york/ui/label";
+import { Section as Compiled } from "../compiled/section";
+import { Section as Native } from "../registry/layout/section";
+import { SideBySide } from "./side-by-side";
 
+/**
+ * `section` was a web-only item until a React Native app wrote its own. These stories are what say
+ * the one source still gives the DOM what the hand-written `<section>` + `<h2>` did: a heading of
+ * the right rank, and a region named by it.
+ */
 const meta = {
-  title: "Layout/Section",
-  component: Section,
-  parameters: { layout: "centered" },
-} satisfies Meta<typeof Section>;
+  title: "Stage 0/Section",
+  component: Native,
+} satisfies Meta<typeof Native>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const Fields = () => (
-  <div className="grid w-[420px] gap-4">
-    <div className="grid gap-2">
-      <Label htmlFor="work-length">Work length</Label>
-      <Input id="work-length" defaultValue="25" />
-    </div>
-    <div className="grid gap-2">
-      <Label htmlFor="break-length">Break length</Label>
-      <Input id="break-length" defaultValue="5" />
-    </div>
-  </div>
-);
+const body = <Text className="text-foreground text-sm">Work 25 minutes, rest 5.</Text>;
 
 export const Default: Story = {
-  args: { title: "Pomodoro", content: <Fields /> },
-};
-
-/**
- * The heading is an `h2`, not a small grey `div`. A settings screen is thirty fields in six
- * groups, and the heading list is the only way that is navigable without arrowing through all
- * thirty — which is what the hand-written versions of this in three of these apps cost.
- */
-export const TheTitleIsAHeading: Story = {
-  args: { title: "Pomodoro", content: <Fields /> },
-  play: async ({ canvas }) => {
-    expect(canvas.getByRole("heading", { level: 2, name: "Pomodoro" })).toBeVisible();
-  },
-};
-
-/** A line under the title when the group needs a sentence, not just a name. */
-export const WithADescription: Story = {
-  args: {
-    title: "Notifications",
-    description: "How this workspace reaches you when something needs a decision.",
-    content: <Fields />,
-  },
-};
-
-/** The heading row's far end. An add button, a count, a switch that turns the group off. */
-export const WithAnAction: Story = {
-  args: {
-    title: "Aliases",
-    action: (
-      <Button size="sm" variant="outline">
-        <Plus /> Add
-      </Button>
-    ),
-    content: <Fields />,
-  },
-  play: async ({ canvas }) => {
-    expect(canvas.getByRole("button", { name: "Add" })).toBeVisible();
-  },
-};
-
-/** `divider` draws the hairline one of the three call sites had and the other two did not. */
-export const WithARule: Story = {
-  args: { title: "Danger zone", divider: true, content: <Fields /> },
-};
-
-/**
- * No title, just the gap and the body. Useful as the last group on a page, the one that needs no
- * name — and it must not leave an empty heading row behind.
- */
-export const ContentOnly: Story = {
-  args: { content: <Fields /> },
-  play: async ({ canvasElement }) => {
-    expect(canvasElement.querySelector("[data-slot=section-heading]")).toBeNull();
-    expect(canvasElement.querySelector("[data-slot=section-content]")).not.toBeNull();
-  },
-};
-
-/**
- * Stacked, which is the only way it is ever really used. The heading sizes and the gaps come
- * from one place, so the sixth section cannot be the one someone typed `tracking-wide` into.
- */
-export const Stacked: Story = {
-  args: { title: "Pomodoro", content: <Fields /> },
-  render: () => (
-    <div className="w-[460px] space-y-8">
-      <Section title="Pomodoro" content={<Fields />} />
-      <Section
-        title="Notifications"
-        description="How this workspace reaches you when something needs a decision."
-        content={<Fields />}
-      />
-      <Section title="Danger zone" divider content={<Fields />} />
-    </div>
+  args: { title: "Pomodoro", description: "How long a focus block runs.", divider: true },
+  render: (args) => (
+    <SideBySide
+      native={<Native {...args} content={body} />}
+      compiled={<Compiled {...args} content={body} />}
+    />
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    expect(canvas.getAllByRole("heading", { level: 2 })).toHaveLength(3);
+
+    // Both halves are a level-2 heading named by the title — the rank is a prop now, and a rank
+    // known only at runtime is `role="heading"` + `aria-level` rather than an `<h2>`.
+    const headings = canvas.getAllByRole("heading", { level: 2, name: "Pomodoro" });
+    await expect(headings).toHaveLength(2);
+    const [native, compiled] = headings;
+    if (!native || !compiled) throw new Error("both halves should render");
+
+    // The compiled root is a `<section>` named by its title, which is what makes it a landmark.
+    const region = canvas.getByRole("region", { name: "Pomodoro" });
+    await expect(region.tagName).toBe("SECTION");
+
+    const nativeStyle = getComputedStyle(native);
+    const compiledStyle = getComputedStyle(compiled);
+    await expect(nativeStyle.color).toBe("rgb(115, 115, 115)");
+    await expect(compiledStyle.color).toBe(nativeStyle.color);
+    await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
+    await expect(compiledStyle.textTransform).toBe("uppercase");
+    await expect(compiledStyle.letterSpacing).toBe(nativeStyle.letterSpacing);
+  },
+};
+
+export const Level: Story = {
+  args: { title: "Breaks", level: 3 },
+  render: (args) => (
+    <SideBySide
+      native={<Native {...args} content={body} />}
+      compiled={<Compiled {...args} content={body} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByRole("heading", { level: 3, name: "Breaks" })).toHaveLength(2);
+    await expect(canvas.queryAllByRole("heading", { level: 2 })).toHaveLength(0);
+  },
+};
+
+export const CardSurface: Story = {
+  args: { title: "Danger zone", surface: "card" },
+  render: (args) => (
+    <SideBySide
+      native={<Native {...args} className="native-root" content={body} />}
+      compiled={<Compiled {...args} className="compiled-root" content={body} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const native = canvasElement.querySelector(".native-root");
+    const compiled = canvasElement.querySelector(".compiled-root");
+    if (!native || !compiled) throw new Error("both halves should render");
+
+    const nativeStyle = getComputedStyle(native);
+    const compiledStyle = getComputedStyle(compiled);
+    await expect(compiledStyle.borderTopWidth).toBe("1px");
+    await expect(compiledStyle.borderTopWidth).toBe(nativeStyle.borderTopWidth);
+    await expect(compiledStyle.paddingTop).toBe(nativeStyle.paddingTop);
+    await expect(compiledStyle.backgroundColor).toBe(nativeStyle.backgroundColor);
   },
 };

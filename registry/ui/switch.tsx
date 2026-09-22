@@ -1,0 +1,55 @@
+/**
+ * The native switch: a `Pressable` track with a thumb that moves, rather than
+ * react-native's `Switch`. RN's takes `trackColor`/`thumbColor` as raw colour
+ * values, which would pin the control outside the tailwind theme and make it
+ * the one control that does not follow dark mode with the rest.
+ *
+ * `switch.web.tsx` is radix; `switch-base.ts` holds the contract and the track
+ * classes, so the two cannot drift visually.
+ */
+
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import {
+  SWITCH_THUMB_CLASS,
+  SWITCH_TRACK_CLASS,
+  type SwitchProps,
+} from "@/components/ui/switch-base";
+import { cn } from "@/lib/utils";
+
+function Switch({
+  checked: checkedProp,
+  defaultChecked = false,
+  onCheckedChange,
+  disabled,
+  onBlur,
+  className,
+}: SwitchProps) {
+  // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
+  const [checkedState, setCheckedState] = useState(defaultChecked);
+  const checked = checkedProp ?? checkedState;
+  return (
+    <Pressable
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onPress={() => {
+        setCheckedState(!checked);
+        onCheckedChange?.(!checked);
+      }}
+      onBlur={onBlur}
+      className={cn(
+        SWITCH_TRACK_CLASS,
+        checked ? "bg-primary" : "bg-input",
+        // `disabled:` never applies to a Pressable — apply the state directly.
+        disabled && "opacity-50",
+        className,
+      )}
+    >
+      <View className={cn(SWITCH_THUMB_CLASS, checked ? "ml-4" : "ml-0")} />
+    </Pressable>
+  );
+}
+
+export type { SwitchProps };
+export { Switch };

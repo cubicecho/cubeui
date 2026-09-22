@@ -1,0 +1,366 @@
+/**
+ * `registry.web.json`, derived from `registry.json`.
+ *
+ * Two registries, one repo, one source. The compiled web half builds to `public/r` and the React
+ * Native half to `public/r/native`, and a consumer points `@cubeui` at whichever one matches the
+ * platform it is:
+ *
+ *   DOM app    "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json"
+ *   Expo app   "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json"
+ *
+ * The web half holds the shorter URL even though this registry is React Native first, and that is
+ * the whole point of the layout. `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
+ * `@cubeui`, and they were mapped to it before this registry had a native half — so keeping `/r/`
+ * meaning "web" made adding one a no-op for every consumer that already existed. The Expo apps are new
+ * consumers with no mapping to preserve, so they take the longer URL. Pointing `/r/` at the native
+ * half instead would have silently handed React Native source to ten DOM apps.
+ *
+ * The item names are the same on both sides — `card` is `card` — which is the whole point. A single
+ * registry could not do that: the shadcn CLI resolves a cross-item import by the source file's
+ * *basename*, so `registry/ui/card.tsx` and `compiled/card.tsx` in one registry would be ambiguous,
+ * and the way out would have been a permanent `web-card` in every DOM consumer's file tree. Split
+ * into two registries the basenames never meet, and `check-registry-build.mjs` checks each one on
+ * its own.
+ *
+ * `registryDependencies` need no rewriting at all, which is the part that makes this cheap. They are
+ * already written `@cubeui/utils`, and `@cubeui` resolves against the *consumer's* `components.json`
+ * — so the same string reaches the React Native `utils` in an Expo app and the compiled one in a DOM
+ * app, with nothing in this repo knowing which.
+ *
+ * Derived rather than hand-maintained, because a second registry.json is a second place to forget.
+ * `npm run compile` writes it and `compile:check` fails if it is stale.
+ */
+
+import { readFileSync } from "node:fs";
+import { basename, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import ts from "typescript";
+import { isSource, packageName, packagesIn } from "../imports.mjs";
+
+const root = fileURLToPath(new URL("../..", import.meta.url));
+
+/**
+ * Which package wants which other package alongside it, for narrowing `dependencies` below.
+ *
+ * Small and explicit rather than read out of `node_modules`: this runs inside `npm run compile`,
+ * whose job is to write a file that has to be byte-identical on every machine, and a peer list
+ * read from an installed tree is a dependency of this repo's lockfile. The guard in
+ * `check-registry-build.mjs` does read the real manifests, and it is what fails if this drifts.
+ */
+const PEERS_OF = { "radix-ui": ["@types/react", "@types/react-dom"] };
+
+/**
+ * The packages an item's *web* files import, which is what the web half of it declares.
+ *
+ * Computed rather than listed, and that is the point. The hand-written version of this was a
+ * `NATIVE_ONLY` set — `nativewind`, `react-native-svg`, the `expo-*` pair — subtracted from
+ * whatever the item declared. It answered the question it was asked and missed the one it was
+ * not: `calendar` declared `date-fns@^4.4.0` for the hand-written native calendar, `date-fns`
+ * is not native-only, and so the web half went on asking every DOM consumer to install a date
+ * library its `react-day-picker` calendar never imports.
+ *
+ * The subtraction was also the wrong shape. "Which packages does React Native need" is a fact
+ * about npm that a list here has to keep up with; "which packages does this file import" is a
+ * fact about the file, and the file is right here. So the web dependency list is filtered to
+ * what the web files actually reach for, and a package drops out of it by no longer being
+ * imported rather than by being remembered.
+ *
+ * `registry.json` is the union of both halves as a result — every package either half imports,
+ * each with its range — and each registry is that union narrowed to itself. Rule 7 of
+ * `check-registry-build.mjs` is the assertion that the narrowing came out exact, on both sides.
+ */
+function webPackages(files, emitted) {
+  const used = new Set();
+  for (const file of files) {
+    if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
+    for (const name of packagesIn(webText(file, emitted), file.path)) used.add(name);
+  }
+  return used;
+}
+
+/**
+ * What a web file will contain once built. A compiled file's text is the transform's output, which
+ * is the only place it exists — it is what the consumer installs, and its imports are not the
+ * React Native source's.
+ */
+function webText(file, emitted) {
+  if (!isSource(file.path)) return "";
+  const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
+  return compiled ?? readFileSync(join(root, file.path), "utf8");
+}
+
+/**
+ * Files that exist only to serve React Native, and so are not in the web half of the item that
+ * ships them.
+ *
+ * `web-as.d.ts` augments React Native's `ViewProps`, which a DOM app has no module to augment — it
+ * is the compiler's *input* vocabulary, and by the time an item reaches this registry the compiler
+ * has already read it and emitted the element it named.
+ */
+const NATIVE_ONLY_FILES = new Set(["registry/lib/web-as.d.ts"]);
+
+/**
+ * Files the web half of an item ships and the native half has no counterpart for, so there is
+ * nothing in `registry.json` to derive them from. The mirror of `NATIVE_ONLY_FILES` above.
+ *
+ * One entry, and it is the compiler's own output. `cube-rn-reset.css` is what replaces
+ * react-native-web's per-component base class for a component that no longer has
+ * react-native-web — 24 of the compiled components wear one of its classes, and a `.tsx` file
+ * cannot declare that its classes come from somewhere. It rides with `tokens` because that is
+ * the one item every DOM consumer installs and the stylesheet that `@import`s it.
+ *
+ * Deliberately not its own item. `@cubeui/reset` would be a 25-item `registryDependencies` edit
+ * and a thing a consumer can decline, and a component whose layout classes are optional is a
+ * component that renders wrong rather than one that fails to install.
+ *
+ * `dependencies` here is the same idea for a package: one the web half needs and the native half
+ * must not be made to install. `tw-animate-css` is where `animate-in`, `fade-in-0`, `zoom-in-95`
+ * and `slide-in-from-*` live — not core Tailwind, which is why four items wore them undeclared —
+ * and `tokens.web.css` is what imports it. `registry.json` cannot carry it, because that file
+ * *is* the native registry and an Expo app has no use for a DOM keyframe library.
+ */
+const WEB_ONLY = {
+  tokens: {
+    files: [
+      { path: "compiled/cube-rn-reset.css", type: "registry:file", target: "~/cubeui-reset.css" },
+    ],
+    dependencies: ["tw-animate-css@^1.4.0"],
+  },
+};
+
+/**
+ * What a web-only item says about itself, appended to its description.
+ *
+ * The tier was invisible from outside this repo. `section` has no native half and `card` does, and
+ * their published JSON is the same shape — same keys, both shipping one file out of `compiled/` —
+ * so the three ways to find out were installing it and reading the file header, probing
+ * `/r/native/<name>.json` for a 404, or reading a table in this repo's README. That is the
+ * deciding fact about an item for anyone choosing components for an app that might go native, and
+ * it was the one fact the registry did not carry.
+ *
+ * In `description` rather than a new field, because `description` is already published, already
+ * printed by the CLI at install time, and needs nothing from the shadcn item schema. Appended here
+ * rather than written into `registry.web-only.json`, because a sentence a human has to remember to
+ * copy onto the 29th item is a sentence that will be missing from the 29th item.
+ *
+ * Only the web registry gets it. In the native registry the item does not exist at all, which says
+ * the same thing more plainly.
+ */
+const WEB_ONLY_NOTE = "Web-only: no React Native half.";
+
+/**
+ * Descriptions are shared: an item is one component, and "a radix listbox on web, a Modal sheet on
+ * device" is worth reading in either registry — it says what arrives and that the other half
+ * exists. The exception is a description that names a file this registry does not ship.
+ */
+const DESCRIPTIONS = {
+  tokens:
+    "The palette as a Tailwind stylesheet, emitted from the same source as the native one so the " +
+    "two cannot drift.",
+};
+
+/**
+ * Where an item's file comes from in the web registry.
+ *
+ * Returns `null` for a file the web half does not ship, and the string `"missing"` for one that
+ * should have compiled and did not — the caller turns that into a dropped item rather than a
+ * registry entry pointing at a file that is not there.
+ */
+function webPath(path, emitted) {
+  if (NATIVE_ONLY_FILES.has(path)) return null;
+
+  // A `-base.ts` is the contract both halves implement. It is platform-neutral by construction and
+  // installs unchanged, which is also why the compiled tree leaves its import specifiers alone.
+  if (/-base\.ts$/.test(path)) return path;
+
+  // `.tsx` and `.web.tsx` of the same item are two sources for one output, so the pair collapses
+  // here: `select.tsx` and `select.web.tsx` both name `compiled/select.tsx`, and the duplicate is
+  // dropped by the caller.
+  if (path.endsWith(".tsx")) {
+    const file = `${basename(path).replace(/\.web\.tsx$/, ".tsx")}`;
+    return emitted.has(file) ? `compiled/${file}` : "missing";
+  }
+
+  if (path.startsWith("registry/lib/")) {
+    const file = basename(path);
+    return emitted.has(file) ? `compiled/${file}` : path;
+  }
+
+  // The palette, in the encoding the platform can read. The web one is `oklch()`; `cubeui-theme.ts` exists
+  // for React Native props that take a colour string and cannot read a CSS variable, which is not a
+  // problem the DOM has.
+  if (path === "dist/tokens.native.css") return "dist/tokens.web.css";
+  if (path === "dist/cubeui-theme.ts") return null;
+
+  return path;
+}
+
+/**
+ * The web registry, as an object ready to be written.
+ *
+ * Two inputs, because there are two ways an item can reach the DOM. Most are *derived*: they exist
+ * natively, and the compiler produced a web half for them. The rest are *declared* in
+ * `registry.web-only.json` — cubeui's shells, which have no native half to derive from. Only the
+ * second list is hand-maintained, and it stays short by construction: an item belongs on it only if
+ * it cannot be authored in React Native at all.
+ */
+export function deriveWebRegistry(registry, webOnly, emitted) {
+  const items = [];
+  const dropped = [];
+  const webOnlyNames = new Set(webOnly.items.map((i) => i.name));
+
+  for (const item of [...registry.items, ...webOnly.items]) {
+    const files = [];
+    let drop = false;
+
+    for (const file of item.files) {
+      const path = webPath(file.path, emitted);
+      if (path === null) continue;
+      if (path === "missing") {
+        drop = true;
+        break;
+      }
+      if (files.some((f) => f.path === path)) continue;
+      files.push({ ...file, path });
+    }
+
+    // A bundle item — `control`, `layout`, `primitive` — is `files: []` and nothing but
+    // `registryDependencies`, so "no files survived" is its normal state rather than a
+    // dropped web half. It still leaves with the rest if one of those dependencies is
+    // missing: that is the fixed point below, which is where the check belongs.
+    if (drop || (files.length === 0 && item.files.length > 0)) {
+      dropped.push(item.name);
+      continue;
+    }
+
+    files.push(...(WEB_ONLY[item.name]?.files ?? []));
+
+    const next = { ...item, files };
+    if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
+    if (webOnlyNames.has(item.name)) next.description = `${next.description} ${WEB_ONLY_NOTE}`;
+    // A package is in the web half either because a web file imports it, or because something a
+    // web file imports peers it — `@types/react-dom` is imported by nothing and pins itself to the
+    // line Expo's own `@types/react` is on. An item whose only reason for a peer was a dependency
+    // the web half does not have should not go on asking a DOM consumer to install it.
+    const used = webPackages(files, emitted);
+    const deps = (item.dependencies ?? []).filter((d) => {
+      const name = packageName(d);
+      return used.has(name) || [...used].some((reason) => PEERS_OF[reason]?.includes(name));
+    });
+    deps.push(...(WEB_ONLY[item.name]?.dependencies ?? []));
+    if (deps.length) next.dependencies = deps;
+    else delete next.dependencies;
+    // `cn` is the one import the compiler writes on its own (`ensureCn`), so a native item with no
+    // class merging of its own — `toast` — can come out needing `utils` without having declared
+    // it. The native half does not need it, so it is added here, to the half that does.
+    const needsUtils = files.some((f) => /from\s+"@\/lib\/utils"/.test(webText(f, emitted)));
+    const utils = "@cubeui/utils";
+    if (needsUtils && item.name !== "utils" && !item.registryDependencies?.includes(utils)) {
+      next.registryDependencies = [...(item.registryDependencies ?? []), utils];
+    }
+    items.push(next);
+  }
+
+  // An item whose dependency was dropped cannot install, so it goes too, and so does anything that
+  // depended on *it*. Run to a fixed point rather than one pass: the cascade is the same shape as
+  // the compiler's, because it has the same cause.
+  for (;;) {
+    const have = new Set(items.map((i) => i.name));
+    const broken = items.filter((i) =>
+      (i.registryDependencies ?? []).some(
+        (d) => d.startsWith("@cubeui/") && !have.has(d.slice("@cubeui/".length)),
+      ),
+    );
+    if (broken.length === 0) break;
+    for (const item of broken) {
+      dropped.push(item.name);
+      items.splice(items.indexOf(item), 1);
+    }
+  }
+
+  return {
+    registry: {
+      $schema: registry.$schema,
+      name: registry.name,
+      homepage: registry.homepage,
+      items,
+    },
+    dropped: dropped.sort(),
+  };
+}
+
+/**
+ * Where a published story lives, and the suffix that makes a story item out of a component one.
+ *
+ * `@cubeui/button-stories` rather than a flag on `@cubeui/button`, so `shadcn add @cubeui/button`
+ * installs exactly what it did before for everyone who does not want a story — and a story item
+ * is one more line in an `add`, not an option the CLI has no syntax for.
+ */
+export const STORIES_DIR = "stories/web/published";
+export const STORIES_SUFFIX = "-stories";
+
+/**
+ * The web registry's story items, one per file in `stories/web/published/`.
+ *
+ * Derived, for the same reason the rest of `registry.web.json` is: a story that has to be
+ * remembered in a JSON file as well as written is a story that ships without its item, or an item
+ * that outlives its story. The file is the declaration. `button.stories.tsx` becomes
+ * `button-stories`, which:
+ *
+ * - lands where `button` did, because it takes that item's file `type`. `registry:ui` puts both in
+ *   the consumer's `components/ui/`, colocated the way a consuming app writes its own stories —
+ *   and the CLI rewrites the story's `@/components/ui/button` to the consumer's alias in the same
+ *   pass it rewrites the component's.
+ * - depends on `@cubeui/button` and on every other item whose file the story imports, so adding
+ *   the story alone brings a component it can render.
+ * - declares no npm package. A story reaches for `storybook/test` and `@storybook/react-vite`, and
+ *   an app that asks for a story has both; declaring them would make the CLI `npm install` a
+ *   Storybook over whichever major the app pinned. Rule 9 of `check-registry-build.mjs` holds
+ *   what a published story may import.
+ *
+ * Web only. A story here imports the compiled `Button`, clicks it with `onClick` and runs its
+ * `play` under `@storybook/addon-vitest` — none of which an on-device Storybook in an Expo app
+ * has. The README's "Stories through the registry" says what a native half would need.
+ *
+ * Throws rather than dropping: a story for an item the web registry does not hold, or one
+ * importing a module no item ships, is a mistake in this repo and not a refusal to report.
+ */
+export function deriveStoryItems(webItems, stories) {
+  const byName = new Map(webItems.map((i) => [i.name, i]));
+  const owner = new Map();
+  for (const item of webItems) {
+    for (const file of item.files) {
+      owner.set(basename(file.path).replace(/\.(tsx?|css)$/, ""), item.name);
+    }
+  }
+
+  const items = [];
+  for (const { path, text } of [...stories].sort((a, b) => a.path.localeCompare(b.path))) {
+    const name = basename(path, ".stories.tsx");
+    const item = byName.get(name);
+    if (!item) throw new Error(`${path}: no web item named "${name}" for this story to ship with`);
+
+    const deps = new Set([name]);
+    for (const { fileName } of ts.preProcessFile(text, true, true).importedFiles) {
+      if (!fileName.startsWith("@/")) continue;
+      const module = fileName.split("/").pop();
+      const from = owner.get(module);
+      if (!from) throw new Error(`${path}: \`${fileName}\` is not a file any web item ships`);
+      deps.add(from);
+    }
+
+    const type = item.files[0]?.type ?? item.type;
+    items.push({
+      name: `${name}${STORIES_SUFFIX}`,
+      type,
+      title: `${item.title ?? name} stories`,
+      description:
+        `Storybook stories for @cubeui/${name}, installed beside it so they render under your own ` +
+        "stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on " +
+        "@storybook/react-vite.",
+      registryDependencies: [...deps].map((d) => `@cubeui/${d}`),
+      files: [{ path, type }],
+    });
+  }
+  return items;
+}

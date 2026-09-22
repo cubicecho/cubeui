@@ -3,6 +3,10 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
+**Web only**, except `RadioGroupField`. Everything else in this file is a DOM component with no
+React Native half, so none of it installs in an Expo project. `RadioGroupField` is one source
+compiled for both, with the same props on each. `SKILL.md`'s last section is the native set.
+
 **Every project using these runs TanStack Form.** Do not introduce a second form library, and do
 not write a form with `useState` and hand-rolled validation beside one written with these.
 
@@ -11,7 +15,7 @@ not write a form with `useState` and hand-rolled validation beside one written w
 A field is one line: the form, the name, and the label.
 
 ```tsx
-import { useAppForm, InputField, SelectField, SubmitButton } from "@/components/form/app-form";
+import { useAppForm, InputField, SelectField, SubmitButton } from "@/components/app-form";
 
 const form = useAppForm({
   defaultValues: { title: "", list: "", priority: "2" },
@@ -54,6 +58,14 @@ The bound fields:
 Each one takes everything `FormField` takes — `label`, `description`, `required`, `action`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
 `validators`, `listeners` and `asyncDebounceMs`, in one flat list.
+
+`RadioGroupField` is the exception to "everything `FormField` takes": it is not built on
+`FormField`, because it has a React Native half and `FormField` does not. It takes `label`,
+`description`, `required`, `action`, `loading` and the `*ClassName` props (`labelClassName`,
+`descriptionClassName`, `errorClassName`, `loadingClassName`, `groupClassName`), plus the group's
+own `variant`, `orientation`, `disabled` and `loop`. There is no `descriptionPlacement`,
+`descriptionIcon`, `htmlFor` or `asGroup`: the description is always inline under the options, and
+the group is always named by its title.
 
 The four in their own files are there for the weight of what they import: a form of plain inputs
 installs `@cubeui/app-form` and pulls in no cmdk, no `react-day-picker`.
@@ -321,9 +333,12 @@ and put the props where they go:
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
 element itself and needs none of this.
 
-Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect`, `DatePicker`
-and `ColorPicker` take the rest of a `<button>`'s props and put them there, so the function form
+Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect` and
+`DatePicker` take the rest of a `<button>`'s props and put them there, so the function form
 spreads onto the control and stops — `control={(props) => <OptionSelect {...props} options={LISTS} … />}`.
+`ColorPicker` has no trigger — it is the swatch row and the hex field, drawn inline — so it splits
+the same props: `id` goes to the hex field, and `aria-label`, `aria-labelledby`,
+`aria-describedby`, `aria-invalid` and `aria-required` go to the swatch row's `radiogroup`.
 The primitive version above is what that saves.
 
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
@@ -338,8 +353,8 @@ association silently, so the default wiring produces a field that looks wired in
 is not. Any grouped control needs it: a radio group, a segmented control, a swatch grid used as
 the field itself.
 
-`RadioGroupField` already passes it. You only reach for `asGroup` when writing a new grouped
-control by hand.
+`RadioGroupField` already names its group that way. You only reach for `asGroup` when writing a
+new grouped control by hand.
 
 ```tsx
 <RadioGroupField
@@ -354,7 +369,30 @@ control by hand.
 />
 ```
 
-Each option gets a real `<label htmlFor>` of its own, so clicking the option's text chooses it.
+Each option is one control — the circle, the label and the description are all inside the
+`role="radio"` — so clicking the option's text chooses it, and the description describes that
+option only. The keyboard is done: one tab stop (the checked option, or the first), arrow keys
+that move and select. Do not add an `onKeyDown`.
+
+`variant="card"` draws the options as tiles across a row, each with an `icon` over its label and a
+`hint` for the hover title — a theme picker, a layout choice:
+
+```tsx
+<RadioGroupField
+  form={form}
+  name="theme"
+  label="Theme"
+  variant="card"
+  options={[
+    { value: "light", label: "Light", icon: <Sun />, hint: "Always light" },
+    { value: "dark", label: "Dark", icon: <Moon />, hint: "Always dark" },
+    { value: "system", label: "System", icon: <Monitor />, hint: "Follow the device" },
+  ]}
+/>
+```
+
+Outside a form, the same thing is `RadioGroup` and `RadioGroupItem` from `@cubeui/radio-group`,
+controlled with `value` / `onValueChange`.
 
 ## Fields on one row
 

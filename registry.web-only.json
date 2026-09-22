@@ -1,0 +1,368 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "cubeui",
+  "homepage": "https://cubicecho.github.io/cubeui",
+  "items": [
+    {
+      "name": "action-button",
+      "type": "registry:component",
+      "title": "Action Button",
+      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/action-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "shadcn's modal that interrupts to ask, re-published from here so it imports the same `cn` every other file in the install does.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/alert-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
+    },
+    {
+      "name": "app-form",
+      "type": "registry:component",
+      "title": "App Form",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/checkbox",
+        "@cubeui/form-field",
+        "@cubeui/input",
+        "@cubeui/option-select",
+        "@cubeui/switch",
+        "@cubeui/textarea"
+      ],
+      "files": [
+        {
+          "path": "registry/web/app-form.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["@tanstack/react-form@^1.33.5"]
+    },
+    {
+      "name": "color-field",
+      "type": "registry:component",
+      "title": "Color Field",
+      "description": "A colour picker as one line, over a field the compiler checked holds a string.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/color-picker", "@cubeui/form-field"],
+      "files": [
+        {
+          "path": "registry/web/color-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "shadcn's command palette, re-published from here so it imports the same `cn` every other file in the install does.",
+      "registryDependencies": ["@cubeui/dialog", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/command.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": ["cmdk@^1.1.1", "lucide-react@^1.34.0"]
+    },
+    {
+      "name": "confirm-button",
+      "type": "registry:component",
+      "title": "Confirm Button",
+      "description": "A destructive button that asks first, with a required description of what is lost.",
+      "registryDependencies": ["@cubeui/action-button", "@cubeui/alert-dialog"],
+      "files": [
+        {
+          "path": "registry/web/confirm-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "control",
+      "type": "registry:component",
+      "title": "Control Set",
+      "description": "Every cubeui control in one install.",
+      "registryDependencies": [
+        "@cubeui/action-button",
+        "@cubeui/color-picker",
+        "@cubeui/confirm-button",
+        "@cubeui/date-picker",
+        "@cubeui/multi-select",
+        "@cubeui/option-select",
+        "@cubeui/password-input"
+      ],
+      "files": []
+    },
+    {
+      "name": "date-field",
+      "type": "registry:component",
+      "title": "Date Field",
+      "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/date-picker", "@cubeui/form-field"],
+      "files": [
+        {
+          "path": "registry/web/date-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/input",
+        "@cubeui/popover",
+        "@cubeui/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/web/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
+    },
+    {
+      "name": "disclosure-row",
+      "type": "registry:component",
+      "title": "Disclosure Row",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.",
+      "registryDependencies": ["@cubeui/item", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/disclosure-row.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/empty.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": ["class-variance-authority@^0.7.1"]
+    },
+    {
+      "name": "field-row",
+      "type": "registry:component",
+      "title": "Field Row",
+      "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/field-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "form-field",
+      "type": "registry:component",
+      "title": "Form Field",
+      "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
+      "registryDependencies": [
+        "@cubeui/field",
+        "@cubeui/popover",
+        "@cubeui/skeleton",
+        "@cubeui/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/web/form-field.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
+    },
+    {
+      "name": "form-set",
+      "type": "registry:component",
+      "title": "Form Set",
+      "description": "Every cubeui form component in one install, TanStack binding included. Named `form-set` rather than `form`: that name is the React Native `Form` component in this registry, and the shadcn CLI resolves a cross-item import by basename, so the two cannot share it.",
+      "registryDependencies": [
+        "@cubeui/app-form",
+        "@cubeui/color-field",
+        "@cubeui/date-field",
+        "@cubeui/field-row",
+        "@cubeui/form-field",
+        "@cubeui/multi-select-field",
+        "@cubeui/password-field",
+        "@cubeui/radio-group-field"
+      ],
+      "files": []
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
+      "registryDependencies": ["@cubeui/separator", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/item.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
+      ]
+    },
+    {
+      "name": "layout",
+      "type": "registry:component",
+      "title": "Layout Set",
+      "description": "Every cubeui layout shell in one install.",
+      "registryDependencies": [
+        "@cubeui/card-layout",
+        "@cubeui/dialog-layout",
+        "@cubeui/disclosure-row",
+        "@cubeui/header-content-footer",
+        "@cubeui/page-header",
+        "@cubeui/page-layout",
+        "@cubeui/query-state",
+        "@cubeui/section",
+        "@cubeui/sidebar",
+        "@cubeui/split-layout"
+      ],
+      "files": []
+    },
+    {
+      "name": "multi-select",
+      "type": "registry:component",
+      "title": "Multi Select",
+      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.",
+      "registryDependencies": [
+        "@cubeui/badge",
+        "@cubeui/button",
+        "@cubeui/command",
+        "@cubeui/popover",
+        "@cubeui/readable-text-color",
+        "@cubeui/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/web/multi-select.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
+    },
+    {
+      "name": "multi-select-field",
+      "type": "registry:component",
+      "title": "Multi Select Field",
+      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
+      "files": [
+        {
+          "path": "registry/web/multi-select-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/option-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "password-field",
+      "type": "registry:component",
+      "title": "Password Field",
+      "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has.",
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
+      "files": [
+        {
+          "path": "registry/web/password-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/password-input.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["lucide-react@^1.34.0"]
+    },
+    {
+      "name": "primitive",
+      "type": "registry:component",
+      "title": "Vendored Primitives",
+      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
+      "registryDependencies": ["@cubeui/empty", "@cubeui/item"],
+      "files": []
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/separator.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/ui/skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
+}

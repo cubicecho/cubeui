@@ -2,17 +2,18 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "layout",
   "title": "Layout Set",
-  "description": "Every cubeui layout shell in one install.",
+  "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
   "registryDependencies": [
-    "@cubeui/header-content-footer",
     "@cubeui/card-layout",
     "@cubeui/dialog-layout",
+    "@cubeui/disclosure-row",
+    "@cubeui/header-content-footer",
     "@cubeui/page-header",
     "@cubeui/page-layout",
-    "@cubeui/split-layout",
-    "@cubeui/section",
     "@cubeui/query-state",
-    "@cubeui/disclosure-row"
+    "@cubeui/section",
+    "@cubeui/sidebar",
+    "@cubeui/split-layout"
   ],
   "files": [],
   "type": "registry:component"

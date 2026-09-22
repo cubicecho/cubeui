@@ -5,20 +5,19 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "preview/index.css",
+    "css": "dist/tokens.native.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@/registry/new-york",
-    "ui": "@/registry/new-york/ui",
+    "components": "@/components",
+    "ui": "@/components/ui",
     "utils": "@/lib/utils",
-    "lib": "@/lib",
-    "hooks": "@/registry/new-york/hooks"
+    "lib": "@/lib"
   },
   "registries": {
-    "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json"
+    "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json"
   }
 }

@@ -79,8 +79,12 @@ const rule2 = between(conventions, "## 2. One vocabulary across the set", "\n## 
 const vocabulary = between(skill, "## The slot vocabulary", "\n## What does not belong");
 
 const problems = [];
-if (rule2 === null) problems.push(`${CONVENTIONS}: rule 2's heading was renamed; this check cannot find it.`);
-if (vocabulary === null) problems.push(`${SKILL}: the vocabulary section's heading was renamed; this check cannot find it.`);
+if (rule2 === null)
+  problems.push(`${CONVENTIONS}: rule 2's heading was renamed; this check cannot find it.`);
+if (vocabulary === null)
+  problems.push(
+    `${SKILL}: the vocabulary section's heading was renamed; this check cannot find it.`,
+  );
 
 if (problems.length === 0) {
   const left = fromConventions(rule2);
@@ -102,7 +106,9 @@ if (problems.length === 0) {
     if (missingFromSkill.length > 0)
       problems.push(`"${skillHeading}" in ${SKILL} is missing: ${missingFromSkill.join(", ")}`);
     if (missingFromConventions.length > 0)
-      problems.push(`"${conventionsHeading}" in ${CONVENTIONS} is missing: ${missingFromConventions.join(", ")}`);
+      problems.push(
+        `"${conventionsHeading}" in ${CONVENTIONS} is missing: ${missingFromConventions.join(", ")}`,
+      );
   }
 
   // A word taught in one layer and argued in another is the `hasUnsavedChanges` case: it reads as
@@ -110,13 +116,19 @@ if (problems.length === 0) {
   const layerOf = (layers, headings) => {
     const found = new Map();
     for (const [heading, words] of layers) {
-      const index = headings.findIndex((pair) => pair === heading);
+      const index = headings.indexOf(heading);
       for (const word of words) if (index !== -1) found.set(word, index);
     }
     return found;
   };
-  const leftLayer = layerOf(left, LAYERS.map(([c]) => c));
-  const rightLayer = layerOf(right, LAYERS.map(([, s]) => s));
+  const leftLayer = layerOf(
+    left,
+    LAYERS.map(([c]) => c),
+  );
+  const rightLayer = layerOf(
+    right,
+    LAYERS.map(([, s]) => s),
+  );
   for (const [word, index] of leftLayer) {
     const other = rightLayer.get(word);
     if (other !== undefined && other !== index)

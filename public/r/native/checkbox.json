@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "checkbox",
+  "title": "Checkbox",
+  "description": "Radix on web, with its whole prop surface; a Pressable announced through role and aria-checked on device. Controlled or uncontrolled on both.",
+  "dependencies": [
+    "@types/react-dom@~19.2.0",
+    "radix-ui@^1.6.7"
+  ],
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/icons"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/checkbox-base.ts",
+      "content": "/**\n * The contract `checkbox.tsx` (native) and `checkbox.web.tsx` (radix) both implement. Its own\n * module because Metro resolves `./checkbox` to `checkbox.web.tsx` on web — the web file would\n * otherwise import itself.\n *\n * Controlled or not, as radix's is: pass `checked` and `onCheckedChange` to drive it, or\n * `defaultChecked` (or nothing) and let it hold its own state. The web half takes radix's whole\n * `Checkbox.Root` surface on top of this — `name`, `value`, `required`, `id`, `\"indeterminate\"`,\n * the `aria-*` props — because it installs over a DOM app's shadcn checkbox; this is the part that\n * means something on both platforms.\n */\nexport type CheckboxProps = {\n  checked?: boolean | undefined;\n  /** Where an uncontrolled box starts. Ignored once `checked` is passed. */\n  defaultChecked?: boolean | undefined;\n  onCheckedChange?: ((checked: boolean) => void) | undefined;\n  disabled?: boolean | undefined;\n  /**\n   * Fired when the control loses focus. A bound field marks itself touched from\n   * this, which is what decides whether an error is shown yet — so a checkbox\n   * without one is a required field that never reports itself as unfilled.\n   */\n  onBlur?: (() => void) | undefined;\n  /**\n   * Required on device: the box carries no visible label of its own, and there is no\n   * `<label htmlFor>` to borrow one from. (On web a `<Label htmlFor={id}>` or an `aria-label` does\n   * it, so the web half does not ask for this.)\n   */\n  accessibilityLabel: string;\n  className?: string | undefined;\n};\n\n/** The box, shared so the two halves cannot drift apart visually. */\nexport const CHECKBOX_CLASS = \"h-4 w-4 shrink-0 items-center justify-center rounded border\";\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/checkbox.tsx",
+      "content": "/**\n * The native checkbox, built from a `Pressable`. `checkbox.web.tsx` is radix's, and\n * `checkbox-base.ts` holds the contract they share.\n *\n * `role=\"checkbox\"` plus `aria-checked` is what makes it a real checkbox to a\n * screen reader; the role and `aria-checked` below are the part that actually\n * matters, and they cost nothing.\n */\n\nimport { useState } from \"react\";\nimport { Pressable } from \"react-native\";\nimport { CHECKBOX_CLASS, type CheckboxProps } from \"@/components/ui/checkbox-base\";\nimport { Check } from \"@/components/ui/icons\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Checkbox({\n  checked: checkedProp,\n  defaultChecked = false,\n  onCheckedChange,\n  disabled = false,\n  onBlur,\n  accessibilityLabel,\n  className,\n}: CheckboxProps) {\n  // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.\n  const [checkedState, setCheckedState] = useState(defaultChecked);\n  const checked = checkedProp ?? checkedState;\n  return (\n    <Pressable\n      role=\"checkbox\"\n      aria-checked={checked}\n      aria-label={accessibilityLabel}\n      disabled={disabled}\n      onPress={() => {\n        setCheckedState(!checked);\n        onCheckedChange?.(!checked);\n      }}\n      onBlur={onBlur}\n      className={cn(\n        CHECKBOX_CLASS,\n        checked ? \"border-primary bg-primary\" : \"border-input bg-background\",\n        disabled && \"opacity-50\",\n        className,\n      )}\n    >\n      {checked && <Check className=\"h-3 w-3 text-primary-foreground\" />}\n    </Pressable>\n  );\n}\n\nexport type { CheckboxProps };\nexport { Checkbox };\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/checkbox.web.tsx",
+      "content": "/**\n * The web checkbox: radix. `checkbox.tsx` is the native counterpart and `checkbox-base.ts` holds\n * the contract they share.\n *\n * It used to be compiled from the native `Pressable`, which made it a `<button role=\"checkbox\">`\n * with a required `aria-label` and nothing else — no `name`, no `value`, no `required`, nothing a\n * `<form>` submit could see, and no uncontrolled use. This file installs over a DOM app's shadcn\n * checkbox at `components/ui/checkbox.tsx`, so it takes radix's `Checkbox.Root` props whole, as\n * shadcn's does: radix renders the hidden `<input>` a native form submit reads, and a\n * `<Label htmlFor={id}>` names it.\n */\n\nimport { Checkbox as CheckboxPrimitive } from \"radix-ui\";\nimport type { ComponentPropsWithRef } from \"react\";\nimport { CHECKBOX_CLASS } from \"@/components/ui/checkbox-base\";\nimport { Check } from \"@/components/ui/icons\";\nimport { cn } from \"@/lib/utils\";\n\n/**\n * radix's props, with `className` re-declared for `exactOptionalPropertyTypes`. Every prop of the\n * shared contract but `accessibilityLabel` is already one of radix's; a `() => void` is a DOM\n * `onBlur`.\n */\nexport type CheckboxProps = Omit<\n  ComponentPropsWithRef<typeof CheckboxPrimitive.Root>,\n  \"className\"\n> & {\n  className?: string | undefined;\n};\n\nfunction Checkbox({ className, ...props }: CheckboxProps) {\n  return (\n    <CheckboxPrimitive.Root\n      data-slot=\"checkbox\"\n      {...props}\n      className={cn(\n        CHECKBOX_CLASS,\n        \"peer flex border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground\",\n        className,\n      )}\n    >\n      <CheckboxPrimitive.Indicator\n        data-slot=\"checkbox-indicator\"\n        className=\"flex items-center justify-center text-current\"\n      >\n        <Check className=\"h-3 w-3\" />\n      </CheckboxPrimitive.Indicator>\n    </CheckboxPrimitive.Root>\n  );\n}\n\nexport { Checkbox };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

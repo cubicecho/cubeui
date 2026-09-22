@@ -3,6 +3,20 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
+**Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
+sections and sidebars are written once in React Native and compiled to the web, so the same item
+installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
+the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
+device, four things differ, and none of them changes a call site:
+
+- `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
+  `ScrollView` there (a `<div>` on the web), and `contentClassName` styles its content container.
+- An `icon` is not sized for you on a device — there is no `[&_svg]` selector — so pass it at
+  `size-4` yourself (`size-5` in a level 1 or 2 `PageHeader`).
+- A split's two panes are a flex row, not grid tracks. The widths and `stackBelow` read the same.
+- A string or number passed to a slot is wrapped in a `Text` for you, so a bare `"Save"` does not
+  crash a `View`. A node you build yourself still needs its own `Text`.
+
 ## Pages
 
 `PageLayout` is a page: a title block pinned above a body that scrolls under it. It is
@@ -38,8 +52,8 @@ under the header, which is correct — the search row is already the separator.
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
 body's own loading state is the caller's, or `CardLayout`'s.
 
-`PageLayout` does not own the sidebar, the theme toggle, or the route. That is an app shell, and
-shadcn ships `sidebar` for it.
+`PageLayout` does not own the sidebar, the theme toggle, or the route. That is an app shell: put
+a [`Sidebar`](#sidebar) and the page side by side in a `SidebarLayout`.
 
 ## Page shells
 
@@ -182,8 +196,8 @@ the slots is spelled the same on each.
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
   hairline between them — the app shell), or `none` (flush, nothing drawn). Do not draw the rule
   yourself with a `border-r` on the sidebar: that is a line between the panes only until the layout
-  stacks, at which point it is a line down one side of the screen. `line` puts the rule in its
-  own track so it turns with the panes.
+  stacks, at which point it is a line down one side of the screen. `line` draws the rule as its
+  own element between the panes, so it turns with them.
 
 ### The things it deliberately does not do
 
@@ -211,6 +225,70 @@ A split is the right shape when both panes are on the screen together and the se
 between them. It is the wrong shape when the detail is a place you *go* — if there is a
 `/things/:id` route, keep the route and let the detail be its own page. A `SidebarLayout` that has to
 be told to hide one of its panes on a phone is that decision arriving late.
+
+## Sidebar
+
+```tsx
+<SidebarLayout
+  sidebarWidth="auto"
+  stackBelow="never"
+  divider="none"
+  sidebar={
+    <Sidebar
+      label="Main"
+      header={<Brand />}
+      content={
+        <SidebarSection
+          title="Projects"
+          action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
+          status={<QueryState compact query={projects} what="projects" count={rows.length} />}
+          content={rows.map((p) => (
+            <Link key={p.id} href={`/projects/${p.id}`} asChild>
+              <SidebarNavItem
+                href={`/projects/${p.id}`}
+                label={p.name}
+                icon={<Folder />}
+                count={p.open}
+                active={p.id === current}
+              />
+            </Link>
+          ))}
+        />
+      }
+      footer={<SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />}
+    />
+  }
+  content={page}
+/>
+```
+
+`@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
+Three parts, and only `Sidebar` is required:
+
+- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-sidebar` at a
+  fixed `w-64` with a `border-sidebar-border` rule on the edge facing the page (`side="end"` moves
+  it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
+  sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
+  `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
+  different width is one `w-*` in `className`.
+- **`SidebarSection`** — an overline `title` over a real list: `role="list"` and one
+  `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
+  keyed); each element becomes one item, so a fragment or a wrapper around them is one item
+  holding everything. `status` sits between the title and the list and is where a
+  `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
+  title's heading rank, 2 by default.
+- **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
+  `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
+  `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.
+
+**Routing is the app's.** The row names no router. Wrap it in your router's link with `asChild`
+(expo-router's `Link`), which hands it the press handling; it forwards its ref and every prop it
+does not name. A DOM router with no `asChild` passes its click handler as `onClick` instead —
+react-router's `useLinkClickHandler`, TanStack's `createLink`. With neither, the `<a href>` still
+navigates. `active` is yours to compute from the current route.
+
+Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
+A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
 
 ## Cards
 
@@ -263,9 +341,16 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
   cap on the whole dialog is what takes the title off the screen on a long form.
 - **`hasUnsavedChanges` is the one to remember.** On, Escape, a click on the overlay and the
   close button all ask before throwing the work away, and the dialog is still there behind the
-  question. Pass `form.state.isDirty` — it is asked for, never computed, because only the caller
-  knows what its fields are. `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`
-  reword the question when the dialog knows what is lost.
+  question. It is asked for, never computed, because only the caller knows what its fields are.
+  `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel` reword the question when
+  the dialog knows what is lost.
+- **Pass it as a function when the answer is not something you render.** The question is asked
+  once, at a click — nothing in the dialog draws the answer — so a boolean makes you keep a value
+  in render that only a handler reads, and work held outside the form's fields has to be lifted
+  into state to answer at all. `hasUnsavedChanges={() => !form.state.isDefaultValue ||
+  picker.hasEdits()}` runs at the click and subscribes to nothing. `isDefaultValue` and not
+  `isDirty`: `isDirty` stays true for a field typed into and then back out of, so the dialog asks
+  about a form identical to how it opened.
 - **Take `close` from `footerActions` rather than closing the dialog yourself.** Pass a function
   and it is handed the dialog's own close — the same one Escape, the overlay and the close button
   go through, so `hasUnsavedChanges` asks on the way through Cancel too. A Cancel wired to your
@@ -298,11 +383,18 @@ A heading over a group of fields or rows, inside a page or a card.
 />
 ```
 
-- The title is a real `<h2>`, and the level is fixed on purpose: `PageHeader` owns the `h1`, so
-  this is always the one below it. There is no `level` prop, because it would be an invitation to
-  get that wrong. A screen reader's heading list is how a form of thirty fields is navigated.
-- It draws **no surface** — no border, no padding box. Wrapping the group in a `Card` stays a
-  decision at the call site, and `CardLayout` is the component that owns a surface.
+- One source for both platforms: the same item is `@cubeui/section` in `/r/web` and `/r/native`.
+- The title is a heading of rank `level`, **2 by default**: `PageHeader` owns the `h1`, so a
+  section on a page is the one below it. Nested in another section, or in a dialog whose title is
+  the `h2`, pass `level={3}`. Choose it by where the section sits, never by how big the text should
+  look — the text is the same size at every level. On the web it is `role="heading"` +
+  `aria-level` rather than an `<hN>` element (same heading to a screen reader; style it by
+  `data-slot="section-title"`, not by `h2`).
+- The root is a `<section>` on the web, named by its title, so a titled section is a `region`
+  landmark. There is nothing to add for that — do not wrap it in another `role="region"`.
+- It draws **no surface** by default. `surface="card"` puts the whole group on a card (border,
+  background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
+  the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
 - It is the smallest thing in the registry and it exists because three projects wrote
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
@@ -343,9 +435,14 @@ Two shells for the shape every list route is: a ladder of states, then rows.
 - It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
-- `RowSkeleton` draws outlined `Item`s, the same primitive the rows are, so the page does not
-  change shape when the answer lands. Use it on `isPending` only: behind `isFetching` it flashes a
-  skeleton over a list that is perfectly good.
+- `RowSkeleton` draws `rows` bordered `Card`s — the shape a row is — so the page does not change
+  shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
+  `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
+  The placeholders are `aria-hidden` inside one `role="status"` wrapper announcing "Loading", so
+  three cards of placeholder text are not three cards of nothing to read out.
+- **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
+  small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
+  it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
 
 ### DisclosureRow
 

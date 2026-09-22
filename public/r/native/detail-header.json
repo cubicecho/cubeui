@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "detail-header",
+  "title": "Detail Header",
+  "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
+  "registryDependencies": [
+    "@cubeui/button",
+    "@cubeui/color-dot",
+    "@cubeui/icons"
+  ],
+  "files": [
+    {
+      "path": "registry/layout/detail-header.tsx",
+      "content": "/**\n * The header row of a detail view: back button, optional colour dot, title,\n * badge, subtitle, trailing actions.\n *\n * Distinct from `PageHeader` in `layout/page-header` by the back affordance and the\n * leading dot — a detail view is reached *from* somewhere, and a list page is\n * not.\n */\nimport type { ReactNode } from \"react\";\nimport { Text, View } from \"react-native\";\nimport { Button } from \"@/components/ui/button\";\nimport { ColorDot } from \"@/components/ui/color-dot\";\nimport { ArrowLeft, Pencil } from \"@/components/ui/icons\";\n\n/** The outline \"Edit\" action a detail header usually carries. */\nexport function EditButton({ onPress, label = \"Edit\" }: { onPress: () => void; label?: string }) {\n  return (\n    <Button variant=\"outline\" size=\"sm\" onPress={onPress}>\n      <Pencil className=\"mr-1.5 h-3.5 w-3.5\" />\n      {label}\n    </Button>\n  );\n}\n\ntype DetailHeaderProps = {\n  onBack: () => void;\n  /** Labels the back button for a screen reader — \"Back to projects\". */\n  backLabel: string;\n  /** Colour for the leading dot; omit to hide it. */\n  color?: string | null | undefined;\n  colorLabel?: string | undefined;\n  title: string;\n  /** Small muted line under the title. */\n  subtitle?: ReactNode;\n  /** Rendered next to the title — typically a `Badge`. */\n  badge?: ReactNode;\n  /** Trailing actions. */\n  actions?: ReactNode;\n};\n\nexport function DetailHeader({\n  onBack,\n  backLabel,\n  color,\n  colorLabel,\n  title,\n  subtitle,\n  badge,\n  actions,\n}: DetailHeaderProps) {\n  return (\n    <View className=\"flex-row items-center gap-3\">\n      <Button variant=\"ghost\" size=\"icon\" onPress={onBack} aria-label={backLabel}>\n        <ArrowLeft className=\"h-4 w-4\" />\n      </Button>\n      <View className=\"flex-1\">\n        <View className=\"flex-row items-center gap-2\">\n          {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}\n          {/* `role`/`aria-level` because an `<h2>` has no native counterpart —\n              and they are what a compiled web build reads to emit one. */}\n          <Text role=\"heading\" aria-level={2} className=\"text-2xl font-bold text-foreground\">\n            {title}\n          </Text>\n          {badge}\n        </View>\n        {subtitle ? <Text className=\"mt-0.5 text-sm text-muted-foreground\">{subtitle}</Text> : null}\n      </View>\n      {actions}\n    </View>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

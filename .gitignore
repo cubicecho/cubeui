@@ -1,6 +1,17 @@
 node_modules/
-dist/
-storybook-static/
+.expo/
 *.log
-.DS_Store
+
+# Agent worktrees. The rest of .claude/ is tracked on purpose: .claude/skills/cubeui/ is the
+# pointer that makes this repo's own agent read the skill that ships.
 .claude/worktrees/
+
+# dist/ is committed on purpose: the emitted tokens are the artefact consumers
+# install, and committing them is what lets `tokens:check` catch drift in CI the
+# way `git diff --exit-code -- public/r` catches registry drift.
+
+storybook-static/
+
+# The deployed Storybook. Built into the Pages tree by the workflow, never committed: it is a
+# generated bundle with no consumer but that host, and a stale copy in git reads as current.
+public/storybook/

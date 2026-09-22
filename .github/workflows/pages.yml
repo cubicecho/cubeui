@@ -5,8 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# The registry is what consuming projects install from, so a half-finished deploy is worse than
-# a late one: let a run finish rather than cancelling it mid-publish.
+# The registry is what consuming projects install from, so a half-finished deploy
+# is worse than a late one: let a run finish rather than cancelling it mid-publish.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -32,28 +32,56 @@ jobs:
 
       - run: npm ci
 
-      # `npm run build` is typecheck + `shadcn build` + `vite build`, so the JSON that ships is
+      # tokens → typecheck → `shadcn build` → guards. The JSON that ships is
       # rebuilt from registry.json here rather than trusted from the commit.
       - run: npm run build
 
-      # A registry item that 404s is the failure that would be invisible until someone tried to
-      # install it, so the deploy refuses to publish a tree missing what registry.json promises.
-      - name: Every item in registry.json was built
+      # A registry item that 404s is the failure that stays invisible until
+      # someone tries to install it, so the deploy refuses to publish a tree
+      # missing what either registry promises. Both are checked: `/r` is what
+      # every DOM consumer already maps, and a gap there breaks a live install.
+      - name: Every item in both registries was built
         run: |
           missing=0
-          for name in $(node -p "require('./registry.json').items.map(i => i.name).join('\n')"); do
-            if [ ! -f "dist/r/$name.json" ]; then
-              echo "::error::registry.json names '$name', but dist/r/$name.json was not built"
-              missing=1
-            fi
-          done
+          check() {
+            for name in $(node -p "require('./$1').items.map(i => i.name).join('\n')"); do
+              if [ ! -f "$2/$name.json" ]; then
+                echo "::error::$1 names '$name', but $2/$name.json was not built"
+                missing=1
+              fi
+            done
+          }
+          check registry.web.json public/r
+          check registry.json public/r/native
           exit $missing
+
+      # The Storybook, deployed beside the registry at `/storybook`, so a consuming app can
+      # compose it into its own sidebar with one `refs` entry and read a component's stories
+      # next to the domain component built from it. Built here rather than committed: it is
+      # 9MB of generated bundle, it has no consumer other than this host, and a stale copy in
+      # git is worse than none. GitHub Pages sends `access-control-allow-origin: *`, which is
+      # the one thing composition needs from the far side.
+      - name: Build the Storybook into the deployed tree
+        run: npx storybook build -o public/storybook
+
+      # What `refs` fetches is `index.json`, and the way this broke before was Vite copying
+      # `public/` into the build — the registry page over Storybook's own index. Both are one
+      # file test, so the deploy refuses rather than publishing a Storybook nobody can compose.
+      - name: The Storybook is composable
+        run: |
+          test -f public/storybook/index.json
+          test ! -e public/storybook/r
+          ! grep -q 'components for React Native and the DOM' public/storybook/index.html
 
       - uses: actions/configure-pages@v5
 
+      # `public`, not `dist` — this repo's `dist/` is the emitted token set. What
+      # Pages serves is the built registry under `public/r`, the landing page at
+      # `public/index.html`, which is the same host and the one URL a person
+      # rather than a CLI arrives at, and the Storybook under `public/storybook`.
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: public
 
       - id: deploy
         uses: actions/deploy-pages@v4

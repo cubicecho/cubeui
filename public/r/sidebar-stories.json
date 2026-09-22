@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sidebar-stories",
+  "title": "Sidebar stories",
+  "description": "Storybook stories for @cubeui/sidebar, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/sidebar"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/sidebar.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { expect, within } from \"storybook/test\";\nimport { Sidebar, SidebarNavItem, SidebarSection } from \"@/components/sidebar\";\n\n/**\n * `Sidebar`, as installed beside it by `@cubeui/sidebar-stories`. It is a `registry:component`, so\n * this file lands in `components/` beside it rather than in `components/ui/`.\n *\n * What it holds is the structure, not the palette: whichever colours an app gives `--sidebar`, the\n * column has to stay a named landmark, a section's rows a list named by its title, every row a\n * link, and the row for the page on screen `aria-current=\"page\"`.\n */\nconst meta = {\n  title: \"cubeui/Sidebar\",\n  component: Sidebar,\n  decorators: [\n    (Story) => (\n      <div className=\"flex h-96 bg-background text-foreground\">\n        <Story />\n      </div>\n    ),\n  ],\n} satisfies Meta<typeof Sidebar>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\nexport const Default: Story = {\n  args: {\n    label: \"Workspace\",\n    header: <span className=\"font-semibold\">Acme</span>,\n    content: (\n      <SidebarSection\n        title=\"Projects\"\n        content={[\n          <SidebarNavItem key=\"inbox\" href=\"#/inbox\" label=\"Inbox\" count={12} />,\n          <SidebarNavItem key=\"launch\" href=\"#/launch\" label=\"Launch plan\" count={3} active />,\n          <SidebarNavItem key=\"garden\" href=\"#/garden\" label=\"Garden\" />,\n        ]}\n      />\n    ),\n    footer: <SidebarNavItem href=\"#/settings\" label=\"Settings\" />,\n  },\n  play: async ({ canvasElement }) => {\n    const canvas = within(canvasElement);\n    await expect(canvas.getByRole(\"complementary\", { name: \"Workspace\" })).toBeInTheDocument();\n\n    const list = canvas.getByRole(\"list\", { name: \"Projects\" });\n    await expect(within(list).getAllByRole(\"listitem\")).toHaveLength(3);\n\n    const current = canvas.getByRole(\"link\", { current: \"page\" });\n    await expect(current).toHaveAccessibleName(/Launch plan/);\n    await expect(current.getAttribute(\"href\")).toBe(\"#/launch\");\n    await expect(canvas.getAllByRole(\"link\", { current: false })).toHaveLength(3);\n\n    // The footer row is outside the list: a row with no list around it is not a list item.\n    await expect(canvas.getByRole(\"link\", { name: \"Settings\" }).closest(\"li\")).toBeNull();\n  },\n};\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

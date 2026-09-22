@@ -1,32 +1,55 @@
 {
   "compilerOptions": {
-    "target": "ES2023",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "strict": true,
-    "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    // The reason components re-declare `className?: string | undefined` rather
+    // than inheriting nativewind's `className?: string`: under this flag the two
+    // are different types, and a call site passing `cond ? 'x' : undefined` only
+    // typechecks against the explicit one.
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
     "esModuleInterop": true,
-    "types": ["node"],
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    // These mirror where the shadcn CLI actually puts each file in a consumer's
+    // tree, so an import that typechecks here is the import the consumer gets:
+    // `registry:ui` lands in `components/ui/`, `registry:component` in
+    // `components/`, `registry:lib` in `lib/`.
     "paths": {
-      "@/*": ["./*"]
+      // The emitted palette, mapped where a consumer installs it, so this repo
+      // imports it by the same specifier its consumers will.
+      "@/lib/cubeui-theme": ["./dist/cubeui-theme.ts"],
+      "@/lib/*": ["./registry/lib/*"],
+      "@/components/*": ["./registry/*", "./registry/layout/*", "./registry/ui/*"]
     }
   },
+  // The two projects split by platform, not by directory-under-test. Everything DOM —
+  // `compiled/`, the web-only items in `registry/web`, the vendored upstream shadcn files —
+  // is `tsconfig.web.json`'s, because `@/components/ui/button` has to mean the compiled web
+  // half there and the React Native one here. Leaving `compiled/` in both was how
+  // `compiled/multi-select-field.tsx` came to be checked against a React Native `Badge`.
+  // `stories/web` joins them: a story for a web-only item imports out of `compiled/`, and under
+  // this project `@/components/ui/*` means the React Native half.
+  "exclude": ["registry/web", "stories/web"],
   "include": [
-    "lib",
-    "registry",
-    "preview",
-    "stories",
     ".storybook",
-    "vite.config.ts",
+    // The emitted palette. It is not authored here, but it is *installed* by every consumer of
+    // `@cubeui/tokens`, and an Expo app's tsconfig has `strict` on — so a type the emitter left
+    // out is that consumer's error, in a file they did not write. `paletteFor`'s annotation sat
+    // inside a `/* */` for exactly as long as this line was missing.
+    "dist",
+    "registry",
+    "scripts",
+    "stories",
+    "tokens",
+    "nativewind-env.d.ts",
     "vitest.config.ts"
   ]
 }

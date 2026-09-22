@@ -1,0 +1,24 @@
+{
+  // Web-only items are DOM source, so they must be checked against the DOM halves.
+  //
+  // The main `tsconfig.json` resolves `@/components/ui/button` to `registry/ui/button.tsx`, which is
+  // React Native — checking `registry/web/` under it reported `RefAttributes<View>` mismatches on
+  // every Button in every shell, which is true and useless. Here the same specifiers resolve to
+  // `compiled/`, which is what a DOM consumer actually installs, so a mismatch reported here is a
+  // real gap between what cubeui's shells expect and what this registry's web half provides.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // A DOM consumer's lib, which the React Native base leaves out: the stories here spread a
+    // `querySelectorAll` the way any DOM test does.
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@/lib/cubeui-theme": ["./dist/cubeui-theme.ts"],
+      "@/lib/*": ["./compiled/*", "./registry/lib/*"],
+      "@/components/ui/*": ["./compiled/*", "./registry/ui/*", "./registry/web/ui/*"],
+      "@/components/*": ["./compiled/*", "./registry/web/*"]
+    }
+  },
+  // The base config excludes these; this project is the one that checks them.
+  "exclude": [],
+  "include": ["compiled/**/*", "registry/web/**/*", "stories/web/**/*"]
+}

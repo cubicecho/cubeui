@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form-set",
+  "title": "Form Set",
+  "description": "Every cubeui form component in one install, TanStack binding included. Named `form-set` rather than `form`: that name is the React Native `Form` component in this registry, and the shadcn CLI resolves a cross-item import by basename, so the two cannot share it. Web-only: no React Native half.",
+  "registryDependencies": [
+    "@cubeui/app-form",
+    "@cubeui/color-field",
+    "@cubeui/date-field",
+    "@cubeui/field-row",
+    "@cubeui/form-field",
+    "@cubeui/multi-select-field",
+    "@cubeui/password-field",
+    "@cubeui/radio-group-field"
+  ],
+  "files": [],
+  "type": "registry:component"
+}

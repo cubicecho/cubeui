@@ -22,34 +22,68 @@ jobs:
 
       - run: npm ci
 
+      # dist/ is committed because it is the artefact consumers install. A stale
+      # one means someone changed the palette and did not re-emit, and the three
+      # encodings would no longer agree with each other.
+      - name: dist/ is in sync with tokens/palette.mjs
+        run: npm run tokens:check
+
+      # compiled/ and registry.web.json are committed for the same reason dist/ is:
+      # they are what a DOM app installs. This step re-runs the compiler and the
+      # derivation and fails if either moved, which is also the only thing that
+      # catches a compiler change that silently stops emitting for an item.
+      - name: compiled/ and registry.web.json are in sync with registry/
+        run: npm run compile:check
+
       - name: Types
         run: npm run typecheck
 
       - name: Lint and format
         run: npm run lint
 
-      # Rule 2 and the skill's vocabulary section are the same list in two voices. They drifted
-      # by five words before anything compared them.
+      # Rule 2 of docs/component-conventions.md and the skill's vocabulary section are the same
+      # list in two voices. They drifted by five words on cubeui before anything compared them.
       - name: The conventions and the skill agree on the vocabulary
         run: npm run docs:check
 
       - name: Build the registry
         run: npm run registry:build
 
-      # A file that resolves but is empty is written as `content: ""` and the build still
-      # reports success — so the one thing a consumer would install as an empty file is the one
-      # thing the build does not catch.
-      - name: Every built item carries its content
+      # Three failures that otherwise ship silently: two source files claiming
+      # one item name, a `.web.tsx` whose exports drifted from its `.tsx`, and a
+      # built item whose `content` is the empty string.
+      - name: Collisions, platform-pair drift, empty content
         run: npm run registry:check
 
-      # `shadcn build` writes public/r. A drifted checkout means someone edited registry.json
-      # without rebuilding, and the published JSON would not match the sources it names.
-      - name: public/r is in sync with registry.json
+      # `shadcn build` writes both registries under public/r. A drifted checkout
+      # means someone edited registry.json without rebuilding, and the published
+      # JSON would not match the sources it names.
+      - name: public/ is in sync with the two registry.json files
         run: git diff --exit-code -- public/r
 
-      - name: Install the browser the stories run in
+      # The landing page lists every item, generated from the same two indexes.
+      # A hand-edited or stale one is prose that is wrong and that nothing reads.
+      - name: The landing page lists what the registries hold
+        run: npm run page:check
+
+      # `npm test` runs two vitest projects, and the second one renders the
+      # stories in a real browser. Without this step it fails at launch rather
+      # than skipping, which is the intended behaviour: a silently-skipped
+      # a11y suite is worse than a red build.
+      - name: Chromium, for the story tests
         run: npx playwright install --with-deps chromium
 
-      # Every story is a test, and axe runs on all of them.
-      - name: Stories
+      - name: Tests
         run: npm test
+
+      # The stories are the compiler's evidence. If one stops building, the
+      # Stage 0 verdict in the README is no longer backed by anything.
+      - name: Storybook builds
+        run: npm run build-storybook
+
+      # The same composability check `pages.yml` makes before deploying, here so a PR finds out.
+      - name: The Storybook is composable
+        run: |
+          test -f storybook-static/index.json
+          test ! -e storybook-static/r
+          ! grep -q 'components for React Native and the DOM' storybook-static/index.html

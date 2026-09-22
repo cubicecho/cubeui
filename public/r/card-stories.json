@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "card-stories",
+  "title": "Card stories",
+  "description": "Storybook stories for @cubeui/card, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/card"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/card.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { expect, fn, userEvent, within } from \"storybook/test\";\nimport {\n  Card,\n  CardContent,\n  CardDescription,\n  CardFooter,\n  CardHeader,\n  CardTitle,\n} from \"@/components/ui/card\";\n\n/**\n * `Card`, as installed beside it by `@cubeui/card-stories`: the static card, whose title is a\n * real heading, and the pressable one, which is a real button rather than a `div` with a click.\n */\nconst meta = {\n  title: \"cubeui/Card\",\n  component: Card,\n  decorators: [\n    (Story) => (\n      <div className=\"w-[360px] bg-background p-6 text-foreground\">\n        <Story />\n      </div>\n    ),\n  ],\n} satisfies Meta<typeof Card>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\nconst body = (\n  <>\n    <CardHeader>\n      <CardTitle>Quarterly review</CardTitle>\n      <CardDescription>Everything that shipped since June.</CardDescription>\n    </CardHeader>\n    <CardContent>\n      <CardDescription>Twelve items, four of them still open.</CardDescription>\n    </CardContent>\n    <CardFooter>\n      <CardDescription>Updated today</CardDescription>\n    </CardFooter>\n  </>\n);\n\nexport const Default: Story = {\n  render: (args) => <Card {...args}>{body}</Card>,\n  play: async ({ canvasElement }) => {\n    const canvas = within(canvasElement);\n    await expect(canvas.getByRole(\"heading\", { name: \"Quarterly review\" })).toBeInTheDocument();\n    await expect(canvas.queryByRole(\"button\")).toBeNull();\n  },\n};\n\nexport const Pressable: Story = {\n  args: { onClick: fn() },\n  render: (args) => <Card {...args}>{body}</Card>,\n  play: async ({ canvasElement, args }) => {\n    const card = within(canvasElement).getByRole(\"button\");\n    await userEvent.click(card);\n    await expect(args.onClick).toHaveBeenCalledTimes(1);\n  },\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

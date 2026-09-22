@@ -1,19 +1,20 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.12/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "lib/**",
-      "registry/**",
-      "preview/**",
-      "stories/**",
       ".storybook/**",
+      "compiled/**",
+      "registry/**",
+      "scripts/**",
+      "stories/**",
+      "tokens/**",
       "*.ts",
       "*.json",
       "!public/r",
-      "!storybook-static",
-      "!.claude"
+      "!dist",
+      "!node_modules"
     ]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
@@ -27,8 +28,12 @@
   },
   "overrides": [
     {
-      "includes": ["registry/new-york/ui/**"],
-      "linter": { "enabled": false }
+      "includes": ["compiled/cube-rn-reset.css"],
+      "linter": { "rules": { "complexity": { "noImportantStyles": "off" } } }
+    },
+    {
+      "includes": ["compiled/**"],
+      "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
     }
   ],
   "javascript": { "formatter": { "quoteStyle": "double", "trailingCommas": "all" } },

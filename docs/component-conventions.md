@@ -5,6 +5,11 @@ about them once rather than per component. They started as the rules the first f
 shells shared; where a later item widened one — the form layer, the controls — the rule below is
 the widened version, not the original.
 
+They came across from cubeui, where every item was a web-only shell, and they still hold for the
+layout family now that it is written once in React Native and compiled (README, Stage 4). Where a
+rule reads differently on this side of that move it says so. `npm run docs:check` holds rule 2 and
+the skill's vocabulary section to the same list of words.
+
 ## 1. Every slot is a named prop, including the body
 
 Every part a component places is a `ReactNode` prop with a name that says where it goes, and the
@@ -126,8 +131,10 @@ const SIZES = { sm: "sm:max-w-sm", md: "sm:max-w-lg" } as const;
 ```
 
 Never `` `sm:max-w-${size}` ``. Tailwind's scanner reads source text, so a composed class name is
-one that is never generated. Where the template itself has to be dynamic, put the value on a CSS
-custom property and let the class read `var(--…)`.
+one that is never generated — and here the same is true twice over, because `rn2web` compiles a
+class list it can read and refuses one it cannot. Where the value itself has to be dynamic, put it
+on a style prop (on native) or a CSS custom property read by `var(--…)` (on the web, behind the
+`Platform.select` the compiler folds).
 
 ## 4. Floors on every flex and grid cell
 
@@ -156,8 +163,7 @@ title off the screen.
 
 The corollary is that a shell overrides as little of its primitive as it can. `DialogLayout`
 changes `display` and `overflow` on `DialogContent` and leaves the padding alone, because the
-padding is style-specific (`p-6` in new-york, `p-4` in radix-nova, whose footer bleeds to the
-edge with a matching negative margin) and a shell that sets its own only fits one style.
+padding is the primitive's to decide and a shell that sets its own only fits one dialog.
 
 ## 8. Shells hold no state and no data
 
@@ -179,8 +185,8 @@ be closed by making the behaviour unforgettable, prefer the prop to the hook** �
 caller cannot see is the guard the caller cannot skip.
 
 The shell guards only what it owns — and where it cannot own a path, it hands the caller the
-guard rather than a second copy of it. `DialogLayout` reaches Escape, the overlay and the close
-button, because all three arrive through Radix's `onOpenChange`. A Cancel button in
+guard rather than a second copy of it. `DialogLayout` reaches Escape (and Android back), the overlay and the
+close button, because all three arrive through the `Dialog` primitive's `onOpenChange`. A Cancel button in
 `footerActions` does not: it is the caller's node calling the caller's setter. So `footerActions`
 takes a **function** and hands it the shell's own guarded close, which is the same close the
 other three go through.
@@ -194,8 +200,8 @@ behaviour; the function is right there in the prop's type, which is where a call
 line is already looking.
 
 Controlled/uncontrolled is delegated where it can be: pass `open`/`onOpenChange` straight through
-to Radix and let `undefined` mean uncontrolled. `DialogLayout` is the exception it has to be —
-guarding every close path means Radix is always handed an `open`, so an uncontrolled caller's
+to the primitive and let `undefined` mean uncontrolled. `DialogLayout` is the exception it has to
+be — guarding every close path means the primitive is always handed an `open`, so an uncontrolled caller's
 state lives in the shell instead of the primitive. A caller who passes `open` still owns it, and
 still hears every change. The two never mirror.
 
@@ -207,7 +213,7 @@ anything else in the app can read is the caller's. The value itself is always `v
 `onValueChange`, never held inside; the two never mirror.
 
 Delegation is the same here as it is above, and a control that wraps a primitive has to be told
-so: `OptionSelect` passes `open`/`onOpenChange` through to Radix because a menu whose list is
+so: `OptionSelect` passes `open`/`onOpenChange` through to its `Select` because a menu whose list is
 fetched has nowhere else to learn that it opened. It shipped without them and the one picker in
 task-server whose options come from the server stayed hand-assembled — a control that swallows
 the primitive's own state is a control the fetching call site cannot use, and the fix is to pass
@@ -223,18 +229,22 @@ that needs the form store goes there, and one that only needs to be told goes be
 `/** The footer's end. The buttons. Given alone, the footer is simply right-aligned. */` — the
 second sentence is the one that earns its place.
 
-## 10. Imports are `cn`, shadcn primitives, react, lucide, and other cubeui items
+## 10. Imports are `cn`, react, react-native, lucide, and other cubeui items
 
 Anything else is a dependency a consuming project has to be told about. `registryDependencies`
-covers both the shadcn primitives and other items in this registry; `dependencies` covers npm
-packages; a fourth category means the component is doing too much.
+covers other items in this registry — the primitives included, since every one a shell uses is
+published from here; `dependencies` covers npm packages; a fourth category means the component is
+doing too much. A web-only item (`registry/web/`) reaches `react-dom`'s world through the compiled
+primitives, not through `react-native`, and `lucide-react` rather than `lucide-react-native`.
+`registry:check` rule 7 holds each item's declared packages to the ones its files import.
 
 **Re-export with `import` + `export { … }`, never `export … from`.** The shadcn CLI rewrites
 *import declarations* against a consumer's aliases and leaves *re-export declarations* alone, so
-`export { PasswordInput } from "@/registry/new-york/control/password-input"` ships verbatim and
-points at a directory that does not exist in the consumer's tree. Import the symbol at the top of
+`export { PageHeader } from "@/components/page-header"` ships verbatim and points at wherever
+this repo keeps the file, not wherever the consumer's `components.json` does. Import the symbol at the top of
 the file the way everything else is imported, and export the local binding at the bottom. Same two
-lines, and the one that moves is the one the CLI knows how to move.
+lines, and the one that moves is the one the CLI knows how to move. `registry:check` rule 12
+fails on the other form in anything either registry ships.
 
 ## 11. Names are plain English
 
@@ -245,7 +255,7 @@ through `has-data-[slot=…]` (rule 6). `rail` was Material Design's word, `dirt
 
 The test: would someone who has never seen this registry guess what it holds? `sidebar` passes,
 `rail` does not. Internal metaphors stay internal — *chassis*, *floors* and *rungs* earn their
-keep in AGENTS.md and in source comments, and appear in no prop name.
+keep in the README and in source comments, and appear in no prop name.
 
 A bare noun is a slot (rule 1), so a boolean never gets one: `hasUnsavedChanges`, not
 `unsavedChanges`.
@@ -300,9 +310,12 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    the shape.
 4. **Where installed files land, and how items import each other.** *Settled — and verified by
    installing into a scratch project whose aliases deliberately differ from ours.* Registry
-   sources use the official template's form, `@/registry/new-york/...`, and the source tree is
-   fixed to `registry/new-york/{ui,layout}/` with `components.json` aliases pointing at it. No
-   `target` is set on the component items, so they land flat in the consumer's components alias.
+   sources import each other as a consumer would — `@/components/ui/button`,
+   `@/components/header-content-footer`, `@/lib/utils` — and the two tsconfig projects resolve
+   those to `registry/{ui,layout,lib}` (React Native) or `compiled/` and `registry/web/` (DOM).
+   No `target` is set on the component items, so they land flat in the consumer's components
+   alias. (On cubeui the sources used the official template's `@/registry/new-york/...` form;
+   the finding below is from then, and is unchanged by the move.)
    Installing `@cubeui/dialog-layout` into a project aliased `~/* -> ./src/*` produced:
 
    ```
@@ -311,13 +324,13 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    src/components/ui/dialog.tsx              (pulled in as a registryDependency)
    ```
 
-   So the CLI rewrites both our `@/registry/...` cross-references and `@/lib/utils` against the
+   So the CLI rewrites both our cross-references and `@/lib/utils` against the
    consumer's own aliases, and the transitive `@cubeui/header-content-footer` dependency resolves.
 
    **With one exception, found later: it rewrites imports, not re-exports.** The transform walks
-   the file's import string literals, so `export { X } from "@/registry/new-york/control/x"` is
-   left exactly as written and lands pointing at a `control/` directory that only exists in this
-   repo. Nothing warns; the install succeeds and `tsc` fails afterwards. Reproduced in the same
+   the file's import string literals, so `export { X } from "@/registry/new-york/control/x"` was
+   left exactly as written and landed pointing at a `control/` directory that only existed in
+   cubeui. Nothing warns; the install succeeds and `tsc` fails afterwards. Reproduced in the same
    scratch project — installing the four bound-field items from the published registry gave six
    `TS2307`s, and the same install with every re-export rewritten as an import plus a local
    `export { … }` gave none. That form is §10.
@@ -336,13 +349,13 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
    ```
 
-   Live: `.github/workflows/pages.yml` builds and publishes on every push to `main`, and the
-   deploy refuses to ship a tree missing anything `registry.json` names. Verified end to end by
+   Live: `.github/workflows/pages.yml` builds and publishes on every push to `main`. The React
+   Native registry is the same host at `/r/native/{name}.json`, and the consumer's URL is what
+   picks a platform. Verified end to end by
    installing three items into a project scaffolded by `shadcn init --template vite`, which
    pulled two more cubeui items and five upstream primitives transitively and typechecked clean.
 
-   A project Pages site, so `vite.config.ts` sets `base: "/cubeui/"` and `public/r` rides along
-   under it. Note that upstream shadcn has since moved `cn` into an npm package — their
+   A project Pages site, so `public/` is published as-is under `/cubeui/`. Note that upstream shadcn has since moved `cn` into an npm package — their
    primitives import `from "cn"` and `lib/utils.ts` is now a shim that re-exports it. Our items
    still import `@/lib/utils`, which `shadcn init` still creates, so this resolves. We do *not*
    declare `utils` as a registryDependency: `shadcn add utils` prompts to overwrite an existing

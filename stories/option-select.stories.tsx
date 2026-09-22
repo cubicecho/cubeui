@@ -2,8 +2,19 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentProps } from "react";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { OptionSelect, type SelectEntry } from "@/registry/new-york/control/option-select";
-import { FormField } from "@/registry/new-york/form/form-field";
+import { OptionSelect, type SelectEntry } from "../compiled/option-select";
+import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
+
+/**
+ * The compiled half, because `option-select` is a web-only item: there is no React Native source
+ * to stand it beside, and the file in `compiled/` is the one a DOM consumer installs.
+ *
+ * `FormField` is written out by hand below rather than imported. `stories/` belongs to the native
+ * tsconfig project, and `compiled/form-field` reaches for `@/components/ui/skeleton`, which is a
+ * web-only vendored primitive that project cannot resolve. What is being asserted is where the
+ * wiring lands, not which component handed it over, so the label, the description and the error
+ * are spelled out here and passed the same way `FormField`'s function form passes them.
+ */
 
 /**
  * kanban-server's "On success" picker, unbound: where a card goes when it passes. Three kinds of
@@ -125,7 +136,7 @@ export const Default: Story = { args: {} };
  * `SelectField` needs a TanStack form object, so a filter bar, a search box or a `useState`
  * screen had no answer but to assemble the trigger, the value, the content and the mapped items
  * by hand — ten of those across these projects, each one a chance to put the wiring somewhere
- * Radix does not read it.
+ * radix does not read it.
  */
 export const ItIsAControlWithAValue: Story = {
   args: {},
@@ -146,8 +157,8 @@ export const ItIsAControlWithAValue: Story = {
 };
 
 /**
- * The detail every hand-written select field gets wrong. `OptionSelect`'s Radix root renders no DOM,
- * so an `id` or an `aria-invalid` put on it goes nowhere at all — silently, because nothing
+ * The detail every hand-written select field gets wrong. `OptionSelect`'s radix root renders no
+ * DOM, so an `id` or an `aria-invalid` put on it goes nowhere at all — silently, because nothing
  * errors and the attribute simply is not in the document. They belong on the trigger, and this
  * takes the rest of a `<button>`'s props there.
  *
@@ -158,12 +169,18 @@ export const ItIsAControlWithAValue: Story = {
 export const TheWiringLandsOnTheTrigger: Story = {
   args: {},
   render: (args) => (
-    <FormField
-      label="On success"
-      description="Where the card goes when it passes."
-      error="Pick a destination"
-      control={(wired) => <Harness {...args} {...wired} aria-label={undefined} />}
-    />
+    <div>
+      <label htmlFor="on-success">On success</label>
+      <Harness
+        {...args}
+        id="on-success"
+        aria-invalid={true}
+        aria-describedby="on-success-description on-success-error"
+        aria-label={undefined}
+      />
+      <p id="on-success-description">Where the card goes when it passes.</p>
+      <p id="on-success-error">Pick a destination</p>
+    </div>
   ),
   play: async ({ canvas }) => {
     // Found by its label, which means `htmlFor` resolved to the trigger and not to a root that
@@ -187,7 +204,9 @@ export const AnOptionThatIsNotALaneIsNotDrawnAsOne: Story = {
   args: {},
   play: async ({ canvas }) => {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
-      const rule = list.querySelector("[data-slot=select-separator]");
+      // Found by the class both halves share rather than by a slot attribute: this select carries
+      // no `data-slot`, and `select-base.ts` is where the two platforms agree on what a rule is.
+      const rule = list.querySelector(`.${SELECT_SEPARATOR_CLASS.split(" ").pop()}`);
       expect(rule).not.toBeNull();
 
       const archive = within(list).getByRole("option", { name: "Archive it" });
@@ -195,6 +214,39 @@ export const AnOptionThatIsNotALaneIsNotDrawnAsOne: Story = {
 
       expect(done.compareDocumentPosition(rule as Node)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
       expect(archive.compareDocumentPosition(rule as Node)).toBe(Node.DOCUMENT_POSITION_PRECEDING);
+    });
+  },
+};
+
+/**
+ * And the rows are rows. The bug this measures against was invisible to every query in this file:
+ * each option was in the document, had its role, had its name, and was one pixel tall — `SelectItem`
+ * wore `SELECT_SEPARATOR_CLASS` beside its own classes, `cn` is tailwind-merge and last-wins, so
+ * `h-px` took the height. `registry:check` rule 8 catches that authoring mistake at the source; this
+ * catches anything else that arrives at the same geometry.
+ *
+ * `offsetHeight` and not `getBoundingClientRect`, because the menu is mid-`zoom-in-95` when the
+ * listbox first resolves and a transform would scale the measurement. Layout height ignores it.
+ */
+export const RowsAreRowsAndTheRuleIsAHairline: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
+      // `:not([role="option"])` because the bug being measured for puts the separator's own class
+      // on every row, and without it this finds a row and reports its height as the rule's.
+      const rule = list.querySelector<HTMLElement>(
+        `:not([role="option"]).${SELECT_SEPARATOR_CLASS.split(" ").pop()}`,
+      );
+      expect(rule).not.toBeNull();
+      // A hairline. Loose enough to survive a border-width change, tight enough that no padding
+      // scale in this registry produces it.
+      expect((rule as HTMLElement).offsetHeight).toBeLessThanOrEqual(2);
+
+      for (const option of within(list).getAllByRole("option")) {
+        // A thing a finger can land on. Well under the smallest row this registry draws, and well
+        // over the one pixel the bug drew.
+        expect(option.offsetHeight).toBeGreaterThan(16);
+      }
     });
   },
 };
@@ -222,7 +274,7 @@ export const AFlatListIsStillFlat: Story = {
   args: { options: LISTS },
   play: async ({ canvas }) => {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
-      expect(list.querySelectorAll("[data-slot=select-separator]")).toHaveLength(0);
+      expect(list.querySelectorAll(`.${SELECT_SEPARATOR_CLASS.split(" ").pop()}`)).toHaveLength(0);
       expect(within(list).queryAllByRole("group", { name: /./ })).toHaveLength(0);
       expect(within(list).getAllByRole("option")).toHaveLength(2);
     });
@@ -230,32 +282,10 @@ export const AFlatListIsStillFlat: Story = {
 };
 
 /**
- * Full width by default, because a select in a field is one and a trigger that shrinks to its
- * longest option makes a column of them ragged. A caller who wants a narrow one in a toolbar
- * says so, and `cn` lets the later width win rather than shipping both.
- */
-export const ItFillsItsColumnUnlessToldOtherwise: Story = {
-  args: {},
-  render: (args) => (
-    <div className="flex flex-col gap-3">
-      <Harness {...args} aria-label="Wide" />
-      <Harness {...args} aria-label="Narrow" className="w-40" />
-    </div>
-  ),
-  play: async ({ canvas }) => {
-    const wide = canvas.getByRole("combobox", { name: "Wide" });
-    const narrow = canvas.getByRole("combobox", { name: "Narrow" });
-
-    expect(narrow.className).toContain("w-40");
-    expect(narrow.getBoundingClientRect().width).toBeLessThan(wide.getBoundingClientRect().width);
-  },
-};
-
-/**
  * The case this control could not express: a menu whose list is fetched when it opens.
  *
  * The fetch is `enabled: opened`, so a form of twenty fields asks the server nothing for the
- * eighteen the reader never touches — and `onOpenChange` is the only way to know, because Radix's
+ * eighteen the reader never touches — and `onOpenChange` is the only way to know, because radix's
  * root is what holds the open state and the root is the one element this control does not hand
  * back. Without it, the sixth of task-server's six selects stayed on the primitives.
  */

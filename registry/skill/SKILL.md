@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -15,19 +15,44 @@ and the footer are props, because in a layout every part is dynamic and none of 
 privileged one. `<CardLayout>{rows}</CardLayout>` is wrong; `<CardLayout content={rows} />` is
 right. This is the mistake to check for first when reading or writing a call site.
 
-Install from the registry, do not copy by hand:
+## Which half you are in
+
+One registry, two URLs. `@cubeui` points at the half that matches the platform the project is,
+and the project is one or the other — a DOM app or an Expo app, never both:
 
 ```jsonc
-// components.json, once per project
+// components.json, once per project. A DOM app:
 "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
+
+// An Expo app:
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json" }
 ```
 
 ```bash
 npx shadcn@latest add @cubeui/card-layout   # one item
-npx shadcn@latest add @cubeui/layout        # or a set: layout, form, control
+npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, control, primitive
 ```
 
-## Choosing
+Install from the registry, do not copy by hand.
+
+**Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `tabs`,
+`tooltip`, `badge`, `calendar`, `field`, `toast`, `query-state` — same item name, same props,
+one written in React Native and one compiled or hand-written for the DOM. That is the point of
+the layout: a call site moves between the two halves unchanged.
+
+**So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout` and `Section` are written once in
+React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
+Vite one alike, with the same props.
+
+**Some web shells are still web-only.** `FormField`, `useAppForm` and the bound fields,
+`ActionButton`, `MultiSelect` and the rest of the controls lean on CSS grid tracks and arbitrary
+variants, which Yoga and NativeWind do not have. In an Expo project those items are a 404, and
+that is the registry telling you the truth rather than shipping a shell that lays out wrong. Use
+the native set for those shapes instead — see [Shapes on React Native](#shapes-on-react-native)
+at the end.
+
+## Choosing — on the web
 
 | The shape you are building | Use | Reference |
 | --- | --- | --- |
@@ -36,6 +61,7 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form, control
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
+| The app's sidebar itself — brand, titled lists of links, settings at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
@@ -97,8 +123,9 @@ The same words mean the same thing in every component, and this is the point of 
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
   and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
-- **`hasUnsavedChanges`** — a boolean, on `DialogLayout`. On, closing asks first. Pass
-  `form.state.isDirty`.
+- **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
+  called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
+  is not something the caller renders.
 
 **Form components add:**
 
@@ -153,3 +180,68 @@ asked for, never computed: only the caller knows what its fields are.
 A draggable split divider is the same case: the width it drags is state, so it belongs to
 `react-resizable-panels`, not to `SplitLayout`. A stored sidebar collapse is the same case again —
 `sidebar={open ? <Nav /> : undefined}` is the whole feature, and the caller already holds `open`.
+
+## Shapes on React Native
+
+The native half is its own set: fewer shells, because a phone screen has fewer shapes in it, and
+the ones it has take `children` rather than a `content` prop — a React Native tree is a tree of
+views and there is no shell wrapping to hide.
+
+| The shape you are building | Use | Item |
+| --- | --- | --- |
+| A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
+| The same screen with the web's props, on both halves | `PageLayout` | `@cubeui/page-layout` |
+| Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
+| The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
+| Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
+| A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
+| A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
+| A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
+| A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
+| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
+| A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
+| A form of any size | `Form` and its bound fields | `@cubeui/form` |
+| A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
+| Three or four exclusive choices, all on screen (a theme, a visibility) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
+| The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
+| A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
+| An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
+| A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
+
+One name means different things across the halves, and it is worth knowing before you grep:
+
+- **`Form`.** On the web `@cubeui/form-set` is the eight bound-field items and the form component
+  is `useAppForm`; on native `@cubeui/form` is one file exporting `Form` and its bound fields
+  directly. The item is called `form-set` on the web because `form` is the native component's
+  name, and the shadcn CLI resolves a cross-item import by basename — the two cannot share it.
+
+`PageHeader` is one component on both halves: `@cubeui/page-header`. `@cubeui/page` re-exports
+it, so `Page` and `PageLayout` draw the same title block — `title`, `description`, `action`,
+`icon`, `breadcrumbs`, `loading`, and a `level` (default 1) for the heading's rank.
+
+Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
+`Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Tabs`, `Tooltip`,
+`Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`. They take the props the
+web ones take, with three conversions that are the same everywhere:
+
+- **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
+  output takes `onPress` too, so a call site does not change when it moves.
+- **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
+  The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
+  still compiles — but shared code should use `onChangeText`, the one that exists on device.
+- **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
+  that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
+
+The web halves go the other way too: `Button`, `Dialog`, `Popover`, `Tooltip`, `Tabs`, `Label`
+and `Badge` are a **superset of shadcn's own** there. Every part also takes the props of the radix
+part or DOM element it renders, and shadcn's extra parts and sizes exist — `DialogClose`,
+`DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverHeader`, controlled `Tabs`,
+`TooltipContent sideOffset`, `Badge asChild`, `size="icon-sm"`. So a shadcn call site compiles
+unchanged. The new parts and sizes exist on native too; the radix and DOM passthrough props are
+web only, and a native call site keeps to the shared contract.
+
+`file-picker` is the one item whose native half does not do the job: it draws the zone and says
+so on screen, because picking a file needs `expo-document-picker` and a permission flow that is
+the app's choice. The contract is there; the picking is not.

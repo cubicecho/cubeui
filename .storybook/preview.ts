@@ -1,16 +1,14 @@
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview, ReactRenderer } from "@storybook/react-vite";
 
-// The same stylesheet the preview site loads. Two harnesses rendering the same component from
-// two token sets are not showing the same component, and the drift would be invisible.
-import "../preview/index.css";
+import "./preview.css";
 
 const preview: Preview = {
   parameters: {
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
-    // These shells carry real a11y behaviour — DialogLayout's `hideTitle` keeps the title and
-    // hides it, and its `aria-describedby: undefined` exists to stop Radix warning. Failing the
-    // run rather than collecting a report is the only version of that check that holds.
+    // Collecting a report and passing anyway is not a check. These stories exist to answer
+    // whether a compiled DOM tree keeps the semantics the React Native source expressed, and an
+    // honest answer needs the run to fail when it does not.
     a11y: { test: "error" },
   },
   decorators: [

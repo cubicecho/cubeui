@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "toggle-chip-stories",
+  "title": "Toggle Chip stories",
+  "description": "Storybook stories for @cubeui/toggle-chip, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/toggle-chip"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/toggle-chip.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { useState } from \"react\";\nimport { expect, userEvent, within } from \"storybook/test\";\nimport { ToggleChip } from \"@/components/ui/toggle-chip\";\n\n/**\n * `ToggleChip`, as installed beside it by `@cubeui/toggle-chip-stories`: an on/off pill whose\n * state is `aria-pressed`, and a disabled one that stays put.\n */\nfunction Chips() {\n  const [on, setOn] = useState(false);\n  return (\n    <div className=\"flex flex-row flex-wrap gap-2 bg-background p-6 text-foreground\">\n      <ToggleChip selected={on} onClick={() => setOn((v) => !v)}>\n        Mon\n      </ToggleChip>\n      <ToggleChip selected size=\"sm\">\n        Tue\n      </ToggleChip>\n      <ToggleChip disabled>Wed</ToggleChip>\n    </div>\n  );\n}\n\nconst meta = { title: \"cubeui/ToggleChip\", component: Chips } satisfies Meta<typeof Chips>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\nexport const Default: Story = {\n  play: async ({ canvasElement }) => {\n    const canvas = within(canvasElement);\n    const chip = canvas.getByRole(\"button\", { name: \"Mon\" });\n\n    await expect(chip.getAttribute(\"aria-pressed\")).toBe(\"false\");\n    await userEvent.click(chip);\n    await expect(chip.getAttribute(\"aria-pressed\")).toBe(\"true\");\n\n    const selected = canvas.getByRole(\"button\", { name: \"Tue\" });\n    await expect(getComputedStyle(selected).backgroundColor).not.toBe(\"rgba(0, 0, 0, 0)\");\n\n    const disabled = canvas.getByRole(\"button\", { name: \"Wed\" });\n    await expect(disabled).toBeDisabled();\n    await expect(disabled.getAttribute(\"aria-pressed\")).toBe(\"false\");\n  },\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

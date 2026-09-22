@@ -1,0 +1,43 @@
+/*
+ * The stylesheet a consumer app writes, written once here so the stories render from exactly the
+ * tokens the registry ships. `dist/tokens.native.css` is the emitted artefact of the `tokens`
+ * item — imports, `@theme inline` and both palettes — so a story showing a wrong colour means the
+ * emitter is wrong, not that the harness disagrees with it.
+ */
+@import "../dist/tokens.native.css";
+
+/*
+ * The reset the compiled items rely on, which a consumer of a compiled item installs alongside it.
+ * It is imported after the tokens on purpose: those bring Tailwind's utilities in *unlayered*, and
+ * this is `@layer base`, so every utility outranks it without a specificity fight.
+ */
+@import "../compiled/cube-rn-reset.css";
+
+/*
+ * Where `animate-in`, `fade-in-0`, `zoom-in-95` and `slide-in-from-*` come from — the classes
+ * `dialog`, `popover`, `select` and `tooltip` wear on their `data-[state]` rules. Not core
+ * Tailwind, and the reason this line exists here is that it was missing everywhere: the stories
+ * were rendering those four with the state rules inert and nothing saying so. The emitted
+ * `tokens.web.css` now imports it too, which is what a consumer gets.
+ */
+@import "tw-animate-css";
+
+/*
+ * Tailwind 4 infers its sources from where the CSS lives, which here is `.storybook/`. Naming
+ * them makes the scan cover the trees the classes are actually written in, whatever the CSS moves
+ * to later.
+ */
+@source "../registry";
+@source "../compiled";
+@source "../stories";
+
+/*
+ * react-native-web pins `font: 14px System` on every `<Text>`; a compiled component inherits the
+ * page font instead, deliberately (see `cube-rn-reset.css`). With nothing on the page that would
+ * be the browser's serif default, and a side-by-side would be comparing two fonts rather than two
+ * layouts. Naming react-native-web's own stack here is what isolates the comparison to the thing
+ * under test — and it is the same line a consuming app already has.
+ */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
