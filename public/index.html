@@ -529,9 +529,18 @@ refs: { cubeui: { title: "cubeui", url: "https://cubicecho.github.io/cubeui/stor
   <strong>Composed stories render here, under these tokens.</strong> That makes them
   documentation, not a test of your theme — the question "does <code>Button</code> still pass
   contrast after our <code>index.css</code> override" is only answered by a story compiled in
-  your app, and shipping stories through the registry is
-  <a href="https://github.com/cubicecho/cubeui/issues/45">tracked separately</a>.
+  your app — which is what the <code>-stories</code> items are.
 </div>
+
+<p>
+  Installing <code>@cubeui/&lt;name&gt;-stories</code> puts that component's stories beside it in
+  your tree, importing it as <code>@/components/ui/&lt;name&gt;</code>, so they render under your
+  stylesheet and run as tests under your addon-vitest. They need Storybook 9 or later on
+  <code>@storybook/react-vite</code> and declare no npm dependencies. Available for:
+  <code>badge</code>, <code>button</code>, <code>card</code>, <code>section-heading</code>, <code>segmented</code>, <code>toggle-chip</code>.
+</p>
+
+<pre><code>npx shadcn add @cubeui/button-stories</code></pre>
 
 <footer>
   <a href="https://github.com/cubicecho/cubeui">github.com/cubicecho/cubeui</a> ·

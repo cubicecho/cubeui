@@ -1,4 +1,4 @@
-// Nine things that have to be true before a built registry is installable.
+// Ten things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -168,10 +168,31 @@
 // `SWITCH_THUMB_CLASS` — it is one component drawing two parts, and neither part has a component
 // of its own to belong to.
 //
+// ## 10. A published story imports only what a consumer's tree will have
+//
+// A story item (`button-stories`, derived from `stories/web/published/`) is copied into someone
+// else's `components/ui/` and compiled by their Storybook, so every import in it has to resolve
+// *there*, in their layout, under the Storybook major they pinned. Each import is one of:
+//
+// - an `@/` path that some item in the story's own `registryDependencies` closure installs at
+//   exactly that path — `@/components/ui/button` because `button` is a `registry:ui` file called
+//   `button.tsx`. A path that only resolves in this repo is a resolve error in theirs.
+// - `react`, `storybook/test` for the names in `STORY_TEST_API`, or a *type-only* import of
+//   `@storybook/react-vite`. Nothing else from Storybook: an addon is the app's choice, and a
+//   runtime import of the framework package fails in an app on a different Vite framework where
+//   a type import only costs a type.
+//
+// Never a relative path. That is a local helper — `stories/side-by-side.tsx` is one — which does
+// not ship, and would arrive as a dangling import in a file the consumer did not write.
+//
+// Those Storybook packages are also the only exemption from rule 7: an app that asks for a story
+// has Storybook, and declaring it would have the CLI install one over whatever major it pinned.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import ts from "typescript";
 import { tokensIn, unresolvedColours } from "./colour-classes.mjs";
 import { isSource, packageName, packagesIn } from "./imports.mjs";
 
@@ -227,6 +248,94 @@ async function peersOf(name) {
   }));
 }
 
+/**
+ * Rule 9's allowlists. `storybook/test` is where Storybook 9 moved `@storybook/test`, and these are
+ * the names that have been there, unchanged, since — the floor the story items' descriptions
+ * promise. A newer helper is a newer floor, and that is a decision to make on purpose rather than
+ * by an import.
+ */
+const STORY_PACKAGES = new Set(["react", "storybook/test", "@storybook/react-vite"]);
+const STORY_TYPE_ONLY = new Set(["@storybook/react-vite"]);
+const STORY_TEST_API = new Set([
+  "expect",
+  "fireEvent",
+  "fn",
+  "screen",
+  "spyOn",
+  "userEvent",
+  "waitFor",
+  "within",
+]);
+/** Where the CLI puts a file of each type, as the consumer's `@/` alias spells it. */
+const STORY_ALIAS = {
+  "registry:ui": "@/components/ui",
+  "registry:component": "@/components",
+  "registry:lib": "@/lib",
+  "registry:hook": "@/hooks",
+};
+const isStory = (item) => (item.files ?? []).some((f) => f.path.endsWith(".stories.tsx"));
+
+/** Rule 9 for one story item, against the registry it was built into. */
+function storyProblems(built, item, items) {
+  const problems = [];
+  const name = item.name.replace(/-stories$/, "");
+  if (!(item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`)) {
+    problems.push(`${built}: "${item.name}" does not depend on \`${NAMESPACE}/${name}\``);
+  }
+
+  // Every path an item in the story's dependency closure installs, spelled as an import.
+  const reachable = new Set();
+  const queue = [...(item.registryDependencies ?? [])];
+  const visited = new Set();
+  while (queue.length > 0) {
+    const dep = queue.shift().slice(`${NAMESPACE}/`.length);
+    if (visited.has(dep)) continue;
+    visited.add(dep);
+    const target = items.get(dep);
+    if (!target) continue;
+    for (const file of target.files ?? []) {
+      const alias = STORY_ALIAS[file.type];
+      if (alias) reachable.add(`${alias}/${path.basename(file.path).replace(/\.tsx?$/, "")}`);
+    }
+    queue.push(...(target.registryDependencies ?? []));
+  }
+
+  for (const file of item.files ?? []) {
+    const source = ts.createSourceFile(file.path, file.content ?? "", ts.ScriptTarget.Latest);
+    for (const statement of source.statements) {
+      if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
+      if (!statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+      const spec = statement.moduleSpecifier.text;
+      const where = `${built}: "${item.name}" (${path.basename(file.path)})`;
+
+      if (spec.startsWith(".")) {
+        problems.push(`${where} imports \`${spec}\`, a local file that does not ship`);
+      } else if (spec.startsWith("@/")) {
+        if (!reachable.has(spec)) {
+          problems.push(
+            `${where} imports \`${spec}\`, which nothing in its registryDependencies installs`,
+          );
+        }
+      } else if (!STORY_PACKAGES.has(spec)) {
+        problems.push(`${where} imports \`${spec}\`, which a consumer's Storybook may not have`);
+      } else if (STORY_TYPE_ONLY.has(spec) && !statement.importClause?.isTypeOnly) {
+        problems.push(`${where} imports \`${spec}\` at runtime; only \`import type\` is allowed`);
+      } else if (spec === "storybook/test") {
+        const bindings = statement.importClause?.namedBindings;
+        const names =
+          bindings && ts.isNamedImports(bindings)
+            ? bindings.elements.map((e) => (e.propertyName ?? e.name).text)
+            : ["*"];
+        for (const imported of names.filter((n) => !STORY_TEST_API.has(n))) {
+          problems.push(`${where} imports \`${imported}\` from storybook/test, outside the floor`);
+        }
+      }
+    }
+  }
+  return problems;
+}
+
+const stories = [];
 const collisions = [];
 const unreachable = [];
 const orphans = [];
@@ -439,6 +548,7 @@ for (const built of BUILT) {
   const pinned = new Map();
   const present = new Set();
   const wanted = [];
+  const items = new Map();
 
   // The index is the registry's own account of what it holds; the item files beside it are what
   // actually gets served. Section 6 is the gap between those two.
@@ -451,6 +561,7 @@ for (const built of BUILT) {
     const where = path.join(built, entry);
     const item = JSON.parse(await readFile(where, "utf8"));
     present.add(item.name);
+    items.set(item.name, item);
 
     if (listed && !listed.has(item.name)) {
       orphans.push(`${where}: "${item.name}" is not in ${built}/registry.json`);
@@ -486,6 +597,12 @@ for (const built of BUILT) {
     for (const file of item.files ?? []) {
       if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
       for (const name of packagesIn(file.content ?? "", file.path)) imported.add(name);
+    }
+    // Rule 7's one exemption: a story's Storybook imports are the app's own, and rule 10 is what
+    // narrows them to the ones a consumer is sure to have.
+    if (isStory(item)) {
+      imported.delete("storybook");
+      imported.delete("@storybook/react-vite");
     }
     // `devDependencies` is where an optional peer goes — `@types/react-dom` is not a runtime
     // dependency — so both lists count as "declared" for every question below.
@@ -534,6 +651,10 @@ for (const built of BUILT) {
       }
       basenames.set(name, item.name);
     }
+  }
+
+  for (const item of items.values()) {
+    if (isStory(item)) stories.push(...storyProblems(built, item, items));
   }
 
   for (const { from, dependency } of wanted) {
@@ -687,8 +808,20 @@ if (uncoloured.length > 0) {
   );
 }
 
+if (stories.length > 0) {
+  console.error("\nA published story would not compile in the app that installs it:\n");
+  for (const one of stories) console.error(`  ${one}`);
+  console.error(
+    "\nA story item is copied into the consumer's components/ and built by their Storybook, so" +
+      "\nevery import has to resolve in their tree: an @/ path an item it depends on installs," +
+      "\n`react`, the storybook/test floor, or `import type` from @storybook/react-vite. A local" +
+      "\nhelper or an addon import is a resolve error in a file they did not write.",
+  );
+}
+
 if (
-  collisions.length +
+  stories.length +
+    collisions.length +
     drift.length +
     unpinned.length +
     empties.length +
@@ -712,6 +845,7 @@ console.log(
     `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
     "every built item file is still listed by the index beside it, and every item declares exactly " +
     "the packages its own files import plus their required peers, at one range per package, " +
-    "every shared class constant is applied only by the component it is named for, and every " +
-    "colour class names a token.",
+    "every shared class constant is applied only by the component it is named for, every " +
+    "colour class names a token, and every published story imports only what the consumer's " +
+    "tree will hold.",
 );

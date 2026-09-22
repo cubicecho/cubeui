@@ -581,9 +581,47 @@ Composition needs exactly one thing from this side — `access-control-allow-ori
 sends on every response — and it buys documentation, not a test: the stories render in cubeui's
 iframe under **cubeui's** tokens, so "does `Button` still pass contrast after our `index.css`
 override" is unanswered by it. That question needs a story compiled in the consumer, which is
-mechanism 2 and is real feature work: the stories would have to move into `registry/` or the build
-read two trees, their imports would have to resolve as `@/components/ui/*` in someone else's
-layout, and they would have to stay inside whatever Storybook major the consumer pinned.
+mechanism 2, below.
+
+Nothing is served until `next` reaches `main`: `pages.yml` deploys from `main` only, so until then
+`/storybook/index.json` is a 404 — though already one carrying the CORS header, which is the part
+composition depends on.
+
+### Stories through the registry
+
+The other half of #45: a story installed *into* the consumer, where it renders under the app's own
+`index.css` and runs as a test under the app's own addon-vitest.
+
+```sh
+npx shadcn add @cubeui/button-stories   # lands components/ui/button.stories.tsx, beside button.tsx
+```
+
+- **The file is the declaration.** Every `stories/web/published/<name>.stories.tsx` becomes a
+  web-registry item `<name>-stories`, derived by `rn2web` alongside `registry.web.json` and
+  depending on `@cubeui/<name>`. No hand-written entry, so no entry to drift.
+- **A separate item, not part of the component.** Installing `button` does not drag a Storybook
+  file into an app with no Storybook, and `-stories` is asked for by name.
+- **It lands where the component does**, taking the component item's own type — `components/ui/`
+  for a `registry:ui`, `components/` for a `registry:component` — so a stories glob over `src/`
+  finds it, and it reads as the component's neighbour.
+- **Written in the consumer's terms.** Imports are `@/components/ui/button`, which
+  `tsconfig.web.json` resolves to `compiled/` here — so these stories typecheck and run in this
+  Storybook too, and are tested before they ship.
+- **Nothing the consumer's tree will not have.** No helper, no relative import, no decorator
+  package: `react`, `storybook/test`, a *type-only* import from `@storybook/react-vite`, and the
+  `@/` paths of the item's own dependency closure. It declares no npm dependency, so an install
+  never moves the consumer's Storybook pin. The floor is Storybook 9 (`storybook/test`) and CSF3
+  `args` / `play` with `within(canvasElement)`.
+- **No colour is asserted.** The consumer owns the palette; axe's contrast pass is the colour check,
+  and the assertions are the palette-free ones — a variant painted *something*, disabled dims,
+  the state attribute is set.
+- **Web only, for now.** On-device Storybook has no `play` and no addon-vitest, which is the whole
+  reason to ship a story, so the native registry carries none.
+
+Rule 10 in `check-registry-build.mjs` holds the import rules against the built JSON, which is what
+a consumer actually receives. The stories in `stories/web/published/` are button, badge, card,
+segmented, toggle-chip and section-heading; the Stage 0 stories stay unpublished, because they
+compare against the native half and a consumer has no native half to compare.
 
 **`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's
 `publicDir` defaults to `<root>/public`, and `public/` here is the deployed registry rather than

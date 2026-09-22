@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "badge-stories",
+  "title": "Badge stories",
+  "description": "Storybook stories for @cubeui/badge, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/badge"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/badge.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { expect, within } from \"storybook/test\";\nimport { Badge } from \"@/components/ui/badge\";\n\n/**\n * `Badge`, as installed beside it by `@cubeui/badge-stories`. Same rules as the button's: nothing\n * here asserts a colour, since the consumer's tokens own those — axe's contrast pass over every\n * variant is the colour check, and it is the consumer's palette it runs against.\n */\nconst meta = {\n  title: \"cubeui/Badge\",\n  component: Badge,\n  args: { children: \"Active\" },\n  decorators: [\n    (Story) => (\n      <div className=\"flex flex-row flex-wrap items-center gap-2 bg-background p-6 text-foreground\">\n        <Story />\n      </div>\n    ),\n  ],\n} satisfies Meta<typeof Badge>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\nexport const Default: Story = {\n  play: async ({ canvasElement }) => {\n    await expect(within(canvasElement).getByText(\"Active\")).toBeInTheDocument();\n  },\n};\n\n/** Every variant with a label, for the contrast pass. */\nexport const Variants: Story = {\n  render: () => (\n    <>\n      <Badge>Default</Badge>\n      <Badge variant=\"secondary\">Secondary</Badge>\n      <Badge variant=\"destructive\">Destructive</Badge>\n      <Badge variant=\"outline\">Outline</Badge>\n      <Badge variant=\"success\">Success</Badge>\n      <Badge variant=\"warning\">Warning</Badge>\n    </>\n  ),\n  play: async ({ canvasElement }) => {\n    await expect(within(canvasElement).getByText(\"Warning\")).toBeInTheDocument();\n  },\n};\n\n/**\n * No label collapses the pill to a dot, which is named when it means something and hidden when\n * it does not — never an unnamed node in the accessibility tree.\n */\nexport const Dots: Story = {\n  render: () => (\n    <>\n      <Badge variant=\"warning\" label=\"Paused\" />\n      <Badge variant=\"secondary\" />\n    </>\n  ),\n  play: async ({ canvasElement }) => {\n    const canvas = within(canvasElement);\n    await expect(canvas.getByRole(\"img\", { name: \"Paused\" })).toBeInTheDocument();\n    await expect(canvas.queryAllByRole(\"img\")).toHaveLength(1);\n    await expect(canvasElement.querySelectorAll('[aria-hidden=\"true\"]')).toHaveLength(1);\n  },\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

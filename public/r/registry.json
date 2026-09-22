@@ -1161,6 +1161,84 @@
           "type": "registry:component"
         }
       ]
+    },
+    {
+      "name": "badge-stories",
+      "type": "registry:ui",
+      "title": "Badge stories",
+      "description": "Storybook stories for @cubeui/badge, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/badge"],
+      "files": [
+        {
+          "path": "stories/web/published/badge.stories.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button-stories",
+      "type": "registry:ui",
+      "title": "Button stories",
+      "description": "Storybook stories for @cubeui/button, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/button"],
+      "files": [
+        {
+          "path": "stories/web/published/button.stories.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "card-stories",
+      "type": "registry:ui",
+      "title": "Card stories",
+      "description": "Storybook stories for @cubeui/card, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/card"],
+      "files": [
+        {
+          "path": "stories/web/published/card.stories.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "section-heading-stories",
+      "type": "registry:component",
+      "title": "Section Heading stories",
+      "description": "Storybook stories for @cubeui/section-heading, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/section-heading"],
+      "files": [
+        {
+          "path": "stories/web/published/section-heading.stories.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "segmented-stories",
+      "type": "registry:ui",
+      "title": "Segmented stories",
+      "description": "Storybook stories for @cubeui/segmented, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/segmented"],
+      "files": [
+        {
+          "path": "stories/web/published/segmented.stories.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle-chip-stories",
+      "type": "registry:ui",
+      "title": "Toggle Chip stories",
+      "description": "Storybook stories for @cubeui/toggle-chip, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/toggle-chip"],
+      "files": [
+        {
+          "path": "stories/web/published/toggle-chip.stories.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

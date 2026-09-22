@@ -64,6 +64,15 @@ jobs:
       - name: Build the Storybook into the deployed tree
         run: npx storybook build -o public/storybook
 
+      # What `refs` fetches is `index.json`, and the way this broke before was Vite copying
+      # `public/` into the build — the registry page over Storybook's own index. Both are one
+      # file test, so the deploy refuses rather than publishing a Storybook nobody can compose.
+      - name: The Storybook is composable
+        run: |
+          test -f public/storybook/index.json
+          test ! -e public/storybook/r
+          ! grep -q 'components for React Native and the DOM' public/storybook/index.html
+
       - uses: actions/configure-pages@v5
 
       # `public`, not `dist` — this repo's `dist/` is the emitted token set. What
