@@ -90,7 +90,10 @@ export function useFieldError(): string | undefined {
 }
 
 type InputFieldProps = FieldProps &
-  Omit<ComponentProps<typeof Input>, "id" | "value" | "onChangeText" | "onBlur">;
+  Omit<
+    ComponentProps<typeof Input>,
+    "id" | "value" | "defaultValue" | "onChange" | "onChangeText" | "onBlur"
+  >;
 
 /** A text input. For numbers see {@link NumberField}, which keeps the store numeric. */
 function BoundInputField(props: InputFieldProps) {
@@ -129,7 +132,10 @@ function parseNumber(text: string): number | null {
 }
 
 type NumberFieldProps = FieldProps &
-  Omit<ComponentProps<typeof Input>, "id" | "value" | "onChangeText" | "onBlur" | "type">;
+  Omit<
+    ComponentProps<typeof Input>,
+    "id" | "value" | "defaultValue" | "onChange" | "onChangeText" | "onBlur" | "type"
+  >;
 
 /**
  * A number input whose store stays numeric.
@@ -204,7 +210,10 @@ const TEXTAREA_BOX: Record<number, string | undefined> = {
 };
 
 type TextareaFieldProps = FieldProps &
-  Omit<ComponentProps<typeof Textarea>, "id" | "value" | "onChangeText" | "onBlur">;
+  Omit<
+    ComponentProps<typeof Textarea>,
+    "id" | "value" | "defaultValue" | "onChange" | "onChangeText" | "onBlur"
+  >;
 
 function BoundTextareaField(props: TextareaFieldProps) {
   const [fieldProps, textarea] = splitProps(props);
@@ -282,7 +291,10 @@ function BoundSelectField({
 }
 
 type CheckboxFieldProps = FieldProps &
-  Omit<ComponentProps<typeof Checkbox>, "id" | "checked" | "onCheckedChange" | "onBlur">;
+  Omit<
+    ComponentProps<typeof Checkbox>,
+    "id" | "checked" | "defaultChecked" | "onCheckedChange" | "onBlur"
+  >;
 
 /** Horizontal by default: a 16px box on a line of its own above its caption is not a field. */
 function BoundCheckboxField(props: CheckboxFieldProps) {
@@ -308,7 +320,10 @@ function BoundCheckboxField(props: CheckboxFieldProps) {
 }
 
 type SwitchFieldProps = FieldProps &
-  Omit<ComponentProps<typeof Switch>, "id" | "checked" | "onCheckedChange" | "onBlur">;
+  Omit<
+    ComponentProps<typeof Switch>,
+    "id" | "checked" | "defaultChecked" | "onCheckedChange" | "onBlur"
+  >;
 
 function BoundSwitchField(props: SwitchFieldProps) {
   const [fieldProps, control] = splitProps(props);

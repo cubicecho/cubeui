@@ -25,6 +25,7 @@ import {
   type SelectItemProps,
   type SelectLabelProps,
   type SelectProps,
+  type SelectScrollButtonProps,
   type SelectSeparatorProps,
   type SelectTriggerProps,
   type SelectValueProps,
@@ -48,8 +49,9 @@ const SelectContext = createContext<SelectState>({
 });
 
 function Select({
-  value,
-  onValueChange,
+  value: valueProp,
+  defaultValue = "",
+  onValueChange: onValueChangeProp,
   disabled = false,
   open: openProp,
   onOpenChange,
@@ -63,6 +65,13 @@ function Select({
   const setOpen = (next: boolean) => {
     setOpenState(next);
     onOpenChange?.(next);
+  };
+  // The value, the same way: radix's select is uncontrolled unless given one.
+  const [valueState, setValueState] = useState(defaultValue);
+  const value = valueProp ?? valueState;
+  const onValueChange = (next: string) => {
+    setValueState(next);
+    onValueChangeProp?.(next);
   };
   return (
     <SelectContext.Provider
@@ -137,17 +146,24 @@ function SelectContent({ className, children }: SelectContentProps) {
   );
 }
 
-function SelectItem({ value, className, children }: SelectItemProps) {
+function SelectItem({ value, disabled = false, className, children }: SelectItemProps) {
   const select = useContext(SelectContext);
   const selected = select.value === value;
   return (
     <Pressable
       role="menuitem"
+      disabled={disabled}
+      aria-disabled={disabled}
       onPress={() => {
         select.onValueChange(value);
         select.setOpen(false);
       }}
-      className={cn(SELECT_ITEM_CLASS, selected && "bg-accent", className)}
+      className={cn(
+        SELECT_ITEM_CLASS,
+        selected && "bg-accent",
+        disabled && "opacity-50",
+        className,
+      )}
     >
       {selected ? (
         <View className="absolute left-2 h-3.5 w-3.5 items-center justify-center">
@@ -180,12 +196,28 @@ function SelectSeparator({ className }: SelectSeparatorProps) {
   return <View role="separator" className={cn(SELECT_SEPARATOR_CLASS, className)} />;
 }
 
+/**
+ * Nothing, on purpose: a sheet scrolls under the finger and has no edge to put an arrow against.
+ * Exported so a call site written against shadcn's select — which renders these inside its
+ * content — compiles here unchanged.
+ */
+function SelectScrollUpButton(_props: SelectScrollButtonProps) {
+  return null;
+}
+
+/** See `SelectScrollUpButton`. */
+function SelectScrollDownButton(_props: SelectScrollButtonProps) {
+  return null;
+}
+
 export {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
   SelectSeparator,
   SelectTrigger,
   SelectValue,

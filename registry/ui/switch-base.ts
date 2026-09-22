@@ -2,14 +2,21 @@
  * The contract `switch.tsx` (native) and `switch.web.tsx` (radix) both
  * implement. Its own module because Metro resolves `./switch` to
  * `switch.web.tsx` on web — the web file would otherwise import itself.
+ *
+ * Controlled or not, as radix's is. The web half takes radix's whole
+ * `Switch.Root` surface on top of this — `name`, `value`, `required`, the
+ * `aria-*` props, shadcn's `size` — because it installs over a DOM app's
+ * shadcn switch; this is the part that means something on both platforms.
  */
 export type SwitchProps = {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  checked?: boolean | undefined;
+  /** Where an uncontrolled switch starts. Ignored once `checked` is passed. */
+  defaultChecked?: boolean | undefined;
+  onCheckedChange?: ((checked: boolean) => void) | undefined;
   /** Web only: what a `<label htmlFor>` points at. */
   id?: string | undefined;
   disabled?: boolean | undefined;
-  /** See `checkbox.tsx`: a bound field marks itself touched from this. */
+  /** See `checkbox-base.ts`: a bound field marks itself touched from this. */
   onBlur?: (() => void) | undefined;
   className?: string | undefined;
 };

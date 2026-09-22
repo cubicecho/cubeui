@@ -23,7 +23,7 @@
     },
     {
       "path": "registry/ui/label.web.tsx",
-      "content": "/**\n * The web label: radix, which is here for one thing — clicking the label\n * focuses the control named by `htmlFor`. That association has no native\n * counterpart, which is the whole reason for the split.\n */\n\nimport { Label as LabelPrimitive } from \"radix-ui\";\nimport { LABEL_CLASS, type LabelProps } from \"@/components/ui/label-base\";\nimport { cn } from \"@/lib/utils\";\n\nfunction Label({ htmlFor, className, children }: LabelProps) {\n  return (\n    <LabelPrimitive.Root htmlFor={htmlFor} className={cn(LABEL_CLASS, className)}>\n      {children}\n    </LabelPrimitive.Root>\n  );\n}\n\nexport { Label };\n",
+      "content": "/**\n * The web label: radix, which is here for one thing — clicking the label\n * focuses the control named by `htmlFor`. That association has no native\n * counterpart, which is the whole reason for the split.\n *\n * It takes radix's `Label.Root` props whole — `id`, `onClick`, the `aria-*`\n * and `data-*` props — because it installs over a DOM app's shadcn label, and\n * shadcn's `FieldLabel` is typed as this label's props.\n */\n\nimport { Label as LabelPrimitive } from \"radix-ui\";\nimport type { ComponentPropsWithRef } from \"react\";\nimport { LABEL_CLASS } from \"@/components/ui/label-base\";\nimport { cn } from \"@/lib/utils\";\n\ntype LabelProps = Omit<ComponentPropsWithRef<typeof LabelPrimitive.Root>, \"className\"> & {\n  className?: string | undefined;\n};\n\nfunction Label({ className, ...props }: LabelProps) {\n  return (\n    <LabelPrimitive.Root data-slot=\"label\" {...props} className={cn(LABEL_CLASS, className)} />\n  );\n}\n\nexport { Label };\n",
       "type": "registry:ui"
     }
   ],

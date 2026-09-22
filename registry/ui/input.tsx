@@ -8,12 +8,18 @@
  * way to reach them. Because both files export the
  * same `InputProps`, call sites never branch — the only rules are that they
  * speak `onChangeText` rather than `onChange`, and reach the element through
- * `InputHandle` rather than an `HTMLInputElement` ref.
+ * `InputHandle` rather than an `HTMLInputElement` ref. (The web half takes both
+ * of those as well, as shadcn's `Input` does; shared code should not.)
  */
 
 import { useImperativeHandle, useRef } from "react";
 import { TextInput } from "react-native";
-import { INPUT_CLASS, type InputHandle, type InputProps } from "@/components/ui/input-base";
+import {
+  INPUT_CLASS,
+  type InputHandle,
+  type InputProps,
+  NATIVE_INPUT_MODE,
+} from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
 
 function Input({
@@ -21,6 +27,7 @@ function Input({
   type = "text",
   inputMode,
   value,
+  defaultValue,
   onChangeText,
   onBlur,
   onSubmitEditing,
@@ -39,6 +46,7 @@ function Input({
     <TextInput
       ref={inner}
       value={value}
+      defaultValue={defaultValue}
       onChangeText={onChangeText}
       onBlur={onBlur}
       onSubmitEditing={onSubmitEditing}
@@ -46,7 +54,7 @@ function Input({
       maxLength={maxLength}
       editable={!disabled}
       autoFocus={autoFocus}
-      inputMode={inputMode ?? (type === "number" ? "numeric" : "text")}
+      inputMode={inputMode ?? NATIVE_INPUT_MODE[type] ?? "text"}
       secureTextEntry={type === "password"}
       className={cn(INPUT_CLASS, disabled && "opacity-50", className)}
     />

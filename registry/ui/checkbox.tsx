@@ -1,52 +1,43 @@
 /**
- * A checkbox built from a `Pressable`, not radix's. Radix would buy a
- * `.web.tsx` pair for a box with a tick in it; the role and `aria-checked`
- * below are the part that actually matters, and they cost nothing.
+ * The native checkbox, built from a `Pressable`. `checkbox.web.tsx` is radix's, and
+ * `checkbox-base.ts` holds the contract they share.
  *
  * `role="checkbox"` plus `aria-checked` is what makes it a real checkbox to a
- * screen reader on both platforms; without the role react-native-web renders a
- * plain `<div>`.
+ * screen reader; the role and `aria-checked` below are the part that actually
+ * matters, and they cost nothing.
  */
 
+import { useState } from "react";
 import { Pressable } from "react-native";
+import { CHECKBOX_CLASS, type CheckboxProps } from "@/components/ui/checkbox-base";
 import { Check } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
-type CheckboxProps = {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean | undefined;
-  /**
-   * Fired when the control loses focus. A bound field marks itself touched from
-   * this, which is what decides whether an error is shown yet — so a checkbox
-   * without one is a required field that never reports itself as unfilled.
-   */
-  onBlur?: (() => void) | undefined;
-  /** Required: the box carries no visible label of its own. */
-  accessibilityLabel: string;
-  className?: string | undefined;
-};
-
-export function Checkbox({
-  checked,
+function Checkbox({
+  checked: checkedProp,
+  defaultChecked = false,
   onCheckedChange,
   disabled = false,
   onBlur,
   accessibilityLabel,
   className,
 }: CheckboxProps) {
+  // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
+  const [checkedState, setCheckedState] = useState(defaultChecked);
+  const checked = checkedProp ?? checkedState;
   return (
     <Pressable
-      // (No `useSemanticElements` suppression needed: `<input type="checkbox">` has no native
-      // counterpart, and the rule does not reach a `Pressable` anyway.)
       role="checkbox"
       aria-checked={checked}
       aria-label={accessibilityLabel}
       disabled={disabled}
-      onPress={() => onCheckedChange(!checked)}
+      onPress={() => {
+        setCheckedState(!checked);
+        onCheckedChange?.(!checked);
+      }}
       onBlur={onBlur}
       className={cn(
-        "h-4 w-4 items-center justify-center rounded border",
+        CHECKBOX_CLASS,
         checked ? "border-primary bg-primary" : "border-input bg-background",
         disabled && "opacity-50",
         className,
@@ -56,3 +47,6 @@ export function Checkbox({
     </Pressable>
   );
 }
+
+export type { CheckboxProps } from "@/components/ui/checkbox-base";
+export { Checkbox };

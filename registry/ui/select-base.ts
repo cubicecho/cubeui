@@ -3,16 +3,21 @@
  * implement. Its own module because Metro resolves `./select` to
  * `select.web.tsx` on web.
  *
- * Narrower than radix's surface. `Group`, `Label`, `Separator` and the two
- * scroll buttons are left out: each would need a native implementation written
- * only so the two halves export the same names, and a sheet has nothing to
- * scroll-button against. Add one when something needs it, on both sides.
+ * Every part shadcn's select exports is here, so a DOM call site written against
+ * shadcn's compiles against either half. The types below are the part that means
+ * the same on both platforms; the web half widens each to radix's own props
+ * (`name`, `required`, `dir`, `position`, `textValue`, a trigger's `size` and
+ * every `<button>` attribute), because it installs over a DOM app's shadcn
+ * select. The two scroll buttons render nothing on native: a sheet scrolls by
+ * touch and has nothing to put one against.
  */
 import type { ReactNode } from "react";
 
 export type SelectProps = {
-  value: string;
-  onValueChange: (value: string) => void;
+  /** Controlled when passed; otherwise the select holds its own, starting at `defaultValue`. */
+  value?: string | undefined;
+  defaultValue?: string | undefined;
+  onValueChange?: ((value: string) => void) | undefined;
   disabled?: boolean | undefined;
   /**
    * Whether the menu is open, and being told when that changes.
@@ -28,12 +33,11 @@ export type SelectProps = {
 };
 
 /**
- * The trigger takes the wiring a bound field hands its control, and nothing else.
+ * The trigger takes the wiring a bound field hands its control.
  *
- * `option-select` was written against `ComponentProps<"button">`, which is every DOM
- * attribute — none of which a `Pressable` honours. This is the subset that means the
- * same thing on both platforms: React Native takes `id` and the `aria-*` props as
- * cross-platform props and react-native-web renders them as the DOM attributes.
+ * This is the subset that means the same thing on both platforms: React Native takes
+ * `id` and the `aria-*` props as cross-platform props. The web half's trigger is radix's,
+ * a real `<button>`, and takes every attribute one does plus shadcn's `size`.
  */
 export type SelectTriggerProps = {
   id?: string | undefined;
@@ -60,8 +64,16 @@ export type SelectContentProps = {
 
 export type SelectItemProps = {
   value: string;
+  /** Shown, and skipped: it cannot be chosen. */
+  disabled?: boolean | undefined;
   className?: string | undefined;
   children: ReactNode;
+};
+
+/** `SelectScrollUpButton` and `SelectScrollDownButton`. Web only in effect: see above. */
+export type SelectScrollButtonProps = {
+  className?: string | undefined;
+  children?: ReactNode;
 };
 
 export type SelectGroupProps = {

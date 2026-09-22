@@ -35,6 +35,7 @@ import {
   PROPS_TAG,
   REF_TYPE,
   REFUSED_PROPS,
+  TAG_ROLE,
   TYPE_MAP,
 } from "./tables.mjs";
 
@@ -416,6 +417,9 @@ function transformElement(open, elements, diagnostics) {
   if (webAs) {
     tag = webAs;
     find("webAs").remove();
+    // A role the chosen element already has — `role="group"` written for the device on a `View`
+    // that is a `<fieldset>` on the web — is the same thing said twice there, so it goes too.
+    dropRole = role !== null && (NATIVE_TAG_FOR_ROLE[role] === webAs || TAG_ROLE[webAs] === role);
   } else if (role === "heading") {
     const levelAttr = find("aria-level");
     const level = literalValue(levelAttr);

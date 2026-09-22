@@ -1,10 +1,19 @@
 /**
- * The web select: radix, anchored under its trigger. `select.tsx` is the
- * native counterpart and `select-base.ts` holds the contract they share.
+ * The web select: radix. `select.tsx` is the native counterpart and
+ * `select-base.ts` holds the contract they share.
+ *
+ * **It is also shadcn's select, part for part and prop for prop.** It installs
+ * over a DOM app's `components/ui/select.tsx`, so every part takes radix's own
+ * props — `SelectTrigger` every `<button>` attribute and shadcn's `size`,
+ * `SelectContent` `position`/`side`/`align`, `SelectItem` `disabled` and
+ * `textValue`, the root `defaultValue`, `name` and `required` — and the two
+ * scroll buttons are exported and drawn inside the content, as shadcn draws them.
+ * `position` defaults to radix's `"item-aligned"`, which is shadcn's default too.
  */
 
 import { Select as SelectPrimitive } from "radix-ui";
-import { Check, ChevronDown } from "@/components/ui/icons";
+import type { ComponentPropsWithRef, ElementType } from "react";
+import { Check, ChevronDown, ChevronUp } from "@/components/ui/icons";
 import {
   SELECT_ITEM_CLASS,
   SELECT_ITEM_TEXT_CLASS,
@@ -12,44 +21,59 @@ import {
   SELECT_SEPARATOR_CLASS,
   SELECT_TRIGGER_CLASS,
   SELECT_TRIGGER_TEXT_CLASS,
-  type SelectContentProps,
-  type SelectGroupProps,
-  type SelectItemProps,
-  type SelectLabelProps,
-  type SelectProps,
-  type SelectSeparatorProps,
-  type SelectTriggerProps,
-  type SelectValueProps,
 } from "@/components/ui/select-base";
 import { cn } from "@/lib/utils";
 
-function Select({ value, onValueChange, disabled, open, onOpenChange, children }: SelectProps) {
-  return (
-    <SelectPrimitive.Root
-      value={value}
-      onValueChange={onValueChange}
-      {...(disabled === undefined ? {} : { disabled })}
-      // Spread conditionally rather than passed as `undefined`: radix reads the presence of
-      // `open` as the switch between controlled and uncontrolled, and an explicit `undefined`
-      // would leave a caller who passes only `onOpenChange` with a menu that never opens.
-      {...(open === undefined ? {} : { open })}
-      {...(onOpenChange === undefined ? {} : { onOpenChange })}
-    >
-      {children}
-    </SelectPrimitive.Root>
-  );
+// Each part's props are radix's, with `className` re-declared: radix types it `className?: string`,
+// which under `exactOptionalPropertyTypes` rejects the `cond ? "x" : undefined` call sites pass.
+type Props<T extends ElementType> = Omit<ComponentPropsWithRef<T>, "className"> & {
+  className?: string | undefined;
+};
+
+type RootProps = ComponentPropsWithRef<typeof SelectPrimitive.Root>;
+
+/**
+ * radix's root props, each also taking an explicit `undefined` — the shared contract's spelling,
+ * and what a wrapper forwarding its own optional `open` or `value` passes.
+ */
+type SelectProps = { [K in keyof RootProps]?: RootProps[K] | undefined };
+
+function Select(props: SelectProps) {
+  // An explicit `undefined` is dropped rather than passed on: radix reads the presence of `open`
+  // and `value` as the switch between controlled and uncontrolled, and a caller forwarding an
+  // unset `open` means "not controlled", not "closed".
+  const defined = Object.fromEntries(
+    Object.entries(props).filter(([, value]) => value !== undefined),
+  ) as RootProps;
+  return <SelectPrimitive.Root data-slot="select" {...defined} />;
 }
 
-function SelectTrigger({ className, onBlur, disabled, children, ...aria }: SelectTriggerProps) {
+function SelectGroup(props: Props<typeof SelectPrimitive.Group>) {
+  return <SelectPrimitive.Group data-slot="select-group" {...props} />;
+}
+
+function SelectValue(props: Props<typeof SelectPrimitive.Value>) {
+  return <SelectPrimitive.Value data-slot="select-value" {...props} />;
+}
+
+function SelectTrigger({
+  className,
+  size = "default",
+  children,
+  ...props
+}: Props<typeof SelectPrimitive.Trigger> & {
+  /** shadcn's shorter trigger. Web only. */
+  size?: "sm" | "default" | undefined;
+}) {
   return (
     <SelectPrimitive.Trigger
-      onBlur={onBlur}
-      disabled={disabled}
-      {...aria}
+      data-slot="select-trigger"
+      data-size={size}
+      {...props}
       className={cn(
         SELECT_TRIGGER_CLASS,
         SELECT_TRIGGER_TEXT_CLASS,
-        "ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        "ring-offset-background focus:ring-ring flex focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-[placeholder]:text-muted-foreground data-[size=sm]:h-8 [&>span]:line-clamp-1",
         className,
       )}
     >
@@ -61,32 +85,48 @@ function SelectTrigger({ className, onBlur, disabled, children, ...aria }: Selec
   );
 }
 
-function SelectValue({ placeholder, children }: SelectValueProps) {
-  return <SelectPrimitive.Value placeholder={placeholder}>{children}</SelectPrimitive.Value>;
-}
-
-function SelectContent({ className, children }: SelectContentProps) {
+function SelectContent({
+  className,
+  children,
+  position = "item-aligned",
+  align = "center",
+  ...props
+}: Props<typeof SelectPrimitive.Content>) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
-        position="popper"
+        data-slot="select-content"
+        position={position}
+        align={align}
+        {...props}
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1 relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border shadow-md",
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border shadow-md",
+          position === "popper" &&
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className,
         )}
       >
-        <SelectPrimitive.Viewport className="w-full min-w-[var(--radix-select-trigger-width)] p-1">
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={cn(
+            "p-1",
+            position === "popper" &&
+              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1",
+          )}
+        >
           {children}
         </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );
 }
 
-function SelectItem({ value, className, children }: SelectItemProps) {
+function SelectItem({ className, children, ...props }: Props<typeof SelectPrimitive.Item>) {
   return (
     <SelectPrimitive.Item
-      value={value}
+      data-slot="select-item"
+      {...props}
       className={cn(
         SELECT_ITEM_CLASS,
         SELECT_ITEM_TEXT_CLASS,
@@ -104,23 +144,53 @@ function SelectItem({ value, className, children }: SelectItemProps) {
   );
 }
 
-function SelectGroup({ children }: SelectGroupProps) {
-  return <SelectPrimitive.Group>{children}</SelectPrimitive.Group>;
-}
-
-function SelectLabel({ className, children }: SelectLabelProps) {
+function SelectLabel({ className, ...props }: Props<typeof SelectPrimitive.Label>) {
   return (
-    <SelectPrimitive.Label className={cn(SELECT_LABEL_CLASS, className)}>
-      {children}
-    </SelectPrimitive.Label>
+    <SelectPrimitive.Label
+      data-slot="select-label"
+      {...props}
+      className={cn(SELECT_LABEL_CLASS, className)}
+    />
   );
 }
 
-function SelectSeparator({ className }: SelectSeparatorProps) {
+function SelectSeparator({ className, ...props }: Props<typeof SelectPrimitive.Separator>) {
   return (
     <SelectPrimitive.Separator
+      data-slot="select-separator"
+      {...props}
       className={cn(SELECT_SEPARATOR_CLASS, "pointer-events-none", className)}
     />
+  );
+}
+
+function SelectScrollUpButton({
+  className,
+  ...props
+}: Props<typeof SelectPrimitive.ScrollUpButton>) {
+  return (
+    <SelectPrimitive.ScrollUpButton
+      data-slot="select-scroll-up-button"
+      {...props}
+      className={cn("flex cursor-default items-center justify-center py-1", className)}
+    >
+      <ChevronUp className="h-4 w-4" />
+    </SelectPrimitive.ScrollUpButton>
+  );
+}
+
+function SelectScrollDownButton({
+  className,
+  ...props
+}: Props<typeof SelectPrimitive.ScrollDownButton>) {
+  return (
+    <SelectPrimitive.ScrollDownButton
+      data-slot="select-scroll-down-button"
+      {...props}
+      className={cn("flex cursor-default items-center justify-center py-1", className)}
+    >
+      <ChevronDown className="h-4 w-4" />
+    </SelectPrimitive.ScrollDownButton>
   );
 }
 
@@ -130,6 +200,8 @@ export {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
   SelectSeparator,
   SelectTrigger,
   SelectValue,
