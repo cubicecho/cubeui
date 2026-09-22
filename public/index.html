@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 76 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 77 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 76 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 77 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -117,7 +117,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  52 on both platforms · 24 web-only · 0 native-only.
+  53 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -447,6 +447,11 @@
           <td>shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/sidebar</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/skeleton</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.</td>
@@ -537,7 +542,7 @@ refs: { cubeui: { title: "cubeui", url: "https://cubicecho.github.io/cubeui/stor
   your tree, importing it as <code>@/components/ui/&lt;name&gt;</code>, so they render under your
   stylesheet and run as tests under your addon-vitest. They need Storybook 9 or later on
   <code>@storybook/react-vite</code> and declare no npm dependencies. Available for:
-  <code>badge</code>, <code>button</code>, <code>card</code>, <code>section-heading</code>, <code>segmented</code>, <code>toggle-chip</code>.
+  <code>badge</code>, <code>button</code>, <code>card</code>, <code>section-heading</code>, <code>segmented</code>, <code>sidebar</code>, <code>toggle-chip</code>.
 </p>
 
 <pre><code>npx shadcn add @cubeui/button-stories</code></pre>

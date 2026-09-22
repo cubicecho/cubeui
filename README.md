@@ -14,9 +14,9 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 52 items, pipeline green |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 53 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
+| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 77 published |
 | 4 | cubeui's own items ported in as the web-only tier | **done** — 24 web-only items, cubeui fully covered; the layout shells and `section` since moved to both platforms |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
@@ -109,7 +109,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
+| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
@@ -293,9 +293,9 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 26 generated, 37
+react-native-web anywhere in the output. **Every file has a web half — 36 generated, 33
 hand-written** — and `registry.web.json`, derived from `registry.json` and `registry.web-only.json`
-in the same run, publishes **all 71 items**. `scripts/rn2web/` is about 1400 lines, of which
+in the same run, publishes **all 77 items**. `scripts/rn2web/` is about 1400 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
@@ -410,7 +410,10 @@ React Native source were found by trying to compile it**, none of which any RN t
 | 4 | an existing `X.web.tsx` supplies the web half and nothing is generated | `passthroughSource` |
 
 Level 3 exists because levels 1 and 2 cannot reach the markup whose semantics *are* the element:
-`<section>`, `<nav>`, `<aside>`, `<figure>` have no ARIA role a `<View>` could have carried.
+`<section>`, `<nav>`, `<figure>` have no ARIA role a `<View>` could have carried. (`<aside>` was on
+this list, wrongly: its role is `complementary`, which `sidebar` writes on its root and level 2 now
+maps to `<aside>`. The role is what makes the source's `aria-label` legal under react-native-web,
+where a role-less `<div>` may not be named and axe says so.)
 `registry/lib/web-as.d.ts` augments React Native's `ViewProps` and `TextProps` with an optional
 `webAs`, which the compiler reads and removes; on device React Native drops the unknown prop, so it
 costs one type declaration and no runtime. `section` is the first item to need it: its root is a
@@ -446,6 +449,10 @@ react-native-web would have rendered anyway.
 - **`Platform.OS` is a constant here.** `Platform.OS === "web"` folds to `true`, the ternary around it
   collapses, `Platform.select({ web, default })` resolves, and the import goes. That is what lets a
   source file carry web-only ARIA behind a platform guard and have the compiled half come out clean.
+  Once the guard folds, a spread of an object literal is inlined as attributes — shorthands too, so
+  `sidebar`'s `{...(Platform.OS === "web" ? { href, "aria-current": … } : {})}` comes out as
+  `<a href={href} aria-current={…}>`, which is what lets the `accessibilityState` check see the
+  `aria-current` that answers its `selected`.
 
 ### Where the compiled half is not a drop-in
 
@@ -474,7 +481,8 @@ variants, so there was never an RN source for these to come from.
 
 **The layout family has since left this tier** (#57). `header-content-footer`, `page-header`,
 `page-layout`, `split-layout`, `card-layout` and `dialog-layout` are written once in
-`registry/layout/` and compiled for the web: the split is flex rather than grid tracks, and the web
+`registry/layout/` and compiled for the web — and `sidebar` (#59), which was never in this tier,
+joined them there: the split is flex rather than grid tracks, and the web
 classes Yoga cannot read sit behind a `Platform.select` the compiler folds, so the DOM output keeps
 them. The one `PageHeader` replaced the smaller one `page` carried on device. Rule 11 of the guards
 keeps the family on both sides.
@@ -648,7 +656,7 @@ npx shadcn add @cubeui/button-stories   # lands components/ui/button.stories.tsx
 
 Rule 10 in `check-registry-build.mjs` holds the import rules against the built JSON, which is what
 a consumer actually receives. The stories in `stories/web/published/` are button, badge, card,
-segmented, toggle-chip and section-heading; the Stage 0 stories stay unpublished, because they
+segmented, toggle-chip, section-heading and sidebar; the Stage 0 stories stay unpublished, because they
 compare against the native half and a consumer has no native half to compare.
 
 **`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's
@@ -764,7 +772,8 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
 
    **It fired, and the answer was the main palette.** Every cubicecho app's sidebar uses the eight
    tokens, telos was defining all of them in its own `global.css` to keep working, and a sidebar
-   layout is coming here next. A separate item would have been one more thing each of those apps had
+   layout was coming here next — it is `sidebar` now (#59), drawn on `bg-sidebar`,
+   `border-sidebar-border` and `sidebar-accent`. A separate item would have been one more thing each of those apps had
    to know to install. `npm run parity` now compares around the additions — every token cubeui has
    must still match it in value and order, and a token cubeui lacks is not drift — so the
    transition-period guard survives the palette growing.

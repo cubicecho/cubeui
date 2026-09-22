@@ -239,6 +239,11 @@ function inlineSpreads(sourceFile) {
     const parts = [];
     let literal = true;
     for (const prop of expr.getProperties()) {
+      // `{ href }` is `href={href}`, the same attribute written the short way.
+      if (Node.isShorthandPropertyAssignment(prop)) {
+        parts.push(`${prop.getName()}={${prop.getName()}}`);
+        continue;
+      }
       if (!Node.isPropertyAssignment(prop)) {
         literal = false;
         break;

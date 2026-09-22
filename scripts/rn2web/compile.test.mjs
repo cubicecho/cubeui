@@ -71,6 +71,21 @@ test("a shorthand prop inside a JSX spread is expanded and renamed", () => {
   );
 });
 
+/**
+ * A platform-guarded spread with a shorthand in it — `{ href, "aria-current": … }` on
+ * `sidebar`'s nav row — is still just attributes once the guard folds. It used to be left as a
+ * spread, which the `accessibilityState` check then could not see into, and the item was refused.
+ */
+test("a shorthand inside a folded platform spread becomes an attribute", () => {
+  const code = ok(
+    "export const A = ({ href, on }: { href: string; on: boolean }) =>\n" +
+      '  <Pressable role="link" accessibilityState={{ selected: on }}\n' +
+      '    {...(Platform.OS === "web" ? ({ href, "aria-current": on ? "page" : undefined } as const) : {})} />;',
+    "Platform, Pressable",
+  );
+  assert.match(code, /<a\s+href=\{href\} aria-current=\{on \? "page" : undefined\}/);
+});
+
 /** The local binding keeps the source's name, so a *reference* to it is not a leak. */
 test("a renamed prop's local name still reaches the body", () => {
   const code = ok(

@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -41,7 +41,7 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `CardLayout`, `DialogLayout` and `Section` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout` and `Section` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
@@ -61,6 +61,7 @@ at the end.
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
+| The app's sidebar itself — brand, titled lists of links, settings at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
@@ -193,6 +194,7 @@ views and there is no shell wrapping to hide.
 | Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
