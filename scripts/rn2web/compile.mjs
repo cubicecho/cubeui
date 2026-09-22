@@ -335,6 +335,20 @@ function transformElement(open, elements, diagnostics) {
   const attrs = () => open.getAttributes().filter(Node.isJsxAttribute);
   const find = (name) => attrs().find((a) => a.getNameNode().getText() === name);
 
+  /**
+   * The paired element this tag belongs to, or `null` when the tag is its own element.
+   *
+   * `<View>…</View>` is a `JsxElement` whose opening tag is this node, and renaming it means
+   * renaming the closing tag too — which is only reachable from the element. `<View />` is a
+   * `JsxSelfClosingElement`, is the element, and has one tag.
+   *
+   * Asked as "is the parent a `JsxElement`" it gets the nested case wrong, because a self-closing
+   * element's parent is whatever element encloses it: `<View><View /></View>` renamed the outer
+   * tag a second time and left the inner `<View />` untouched, which `checkElementLeaks` then read
+   * as an element chosen at runtime and refused the file over.
+   */
+  const element = Node.isJsxOpeningElement(open) ? open.getParent() : null;
+
   // --- refusals first, so a file that cannot be compiled says so before it is half-rewritten.
   for (const attr of attrs()) {
     const name = attr.getNameNode().getText();
@@ -463,21 +477,19 @@ function transformElement(open, elements, diagnostics) {
         })()
       : `"${inner.reset}"`;
 
-    const host = open.getParent();
-    if (Node.isJsxElement(host)) {
-      const kids = host
+    if (element) {
+      const kids = element
         .getJsxChildren()
         .map((c) => c.getText())
         .join("");
-      host.setBodyText(`<div className=${innerClass}>${kids}</div>`);
+      element.setBodyText(`<div className=${innerClass}>${kids}</div>`);
     }
   }
 
   // --- the rename itself, last, so every lookup above ran against the React Native name.
-  const parent = open.getParent();
-  if (Node.isJsxElement(parent)) {
-    parent.getOpeningElement().getTagNameNode().replaceWithText(tag);
-    parent.getClosingElement().getTagNameNode().replaceWithText(tag);
+  if (element) {
+    element.getOpeningElement().getTagNameNode().replaceWithText(tag);
+    element.getClosingElement().getTagNameNode().replaceWithText(tag);
   } else {
     tagNode.replaceWithText(tag);
   }
