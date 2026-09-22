@@ -48,5 +48,5 @@ function Checkbox({
   );
 }
 
-export type { CheckboxProps } from "@/components/ui/checkbox-base";
+export type { CheckboxProps };
 export { Checkbox };

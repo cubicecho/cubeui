@@ -187,6 +187,14 @@ it — its compile was refused, and the web registry dropped it without failing 
 a layout in the web `layout` set with no native item, unless `WEB_ONLY_LAYOUTS` in the script names
 why (`section`, until #61; `disclosure-row`, which is built on the web-only `item`).
 
+And that **nothing re-exports with `export … from` a path** (rule 12). The shadcn CLI rewrites a
+file's import declarations against the consumer's aliases and leaves re-export declarations exactly
+as written, so `export { PageHeader } from "@/components/page-header"` installs pointing at this
+repo's layout rather than the consumer's. cubeui shipped it once (#9) and it came back here in `page`,
+`input` and `textarea`; the fix is an `import` at the top and `export { … }` of the local binding.
+The rule reads the built `content`, since that is what the CLI rewrites; a package specifier
+(`icons.web.tsx` re-exporting `lucide-react`) is exempt.
+
 All five novel checks are negative-tested: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
 make it exit non-zero and name the cause.

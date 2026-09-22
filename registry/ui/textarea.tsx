@@ -45,5 +45,5 @@ function Textarea({
   );
 }
 
-export type { TextareaProps } from "@/components/ui/textarea-base";
+export type { TextareaProps };
 export { Textarea };

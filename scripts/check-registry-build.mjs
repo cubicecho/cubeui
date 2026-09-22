@@ -1,4 +1,4 @@
-// Eleven things that have to be true before a built registry is installable.
+// Twelve things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -198,6 +198,17 @@
 // is a layout in the web `layout` set with no native item, unless it is named in
 // `WEB_ONLY_LAYOUTS` with the reason it cannot be one yet.
 //
+// ## 12. Nothing re-exports with `export … from`
+//
+// The shadcn CLI rewrites a file's *import declarations* against the consumer's aliases and leaves
+// its *re-export declarations* exactly as written. So `export { PageHeader } from
+// "@/components/page-header"` installs pointing wherever this repo happened to keep the file, not
+// wherever the consumer's `components.json` puts it — the install succeeds and `tsc` fails
+// afterwards, in a file the consumer did not write. It shipped on cubeui (#9, fixed in c2982e4)
+// and came back here in `page` and `textarea`. Import the name at the top the way everything else
+// is imported and `export { … }` the local binding: the same two lines, and the one that moves is
+// the one the CLI knows how to move. Asked of the built `content`, which is what the CLI rewrites.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -357,7 +368,16 @@ const ranges = [];
 const peerless = [];
 const misapplied = [];
 const uncoloured = [];
+const reexports = [];
 let checked = 0;
+
+/**
+ * Rule 12: `export { … } from`, `export type { … } from` and `export * from` a path. A package
+ * specifier is exempt — `icons.web.tsx` re-exports straight from `lucide-react` — because the CLI
+ * has nothing to rewrite in one and it resolves the same in every tree.
+ */
+const REEXPORT =
+  /^[ \t]*export\s+(?:type\s+)?(?:\*(?:\s+as\s+\w+)?|\{[^}]*\})\s*from\s*["'](?:@\/|~\/|\.{1,2}\/)[^"']*["'];?/gm;
 
 /** `input.web.tsx` and `input-base.ts` are both the `input` item. */
 function itemName(file) {
@@ -660,6 +680,11 @@ for (const built of BUILT) {
         collisions.push(`${built}: items "${owner}" and "${item.name}" both ship \`${name}\``);
       }
       basenames.set(name, item.name);
+
+      // Rule 12. A re-export's specifier is one the CLI never rewrites.
+      for (const [statement] of (file.content ?? "").matchAll(REEXPORT)) {
+        reexports.push(`${where}: ${file.path} — \`${statement.replace(/\s+/g, " ")}\``);
+      }
     }
   }
 
@@ -878,8 +903,19 @@ if (oneSided.length > 0) {
   );
 }
 
+if (reexports.length > 0) {
+  console.error("\nA built file re-exports with `export … from`:\n");
+  for (const one of reexports) console.error(`  ${one}`);
+  console.error(
+    "\nThe shadcn CLI rewrites import declarations against the consumer's aliases and leaves" +
+      "\nre-export declarations alone, so this path installs verbatim and points at a file the" +
+      "\nconsumer may not have. Import the name at the top and `export { … }` the local binding.",
+  );
+}
+
 if (
-  stories.length +
+  reexports.length +
+    stories.length +
     collisions.length +
     drift.length +
     unpinned.length +
@@ -907,5 +943,5 @@ console.log(
     "the packages its own files import plus their required peers, at one range per package, " +
     "every shared class constant is applied only by the component it is named for, every " +
     "colour class names a token, every published story imports only what the consumer's " +
-    "tree will hold, and every layout is on both platforms.",
+    "tree will hold, every layout is on both platforms, and nothing re-exports with `export … from`.",
 );

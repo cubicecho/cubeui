@@ -13,6 +13,7 @@
  */
 import { Children, type ReactNode } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { PageHeader, type PageHeaderProps } from "@/components/page-header";
 import type { IconComponent } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +53,7 @@ export function Page({ className, children, fill = false, scroll = true, width }
  * the way: `subtitle` is `description`, `actions` is `action`, the heading is an `h1` unless
  * `level` says otherwise, and the `mb-4` under it is gone — space it with the page's own gap.
  */
-export { PageHeader, type PageHeaderProps } from "@/components/page-header";
+export { PageHeader, type PageHeaderProps };
 
 /**
  * The responsive card grid shared by list pages.
