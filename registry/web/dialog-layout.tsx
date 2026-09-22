@@ -50,7 +50,7 @@ type DialogLayoutProps = {
   trigger?: ReactNode | undefined;
   /** Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. */
   open?: boolean | undefined;
-  onOpenChange?: (open: boolean) => void | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
   size?: keyof typeof SIZES | undefined;
   /** The footer's start. A destructive action, or a word on why the confirm is refusing. */
   footer?: ReactNode | undefined;

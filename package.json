@@ -19,7 +19,7 @@
     "format": "biome check --write .",
     "test": "node --test scripts/ && vitest run",
     "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm test"
+    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm run lint && npm test"
   },
   "engines": {
     "node": ">=20"

@@ -52,7 +52,7 @@ const DialogEscapeContext = createContext<{ current: ((event: Event) => void) | 
 const DialogCloseContext = createContext<() => void>(() => {});
 
 function Dialog({ open, onOpenChange, children }: DialogProps) {
-  const escape = useRef<((event: Event) => void) | undefined>(undefined);
+  const escapeRef = useRef<((event: Event) => void) | undefined>(undefined);
 
   // The trigger has to render while the dialog is shut, and everything else must not.
   // On web that falls out of radix's portal; here the children are split by type, because
@@ -65,7 +65,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   // Android's back button is native's Escape: the one way the dialog closes that the
   // caller did not ask for. `preventDefault` keeps it open, exactly as it does on web.
   const requestClose = () => {
-    const handler = escape.current;
+    const handler = escapeRef.current;
     if (!handler) return onOpenChange(false);
     const event = new Event("keydown", { cancelable: true });
     handler(event);
@@ -75,7 +75,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <DialogOpenContext.Provider value={onOpenChange}>
       {triggers}
-      <DialogEscapeContext.Provider value={escape}>
+      <DialogEscapeContext.Provider value={escapeRef}>
         <Modal visible={open} transparent animationType="fade" onRequestClose={requestClose}>
           <DialogCloseContext.Provider value={() => onOpenChange(false)}>
             {rest}
@@ -114,8 +114,8 @@ function DialogContent({
   children,
 }: DialogContentProps) {
   const close = useContext(DialogCloseContext);
-  const escape = useContext(DialogEscapeContext);
-  escape.current = onEscapeKeyDown;
+  const escapeRef = useContext(DialogEscapeContext);
+  escapeRef.current = onEscapeKeyDown;
 
   // The backdrop press is native's "interact outside". `preventDefault` on the
   // synthetic event is what a caller uses to keep the dialog open, matching radix.

@@ -173,7 +173,7 @@ type MultiSelectProps = Omit<
    * Offer to create what was typed. The handler owns the creation *and* the selection: it is
    * usually a mutation, and only the caller knows the id the new row came back with.
    */
-  onCreateOption?: (name: string) => void | undefined;
+  onCreateOption?: ((name: string) => void) | undefined;
   /** What the create row says, before the quoted name. */
   createLabel?: string | undefined;
   /** Chips to draw before collapsing to a count. `0` always shows the count. */
