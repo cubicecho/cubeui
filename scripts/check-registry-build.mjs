@@ -8,7 +8,7 @@
 // a path that resolves, to the wrong file, failing three files from the cause. Renaming only the
 // item does not help; the file is what the CLI matches on.
 //
-// cubeui-rn owns every file it ships, so the rule here is not "does it collide with a vendored
+// This registry owns every file it ships, so the rule here is not "does it collide with a vendored
 // primitive" but "do any two of ours collide". A file's *item name* is its basename with the
 // platform and contract suffixes removed — `input.tsx`, `input.web.tsx` and `input-base.ts` are
 // all the `input` item and belong together. Two of them in **different directories** is the

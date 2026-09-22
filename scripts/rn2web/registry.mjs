@@ -10,8 +10,8 @@
  *
  * The web half holds the shorter URL even though this registry is React Native first, and that is
  * the whole point of the layout. `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
- * `@cubeui` today, and this repo is the branch that becomes that repo — so keeping `/r/` meaning
- * "web" makes the flip a no-op for every consumer that already exists. The Expo apps are new
+ * `@cubeui`, and they were mapped to it before this registry had a native half — so keeping `/r/`
+ * meaning "web" made adding one a no-op for every consumer that already existed. The Expo apps are new
  * consumers with no mapping to preserve, so they take the longer URL. Pointing `/r/` at the native
  * half instead would have silently handed React Native source to ten DOM apps.
  *

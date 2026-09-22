@@ -15,7 +15,7 @@ not write a form with `useState` and hand-rolled validation beside one written w
 A field is one line: the form, the name, and the label.
 
 ```tsx
-import { useAppForm, InputField, SelectField, SubmitButton } from "@/components/form/app-form";
+import { useAppForm, InputField, SelectField, SubmitButton } from "@/components/app-form";
 
 const form = useAppForm({
   defaultValues: { title: "", list: "", priority: "2" },

@@ -1,30 +1,264 @@
-# cubeui-rn
+# cubeui
 
-A shadcn registry of React Native components, and the tokens they share with the web.
+A shadcn component registry for the cubicecho projects. Its purpose is **code reduction and
+reuse**: shapes that every app was re-deriving live here once, as components installed through the
+shadcn CLI. Examples are a card with a title and a footer of buttons, a dialog whose body scrolls
+under a header that does not, and a page with pinned chrome.
 
-**Endgame: this replaces [cubeui](https://github.com/cubicecho/cubeui).** It starts by serving the
-Expo apps and ends as the single registry serving every app in the tree, at which point cubeui is
-archived. Until then the two coexist and this repo proves it stays faithful to cubeui's palette on
-every build.
+It serves **React Native and the DOM from one set of sources.** Most items are written once in
+React Native and compiled to plain DOM components by this repo's own compiler, `rn2web`. The web
+half has no react-native-web in it. A smaller tier is web-only and hand-written. The same tokens
+feed both. One registry, two URLs: a project points `@cubeui` at the half that matches the
+platform it is.
 
-**Nothing outside this repo is modified.** No app is wired up to it yet.
+```jsonc
+// components.json, once per project. A DOM app:
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json" }
+// An Expo app:
+"registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json" }
+```
 
-## Status
+```bash
+npx shadcn@latest add @cubeui/tokens   # the palette, and the stylesheets compiled items need
+npx shadcn@latest add @cubeui/layout   # or a single item: @cubeui/card-layout
+npx shadcn@latest add @cubeui/skill    # the agent skill, into .claude/skills/
+```
 
-| Stage | What | State |
-|---|---|---|
-| 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 53 items, pipeline green |
-| 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
-| 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 77 published |
-| 4 | cubeui's own items ported in as the web-only tier | **done** — 24 web-only items, cubeui fully covered; the layout shells and `section` since moved to both platforms |
+Components are copied into your tree and rewritten against your own path aliases. There is no
+runtime dependency on this package. Every item, with which platforms it is on, is listed at
+<https://cubicecho.github.io/cubeui/>, and the Storybook is at
+<https://cubicecho.github.io/cubeui/storybook/>.
 
-Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
-needed a real component set to have anything to compile.
+**Install `@cubeui/tokens` first, and `@import` it.** It lands `cubeui-tokens.css` at the project
+root. On the web that file also `@import`s `cubeui-reset.css` (the layout defaults a compiled
+component relies on; see [Stage 0](#stage-0--the-spike-and-its-verdict)) and `tw-animate-css`.
+A compiled component rendered without it lays out in the wrong direction, and nothing reports an
+error.
 
-**This repo is cubeui's `next` branch.** The web registry is published at the URL cubeui's ten DOM
-consumers already map, so the flip is a merge rather than a migration — see
-[Stage 4](#stage-4--cubeuis-own-items-the-web-only-tier).
+**On a Vite app, put `compilerOptions.paths` in the root `tsconfig.json` as well.** `npm create
+vite@latest` writes `paths` into `tsconfig.app.json` and leaves the root file a bare `references`
+stub. The CLI reads only the root one, finds no `@/` alias, and resolves it as a relative path.
+The install then writes a literal `@/` **directory** at the project root and reports success, and
+the app's own imports see none of it. The first sign of trouble is `Cannot find module
+'@/components/ui/card'`. Duplicating the `paths` block into the root file is the whole fix.
+
+## Upgrading from the pre-native cubeui
+
+Until the merge that made this README the one on `main`, cubeui was a web-only registry of shells
+over shadcn's own primitives. The current registry is a superset of that one at the same URL, so a
+DOM app keeps its `components.json` line. What changes under it:
+
+- **`@cubeui/form` is a component now, not a bundle.** It installs a `Form` component and its
+  bound fields at `components/ui/form.tsx`. The old eight-item form bundle (`form-field`,
+  `field-row`, `app-form` and the five bound-field items) is **`@cubeui/form-set`**. Rename it in
+  any install script or doc. If the app already has shadcn's own `components/ui/form.tsx`, this
+  one takes that path. `layout`, `control` and `primitive` kept their names; `layout` now also
+  holds `sidebar`.
+- **The primitives are `@cubeui/*` items and install over shadcn's.** `button`, `card`, `dialog`,
+  `select`, `input`, `field`, `popover`, `tooltip` and the rest land at `components/ui/<name>.tsx`,
+  the path shadcn's own copies occupy. The CLI asks before overwriting unless `--overwrite` is
+  passed. Their web halves take shadcn's API as well as this registry's own, so existing call
+  sites keep compiling. [The web halves are now a superset of shadcn's](#the-web-halves-are-now-a-superset-of-shadcns)
+  has the list, and `stories/web/shadcn-superset.type-assertions.tsx` holds a shadcn call site
+  for each. They import `cn` from your `utils` alias, never from the `cn` npm package. The same
+  goes for `separator`, `skeleton`, `command` and `alert-dialog`, which the shells used to pull
+  from ui.shadcn.com. `@cubeui/utils` installs `lib/utils.ts`, and that is `cn` plus one shared
+  class constant, so check a customised `cn` before accepting the overwrite.
+- **`@cubeui/tokens` is new, and the compiled items need it.** See the note above. It carries
+  the same palette the old `preview/index.css` did, value for value, plus `destructive-foreground`
+  and shadcn's eight `sidebar-*` tokens. Dark mode on the web is still `.dark` on an ancestor.
+- **`Section`'s title is a `<span role="heading" aria-level>`, not an `<h2>`.** The rank is a
+  `level` prop now (default `2`), so the tag cannot be fixed when the file is compiled.
+  `getByRole("heading", { level: 2 })` still finds it. A selector on `h2` does not; use
+  `[data-slot=section-title]`.
+- **`RadioGroupField` is one source for both platforms, and is not built on `FormField`.** It
+  still takes `form`, `name`, `label`, `description`, `required`, `action`, `loading`, `options`
+  and the `*ClassName` props. It no longer takes `descriptionPlacement`, `descriptionIcon`,
+  `htmlFor` or `asGroup`, or radix's `name`, `dir` and `asChild`. `orientation` now arranges the
+  options rather than the field. `variant="card"` and per-option `icon` and `hint` are new.
+- **`SplitLayout` is flexbox, not grid tracks.** The props are unchanged. The
+  `--cube-split-cols` custom property is gone, so a stylesheet that set it does nothing now.
+- **`DialogLayout`'s discard question is a `Dialog` with `role="alertdialog"`.** It is no longer
+  radix's `AlertDialog`. `getByRole("alertdialog")` still finds it. Selectors on
+  `alert-dialog-*` data-slots do not.
+- **`ColorPicker` is inline: a swatch row and a hex box, with no popover.** It installs at
+  `components/ui/color-picker.tsx` rather than `components/color-picker.tsx`, so the old file
+  stays behind. Delete it and fix the import. The old props (`onValueChange`, `swatches`,
+  `clearable` and the rest) are accepted, and `popoverLabel` and `customLabel` are accepted and
+  ignored. The hex box behaves as the old one did: a colour typed without `#` gets it back, case
+  is kept, and only a whole `#rgb` or `#rrggbb` (or an empty box) reaches `onValueChange`.
+
+**An Expo app that installed from this registry before the flip** has two more:
+
+- **The palette as TypeScript is `@/lib/cubeui-theme`**, not `@/lib/theme`. A `registry:lib`
+  lands by basename, and `theme.ts` overwrote an app's own without asking.
+- **`RouteError`'s default title is "Something went wrong"**, not "Failed to load", because a
+  route boundary catches render crashes as well as failed fetches. Pass `title="Failed to load"`
+  for the old wording.
+
+Expo web can force a theme with `class="dark"` or `class="light"` on `<html>`; see
+[Stage 1](#stage-1--tokens).
+
+## Installing into a Biome project
+
+Everything this registry ships passes Biome's recommended preset, which the old cubeui could not
+claim. Its primitives were shadcn's, installed untouched, and those do not pass. This repo lints
+every file it ships, with one exception that travels with the files: `a11y/useSemanticElements`
+is off for the compiled tree. That rule asks for `<input type="checkbox">` where a compiled
+component writes `role="checkbox"` on a `<button>`, which is the only thing its React Native
+source could say (see [Where the compiled half is not a
+drop-in](#where-the-compiled-half-is-not-a-drop-in)). A consumer running the recommended preset
+over `components/` wants the same override:
+
+```jsonc
+// biome.json
+"overrides": [
+  {
+    "includes": ["src/components/**"],
+    "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
+  }
+]
+```
+
+If Biome also lints CSS there, `cubeui-reset.css` needs `complexity/noImportantStyles` off too.
+Its `!important`s copy react-native-web's `pointer-events` rules, and they are there on purpose.
+
+A shadcn primitive installed from ui.shadcn.com beside these still brings its own lint findings.
+Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
+the next `shadcn add` overwrites the edit.
+
+## The agent skill is a per-developer install
+
+`npx shadcn@latest add @cubeui/skill` writes four Markdown files into your project's
+`.claude/skills/cubeui/`, which is where an agent looks for them. Most projects gitignore
+`.claude/`, so by default the skill is installed **per developer**. The person who ran the command
+has it; their teammates and CI do not, and each of them re-runs it for themselves, and again when
+this registry changes.
+
+That is deliberate, and it is the same deal as any other tool a developer installs into their own
+working directory. A team that would rather share one copy un-ignores the one directory:
+
+```gitignore
+.claude/*
+!.claude/skills/
+```
+
+Then the skill is reviewed and updated like any other file in the repo, and `shadcn add` is run
+once by whoever is upgrading rather than by everyone.
+
+What the skill will not do is live somewhere tracked *and* be found automatically. The agent
+looks in `.claude/skills/`, and a copy in `docs/` is a copy somebody has to remember to point at.
+
+In this repository the four files live in [`registry/skill/`](registry/skill), which is what the
+`skill` item ships and what `.claude/skills/cubeui/SKILL.md` points at, so there is one copy of
+each rather than two that drift. The skill opens with which half the project is in, because the
+web-only shells are a 404 in an Expo project.
+
+## Every slot is a prop, including the body
+
+The shells take no children. The body is `content`, exactly like `header` and `footer` are props:
+
+```tsx
+<StickyHeaderContentFooter
+  width="page"
+  header={<PageHeader title="Workspaces" />}
+  content={<DataTable columns={columns} data={rows} />}
+  footer={<Pagination page={page} onPageChange={setPage} />}
+/>
+```
+
+In a layout **all** the parts are dynamic. Giving one of them the privileged position of
+`children` says it is the real content and the others are decoration. That is backwards for a
+component whose whole job is placing all of them. Passing them the same way keeps them equal. It
+keeps a call site to a single self-closing element whose props read as a list of positions, and it
+makes an absent body as visible as an absent header: a prop that is not there, rather than a
+missing nesting level. It also removes the "does this one take `content` or children?" question
+that a mixed convention forces on every call site.
+
+The primitives are shadcn-shaped and take children as shadcn's do, and so do the few React Native
+screen shapes (`Page`, `DetailPage`), because a React Native tree is a tree of views. Rule 1 of
+[`docs/component-conventions.md`](docs/component-conventions.md) carries the argument.
+
+## The forms assume TanStack Form
+
+Every project installing these runs [TanStack Form](https://tanstack.com/form), so the registry
+does too. On the web, `@cubeui/app-form` ships the `createFormHookContexts` / `createFormHook`
+wiring and the field components bound to it; `@cubeui/form-set` is it plus every other form item.
+On React Native, `@cubeui/form` is the same idea in one file. Installing either pulls
+`@tanstack/react-form` in.
+
+```tsx
+const form = useAppForm({
+  defaultValues: { title: "", priority: "2" },
+  onSubmit: ({ value }) => createTodo({ variables: { input: value } }),
+});
+
+<form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}>
+  <InputField
+    form={form}
+    name="title"
+    label="Title"
+    required
+    validators={{ onChange: ({ value }) => (value.trim() ? undefined : "Title is required") }}
+  />
+  <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
+
+  <form.AppForm><form.SubmitButton>Create Todo</form.SubmitButton></form.AppForm>
+</form>
+```
+
+There is no id in there, no `aria-describedby`, no `aria-invalid`, no "has this field been
+touched yet", and no `disabled={!canSubmit || isSubmitting}`. That is four to six lines per field
+that every form was writing out, and half of them were getting one of them wrong. A field's
+`name` is checked against the form's values and their type, so `<NumberField name="title">` over
+a string is a build error.
+
+The layering is deliberate and worth keeping. `FormField` is presentational: it takes `error` as
+a node and asks nothing about where it came from. The bound fields are a thin layer on top that
+read the store and hand it a string. That is what keeps each of them short rather than a fork,
+and it is why a field the binding does not cover yet can still be written by hand against
+`FormField` without leaving the set.
+
+Do not reach for a second form library in a project using these. A second one is a second copy of
+`app-form.tsx`.
+
+## Working on it
+
+```bash
+npm ci
+npm run build          # tokens → compile → typecheck → registry:build → page:build → registry:check
+npm run check          # the same, read-only: what CI runs
+npm run storybook      # on :3001
+```
+
+[`AGENTS.md`](./AGENTS.md) is the guidance for anyone, human or agent, adding to this registry, and
+[`docs/component-conventions.md`](./docs/component-conventions.md) holds the authoring rules and
+the decisions behind them. The rest of this file is how the registry is built and why, stage by
+stage, in the order it was built.
+
+## How it got here
+
+cubeui began as a web-only registry of shells over shadcn's primitives. This repo started beside
+it as `cubeui-rn`, to serve the Expo apps, and grew until it covered everything cubeui published.
+It then became cubeui's `next` branch and was merged into `main`. The web registry kept the URL
+the DOM consumers already mapped, so for them the change was a merge rather than a migration,
+apart from the notes [above](#upgrading-from-the-pre-native-cubeui).
+
+| Stage | What |
+|---|---|
+| 1 | `tokens`: one palette, three emitters |
+| 2 | the React Native registry, ported from `auto-cal/client` |
+| 0 | the compiler spike: three components compiled by hand and rendered beside the originals. Verdict: go |
+| 3 | `rn2web`, the RN→web compiler, and the web registry it feeds |
+| 4 | the pre-native cubeui's items ported in as the web-only tier; the layout shells and `section` since moved to both platforms |
+
+Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was the gate on stage
+3, and it needed a real component set to have anything to compile. In the write-ups below,
+"cubeui" on its own in a historical passage means that pre-native registry.
+
+Today the native registry holds 53 items and the web registry 84: 77 components and 7 story
+items. 24 of the web items are web-only, and every native item has a web half.
+
 
 ## Stage 1 — tokens
 
@@ -45,7 +279,7 @@ gamma), not a lookup table, so changing a value in the palette produces a correc
 hand-converting anything.
 
 **The two stylesheets do not spell dark mode the same way, and cannot.** The web build emits `.dark
-{ … }`, which is what every shadcn stylesheet has and what cubeui's byte-parity requires. The native
+{ … }`, which is what every shadcn stylesheet has and what the pre-native cubeui shipped. The native
 build emits `@media (prefers-color-scheme: dark) { :root { … } }`, because on device there is no DOM
 and no root element to carry a class: react-native-css reads a bare `.dark` as an ordinary class
 style, scoping the variables to whatever subtree gets `className="dark"` rather than to the root. So
@@ -87,7 +321,7 @@ palette by hand; 14 of its 18 tokens still match cubeui and **four no longer do*
 
 ## Stage 2 — the registry
 
-`registry.json` → `shadcn build` → `public/r/*.json`, the same shape cubeui uses. Consumers add one
+`registry.json` → `shadcn build` → `public/r/*.json`, the same shape the pre-native cubeui used. Consumers add one
 line to `components.json` and install with the stock shadcn CLI; there is no bespoke sync tool,
 because the CLI already does the copying and the import-alias rewriting.
 
@@ -96,8 +330,8 @@ files it needs: `card` is a single file, `input` is three (`input-base.ts` + `in
 `input.web.tsx`). `tsconfig.json`'s `paths` deliberately mirror where the CLI actually puts each file
 in a consumer's tree, so an import that typechecks here is the import the consumer gets.
 
-The **web-only** tier — cubeui's shells — is declared separately in `registry.web-only.json` and
-lives in `registry/web/`; see [Stage 4](#stage-4--cubeuis-own-items-the-web-only-tier). This table is
+The **web-only** tier — the pre-native cubeui's shells — is declared separately in `registry.web-only.json` and
+lives in `registry/web/`; see [Stage 4](#stage-4--the-pre-native-items-the-web-only-tier). This table is
 the React Native set.
 
 | Group | Items |
@@ -145,8 +379,8 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces six things, and each one is a failure that otherwise
-ships silently:
+`scripts/check-registry-build.mjs` enforces twelve rules, numbered in the script's header, and
+each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
    the file's *basename*, so two files called `select.tsx` in different directories mean one import
@@ -172,6 +406,13 @@ ships silently:
    already correct and the orphan colliding with nothing — so every other check here passed. Since
    `public/` is committed, this one reports rather than deleting, and the fix is `git rm`.
 
+Rule 7 holds that **an item declares exactly the packages its own files import**, in both
+directions: `button` imported `radix-ui` without declaring it, and the web `calendar` declared a
+`date-fns` nothing on the web imports. Rule 8 holds that **a shared class constant in a `-base.ts`
+is applied by the component it is named for**. `SelectItem` once wore `SELECT_SEPARATOR_CLASS`
+last, and every row of every web select menu was one pixel tall. Rule 10 is the published
+stories' import rules, below.
+
 It also holds that **every colour class names a token** (rule 9 in the script). Tailwind generates
 nothing for a colour its theme does not hold and says nothing either — the class stays in the markup
 and the element inherits. `button`'s `destructive` variant and `toast`'s error tone both wore
@@ -185,7 +426,7 @@ And that **every layout is on both platforms** (rule 11). The layout shells are 
 `registry/layout/` and the web half is compiled from them, so a native layout with no web item beside
 it — its compile was refused, and the web registry dropped it without failing — is an error, and so is
 a layout in the web `layout` set with no native item, unless `WEB_ONLY_LAYOUTS` in the script names
-why (`section`, until #61; `disclosure-row`, which is built on the web-only `item`).
+why (`disclosure-row`, which is built on the web-only `item`; `section` was on the list until #61).
 
 And that **nothing re-exports with `export … from` a path** (rule 12). The shadcn CLI rewrites a
 file's import declarations against the consumer's aliases and leaves re-export declarations exactly
@@ -195,7 +436,7 @@ repo's layout rather than the consumer's. cubeui shipped it once (#9) and it cam
 The rule reads the built `content`, since that is what the CLI rewrites; a package specifier
 (`icons.web.tsx` re-exporting `lucide-react`) is exempt.
 
-All five novel checks are negative-tested: breaking one export, duplicating one basename, leaving
+Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
 make it exit non-zero and name the cause.
 
@@ -301,9 +542,10 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 36 generated, 33
-hand-written** — and `registry.web.json`, derived from `registry.json` and `registry.web-only.json`
-in the same run, publishes **all 77 items**. `scripts/rn2web/` is about 1400 lines, of which
+react-native-web anywhere in the output. **Every file has a web half — 34 generated, 35
+hand-written** (15 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 77 items**, plus
+the 7 story items. `scripts/rn2web/` is about 2100 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
@@ -321,17 +563,12 @@ points `@cubeui` at whichever one matches the platform it is:
 "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json" }
 ```
 
-**On a Vite app, put `compilerOptions.paths` in the root `tsconfig.json` as well.** `npm create
-vite@latest` writes `paths` into `tsconfig.app.json` and leaves the root file a bare `references`
-stub; the CLI reads only the root one, finds no `@/` alias, and resolves it as a relative path —
-so the install writes a literal `@/` **directory** at the project root, reports success, and the
-app's own imports see none of it. The first sign of trouble is `Cannot find module
-'@/components/ui/card'`. Duplicating the `paths` block into the root file is the whole fix.
+On a Vite app the root `tsconfig.json` needs the `paths` too; see the note at the top of this file.
 
 The web half holds the shorter URL even though this registry is React Native first. That is not an
-accident of which came first: `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
-`@cubeui` **today**, and this branch becomes that repo. Keeping `/r/` meaning "web" is what makes the
-flip a no-op for every consumer that already exists. Pointing it at the native half instead would
+accident of which came first: `…/cubeui/r/{name}.json` was the string ten DOM consumers already
+mapped to `@cubeui`, and this repo became that one. Keeping `/r/` meaning "web" is what made the
+merge a no-op for every consumer that already existed. Pointing it at the native half instead would
 have handed React Native source to ten DOM apps, silently, on merge day.
 
 **The item names are the same on both sides** — `card` is `card`, and `shadcn add @cubeui/card`
@@ -477,11 +714,11 @@ is no `<input>` on a phone, so those patterns are built from a `Pressable` and a
 a11y rule stays on, and they earn more here than anywhere else in the repo, because a generated file
 is the one nobody reads — the toast is the proof.
 
-## Stage 4 — cubeui's own items, the web-only tier
+## Stage 4 — the pre-native items, the web-only tier
 
-cubeui's 28 items are now here — plus the five upstream shadcn primitives they depend on, published
+The pre-native cubeui's 28 items came across — plus the five upstream shadcn primitives they depend on, published
 from here for the reason [below](#the-five-upstream-primitives-now-published-from-here) — and with
-them this registry covers everything cubeui published. They
+them this registry covered everything cubeui had published. They
 are the plan's **third class**: web-only, hand-written, no React Native half and nothing for the
 compiler to do. `SplitLayout` is CSS grid tracks driven by a custom property, `PageHeader` is
 `max-w-(--breakpoint-2xl)` and `[&_svg]:size-5`; Yoga has no grid and NativeWind has no arbitrary
@@ -581,11 +818,11 @@ stops compiling.
 
 ### Two names that could not come across unchanged
 
-- **`form` → `form-set`.** cubeui's `form` is a bundle of the eight bound-field items; this
-  registry's `form` is the React Native `Form` component. The shadcn CLI resolves a cross-item
+- **`form` → `form-set`.** The pre-native cubeui's `form` was a bundle of the eight bound-field
+  items; this registry's `form` is the React Native `Form` component. The shadcn CLI resolves a cross-item
   import by *basename*, so the two cannot share the name. The bundle is `@cubeui/form-set`, and it
   is the one rename a migrating consumer has to make.
-- **`color-picker`.** cubeui installs it to `components/color-picker.tsx` and this registry to
+- **`color-picker`.** The pre-native cubeui installed it to `components/color-picker.tsx` and this registry installs it to
   `components/ui/color-picker.tsx`, because here it is a primitive rather than a shell. A consumer
   flipping over gets a second file rather than an overwrite; delete the old one and fix the import.
 
@@ -660,9 +897,7 @@ iframe under **cubeui's** tokens, so "does `Button` still pass contrast after ou
 override" is unanswered by it. That question needs a story compiled in the consumer, which is
 mechanism 2, below.
 
-Nothing is served until `next` reaches `main`: `pages.yml` deploys from `main` only, so until then
-`/storybook/index.json` is a 404 — though already one carrying the CORS header, which is the part
-composition depends on.
+`pages.yml` deploys from `main` only, so the Storybook, like the registry, is whatever `main` holds.
 
 ### Stories through the registry
 
@@ -733,16 +968,17 @@ set is its own smaller vocabulary rather than a port of this one.
 ## Commands
 
 ```sh
-npm run build          # tokens → typecheck → registry:build → registry:check
-npm run check          # the same, read-only: nothing is regenerated
+npm run build          # tokens → compile → typecheck → registry:build → page:build → registry:check
+npm run check          # the same, read-only, plus docs:check, lint and the tests
 
 npm run tokens:build   # emit dist/
 npm run tokens:check   # fail if dist/ is stale (CI)
-npm run parity         # fail if the web emitter diverged from cubeui
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native
-npm run registry:check # collisions, platform-pair drift, empty content
+npm run registry:check # the twelve rules under Guards, against both built registries
+npm run page:build     # public/index.html, from the two registry indexes
+npm run page:check     # fail if the landing page is stale (CI)
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
 npm run docs:check     # rule 2 of docs/component-conventions.md and the skill agree on every word
@@ -760,17 +996,20 @@ for the stories, because an axe run and a `getComputedStyle` assertion both need
 `compile:check` is what catches a compiler change that silently stops emitting for an item.
 
 `dist/` is committed on purpose — the emitted tokens are the artefact consumers install, and committing
-them is what lets `tokens:check` catch drift, the way cubeui catches registry drift with
+them is what lets `tokens:check` catch drift, the way CI catches registry drift with
 `git diff --exit-code -- public/r`.
 
-`npm run parity` reads cubeui at `../cubeui` (override with `CUBEUI_PATH`) and skips cleanly when it is
-not on disk. It is a transition-period guard: when cubeui is archived, delete it.
+Until the merge, `npm run parity` compared the web emitter's output with the pre-native cubeui's
+`preview/index.css`, token by token, so the two registries could not ship different palettes. It
+was deleted with the merge, having passed against `main` one last time: there is no second
+stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `tokens:check` holds
+`dist/` to it.
 
 ## Open decisions
 
-1. ~~**Registry namespace.**~~ **Settled: `@cubeui`, permanently.** Nothing in the repo changes — it
-   is already the string in all 42 items' `registryDependencies`. It was never really contested:
-   ten consumers map `@cubeui` today, so adoption is a one-line *URL* edit each, not a rename. The
+1. ~~**Registry namespace.**~~ **Settled: `@cubeui`, permanently.** Nothing in the repo changed — it
+   was already the string in every item's `registryDependencies`. It was never really contested:
+   ten DOM consumers already mapped `@cubeui`, so adoption needed no rename at all. The
    platform split does not reopen it, because both registries answer to the same string and the URL
    behind it is what differs. `@cubeuirn` would have been a permanent wart — `-rn` stops being true
    the moment a DOM app installs from it, which it already does.
@@ -816,9 +1055,9 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    tokens, telos was defining all of them in its own `global.css` to keep working, and a sidebar
    layout was coming here next — it is `sidebar` now (#59), drawn on `bg-sidebar`,
    `border-sidebar-border` and `sidebar-accent`. A separate item would have been one more thing each of those apps had
-   to know to install. `npm run parity` now compares around the additions — every token cubeui has
-   must still match it in value and order, and a token cubeui lacks is not drift — so the
-   transition-period guard survives the palette growing.
+   to know to install. The parity check compared around the additions for as long as it existed —
+   every token the pre-native cubeui had still matched it in value and order, and a token it
+   lacked was not drift.
 3. ~~**Whether the `.web.tsx` split survives Stage 3.**~~ **Settled by the spike: it survives, as the
    escape hatch it already is.** Every web half kept so far is one the compiler could not have
    produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx` for the radix
@@ -845,10 +1084,9 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    only two additions.
 
    **The token cost this entry was expected to pay did not come due.** Promoting `success` and
-   `warning` to `--success` / `--warning` would put this repo's `:root` block out of step with
-   cubeui's, which is open decision 2's whole reason for being deferred. They ship as palette
-   colours instead, exactly as `status-chip` already shipped them, so `npm run parity` stays green
-   and nothing outside this repo is touched. The promotion stays available and reaches no call
+   `warning` to `--success` / `--warning` would have put this repo's `:root` block out of step with
+   the pre-native cubeui's while the two were held to parity. They ship as palette colours instead,
+   exactly as `status-chip` already shipped them. The promotion stays available and reaches no call
    site when it happens — it is an edit to `tokens/palette.mjs` and one class map.
 
    **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
@@ -910,7 +1148,7 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    `[["#fff"]]`, with the whole dark palette parked in an unreachable class.
 
    The fix is one line in the native emitter: `@media (prefers-color-scheme: dark) { :root { … } }`.
-   The web emitter keeps `.dark`, which is right for the DOM and is what cubeui parity requires — so
+   The web emitter keeps `.dark`, which is right for the DOM and is what the pre-native cubeui shipped — so
    this is the first place the two encodings differ by more than colour syntax.
 
    Two things worth keeping. `.dark:root` looks like the obvious fix and is rejected outright —
