@@ -510,6 +510,25 @@ With no upstream names left, the compiler's third case for an import specifier g
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
 rewritten to `./` like any other.
 
+### The landing page
+
+`https://cubicecho.github.io/cubeui/` is both the registry's host and its human URL — the only repo
+in the org where those are the same string — and `public/` was `r/` and nothing else, so the bare
+URL 404'd. Someone arriving from cubicecho.com, or from the end of a `components.json` line, had the
+registry URL and no way to read what was behind it.
+
+`scripts/build-page.mjs` writes `public/index.html`: the install snippet for both platforms, the
+Vite `paths` note above, and every item with a `both` / `web` / `native` tag. **Generated from the
+two `registry.json` files**, because the item list is what a person comes for and a hand-written
+copy of it is wrong the first time an item is added — silently, since nothing checks prose.
+`npm run page:check` fails if the committed page has drifted, the same guard `dist/` and `compiled/`
+are held to, and it runs in CI beside `git diff --exit-code -- public/r`.
+
+One file, no build step of its own, no framework and no CDN font. The palette is cubesite's
+`brand/tokens.css` values inlined rather than imported — this is served from a different host and
+should not fetch a stylesheet to render — and the mark and `favicon.svg` are cubesite's, both
+`currentColor`-driven and so correct in either theme from one file.
+
 ### Two tsconfig projects, split by platform
 
 `tsconfig.json` is React Native — `registry/{ui,layout,lib}`, `stories`, `scripts`, `tokens`.

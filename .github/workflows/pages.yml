@@ -57,8 +57,10 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
-      # `public`, not `dist` — this repo's `dist/` is the emitted token set, and
-      # what Pages serves is the built registry under `public/r`.
+      # `public`, not `dist` — this repo's `dist/` is the emitted token set. What
+      # Pages serves is the built registry under `public/r`, plus the landing page
+      # at `public/index.html`, which is the same host and the one URL a person
+      # rather than a CLI arrives at.
       - uses: actions/upload-pages-artifact@v4
         with:
           path: public

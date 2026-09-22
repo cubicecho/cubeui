@@ -62,6 +62,11 @@ jobs:
       - name: public/ is in sync with the two registry.json files
         run: git diff --exit-code -- public/r
 
+      # The landing page lists every item, generated from the same two indexes.
+      # A hand-edited or stale one is prose that is wrong and that nothing reads.
+      - name: The landing page lists what the registries hold
+        run: npm run page:check
+
       # `npm test` runs two vitest projects, and the second one renders the
       # stories in a real browser. Without this step it fails at launch rather
       # than skipping, which is the intended behaviour: a silently-skipped

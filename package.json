@@ -12,14 +12,16 @@
     "compile:check": "node scripts/rn2web/index.mjs --check",
     "registry:build": "shadcn build registry.web.json -o public/r && shadcn build -o public/r/native",
     "registry:check": "node scripts/check-registry-build.mjs",
+    "page:build": "node scripts/build-page.mjs",
+    "page:check": "node scripts/build-page.mjs --check",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.web.json",
     "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build",
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "node --test scripts/ && vitest run",
-    "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm run lint && npm test"
+    "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run page:build && npm run registry:check",
+    "check": "npm run tokens:check && npm run parity && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run lint && npm test"
   },
   "engines": {
     "node": ">=20"
