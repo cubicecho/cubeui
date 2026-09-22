@@ -18,10 +18,12 @@ import {
   useContext,
   useState,
 } from "react";
-import { Modal, Pressable, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import type {
+  PopoverAnchorProps,
   PopoverContentProps,
   PopoverProps,
+  PopoverSectionProps,
   PopoverTriggerProps,
 } from "@/components/ui/popover-base";
 import { cn } from "@/lib/utils";
@@ -81,4 +83,31 @@ function PopoverContent({ className, children }: PopoverContentProps) {
   );
 }
 
-export { Popover, PopoverContent, PopoverTrigger };
+/** The native sheet is centred and anchors to nothing, so an anchor is just its children. */
+function PopoverAnchor({ children }: PopoverAnchorProps) {
+  return <>{children}</>;
+}
+
+function PopoverHeader({ className, children }: PopoverSectionProps) {
+  return <View className={cn("gap-1", className)}>{children}</View>;
+}
+
+function PopoverTitle({ className, children }: PopoverSectionProps) {
+  return (
+    <Text className={cn("text-sm font-medium text-popover-foreground", className)}>{children}</Text>
+  );
+}
+
+function PopoverDescription({ className, children }: PopoverSectionProps) {
+  return <Text className={cn("text-sm text-muted-foreground", className)}>{children}</Text>;
+}
+
+export {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+};

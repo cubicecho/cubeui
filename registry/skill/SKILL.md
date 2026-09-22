@@ -234,6 +234,14 @@ web ones take, with three conversions that are the same everywhere:
 - **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
   that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
 
+The web halves go the other way too: `Button`, `Dialog`, `Popover`, `Tooltip`, `Tabs`, `Label`
+and `Badge` are a **superset of shadcn's own** there. Every part also takes the props of the radix
+part or DOM element it renders, and shadcn's extra parts and sizes exist — `DialogClose`,
+`DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverHeader`, controlled `Tabs`,
+`TooltipContent sideOffset`, `Badge asChild`, `size="icon-sm"`. So a shadcn call site compiles
+unchanged. The new parts and sizes exist on native too; the radix and DOM passthrough props are
+web only, and a native call site keeps to the shared contract.
+
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
 so on screen, because picking a file needs `expo-document-picker` and a permission flow that is
 the app's choice. The contract is there; the picking is not.

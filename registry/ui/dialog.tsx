@@ -20,10 +20,16 @@ import {
   type ReactElement,
   useContext,
   useRef,
+  useState,
 } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
+import { Button } from "@/components/ui/button";
 import type {
+  DialogCloseProps,
   DialogContentProps,
+  DialogFooterProps,
+  DialogOverlayProps,
+  DialogPortalProps,
   DialogProps,
   DialogSectionProps,
   DialogTriggerProps,
@@ -51,7 +57,15 @@ const DialogEscapeContext = createContext<{ current: ((event: Event) => void) | 
  */
 const DialogCloseContext = createContext<() => void>(() => {});
 
-function Dialog({ open, onOpenChange, children }: DialogProps) {
+function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogProps) {
+  // Uncontrolled state kept unconditionally — hooks cannot be conditional — and read only when
+  // the caller passed no `open`, the same arrangement as `popover.tsx`.
+  const [uncontrolled, setUncontrolled] = useState(defaultOpen);
+  const isOpen = open ?? uncontrolled;
+  const setOpen = (next: boolean) => {
+    if (open === undefined) setUncontrolled(next);
+    onOpenChange?.(next);
+  };
   const escapeRef = useRef<((event: Event) => void) | undefined>(undefined);
 
   // The trigger has to render while the dialog is shut, and everything else must not.
@@ -66,18 +80,18 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   // caller did not ask for. `preventDefault` keeps it open, exactly as it does on web.
   const requestClose = () => {
     const handler = escapeRef.current;
-    if (!handler) return onOpenChange(false);
+    if (!handler) return setOpen(false);
     const event = new Event("keydown", { cancelable: true });
     handler(event);
-    if (!event.defaultPrevented) onOpenChange(false);
+    if (!event.defaultPrevented) setOpen(false);
   };
 
   return (
-    <DialogOpenContext.Provider value={onOpenChange}>
+    <DialogOpenContext.Provider value={setOpen}>
       {triggers}
       <DialogEscapeContext.Provider value={escapeRef}>
-        <Modal visible={open} transparent animationType="fade" onRequestClose={requestClose}>
-          <DialogCloseContext.Provider value={() => onOpenChange(false)}>
+        <Modal visible={isOpen} transparent animationType="fade" onRequestClose={requestClose}>
+          <DialogCloseContext.Provider value={() => setOpen(false)}>
             {rest}
           </DialogCloseContext.Provider>
         </Modal>
@@ -90,8 +104,8 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
  * A trigger, so a dialog can own its own open state at the call site.
  *
  * On web this is radix's, which also wires `aria-haspopup` and returns focus. Here
- * it is the press that flips the context's open flag — but the flag lives on
- * `Dialog`'s own props, so the native trigger is the caller's `onPress`, cloned.
+ * it is the press that flips `Dialog`'s open flag — its own state, or the caller's
+ * through `onOpenChange` — so the native trigger is the child's `onPress`, cloned.
  */
 function DialogTrigger({ asChild, children }: DialogTriggerProps) {
   const open = useContext(DialogOpenContext);
@@ -104,6 +118,37 @@ function DialogTrigger({ asChild, children }: DialogTriggerProps) {
       {children}
     </Pressable>
   );
+}
+
+/**
+ * Shuts the dialog it is inside — radix's `Close`, for a Cancel button of the caller's own.
+ * `asChild` hands the press to the child, for the reason `DialogTrigger` gives.
+ */
+function DialogClose({ asChild, className, children }: DialogCloseProps) {
+  const close = useContext(DialogCloseContext);
+  if (asChild && isValidElement(children)) {
+    return cloneElement(children as ReactElement<{ onPress?: () => void }>, { onPress: close });
+  }
+  return (
+    // The `role` is hand-written because a `<button>` has no native counterpart.
+    <Pressable onPress={close} role="button" className={cn(className)}>
+      {children}
+    </Pressable>
+  );
+}
+
+/** The `Modal` is already the portal on native; this is here so a shadcn composition renders. */
+function DialogPortal({ children }: DialogPortalProps) {
+  return <>{children}</>;
+}
+
+/**
+ * The dimmed layer, for a caller assembling its own pane. `DialogContent` draws its own, so this
+ * is only for content that is not one; it does not close on press — the backdrop `DialogContent`
+ * draws is the one that does.
+ */
+function DialogOverlay({ className }: DialogOverlayProps) {
+  return <View pointerEvents="none" className={cn("absolute inset-0 bg-black/80", className)} />;
 }
 
 function DialogContent({
@@ -168,8 +213,17 @@ function DialogHeader({ className, children }: DialogSectionProps) {
   return <View className={cn("gap-1.5", className)}>{children}</View>;
 }
 
-function DialogFooter({ className, children }: DialogSectionProps) {
-  return <View className={cn("flex-row justify-end gap-2", className)}>{children}</View>;
+function DialogFooter({ className, showCloseButton = false, children }: DialogFooterProps) {
+  return (
+    <View className={cn("flex-row justify-end gap-2", className)}>
+      {children}
+      {showCloseButton ? (
+        <DialogClose asChild>
+          <Button variant="outline">Close</Button>
+        </DialogClose>
+      ) : null}
+    </View>
+  );
 }
 
 function DialogTitle({ className, children }: DialogSectionProps) {
@@ -191,10 +245,13 @@ function DialogDescription({ className, children }: DialogSectionProps) {
 
 export {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 };

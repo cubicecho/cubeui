@@ -245,6 +245,8 @@ type RadioGroupItemProps = {
    * sentence a tile has no room for; say anything a user needs to choose in `description`.
    */
   hint?: string | undefined;
+  /** The DOM's name for `hint`, accepted so a shadcn call site ports unchanged. `hint` wins. */
+  title?: string | undefined;
   disabled?: boolean | undefined;
   /** The option's own id — what a `<Label htmlFor>` points at when `label` is left out. */
   id?: string | undefined;
@@ -258,13 +260,15 @@ function RadioGroupItem({
   label,
   description,
   icon,
-  hint,
+  hint: hintProp,
+  title,
   disabled: itemDisabled = false,
   id,
   className,
   "aria-label": ariaLabel,
   "aria-describedby": ariaDescribedByProp,
 }: RadioGroupItemProps) {
+  const hint = hintProp ?? title;
   const group = useRadioGroup();
   const ref = React.useRef<Focusable>(null);
   const uid = React.useId();

@@ -60,7 +60,7 @@ function Tooltip({ children }: TooltipProps) {
   );
 }
 
-function TooltipTrigger({ asChild, children }: TooltipTriggerProps) {
+function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
   const { setOpen } = useContext(TooltipContext);
   const show = () => setOpen(true);
   if (asChild && isValidElement(children)) {
@@ -68,7 +68,11 @@ function TooltipTrigger({ asChild, children }: TooltipTriggerProps) {
       onLongPress: show,
     });
   }
-  return <Pressable onLongPress={show}>{children}</Pressable>;
+  return (
+    <Pressable onLongPress={show} className={cn(className)}>
+      {children}
+    </Pressable>
+  );
 }
 
 /** How long the bubble stays up before dismissing itself. */

@@ -3,12 +3,23 @@
  * the focus trap, the scroll lock, the `Escape` handler and the enter/exit
  * animations, none of which have a native counterpart worth faking.
  *
- * The exported surface is `dialog-base.ts`'s, not radix's — see that file.
+ * The exported surface is `dialog-base.ts`'s **plus radix's**: every part also
+ * takes the props of the radix part (or the `div`) it renders, exactly as
+ * shadcn's `dialog` does, so a DOM call site written against shadcn — `modal`,
+ * `onOpenAutoFocus`, `forceMount`, `id`, `data-*`, a `DialogClose asChild` round
+ * a Cancel button, a `DialogPortal` + `DialogOverlay` of its own — compiles and
+ * behaves unchanged. Those extras are web only; the base is what native honours.
  */
 
 import { Dialog as DialogPrimitive } from "radix-ui";
+import type * as React from "react";
+import { Button } from "@/components/ui/button";
 import type {
+  DialogCloseProps,
   DialogContentProps,
+  DialogFooterProps,
+  DialogOverlayProps,
+  DialogPortalProps,
   DialogProps,
   DialogSectionProps,
   DialogTriggerProps,
@@ -16,16 +27,72 @@ import type {
 import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
-function Dialog({ open, onOpenChange, children }: DialogProps) {
+/** The shared contract, widened to what the radix part (or element) underneath accepts. */
+type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
+
+function Dialog({
+  open,
+  onOpenChange,
+  defaultOpen,
+  ...props
+}: Wide<DialogProps, React.ComponentProps<typeof DialogPrimitive.Root>>) {
+  // Spread only when given: radix goes uncontrolled on `open === undefined` only when the prop is
+  // absent, and `exactOptionalPropertyTypes` is what makes the difference expressible.
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      {children}
-    </DialogPrimitive.Root>
+    <DialogPrimitive.Root
+      data-slot="dialog"
+      {...props}
+      {...(open === undefined ? {} : { open })}
+      {...(onOpenChange === undefined ? {} : { onOpenChange })}
+      {...(defaultOpen === undefined ? {} : { defaultOpen })}
+    />
   );
 }
 
-function DialogTrigger({ asChild, children }: DialogTriggerProps) {
-  return <DialogPrimitive.Trigger asChild={asChild ?? false}>{children}</DialogPrimitive.Trigger>;
+function DialogTrigger({
+  asChild,
+  ...props
+}: Wide<DialogTriggerProps, React.ComponentProps<typeof DialogPrimitive.Trigger>>) {
+  return (
+    <DialogPrimitive.Trigger data-slot="dialog-trigger" asChild={asChild ?? false} {...props} />
+  );
+}
+
+function DialogPortal(
+  props: Wide<DialogPortalProps, React.ComponentProps<typeof DialogPrimitive.Portal>>,
+) {
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
+}
+
+function DialogClose({
+  asChild,
+  className,
+  ...props
+}: Wide<DialogCloseProps, React.ComponentProps<typeof DialogPrimitive.Close>>) {
+  return (
+    <DialogPrimitive.Close
+      data-slot="dialog-close"
+      asChild={asChild ?? false}
+      {...(className === undefined ? {} : { className })}
+      {...props}
+    />
+  );
+}
+
+function DialogOverlay({
+  className,
+  ...props
+}: Wide<DialogOverlayProps, React.ComponentProps<typeof DialogPrimitive.Overlay>>) {
+  return (
+    <DialogPrimitive.Overlay
+      data-slot="dialog-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 function DialogContent({
@@ -36,11 +103,14 @@ function DialogContent({
   "aria-describedby": describedBy,
   role,
   children,
-}: DialogContentProps) {
+  ...props
+}: Wide<DialogContentProps, React.ComponentProps<typeof DialogPrimitive.Content>>) {
   return (
-    <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80" />
+    <DialogPortal>
+      <DialogOverlay />
       <DialogPrimitive.Content
+        data-slot="dialog-content"
+        {...props}
         {...(onEscapeKeyDown === undefined ? {} : { onEscapeKeyDown })}
         {...(onInteractOutside === undefined ? {} : { onInteractOutside })}
         // Spread only when given: radix sets its own `role="dialog"` and an explicit `undefined`
@@ -54,56 +124,89 @@ function DialogContent({
       >
         {children}
         {showCloseButton ? (
-          <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
+          <DialogPrimitive.Close
+            data-slot="dialog-close"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none"
+          >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         ) : null}
       </DialogPrimitive.Content>
-    </DialogPrimitive.Portal>
+    </DialogPortal>
   );
 }
 
-function DialogHeader({ className, children }: DialogSectionProps) {
+function DialogHeader({
+  className,
+  ...props
+}: Wide<DialogSectionProps, React.ComponentProps<"div">>) {
   return (
-    <div className={cn("flex flex-col gap-1.5 text-center sm:text-left", className)}>
-      {children}
-    </div>
+    <div
+      data-slot="dialog-header"
+      className={cn("flex flex-col gap-1.5 text-center sm:text-left", className)}
+      {...props}
+    />
   );
 }
 
-function DialogFooter({ className, children }: DialogSectionProps) {
+function DialogFooter({
+  className,
+  showCloseButton = false,
+  children,
+  ...props
+}: Wide<DialogFooterProps, React.ComponentProps<"div">>) {
   return (
-    <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2", className)}>
-      {children}
-    </div>
-  );
-}
-
-function DialogTitle({ className, children }: DialogSectionProps) {
-  return (
-    <DialogPrimitive.Title
-      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+    <div
+      data-slot="dialog-footer"
+      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      {...props}
     >
       {children}
-    </DialogPrimitive.Title>
+      {showCloseButton ? (
+        <DialogPrimitive.Close asChild>
+          <Button variant="outline">Close</Button>
+        </DialogPrimitive.Close>
+      ) : null}
+    </div>
   );
 }
 
-function DialogDescription({ className, children }: DialogSectionProps) {
+function DialogTitle({
+  className,
+  ...props
+}: Wide<DialogSectionProps, React.ComponentProps<typeof DialogPrimitive.Title>>) {
   return (
-    <DialogPrimitive.Description className={cn("text-muted-foreground text-sm", className)}>
-      {children}
-    </DialogPrimitive.Description>
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+      {...props}
+    />
+  );
+}
+
+function DialogDescription({
+  className,
+  ...props
+}: Wide<DialogSectionProps, React.ComponentProps<typeof DialogPrimitive.Description>>) {
+  return (
+    <DialogPrimitive.Description
+      data-slot="dialog-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
   );
 }
 
 export {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 };

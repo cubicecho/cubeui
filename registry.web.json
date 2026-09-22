@@ -227,7 +227,7 @@
       "title": "Dialog",
       "description": "A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.",
       "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/button"],
       "files": [
         {
           "path": "registry/ui/dialog-base.ts",
@@ -297,7 +297,7 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "description": "Radix on web; a row of Pressables over a context on device. Uncontrolled on both.",
+      "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both.",
       "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
@@ -416,11 +416,19 @@
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
+          "path": "registry/ui/badge-base.ts",
+          "type": "registry:ui"
+        },
+        {
           "path": "compiled/badge.tsx",
           "type": "registry:ui"
         }
       ],
-      "dependencies": ["class-variance-authority@^0.7.1"]
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
+      ]
     },
     {
       "name": "field",
@@ -588,7 +596,13 @@
       "type": "registry:ui",
       "title": "Color Picker",
       "description": "Swatches plus a hex field, replacing `<input type=\"color\">` — which has no native counterpart.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/readable-text-color"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/input",
+        "@cubeui/label",
+        "@cubeui/readable-text-color"
+      ],
       "files": [
         {
           "path": "compiled/color-picker.tsx",

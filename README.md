@@ -556,8 +556,18 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
 | `option-select` | every `<button>` prop on the trigger again |
+| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
+| `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
+| `popover` | radix's props on every part; `PopoverAnchor`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
+| `tooltip` | radix's props on every part — `open`/`onOpenChange` on `Tooltip`, `sideOffset`/`align` on the content, `className` on the trigger |
+| `tabs` | radix's props on every part; controlled `value`/`onValueChange` and `TabsTrigger disabled` (on both halves) |
+| `badge` | now platform-split: a `<span>` with every span prop, `asChild`, element children; `ghost`/`link` variants and `badgeVariants` (on both halves) |
+| `calendar` | the rest of react-day-picker's props — `captionLayout`, `showOutsideDays`, `classNames`, `components` |
+| `radio-group` | `title` on `RadioGroupItem`, as `hint` (on both halves) |
+| `color-picker` | `main`'s popover picker's API on both halves: `onValueChange`, `swatches`, a `null` value, `placeholder`, `hexLabel`, `swatchesLabel`, `clearable`/`clearLabel`, `disabled`, `contentClassName`, `id` and `aria-*`; `popoverLabel`/`customLabel` accepted and ignored |
 
-`stories/web/shadcn-superset.type-assertions.tsx` holds a shadcn call site for each, typechecked
+`stories/web/shadcn-superset.type-assertions.tsx` and
+`stories/web/shadcn-compat.overlays.type-assertions.tsx` hold a shadcn call site for each, typechecked
 under `tsconfig.web.json` against `compiled/` — a line there that stops compiling is a DOM app that
 stops compiling.
 
