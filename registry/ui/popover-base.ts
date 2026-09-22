@@ -5,10 +5,12 @@
  * `./popover` without importing itself.
  *
  * Narrower than radix's props on purpose: an `asChild` trigger and one content
- * pane. That is the shape both platforms can honour —
- * everything radix offers beyond it (collision handling, side flipping, nested
- * anchors) has no native counterpart, so exposing it would be a promise only
- * one platform keeps.
+ * pane. That is the shape both platforms can honour — everything radix offers
+ * beyond it (collision handling, side flipping, a separate anchor) has no native
+ * counterpart. The web half accepts it all the same, on top of this contract,
+ * because it is a drop-in for shadcn's `popover`: `popover.web.tsx` widens each
+ * part to the radix part it renders. Those extras are web only, and on native a
+ * `PopoverAnchor` simply renders its children.
  */
 import type { ReactNode } from "react";
 
@@ -39,5 +41,17 @@ export type PopoverContentProps = {
   className?: string | undefined;
   /** Web only — the native sheet is centred and has nothing to align to. */
   align?: "start" | "center" | "end" | undefined;
+  children?: ReactNode;
+};
+
+/** Web only in effect: the native sheet is centred, so it renders its children and anchors nothing. */
+export type PopoverAnchorProps = {
+  asChild?: boolean | undefined;
+  children?: ReactNode;
+};
+
+/** `PopoverHeader`, `PopoverTitle` and `PopoverDescription` — shadcn's heading block for a pane. */
+export type PopoverSectionProps = {
+  className?: string | undefined;
   children?: ReactNode;
 };

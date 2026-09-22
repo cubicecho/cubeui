@@ -2,15 +2,20 @@
  * The contract `tabs.tsx` (native) and `tabs.web.tsx` (radix) both implement.
  * Its own module because Metro resolves `./tabs` to `tabs.web.tsx` on web.
  *
- * Uncontrolled only — `defaultValue` and nothing else. Adding a controlled
- * mode means both halves grow a `value`/`onValueChange` pair and the native one
- * stops owning the state; do it when something actually needs to read or set
- * the active tab from outside, not before.
+ * Controlled (`value` + `onValueChange`) or uncontrolled (`defaultValue`), as
+ * radix is. The web half also takes radix's own props on top of this —
+ * `orientation`, `activationMode`, `forceMount`, `dir`, DOM attributes — as
+ * shadcn's `tabs` does; those extras are web only.
  */
 import type { ReactNode } from "react";
 
 export type TabsProps = {
-  defaultValue: string;
+  /** The active tab, when the caller owns it. */
+  value?: string | undefined;
+  /** Called with the tab the user picked. */
+  onValueChange?: ((value: string) => void) | undefined;
+  /** The tab active at mount, when uncontrolled. */
+  defaultValue?: string | undefined;
   className?: string | undefined;
   children: ReactNode;
 };
@@ -22,6 +27,8 @@ export type TabsListProps = {
 
 export type TabsTriggerProps = {
   value: string;
+  /** Not selectable, and dimmed. */
+  disabled?: boolean | undefined;
   className?: string | undefined;
   children: ReactNode;
 };

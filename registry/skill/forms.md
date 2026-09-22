@@ -333,9 +333,12 @@ and put the props where they go:
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
 element itself and needs none of this.
 
-Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect`, `DatePicker`
-and `ColorPicker` take the rest of a `<button>`'s props and put them there, so the function form
+Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect` and
+`DatePicker` take the rest of a `<button>`'s props and put them there, so the function form
 spreads onto the control and stops — `control={(props) => <OptionSelect {...props} options={LISTS} … />}`.
+`ColorPicker` has no trigger — it is the swatch row and the hex field, drawn inline — so it splits
+the same props: `id` goes to the hex field, and `aria-label`, `aria-labelledby`,
+`aria-describedby`, `aria-invalid` and `aria-required` go to the swatch row's `radiogroup`.
 The primitive version above is what that saves.
 
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the

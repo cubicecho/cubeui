@@ -21,14 +21,16 @@
  *   container classes and text classes. Bare string children are wrapped in a
  *   `<Text>` automatically; elements (icons) pass through untouched, and the
  *   container keeps its `text-*` class so web icons still inherit `currentColor`.
- * - `asChild` is gone. It existed to hand the button's styling to a link, and
- *   the routers that needed it (expo-router, react-router) have their own
- *   `asChild`, so the nesting inverts: `<Link asChild><Button/></Link>` works on
- *   both platforms where `<Button asChild><Link/></Button>` works on neither.
+ * - `asChild` is radix's `Slot` on both platforms (see the prop below). On native
+ *   the nesting usually inverts anyway — `<Link asChild><Button/></Link>` — because
+ *   expo-router's `Link` has its own `asChild`.
  *
- * `type="submit"` is gone too — a Pressable is not a form control. A submit
- * button calls the form's submit handler on press instead; on web the `<form>`
- * element is still there, so Enter-to-submit is unaffected.
+ * On device `type` means nothing — a Pressable is not a form control, so a submit
+ * button calls the form's submit handler on press. The compiled web half is a real
+ * `<button>` and takes the whole of `<button>`'s props — `type="submit"`, `onClick`,
+ * `form`, `aria-*`, `data-*` — which is what makes it a drop-in for shadcn's. Its
+ * sizes and variants are a superset of shadcn's too, `xs` and the `icon-*` ladder
+ * included, so `buttonVariants({ variant: "ghost", size: "icon-sm" })` ports as is.
  */
 
 import { cva, type VariantProps } from "class-variance-authority";
@@ -60,6 +62,11 @@ const buttonVariants = cva(
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        // shadcn's icon ladder, on this file's own heights: each square is the height of the
+        // text size it is named after, so an icon button sits flush in a row of text buttons.
+        "icon-xs": "h-7 w-7 rounded-lg [&_svg]:size-3.5",
+        "icon-sm": "h-9 w-9",
+        "icon-lg": "h-11 w-11",
       },
     },
     defaultVariants: {
@@ -85,6 +92,9 @@ const buttonTextVariants = cva("font-medium", {
       sm: "text-sm",
       lg: "text-sm",
       icon: "text-sm",
+      "icon-xs": "text-xs",
+      "icon-sm": "text-sm",
+      "icon-lg": "text-sm",
     },
     variant: {
       default: "text-primary-foreground",
@@ -99,10 +109,7 @@ const buttonTextVariants = cva("font-medium", {
   defaultVariants: { variant: "default", size: "default" },
 });
 
-export type ButtonProps = Omit<
-  React.ComponentPropsWithoutRef<"button">,
-  "children" | "className" | "style"
-> &
+export type ButtonProps = Omit<React.ComponentPropsWithoutRef<"button">, "children" | "className"> &
   VariantProps<typeof buttonVariants> & {
     // Re-declared rather than inherited: nativewind types it as
     // `className?: string`, which under `exactOptionalPropertyTypes` rejects the

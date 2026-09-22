@@ -4,18 +4,26 @@
  * on web, so the web file cannot import shared types from `./dialog` without
  * importing itself.
  *
- * Deliberately narrower than radix's own props: `open`/`onOpenChange` and the
- * section slots, which is the surface both platforms can actually honour. A
- * shared contract is also the only thing that makes the platform pair
- * checkable — TypeScript resolves the native file and never compares the two,
- * so `scripts/check-registry-build.mjs` compares the exported names instead.
+ * This is the surface both platforms honour. The web half widens every part to
+ * radix's own props on top of it — `modal`, `forceMount`, `onOpenAutoFocus`, a
+ * `div`'s attributes on the sections — so a DOM call site written against
+ * shadcn's `dialog` compiles unchanged; those extras are web only and live in
+ * `dialog.web.tsx`, not here. A shared contract is also the only thing that
+ * makes the platform pair checkable — TypeScript resolves the native file and
+ * never compares the two, so `scripts/check-registry-build.mjs` compares the
+ * exported names instead.
  */
 import type { ReactNode } from "react";
 
 export type DialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  children: ReactNode;
+  /**
+   * Controlled when passed. Leave `open` out and the dialog keeps its own state, opened by a
+   * `DialogTrigger` and shut by a `DialogClose` — shadcn's uncontrolled form.
+   */
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  defaultOpen?: boolean | undefined;
+  children?: ReactNode;
 };
 
 export type DialogTriggerProps = {
@@ -48,6 +56,26 @@ export type DialogContentProps = DialogSectionProps & {
    * technology announces as urgent rather than as a place to work. Default `dialog`.
    */
   role?: "dialog" | "alertdialog" | undefined;
+};
+
+/** Closes the dialog it is inside. `asChild` hands the press to a `Button` rather than wrapping it. */
+export type DialogCloseProps = {
+  asChild?: boolean | undefined;
+  className?: string | undefined;
+  children?: ReactNode;
+};
+
+/**
+ * `DialogPortal` and `DialogOverlay` are shadcn's parts for assembling a custom content pane.
+ * On native the `Modal` is already the portal, so the portal is a pass-through and the overlay is
+ * the same dimmed layer `DialogContent` draws.
+ */
+export type DialogPortalProps = { children?: ReactNode };
+export type DialogOverlayProps = { className?: string | undefined };
+
+export type DialogFooterProps = DialogSectionProps & {
+  /** Append an outline "Close" button that shuts the dialog. Default `false`. */
+  showCloseButton?: boolean | undefined;
 };
 
 /** Every part inside a `Dialog` — content, header, footer, title, description. */

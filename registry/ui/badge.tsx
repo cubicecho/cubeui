@@ -1,17 +1,19 @@
 /**
  * A small pill stating what something is or what state it is in — and, with no
  * label, the dot that stands for the same thing in a row too tight for words.
+ * `badge.web.tsx` is the web counterpart and `badge-base.ts` holds the contract
+ * and the class maps they share.
  *
- * This is the merge of two vocabularies. It keeps shadcn's four variant names
- * with shadcn's meanings, so a DOM call site ports over unchanged and
+ * This is the merge of two vocabularies. It keeps shadcn's variant names with
+ * shadcn's meanings, so a DOM call site ports over unchanged and
  * `variant="secondary"` still means what it meant there. It adds `success` and
  * `warning`, which the shadcn token set has no answer for at all: that set
  * carries exactly one semantic colour, `destructive`. The two additions are
  * palette colours chosen to sit beside it rather than tokens, because promoting
  * them to `--success` / `--warning` would put this repo's `:root` block out of
  * step with cubeui's while the two still have to agree. That promotion is a
- * later edit to `tokens/palette.mjs` and this file's class map; it does not
- * reach a single call site, which is why it can wait.
+ * later edit to `tokens/palette.mjs` and the class maps; it does not reach a
+ * single call site, which is why it can wait.
  *
  * The two shades are the 700s and not the friendlier 500s or 600s because white
  * on `green-600` is 3.22:1 and white on `amber-500` is 2.13:1 — both short of
@@ -28,88 +30,25 @@
  * different input.
  *
  * Colour is split across the container and the `<Text>` for the usual reason:
- * native does not inherit it. `children` is a `string` rather than a
- * `ReactNode` for the same reason — the text class has to land on a `<Text>`,
- * and there is nowhere to put it if the caller passes an element. shadcn's
- * `asChild` is not here either; see `button.tsx`'s header for why it goes the
- * other way round on native.
+ * native does not inherit it. So each string or number among the children is
+ * wrapped in its own `<Text>` carrying the label class, and an element — an
+ * icon — is rendered as it is. shadcn's `asChild` is web only; see `button.tsx`'s
+ * header for why it goes the other way round on native.
  */
-import { cva } from "class-variance-authority";
+import { Children } from "react";
 import { Text, View } from "react-native";
+import {
+  type BadgeProps,
+  type BadgeVariant,
+  badgeContainerVariants,
+  badgeHasLabel,
+  badgeTextFallback,
+  badgeTextVariants,
+  badgeVariants,
+} from "@/components/ui/badge-base";
 import { cn } from "@/lib/utils";
 
-export type BadgeVariant =
-  | "default"
-  | "secondary"
-  | "destructive"
-  | "outline"
-  | "success"
-  | "warning";
-
-/**
- * `shape` is derived from whether a label was passed, not taken as a prop —
- * a dot is what a badge with nothing to say already is, and making it a second
- * axis would allow the two states that mean nothing: a dot with a label it
- * cannot show, and an empty pill.
- */
-const badgeVariants = cva("shrink-0 self-start rounded-full border border-transparent", {
-  variants: {
-    variant: {
-      default: "bg-primary",
-      secondary: "bg-secondary",
-      destructive: "bg-destructive",
-      outline: "border-border bg-transparent",
-      success: "bg-green-700",
-      warning: "bg-amber-700",
-    },
-    shape: {
-      pill: "flex-row items-center justify-center gap-1 px-2 py-0.5",
-      dot: "h-2 w-2",
-    },
-  },
-  defaultVariants: { variant: "default", shape: "pill" },
-});
-
-const badgeTextVariants = cva("text-xs font-medium", {
-  variants: {
-    variant: {
-      default: "text-primary-foreground",
-      secondary: "text-secondary-foreground",
-      destructive: "text-white",
-      outline: "text-foreground",
-      success: "text-white",
-      warning: "text-white",
-    },
-  },
-  defaultVariants: { variant: "default" },
-});
-
-type BadgeProps = {
-  variant?: BadgeVariant;
-  /**
-   * Overrides the variant's background with a literal colour — for a badge
-   * standing in for a user-chosen tag or category. Passing it also drops the
-   * variant's label colour, since the caller's background is unknown and
-   * `text-primary-foreground` would be a guess. Pair it with `readableTextColor`
-   * when the label has to stay legible on an arbitrary hue.
-   */
-  backgroundColor?: string | undefined;
-  /**
-   * Overrides the label's colour, for the same case as `backgroundColor`: with an
-   * arbitrary hue behind it, neither the variant's label colour nor the
-   * `text-foreground` fallback is guaranteed to be legible. `readableTextColor`
-   * is what computes the value to pass.
-   */
-  textColor?: string | undefined;
-  className?: string | undefined;
-  /**
-   * What the dot stands for, exposed as its accessible name. Ignored in the
-   * pill form, where the label is already the name.
-   */
-  label?: string | undefined;
-  /** Absent — including an empty string — collapses the badge to a dot. */
-  children?: string | undefined;
-};
+export type { BadgeProps, BadgeVariant };
 
 export function Badge({
   variant = "default",
@@ -119,11 +58,12 @@ export function Badge({
   label,
   children,
 }: BadgeProps) {
-  const shape = children ? "pill" : "dot";
+  const shape = badgeHasLabel(children) ? "pill" : "dot";
+  const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
 
   return (
     <View
-      className={cn(badgeVariants({ variant, shape }), className)}
+      className={cn(badgeContainerVariants({ variant, shape }), className)}
       {...(backgroundColor ? { style: { backgroundColor } } : {})}
       // A dot carries meaning and no text, so it is named or it is decoration;
       // the same split `color-dot` makes, for the same reason.
@@ -133,16 +73,19 @@ export function Badge({
           : ({ "aria-hidden": true } as const)
         : {})}
     >
-      {children ? (
-        <Text
-          className={
-            backgroundColor ? "text-xs font-medium text-foreground" : badgeTextVariants({ variant })
-          }
-          {...(textColor ? { style: { color: textColor } } : {})}
-        >
-          {children}
-        </Text>
-      ) : null}
+      {shape === "pill"
+        ? Children.map(children, (child) =>
+            typeof child === "string" || typeof child === "number" ? (
+              <Text className={textClass} {...(textColor ? { style: { color: textColor } } : {})}>
+                {child}
+              </Text>
+            ) : (
+              child
+            ),
+          )
+        : null}
     </View>
   );
 }
+
+export { badgeVariants };

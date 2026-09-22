@@ -8,9 +8,25 @@
  * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
+/**
+ * Swatches plus a hex field, replacing `<input type="color">`.
+ *
+ * The DOM colour input has no native counterpart — react-native-web renders it
+ * as a plain text box and a `TextInput` cannot open a picker — so an app with
+ * both targets ends up with two different colour controls. This is the one that
+ * works on both: the swatch row is what a native sheet would offer anyway, and
+ * the hex field is still the way to enter a colour that is not on the list.
+ *
+ * ```tsx
+ * <ColorPicker value={color} onValueChange={setColor} swatches={ACTIVITY_COLORS} clearable />
+ * ```
+ */
+import { useId } from "react";
 import { readableTextColor } from "@/lib/readable-text-color";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 import { Input } from "./input";
+import { Label } from "./label";
 
 /**
  * A palette wide enough to look chosen from rather than settled for.
@@ -59,22 +75,93 @@ export function isHexColor(value: string): boolean {
   return HEX.test(value);
 }
 
+/**
+ * The props, in this registry's vocabulary and in the one cubeui's popover picker shipped with
+ * on `main`, so a call site written against either compiles. The aliases are exactly that —
+ * `onValueChange` is `onChange`, `swatches` is `colors` — and the popover-only labels
+ * (`popoverLabel`, `customLabel`) are accepted and ignored, because this control has no popover
+ * to name and no OS colour well to label.
+ */
 type ColorPickerProps = {
-  value: string;
-  onChange: (color: string) => void;
+  /** The colour, as `#rgb`/`#rrggbb`. `null` and `""` are both "no colour". */
+  value?: string | null | undefined;
+  /** Called with the colour picked or typed; `""` when cleared. */
+  onChange?: ((color: string) => void) | undefined;
+  /** `onChange`, under the name shadcn and `main`'s picker use. Both are called when both are given. */
+  onValueChange?: ((color: string) => void) | undefined;
   onBlur?: (() => void) | undefined;
   /** Swatches to offer. Defaults to `COLOR_SWATCHES`. */
-  colors?: readonly string[];
+  colors?: readonly string[] | undefined;
+  /** `colors`, under `main`'s name. `colors` wins when both are given. */
+  swatches?: readonly string[] | undefined;
+  /** The hex field's placeholder. A format hint by default, for the reason given at the field. */
+  placeholder?: string | undefined;
+  /**
+   * The hex field's accessible name, drawn only for a screen reader. Web only: it is a `<label>`
+   * pointed at the field, and native has no label/control association to make.
+   */
+  hexLabel?: string | undefined;
+  /** The swatch row's accessible name, when `aria-label` does not already give one. */
+  swatchesLabel?: string | undefined;
+  /** Draws a Clear button, which sets the value to `""`, while there is a value. */
+  clearable?: boolean | undefined;
+  /** The Clear button's text. */
+  clearLabel?: string | undefined;
+  /** Blocks the swatches, the hex field and Clear. */
+  disabled?: boolean | undefined;
   className?: string | undefined;
+  /** The swatch row's class — the nearest thing here to `main`'s popover content. */
+  contentClassName?: string | undefined;
+  /** Accepted for `main`'s API and ignored: there is no popover to name. */
+  popoverLabel?: string | undefined;
+  /** Accepted for `main`'s API and ignored: there is no OS colour well to label. */
+  customLabel?: string | undefined;
+  /** The hex field's id — what a field's `<Label htmlFor>` points at. */
+  id?: string | undefined;
+  /** The swatch row's name. */
+  "aria-label"?: string | undefined;
+  /** The swatch row's name, by reference. */
+  "aria-labelledby"?: string | undefined;
+  /** Web only, on the swatch row: native has no description relation. */
+  "aria-describedby"?: string | undefined;
+  /** Web only, on the swatch row. */
+  "aria-invalid"?: boolean | "true" | "false" | undefined;
+  /** Web only, on the swatch row. */
+  "aria-required"?: boolean | "true" | "false" | undefined;
 };
 
 export function ColorPicker({
   value,
   onChange,
+  onValueChange,
   onBlur,
-  colors = COLOR_SWATCHES,
+  colors,
+  swatches,
+  placeholder = "#rrggbb",
+  hexLabel,
+  swatchesLabel,
+  clearable = false,
+  clearLabel = "Clear",
+  disabled = false,
   className,
+  contentClassName,
+  id,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  "aria-required": ariaRequired,
 }: ColorPickerProps) {
+  const fallbackId = useId();
+  const inputId = id ?? fallbackId;
+  const current = value ?? "";
+  const palette = colors ?? swatches ?? COLOR_SWATCHES;
+  const groupLabel = ariaLabel ?? swatchesLabel;
+  const emit = (color: string) => {
+    onChange?.(color);
+    onValueChange?.(color);
+  };
+
   return (
     <div className={cn("cube-rn-view", "gap-3", className)}>
       {/*
@@ -82,14 +169,32 @@ export function ColorPicker({
         incomplete control to an assistive technology and an axe violation on web, and the role
         is the same word on both platforms.
       */}
-      <div role="radiogroup" className="cube-rn-view flex-row flex-wrap gap-2">
-        {colors.map((color) => {
-          const selected = value.toLowerCase() === color.toLowerCase();
+      <div
+        role="radiogroup"
+        aria-label={groupLabel}
+        aria-labelledby={ariaLabelledBy}
+        // What react-native has no prop for, in the spelling the web reads.
+        {...{
+          ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
+          ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+          ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
+          ...(disabled ? { "aria-disabled": true } : {}),
+        }}
+        className={cn(
+          "cube-rn-view",
+          "flex-row flex-wrap gap-2",
+          disabled && "opacity-50",
+          contentClassName,
+        )}
+      >
+        {palette.map((color) => {
+          const selected = current.toLowerCase() === color.toLowerCase();
           return (
             <button
               type="button"
               key={color}
-              onClick={() => onChange(color)}
+              onClick={() => emit(color)}
+              disabled={disabled}
               // A swatch row is a radio group: one of the set is current, and
               // the label is the colour itself, which nothing else conveys.
               role="radio"
@@ -120,16 +225,35 @@ export function ColorPicker({
           );
         })}
       </div>
-      <Input
-        // A format hint rather than a colour: the field's job is the colour that
-        // is *not* in the row above, so showing one of them would mislead.
-        placeholder="#rrggbb"
-        value={value}
-        onChangeText={onChange}
-        onBlur={onBlur}
-        maxLength={7}
-        className="font-mono"
-      />
+      {/*
+        The hex field's own name, for a screen reader only. It is a `<label>` pointed at the field
+        because `Input` takes no `aria-label`; on native there is no label/control association to
+        make, so nothing is drawn there.
+      */}
+      {hexLabel ? (
+        <Label htmlFor={inputId} className="sr-only">
+          {hexLabel}
+        </Label>
+      ) : null}
+      <div className="cube-rn-view flex-row items-center gap-2">
+        <Input
+          id={inputId}
+          // A format hint rather than a colour by default: the field's job is the colour that
+          // is *not* in the row above, so showing one of them would mislead.
+          placeholder={placeholder}
+          value={current}
+          onChangeText={emit}
+          onBlur={onBlur}
+          maxLength={7}
+          disabled={disabled}
+          className="flex-1 font-mono"
+        />
+        {clearable && current ? (
+          <Button variant="ghost" size="sm" disabled={disabled} onClick={() => emit("")}>
+            {clearLabel}
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }

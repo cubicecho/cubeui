@@ -222,17 +222,25 @@ is a `Popover`. `MultiSelectField` already does.
 ## Colour
 
 ```tsx
-<ColorPicker value={color} onValueChange={setColor} />
+<ColorPicker value={color} onValueChange={setColor} clearable />
 ```
 
-- The value is a hex string, `#rgb` or `#rrggbb`. `normalizeHex` and `isHexColor` are exported
-  for a caller that validates its own.
-- A half-typed hex is not committed: the box holds a draft and the value changes only when what
-  is in it is a colour. Emptying the box **is** an answer — it commits `""`, meaning no colour.
-- `swatches` overrides the palette; the default is 16 Tailwind 500s. Each swatch is a real
-  toggle with the hex as its name and `aria-pressed` for the chosen one.
-- The popover carries its own accessible name inside itself, because Radix unmounts popover
-  content on close and a name living outside it is unreachable.
+- It is drawn inline, not in a popover: a row of swatches over a hex field, one source for both
+  platforms. `<input type="color">` has no native counterpart, so there is no OS colour well.
+- The value is a hex string, `#rgb` or `#rrggbb`; `null` and `""` both mean no colour.
+  `normalizeHex` and `isHexColor` are exported for a caller that validates its own — the hex
+  field reports what is typed as it is typed, so validating is the caller's.
+- `onValueChange` and `onChange` are the same callback under two names, and `swatches` and
+  `colors` the same list; the default is 16 Tailwind 500s. The swatch row is a `radiogroup` of
+  radios, each named by its hex, with a tick drawn in `readableTextColor` of the swatch.
+- `clearable` (off by default) draws a Clear button, labelled `clearLabel`, that commits `""`.
+- `placeholder` is the hex field's; `hexLabel` names the hex field for a screen reader (web
+  only); `swatchesLabel` or `aria-label` names the swatch row. `disabled` blocks all of it, and
+  `contentClassName` reaches the swatch row.
+- `popoverLabel` and `customLabel` are accepted from the popover picker's API and ignored —
+  there is no popover to name and no colour well to label.
+- `id` goes to the hex field and the `aria-*` props to the swatch row, so a field's function-form
+  `control` can spread onto it.
 
 ## Password
 
