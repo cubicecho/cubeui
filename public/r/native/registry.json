@@ -24,7 +24,7 @@
       "name": "utils",
       "type": "registry:lib",
       "title": "cn",
-      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN\u2192web compiler reads.",
+      "description": "The class merger every component calls, the one hover helper that has to be gated on platform, and the `webAs` declaration the RN→web compiler reads.",
       "dependencies": ["clsx@^2.1.1", "tailwind-merge@^3.6.0"],
       "files": [
         {
@@ -403,7 +403,7 @@
       "name": "toggle-chip",
       "type": "registry:ui",
       "title": "Toggle Chip",
-      "description": "A small on/off pill \u2014 a filter chip, a day toggle, a swatch \u2014 with its colour split across container and label.",
+      "description": "A small on/off pill — a filter chip, a day toggle, a swatch — with its colour split across container and label.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -416,7 +416,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A pill naming what something is or what state it is in \u2014 and, with no label, the dot that says the same thing in a tighter row.",
+      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -470,7 +470,7 @@
       "name": "confirm",
       "type": "registry:ui",
       "title": "Confirm",
-      "description": "One confirmation prompt for both platforms, as a promise: `if (await confirm({\u2026})) remove()`.",
+      "description": "One confirmation prompt for both platforms, as a promise: `if (await confirm({…})) remove()`.",
       "registryDependencies": ["@cubeui/confirm-dialog"],
       "files": [
         {
@@ -544,7 +544,7 @@
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
-      "description": "Transient messages for mutations fired outside a form \u2014 the failures that otherwise reach only the console.",
+      "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
       "files": [
         {
           "path": "registry/ui/toast.tsx",
@@ -599,7 +599,7 @@
       "name": "color-picker",
       "type": "registry:ui",
       "title": "Color Picker",
-      "description": "Swatches plus a hex field, replacing `<input type=\"color\">` \u2014 which has no native counterpart.",
+      "description": "Swatches plus a hex field, replacing `<input type=\"color\">` — which has no native counterpart.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/readable-text-color"],
       "files": [
         {
@@ -646,7 +646,8 @@
       "name": "query-state",
       "type": "registry:component",
       "title": "Query State",
-      "description": "Inline loading / error text for a query whose data may still render beside it.",
+      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/card", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/layout/query-state.tsx",
@@ -658,7 +659,7 @@
       "name": "page",
       "type": "registry:component",
       "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state \u2014 the four pieces every route repeats.",
+      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -710,7 +711,7 @@
       "name": "skill",
       "type": "registry:item",
       "title": "cubeui Agent Skill",
-      "description": "How to use these components, for agents working in a consuming project. Installs into .claude/skills/ as a router plus layout, form and control references, and says which half of the registry \u2014 DOM or React Native \u2014 the project is on.",
+      "description": "How to use these components, for agents working in a consuming project. Installs into .claude/skills/ as a router plus layout, form and control references, and says which half of the registry — DOM or React Native — the project is on.",
       "files": [
         {
           "path": "registry/skill/SKILL.md",

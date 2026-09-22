@@ -579,7 +579,8 @@
       "name": "query-state",
       "type": "registry:component",
       "title": "Query State",
-      "description": "Inline loading / error text for a query whose data may still render beside it.",
+      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/card", "@cubeui/icons"],
       "files": [
         {
           "path": "compiled/query-state.tsx",
