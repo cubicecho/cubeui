@@ -13,6 +13,11 @@
  * `errors`, `Field` takes `orientation="responsive"`, and every part spreads
  * the rest of its props onto its root — `View`/`Text` props here, which the
  * compiler turns into `<div>`/`<span>` props on the web.
+ *
+ * **Each part wears shadcn's `data-slot`**, as a `testID` the compiler turns into
+ * one: `form-field` promises that a project already styling
+ * `[data-slot=field-label]` styles it too, and shadcn's own `Field` variants
+ * select on `[data-slot=field-content]`.
  */
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
@@ -41,6 +46,7 @@ function FieldSet({ className, ...props }: ViewProps) {
     <View
       webAs="fieldset"
       role="group"
+      testID="field-set"
       className={cn("w-full flex-col gap-6", className)}
       {...props}
     />
@@ -59,6 +65,7 @@ function FieldLegend({
   return (
     <Text
       webAs="legend"
+      testID="field-legend"
       className={cn(
         "mb-3 font-medium text-foreground",
         variant === "legend" ? "text-base" : "text-sm",
@@ -76,6 +83,7 @@ function FieldLegend({
 function FieldGroup({ className, ...props }: ViewProps) {
   return (
     <View
+      testID="field-group"
       className={cn(
         "w-full flex-col gap-4",
         Platform.select({ web: "@container/field-group", default: undefined }),
@@ -109,16 +117,29 @@ function Field({
 }: ViewProps & VariantProps<typeof fieldVariants>) {
   return (
     // The `role` is hand-written because a `<fieldset>` has no native counterpart.
-    <View role="group" className={cn(fieldVariants({ orientation }), className)} {...props} />
+    <View
+      role="group"
+      testID="field"
+      className={cn(fieldVariants({ orientation }), className)}
+      {...props}
+    />
   );
 }
 
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
-  return <Label className={className} {...props} />;
+  // `data-slot` rather than `testID`: `Label`'s shared contract has no `testID`, the native half
+  // ignores an attribute it does not know, and the web half spreads it over its own `label`.
+  return <Label data-slot="field-label" className={className} {...props} />;
 }
 
 function FieldDescription({ className, ...props }: TextProps) {
-  return <Text className={cn("text-muted-foreground text-sm", className)} {...props} />;
+  return (
+    <Text
+      testID="field-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -149,14 +170,14 @@ function FieldError({
   const content = children || (messages.length === 1 ? messages[0] : null);
   if (content) {
     return (
-      <Text role="alert" className={classes} {...props}>
+      <Text role="alert" testID="field-error" className={classes} {...props}>
         {content}
       </Text>
     );
   }
   if (messages.length === 0) return null;
   return (
-    <View role="alert" id={props.id} className="gap-1">
+    <View role="alert" testID="field-error" id={props.id} className="gap-1">
       <View role="list" className="gap-1">
         {messages.map((message) => (
           <View key={message} role="listitem" className="flex-row gap-2">
@@ -175,7 +196,13 @@ function FieldError({
  * under the label and not under the checkbox.
  */
 function FieldContent({ className, ...props }: ViewProps) {
-  return <View className={cn("min-w-0 flex-1 flex-col gap-1.5", className)} {...props} />;
+  return (
+    <View
+      testID="field-content"
+      className={cn("min-w-0 flex-1 flex-col gap-1.5", className)}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -185,7 +212,14 @@ function FieldContent({ className, ...props }: ViewProps) {
  * `aria-labelledby` pointing at this `id`.
  */
 function FieldTitle({ className, ...props }: TextProps) {
-  return <Text className={cn("text-foreground text-sm font-medium", className)} {...props} />;
+  // `field-label`, as shadcn's does: it is the label of its group, and styled as one.
+  return (
+    <Text
+      testID="field-label"
+      className={cn("text-foreground text-sm font-medium", className)}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -193,10 +227,14 @@ function FieldTitle({ className, ...props }: TextProps) {
  */
 function FieldSeparator({ className, children, ...props }: ViewProps) {
   return (
-    <View className={cn("relative h-5 w-full justify-center", className)} {...props}>
+    <View
+      testID="field-separator"
+      className={cn("relative h-5 w-full justify-center", className)}
+      {...props}
+    >
       <View className="absolute inset-x-0 top-1/2 h-px bg-border" />
       {children ? (
-        <View className="items-center">
+        <View testID="field-separator-content" className="items-center">
           <Text className="bg-background px-2 text-muted-foreground text-sm">{children}</Text>
         </View>
       ) : null}

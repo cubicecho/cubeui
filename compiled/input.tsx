@@ -32,6 +32,7 @@ import type { ComponentPropsWithoutRef, HTMLInputTypeAttribute, Ref } from "reac
 import {
   INPUT_CLASS,
   type InputHandle,
+  type InputType,
   type InputProps as SharedInputProps,
 } from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
@@ -85,5 +86,5 @@ function Input({
   );
 }
 
-export type { InputHandle, InputType } from "@/components/ui/input-base";
+export type { InputHandle, InputType };
 export { Input };

@@ -74,7 +74,9 @@ export function DisclosureRow({
         aria-controls={isOpen ? contentId : undefined}
         aria-expanded={open}
         onClick={() => onOpenChange(!open)}
-        className="flex min-w-0 flex-1 items-start gap-2 rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        // `bg-transparent` and `p-0` because a bare `<button>` is otherwise drawn in the user
+        // agent's grey wherever Tailwind's preflight is not loaded — and the row is the surface.
+        className="flex min-w-0 flex-1 items-start gap-2 rounded border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <ChevronRight
           aria-hidden
@@ -98,7 +100,7 @@ export function DisclosureRow({
       {isOpen ? (
         <ItemFooter
           id={contentId}
-          className={cn("flex-col items-stretch gap-2 border-t pt-3", contentClassName)}
+          className={cn("min-w-0 flex-col items-stretch gap-2 border-t pt-3", contentClassName)}
         >
           {content}
         </ItemFooter>

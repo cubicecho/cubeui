@@ -51,5 +51,5 @@ function Switch({
   );
 }
 
-export type { SwitchProps } from "@/components/ui/switch-base";
+export type { SwitchProps };
 export { Switch };

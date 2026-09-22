@@ -22,15 +22,17 @@ import { cn } from "@/lib/utils";
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
 
+// `delayDuration` defaults to shadcn's `0`, not Radix's 700ms. `ActionButton` renders its own
+// provider and documents shadcn's default; left to Radix, every icon button waited 700ms.
 function TooltipProvider({
-  delayDuration,
+  delayDuration = 0,
   skipDelayDuration,
   ...props
 }: Wide<TooltipProviderProps, React.ComponentProps<typeof TooltipPrimitive.Provider>>) {
   return (
     <TooltipPrimitive.Provider
       {...props}
-      {...(delayDuration === undefined ? {} : { delayDuration })}
+      delayDuration={delayDuration}
       {...(skipDelayDuration === undefined ? {} : { skipDelayDuration })}
     />
   );

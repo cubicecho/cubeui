@@ -23,6 +23,11 @@
  * `errors`, `Field` takes `orientation="responsive"`, and every part spreads
  * the rest of its props onto its root — `View`/`Text` props here, which the
  * compiler turns into `<div>`/`<span>` props on the web.
+ *
+ * **Each part wears shadcn's `data-slot`**, as a `testID` the compiler turns into
+ * one: `form-field` promises that a project already styling
+ * `[data-slot=field-label]` styles it too, and shadcn's own `Field` variants
+ * select on `[data-slot=field-content]`.
  */
 import { cva, type VariantProps } from "class-variance-authority";
 import type * as React from "react";
@@ -48,6 +53,7 @@ type TextProps = Omit<React.ComponentPropsWithoutRef<"span">, "className"> & {
 function FieldSet({ className, ...props }: ViewProps) {
   return (
     <fieldset
+      data-slot="field-set"
       className={cn("cube-rn-view", "w-full flex-col gap-6", className)}
       {...(props as React.ComponentPropsWithoutRef<"fieldset">)}
     />
@@ -65,6 +71,7 @@ function FieldLegend({
 }: TextProps & { variant?: "legend" | "label" | undefined }) {
   return (
     <legend
+      data-slot="field-legend"
       className={cn(
         "cube-rn-text",
         "mb-3 font-medium text-foreground",
@@ -83,6 +90,7 @@ function FieldLegend({
 function FieldGroup({ className, ...props }: ViewProps) {
   return (
     <div
+      data-slot="field-group"
       className={cn("cube-rn-view", "w-full flex-col gap-4", "@container/field-group", className)}
       {...(props as React.ComponentPropsWithoutRef<"div">)}
     />
@@ -111,6 +119,7 @@ function Field({
     // The `role` is hand-written because a `<fieldset>` has no native counterpart.
     <div
       role="group"
+      data-slot="field"
       className={cn("cube-rn-view", fieldVariants({ orientation }), className)}
       {...(props as React.ComponentPropsWithoutRef<"div">)}
     />
@@ -118,12 +127,15 @@ function Field({
 }
 
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
-  return <Label className={className} {...props} />;
+  // `data-slot` rather than `testID`: `Label`'s shared contract has no `testID`, the native half
+  // ignores an attribute it does not know, and the web half spreads it over its own `label`.
+  return <Label data-slot="field-label" className={className} {...props} />;
 }
 
 function FieldDescription({ className, ...props }: TextProps) {
   return (
     <span
+      data-slot="field-description"
       className={cn("cube-rn-text", "text-muted-foreground text-sm", className)}
       {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
@@ -160,6 +172,7 @@ function FieldError({
     return (
       <span
         role="alert"
+        data-slot="field-error"
         className={cn("cube-rn-text", classes)}
         {...(props as React.ComponentPropsWithoutRef<"span">)}
       >
@@ -169,7 +182,7 @@ function FieldError({
   }
   if (messages.length === 0) return null;
   return (
-    <div role="alert" id={props.id} className="cube-rn-view gap-1">
+    <div role="alert" data-slot="field-error" id={props.id} className="cube-rn-view gap-1">
       <ul className="cube-rn-view gap-1">
         {messages.map((message) => (
           <li key={message} className="cube-rn-view flex-row gap-2">
@@ -190,6 +203,7 @@ function FieldError({
 function FieldContent({ className, ...props }: ViewProps) {
   return (
     <div
+      data-slot="field-content"
       className={cn("cube-rn-view", "min-w-0 flex-1 flex-col gap-1.5", className)}
       {...(props as React.ComponentPropsWithoutRef<"div">)}
     />
@@ -203,8 +217,10 @@ function FieldContent({ className, ...props }: ViewProps) {
  * `aria-labelledby` pointing at this `id`.
  */
 function FieldTitle({ className, ...props }: TextProps) {
+  // `field-label`, as shadcn's does: it is the label of its group, and styled as one.
   return (
     <span
+      data-slot="field-label"
       className={cn("cube-rn-text", "text-foreground text-sm font-medium", className)}
       {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
@@ -217,12 +233,13 @@ function FieldTitle({ className, ...props }: TextProps) {
 function FieldSeparator({ className, children, ...props }: ViewProps) {
   return (
     <div
+      data-slot="field-separator"
       className={cn("cube-rn-view", "relative h-5 w-full justify-center", className)}
       {...(props as React.ComponentPropsWithoutRef<"div">)}
     >
       <div className="cube-rn-view absolute inset-x-0 top-1/2 h-px bg-border" />
       {children ? (
-        <div className="cube-rn-view items-center">
+        <div data-slot="field-separator-content" className="cube-rn-view items-center">
           <span className="cube-rn-text bg-background px-2 text-muted-foreground text-sm">
             {children}
           </span>

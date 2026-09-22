@@ -18,6 +18,7 @@ import {
   INPUT_CLASS,
   type InputHandle,
   type InputProps,
+  type InputType,
   NATIVE_INPUT_MODE,
 } from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
@@ -61,9 +62,5 @@ function Input({
   );
 }
 
-export type {
-  InputHandle,
-  InputProps,
-  InputType,
-} from "@/components/ui/input-base";
+export type { InputHandle, InputProps, InputType };
 export { Input };
