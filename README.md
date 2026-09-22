@@ -745,6 +745,7 @@ npm run registry:build # shadcn build → public/r (web) and public/r/native
 npm run registry:check # collisions, platform-pair drift, empty content
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
+npm run docs:check     # rule 2 of docs/component-conventions.md and the skill agree on every word
 
 npm run storybook      # the RN-vs-compiled comparison, on :3001
 npm run build-storybook
