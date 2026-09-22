@@ -1,4 +1,4 @@
-// Ten things that have to be true before a built registry is installable.
+// Eleven things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -187,6 +187,16 @@
 //
 // Those Storybook packages are also the only exemption from rule 7: an app that asks for a story
 // has Storybook, and declaring it would have the CLI install one over whatever major it pinned.
+//
+// ## 11. A layout is on both platforms
+//
+// The layout shells — the chassis, the page header, the page, the split, the card and the dialog —
+// are written once in `registry/layout/` and the web half is compiled from them. Before that, the
+// web had its own copies and the device had a different `PageHeader` with different props, and the
+// two drifted the way any pair kept by hand does. So a native layout item with no web item beside
+// it is an error (its compile was refused, and the web registry dropped it without failing), and so
+// is a layout in the web `layout` set with no native item, unless it is named in
+// `WEB_ONLY_LAYOUTS` with the reason it cannot be one yet.
 //
 // Run after `npm run registry:build`.
 
@@ -676,6 +686,41 @@ for (const built of BUILT) {
   }
 }
 
+// Rule 11. The layout family is written once, in `registry/layout/`, and the web half is compiled
+// from it. Asked of the two built indexes, because the failure is an item present in one and not
+// the other: a layout whose compile is refused drops out of the web registry quietly, and a shell
+// added to `registry/web/` is a second copy of a thing that should have one.
+const LAYOUT_DIR = "registry/layout/";
+const LAYOUT_BUNDLE = "layout";
+// Layouts in the web bundle with no React Native half yet, and why. Each one is a named debt, not
+// a category: when the reason goes, so does the line.
+const WEB_ONLY_LAYOUTS = {
+  "disclosure-row": "built on the web-only `item`",
+};
+const namesIn = async (built) => {
+  const text = await readFile(path.join(built, "registry.json"), "utf8").catch(() => null);
+  return text === null ? null : JSON.parse(text).items;
+};
+const webItems = await namesIn(BUILT[0]);
+const nativeItems = await namesIn(BUILT[1]);
+const oneSided = [];
+if (webItems && nativeItems) {
+  const onWeb = new Set(webItems.map((i) => i.name));
+  const onNative = new Set(nativeItems.map((i) => i.name));
+  for (const item of nativeItems) {
+    const layout = (item.files ?? []).some((f) => f.path.startsWith(LAYOUT_DIR));
+    if (layout && !onWeb.has(item.name)) {
+      oneSided.push(`"${item.name}" is a layout on React Native and has no compiled web half`);
+    }
+  }
+  const bundle = webItems.find((i) => i.name === LAYOUT_BUNDLE);
+  for (const dependency of bundle?.registryDependencies ?? []) {
+    const name = dependency.split("/").pop();
+    if (onNative.has(name) || name in WEB_ONLY_LAYOUTS) continue;
+    oneSided.push(`"${name}" is in the web \`${LAYOUT_BUNDLE}\` set and has no React Native half`);
+  }
+}
+
 if (collisions.length > 0) {
   console.error("Two files claim one name:\n");
   for (const collision of collisions) console.error(`  ${collision}`);
@@ -819,6 +864,20 @@ if (stories.length > 0) {
   );
 }
 
+if (oneSided.length > 0) {
+  console.error(
+    `${stories.length + collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length + misapplied.length + uncoloured.length > 0 ? "\n" : ""}A layout exists on one platform only:\n`,
+  );
+  for (const one of oneSided) console.error(`  ${one}`);
+  console.error(
+    "\nThe layout family is written once, in `registry/layout/`, and compiled for the web. A layout" +
+      "\nwhose compile was refused drops out of the web registry without failing the build; run" +
+      "\n`npm run compile` for the reason. A layout added to `registry/web/` instead is a second" +
+      "\ncopy to keep in step — write it in `registry/layout/`, or name why it cannot be in" +
+      "\n`WEB_ONLY_LAYOUTS` in this file.",
+  );
+}
+
 if (
   stories.length +
     collisions.length +
@@ -831,7 +890,8 @@ if (
     peerless.length +
     ranges.length +
     misapplied.length +
-    uncoloured.length >
+    uncoloured.length +
+    oneSided.length >
   0
 ) {
   process.exit(1);
@@ -846,6 +906,6 @@ console.log(
     "every built item file is still listed by the index beside it, and every item declares exactly " +
     "the packages its own files import plus their required peers, at one range per package, " +
     "every shared class constant is applied only by the component it is named for, every " +
-    "colour class names a token, and every published story imports only what the consumer's " +
-    "tree will hold.",
+    "colour class names a token, every published story imports only what the consumer's " +
+    "tree will hold, and every layout is on both platforms.",
 );

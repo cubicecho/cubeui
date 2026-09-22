@@ -1,14 +1,17 @@
-import type { ComponentProps, ReactNode, Ref } from "react";
+/**
+ * A whole page — written once here and compiled for the web by `scripts/rn2web`. It is two other
+ * components of this set composed, so it has nothing of its own to translate: the platform
+ * differences all live in the chassis and the header.
+ */
+import type { ReactNode } from "react";
 
 import {
-  type HeaderContentFooter,
+  type HeaderContentFooterProps,
   StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
 
-type PageHeaderProps = ComponentProps<typeof PageHeader>;
-
-type PageLayoutProps = {
+export type PageLayoutProps = {
   /** The page. The only slot that scrolls. */
   content: ReactNode;
   /** What the page is called. Required for the same reason it is on {@link PageHeader}. */
@@ -31,16 +34,16 @@ type PageLayoutProps = {
   /** Whether the *title* is still being fetched. The body is the caller's to place. */
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
-  level?: PageHeaderProps["level"] | undefined;
+  level?: PageHeaderLevel | undefined;
   /** Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. */
   footer?: ReactNode | undefined;
   /**
    * The column the header and body share. `page` for a list or a board, `prose` for settings, a
    * detail page or a form, `full` for a pane that is already inside someone else's column.
    */
-  width?: ComponentProps<typeof HeaderContentFooter>["width"] | undefined;
+  width?: HeaderContentFooterProps["width"];
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
-  contentRef?: Ref<HTMLDivElement> | undefined;
+  contentRef?: HeaderContentFooterProps["contentRef"];
   className?: string | undefined;
   headerClassName?: string | undefined;
   contentClassName?: string | undefined;

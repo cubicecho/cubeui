@@ -111,6 +111,7 @@ function DialogContent({
   showCloseButton = true,
   onEscapeKeyDown,
   onInteractOutside,
+  role,
   children,
 }: DialogContentProps) {
   const close = useContext(DialogCloseContext);
@@ -137,6 +138,7 @@ function DialogContent({
         aria-label="Close"
       />
       <View
+        {...(role === undefined ? {} : { role })}
         className={cn(
           "w-full max-w-lg gap-4 rounded-lg border border-border bg-background p-6",
           className,

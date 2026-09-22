@@ -40,15 +40,17 @@ Install from the registry, do not copy by hand.
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
 
-**The shells below are web-only.** `PageLayout`, `SplitLayout`, `SidebarLayout`, `CardLayout`,
-`DialogLayout`, `FormField`, `useAppForm` and the bound fields, `ActionButton`, `MultiSelect`
-and the rest of the controls are CSS grid tracks, `max-w-(--breakpoint-2xl)` and arbitrary
-variants. Yoga has no grid and NativeWind has no arbitrary variants, so there is nothing to
-author natively and nothing to compile. `@cubeui/page-layout` in an Expo project is a 404, and
-that is the registry telling you the truth rather than shipping a shell that lays out wrong.
+**So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `CardLayout`, `DialogLayout` and `Section` are written once in
+React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
+Vite one alike, with the same props.
 
-**In an Expo app, use the native set instead** — see [Shapes on React Native](#shapes-on-react-native)
-at the end. It is a smaller set with the same vocabulary, not a port of this one.
+**Some web shells are still web-only.** `FormField`, `useAppForm` and the bound fields,
+`ActionButton`, `MultiSelect` and the rest of the controls lean on CSS grid tracks and arbitrary
+variants, which Yoga and NativeWind do not have. In an Expo project those items are a 404, and
+that is the registry telling you the truth rather than shipping a shell that lays out wrong. Use
+the native set for those shapes instead — see [Shapes on React Native](#shapes-on-react-native)
+at the end.
 
 ## Choosing — on the web
 
@@ -187,6 +189,12 @@ views and there is no shell wrapping to hide.
 | The shape you are building | Use | Item |
 | --- | --- | --- |
 | A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
+| The same screen with the web's props, on both halves | `PageLayout` | `@cubeui/page-layout` |
+| Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
+| The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
+| Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
+| A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
+| A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
@@ -200,14 +208,16 @@ views and there is no shell wrapping to hide.
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 
-Two names mean different things across the halves, and both are worth knowing before you grep:
+One name means different things across the halves, and it is worth knowing before you grep:
 
 - **`Form`.** On the web `@cubeui/form-set` is the eight bound-field items and the form component
   is `useAppForm`; on native `@cubeui/form` is one file exporting `Form` and its bound fields
   directly. The item is called `form-set` on the web because `form` is the native component's
   name, and the shadcn CLI resolves a cross-item import by basename — the two cannot share it.
-- **`PageHeader`.** On the web it is its own item, the title block at the top of a page. On native
-  it is a part of `@cubeui/page`, and it is the header *inside* the `Page` shell.
+
+`PageHeader` is one component on both halves: `@cubeui/page-header`. `@cubeui/page` re-exports
+it, so `Page` and `PageLayout` draw the same title block — `title`, `description`, `action`,
+`icon`, `breadcrumbs`, `loading`, and a `level` (default 1) for the heading's rank.
 
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
 `Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Tabs`, `Tooltip`,

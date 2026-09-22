@@ -1,25 +1,27 @@
 /**
- * Copied from `registry/web/page-layout.tsx` by `scripts/rn2web`.
+ * Compiled from `registry/layout/page-layout.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
- * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
- * same passes still ran over it, and for a file already written against the DOM they find nothing
- * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one
- * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one
- * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
-import type { ComponentProps, ReactNode, Ref } from "react";
+/**
+ * A whole page — written once here and compiled for the web by `scripts/rn2web`. It is two other
+ * components of this set composed, so it has nothing of its own to translate: the platform
+ * differences all live in the chassis and the header.
+ */
+import type { ReactNode } from "react";
 
 import {
-  type HeaderContentFooter,
+  type HeaderContentFooterProps,
   StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
 
-type PageHeaderProps = ComponentProps<typeof PageHeader>;
-
-type PageLayoutProps = {
+export type PageLayoutProps = {
   /** The page. The only slot that scrolls. */
   content: ReactNode;
   /** What the page is called. Required for the same reason it is on {@link PageHeader}. */
@@ -42,16 +44,16 @@ type PageLayoutProps = {
   /** Whether the *title* is still being fetched. The body is the caller's to place. */
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
-  level?: PageHeaderProps["level"] | undefined;
+  level?: PageHeaderLevel | undefined;
   /** Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. */
   footer?: ReactNode | undefined;
   /**
    * The column the header and body share. `page` for a list or a board, `prose` for settings, a
    * detail page or a form, `full` for a pane that is already inside someone else's column.
    */
-  width?: ComponentProps<typeof HeaderContentFooter>["width"] | undefined;
+  width?: HeaderContentFooterProps["width"];
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
-  contentRef?: Ref<HTMLDivElement> | undefined;
+  contentRef?: HeaderContentFooterProps["contentRef"];
   className?: string | undefined;
   headerClassName?: string | undefined;
   contentClassName?: string | undefined;

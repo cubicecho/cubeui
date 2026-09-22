@@ -96,6 +96,58 @@ test("a React Native prop with no mapping is refused rather than emitted", () =>
 });
 
 /**
+ * A platform branch written as statements, which is the only way to put two different *elements*
+ * on the two sides — a `ScrollView` on device, a scrolling `<div>` here — without naming either
+ * outside a JSX tag. The native arm has to be gone before the element pass sees it, or the
+ * `ScrollView` compiles into dead code the DOM consumer still downloads.
+ */
+test("an if on Platform.OS keeps the web arm and drops what it made unreachable", () => {
+  const code = ok(
+    "export const A = () => {\n" +
+      '  if (Platform.OS === "web") {\n' +
+      '    return <View className="web" />;\n' +
+      "  }\n" +
+      '  return <ScrollView className="native" />;\n' +
+      "};",
+    "Platform, ScrollView, View",
+  );
+  assert.match(code, /return <div className="cube-rn-view web" \/>;/);
+  assert.equal(code.includes("native"), false, code);
+  assert.equal(code.includes("if ("), false, code);
+});
+
+test("an if on the other platform is dropped, else arm and all", () => {
+  const code = ok(
+    "export const A = () => {\n" +
+      '  let c = "a";\n' +
+      '  if (Platform.OS !== "web") { c = "native"; } else { c = "web"; }\n' +
+      "  return <View className={c} />;\n" +
+      "};",
+    "Platform, View",
+  );
+  assert.match(code, /c = "web";/);
+  assert.equal(code.includes('"native"'), false, code);
+});
+
+test("a type import the ref rewrite used up is dropped", () => {
+  const code = ok(
+    'import type { ElementRef, Ref } from "react";\n' +
+      "export const A = ({ r }: { r: Ref<ElementRef<typeof View>> }) => <View ref={r} />;",
+  );
+  assert.match(code, /import type \{ Ref \} from "react";/);
+  assert.match(code, /Ref<HTMLDivElement>/);
+});
+
+test("a platform && in a class list folds to its operand", () => {
+  const code = ok(
+    'export const A = () => <View className={cn("a", Platform.OS === "web" && "w", Platform.OS !== "web" && "n")} />;',
+    "Platform, View",
+  );
+  assert.match(code, /"a", "w", false/);
+  assert.equal(code.includes('"n"'), false, code);
+});
+
+/**
  * A heading whose rank the caller picks. A literal `aria-level` is an `<hN>`; an expression cannot
  * be one, because the tag is written once at compile time, so the element keeps `role="heading"`
  * and `aria-level` — which is a heading of that rank to assistive technology, and what

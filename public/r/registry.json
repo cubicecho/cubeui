@@ -639,7 +639,7 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/page-header"],
       "files": [
         {
           "path": "compiled/page.tsx",
@@ -682,6 +682,89 @@
       "files": [
         {
           "path": "compiled/route-error.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "header-content-footer",
+      "type": "registry:component",
+      "title": "Header / Content / Footer",
+      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/header-content-footer.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:component",
+      "title": "Page Header",
+      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/page-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page-layout",
+      "type": "registry:component",
+      "title": "Page Layout",
+      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
+      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
+      "files": [
+        {
+          "path": "compiled/page-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "split-layout",
+      "type": "registry:component",
+      "title": "Split Layout",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/split-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "card-layout",
+      "type": "registry:component",
+      "title": "Card Layout",
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
+      "registryDependencies": ["@cubeui/card", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dialog-layout",
+      "type": "registry:component",
+      "title": "Dialog Layout",
+      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/dialog",
+        "@cubeui/header-content-footer",
+        "@cubeui/utils"
+      ],
+      "files": [
+        {
+          "path": "compiled/dialog-layout.tsx",
           "type": "registry:component"
         }
       ]
@@ -762,19 +845,6 @@
         }
       ],
       "dependencies": ["@tanstack/react-form@^1.33.5"]
-    },
-    {
-      "name": "card-layout",
-      "type": "registry:component",
-      "title": "Card Layout",
-      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/skeleton", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/card-layout.tsx",
-          "type": "registry:component"
-        }
-      ]
     },
     {
       "name": "color-field",
@@ -866,24 +936,6 @@
       "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
     },
     {
-      "name": "dialog-layout",
-      "type": "registry:component",
-      "title": "Dialog Layout",
-      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/alert-dialog",
-        "@cubeui/dialog",
-        "@cubeui/header-content-footer",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "compiled/dialog-layout.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
@@ -959,19 +1011,6 @@
         "@cubeui/radio-group-field"
       ],
       "files": []
-    },
-    {
-      "name": "header-content-footer",
-      "type": "registry:component",
-      "title": "Header / Content / Footer",
-      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/header-content-footer.tsx",
-          "type": "registry:component"
-        }
-      ]
     },
     {
       "name": "item",
@@ -1057,32 +1096,6 @@
       ]
     },
     {
-      "name": "page-header",
-      "type": "registry:component",
-      "title": "Page Header",
-      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/skeleton", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/page-header.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "page-layout",
-      "type": "registry:component",
-      "title": "Page Layout",
-      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
-      "files": [
-        {
-          "path": "compiled/page-layout.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "password-field",
       "type": "registry:component",
       "title": "Password Field",
@@ -1141,19 +1154,6 @@
         {
           "path": "compiled/skeleton.tsx",
           "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "split-layout",
-      "type": "registry:component",
-      "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/split-layout.tsx",
-          "type": "registry:component"
         }
       ]
     },

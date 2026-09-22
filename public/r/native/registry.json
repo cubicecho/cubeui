@@ -705,7 +705,7 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/page-header"],
       "files": [
         {
           "path": "registry/layout/page.tsx",
@@ -748,6 +748,89 @@
       "files": [
         {
           "path": "registry/layout/route-error.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "header-content-footer",
+      "type": "registry:component",
+      "title": "Header / Content / Footer",
+      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/header-content-footer.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page-header",
+      "type": "registry:component",
+      "title": "Page Header",
+      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/page-header.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "page-layout",
+      "type": "registry:component",
+      "title": "Page Layout",
+      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
+      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
+      "files": [
+        {
+          "path": "registry/layout/page-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "split-layout",
+      "type": "registry:component",
+      "title": "Split Layout",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/split-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "card-layout",
+      "type": "registry:component",
+      "title": "Card Layout",
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
+      "registryDependencies": ["@cubeui/card", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "dialog-layout",
+      "type": "registry:component",
+      "title": "Dialog Layout",
+      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/dialog",
+        "@cubeui/header-content-footer",
+        "@cubeui/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/layout/dialog-layout.tsx",
           "type": "registry:component"
         }
       ]

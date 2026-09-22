@@ -3,9 +3,19 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
-**Web only**, except `Section`. Everything else in this file is a DOM component with no React
-Native half, so none of it installs in an Expo project. `Section` is one source compiled for both,
-with the same props on each. `SKILL.md`'s last section is the native set.
+**Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs and
+sections are written once in React Native and compiled to the web, so the same item installs in
+a Vite app and an Expo app with the same props. The list-page parts at the end are the
+exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
+device, four things differ, and none of them changes a call site:
+
+- `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
+  `ScrollView` there (a `<div>` on the web), and `contentClassName` styles its content container.
+- An `icon` is not sized for you on a device — there is no `[&_svg]` selector — so pass it at
+  `size-4` yourself (`size-5` in a level 1 or 2 `PageHeader`).
+- A split's two panes are a flex row, not grid tracks. The widths and `stackBelow` read the same.
+- A string or number passed to a slot is wrapped in a `Text` for you, so a bare `"Save"` does not
+  crash a `View`. A node you build yourself still needs its own `Text`.
 
 ## Pages
 
@@ -186,8 +196,8 @@ the slots is spelled the same on each.
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
   hairline between them — the app shell), or `none` (flush, nothing drawn). Do not draw the rule
   yourself with a `border-r` on the sidebar: that is a line between the panes only until the layout
-  stacks, at which point it is a line down one side of the screen. `line` puts the rule in its
-  own track so it turns with the panes.
+  stacks, at which point it is a line down one side of the screen. `line` draws the rule as its
+  own element between the panes, so it turns with them.
 
 ### The things it deliberately does not do
 
