@@ -250,6 +250,7 @@
         "@cubeui/page-layout",
         "@cubeui/query-state",
         "@cubeui/section",
+        "@cubeui/sidebar",
         "@cubeui/split-layout"
       ],
       "files": []

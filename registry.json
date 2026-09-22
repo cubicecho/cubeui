@@ -805,6 +805,19 @@
       ]
     },
     {
+      "name": "sidebar",
+      "type": "registry:component",
+      "title": "Sidebar",
+      "description": "An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/header-content-footer"],
+      "files": [
+        {
+          "path": "registry/layout/sidebar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "card-layout",
       "type": "registry:component",
       "title": "Card Layout",

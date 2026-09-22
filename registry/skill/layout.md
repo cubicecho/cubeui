@@ -3,10 +3,10 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
-**Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs and
-sections are written once in React Native and compiled to the web, so the same item installs in
-a Vite app and an Expo app with the same props. The list-page parts at the end are the
-exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
+**Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
+sections and sidebars are written once in React Native and compiled to the web, so the same item
+installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
+the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
 device, four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -52,8 +52,8 @@ under the header, which is correct — the search row is already the separator.
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
 body's own loading state is the caller's, or `CardLayout`'s.
 
-`PageLayout` does not own the sidebar, the theme toggle, or the route. That is an app shell, and
-shadcn ships `sidebar` for it.
+`PageLayout` does not own the sidebar, the theme toggle, or the route. That is an app shell: put
+a [`Sidebar`](#sidebar) and the page side by side in a `SidebarLayout`.
 
 ## Page shells
 
@@ -226,6 +226,70 @@ between them. It is the wrong shape when the detail is a place you *go* — if t
 `/things/:id` route, keep the route and let the detail be its own page. A `SidebarLayout` that has to
 be told to hide one of its panes on a phone is that decision arriving late.
 
+## Sidebar
+
+```tsx
+<SidebarLayout
+  sidebarWidth="auto"
+  stackBelow="never"
+  divider="none"
+  sidebar={
+    <Sidebar
+      label="Main"
+      header={<Brand />}
+      content={
+        <SidebarSection
+          title="Projects"
+          action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
+          status={<QueryState compact query={projects} what="projects" count={rows.length} />}
+          content={rows.map((p) => (
+            <Link key={p.id} href={`/projects/${p.id}`} asChild>
+              <SidebarNavItem
+                href={`/projects/${p.id}`}
+                label={p.name}
+                icon={<Folder />}
+                count={p.open}
+                active={p.id === current}
+              />
+            </Link>
+          ))}
+        />
+      }
+      footer={<SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />}
+    />
+  }
+  content={page}
+/>
+```
+
+`@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
+Three parts, and only `Sidebar` is required:
+
+- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-sidebar` at a
+  fixed `w-64` with a `border-sidebar-border` rule on the edge facing the page (`side="end"` moves
+  it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
+  sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
+  `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
+  different width is one `w-*` in `className`.
+- **`SidebarSection`** — an overline `title` over a real list: `role="list"` and one
+  `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
+  keyed); each element becomes one item, so a fragment or a wrapper around them is one item
+  holding everything. `status` sits between the title and the list and is where a
+  `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
+  title's heading rank, 2 by default.
+- **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
+  `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
+  `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.
+
+**Routing is the app's.** The row names no router. Wrap it in your router's link with `asChild`
+(expo-router's `Link`), which hands it the press handling; it forwards its ref and every prop it
+does not name. A DOM router with no `asChild` passes its click handler as `onClick` instead —
+react-router's `useLinkClickHandler`, TanStack's `createLink`. With neither, the `<a href>` still
+navigates. `active` is yours to compute from the current route.
+
+Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
+A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
+
 ## Cards
 
 ```tsx
@@ -376,6 +440,9 @@ Two shells for the shape every list route is: a ladder of states, then rows.
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
   The placeholders are `aria-hidden` inside one `role="status"` wrapper announcing "Loading", so
   three cards of placeholder text are not three cards of nothing to read out.
+- **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
+  small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
+  it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
 
 ### DisclosureRow
 

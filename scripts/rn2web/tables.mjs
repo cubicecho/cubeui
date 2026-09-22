@@ -110,6 +110,7 @@ export const NATIVE_TAG_FOR_ROLE = {
   article: "article",
   banner: "header",
   contentinfo: "footer",
+  complementary: "aside",
 };
 
 /**
@@ -282,6 +283,7 @@ export const PROPS_TAG = {
 export const DOM_INTERFACE = {
   a: "HTMLAnchorElement",
   article: "HTMLElement",
+  aside: "HTMLElement",
   button: "HTMLButtonElement",
   div: "HTMLDivElement",
   footer: "HTMLElement",

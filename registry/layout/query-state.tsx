@@ -47,6 +47,7 @@ export function QueryState({
   count,
   empty,
   rows = 3,
+  compact = false,
   className,
 }: {
   query: QueryLike;
@@ -64,6 +65,12 @@ export function QueryState({
   empty?: ReactNode | undefined;
   /** How many placeholder rows stand in for the list while it loads. */
   rows?: number | undefined;
+  /**
+   * The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and
+   * the placeholders as bars the height of a nav row rather than cards. For a list that lives in a
+   * sidebar, where a card-sized error would be taller than the list it replaced.
+   */
+  compact?: boolean | undefined;
   className?: string | undefined;
 }) {
   if (query.isError)
@@ -72,11 +79,18 @@ export function QueryState({
         error={query.error}
         onRetry={() => query.refetch()}
         what={what}
+        compact={compact}
         {...(className === undefined ? {} : { className })}
       />
     );
   if (query.isPending)
-    return <RowSkeleton rows={rows} {...(className === undefined ? {} : { className })} />;
+    return (
+      <RowSkeleton
+        rows={rows}
+        compact={compact}
+        {...(className === undefined ? {} : { className })}
+      />
+    );
   if (count === 0) return <>{empty}</>;
   return null;
 }
@@ -94,13 +108,40 @@ export function QueryError({
   error,
   onRetry,
   what,
+  compact = false,
   className,
 }: {
   error: Error | null;
   onRetry: () => void;
   what: string;
+  /** No card, smaller type, a ghost retry — see `QueryState`'s `compact`. */
+  compact?: boolean | undefined;
   className?: string | undefined;
 }) {
+  // The same three parts — what failed, why, try again — at the size of a nav row. No card, since a
+  // bordered box inside a rail reads as one more row, and the retry is a ghost button so the rail's
+  // only filled control stays the primary action above it.
+  if (compact)
+    return (
+      <View testID="query-error" className={cn("min-w-0 gap-1 px-2 py-1", className)}>
+        <View className="min-w-0 flex-row items-center gap-1.5">
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-destructive" aria-hidden />
+          <Text className="min-w-0 flex-1 font-medium text-destructive text-xs">
+            Could not load {what}
+          </Text>
+        </View>
+        <Text className="text-muted-foreground text-xs">
+          {error?.message || "The server did not answer."}
+        </Text>
+        <View className="flex-row">
+          <Button variant="ghost" size="xs" onPress={onRetry}>
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+            Try again
+          </Button>
+        </View>
+      </View>
+    );
+
   return (
     <Card
       testID="query-error"
@@ -149,11 +190,29 @@ export function QueryError({
  */
 export function RowSkeleton({
   rows = 3,
+  compact = false,
   className,
 }: {
   rows?: number | undefined;
+  /** Bars the height of a nav row instead of cards — see `QueryState`'s `compact`. */
+  compact?: boolean | undefined;
   className?: string | undefined;
 }) {
+  if (compact)
+    return (
+      <View role="status" aria-label="Loading" className={cn("gap-1", className)}>
+        {Array.from({ length: rows }, (_, index) => (
+          <View
+            // biome-ignore lint/suspicious/noArrayIndexKey: placeholders, in a list with no identity
+            key={index}
+            testID="row-skeleton"
+            aria-hidden
+            className="h-8 animate-pulse rounded-md bg-accent"
+          />
+        ))}
+      </View>
+    );
+
   return (
     <View role="status" aria-label="Loading" className={cn("gap-2", className)}>
       {Array.from({ length: rows }, (_, index) => (
