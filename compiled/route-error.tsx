@@ -8,6 +8,28 @@
  * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
+/**
+ * What shows when the tree below a route has thrown.
+ *
+ * Deliberately dependency-free beyond `ui/`: it must not rely on the data
+ * client, the router, or theme state, since any of those could be what failed.
+ *
+ * It is the whole screen and says everything an error boundary needs said, so
+ * the boundary renders it and nothing around it: the root is `role="alert"`,
+ * the raw message for a bug report is `details`, and a second way out (a
+ * reload, a restart) is `actions`.
+ *
+ * ```tsx
+ * <RouteError
+ *   error={error}
+ *   reset={retry}
+ *   describe={describeError}
+ *   details
+ *   actions={<Button variant="ghost" size="sm" onPress={reload}>Reload</Button>}
+ * />
+ * ```
+ */
+import type { ReactNode } from "react";
 import { Button } from "./button";
 import { CircleAlert } from "./icons";
 
@@ -20,6 +42,21 @@ type RouteErrorProps = {
    * rather than letting a stack-trace message reach the screen.
    */
   describe?: (error: unknown) => string;
+  /**
+   * The heading. The default fits a failed fetch and a render crash alike,
+   * which is why it is not "Failed to load" — a boundary catches both.
+   */
+  title?: string;
+  /**
+   * The raw message, in a muted monospace block the user can select and paste
+   * into a bug report. `true` shows `error.message`; a node replaces the block's
+   * contents. Left out when it would say exactly what `describe` already said.
+   * Selectable on device too (`selectable`), where text is not by default. The
+   * block is bordered rather than filled: muted text on `bg-muted` fails contrast.
+   */
+  details?: ReactNode | boolean;
+  /** More buttons beside "Try again" — a reload is the usual one. */
+  actions?: ReactNode;
 };
 
 function friendlyMessage(error: unknown): string {
@@ -39,21 +76,61 @@ function friendlyMessage(error: unknown): string {
   return "An unexpected error occurred.";
 }
 
-export function RouteError({ error, reset, describe = friendlyMessage }: RouteErrorProps) {
+/** What `details={true}` shows: the message as thrown, for whoever files the bug. */
+function rawMessage(error: unknown): string | undefined {
+  if (error instanceof Error) return error.message || undefined;
+  if (typeof error === "string") return error || undefined;
+  return undefined;
+}
+
+export function RouteError({
+  error,
+  reset,
+  describe = friendlyMessage,
+  title = "Something went wrong",
+  details,
+  actions,
+}: RouteErrorProps) {
+  const summary = describe(error);
+  const detail = details === true ? rawMessage(error) : details || undefined;
+  // A plain `Error` is described by its own message, so the default block would print it twice.
+  const shown = detail === summary ? undefined : detail;
+
   return (
-    <div className="cube-rn-view flex-1 items-center justify-center gap-4 px-8 py-20">
+    <div
+      role="alert"
+      data-slot="route-error"
+      className="cube-rn-view flex-1 items-center justify-center gap-4 px-8 py-20"
+    >
       <div className="cube-rn-view rounded-full bg-destructive/10 p-4">
         <CircleAlert className="h-7 w-7 text-destructive" />
       </div>
       <div className="cube-rn-view max-w-sm items-center">
-        <span className="cube-rn-text font-semibold text-foreground">Failed to load</span>
+        <span data-slot="route-error-title" className="cube-rn-text font-semibold text-foreground">
+          {title}
+        </span>
         <span className="cube-rn-text mt-1 text-center text-sm text-muted-foreground">
-          {describe(error)}
+          {summary}
         </span>
       </div>
-      <Button variant="outline" size="sm" onClick={reset}>
-        Try again
-      </Button>
+      {shown ? (
+        <div
+          data-slot="route-error-details"
+          className="cube-rn-view w-full max-w-md rounded-md border px-3 py-2"
+        >
+          {typeof shown === "string" ? (
+            <span className="cube-rn-text font-mono text-xs text-muted-foreground">{shown}</span>
+          ) : (
+            shown
+          )}
+        </div>
+      ) : null}
+      <div className="cube-rn-view flex-row flex-wrap items-center justify-center gap-2">
+        <Button variant="outline" size="sm" onClick={reset}>
+          Try again
+        </Button>
+        {actions}
+      </div>
     </div>
   );
 }

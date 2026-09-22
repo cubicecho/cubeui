@@ -198,7 +198,7 @@ views and there is no shell wrapping to hide.
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
-| A route that threw | `RouteError` | `@cubeui/route-error` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 
 Two names mean different things across the halves, and both are worth knowing before you grep:
 

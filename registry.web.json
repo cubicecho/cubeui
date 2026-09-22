@@ -677,7 +677,7 @@
       "name": "route-error",
       "type": "registry:component",
       "title": "Route Error",
-      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause.",
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).",
       "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
       "files": [
         {
