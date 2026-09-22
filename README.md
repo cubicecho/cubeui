@@ -529,6 +529,38 @@ One file, no build step of its own, no framework and no CDN font. The palette is
 should not fetch a stylesheet to render — and the mark and `favicon.svg` are cubesite's, both
 `currentColor`-driven and so correct in either theme from one file.
 
+### The Storybook, deployed beside the registry
+
+`pages.yml` builds it into `public/storybook`, so it ships in the same artefact the registry does
+and lands at `https://cubicecho.github.io/cubeui/storybook/`. It is **not committed** — 9MB of
+generated bundle with no consumer but that host, and a stale copy in git reads as current — so
+`public/storybook/` is in `.gitignore` and the page is the only thing in `public/` besides `r/`
+that a human is meant to open.
+
+A consuming app composes it with one entry, which is the whole of what mechanism 1 of
+[#45](https://github.com/cubicecho/cubeui/issues/45) asked for:
+
+```ts
+// .storybook/main.ts
+refs: { cubeui: { title: "cubeui", url: "https://cubicecho.github.io/cubeui/storybook" } },
+```
+
+Composition needs exactly one thing from this side — `access-control-allow-origin: *`, which Pages
+sends on every response — and it buys documentation, not a test: the stories render in cubeui's
+iframe under **cubeui's** tokens, so "does `Button` still pass contrast after our `index.css`
+override" is unanswered by it. That question needs a story compiled in the consumer, which is
+mechanism 2 and is real feature work: the stories would have to move into `registry/` or the build
+read two trees, their imports would have to resolve as `@/components/ui/*` in someone else's
+layout, and they would have to stay inside whatever Storybook major the consumer pinned.
+
+**`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's
+`publicDir` defaults to `<root>/public`, and `public/` here is the deployed registry rather than
+this app's assets — so every Storybook build was carrying a second copy of 160 item JSONs, and the
+moment the landing page landed at `public/index.html` it **overwrote Storybook's own**: a static
+build whose index was the registry page and whose UI could not be reached. `.storybook/main.ts`
+sets `config.publicDir = false` in `viteFinal`. Setting `staticDirs: []` does not do it — Storybook
+treats the empty array as unset and Vite's own default still applies.
+
 ### Two tsconfig projects, split by platform
 
 `tsconfig.json` is React Native — `registry/{ui,layout,lib}`, `stories`, `scripts`, `tokens`.

@@ -222,8 +222,33 @@ ${rowsHtml(rows)}
   </tbody>
 </table>
 
+<h2>Storybook</h2>
+
+<p>
+  Every item with a story is at <a href="${HOST}/storybook/">${HOST.replace(/^https:\/\//, "")}/storybook/</a>,
+  rendered in a real browser — the same stories the test run drives, with the a11y addon set to
+  fail rather than warn.
+</p>
+
+<p>
+  A consuming app can put them in its own sidebar with one entry, so someone reading
+  <code>Domain/UploadPanel</code> can click through to the <code>Button</code> it is built from:
+</p>
+
+<pre><code>// .storybook/main.ts
+refs: { cubeui: { title: "cubeui", url: "${HOST}/storybook" } }</code></pre>
+
+<div class="note">
+  <strong>Composed stories render here, under these tokens.</strong> That makes them
+  documentation, not a test of your theme — the question "does <code>Button</code> still pass
+  contrast after our <code>index.css</code> override" is only answered by a story compiled in
+  your app, and shipping stories through the registry is
+  <a href="https://github.com/cubicecho/cubeui/issues/45">tracked separately</a>.
+</div>
+
 <footer>
   <a href="https://github.com/cubicecho/cubeui">github.com/cubicecho/cubeui</a> ·
+  <a href="${HOST}/storybook/">the Storybook</a> ·
   <a href="${HOST}/r/registry.json">the DOM registry index</a> ·
   <a href="${HOST}/r/native/registry.json">the Expo one</a> ·
   part of <a href="https://cubicecho.com">cubicecho</a>

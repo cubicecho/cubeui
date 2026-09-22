@@ -41,6 +41,13 @@ const config: StorybookConfig = {
   },
 
   viteFinal: (config) => {
+    // Vite's `publicDir` defaults to `<root>/public`, and `public/` here is the deployed registry
+    // rather than this app's assets. Every Storybook build was carrying a second copy of 160 item
+    // JSONs, and the moment a landing page landed at `public/index.html` it overwrote Storybook's
+    // own — a static build whose index was the registry page and whose UI could not be reached.
+    // No story reads anything out of `public/`.
+    config.publicDir = false;
+
     config.plugins = [
       reactNativeClassName(),
       tailwind(),

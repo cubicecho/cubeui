@@ -7,3 +7,7 @@ node_modules/
 # way cubeui catches registry drift with `git diff --exit-code -- public/r`.
 
 storybook-static/
+
+# The deployed Storybook. Built into the Pages tree by the workflow, never committed: it is a
+# generated bundle with no consumer but that host, and a stale copy in git reads as current.
+public/storybook/
