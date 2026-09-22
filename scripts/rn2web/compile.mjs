@@ -373,18 +373,34 @@ function transformElement(open, elements, diagnostics) {
   } else if (role === "heading") {
     const levelAttr = find("aria-level");
     const level = literalValue(levelAttr);
-    if (!level || Number(level) < 1 || Number(level) > 6) {
+    const levelInit = levelAttr?.getInitializer();
+    // A rank known only at runtime — `aria-level={level}` in a component whose caller picks it —
+    // cannot become an `<hN>`, because the tag is written once, here. It is not refused either:
+    // `role="heading"` + `aria-level` on the element map's tag is a heading of that rank to every
+    // assistive technology, and it is exactly what react-native-web renders for the same source.
+    // What it is not is an `h2` to a stylesheet or a `querySelector`, which is the trade.
+    const dynamic =
+      level === null &&
+      Node.isJsxExpression(levelInit) &&
+      levelInit.getExpression() !== undefined &&
+      !Node.isNumericLiteral(levelInit.getExpression()) &&
+      !Node.isStringLiteral(levelInit.getExpression());
+    if (dynamic) {
+      // Keep both attributes and the element map's own tag.
+    } else if (!level || Number(level) < 1 || Number(level) > 6) {
       refuse(
         diagnostics,
         roleAttr,
-        '`role="heading"` needs a literal `aria-level` between 1 and 6 — the compiler emits the ' +
-          "heading element, and there is no such thing as a heading of unknown rank on the DOM",
+        '`role="heading"` needs an `aria-level` — a literal between 1 and 6, which the compiler ' +
+          "emits as that heading element, or an expression, which it keeps as `role` + " +
+          "`aria-level`. There is no such thing as a heading of unknown rank on the DOM",
       );
       return false;
+    } else {
+      tag = `h${Number(level)}`;
+      levelAttr.remove();
+      dropRole = true;
     }
-    tag = `h${Number(level)}`;
-    levelAttr.remove();
-    dropRole = true;
   } else if (role && NATIVE_TAG_FOR_ROLE[role]) {
     tag = NATIVE_TAG_FOR_ROLE[role];
     dropRole = true;

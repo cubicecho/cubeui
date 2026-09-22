@@ -1,15 +1,6 @@
-/**
- * Compiled from `registry/layout/section.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
 import type { ReactNode } from "react";
 import * as React from "react";
+import { Text, View } from "react-native";
 import { cn } from "@/lib/utils";
 
 type SectionProps = {
@@ -81,66 +72,59 @@ export function Section({
   const hasHeading = Boolean(title || description || action);
 
   return (
-    <section
-      data-slot="section"
+    <View
+      webAs="section"
+      testID="section"
       {...(title ? { "aria-labelledby": titleId } : {})}
       className={cn(
-        "cube-rn-view",
         "min-w-0 gap-3",
         surface === "card" && "rounded-lg border bg-card p-4 text-card-foreground shadow-sm",
         className,
       )}
     >
       {hasHeading ? (
-        <div
-          data-slot="section-heading"
-          className={cn(
-            "cube-rn-view",
-            "min-w-0 flex-row items-center gap-2",
-            divider && "border-b pb-1",
-          )}
+        <View
+          testID="section-heading"
+          className={cn("min-w-0 flex-row items-center gap-2", divider && "border-b pb-1")}
         >
-          <div className="cube-rn-view min-w-0 flex-1">
+          <View className="min-w-0 flex-1">
             {title ? (
-              <span
-                data-slot="section-title"
-                id={titleId}
+              <Text
+                testID="section-title"
+                nativeID={titleId}
                 role="heading"
                 aria-level={level}
                 className={cn(
-                  "cube-rn-text",
                   "truncate font-semibold text-muted-foreground text-xs uppercase tracking-wider",
                   titleClassName,
                 )}
               >
                 {title}
-              </span>
+              </Text>
             ) : null}
             {description ? (
-              <p
-                data-slot="section-description"
-                className="cube-rn-text mt-1 text-muted-foreground text-sm"
+              <Text
+                webAs="p"
+                testID="section-description"
+                className="mt-1 text-muted-foreground text-sm"
               >
                 {description}
-              </p>
+              </Text>
             ) : null}
-          </div>
+          </View>
           {action ? (
-            <div data-slot="section-action" className="cube-rn-view shrink-0">
+            <View testID="section-action" className="shrink-0">
               {action}
-            </div>
+            </View>
           ) : null}
-        </div>
+        </View>
       ) : null}
 
       {content ? (
-        <div
-          data-slot="section-content"
-          className={cn("cube-rn-view", "min-w-0 gap-4", contentClassName)}
-        >
+        <View testID="section-content" className={cn("min-w-0 gap-4", contentClassName)}>
           {content}
-        </div>
+        </View>
       ) : null}
-    </section>
+    </View>
   );
 }

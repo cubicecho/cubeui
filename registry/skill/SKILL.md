@@ -188,7 +188,8 @@ views and there is no shell wrapping to hide.
 | --- | --- | --- |
 | A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
-| A heading over a group of fields or rows | `SectionHeading` | `@cubeui/section-heading` |
+| A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
+| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A form of any size | `Form` and its bound fields | `@cubeui/form` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |

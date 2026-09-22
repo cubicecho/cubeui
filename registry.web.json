@@ -325,10 +325,23 @@
       ]
     },
     {
+      "name": "section",
+      "type": "registry:component",
+      "title": "Section",
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/section.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
-      "description": "The small muted heading above a section of content.",
+      "description": "The small muted heading above a section of content, with an optional heading `level`.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -1105,19 +1118,6 @@
       "files": [
         {
           "path": "compiled/radio-group-field.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "section",
-      "type": "registry:component",
-      "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/section.tsx",
           "type": "registry:component"
         }
       ]

@@ -14,10 +14,10 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 43 items, pipeline green |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 44 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
 | 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
-| 4 | cubeui's own items ported in as the web-only tier | **done** — 33 web-only items, cubeui fully covered |
+| 4 | cubeui's own items ported in as the web-only tier | **done** — 32 web-only items, cubeui fully covered |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -109,7 +109,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `page`, `detail-page`, `detail-header`, `section-heading` |
+| layout | `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
@@ -407,8 +407,15 @@ Level 3 exists because levels 1 and 2 cannot reach the markup whose semantics *a
 `<section>`, `<nav>`, `<aside>`, `<figure>` have no ARIA role a `<View>` could have carried.
 `registry/lib/web-as.d.ts` augments React Native's `ViewProps` and `TextProps` with an optional
 `webAs`, which the compiler reads and removes; on device React Native drops the unknown prop, so it
-costs one type declaration and no runtime. **Nothing in the registry needs it yet** — every item so
-far was reachable from ARIA it already had — so it is built and typed but unexercised.
+costs one type declaration and no runtime. `section` is the first item to need it: its root is a
+`<View webAs="section">`, named by its title through `aria-labelledby`, which is what a
+region landmark is on the DOM.
+
+`section` also made level 2 give a little. Its title's rank is a prop, and an `<hN>` is chosen when
+the file is compiled, so an `aria-level` that is an expression rather than a literal keeps
+`role="heading"` + `aria-level` on the element map's tag — a `<span role="heading" aria-level={level}>`,
+which is the same heading to assistive technology and exactly what react-native-web renders for the
+same source. A literal still becomes the element; a heading with no `aria-level` is still refused.
 
 Level 4 still runs the same passes. That surfaced the second reason it has to: `file-picker.web.tsx`
 reaches for a React Native `<Text>`, which is free inside an Expo app on web and would have been the
@@ -472,11 +479,11 @@ without either weakening the rule or carrying a marker field that has to be kept
 `registry/web/ui/` mirrors `registry:ui` vs `registry:component` so `item` still installs to
 `components/ui/` where cubeui's consumers already have it.
 
-**And the published item says so.** The tier was invisible from outside this repo — `section` has
+**And the published item says so.** The tier was invisible from outside this repo — `section` had
 no native half, `card` does, and their item JSON was the same shape down to both shipping one file
 out of `compiled/` — so the only ways to tell were installing it and reading the file header,
 probing `/r/native/<name>.json` for a 404, or reading this table. `registry.mjs` now appends
-*"Web-only: no React Native half."* to each of the 33 descriptions in the web registry, which is
+*"Web-only: no React Native half."* to each of the web-only descriptions in the web registry, which is
 the one field already published and already printed by the CLI at install time. It is appended
 rather than written into `registry.web-only.json`, so the 29th item cannot be the one that forgets.
 In the native registry the item simply is not there, which says it more plainly.

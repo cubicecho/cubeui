@@ -3,8 +3,9 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
-**Web only.** Everything in this file is a DOM component with no React Native half, so
-none of it installs in an Expo project. `SKILL.md`'s last section is the native set.
+**Web only**, except `Section`. Everything else in this file is a DOM component with no React
+Native half, so none of it installs in an Expo project. `Section` is one source compiled for both,
+with the same props on each. `SKILL.md`'s last section is the native set.
 
 ## Pages
 
@@ -308,11 +309,18 @@ A heading over a group of fields or rows, inside a page or a card.
 />
 ```
 
-- The title is a real `<h2>`, and the level is fixed on purpose: `PageHeader` owns the `h1`, so
-  this is always the one below it. There is no `level` prop, because it would be an invitation to
-  get that wrong. A screen reader's heading list is how a form of thirty fields is navigated.
-- It draws **no surface** — no border, no padding box. Wrapping the group in a `Card` stays a
-  decision at the call site, and `CardLayout` is the component that owns a surface.
+- One source for both platforms: the same item is `@cubeui/section` in `/r/web` and `/r/native`.
+- The title is a heading of rank `level`, **2 by default**: `PageHeader` owns the `h1`, so a
+  section on a page is the one below it. Nested in another section, or in a dialog whose title is
+  the `h2`, pass `level={3}`. Choose it by where the section sits, never by how big the text should
+  look — the text is the same size at every level. On the web it is `role="heading"` +
+  `aria-level` rather than an `<hN>` element (same heading to a screen reader; style it by
+  `data-slot="section-title"`, not by `h2`).
+- The root is a `<section>` on the web, named by its title, so a titled section is a `region`
+  landmark. There is nothing to add for that — do not wrap it in another `role="region"`.
+- It draws **no surface** by default. `surface="card"` puts the whole group on a card (border,
+  background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
+  the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
 - It is the smallest thing in the registry and it exists because three projects wrote
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
