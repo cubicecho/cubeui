@@ -17,8 +17,17 @@
  *   for containers that set their own colour, and the call site's own `text-*`
  *   overrides both.
  *
- * This is the set the registry's own components need, not an exhaustive one. It
- * is copied into your tree, so add to it — but **add to both files**: the web
+ * This is the set the registry's own components need, plus a short tail that no
+ * component here uses and every app does: `Play`, `Pause`, `Square`, `Sun` and
+ * `Moon` — transport controls and a theme toggle. They are the names a consumer
+ * reached for first and had to go around this module for, and an icon imported
+ * straight from `lucide-react-native` is one that missed `cssInterop`, so
+ * `className` does nothing to it and the sizing and colour have to be written
+ * as props. A barrel that is only what this registry happens to need is a barrel
+ * people route around; these five are the cheapest way to find out that is what
+ * was happening.
+ *
+ * It is copied into your tree, so add to it — but **add to both files**: the web
  * counterpart must export the same names, and TypeScript will not tell you it
  * does not, because it only ever resolves the native file. `npm run
  * registry:check` is what catches a name that exists on one platform only.
@@ -44,11 +53,16 @@ import ClockSource from "lucide-react-native/icons/clock";
 import CopySource from "lucide-react-native/icons/copy";
 import DownloadSource from "lucide-react-native/icons/download";
 import LoaderCircleSource from "lucide-react-native/icons/loader-circle";
+import MoonSource from "lucide-react-native/icons/moon";
+import PauseSource from "lucide-react-native/icons/pause";
 import PencilSource from "lucide-react-native/icons/pencil";
+import PlaySource from "lucide-react-native/icons/play";
 import PlusSource from "lucide-react-native/icons/plus";
 import RefreshCwSource from "lucide-react-native/icons/refresh-cw";
 import SearchSource from "lucide-react-native/icons/search";
 import SettingsSource from "lucide-react-native/icons/settings";
+import SquareSource from "lucide-react-native/icons/square";
+import SunSource from "lucide-react-native/icons/sun";
 import Trash2Source from "lucide-react-native/icons/trash-2";
 import TriangleAlertSource from "lucide-react-native/icons/triangle-alert";
 import Undo2Source from "lucide-react-native/icons/undo-2";
@@ -91,11 +105,16 @@ export const Clock = icon(ClockSource);
 export const Copy = icon(CopySource);
 export const Download = icon(DownloadSource);
 export const LoaderCircle = icon(LoaderCircleSource);
+export const Moon = icon(MoonSource);
+export const Pause = icon(PauseSource);
 export const Pencil = icon(PencilSource);
+export const Play = icon(PlaySource);
 export const Plus = icon(PlusSource);
 export const RefreshCw = icon(RefreshCwSource);
 export const Search = icon(SearchSource);
 export const Settings = icon(SettingsSource);
+export const Square = icon(SquareSource);
+export const Sun = icon(SunSource);
 export const Trash2 = icon(Trash2Source);
 export const TriangleAlert = icon(TriangleAlertSource);
 export const Undo2 = icon(Undo2Source);
