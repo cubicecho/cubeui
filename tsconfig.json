@@ -25,7 +25,7 @@
     "paths": {
       // The emitted palette, mapped where a consumer installs it, so this repo
       // imports it by the same specifier its consumers will.
-      "@/lib/theme": ["./dist/theme.ts"],
+      "@/lib/cubeui-theme": ["./dist/cubeui-theme.ts"],
       "@/lib/*": ["./registry/lib/*"],
       "@/components/*": ["./registry/*", "./registry/layout/*", "./registry/ui/*"]
     }

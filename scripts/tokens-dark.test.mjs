@@ -31,10 +31,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
  * this compiler, and lightningcss cannot parse them standalone. Stripping them leaves
  * exactly the part under test: the two variable blocks.
  */
-const stylesheet = async () => {
-  const css = readFileSync(join(root, "dist/tokens.native.css"), "utf8")
-    .replace(/^@import.*$/gm, "")
-    .replace(/@theme inline \{[\s\S]*?\n\}/m, "");
+const stylesheet = async (source = readFileSync(join(root, "dist/tokens.native.css"), "utf8")) => {
+  const css = source.replace(/^@import.*$/gm, "").replace(/@theme inline \{[\s\S]*?\n\}/m, "");
   return (await compile(css)).stylesheet();
 };
 
@@ -60,4 +58,47 @@ test("the dark block did not become a class style", async () => {
   // tokens dark and strand the rest here rather than failing the check above.
   const styles = ((await stylesheet()).s ?? []).map(([name]) => name);
   assert.deepEqual(styles, [], `the stylesheet should define no classes, found: ${styles}`);
+});
+
+/** The body of the first block opened by `selector`, one declaration per entry. */
+const declarations = (css, selector) => {
+  const start = css.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `no \`${selector}\` block in dist/tokens.native.css`);
+  const body = css.slice(start, css.indexOf("}", start));
+  return body.match(/--[\w-]+: [^;]+;/g) ?? [];
+};
+
+/**
+ * The rules that exist for Expo *web* and nothing else: the `box-sizing` reset raw DOM controls
+ * need, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
+ * safe to ship in the one stylesheet because the native compiler drops them — and the spellings
+ * that look equivalent do not get dropped: `:root.dark` fails the compile, `html.dark` becomes a
+ * class style. So what is asserted is the compiler's own output, with and without them.
+ */
+const WEB_ONLY = [
+  /^\*,\n::before,\n::after \{[\s\S]*?\n\}/m,
+  /^:is\(html\.(dark|light)\) \{[\s\S]*?\n\}/gm,
+];
+
+test("the web-only rules compile to nothing on native", async () => {
+  const css = readFileSync(join(root, "dist/tokens.native.css"), "utf8").replace(
+    /\/\*[\s\S]*?\*\//g,
+    "",
+  );
+  const without = WEB_ONLY.reduce((acc, re) => acc.replace(re, ""), css);
+
+  assert.match(css, /^\*,\n::before,\n::after \{\n {2}box-sizing: border-box;\n\}/m);
+  assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 2);
+  assert.equal(/box-sizing|:is\(html/.test(without), false, "the strip missed something");
+  assert.deepEqual(await stylesheet(css), await stylesheet(without));
+});
+
+test("the manual override carries the whole palette, in both directions", () => {
+  const css = readFileSync(join(root, "dist/tokens.native.css"), "utf8");
+  const system = css.slice(css.indexOf("@media (prefers-color-scheme: dark)"));
+  const lightRoot = declarations(css, ":root").filter((d) => !d.startsWith("--radius:"));
+
+  assert.equal(lightRoot.length, names.length);
+  assert.deepEqual(declarations(css, ":is(html.light)"), lightRoot);
+  assert.deepEqual(declarations(css, ":is(html.dark)"), declarations(system, ":root"));
 });

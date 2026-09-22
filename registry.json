@@ -20,7 +20,7 @@
           "target": "~/cubeui-tokens.css"
         },
         {
-          "path": "dist/theme.ts",
+          "path": "dist/cubeui-theme.ts",
           "type": "registry:lib"
         }
       ]

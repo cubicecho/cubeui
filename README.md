@@ -28,14 +28,15 @@ consumers already map, so the flip is a merge rather than a migration — see
 
 ## Stage 1 — tokens
 
-`tokens/palette.mjs` is the single source of truth: 18 shadcn token names in light and dark, stored as
-OKLCH components. `npm run tokens:build` emits three encodings of it into `dist/`:
+`tokens/palette.mjs` is the single source of truth: 27 shadcn token names in light and dark, stored as
+OKLCH components — the 18 cubeui has always carried, plus `destructive-foreground` and shadcn's eight
+`sidebar-*` tokens. `npm run tokens:build` emits three encodings of it into `dist/`:
 
 | Output | Encoding | For |
 |---|---|---|
 | `tokens.web.css` | `oklch()` | Tailwind 4 on the web |
 | `tokens.native.css` | hex / `rgba()` | NativeWind 5 on device |
-| `theme.ts` | JS strings | RN props that take a colour |
+| `cubeui-theme.ts` | JS strings | RN props that take a colour |
 
 Three encodings because **React Native's style engine cannot parse `oklch()` at runtime**, and because
 RN props like `placeholderTextColor`, icon tints and SVG fills are plain strings that cannot read a CSS
@@ -51,6 +52,26 @@ style, scoping the variables to whatever subtree gets `className="dark"` rather 
 native follows the **system** appearance, and an in-app toggle is `Appearance.setColorScheme("dark")`
 rather than a class on a wrapper. That is the one place these two platforms' theming does not look
 alike, and open decision 7 is where it was found.
+
+**An Expo web build gets the class override as well.** Nothing inside a web page can move
+`prefers-color-scheme`, so a light / dark / system picker there needs a class that beats the media
+query in both directions. The native stylesheet ends with two more palette blocks,
+`:is(html.dark) { … }` and `:is(html.light) { … }`, generated like the rest: `class="dark"` or
+`class="light"` on `<html>` wins over the system, and no class follows it. The spelling is the one
+that works on both platforms. `:root.dark` — what an app would write by hand — fails the native
+compile outright ("Class-qualified :root selectors are unsupported on native"), and `.dark` /
+`html.dark` compile into the class style open decision 7 removed. `:is(html.dark)` is (0,1,1), so it
+outranks the media query's `:root`, and react-native-css drops it without a word;
+`scripts/tokens-dark.test.mjs` asserts the compiled native output is identical with and without it.
+
+**The native stylesheet also carries the one line of preflight a web build needs:**
+`*, ::before, ::after { box-sizing: border-box; }`. Preflight itself stays out — it would fight
+react-native-web's unlayered reset — but it was the only thing setting `border-box` on `*`.
+react-native-web sets it on every element it renders, so a `View` never noticed; a `.web.tsx` half
+that renders a raw `<input>` or `<textarea>` fell back to `content-box`, and an `h-10 py-2` input
+drew 58px tall beside a 40px button. It lives here rather than as `box-border` on each raw-DOM class
+so the next raw-DOM half is covered too. Yoga is always border-box, and the native compiler drops
+the rule. `stories/tokens.stories.tsx` measures the input beside the button.
 
 ### Why this exists, in one table
 
@@ -103,8 +124,10 @@ choice with its own permission flow, so the registry ships the contract and the 
 rather than a control that silently opens nothing.
 
 The `tokens` item installs `dist/tokens.native.css` as `cubeui-tokens.css` at the project root —
-`@import` it from the app's own `global.css` — and `dist/theme.ts` as `@/lib/theme`, for the RN
-props that take a colour as a string and cannot read a CSS variable.
+`@import` it from the app's own `global.css` — and `dist/cubeui-theme.ts` as `@/lib/cubeui-theme`,
+for the RN props that take a colour as a string and cannot read a CSS variable. The name is
+namespaced on purpose: a `registry:lib` lands in the consumer's `lib/` by basename, and it used to be
+`theme.ts`, which overwrote an app's own `lib/theme.ts` on `shadcn add` without asking.
 
 ### What the NativeWind 4 → 5 port actually changed
 
@@ -148,6 +171,15 @@ ships silently:
    `public/r/status-chip.json` in place, complete and still served at its URL, with the index
    already correct and the orphan colliding with nothing — so every other check here passed. Since
    `public/` is committed, this one reports rather than deleting, and the fix is `git rm`.
+
+It also holds that **every colour class names a token** (rule 9 in the script). Tailwind generates
+nothing for a colour its theme does not hold and says nothing either — the class stays in the markup
+and the element inherits. `button`'s `destructive` variant and `toast`'s error tone both wore
+`text-destructive-foreground` while the palette had no such token. `scripts/colour-classes.mjs`
+reads every `text-*`, `bg-*`, `border-*` (and `ring-*`, `fill-*`, `stroke-*`, `outline-*`) colour
+out of the string literals in `registry/` — through the TypeScript parser, so TSDoc that talks about
+classes is not read as markup — and each has to be a token both stylesheets define or a colour
+Tailwind ships.
 
 All five novel checks are negative-tested: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -663,6 +695,13 @@ not on disk. It is a transition-period guard: when cubeui is archived, delete it
    web-only shells" work. At that point the choice is the main palette (byte-parity is gone by then,
    or the check has been) or a separate `tokens-sidebar` item, which keeps the main blocks untouched
    and is the cheaper answer if only one app wants a sidebar. Not before.
+
+   **It fired, and the answer was the main palette.** Every cubicecho app's sidebar uses the eight
+   tokens, telos was defining all of them in its own `global.css` to keep working, and a sidebar
+   layout is coming here next. A separate item would have been one more thing each of those apps had
+   to know to install. `npm run parity` now compares around the additions — every token cubeui has
+   must still match it in value and order, and a token cubeui lacks is not drift — so the
+   transition-period guard survives the palette growing.
 3. ~~**Whether the `.web.tsx` split survives Stage 3.**~~ **Settled by the spike: it survives, as the
    escape hatch it already is.** Every web half kept so far is one the compiler could not have
    produced — `input.web.tsx` exists for `type="time"` and `min`/`max`, `label.web.tsx` for the radix

@@ -11,12 +11,15 @@
  *   exists in this shape. `ai_tools/min-agent/mobile/global.css` discovered it the
  *   hard way and hand-converted the palette; that hand conversion has since
  *   drifted from cubeui in three places, which is the drift this package ends.
- * - `theme.ts` needs plain JS strings, because RN props that take a colour
+ * - `cubeui-theme.ts` needs plain JS strings, because RN props that take a colour
  *   (`placeholderTextColor`, icon tints, navigator chrome, SVG fills) are strings
  *   and cannot read a CSS variable.
  *
  * Order is significant: the web emitter reproduces `cubeui/preview/index.css`
- * byte for byte, and that file lists the tokens in this order.
+ * byte for byte for the tokens that file has, and lists them in its order.
+ * `destructive-foreground` and the eight `sidebar-*` tokens are this repo's
+ * additions — shadcn's own set, which cubeui never carried — and
+ * `check-cubeui-parity.mjs` compares around them.
  *
  * `a` is alpha in [0,1] and is omitted when opaque.
  */
@@ -43,9 +46,18 @@ export const light = {
   accent: { l: 0.97, c: 0, h: 0 },
   "accent-foreground": { l: 0.205, c: 0, h: 0 },
   destructive: { l: 0.577, c: 0.245, h: 27.325 },
+  "destructive-foreground": { l: 1, c: 0, h: 0 },
   border: { l: 0.922, c: 0, h: 0 },
   input: { l: 0.922, c: 0, h: 0 },
   ring: { l: 0.708, c: 0, h: 0 },
+  sidebar: { l: 0.985, c: 0, h: 0 },
+  "sidebar-foreground": { l: 0.145, c: 0, h: 0 },
+  "sidebar-primary": { l: 0.205, c: 0, h: 0 },
+  "sidebar-primary-foreground": { l: 0.985, c: 0, h: 0 },
+  "sidebar-accent": { l: 0.97, c: 0, h: 0 },
+  "sidebar-accent-foreground": { l: 0.205, c: 0, h: 0 },
+  "sidebar-border": { l: 0.922, c: 0, h: 0 },
+  "sidebar-ring": { l: 0.708, c: 0, h: 0 },
 };
 
 /** @type {Record<string, Oklch>} */
@@ -65,9 +77,20 @@ export const dark = {
   accent: { l: 0.371, c: 0, h: 0 },
   "accent-foreground": { l: 0.985, c: 0, h: 0 },
   destructive: { l: 0.704, c: 0.191, h: 22.216 },
+  // Dark text, not white: dark `destructive` is a light coral, and white on it is 2.89:1 — short
+  // of the 4.5:1 a button label needs. Near-black is 6.85:1. Light mode's white is 4.77:1.
+  "destructive-foreground": { l: 0.145, c: 0, h: 0 },
   border: { l: 1, c: 0, h: 0, a: 0.1 },
   input: { l: 1, c: 0, h: 0, a: 0.15 },
   ring: { l: 0.556, c: 0, h: 0 },
+  sidebar: { l: 0.205, c: 0, h: 0 },
+  "sidebar-foreground": { l: 0.985, c: 0, h: 0 },
+  "sidebar-primary": { l: 0.488, c: 0.243, h: 264.376 },
+  "sidebar-primary-foreground": { l: 0.985, c: 0, h: 0 },
+  "sidebar-accent": { l: 0.269, c: 0, h: 0 },
+  "sidebar-accent-foreground": { l: 0.985, c: 0, h: 0 },
+  "sidebar-border": { l: 1, c: 0, h: 0, a: 0.1 },
+  "sidebar-ring": { l: 0.556, c: 0, h: 0 },
 };
 
 /** The token names, in emission order. Both maps must carry all of them. */
