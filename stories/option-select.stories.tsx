@@ -218,6 +218,39 @@ export const AnOptionThatIsNotALaneIsNotDrawnAsOne: Story = {
   },
 };
 
+/**
+ * And the rows are rows. The bug this measures against was invisible to every query in this file:
+ * each option was in the document, had its role, had its name, and was one pixel tall — `SelectItem`
+ * wore `SELECT_SEPARATOR_CLASS` beside its own classes, `cn` is tailwind-merge and last-wins, so
+ * `h-px` took the height. `registry:check` rule 8 catches that authoring mistake at the source; this
+ * catches anything else that arrives at the same geometry.
+ *
+ * `offsetHeight` and not `getBoundingClientRect`, because the menu is mid-`zoom-in-95` when the
+ * listbox first resolves and a transform would scale the measurement. Layout height ignores it.
+ */
+export const RowsAreRowsAndTheRuleIsAHairline: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
+      // `:not([role="option"])` because the bug being measured for puts the separator's own class
+      // on every row, and without it this finds a row and reports its height as the rule's.
+      const rule = list.querySelector<HTMLElement>(
+        `:not([role="option"]).${SELECT_SEPARATOR_CLASS.split(" ").pop()}`,
+      );
+      expect(rule).not.toBeNull();
+      // A hairline. Loose enough to survive a border-width change, tight enough that no padding
+      // scale in this registry produces it.
+      expect((rule as HTMLElement).offsetHeight).toBeLessThanOrEqual(2);
+
+      for (const option of within(list).getAllByRole("option")) {
+        // A thing a finger can land on. Well under the smallest row this registry draws, and well
+        // over the one pixel the bug drew.
+        expect(option.offsetHeight).toBeGreaterThan(16);
+      }
+    });
+  },
+};
+
 /** And options sharing a `group` are drawn under it, in the order they were given. */
 export const AGroupIsAHeadingOverItsOptions: Story = {
   args: {},

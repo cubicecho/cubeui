@@ -1,4 +1,4 @@
-// Seven things that have to be true before a built registry is installable.
+// Eight things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -129,6 +129,27 @@
 // them. Two items asking for two ranges of one package is a single install whose result depends on
 // which item the consumer added last.
 //
+// ## 8. A shared class constant is applied by the component it is named for
+//
+// A `-base.ts` is the contract the two platforms implement, and the class constants in it are the
+// part of that contract that is a *string* — so misapplying one is not a type error anywhere. It
+// shipped: `select.web.tsx`'s `SelectItem` wore `SELECT_ITEM_CLASS`, `SELECT_ITEM_TEXT_CLASS`,
+// `SELECT_LABEL_CLASS` **and** `SELECT_SEPARATOR_CLASS`, and since `cn` is tailwind-merge and the
+// separator's `h-px` was last, every row in every select menu on the web half was one pixel tall.
+//
+// Nothing caught it. It typechecks, it builds, both guards above pass, and there is no story
+// asserting the height of a menu row — so it reached a consumer, who found it by opening a menu.
+// This is the cheapest of the three answers that issue proposed, and it is the one that is an
+// invariant rather than a test: the names already say who owns what, and the rule is just that
+// they mean it.
+//
+// A part is claimed when a component named for it exists — `SELECT_ITEM_CLASS` is claimed because
+// `SelectItem` does, `TOOLTIP_TEXT_CLASS` is not because there is no `TooltipText`. A claimed
+// component may apply its own part's constants and any unclaimed one; applying another claimed
+// part's is the error. That is what leaves `Switch` free to wear both `SWITCH_TRACK_CLASS` and
+// `SWITCH_THUMB_CLASS` — it is one component drawing two parts, and neither part has a component
+// of its own to belong to.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -196,6 +217,7 @@ const empties = [];
 const mismatched = [];
 const ranges = [];
 const peerless = [];
+const misapplied = [];
 let checked = 0;
 
 /** `input.web.tsx` and `input-base.ts` are both the `input` item. */
@@ -241,6 +263,56 @@ function exportsOf(source) {
   return names;
 }
 
+/**
+ * The class constants a `-base.ts` exports, keyed by the part of the component each belongs to.
+ *
+ * `SELECT_ITEM_CLASS` and `SELECT_ITEM_TEXT_CLASS` are both the `ITEM` part: the second is the
+ * text half of the same row, split out because native does not inherit colour. A trailing `_TEXT`
+ * is therefore stripped — unless it is the whole remainder, as in `TOOLTIP_TEXT_CLASS`, which
+ * names the text of the item itself and not a part called "text".
+ */
+function classPartsOf(source, item) {
+  const prefix = `${item.replace(/-/g, "_").toUpperCase()}_`;
+  const parts = new Map();
+  for (const [, name] of source.matchAll(/^export const ([A-Z][A-Z0-9_]*_CLASS)\b/gm)) {
+    if (!name.startsWith(prefix) && name !== `${prefix.slice(0, -1)}_CLASS`) continue;
+    const middle = name.slice(prefix.length, -"_CLASS".length);
+    const part = middle.endsWith("_TEXT") ? middle.slice(0, -"_TEXT".length) : middle;
+    parts.set(name, part);
+  }
+  return parts;
+}
+
+/** `select` + `ITEM` -> `SelectItem`; `select` + `` -> `Select`. */
+function componentFor(item, part) {
+  const pascal = (s) =>
+    s
+      .split(/[-_]/)
+      .filter(Boolean)
+      .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
+      .join("");
+  return pascal(item) + pascal(part);
+}
+
+/**
+ * Each top-level declaration in a module, as `name -> its text`.
+ *
+ * Split on column-zero `function`/`const`, which is what these files look like because biome
+ * formats them — a nested declaration is indented and stays inside its parent's slice, which is
+ * the behaviour this wants. It is a text scan and not a parse for the same reason `exportsOf`
+ * above is: this runs over the web half, whose imports resolve only in a tree the native side
+ * does not have.
+ */
+function declarationsIn(source) {
+  const found = [];
+  const starts = [...source.matchAll(/^(?:export\s+)?(?:function|const)\s+(\w+)/gm)];
+  for (const [index, match] of starts.entries()) {
+    const end = starts[index + 1]?.index ?? source.length;
+    found.push([match[1], source.slice(match.index, end)]);
+  }
+  return found;
+}
+
 const dirs = (await readdir(SOURCES, { withFileTypes: true })).filter((d) => d.isDirectory());
 const seen = new Map();
 
@@ -259,6 +331,44 @@ for (const dir of dirs) {
       );
     }
     seen.set(item, dir.name);
+  }
+
+  // Rule 8. A class constant is applied by the component it is named for.
+  for (const base of files.filter((f) => f.endsWith("-base.ts"))) {
+    const item = itemName(base);
+    const parts = classPartsOf(await readFile(path.join(here, base), "utf8"), item);
+    if (parts.size === 0) continue;
+
+    const implementations = files.filter(
+      (f) => itemName(f) === item && f !== base && f.endsWith(".tsx"),
+    );
+    const sources = await Promise.all(
+      implementations.map(async (f) => [f, await readFile(path.join(here, f), "utf8")]),
+    );
+
+    // A part is claimed only where a component of that name exists, on either half.
+    const claimed = new Set();
+    for (const part of new Set(parts.values())) {
+      const component = componentFor(item, part);
+      if (sources.some(([, text]) => declarationsIn(text).some(([n]) => n === component))) {
+        claimed.add(part);
+      }
+    }
+
+    for (const [file, text] of sources) {
+      for (const [name, body] of declarationsIn(text)) {
+        const own = [...claimed].find((part) => componentFor(item, part) === name);
+        if (own === undefined) continue;
+        for (const [constant, part] of parts) {
+          if (part === own || !claimed.has(part)) continue;
+          if (!new RegExp(`\\b${constant}\\b`).test(body)) continue;
+          misapplied.push(
+            `${here}/${file}: \`${name}\` applies \`${constant}\`, which belongs to ` +
+              `\`${componentFor(item, part)}\``,
+          );
+        }
+      }
+    }
   }
 
   for (const web of files.filter((f) => f.endsWith(".web.tsx"))) {
@@ -507,6 +617,19 @@ if (ranges.length > 0) {
   );
 }
 
+if (misapplied.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length > 0 ? "\n" : ""}A component wears another component's class:\n`,
+  );
+  for (const one of misapplied) console.error(`  ${one}`);
+  console.error(
+    "\n`cn` is tailwind-merge, so the last class of a property wins and the extra one is simply" +
+      "\nobeyed. This shipped: every row in every web select menu was `h-px` — one pixel tall —" +
+      "\nbecause `SelectItem` also wore `SELECT_SEPARATOR_CLASS`. Nothing else here can see it:" +
+      "\na class name is a string, and no story asserts the height of a menu row.",
+  );
+}
+
 if (
   collisions.length +
     drift.length +
@@ -516,7 +639,8 @@ if (
     orphans.length +
     mismatched.length +
     peerless.length +
-    ranges.length >
+    ranges.length +
+    misapplied.length >
   0
 ) {
   process.exit(1);
@@ -529,5 +653,6 @@ console.log(
     "names, every platform pair exports the same set, every npm dependency carries a version " +
     `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
     "every built item file is still listed by the index beside it, and every item declares exactly " +
-    "the packages its own files import plus their required peers, at one range per package.",
+    "the packages its own files import plus their required peers, at one range per package, and " +
+    "every shared class constant is applied only by the component it is named for.",
 );
