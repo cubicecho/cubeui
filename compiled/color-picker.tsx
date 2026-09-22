@@ -75,6 +75,22 @@ export function isHexColor(value: string): boolean {
   return HEX.test(value);
 }
 
+/** `#f80` and `#FF8800` are one colour. Shorthand doubles each digit; it does not pad. */
+function expand(value: string): string {
+  const digits = value.replace("#", "").toLowerCase();
+  return digits.length === 3
+    ? digits
+        .split("")
+        .map((digit) => digit + digit)
+        .join("")
+    : digits;
+}
+
+/** Whether two strings are the same colour, however each was spelled. */
+function sameColor(a: string, b: string): boolean {
+  return isHexColor(a) && isHexColor(b) && expand(a) === expand(b);
+}
+
 /**
  * The props, in this registry's vocabulary and in the one cubeui's popover picker shipped with
  * on `main`, so a call site written against either compiles. The aliases are exactly that —
@@ -188,7 +204,7 @@ export function ColorPicker({
         )}
       >
         {palette.map((color) => {
-          const selected = current.toLowerCase() === color.toLowerCase();
+          const selected = sameColor(current, color);
           return (
             <button
               type="button"
