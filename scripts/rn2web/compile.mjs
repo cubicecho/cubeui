@@ -167,6 +167,47 @@ function foldPlatform(sourceFile) {
     changed = true;
   }
 
+  // `true && a` is `a` and `false && a` is `false`; `||` the mirror. The class-list idiom
+  // `cn(Platform.OS === "web" && "animate-pulse")` is what leaves these behind.
+  for (const bin of sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression)) {
+    if (bin.wasForgotten()) continue;
+    const op = bin.getOperatorToken().getText();
+    const left = bin.getLeft().getText();
+    if ((op !== "&&" && op !== "||") || (left !== "true" && left !== "false")) continue;
+    const keepsRight = (op === "&&") === (left === "true");
+    bin.replaceWithText(keepsRight ? bin.getRight().getText() : left);
+    changed = true;
+  }
+
+  // `if (true) { … } else { … }` is its first arm, `if (false)` its second or nothing. This is the
+  // statement form of the ternary above, and it is how a source writes a branch whose two arms are
+  // different *elements* — a `ScrollView` on device, a scrolling `<div>` here — without naming
+  // either outside a JSX tag. An arm that returns makes whatever follows it in the block dead, and
+  // the dead half is dropped with it, so the native element never reaches the element pass.
+  for (const stmt of sourceFile.getDescendantsOfKind(SyntaxKind.IfStatement)) {
+    if (stmt.wasForgotten()) continue;
+    const test = stmt.getExpression().getText();
+    if (test !== "true" && test !== "false") continue;
+    const container = stmt.getParent();
+    if (!Node.isBlock(container) && !Node.isSourceFile(container)) continue;
+
+    const arm = test === "true" ? stmt.getThenStatement() : stmt.getElseStatement();
+    const body = arm === undefined ? [] : Node.isBlock(arm) ? arm.getStatements() : [arm];
+    const texts = body.map((s) => s.getText());
+    const last = body.at(-1);
+    const exits =
+      last !== undefined && (Node.isReturnStatement(last) || Node.isThrowStatement(last));
+
+    const statements = container.getStatements();
+    const index = statements.findIndex((s) => s.compilerNode === stmt.compilerNode);
+    if (exits) {
+      for (const dead of statements.slice(index + 1).reverse()) dead.remove();
+    }
+    stmt.remove();
+    if (texts.length) container.insertStatements(index, texts);
+    changed = true;
+  }
+
   // The `Platform` import itself, once nothing references it.
   for (const decl of sourceFile.getImportDeclarations()) {
     if (decl.getModuleSpecifierValue() !== "react-native") continue;
@@ -685,6 +726,33 @@ function renamePublicProps(sourceFile) {
  * form `[...]["onPress"]` -> `[...]["onClick"]` along with it, because the key is a prop name and
  * pass 4 already renamed the prop it refers to.
  */
+/**
+ * `ElementRef` and `ComponentProps` imported by name from `react` are what {@link rewriteTypes}
+ * replaces, so a file that used them only on a React Native element is left importing a name it
+ * no longer mentions — which the linter reports on the compiled file, not the source.
+ */
+function pruneRewrittenTypeImports(sourceFile) {
+  const react = sourceFile.getImportDeclaration((d) => d.getModuleSpecifierValue() === "react");
+  if (!react) return;
+  for (const spec of react.getNamedImports()) {
+    const name = spec.getName();
+    if (name !== "ElementRef" && name !== "ComponentProps") continue;
+    const used = sourceFile
+      .getDescendantsOfKind(SyntaxKind.Identifier)
+      .some(
+        (id) => id.getText() === name && !id.getFirstAncestorByKind(SyntaxKind.ImportDeclaration),
+      );
+    if (!used) spec.remove();
+  }
+  if (
+    react.getNamedImports().length === 0 &&
+    !react.getDefaultImport() &&
+    !react.getNamespaceImport()
+  ) {
+    react.remove();
+  }
+}
+
 function rewriteTypes(sourceFile, types, diagnostics) {
   let changed = false;
 
@@ -862,6 +930,7 @@ export function compileSource({
   }
 
   renamePublicProps(sourceFile);
+  pruneRewrittenTypeImports(sourceFile);
   ensureCn(sourceFile);
   checkElementLeaks(sourceFile, elements, diagnostics);
   checkNativePropLeaks(sourceFile, diagnostics);

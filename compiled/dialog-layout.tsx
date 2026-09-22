@@ -1,28 +1,35 @@
 /**
- * Copied from `registry/web/dialog-layout.tsx` by `scripts/rn2web`.
+ * Compiled from `registry/layout/dialog-layout.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
- * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
- * same passes still ran over it, and for a file already written against the DOM they find nothing
- * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one
- * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one
- * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
+ * The prose below is the source's own, carried across untouched, which is the property that makes
+ * a compiled registry worth having: this is the same component, not a second one to keep in step
+ * by hand. Where a comment names a React Native component it is describing the source; the
+ * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
+/**
+ * A dialog with its slots placed — written once here and compiled for the web by `scripts/rn2web`,
+ * on the `dialog` both platforms already share (radix on the web, a `Modal` on device).
+ *
+ * What differs, each behind a `Platform` test the compiler folds:
+ *
+ * - the height cap: `100dvh` and `calc()` on the web, the screen the `Modal` already fills on
+ *   device;
+ * - `hideTitle`: an `sr-only` clip on the web, a one-pixel box on device;
+ * - where the discard question is mounted — see the comment on it;
+ * - a string handed to `footer` is wrapped in a `Text`, because a bare string inside a view throws
+ *   on device.
+ *
+ * The discard question is a `Dialog` with `role="alertdialog"` rather than the web-only
+ * `alert-dialog`, so both halves share it. It keeps what that primitive gave: the role, focus
+ * landing on "Keep editing", and a click on the overlay that does not answer the question.
+ */
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { cn } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./alert-dialog";
+import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +49,37 @@ const SIZES = {
   full: "sm:max-w-[calc(100vw-4rem)]",
 } as const;
 
-type DialogLayoutProps = {
+/**
+ * What turns `DialogContent` into a column that can be divided: `flex` replaces the web
+ * primitive's `grid` so the body can be handed the leftover height, and `overflow-hidden` takes
+ * the scroll off the dialog so the chassis can put it on the body. The cap is the web primitive's
+ * own, restated for the styles that ship without one; on device the `Modal` is the screen.
+ */
+const COLUMN = "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden";
+
+/**
+ * The chassis inside it. `flex-1` on the web, where it sizes from content in a box of no set
+ * height; Yoga's `flex: 1` starts from nothing, so on device it starts from its content and
+ * shrinks under the cap instead.
+ */
+const CHASSIS = "min-h-0 flex-1 gap-4";
+
+/** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
+const SR_ONLY = "sr-only";
+
+/** A string slot's colour. The web inherits one; the device has to be told it. */
+const INK = undefined;
+
+/** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
+function asText(node: ReactNode) {
+  return typeof node === "string" || typeof node === "number" ? (
+    <span className={cn("cube-rn-text", INK)}>{node}</span>
+  ) : (
+    node
+  );
+}
+
+export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
   content: ReactNode;
   /**
@@ -220,6 +257,35 @@ export function DialogLayout({
   // dialog with no footer, not with an empty one taking up a row.
   const hasFooter = Boolean(footer || actions);
 
+  // Keeping the question's answer from being given by accident: a click on the overlay does not
+  // answer "discard?", which is what the web-only `alert-dialog` refused as well.
+  const holdOpen = (event: Event) => event.preventDefault();
+
+  const discardQuestion = (
+    <Dialog open={askingToDiscard} onOpenChange={setAskingToDiscard}>
+      <DialogContent
+        role="alertdialog"
+        showCloseButton={false}
+        onInteractOutside={holdOpen}
+        className="sm:max-w-lg"
+      >
+        <DialogHeader>
+          <DialogTitle>{discardTitle}</DialogTitle>
+          <DialogDescription>{discardDescription}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          {/* First, so it is where focus lands: the safe answer is the one a stray Enter gives. */}
+          <Button variant="outline" onClick={() => setAskingToDiscard(false)}>
+            {keepLabel}
+          </Button>
+          <Button variant="destructive" onClick={discard}>
+            {discardLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={requestOpenChange}>
@@ -233,25 +299,18 @@ export function DialogLayout({
           // intent, and an explicit `undefined` is how it is said — spread only in that case,
           // because the prop is applied after the primitive's own and would unlink a real one.
           {...(description ? {} : { "aria-describedby": undefined })}
-          // `flex` replaces the primitive's `grid` so the body can be handed the leftover height;
-          // `overflow-hidden` takes the scroll off the dialog so the chassis can put it on the
-          // body. The cap is the primitive's own, restated for the styles that ship without one.
-          className={cn(
-            "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
-            SIZES[size],
-            className,
-          )}
+          className={cn(COLUMN, SIZES[size], className)}
         >
           <HeaderContentFooter
             scroll
-            className="min-h-0 flex-1 gap-4"
+            className={CHASSIS}
             header={
               <DialogHeader
                 // The close button is positioned against the dialog, not the header, so a long
                 // title runs under it without this.
                 className={cn(showCloseButton && "pr-6", headerClassName)}
               >
-                <DialogTitle className={cn(hideTitle && "sr-only")}>{title}</DialogTitle>
+                <DialogTitle className={cn(hideTitle && SR_ONLY)}>{title}</DialogTitle>
                 {description ? <DialogDescription>{description}</DialogDescription> : null}
               </DialogHeader>
             }
@@ -264,33 +323,25 @@ export function DialogLayout({
                 <DialogFooter
                   className={cn(footer && footerActions && "sm:justify-between", footerClassName)}
                 >
-                  {footer}
-                  {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+                  {asText(footer)}
+                  {actions ? (
+                    <div className="cube-rn-view flex-row items-center gap-2">{actions}</div>
+                  ) : null}
                 </DialogFooter>
               ) : null
             }
           />
+
+          {/* On device the question is a `Modal` presented over this one, and iOS presents a
+              second modal only from inside the first. */}
+          {null}
         </DialogContent>
       </Dialog>
 
-      {/*
-      A sibling of the dialog rather than a child of it: two modals nested in the DOM fight over
-      the focus trap, and the question has to be able to take focus from the form it is about.
-    */}
-      <AlertDialog open={askingToDiscard} onOpenChange={setAskingToDiscard}>
-        <AlertDialogContent data-slot="dialog-layout-discard">
-          <AlertDialogHeader>
-            <AlertDialogTitle>{discardTitle}</AlertDialogTitle>
-            <AlertDialogDescription>{discardDescription}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{keepLabel}</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={discard}>
-              {discardLabel}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* On the web, a sibling of the dialog rather than a child of it: two modals nested in the
+          DOM fight over the focus trap, and the question has to be able to take focus from the
+          form it is about. */}
+      {discardQuestion}
     </>
   );
 }

@@ -1,5 +1,20 @@
+/**
+ * A card with its slots already placed — written once here and compiled for the web by
+ * `scripts/rn2web`, so the DOM `CardLayout` and the React Native one are the same component, built
+ * on the one `card` both platforms already share.
+ *
+ * What the device cannot draw the way the web did, each behind a `Platform.select` the compiler
+ * folds:
+ *
+ * - the icon is sized with `[&_svg]:size-4`, an arbitrary variant NativeWind has no answer for —
+ *   on device, pass the icon at the size you want;
+ * - a string handed to `empty` or `footer` is wrapped in a `Text`, because a bare string inside a
+ *   view throws on device;
+ * - the skeleton's bars are spaced with `gap`, not `space-y`, which NativeWind does not have.
+ */
 import type { ReactNode } from "react";
 import { Children } from "react";
+import { Platform, Text, View } from "react-native";
 import {
   Card,
   CardAction,
@@ -9,17 +24,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-type CardLayoutProps = {
+export type CardLayoutProps = {
   /** The body. */
   content?: ReactNode | undefined;
-  /** A string, a heading, whatever names the card. Absent, no header row is drawn. */
+  /**
+   * A string, a heading, whatever names the card. Absent, no header row is drawn. On device it is
+   * rendered inside a `Text`, so pass text or inline text nodes.
+   */
   title?: ReactNode | undefined;
   /** One line on what the card holds, or what changing it costs. */
   description?: ReactNode | undefined;
-  /** Sits before the title, sized to the text. An icon, a status dot, an avatar. */
+  /**
+   * Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device
+   * an icon cannot be sized from outside it, so pass it at the size you want.
+   */
   icon?: ReactNode | undefined;
   /** The header's far end: an add button, a menu, a switch. */
   action?: ReactNode | undefined;
@@ -42,6 +62,30 @@ type CardLayoutProps = {
   contentClassName?: string | undefined;
   footerClassName?: string | undefined;
 };
+
+/** Sized from outside on the web; see the file comment for the device. */
+const ICON = Platform.select({ web: "[&_svg]:size-4", default: undefined });
+
+/**
+ * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
+ * view would otherwise be a flex column and lay a sentence and its link out as two rows.
+ */
+const SLOT = Platform.select({ web: "block", default: undefined });
+
+/** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
+const BAR = cn("h-4 rounded-md bg-accent", Platform.OS === "web" && "animate-pulse");
+
+/** A string slot's colour. The web inherits the card's; the device has to be told it. */
+const INK = Platform.select({ web: undefined, default: "text-card-foreground" });
+
+/** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
+function asText(node: ReactNode) {
+  return typeof node === "string" || typeof node === "number" ? (
+    <Text className={cn(INK)}>{node}</Text>
+  ) : (
+    node
+  );
+}
 
 /**
  * A card with its slots already placed.
@@ -76,37 +120,41 @@ export function CardLayout({
   // `Children.count` rather than a truth test: `{items.map(…)}` on an empty array is an empty
   // array, not null, and it is the shape a card is nearly always handed.
   const isEmpty = Children.count(content) === 0;
-  const body = loading ? <CardLayoutSkeleton /> : isEmpty && empty ? empty : content;
+  const body = loading ? <CardLayoutSkeleton /> : isEmpty && empty ? asText(empty) : content;
 
   const hasHeader = Boolean(title || description || action);
   const hasFooter = Boolean(footer || footerActions);
 
   return (
-    <Card data-slot="card-layout" className={className}>
+    <Card testID="card-layout" className={className}>
       {hasHeader ? (
         <CardHeader className={headerClassName}>
           {title ? (
-            <CardTitle className="flex min-w-0 items-center gap-2">
+            // The icon sits beside the heading rather than inside it: a heading is a `Text`, and
+            // a view inside a `Text` is not something the device lays out.
+            <View className="min-w-0 flex-row items-center gap-2">
               {icon ? (
                 // Sized here rather than by the caller, so an icon passed as `<Plus />` and one
                 // passed as `<Plus className="size-4" />` land at the same size.
-                <span className="shrink-0 text-muted-foreground [&_svg]:size-4">{icon}</span>
+                <View className={cn("shrink-0 text-muted-foreground", ICON)}>{icon}</View>
               ) : null}
               {/* The padding is what stops `truncate` clipping the title: `CardTitle` is
                   `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts the
                   ascenders and descenders off it. The negative margin gives the space back, so
                   the header keeps the height shadcn drew it at. */}
-              <span className="-my-1 min-w-0 truncate py-1">{title}</span>
-            </CardTitle>
+              <CardTitle className="-my-1 min-w-0 shrink truncate py-1">{title}</CardTitle>
+            </View>
           ) : null}
           {description ? <CardDescription>{description}</CardDescription> : null}
-          {/* CardAction places itself in the header grid's second column; it needs no wrapper. */}
+          {/* CardAction places itself at the header's far end; it needs no wrapper. */}
           {action ? <CardAction>{action}</CardAction> : null}
         </CardHeader>
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent> : null}
+      {body ? (
+        <CardContent className={cn(SLOT, "min-w-0", contentClassName)}>{body}</CardContent>
+      ) : null}
 
       {hasFooter ? (
         <CardFooter
@@ -116,8 +164,10 @@ export function CardLayout({
             footerClassName,
           )}
         >
-          {footer}
-          {footerActions ? <div className="flex items-center gap-2">{footerActions}</div> : null}
+          {asText(footer)}
+          {footerActions ? (
+            <View className="flex-row items-center gap-2">{footerActions}</View>
+          ) : null}
         </CardFooter>
       ) : null}
     </Card>
@@ -130,10 +180,10 @@ export function CardLayout({
  */
 function CardLayoutSkeleton() {
   return (
-    <div data-slot="card-layout-skeleton" className="space-y-2" aria-hidden>
-      <Skeleton className="h-4 w-2/3" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-1/2" />
-    </div>
+    <View testID="card-layout-skeleton" className="gap-2" aria-hidden>
+      <View className={cn(BAR, "w-2/3")} />
+      <View className={cn(BAR, "w-full")} />
+      <View className={cn(BAR, "w-1/2")} />
+    </View>
   );
 }

@@ -43,6 +43,11 @@ export type DialogContentProps = DialogSectionProps & {
   onInteractOutside?: ((event: Event) => void) | undefined;
   /** `undefined` passed explicitly is how "nothing describes this" is said to radix. */
   "aria-describedby"?: string | undefined;
+  /**
+   * `alertdialog` for a question that interrupts — "Discard your changes?" — which assistive
+   * technology announces as urgent rather than as a place to work. Default `dialog`.
+   */
+  role?: "dialog" | "alertdialog" | undefined;
 };
 
 /** Every part inside a `Dialog` — content, header, footer, title, description. */

@@ -54,31 +54,14 @@ export function Page({ className, children, fill = false, scroll = true, width }
   );
 }
 
-type PageHeaderProps = {
-  title: string;
-  subtitle?: ReactNode;
-  actions?: ReactNode;
-  className?: string;
-};
-
-/** The title / subtitle / actions row at the top of a page. */
-export function PageHeader({ title, subtitle, actions, className }: PageHeaderProps) {
-  return (
-    <div
-      className={cn("cube-rn-view", "mb-4 flex-row items-center justify-between gap-3", className)}
-    >
-      <div className="cube-rn-view flex-1">
-        {/* `role`/`aria-level` because an `<h2>` has no native counterpart — and
-            they are what a compiled web build reads to emit one. */}
-        <h2 className="cube-rn-text text-xl font-semibold text-foreground">{title}</h2>
-        {subtitle ? (
-          <span className="cube-rn-text text-sm text-muted-foreground">{subtitle}</span>
-        ) : null}
-      </div>
-      {actions ? <div className="cube-rn-view flex-row items-center gap-3">{actions}</div> : null}
-    </div>
-  );
-}
+/**
+ * The title row at the top of a page. There is one `PageHeader` in this set, and it lives in
+ * `page-header`; it is re-exported here so a screen importing it from its page shell keeps
+ * working. It took over from the small one this file used to carry, whose props were renamed on
+ * the way: `subtitle` is `description`, `actions` is `action`, the heading is an `h1` unless
+ * `level` says otherwise, and the `mb-4` under it is gone — space it with the page's own gap.
+ */
+export { PageHeader, type PageHeaderProps } from "@/components/page-header";
 
 /**
  * The responsive card grid shared by list pages.

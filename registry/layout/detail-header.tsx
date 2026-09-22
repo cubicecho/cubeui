@@ -2,7 +2,7 @@
  * The header row of a detail view: back button, optional colour dot, title,
  * badge, subtitle, trailing actions.
  *
- * Distinct from `PageHeader` in `layout/page` by the back affordance and the
+ * Distinct from `PageHeader` in `layout/page-header` by the back affordance and the
  * leading dot — a detail view is reached *from* somewhere, and a list page is
  * not.
  */

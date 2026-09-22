@@ -14,10 +14,10 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 43 items, pipeline green |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 49 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
 | 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
-| 4 | cubeui's own items ported in as the web-only tier | **done** — 33 web-only items, cubeui fully covered |
+| 4 | cubeui's own items ported in as the web-only tier | **done** — 27 web-only items, cubeui fully covered; the layout shells since moved to both platforms |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -109,7 +109,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `page`, `detail-page`, `detail-header`, `section-heading` |
+| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
@@ -180,6 +180,12 @@ reads every `text-*`, `bg-*`, `border-*` (and `ring-*`, `fill-*`, `stroke-*`, `o
 out of the string literals in `registry/` — through the TypeScript parser, so TSDoc that talks about
 classes is not read as markup — and each has to be a token both stylesheets define or a colour
 Tailwind ships.
+
+And that **every layout is on both platforms** (rule 11). The layout shells are written once in
+`registry/layout/` and the web half is compiled from them, so a native layout with no web item beside
+it — its compile was refused, and the web registry dropped it without failing — is an error, and so is
+a layout in the web `layout` set with no native item, unless `WEB_ONLY_LAYOUTS` in the script names
+why (`section`, until #61; `disclosure-row`, which is built on the web-only `item`).
 
 All five novel checks are negative-tested: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -459,11 +465,18 @@ compiler to do. `SplitLayout` is CSS grid tracks driven by a custom property, `P
 `max-w-(--breakpoint-2xl)` and `[&_svg]:size-5`; Yoga has no grid and NativeWind has no arbitrary
 variants, so there was never an RN source for these to come from.
 
+**The layout family has since left this tier** (#57). `header-content-footer`, `page-header`,
+`page-layout`, `split-layout`, `card-layout` and `dialog-layout` are written once in
+`registry/layout/` and compiled for the web: the split is flex rather than grid tracks, and the web
+classes Yoga cannot read sit behind a `Platform.select` the compiler folds, so the DOM output keeps
+them. The one `PageHeader` replaced the smaller one `page` carried on device. Rule 11 of the guards
+keeps the family on both sides.
+
 | Class | Files | Declared by | Example |
 |---|---|---|---|
 | universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
 | native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
-| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `SplitLayout`, `PageHeader`, `FormField` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `Section`, `OptionSelect`, `FormField` |
 
 **The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
@@ -476,7 +489,7 @@ without either weakening the rule or carrying a marker field that has to be kept
 no native half, `card` does, and their item JSON was the same shape down to both shipping one file
 out of `compiled/` — so the only ways to tell were installing it and reading the file header,
 probing `/r/native/<name>.json` for a 404, or reading this table. `registry.mjs` now appends
-*"Web-only: no React Native half."* to each of the 33 descriptions in the web registry, which is
+*"Web-only: no React Native half."* to each of the 27 descriptions in the web registry, which is
 the one field already published and already printed by the CLI at install time. It is appended
 rather than written into `registry.web-only.json`, so the 29th item cannot be the one that forgets.
 In the native registry the item simply is not there, which says it more plainly.

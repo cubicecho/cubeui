@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/layout/header-content-footer.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * The page chassis: header, body, footer, in a column — written once here and compiled for the
  * web by `scripts/rn2web`, so the DOM `HeaderContentFooter` and the React Native one are the same
  * component rather than two to keep in step.
@@ -22,7 +12,8 @@
  * web), so a shell built on it — `PageLayout`, `DialogLayout`, an app's sidebar — styles a part by
  * its class prop rather than by reaching into the tree.
  */
-import type { ReactNode, Ref } from "react";
+import type { ElementRef, ReactNode, Ref } from "react";
+import { Platform, ScrollView, View } from "react-native";
 import { cn } from "@/lib/utils";
 
 /**
@@ -36,7 +27,10 @@ import { cn } from "@/lib/utils";
  * The cap is the `2xl` breakpoint. The web reads it from the theme variable so it moves with the
  * app's own breakpoints; native has no such variable, so it spells the default (`96rem`) out.
  */
-export const PAGE_COLUMN = "mx-auto w-full max-w-(--breakpoint-2xl)";
+export const PAGE_COLUMN = Platform.select({
+  web: "mx-auto w-full max-w-(--breakpoint-2xl)",
+  default: "mx-auto w-full max-w-[96rem]",
+});
 
 /**
  * The reading column: a page of prose, a settings screen, a form.
@@ -85,7 +79,7 @@ export type HeaderContentFooterProps = {
    * The scrolling body, for a caller that has to reach it — restoring a scroll position. A
    * `<div>` on the web and, while `scroll` is on, the `ScrollView` on device.
    */
-  contentRef?: Ref<HTMLDivElement> | undefined;
+  contentRef?: Ref<ElementRef<typeof ScrollView>> | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
   /**
@@ -112,7 +106,7 @@ type BodyProps = {
  * The slots are wrappers around a caller's nodes, not layout of their own, so on the web they stay
  * the block boxes they always were. On device there is no other kind of box.
  */
-const SLOT = "block";
+const SLOT = Platform.select({ web: "block", default: undefined });
 
 /**
  * The floor every body needs, whichever element it is. See {@link HeaderContentFooter}.
@@ -122,7 +116,10 @@ const SLOT = "block";
  * same body in the same dialog collapses to zero; there it starts from its content (`basis-auto`),
  * grows into a height it is given and shrinks under a cap.
  */
-const BODY = cn("relative min-h-0 min-w-0", "flex-1");
+const BODY = cn(
+  "relative min-h-0 min-w-0",
+  Platform.select({ web: "flex-1", default: "shrink grow basis-auto" }),
+);
 
 /**
  * The body, which is the one part that is a different element on each platform.
@@ -132,20 +129,41 @@ const BODY = cn("relative min-h-0 min-w-0", "flex-1");
  * and keeps the first arm, and the `ScrollView` below it is dropped as unreachable.
  */
 function Body({ content, scroll, column, contentRef, className }: BodyProps) {
+  if (Platform.OS === "web") {
+    return (
+      <View
+        testID="header-content-footer-content"
+        // The chassis's own ref type is the device's scroller; on the web both are a `<div>`.
+        ref={contentRef as unknown as Ref<ElementRef<typeof View>>}
+        // A scrolling region a keyboard cannot reach is a region a keyboard user cannot read:
+        // the mouse wheel moves it and nothing else does, which axe reports as
+        // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
+        // nothing when the body already holds focusable children — the caret goes to them next.
+        tabIndex={scroll ? 0 : undefined}
+        className={cn(SLOT, BODY, scroll && "overflow-y-auto", column, className)}
+      >
+        {content}
+      </View>
+    );
+  }
+
+  if (scroll) {
+    return (
+      <ScrollView
+        testID="header-content-footer-content"
+        ref={contentRef}
+        className={BODY}
+        contentContainerClassName={cn(column, className)}
+      >
+        {content}
+      </ScrollView>
+    );
+  }
+
   return (
-    <div
-      data-slot="header-content-footer-content"
-      // The chassis's own ref type is the device's scroller; on the web both are a `<div>`.
-      ref={contentRef as unknown as Ref<HTMLDivElement>}
-      // A scrolling region a keyboard cannot reach is a region a keyboard user cannot read:
-      // the mouse wheel moves it and nothing else does, which axe reports as
-      // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
-      // nothing when the body already holds focusable children — the caret goes to them next.
-      tabIndex={scroll ? 0 : undefined}
-      className={cn("cube-rn-view", SLOT, BODY, scroll && "overflow-y-auto", column, className)}
-    >
+    <View testID="header-content-footer-content" className={cn(BODY, column, className)}>
       {content}
-    </div>
+    </View>
   );
 }
 
@@ -182,17 +200,17 @@ export function HeaderContentFooter({
 
   return (
     // `shrink` because a chassis is sized by its parent, and a view does not shrink by default.
-    <div
-      data-slot="header-content-footer"
-      className={cn("cube-rn-view", "min-h-0 min-w-0 shrink flex-col", className)}
+    <View
+      testID="header-content-footer"
+      className={cn("min-h-0 min-w-0 shrink flex-col", className)}
     >
       {header ? (
-        <div
-          data-slot="header-content-footer-header"
-          className={cn("cube-rn-view", SLOT, "min-w-0 shrink-0", column, headerClassName)}
+        <View
+          testID="header-content-footer-header"
+          className={cn(SLOT, "min-w-0 shrink-0", column, headerClassName)}
         >
           {header}
-        </div>
+        </View>
       ) : null}
 
       <Body
@@ -204,14 +222,14 @@ export function HeaderContentFooter({
       />
 
       {footer ? (
-        <div
-          data-slot="header-content-footer-footer"
-          className={cn("cube-rn-view", SLOT, "min-w-0 shrink-0", bodyColumn, footerClassName)}
+        <View
+          testID="header-content-footer-footer"
+          className={cn(SLOT, "min-w-0 shrink-0", bodyColumn, footerClassName)}
         >
           {footer}
-        </div>
+        </View>
       ) : null}
-    </div>
+    </View>
   );
 }
 
