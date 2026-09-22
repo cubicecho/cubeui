@@ -188,14 +188,17 @@ views and there is no shell wrapping to hide.
 | --- | --- | --- |
 | A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
-| A heading over a group of fields or rows | `SectionHeading` | `@cubeui/section-heading` |
+| A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
+| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A form of any size | `Form` and its bound fields | `@cubeui/form` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
+| Three or four exclusive choices, all on screen (a theme, a visibility) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
+| The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
-| A route that threw | `RouteError` | `@cubeui/route-error` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 
 Two names mean different things across the halves, and both are worth knowing before you grep:
 

@@ -325,10 +325,50 @@
       ]
     },
     {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radio-group-field",
+      "type": "registry:component",
+      "title": "Radio Group Field",
+      "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/radio-group"],
+      "files": [
+        {
+          "path": "compiled/radio-group-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "section",
+      "type": "registry:component",
+      "title": "Section",
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/section.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
-      "description": "The small muted heading above a section of content.",
+      "description": "The small muted heading above a section of content, with an optional heading `level`.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -637,7 +677,7 @@
       "name": "route-error",
       "type": "registry:component",
       "title": "Route Error",
-      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause.",
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).",
       "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
       "files": [
         {
@@ -1076,51 +1116,6 @@
       "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item"],
       "files": []
-    },
-    {
-      "name": "radio-group",
-      "type": "registry:ui",
-      "title": "Radio Group",
-      "description": "shadcn's exclusive choice, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/radio-group.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "lucide-react@^1.34.0", "radix-ui@^1.6.7"]
-    },
-    {
-      "name": "radio-group-field",
-      "type": "registry:component",
-      "title": "Radio Group Field",
-      "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/field",
-        "@cubeui/form-field",
-        "@cubeui/radio-group"
-      ],
-      "files": [
-        {
-          "path": "compiled/radio-group-field.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "section",
-      "type": "registry:component",
-      "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/section.tsx",
-          "type": "registry:component"
-        }
-      ]
     },
     {
       "name": "separator",

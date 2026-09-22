@@ -117,7 +117,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  43 on both platforms · 33 web-only · 0 native-only.
+  46 on both platforms · 30 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -403,13 +403,13 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/radio-group</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's exclusive choice, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/radio-group-field</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/readable-text-color</code></th>
@@ -419,17 +419,17 @@
         <tr>
           <th scope="row"><code>@cubeui/route-error</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause.</td>
+          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/section</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/section-heading</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The small muted heading above a section of content.</td>
+          <td>The small muted heading above a section of content, with an optional heading `level`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/segmented</code></th>

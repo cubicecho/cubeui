@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/ui/radio-group.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * A radio group built from `Pressable`s — one source for both platforms, compiled to the web item.
  *
  * It replaced shadcn's radix primitive, which was web-only, and a React Native app without it
@@ -42,9 +32,10 @@
  */
 import type { ReactNode } from "react";
 import * as React from "react";
+import { Platform, Pressable, Text, View } from "react-native";
 import { cn } from "@/lib/utils";
 
-type Focusable = HTMLButtonElement;
+type Focusable = React.ElementRef<typeof Pressable>;
 
 /** The web's key event, narrowed to the two members used — the same shape on both halves. */
 type KeyEvent = { key: string; preventDefault: () => void };
@@ -213,21 +204,25 @@ function RadioGroup({
         unregister,
       }}
     >
-      <div
+      <View
         role="radiogroup"
-        data-slot="radio-group"
+        testID="radio-group"
         {...(id ? { id } : {})}
         {...(ariaLabel ? { "aria-label": ariaLabel } : {})}
         {...(ariaLabelledBy ? { "aria-labelledby": ariaLabelledBy } : {})}
         {...(disabled ? { "aria-disabled": true } : {})}
         // React Native has no prop for these three; react-native-web and the DOM read them.
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={ariaInvalid}
-        aria-required={ariaRequired}
-        className={cn("cube-rn-view", horizontal ? "flex-row flex-wrap gap-3" : "gap-3", className)}
+        {...(Platform.OS === "web"
+          ? {
+              "aria-describedby": ariaDescribedBy,
+              "aria-invalid": ariaInvalid,
+              "aria-required": ariaRequired,
+            }
+          : {})}
+        className={cn(horizontal ? "flex-row flex-wrap gap-3" : "gap-3", className)}
       >
         {children}
-      </div>
+      </View>
     </RadioGroupContext.Provider>
   );
 }
@@ -285,37 +280,38 @@ function RadioGroupItem({
     undefined;
 
   const circle = (
-    <div
+    <View
       className={cn(
-        "cube-rn-view",
         "h-4 w-4 shrink-0 items-center justify-center rounded-full border",
         checked ? "border-primary" : "border-input",
         group.invalid && "border-destructive",
       )}
     >
-      {checked ? <div className="cube-rn-view h-2 w-2 rounded-full bg-primary" /> : null}
-    </div>
+      {checked ? <View className="h-2 w-2 rounded-full bg-primary" /> : null}
+    </View>
   );
 
   return (
-    <button
-      type="button"
-      ref={ref as React.Ref<HTMLButtonElement>}
-      data-slot="radio-group-item"
+    <Pressable
+      ref={ref}
+      testID="radio-group-item"
       role="radio"
       aria-checked={checked}
       disabled={disabled}
-      onClick={() => group.select(value)}
+      onPress={() => group.select(value)}
       {...(id ? { id } : {})}
       {...(label ? { "aria-labelledby": labelId } : {})}
       {...(ariaLabel ? { "aria-label": ariaLabel } : {})}
-      aria-description={hint}
-      tabIndex={group.tabStop === value ? (0 as const) : (-1 as const)}
-      onKeyDown={(event: KeyEvent) => group.move(value, event)}
-      aria-describedby={describedBy}
-      title={hint}
+      accessibilityHint={hint}
+      {...(Platform.OS === "web"
+        ? {
+            tabIndex: group.tabStop === value ? (0 as const) : (-1 as const),
+            onKeyDown: (event: KeyEvent) => group.move(value, event),
+            "aria-describedby": describedBy,
+            title: hint,
+          }
+        : {})}
       className={cn(
-        "cube-rn-view cube-rn-pressable",
         "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         label === undefined
           ? "rounded-full"
@@ -335,38 +331,32 @@ function RadioGroupItem({
         circle
       ) : card ? (
         <>
-          {icon ? <div className="cube-rn-view items-center justify-center">{icon}</div> : null}
-          <span
-            id={labelId}
-            className="cube-rn-text text-center text-foreground text-sm font-medium"
-          >
+          {icon ? <View className="items-center justify-center">{icon}</View> : null}
+          <Text id={labelId} className="text-center text-foreground text-sm font-medium">
             {label}
-          </span>
+          </Text>
           {description ? (
-            <span
-              id={descriptionId}
-              className="cube-rn-text text-center text-muted-foreground text-xs"
-            >
+            <Text id={descriptionId} className="text-center text-muted-foreground text-xs">
               {description}
-            </span>
+            </Text>
           ) : null}
         </>
       ) : (
         <>
-          <div className="cube-rn-view mt-0.5">{circle}</div>
-          <div className="cube-rn-view min-w-0 flex-1 gap-1">
-            <span id={labelId} className="cube-rn-text text-foreground text-sm">
+          <View className="mt-0.5">{circle}</View>
+          <View className="min-w-0 flex-1 gap-1">
+            <Text id={labelId} className="text-foreground text-sm">
               {label}
-            </span>
+            </Text>
             {description ? (
-              <span id={descriptionId} className="cube-rn-text text-muted-foreground text-sm">
+              <Text id={descriptionId} className="text-muted-foreground text-sm">
                 {description}
-              </span>
+              </Text>
             ) : null}
-          </div>
+          </View>
         </>
       )}
-    </button>
+    </Pressable>
   );
 }
 
