@@ -79,10 +79,7 @@ export const TheChosenSwatchIsAnnounced: Story = {
   play: async ({ canvas }) => {
     expect(canvas.getByRole("radiogroup", { name: "Tag colour" })).toBeVisible();
     expect(canvas.getByRole("radio", { name: "#10b981" })).toHaveAttribute("aria-checked", "true");
-    expect(canvas.getByRole("radio", { name: "#ec4899" })).toHaveAttribute(
-      "aria-checked",
-      "false",
-    );
+    expect(canvas.getByRole("radio", { name: "#ec4899" })).toHaveAttribute("aria-checked", "false");
   },
 };
 

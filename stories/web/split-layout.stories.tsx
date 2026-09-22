@@ -2,11 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
 import { StickyHeaderContentFooter } from "@/components/header-content-footer";
-import {
-  SidebarLayout,
-  SplitLayout,
-  type SplitWidth,
-} from "@/components/split-layout";
+import { SidebarLayout, SplitLayout, type SplitWidth } from "@/components/split-layout";
 
 const meta = {
   title: "Layout/SplitLayout",

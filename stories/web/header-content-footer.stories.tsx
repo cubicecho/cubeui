@@ -1,10 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
-import {
-  HeaderContentFooter,
-  StickyHeaderContentFooter,
-} from "@/components/header-content-footer";
+import { HeaderContentFooter, StickyHeaderContentFooter } from "@/components/header-content-footer";
 
 const meta = {
   title: "Layout/HeaderContentFooter",

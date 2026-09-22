@@ -1,13 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import type { DateRange } from "@/components/date-picker";
-import {
-  InputField,
-  NumberField,
-  SelectField,
-  useAppForm,
-} from "@/components/app-form";
+import { InputField, NumberField, SelectField, useAppForm } from "@/components/app-form";
 import { DateField, DateRangeField } from "@/components/date-field";
+import type { DateRange } from "@/components/date-picker";
 import { MultiSelectField } from "@/components/multi-select-field";
 import { Button } from "@/components/ui/button";
 

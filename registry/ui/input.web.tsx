@@ -21,8 +21,8 @@ import type { ComponentPropsWithoutRef, HTMLInputTypeAttribute, Ref } from "reac
 import {
   INPUT_CLASS,
   type InputHandle,
-  type InputProps as SharedInputProps,
   type InputType,
+  type InputProps as SharedInputProps,
 } from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
 
