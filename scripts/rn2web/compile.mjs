@@ -14,7 +14,8 @@
  *   3. spreads      — folding leaves `{...({ 'aria-pressed': x })}`, which is just an attribute
  *   4. elements     — the element map, the ARIA inference, the reset classes, the prop renames
  *   5. types        — `ComponentProps<typeof View>` and friends
- *   6. specifiers   — `@/components/ui/x` is `./x` once both sides are compiled
+ *   6. specifiers   — `@/components/ui/x` is `./x` once both sides are compiled (in this repo;
+ *                     the published registry gets the alias back — see `publish-imports.mjs`)
  *
  * 2 before 3 before 4 because each leaves the next one something simpler to look at: a compiled
  * `aria-pressed` was a `Platform.OS === "web"` ternary two passes earlier.
@@ -839,6 +840,14 @@ function rewriteTypes(sourceFile, types, diagnostics) {
  * A compiled tree that reaches back into a React Native component is not a compiled tree, so a
  * sibling import is rewritten to the sibling's compiled file — and refused if that file is not
  * being produced.
+ *
+ * `./x` is this repo's spelling only, and it is load-bearing here: the side-by-side stories are in
+ * the React Native tsconfig project, where `@/components/ui/button` means the native half, so a
+ * compiled file that kept the alias would be typechecked against React Native components the
+ * moment a story imported it. It is **not** what ships. The CLI places files by type — a
+ * `registry:component` in `components/`, a `registry:ui` in `components/ui/` — and never rewrites a
+ * relative specifier, so `publish-imports.mjs` turns every `./x` back into the alias for where `x`
+ * lands, after `shadcn build`. `registry:check` rule 13 holds the result.
  */
 function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics) {
   for (const decl of sourceFile.getImportDeclarations()) {

@@ -51,14 +51,10 @@
       "name": "readable-text-color",
       "type": "registry:lib",
       "title": "Readable Text Color",
-      "description": "Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast. Ships with its tests.",
+      "description": "Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast.",
       "files": [
         {
           "path": "registry/lib/readable-text-color.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/lib/readable-text-color.test.ts",
           "type": "registry:lib"
         }
       ]
@@ -550,7 +546,8 @@
           "path": "compiled/toast.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "registryDependencies": ["@cubeui/utils"]
     },
     {
       "name": "calendar",
@@ -632,7 +629,7 @@
       "type": "registry:ui",
       "title": "Inline Number Edit",
       "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit.",
-      "registryDependencies": ["@cubeui/input"],
+      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
       "files": [
         {
           "path": "compiled/inline-number-edit.tsx",

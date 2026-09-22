@@ -379,7 +379,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces twelve rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces thirteen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -436,32 +436,61 @@ repo's layout rather than the consumer's. cubeui shipped it once (#9) and it cam
 The rule reads the built `content`, since that is what the CLI rewrites; a package specifier
 (`icons.web.tsx` re-exporting `lucide-react`) is exempt.
 
+And that **every import between shipped files resolves where the CLI installs them** (rule 13). The
+CLI places a file by its type — `registry:ui` in `components/ui/`, `registry:component` in
+`components/`, `registry:lib` in `lib/` — rewrites `@/` aliases against the consumer's, and leaves a
+relative specifier as written. `compiled/` is flat, so the compiler's `./button` looked right, and
+thirty-one items shipped with one: `app-form` installed into `components/` importing a `./button`
+that had landed in `components/ui/`. `registry:build` now ends with
+`scripts/rn2web/publish-imports.mjs`, which turns each `./x` in the built JSON back into the alias
+for where `x` lands — `compiled/` keeps `./x`, because the side-by-side stories typecheck compiled
+files under the React Native tsconfig, where the alias means the native half. The rule forbids a
+relative import in anything shipped, and holds every `@/` specifier to a path the item or its
+`registryDependencies` closure installs — which is also what caught `color-field` importing
+`@/components/color-picker` (a `registry:ui`, so `components/ui/`) and the compiled `toast` using
+`cn` without depending on `utils`.
+
 Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
 make it exit non-zero and name the cause.
 
 ### The install test
 
-The registry is verified the way a consumer meets it, not only the way it is built: serve `public/`
-over HTTP, point a throwaway project's `components.json` at it, and `shadcn add` a few items.
+The registry is verified the way a consumer meets it, not only the way it is built:
 
 ```sh
-python3 -m http.server 8731 --directory public   # in this repo
-
-# in a scratch DOM project, "@cubeui": "http://localhost:8731/r/{name}.json"
-npx shadcn@latest add @cubeui/form-set @cubeui/page-layout @cubeui/tokens --yes
-
-# in a scratch Expo project, "@cubeui": "http://localhost:8731/r/native/{name}.json"
-npx shadcn@latest add @cubeui/page @cubeui/select @cubeui/toast @cubeui/tokens --yes
+npm run build
+npm run install-test                 # all three apps below; needs the network for npm
+node scripts/install-test.mjs web    # or a subset: web, web-moved-ui, native
 ```
 
-What that proves, and nothing else does: every `-base.ts` / `.tsx` / `.web.tsx` of a split item
-travels together, `@/` rewrites to the consumer's own alias in every file, a `registry:file` lands
-at its `target` (`cubeui-tokens.css` at the project root) while a `registry:lib` lands under the
-`lib` alias, and the npm dependencies that arrive are the versions intended.
+`scripts/install-test.mjs` serves `public/` from an in-process HTTP server, writes three throwaway
+apps (into a temp dir, or `INSTALL_TEST_DIR`), points each one's `components.json` at that server,
+runs `shadcn add` for **every item in the index except the `*-stories`**, and then runs the app's own
+`tsc --noEmit` over everything that arrived:
 
-The web registry was verified the same way, and the four things worth checking there all held: not
-one line of react-native or nativewind in anything installed, `cubeui-tokens.css` arriving as the
+| App | Registry | What it is |
+| --- | --- | --- |
+| `web` | `r/` | Vite + React 19 + TS (strict) + Tailwind v4, the stock aliases |
+| `web-moved-ui` | `r/` | the same with `"ui": "@/components/shadcn"` — proves every import is an alias the CLI rewrites, not a path that happens to match this repo's layout |
+| `native` | `r/native/` | React Native 0.81 + NativeWind 5 types; typecheck only, `.web.tsx` halves included |
+
+It uses this repo's pinned `shadcn` unless `SHADCN="npx shadcn@latest"` says otherwise. It is not in
+`npm run check`, because it installs from npm; run it before a change to how files are placed,
+imported or depended on reaches `main`. On the commit that added it, all three passed — 77 web items
+into each web app, 53 into the native one — and the registry from before it failed the `web` app
+with 47 errors across 17 files: the relative imports rule 13 now forbids, plus the shipped
+`readable-text-color.test.ts` importing a `vitest` the app never installed (the item no longer ships
+its test).
+
+What an install proves, and nothing else does: every `-base.ts` / `.tsx` / `.web.tsx` of a split item
+travels together, `@/` rewrites to the consumer's own alias in every file, each type lands where its
+importers expect it, a `registry:file` lands at its `target` (`cubeui-tokens.css` at the project root)
+while a `registry:lib` lands under the `lib` alias, and the npm dependencies that arrive resolve
+together.
+
+The web registry was also checked by hand, and the four things worth checking there held: not one
+line of react-native or nativewind in anything installed, `cubeui-tokens.css` arriving as the
 **oklch** encoding rather than the hex one, `lucide-react` and `radix-ui` installed where the Expo
 side would have taken `lucide-react-native` and `nativewind`, and `@cubeui/select` pulling the
 compiled `select` — the same item name the Expo project used for the `Modal` sheet.
@@ -854,7 +883,7 @@ radix: the hidden `<input>` behind `name` / `required` for a native `<form>` sub
 
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
-rewritten to `./` like any other.
+rewritten to `./` like any other — inside `compiled/`. What ships gets the alias back (rule 13).
 
 ### The landing page
 
@@ -975,8 +1004,9 @@ npm run tokens:build   # emit dist/
 npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
-npm run registry:build # shadcn build → public/r (web) and public/r/native
-npm run registry:check # the twelve rules under Guards, against both built registries
+npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
+npm run registry:check # the thirteen rules under Guards, against both built registries
+npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)

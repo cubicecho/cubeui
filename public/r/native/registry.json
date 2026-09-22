@@ -58,14 +58,10 @@
       "name": "readable-text-color",
       "type": "registry:lib",
       "title": "Readable Text Color",
-      "description": "Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast. Ships with its tests.",
+      "description": "Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast.",
       "files": [
         {
           "path": "registry/lib/readable-text-color.ts",
-          "type": "registry:lib"
-        },
-        {
-          "path": "registry/lib/readable-text-color.test.ts",
           "type": "registry:lib"
         }
       ]

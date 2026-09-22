@@ -171,7 +171,8 @@ docs/component-conventions.md         authoring rules, and the open questions
                                       reads the copy that ships
 scripts/rn2web/                       the compiler
 scripts/build-tokens.mjs              the token emitter
-scripts/check-registry-build.mjs      `registry:check`: twelve rules over what ships
+scripts/check-registry-build.mjs      `registry:check`: thirteen rules over what ships
+scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/build-page.mjs                the landing page, public/index.html
 .github/workflows/ci.yml              `npm run check` and the Storybook tests
@@ -179,7 +180,11 @@ scripts/build-page.mjs                the landing page, public/index.html
 ```
 
 Sources import each other as `@/components/ui/...`, `@/components/...` and `@/lib/...`; the CLI
-rewrites those against the consuming project's own aliases on install.
+rewrites those against the consuming project's own aliases on install. Pick the prefix by where the
+*imported* file installs — its type, not its directory here: `registry:ui` is `@/components/ui/`,
+`registry:component` is `@/components/`. A relative import never ships: the CLI does not rewrite
+one, and `registry:check` rule 13 fails on it. `compiled/` uses `./x` internally and
+`registry:build` puts the alias back.
 
 Still unsettled: the open decisions at the end of the README, and the open questions in
 `docs/component-conventions.md`. Do not answer those unilaterally in code.
@@ -290,6 +295,10 @@ its label as children.
 npm run build     # tokens → compile → typecheck → registry:build → page:build → registry:check
 npm run check     # the same, read-only: what CI runs
 ```
+
+A change to how files are placed, imported or depended on also gets `npm run install-test`, which
+`shadcn add`s every item into scratch web and native apps and runs their `tsc`. It needs the
+network, so it is not in `check`.
 
 `npm run check` is `tokens:check`, `compile:check`, both typechecks, `registry:check`,
 `page:check`, `docs:check`, Biome and the tests. It is read-only, so a failure in it is either a

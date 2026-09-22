@@ -6,8 +6,13 @@ import {
   useFieldContext,
   useFieldError,
 } from "@/components/app-form";
-import { COLOR_SWATCHES, ColorPicker, isHexColor, normalizeHex } from "@/components/color-picker";
 import { FormField } from "@/components/form-field";
+import {
+  COLOR_SWATCHES,
+  ColorPicker,
+  isHexColor,
+  normalizeHex,
+} from "@/components/ui/color-picker";
 
 type ColorFieldProps = FieldProps &
   Omit<
