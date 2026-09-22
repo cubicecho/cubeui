@@ -178,11 +178,11 @@ function webPath(path, emitted) {
     return emitted.has(file) ? `compiled/${file}` : path;
   }
 
-  // The palette, in the encoding the platform can read. The web one is `oklch()`; `theme.ts` exists
+  // The palette, in the encoding the platform can read. The web one is `oklch()`; `cubeui-theme.ts` exists
   // for React Native props that take a colour string and cannot read a CSS variable, which is not a
   // problem the DOM has.
   if (path === "dist/tokens.native.css") return "dist/tokens.web.css";
-  if (path === "dist/theme.ts") return null;
+  if (path === "dist/cubeui-theme.ts") return null;
 
   return path;
 }

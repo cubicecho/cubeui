@@ -24,9 +24,18 @@ export const light = {
   accent: "#f5f5f5",
   accentForeground: "#171717",
   destructive: "#e7000b",
+  destructiveForeground: "#ffffff",
   border: "#e5e5e5",
   input: "#e5e5e5",
   ring: "#a1a1a1",
+  sidebar: "#fafafa",
+  sidebarForeground: "#0a0a0a",
+  sidebarPrimary: "#171717",
+  sidebarPrimaryForeground: "#fafafa",
+  sidebarAccent: "#f5f5f5",
+  sidebarAccentForeground: "#171717",
+  sidebarBorder: "#e5e5e5",
+  sidebarRing: "#a1a1a1",
 } as const;
 
 export const dark = {
@@ -45,9 +54,18 @@ export const dark = {
   accent: "#404040",
   accentForeground: "#fafafa",
   destructive: "#ff6467",
+  destructiveForeground: "#0a0a0a",
   border: "rgba(255, 255, 255, 0.1)",
   input: "rgba(255, 255, 255, 0.15)",
   ring: "#737373",
+  sidebar: "#171717",
+  sidebarForeground: "#fafafa",
+  sidebarPrimary: "#1447e6",
+  sidebarPrimaryForeground: "#fafafa",
+  sidebarAccent: "#262626",
+  sidebarAccentForeground: "#fafafa",
+  sidebarBorder: "rgba(255, 255, 255, 0.1)",
+  sidebarRing: "#737373",
 } as const;
 
 export type ColorName = keyof typeof light;

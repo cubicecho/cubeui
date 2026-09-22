@@ -1,5 +1,6 @@
 /**
- * Proves the web emitter still reproduces cubeui's committed token blocks exactly.
+ * Proves the web emitter still reproduces cubeui's committed token blocks exactly, for every
+ * token cubeui has.
  *
  * Read-only in both directions: it never writes into cubeui, and cubeui never
  * learns this exists. It is a transition-period guard — when cubeui is archived
@@ -34,13 +35,31 @@ const block = (css, selector) => {
   return end === -1 ? null : css.slice(start, end + 2);
 };
 
+/**
+ * Our block, less the declarations cubeui's has no counterpart for.
+ *
+ * `destructive-foreground` and the `sidebar-*` set are additions here that cubeui never carried,
+ * and a token cubeui lacks is not drift. Everything cubeui *does* have still has to match in value
+ * and in order, which is the part of parity that means something.
+ */
+const shared = (ours, theirs) => {
+  const has = new Set(theirs.match(/--[\w-]+(?=:)/g));
+  return ours
+    .split("\n")
+    .filter((line) => {
+      const name = line.match(/^\s*(--[\w-]+):/)?.[1];
+      return name === undefined || has.has(name);
+    })
+    .join("\n");
+};
+
 const theirs = readFileSync(cubeui, "utf8");
 const ours = readFileSync(mine, "utf8");
 
 let bad = 0;
 for (const selector of [":root", ".dark", "@theme inline"]) {
   const a = block(theirs, selector);
-  const b = block(ours, selector);
+  const b = a === null ? null : shared(block(ours, selector) ?? "", a);
   if (a === null) {
     console.error(`  missing ${selector} in cubeui`);
     bad++;

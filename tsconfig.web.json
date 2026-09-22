@@ -9,7 +9,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@/lib/theme": ["./dist/theme.ts"],
+      "@/lib/cubeui-theme": ["./dist/cubeui-theme.ts"],
       "@/lib/*": ["./compiled/*", "./registry/lib/*"],
       "@/components/ui/*": ["./compiled/*", "./registry/ui/*", "./registry/web/ui/*"],
       "@/components/*": ["./compiled/*", "./registry/web/*"]

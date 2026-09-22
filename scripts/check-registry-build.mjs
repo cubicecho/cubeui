@@ -1,4 +1,4 @@
-// Eight things that have to be true before a built registry is installable.
+// Nine things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -151,6 +151,16 @@
 // invariant rather than a test: the names already say who owns what, and the rule is just that
 // they mean it.
 //
+// ## 9. Every colour class names a token
+//
+// Tailwind generates a colour utility only for a colour its theme holds, and is silent about one
+// it does not: the class stays in the markup, matches no rule, and the element inherits. `button`'s
+// `destructive` variant and `toast`'s error tone both wore `text-destructive-foreground` while the
+// palette had no `--destructive-foreground`, and the consumer who noticed fixed it by defining the
+// token in their own `global.css`. So every `text-*`, `bg-*`, `border-*` (and `ring-*`, `fill-*`,
+// `stroke-*`, `outline-*`) colour a registry file spells has to be a token both stylesheets define
+// or a colour Tailwind ships. `colour-classes.mjs` reads it out of string literals, not comments.
+//
 // A part is claimed when a component named for it exists — `SELECT_ITEM_CLASS` is claimed because
 // `SelectItem` does, `TOOLTIP_TEXT_CLASS` is not because there is no `TooltipText`. A claimed
 // component may apply its own part's constants and any unclaimed one; applying another claimed
@@ -162,6 +172,7 @@
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { tokensIn, unresolvedColours } from "./colour-classes.mjs";
 import { isSource, packageName, packagesIn } from "./imports.mjs";
 
 // Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
@@ -226,6 +237,7 @@ const mismatched = [];
 const ranges = [];
 const peerless = [];
 const misapplied = [];
+const uncoloured = [];
 let checked = 0;
 
 /** `input.web.tsx` and `input-base.ts` are both the `input` item. */
@@ -403,6 +415,22 @@ for (const dir of dirs) {
     if (missingOnNative.length > 0) {
       drift.push(`${here}/${native} is missing: ${missingOnNative.join(", ")}`);
     }
+  }
+}
+
+// Rule 9. Every colour a registry file names is a token both stylesheets define, or a colour
+// Tailwind ships. Recursive, unlike the walk above, because `registry/web/ui` is a source too.
+const [nativeTokens, webTokens] = await Promise.all(
+  ["dist/tokens.native.css", "dist/tokens.web.css"].map(async (f) =>
+    tokensIn(await readFile(f, "utf8")),
+  ),
+);
+const tokens = new Set([...nativeTokens].filter((t) => webTokens.has(t)));
+for (const file of await readdir(SOURCES, { recursive: true })) {
+  if (!/\.(tsx|ts)$/.test(file)) continue;
+  const where = path.join(SOURCES, file);
+  for (const cls of unresolvedColours(await readFile(where, "utf8"), tokens, file)) {
+    uncoloured.push(`${where}: \`${cls}\``);
   }
 }
 
@@ -646,6 +674,19 @@ if (misapplied.length > 0) {
   );
 }
 
+if (uncoloured.length > 0) {
+  console.error(
+    `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length + misapplied.length > 0 ? "\n" : ""}A colour class names no token:\n`,
+  );
+  for (const one of uncoloured) console.error(`  ${one}`);
+  console.error(
+    "\nTailwind generates nothing for a colour its theme does not hold, and says nothing either:" +
+      "\nthe class stays in the markup and the element inherits. `text-destructive-foreground`" +
+      "\nshipped that way on `button` and `toast`. Add the token to `tokens/palette.mjs` and run" +
+      "\n`npm run tokens:build`, or use a colour that exists.",
+  );
+}
+
 if (
   collisions.length +
     drift.length +
@@ -656,7 +697,8 @@ if (
     mismatched.length +
     peerless.length +
     ranges.length +
-    misapplied.length >
+    misapplied.length +
+    uncoloured.length >
   0
 ) {
   process.exit(1);
@@ -669,6 +711,7 @@ console.log(
     "names, every platform pair exports the same set, every npm dependency carries a version " +
     `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
     "every built item file is still listed by the index beside it, and every item declares exactly " +
-    "the packages its own files import plus their required peers, at one range per package, and " +
-    "every shared class constant is applied only by the component it is named for.",
+    "the packages its own files import plus their required peers, at one range per package, " +
+    "every shared class constant is applied only by the component it is named for, and every " +
+    "colour class names a token.",
 );
