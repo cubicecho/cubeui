@@ -36,7 +36,9 @@ export default defineConfig({
         // Naming it here is what vitest's own "please add mentioned dependencies" message asks
         // for; the import is the plugin in `.storybook/rn-classname.ts`, which rewrites every
         // `from "react-native"` in this repo's files to it.
-        optimizeDeps: { include: ["react-native-css/components"] },
+        // `@tanstack/react-form` for the same reason: only `radio-group.stories.tsx` reaches it, so
+        // it is discovered mid-run, and the first cold run lost all four of that file's stories.
+        optimizeDeps: { include: ["react-native-css/components", "@tanstack/react-form"] },
         test: {
           name: "storybook",
           // One browser session at a time. Run in parallel, a session drops its websocket partway

@@ -1,20 +1,11 @@
-/**
- * Compiled from `registry/layout/radio-group-field.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
 import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
+import { Text, View } from "react-native";
+import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import { FieldDescription, FieldError, FieldTitle } from "./field";
-import { RadioGroup, RadioGroupItem } from "./radio-group";
 
 /** One choice. `description` is the line under it — what picking this one means. */
 export type RadioOption = {
@@ -165,32 +156,28 @@ function RadioGroupFieldBody({
     <FieldTitle id={labelId} className={labelClassName}>
       {label}
       {required ? (
-        <span aria-hidden className="cube-rn-text text-destructive">
+        <Text aria-hidden className="text-destructive">
           {" *"}
-        </span>
+        </Text>
       ) : null}
     </FieldTitle>
   ) : null;
 
   return (
-    <div
-      role="group"
-      data-slot="radio-group-field"
-      className={cn("cube-rn-view", "w-full min-w-0 gap-2", className)}
-    >
+    <View role="group" testID="radio-group-field" className={cn("w-full min-w-0 gap-2", className)}>
       {action ? (
-        <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
+        <View className="min-w-0 flex-row items-center gap-2">
           {title}
-          <div className="cube-rn-view ml-auto shrink-0">{action}</div>
-        </div>
+          <View className="ml-auto shrink-0">{action}</View>
+        </View>
       ) : (
         title
       )}
       {loading ? (
-        <div
+        <View
           aria-hidden
-          data-slot="radio-group-field-skeleton"
-          className={cn("cube-rn-view", "h-16 w-full rounded-md bg-muted", loadingClassName)}
+          testID="radio-group-field-skeleton"
+          className={cn("h-16 w-full rounded-md bg-muted", loadingClassName)}
         />
       ) : (
         <RadioGroup
@@ -234,7 +221,7 @@ function RadioGroupFieldBody({
           {error}
         </FieldError>
       ) : null}
-    </div>
+    </View>
   );
 }
 

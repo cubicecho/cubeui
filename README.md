@@ -14,10 +14,10 @@ every build.
 | Stage | What | State |
 |---|---|---|
 | 1 | `tokens` — one palette, three emitters | **done** |
-| 2 | the component registry, ported from `auto-cal/client` | **done** — 44 items, pipeline green |
+| 2 | the component registry, ported from `auto-cal/client` | **done** — 46 items, pipeline green |
 | 0 | the compiler spike — three components, compiled by hand, rendered beside the originals | **done — verdict: go** |
 | 3 | `rn2web` — the RN→web compiler, and the web registry it feeds | **done** — every item has a web half, 71 published |
-| 4 | cubeui's own items ported in as the web-only tier | **done** — 32 web-only items, cubeui fully covered |
+| 4 | cubeui's own items ported in as the web-only tier | **done** — 30 web-only items, cubeui fully covered |
 
 Stage 0 is numbered before stage 3 and run after stage 2 on purpose: it is the gate on stage 3, and it
 needed a real component set to have anything to compile.
@@ -107,7 +107,7 @@ the React Native set.
 | primitives | `icons`, `button`, `card`, `checkbox`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit` |
+| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
 | docs | `skill` |
@@ -544,6 +544,14 @@ half its components, and the first sign is a class that should have been merged 
 
 The cost is owning shadcn's update cadence for five files, which is the price of the install being
 one dialect. It is the same trade `item` and `empty` were already published on.
+
+`radio-group` has since left the list. A React Native app needed it too, so it is now written in
+native (`registry/ui/radio-group.tsx`) and compiled like any other universal item, with
+`radio-group-field` beside it. The web API kept `RadioGroup` / `RadioGroupItem`, `value` /
+`defaultValue` / `onValueChange`, `disabled`, `orientation` and `loop`, and a label-less
+`RadioGroupItem` is still the bare circle for a caller's own `<Label htmlFor>`. What went with
+radix: the hidden `<input>` behind `name` / `required` for a native `<form>` submit, `dir`, and
+`asChild`.
 
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is

@@ -407,38 +407,6 @@
       "files": []
     },
     {
-      "name": "radio-group",
-      "type": "registry:ui",
-      "title": "Radio Group",
-      "description": "shadcn's exclusive choice, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/radio-group.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "lucide-react@^1.34.0", "radix-ui@^1.6.7"]
-    },
-    {
-      "name": "radio-group-field",
-      "type": "registry:component",
-      "title": "Radio Group Field",
-      "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.",
-      "registryDependencies": [
-        "@cubeui/app-form",
-        "@cubeui/field",
-        "@cubeui/form-field",
-        "@cubeui/radio-group"
-      ],
-      "files": [
-        {
-          "path": "registry/web/radio-group-field.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator",

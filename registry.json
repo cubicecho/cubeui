@@ -379,6 +379,33 @@
       ]
     },
     {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radio-group-field",
+      "type": "registry:component",
+      "title": "Radio Group Field",
+      "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/radio-group"],
+      "files": [
+        {
+          "path": "registry/layout/radio-group-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section",
       "type": "registry:component",
       "title": "Section",
