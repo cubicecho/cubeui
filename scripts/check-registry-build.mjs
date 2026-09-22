@@ -1,4 +1,4 @@
-// Twelve things that have to be true before a built registry is installable.
+// Thirteen things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -98,9 +98,10 @@
 // own, against the `content` that actually shipped. `registry.json` is the union of both halves
 // and each registry narrows it; this is the assertion that the narrowing came out exact.
 //
-// A `.test.ts` is exempt. `readable-text-color` ships its tests on purpose, and the runner they
-// import is the consumer's to choose — declaring `vitest` would install a test framework into an
-// app that may not use one.
+// A `.test.ts` is exempt, should one ever ship: the runner it imports is the consumer's to choose,
+// and declaring `vitest` would install a test framework into an app that may not use one. None
+// does now — `readable-text-color` shipped its tests until the install test put that file in a
+// consumer's `lib/`, where their `tsc` failed on a `vitest` import they never asked for.
 //
 // *Peers.* An import is not the only way a package reaches the consumer. `icons` imports
 // `lucide-react-native`, which lists `react-native-svg` as a required *peer* — npm does not
@@ -209,6 +210,22 @@
 // is imported and `export { … }` the local binding: the same two lines, and the one that moves is
 // the one the CLI knows how to move. Asked of the built `content`, which is what the CLI rewrites.
 //
+// ## 13. Every import between shipped files resolves where the CLI puts them
+//
+// The CLI places a file by its *type* — `registry:ui` in the consumer's `components/ui/`,
+// `registry:component` in `components/`, `registry:lib` in `lib/` — and rewrites an `@/` alias
+// against the consumer's `components.json`. A relative specifier it leaves exactly as written. So
+// `compiled/` being flat made `./button` look right: `app-form` imported `./button`, `./checkbox`
+// and three more, and installed into `components/` with every one of them in `components/ui/`.
+// Thirty-one items shipped like that, and every check above passed, because each is about one file
+// or one item and this is about where two of them land relative to each other.
+//
+// So a shipped file never imports another by a relative path, and every `@/` specifier it holds
+// has to be a path that the item itself or something in its `registryDependencies` closure
+// installs — `@/components/ui/card` only if a `registry:ui` file called `card.tsx` arrives with the
+// install, not merely because one exists somewhere in the repo. Rule 10 is this rule for the story
+// items, which have their own package floor on top; this is the same question for everything else.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -270,7 +287,7 @@ async function peersOf(name) {
 }
 
 /**
- * Rule 9's allowlists. `storybook/test` is where Storybook 9 moved `@storybook/test`, and these are
+ * Rule 10's allowlists. `storybook/test` is where Storybook 9 moved `@storybook/test`, and these are
  * the names that have been there, unchanged, since — the floor the story items' descriptions
  * promise. A newer helper is a newer floor, and that is a decision to make on purpose rather than
  * by an import.
@@ -288,7 +305,7 @@ const STORY_TEST_API = new Set([
   "within",
 ]);
 /** Where the CLI puts a file of each type, as the consumer's `@/` alias spells it. */
-const STORY_ALIAS = {
+const INSTALL_ALIAS = {
   "registry:ui": "@/components/ui",
   "registry:component": "@/components",
   "registry:lib": "@/lib",
@@ -296,17 +313,13 @@ const STORY_ALIAS = {
 };
 const isStory = (item) => (item.files ?? []).some((f) => f.path.endsWith(".stories.tsx"));
 
-/** Rule 9 for one story item, against the registry it was built into. */
-function storyProblems(built, item, items) {
-  const problems = [];
-  const name = item.name.replace(/-stories$/, "");
-  if (!(item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`)) {
-    problems.push(`${built}: "${item.name}" does not depend on \`${NAMESPACE}/${name}\``);
-  }
-
-  // Every path an item in the story's dependency closure installs, spelled as an import.
+/**
+ * Every path the items named by `dependencies`, and their own dependency closure, install —
+ * spelled as the `@/` import that reaches each one in the consumer's tree.
+ */
+function installedBy(dependencies, items) {
   const reachable = new Set();
-  const queue = [...(item.registryDependencies ?? [])];
+  const queue = [...dependencies];
   const visited = new Set();
   while (queue.length > 0) {
     const dep = queue.shift().slice(`${NAMESPACE}/`.length);
@@ -315,11 +328,73 @@ function storyProblems(built, item, items) {
     const target = items.get(dep);
     if (!target) continue;
     for (const file of target.files ?? []) {
-      const alias = STORY_ALIAS[file.type];
-      if (alias) reachable.add(`${alias}/${path.basename(file.path).replace(/\.tsx?$/, "")}`);
+      const alias = INSTALL_ALIAS[file.type];
+      if (alias && !file.target) {
+        reachable.add(`${alias}/${path.basename(file.path).replace(/\.tsx?$/, "")}`);
+      }
     }
     queue.push(...(target.registryDependencies ?? []));
   }
+  return reachable;
+}
+
+/** The module specifiers a file names: imports, re-exports and `import()` of a string literal. */
+function specifiersIn(file) {
+  const source = ts.createSourceFile(file.path, file.content ?? "", ts.ScriptTarget.Latest, true);
+  const found = [];
+  const visit = (node) => {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      found.push(node.moduleSpecifier.text);
+    } else if (
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments[0] &&
+      ts.isStringLiteral(node.arguments[0])
+    ) {
+      found.push(node.arguments[0].text);
+    } else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) {
+      const literal = node.argument.literal;
+      if (ts.isStringLiteral(literal)) found.push(literal.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return found;
+}
+
+/** Rule 13 for one item, against the registry it was built into. */
+function placementProblems(built, item, items) {
+  const problems = [];
+  const reachable = installedBy([`${NAMESPACE}/${item.name}`], items);
+  for (const file of item.files ?? []) {
+    if (!/\.(tsx?|jsx?|mjs)$/.test(file.path)) continue;
+    const where = `${built}: "${item.name}" (${path.basename(file.path)})`;
+    for (const spec of specifiersIn(file)) {
+      if (spec.startsWith(".")) {
+        problems.push(`${where} imports \`${spec}\`, a relative path the CLI will not rewrite`);
+      } else if (spec.startsWith("@/") && !reachable.has(spec)) {
+        problems.push(
+          `${where} imports \`${spec}\`, which neither it nor its registryDependencies install there`,
+        );
+      }
+    }
+  }
+  return problems;
+}
+
+/** Rule 10 for one story item, against the registry it was built into. */
+function storyProblems(built, item, items) {
+  const problems = [];
+  const name = item.name.replace(/-stories$/, "");
+  if (!(item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`)) {
+    problems.push(`${built}: "${item.name}" does not depend on \`${NAMESPACE}/${name}\``);
+  }
+
+  const reachable = installedBy(item.registryDependencies ?? [], items);
 
   for (const file of item.files ?? []) {
     const source = ts.createSourceFile(file.path, file.content ?? "", ts.ScriptTarget.Latest);
@@ -369,6 +444,7 @@ const peerless = [];
 const misapplied = [];
 const uncoloured = [];
 const reexports = [];
+const misplaced = [];
 let checked = 0;
 
 /**
@@ -690,6 +766,7 @@ for (const built of BUILT) {
 
   for (const item of items.values()) {
     if (isStory(item)) stories.push(...storyProblems(built, item, items));
+    else misplaced.push(...placementProblems(built, item, items));
   }
 
   for (const { from, dependency } of wanted) {
@@ -913,8 +990,20 @@ if (reexports.length > 0) {
   );
 }
 
+if (misplaced.length > 0) {
+  console.error("\nA built file imports something the install will not put where it points:\n");
+  for (const one of misplaced) console.error(`  ${one}`);
+  console.error(
+    "\nThe CLI places each file by its type — `registry:ui` in components/ui/, `registry:component`" +
+      "\nin components/, `registry:lib` in lib/ — and rewrites `@/` aliases, never relative paths." +
+      "\nImport a sibling as `@/components/ui/<x>`, `@/components/<x>` or `@/lib/<x>` by where *it*" +
+      "\nlands, and name the item that ships it in `registryDependencies`.",
+  );
+}
+
 if (
-  reexports.length +
+  misplaced.length +
+    reexports.length +
     stories.length +
     collisions.length +
     drift.length +
@@ -943,5 +1032,6 @@ console.log(
     "the packages its own files import plus their required peers, at one range per package, " +
     "every shared class constant is applied only by the component it is named for, every " +
     "colour class names a token, every published story imports only what the consumer's " +
-    "tree will hold, every layout is on both platforms, and nothing re-exports with `export … from`.",
+    "tree will hold, every layout is on both platforms, nothing re-exports with `export … from`, " +
+    "and every import between shipped files resolves where the CLI installs them.",
 );

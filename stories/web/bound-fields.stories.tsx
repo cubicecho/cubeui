@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { useAppForm } from "@/components/app-form";
 import { ColorField } from "@/components/color-field";
 import { PasswordField } from "@/components/password-field";

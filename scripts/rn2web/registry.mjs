@@ -73,13 +73,20 @@ function webPackages(files, emitted) {
   const used = new Set();
   for (const file of files) {
     if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
-    // A compiled file's text is the transform's output, which is the only place it exists — it
-    // is what the consumer installs, and its imports are not the React Native source's.
-    const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
-    const text = compiled ?? readFileSync(join(root, file.path), "utf8");
-    for (const name of packagesIn(text, file.path)) used.add(name);
+    for (const name of packagesIn(webText(file, emitted), file.path)) used.add(name);
   }
   return used;
+}
+
+/**
+ * What a web file will contain once built. A compiled file's text is the transform's output, which
+ * is the only place it exists — it is what the consumer installs, and its imports are not the
+ * React Native source's.
+ */
+function webText(file, emitted) {
+  if (!isSource(file.path)) return "";
+  const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
+  return compiled ?? readFileSync(join(root, file.path), "utf8");
 }
 
 /**
@@ -243,6 +250,14 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     deps.push(...(WEB_ONLY[item.name]?.dependencies ?? []));
     if (deps.length) next.dependencies = deps;
     else delete next.dependencies;
+    // `cn` is the one import the compiler writes on its own (`ensureCn`), so a native item with no
+    // class merging of its own — `toast` — can come out needing `utils` without having declared
+    // it. The native half does not need it, so it is added here, to the half that does.
+    const needsUtils = files.some((f) => /from\s+"@\/lib\/utils"/.test(webText(f, emitted)));
+    const utils = "@cubeui/utils";
+    if (needsUtils && item.name !== "utils" && !item.registryDependencies?.includes(utils)) {
+      next.registryDependencies = [...(item.registryDependencies ?? []), utils];
+    }
     items.push(next);
   }
 
