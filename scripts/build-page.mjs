@@ -39,8 +39,22 @@ const native = read("registry.json");
  * choosing what to build on that is the deciding one. Here it is a column, because a table is
  * where someone is actually looking when the question comes up.
  */
+/**
+ * A `-stories` item is a component's companion rather than an item of its own, so it is kept out
+ * of the table and listed once, under Storybook.
+ */
+const isStoryItem = (item) => item.name.endsWith("-stories");
+
+/** The component names that ship a `-stories` item, for the Storybook section. */
+function storyItems() {
+  return web.items
+    .filter(isStoryItem)
+    .map((i) => i.name.slice(0, -"-stories".length))
+    .sort();
+}
+
 function classify() {
-  const webNames = new Set(web.items.map((i) => i.name));
+  const webNames = new Set(web.items.filter((i) => !isStoryItem(i)).map((i) => i.name));
   const nativeNames = new Set(native.items.map((i) => i.name));
   const rows = [];
   for (const name of [...new Set([...webNames, ...nativeNames])].sort()) {
@@ -242,9 +256,20 @@ refs: { cubeui: { title: "cubeui", url: "${HOST}/storybook" } }</code></pre>
   <strong>Composed stories render here, under these tokens.</strong> That makes them
   documentation, not a test of your theme — the question "does <code>Button</code> still pass
   contrast after our <code>index.css</code> override" is only answered by a story compiled in
-  your app, and shipping stories through the registry is
-  <a href="https://github.com/cubicecho/cubeui/issues/45">tracked separately</a>.
+  your app — which is what the <code>-stories</code> items are.
 </div>
+
+<p>
+  Installing <code>@cubeui/&lt;name&gt;-stories</code> puts that component's stories beside it in
+  your tree, importing it as <code>@/components/ui/&lt;name&gt;</code>, so they render under your
+  stylesheet and run as tests under your addon-vitest. They need Storybook 9 or later on
+  <code>@storybook/react-vite</code> and declare no npm dependencies. Available for:
+  ${storyItems()
+    .map((name) => `<code>${html(name)}</code>`)
+    .join(", ")}.
+</p>
+
+<pre><code>npx shadcn add @cubeui/button-stories</code></pre>
 
 <footer>
   <a href="https://github.com/cubicecho/cubeui">github.com/cubicecho/cubeui</a> ·

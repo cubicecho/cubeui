@@ -34,6 +34,7 @@
 import { readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { isSource, packageName, packagesIn } from "../imports.mjs";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
@@ -271,4 +272,80 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     },
     dropped: dropped.sort(),
   };
+}
+
+/**
+ * Where a published story lives, and the suffix that makes a story item out of a component one.
+ *
+ * `@cubeui/button-stories` rather than a flag on `@cubeui/button`, so `shadcn add @cubeui/button`
+ * installs exactly what it did before for everyone who does not want a story — and a story item
+ * is one more line in an `add`, not an option the CLI has no syntax for.
+ */
+export const STORIES_DIR = "stories/web/published";
+export const STORIES_SUFFIX = "-stories";
+
+/**
+ * The web registry's story items, one per file in `stories/web/published/`.
+ *
+ * Derived, for the same reason the rest of `registry.web.json` is: a story that has to be
+ * remembered in a JSON file as well as written is a story that ships without its item, or an item
+ * that outlives its story. The file is the declaration. `button.stories.tsx` becomes
+ * `button-stories`, which:
+ *
+ * - lands where `button` did, because it takes that item's file `type`. `registry:ui` puts both in
+ *   the consumer's `components/ui/`, colocated the way a consuming app writes its own stories —
+ *   and the CLI rewrites the story's `@/components/ui/button` to the consumer's alias in the same
+ *   pass it rewrites the component's.
+ * - depends on `@cubeui/button` and on every other item whose file the story imports, so adding
+ *   the story alone brings a component it can render.
+ * - declares no npm package. A story reaches for `storybook/test` and `@storybook/react-vite`, and
+ *   an app that asks for a story has both; declaring them would make the CLI `npm install` a
+ *   Storybook over whichever major the app pinned. Rule 9 of `check-registry-build.mjs` holds
+ *   what a published story may import.
+ *
+ * Web only. A story here imports the compiled `Button`, clicks it with `onClick` and runs its
+ * `play` under `@storybook/addon-vitest` — none of which an on-device Storybook in an Expo app
+ * has. The README's "Stories through the registry" says what a native half would need.
+ *
+ * Throws rather than dropping: a story for an item the web registry does not hold, or one
+ * importing a module no item ships, is a mistake in this repo and not a refusal to report.
+ */
+export function deriveStoryItems(webItems, stories) {
+  const byName = new Map(webItems.map((i) => [i.name, i]));
+  const owner = new Map();
+  for (const item of webItems) {
+    for (const file of item.files) {
+      owner.set(basename(file.path).replace(/\.(tsx?|css)$/, ""), item.name);
+    }
+  }
+
+  const items = [];
+  for (const { path, text } of [...stories].sort((a, b) => a.path.localeCompare(b.path))) {
+    const name = basename(path, ".stories.tsx");
+    const item = byName.get(name);
+    if (!item) throw new Error(`${path}: no web item named "${name}" for this story to ship with`);
+
+    const deps = new Set([name]);
+    for (const { fileName } of ts.preProcessFile(text, true, true).importedFiles) {
+      if (!fileName.startsWith("@/")) continue;
+      const module = fileName.split("/").pop();
+      const from = owner.get(module);
+      if (!from) throw new Error(`${path}: \`${fileName}\` is not a file any web item ships`);
+      deps.add(from);
+    }
+
+    const type = item.files[0]?.type ?? item.type;
+    items.push({
+      name: `${name}${STORIES_SUFFIX}`,
+      type,
+      title: `${item.title ?? name} stories`,
+      description:
+        `Storybook stories for @cubeui/${name}, installed beside it so they render under your own ` +
+        "stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on " +
+        "@storybook/react-vite.",
+      registryDependencies: [...deps].map((d) => `@cubeui/${d}`),
+      files: [{ path, type }],
+    });
+  }
+  return items;
 }

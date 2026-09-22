@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "segmented-stories",
+  "title": "Segmented stories",
+  "description": "Storybook stories for @cubeui/segmented, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/segmented"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/segmented.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { useState } from \"react\";\nimport { expect, userEvent, within } from \"storybook/test\";\nimport { SegmentedButton } from \"@/components/ui/segmented\";\n\n/**\n * `SegmentedButton`, as installed beside it by `@cubeui/segmented-stories`: a row of pills, one\n * current, and the current one saying so in the only spelling a screen reader reads on the web.\n */\nconst OPTIONS = [\"Day\", \"Week\", \"Month\"] as const;\n\nfunction Row() {\n  const [value, setValue] = useState<(typeof OPTIONS)[number]>(\"Week\");\n  return (\n    <div className=\"flex flex-row gap-1 bg-background p-6 text-foreground\">\n      {OPTIONS.map((option) => (\n        <SegmentedButton key={option} active={option === value} onClick={() => setValue(option)}>\n          {option}\n        </SegmentedButton>\n      ))}\n    </div>\n  );\n}\n\nconst meta = { title: \"cubeui/Segmented\", component: Row } satisfies Meta<typeof Row>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\n/**\n * The active pill is pressed and painted; the others say they are not pressed rather than saying\n * nothing. The painted check is palette-free: the active pill's background differs from an\n * inactive one's, whatever the two colours are.\n */\nexport const Default: Story = {\n  play: async ({ canvasElement }) => {\n    const canvas = within(canvasElement);\n    const pill = (name: string) => canvas.getByRole(\"button\", { name });\n    const background = (el: Element) => getComputedStyle(el).backgroundColor;\n\n    await expect(pill(\"Week\").getAttribute(\"aria-pressed\")).toBe(\"true\");\n    await expect(pill(\"Day\").getAttribute(\"aria-pressed\")).toBe(\"false\");\n    await expect(background(pill(\"Week\"))).not.toBe(background(pill(\"Day\")));\n\n    await userEvent.click(pill(\"Month\"));\n    await expect(pill(\"Month\").getAttribute(\"aria-pressed\")).toBe(\"true\");\n    await expect(pill(\"Week\").getAttribute(\"aria-pressed\")).toBe(\"false\");\n  },\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

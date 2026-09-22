@@ -81,3 +81,10 @@ jobs:
       # Stage 0 verdict in the README is no longer backed by anything.
       - name: Storybook builds
         run: npm run build-storybook
+
+      # The same composability check `pages.yml` makes before deploying, here so a PR finds out.
+      - name: The Storybook is composable
+        run: |
+          test -f storybook-static/index.json
+          test ! -e storybook-static/r
+          ! grep -q 'components for React Native and the DOM' storybook-static/index.html

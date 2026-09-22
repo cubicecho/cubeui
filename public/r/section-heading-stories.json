@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "section-heading-stories",
+  "title": "Section Heading stories",
+  "description": "Storybook stories for @cubeui/section-heading, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+  "registryDependencies": [
+    "@cubeui/section-heading"
+  ],
+  "files": [
+    {
+      "path": "stories/web/published/section-heading.stories.tsx",
+      "content": "import type { Meta, StoryObj } from \"@storybook/react-vite\";\nimport { expect, within } from \"storybook/test\";\nimport { SectionHeading } from \"@/components/section-heading\";\n\n/**\n * `SectionHeading`, as installed beside it by `@cubeui/section-heading-stories`. It is a\n * `registry:component`, so this file lands in `components/` beside it rather than in\n * `components/ui/`.\n */\nconst meta = {\n  title: \"cubeui/SectionHeading\",\n  component: SectionHeading,\n  args: { children: \"Upcoming\" },\n  decorators: [\n    (Story) => (\n      <div className=\"bg-background p-6 text-foreground\">\n        <Story />\n      </div>\n    ),\n  ],\n} satisfies Meta<typeof SectionHeading>;\n\nexport default meta;\ntype Story = StoryObj<typeof meta>;\n\n/**\n * Muted, and muted means *different from body text* — the palette-free version of asserting\n * `text-muted-foreground` resolved.\n */\nexport const Default: Story = {\n  play: async ({ canvasElement }) => {\n    const heading = within(canvasElement).getByText(\"Upcoming\");\n    const body = getComputedStyle(heading.parentElement as Element).color;\n    await expect(getComputedStyle(heading).color).not.toBe(body);\n  },\n};\n\nexport const Overline: Story = {\n  args: { variant: \"overline\", children: \"This week\" },\n  play: async ({ canvasElement }) => {\n    const heading = within(canvasElement).getByText(\"This week\");\n    await expect(getComputedStyle(heading).textTransform).toBe(\"uppercase\");\n  },\n};\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

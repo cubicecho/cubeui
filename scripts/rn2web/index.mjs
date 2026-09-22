@@ -31,7 +31,7 @@ import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compileSource, passthroughSource } from "./compile.mjs";
-import { deriveWebRegistry } from "./registry.mjs";
+import { deriveStoryItems, deriveWebRegistry, STORIES_DIR } from "./registry.mjs";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const OUT = join(root, "compiled");
@@ -218,6 +218,16 @@ const WEB_REGISTRY = join(root, "registry.web.json");
 const source = JSON.parse(readFileSync(join(root, "registry.json"), "utf8"));
 const webOnly = JSON.parse(readFileSync(join(root, "registry.web-only.json"), "utf8"));
 const { registry: web, dropped } = deriveWebRegistry(source, webOnly, emitted);
+// The published stories, one item per file, appended after the components they document. See
+// `deriveStoryItems` for why they are items of their own and derived rather than declared.
+const stories = readdirSync(join(root, STORIES_DIR))
+  .filter((f) => f.endsWith(".stories.tsx"))
+  .map((f) => ({
+    path: `${STORIES_DIR}/${f}`,
+    text: readFileSync(join(root, STORIES_DIR, f), "utf8"),
+  }));
+const storyItems = deriveStoryItems(web.items, stories);
+web.items.push(...storyItems);
 // Through biome for the same reason the `.tsx` output is: `--check` has to compare what this writes
 // against what the repo's formatter would leave behind, or every file drifts the moment it is
 // tidied.
@@ -242,7 +252,8 @@ console.log(
     `${refusals.length} refused${check ? `, ${drift} drifted, ${stale.length} stale` : ""}.`,
 );
 console.log(
-  `registry.web.json: ${web.items.length} of ${source.items.length + webOnly.items.length} items` +
+  `registry.web.json: ${web.items.length - storyItems.length} of ` +
+    `${source.items.length + webOnly.items.length} items, and ${storyItems.length} story items` +
     `${dropped.length ? ` — no web half for ${dropped.join(", ")}` : ""}.`,
 );
 
