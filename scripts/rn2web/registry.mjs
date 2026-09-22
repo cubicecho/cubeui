@@ -76,7 +76,7 @@ function webPackages(files, emitted) {
     // is what the consumer installs, and its imports are not the React Native source's.
     const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
     const text = compiled ?? readFileSync(join(root, file.path), "utf8");
-    for (const name of packagesIn(text)) used.add(name);
+    for (const name of packagesIn(text, file.path)) used.add(name);
   }
   return used;
 }
@@ -90,6 +90,35 @@ function webPackages(files, emitted) {
  * has already read it and emitted the element it named.
  */
 const NATIVE_ONLY_FILES = new Set(["registry/lib/web-as.d.ts"]);
+
+/**
+ * Files the web half of an item ships and the native half has no counterpart for, so there is
+ * nothing in `registry.json` to derive them from. The mirror of `NATIVE_ONLY_FILES` above.
+ *
+ * One entry, and it is the compiler's own output. `cube-rn-reset.css` is what replaces
+ * react-native-web's per-component base class for a component that no longer has
+ * react-native-web — 24 of the compiled components wear one of its classes, and a `.tsx` file
+ * cannot declare that its classes come from somewhere. It rides with `tokens` because that is
+ * the one item every DOM consumer installs and the stylesheet that `@import`s it.
+ *
+ * Deliberately not its own item. `@cubeui/reset` would be a 25-item `registryDependencies` edit
+ * and a thing a consumer can decline, and a component whose layout classes are optional is a
+ * component that renders wrong rather than one that fails to install.
+ *
+ * `dependencies` here is the same idea for a package: one the web half needs and the native half
+ * must not be made to install. `tw-animate-css` is where `animate-in`, `fade-in-0`, `zoom-in-95`
+ * and `slide-in-from-*` live — not core Tailwind, which is why four items wore them undeclared —
+ * and `tokens.web.css` is what imports it. `registry.json` cannot carry it, because that file
+ * *is* the native registry and an Expo app has no use for a DOM keyframe library.
+ */
+const WEB_ONLY = {
+  tokens: {
+    files: [
+      { path: "compiled/cube-rn-reset.css", type: "registry:file", target: "~/cubeui-reset.css" },
+    ],
+    dependencies: ["tw-animate-css@^1.4.0"],
+  },
+};
 
 /**
  * Descriptions are shared: an item is one component, and "a radix listbox on web, a Modal sheet on
@@ -175,6 +204,8 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
       continue;
     }
 
+    files.push(...(WEB_ONLY[item.name]?.files ?? []));
+
     const next = { ...item, files };
     if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
     // A package is in the web half either because a web file imports it, or because something a
@@ -186,6 +217,7 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
       const name = packageName(d);
       return used.has(name) || [...used].some((reason) => PEERS_OF[reason]?.includes(name));
     });
+    deps.push(...(WEB_ONLY[item.name]?.dependencies ?? []));
     if (deps.length) next.dependencies = deps;
     else delete next.dependencies;
     items.push(next);

@@ -339,7 +339,7 @@ for (const built of BUILT) {
     const imported = new Set();
     for (const file of item.files ?? []) {
       if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
-      for (const name of packagesIn(file.content ?? "")) imported.add(name);
+      for (const name of packagesIn(file.content ?? "", file.path)) imported.add(name);
     }
     // `devDependencies` is where an optional peer goes — `@types/react-dom` is not a runtime
     // dependency — so both lists count as "declared" for every question below.

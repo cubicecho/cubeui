@@ -58,7 +58,7 @@ export function ToggleChip({
       // `aria-selected` because this is a `button`, where `aria-selected` is markup axe rejects.
       aria-pressed={selected}
       aria-disabled={disabled}
-      {...(accessibilityLabel ? { accessibilityLabel } : {})}
+      {...(accessibilityLabel ? { "aria-label": accessibilityLabel } : {})}
       className={cn(
         "cube-rn-view cube-rn-pressable",
         "rounded-md border",

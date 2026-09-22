@@ -560,6 +560,54 @@ function checkElementLeaks(sourceFile, elements, diagnostics) {
 }
 
 /**
+ * No React Native prop name survived into the output *as a prop name*.
+ *
+ * `renamePublicProps` walks the syntactic places a prop name can appear, and the way it failed
+ * was by there being one more. A name it misses does not break the build and does not warn: React
+ * hands an unrecognised prop straight to the DOM node, so the component renders, the attribute is
+ * invalid HTML, and whatever the prop was for — an accessible name, in the case that found this —
+ * is simply absent. Only a reader using a screen reader would ever notice.
+ *
+ * "As a prop name" is the whole precision of this. A renamed prop keeps the source's own local
+ * name on purpose — `{ "aria-label": accessibilityLabel }` — and the body then references that
+ * local freely, so an `accessibilityLabel` *identifier* in the output is normal and an
+ * `accessibilityLabel` *key* is the bug. The four positions below are where a key can be written;
+ * every other appearance is a reference and is left alone. Comments are outside the syntax tree
+ * entirely, which is why the six compiled files explaining `accessibilityState` in prose are fine.
+ */
+function checkNativePropLeaks(sourceFile, diagnostics) {
+  const leaked = (node, name) =>
+    refuse(
+      diagnostics,
+      node,
+      `\`${name}\` is used as a prop name in the compiled output, where it is a React Native name ` +
+        "the DOM does not have. React forwards an unknown prop to the element, so this ships as an " +
+        "invalid attribute and whatever it was for is silently missing. Add it to `PROP_MAP` in " +
+        "`tables.mjs`, or to `REFUSED_PROPS` if it has no web equivalent.",
+    );
+  const native = (text) => /^accessibility[A-Z]/.test(text);
+
+  // A shorthand is both positions at once, which is exactly how this class of bug hides.
+  for (const node of sourceFile.getDescendantsOfKind(SyntaxKind.ShorthandPropertyAssignment)) {
+    if (!node.wasForgotten() && native(node.getName())) leaked(node, node.getName());
+  }
+  for (const kind of [
+    SyntaxKind.JsxAttribute,
+    SyntaxKind.PropertySignature,
+    SyntaxKind.PropertyAssignment,
+  ]) {
+    for (const node of sourceFile.getDescendantsOfKind(kind)) {
+      if (node.wasForgotten()) continue;
+      const name = node
+        .getNameNode()
+        .getText()
+        .replace(/^["']|["']$/g, "");
+      if (native(name)) leaked(node.getNameNode(), name);
+    }
+  }
+}
+
+/**
  * The public API, renamed to the names the platform actually has.
  *
  * A compiled `<Button>` renders a `<button>`, so it takes `onClick`. This is a real fork and the
@@ -593,6 +641,27 @@ function renamePublicProps(sourceFile) {
     const name = binding.getNameNode().getText();
     const mapped = PROP_MAP[name];
     if (mapped) binding.replaceWithText(`${key(mapped)}: ${name}`);
+  }
+
+  /*
+   * `{...(label ? { accessibilityLabel } : {})}` -> `{...(label ? { "aria-label": accessibilityLabel } : {})}`.
+   *
+   * A shorthand property is a prop name and a variable name in one token, and the passes above
+   * only ever saw it as the second. So `toggle-chip`'s conditional spread — the idiom this repo
+   * uses everywhere a prop is optional under `exactOptionalPropertyTypes` — put a literal
+   * `accessibilityLabel` attribute on a DOM `<button>`, where React passes unknown props straight
+   * through to the element: an invalid attribute in the HTML, and a chip whose accessible name
+   * never arrived. Silent, because nothing errors and the component looks right.
+   *
+   * Only expanded inside a JSX spread, which is what makes this safe rather than a rename of
+   * every object key that happens to collide with a React Native prop name. An object being
+   * spread onto an element is an attribute list; an object anywhere else is the author's own.
+   */
+  for (const short of sourceFile.getDescendantsOfKind(SyntaxKind.ShorthandPropertyAssignment)) {
+    const mapped = PROP_MAP[short.getName()];
+    if (!mapped) continue;
+    if (!short.getFirstAncestorByKind(SyntaxKind.JsxSpreadAttribute)) continue;
+    short.replaceWithText(`${key(mapped)}: ${short.getName()}`);
   }
 
   // Whatever is still a capitalised tag at this point is a component, not a host element: every
@@ -809,6 +878,7 @@ export function compileSource({
   renamePublicProps(sourceFile);
   ensureCn(sourceFile);
   checkElementLeaks(sourceFile, elements, diagnostics);
+  checkNativePropLeaks(sourceFile, diagnostics);
   checkNestedInteractive(sourceFile, diagnostics);
   rewriteSpecifiers(sourceFile, compiledNames, neutralNames, upstreamNames, diagnostics);
   if (diagnostics.length) return { code: null, diagnostics };

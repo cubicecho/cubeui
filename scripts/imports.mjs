@@ -46,9 +46,12 @@ function packageOf(specifier) {
  * reaching upstream shadcn's `@/components/ui/separator` — so it is `registryDependencies` that
  * covers them and never `dependencies`.
  */
-export function packagesIn(source) {
+export function packagesIn(source, path = "") {
   const found = new Set();
-  for (const { fileName } of ts.preProcessFile(source, true, true).importedFiles) {
+  const specifiers = path.endsWith(".css")
+    ? cssImportsIn(source)
+    : ts.preProcessFile(source, true, true).importedFiles.map((f) => f.fileName);
+  for (const fileName of specifiers) {
     if (fileName.startsWith(".") || fileName.startsWith("@/")) continue;
     const name = packageOf(fileName);
     if (!PEERS.has(name)) found.add(name);
@@ -56,8 +59,37 @@ export function packagesIn(source) {
   return found;
 }
 
+/**
+ * The specifiers a stylesheet `@import`s.
+ *
+ * A regex here where the TypeScript scanner is used above, because there is no CSS parser in this
+ * repo's dependencies and `@import` is the one CSS statement whose grammar is small enough to
+ * match honestly: it is the first thing in the file, its argument is a quoted string or a
+ * `url()`, and anything after that is a layer or media query this does not care about — which is
+ * why the match stops at the closing quote and `@import "tailwindcss/theme.css" layer(theme);`
+ * yields the stylesheet rather than `theme`.
+ *
+ * It matters because a stylesheet is the only file in this registry that can pull in a package
+ * the consumer has to have installed and that no `.tsx` mentions — `tw-animate-css` is exactly
+ * that, and the four items using its classes had no way to say so.
+ */
+function cssImportsIn(source) {
+  const found = [];
+  for (const match of source.matchAll(/@import\s+(?:url\(\s*)?["']([^"']+)["']/g)) {
+    found.push(match[1]);
+  }
+  return found;
+}
+
 /** `nativewind@^5.0.0-rc.0` -> `nativewind`. A scoped name's own `@` is never the separator. */
 export const packageName = (spec) => spec.replace(/(?!^)@[\^~><=\d].*$/, "");
 
-/** Only a TypeScript source carries imports; a `.css` or a `.md` in an item's files does not. */
-export const isSource = (path) => /\.tsx?$/.test(path);
+/**
+ * Files that can name a package: a TypeScript source, and a stylesheet.
+ *
+ * `.css` was outside this until a compiled DOM component shipped wearing `cube-rn-view` and
+ * `animate-in` with nothing in the consumer's tree defining either. The stylesheet is where both
+ * are imported from, so it is a file with dependencies and has to be read as one. A `.md` in an
+ * item's files still is not.
+ */
+export const isSource = (path) => /\.(tsx?|css)$/.test(path);

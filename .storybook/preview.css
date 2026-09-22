@@ -14,6 +14,15 @@
 @import "../compiled/cube-rn-reset.css";
 
 /*
+ * Where `animate-in`, `fade-in-0`, `zoom-in-95` and `slide-in-from-*` come from — the classes
+ * `dialog`, `popover`, `select` and `tooltip` wear on their `data-[state]` rules. Not core
+ * Tailwind, and the reason this line exists here is that it was missing everywhere: the stories
+ * were rendering those four with the state rules inert and nothing saying so. The emitted
+ * `tokens.web.css` now imports it too, which is what a consumer gets.
+ */
+@import "tw-animate-css";
+
+/*
  * Tailwind 4 infers its sources from where the CSS lives, which here is `.storybook/`. Naming
  * them makes the scan cover the trees the classes are actually written in, whatever the CSS moves
  * to later.
