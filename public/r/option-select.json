@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "option-select",
   "title": "OptionSelect",
-  "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.",
+  "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/select",
     "@cubeui/utils"

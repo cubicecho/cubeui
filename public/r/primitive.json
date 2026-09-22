@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "primitive",
   "title": "Vendored Primitives",
-  "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
+  "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/empty",
     "@cubeui/item"

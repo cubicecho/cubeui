@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "section",
   "title": "Section",
-  "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable.",
+  "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/utils"
   ],

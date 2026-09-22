@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "date-field",
   "title": "Date Field",
-  "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.",
+  "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/app-form",
     "@cubeui/date-picker",

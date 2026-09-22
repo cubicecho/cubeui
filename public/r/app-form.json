@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "app-form",
   "title": "App Form",
-  "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+  "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
   "dependencies": [
     "@tanstack/react-form@^1.33.5"
   ],

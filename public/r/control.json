@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "control",
   "title": "Control Set",
-  "description": "Every cubeui control in one install.",
+  "description": "Every cubeui control in one install. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/action-button",
     "@cubeui/color-picker",

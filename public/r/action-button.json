@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "action-button",
   "title": "Action Button",
-  "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
+  "description": "An icon button with a required accessible name, and a tooltip that survives being disabled. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/button",
     "@cubeui/tooltip",

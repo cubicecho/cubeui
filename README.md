@@ -275,6 +275,13 @@ points `@cubeui` at whichever one matches the platform it is:
 "registries": { "@cubeui": "https://cubicecho.github.io/cubeui/r/native/{name}.json" }
 ```
 
+**On a Vite app, put `compilerOptions.paths` in the root `tsconfig.json` as well.** `npm create
+vite@latest` writes `paths` into `tsconfig.app.json` and leaves the root file a bare `references`
+stub; the CLI reads only the root one, finds no `@/` alias, and resolves it as a relative path —
+so the install writes a literal `@/` **directory** at the project root, reports success, and the
+app's own imports see none of it. The first sign of trouble is `Cannot find module
+'@/components/ui/card'`. Duplicating the `paths` block into the root file is the whole fix.
+
 The web half holds the shorter URL even though this registry is React Native first. That is not an
 accident of which came first: `…/cubeui/r/{name}.json` is the string ten DOM consumers map to
 `@cubeui` **today**, and this branch becomes that repo. Keeping `/r/` meaning "web" is what makes the
@@ -430,6 +437,15 @@ without either weakening the rule or carrying a marker field that has to be kept
 `registry/web/` needs neither: every file in it is web-only because of where it is, and
 `registry/web/ui/` mirrors `registry:ui` vs `registry:component` so `item` still installs to
 `components/ui/` where cubeui's consumers already have it.
+
+**And the published item says so.** The tier was invisible from outside this repo — `section` has
+no native half, `card` does, and their item JSON was the same shape down to both shipping one file
+out of `compiled/` — so the only ways to tell were installing it and reading the file header,
+probing `/r/native/<name>.json` for a 404, or reading this table. `registry.mjs` now appends
+*"Web-only: no React Native half."* to each of the 28 descriptions in the web registry, which is
+the one field already published and already printed by the CLI at install time. It is appended
+rather than written into `registry.web-only.json`, so the 29th item cannot be the one that forgets.
+In the native registry the item simply is not there, which says it more plainly.
 
 ### The port was an API reconciliation, not a copy
 

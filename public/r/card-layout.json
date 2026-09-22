@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "card-layout",
   "title": "Card Layout",
-  "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
+  "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/card",
     "@cubeui/utils",

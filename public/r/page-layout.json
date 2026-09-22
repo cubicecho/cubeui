@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "page-layout",
   "title": "Page Layout",
-  "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
+  "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/header-content-footer",
     "@cubeui/page-header"

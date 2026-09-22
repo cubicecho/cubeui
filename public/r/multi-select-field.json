@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "multi-select-field",
   "title": "Multi Select Field",
-  "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
+  "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/app-form",
     "@cubeui/form-field",

@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "item",
   "title": "Item",
-  "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
+  "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place. Web-only: no React Native half.",
   "dependencies": [
     "@types/react-dom@~19.2.0",
     "class-variance-authority@^0.7.1",

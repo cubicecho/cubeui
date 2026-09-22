@@ -121,6 +121,26 @@ const WEB_ONLY = {
 };
 
 /**
+ * What a web-only item says about itself, appended to its description.
+ *
+ * The tier was invisible from outside this repo. `section` has no native half and `card` does, and
+ * their published JSON is the same shape — same keys, both shipping one file out of `compiled/` —
+ * so the three ways to find out were installing it and reading the file header, probing
+ * `/r/native/<name>.json` for a 404, or reading a table in this repo's README. That is the
+ * deciding fact about an item for anyone choosing components for an app that might go native, and
+ * it was the one fact the registry did not carry.
+ *
+ * In `description` rather than a new field, because `description` is already published, already
+ * printed by the CLI at install time, and needs nothing from the shadcn item schema. Appended here
+ * rather than written into `registry.web-only.json`, because a sentence a human has to remember to
+ * copy onto the 29th item is a sentence that will be missing from the 29th item.
+ *
+ * Only the web registry gets it. In the native registry the item does not exist at all, which says
+ * the same thing more plainly.
+ */
+const WEB_ONLY_NOTE = "Web-only: no React Native half.";
+
+/**
  * Descriptions are shared: an item is one component, and "a radix listbox on web, a Modal sheet on
  * device" is worth reading in either registry — it says what arrives and that the other half
  * exists. The exception is a description that names a file this registry does not ship.
@@ -179,6 +199,7 @@ function webPath(path, emitted) {
 export function deriveWebRegistry(registry, webOnly, emitted) {
   const items = [];
   const dropped = [];
+  const webOnlyNames = new Set(webOnly.items.map((i) => i.name));
 
   for (const item of [...registry.items, ...webOnly.items]) {
     const files = [];
@@ -208,6 +229,7 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
 
     const next = { ...item, files };
     if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
+    if (webOnlyNames.has(item.name)) next.description = `${next.description} ${WEB_ONLY_NOTE}`;
     // A package is in the web half either because a web file imports it, or because something a
     // web file imports peers it — `@types/react-dom` is imported by nothing and pins itself to the
     // line Expo's own `@types/react` is on. An item whose only reason for a peer was a dependency

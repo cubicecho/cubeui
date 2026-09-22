@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "empty",
   "title": "Empty",
-  "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place.",
+  "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place. Web-only: no React Native half.",
   "dependencies": [
     "class-variance-authority@^0.7.1"
   ],

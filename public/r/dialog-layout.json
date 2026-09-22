@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dialog-layout",
   "title": "Dialog Layout",
-  "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
+  "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/dialog",
     "@cubeui/header-content-footer",

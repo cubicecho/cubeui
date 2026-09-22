@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "confirm-button",
   "title": "Confirm Button",
-  "description": "A destructive button that asks first, with a required description of what is lost.",
+  "description": "A destructive button that asks first, with a required description of what is lost. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/action-button",
     "alert-dialog"

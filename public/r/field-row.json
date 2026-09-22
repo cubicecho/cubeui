@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "field-row",
   "title": "Field Row",
-  "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at.",
+  "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/utils"
   ],

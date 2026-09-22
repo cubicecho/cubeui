@@ -678,7 +678,7 @@
       "name": "action-button",
       "type": "registry:component",
       "title": "Action Button",
-      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
+      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
       "files": [
         {
@@ -691,7 +691,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -713,7 +713,7 @@
       "name": "card-layout",
       "type": "registry:component",
       "title": "Card Layout",
-      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/card", "@cubeui/utils", "skeleton"],
       "files": [
         {
@@ -726,7 +726,7 @@
       "name": "color-field",
       "type": "registry:component",
       "title": "Color Field",
-      "description": "A colour picker as one line, over a field the compiler checked holds a string.",
+      "description": "A colour picker as one line, over a field the compiler checked holds a string. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/app-form", "@cubeui/color-picker", "@cubeui/form-field"],
       "files": [
         {
@@ -739,7 +739,7 @@
       "name": "confirm-button",
       "type": "registry:component",
       "title": "Confirm Button",
-      "description": "A destructive button that asks first, with a required description of what is lost.",
+      "description": "A destructive button that asks first, with a required description of what is lost. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/action-button", "alert-dialog"],
       "files": [
         {
@@ -752,7 +752,7 @@
       "name": "control",
       "type": "registry:component",
       "title": "Control Set",
-      "description": "Every cubeui control in one install.",
+      "description": "Every cubeui control in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/action-button",
         "@cubeui/color-picker",
@@ -768,7 +768,7 @@
       "name": "date-field",
       "type": "registry:component",
       "title": "Date Field",
-      "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.",
+      "description": "A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/app-form", "@cubeui/date-picker", "@cubeui/form-field"],
       "files": [
         {
@@ -781,7 +781,7 @@
       "name": "date-picker",
       "type": "registry:component",
       "title": "Date Picker",
-      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/calendar",
@@ -801,7 +801,7 @@
       "name": "dialog-layout",
       "type": "registry:component",
       "title": "Dialog Layout",
-      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
+      "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/dialog",
         "@cubeui/header-content-footer",
@@ -819,7 +819,7 @@
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/item", "@cubeui/utils"],
       "files": [
         {
@@ -833,7 +833,7 @@
       "name": "empty",
       "type": "registry:ui",
       "title": "Empty",
-      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place.",
+      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -847,7 +847,7 @@
       "name": "field-row",
       "type": "registry:component",
       "title": "Field Row",
-      "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at.",
+      "description": "Fields side by side on one row, wrapping when they no longer fit rather than squeezing to a width the values no longer read at. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -860,7 +860,7 @@
       "name": "form-field",
       "type": "registry:component",
       "title": "Form Field",
-      "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it.",
+      "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/field", "@cubeui/popover", "@cubeui/utils", "skeleton"],
       "files": [
         {
@@ -874,7 +874,7 @@
       "name": "form-set",
       "type": "registry:component",
       "title": "Form Set",
-      "description": "Every cubeui form component in one install, TanStack binding included. Named `form-set` rather than `form`: that name is the React Native `Form` component in this registry, and the shadcn CLI resolves a cross-item import by basename, so the two cannot share it.",
+      "description": "Every cubeui form component in one install, TanStack binding included. Named `form-set` rather than `form`: that name is the React Native `Form` component in this registry, and the shadcn CLI resolves a cross-item import by basename, so the two cannot share it. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/app-form",
         "@cubeui/color-field",
@@ -891,7 +891,7 @@
       "name": "header-content-footer",
       "type": "registry:component",
       "title": "Header / Content / Footer",
-      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
+      "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -904,7 +904,7 @@
       "name": "item",
       "type": "registry:ui",
       "title": "Item",
-      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
+      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils", "separator"],
       "files": [
         {
@@ -922,7 +922,7 @@
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",
-      "description": "Every cubeui layout shell in one install.",
+      "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/card-layout",
         "@cubeui/dialog-layout",
@@ -940,7 +940,7 @@
       "name": "multi-select",
       "type": "registry:component",
       "title": "Multi Select",
-      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.",
+      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/badge",
         "@cubeui/button",
@@ -961,7 +961,7 @@
       "name": "multi-select-field",
       "type": "registry:component",
       "title": "Multi Select Field",
-      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
+      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
       "files": [
         {
@@ -974,7 +974,7 @@
       "name": "option-select",
       "type": "registry:component",
       "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
       "files": [
         {
@@ -987,7 +987,7 @@
       "name": "page-header",
       "type": "registry:component",
       "title": "Page Header",
-      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
+      "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils", "skeleton"],
       "files": [
         {
@@ -1000,7 +1000,7 @@
       "name": "page-layout",
       "type": "registry:component",
       "title": "Page Layout",
-      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
+      "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
       "files": [
         {
@@ -1013,7 +1013,7 @@
       "name": "password-field",
       "type": "registry:component",
       "title": "Password Field",
-      "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has.",
+      "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
       "files": [
         {
@@ -1026,7 +1026,7 @@
       "name": "password-input",
       "type": "registry:component",
       "title": "Password Input",
-      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form.",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
       "files": [
         {
@@ -1040,7 +1040,7 @@
       "name": "primitive",
       "type": "registry:component",
       "title": "Vendored Primitives",
-      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
+      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item"],
       "files": []
     },
@@ -1048,7 +1048,7 @@
       "name": "radio-group-field",
       "type": "registry:component",
       "title": "Radio Group Field",
-      "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.",
+      "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/app-form",
         "@cubeui/field",
@@ -1066,7 +1066,7 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable.",
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, and an optional rule. An h2, so a long settings page is navigable. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -1079,7 +1079,7 @@
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {

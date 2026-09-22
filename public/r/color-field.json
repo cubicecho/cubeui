@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "color-field",
   "title": "Color Field",
-  "description": "A colour picker as one line, over a field the compiler checked holds a string.",
+  "description": "A colour picker as one line, over a field the compiler checked holds a string. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/app-form",
     "@cubeui/color-picker",

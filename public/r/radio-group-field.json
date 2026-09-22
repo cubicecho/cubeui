@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "radio-group-field",
   "title": "Radio Group Field",
-  "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group.",
+  "description": "A set of exclusive choices with the options on the page, each able to carry a line saying what it means. The field that made FormField able to name a group. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/app-form",
     "@cubeui/field",

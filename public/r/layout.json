@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "layout",
   "title": "Layout Set",
-  "description": "Every cubeui layout shell in one install.",
+  "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/card-layout",
     "@cubeui/dialog-layout",

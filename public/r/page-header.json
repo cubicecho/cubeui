@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "page-header",
   "title": "Page Header",
-  "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
+  "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/utils",
     "skeleton"

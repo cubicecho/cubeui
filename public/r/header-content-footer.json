@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "header-content-footer",
   "title": "Header / Content / Footer",
-  "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
+  "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/utils"
   ],
