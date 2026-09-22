@@ -8,6 +8,7 @@
  * classes, so the two cannot drift visually.
  */
 
+import { useState } from "react";
 import { Pressable, View } from "react-native";
 import {
   SWITCH_THUMB_CLASS,
@@ -16,13 +17,26 @@ import {
 } from "@/components/ui/switch-base";
 import { cn } from "@/lib/utils";
 
-function Switch({ checked, onCheckedChange, disabled, onBlur, className }: SwitchProps) {
+function Switch({
+  checked: checkedProp,
+  defaultChecked = false,
+  onCheckedChange,
+  disabled,
+  onBlur,
+  className,
+}: SwitchProps) {
+  // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
+  const [checkedState, setCheckedState] = useState(defaultChecked);
+  const checked = checkedProp ?? checkedState;
   return (
     <Pressable
       role="switch"
       aria-checked={checked}
       disabled={disabled}
-      onPress={() => onCheckedChange(!checked)}
+      onPress={() => {
+        setCheckedState(!checked);
+        onCheckedChange?.(!checked);
+      }}
       onBlur={onBlur}
       className={cn(
         SWITCH_TRACK_CLASS,
@@ -37,4 +51,5 @@ function Switch({ checked, onCheckedChange, disabled, onBlur, className }: Switc
   );
 }
 
+export type { SwitchProps } from "@/components/ui/switch-base";
 export { Switch };

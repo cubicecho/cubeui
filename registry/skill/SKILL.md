@@ -229,6 +229,8 @@ web ones take, with three conversions that are the same everywhere:
 - **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
   output takes `onPress` too, so a call site does not change when it moves.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
+  The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
+  still compiles — but shared code should use `onChangeText`, the one that exists on device.
 - **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
   that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
 

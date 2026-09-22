@@ -114,6 +114,15 @@ export const NATIVE_TAG_FOR_ROLE = {
 };
 
 /**
+ * Implicit roles of elements that only `webAs` reaches, which `NATIVE_TAG_FOR_ROLE` does not map
+ * to because a role alone should not turn a `View` into them. When `webAs` picks one of these and
+ * the source also wrote its role for the device, the compiler drops the now-redundant attribute.
+ */
+export const TAG_ROLE = {
+  fieldset: "group",
+};
+
+/**
  * The roles a `<button>` is allowed to carry, and the reason a `Pressable` does not always become
  * one.
  *
@@ -286,6 +295,7 @@ export const DOM_INTERFACE = {
   aside: "HTMLElement",
   button: "HTMLButtonElement",
   div: "HTMLDivElement",
+  fieldset: "HTMLFieldSetElement",
   footer: "HTMLElement",
   h1: "HTMLHeadingElement",
   h2: "HTMLHeadingElement",
@@ -294,6 +304,7 @@ export const DOM_INTERFACE = {
   h5: "HTMLHeadingElement",
   h6: "HTMLHeadingElement",
   header: "HTMLElement",
+  legend: "HTMLLegendElement",
   li: "HTMLLIElement",
   main: "HTMLElement",
   nav: "HTMLElement",

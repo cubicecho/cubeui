@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 function Textarea({
   value,
+  defaultValue,
   onChangeText,
   onBlur,
   placeholder,
@@ -29,7 +30,9 @@ function Textarea({
     <TextInput
       multiline
       textAlignVertical="top"
-      value={value ?? ""}
+      // Held at `""` unless the caller asked for uncontrolled by passing a `defaultValue`: a bound
+      // field's value starts `undefined` more often than not.
+      {...(defaultValue === undefined ? { value: value ?? "" } : { value, defaultValue })}
       onChangeText={onChangeText}
       onBlur={onBlur}
       placeholder={placeholder}

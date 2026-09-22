@@ -116,9 +116,14 @@
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
-      "description": "A checkbox from a Pressable, announced through role and aria-checked rather than a DOM input.",
+      "description": "Radix on web, with its whole prop surface; a Pressable announced through role and aria-checked on device. Controlled or uncontrolled on both.",
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
+        {
+          "path": "registry/ui/checkbox-base.ts",
+          "type": "registry:ui"
+        },
         {
           "path": "compiled/checkbox.tsx",
           "type": "registry:ui"

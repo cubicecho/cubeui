@@ -12,6 +12,8 @@
 
 export type TextareaProps = {
   value?: string | undefined;
+  /** Uncontrolled: where the text starts, when nothing above is holding `value`. */
+  defaultValue?: string | undefined;
   onChangeText?: ((text: string) => void) | undefined;
   onBlur?: (() => void) | undefined;
   placeholder?: string | undefined;

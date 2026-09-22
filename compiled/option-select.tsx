@@ -9,9 +9,8 @@
  * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
  */
 
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { useMemo } from "react";
-import type { SelectTriggerProps } from "@/components/ui/select-base";
 import { cn } from "@/lib/utils";
 import {
   SelectContent,
@@ -121,10 +120,15 @@ function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
   return blocks;
 }
 
-// `SelectTriggerProps` rather than `ComponentProps<"button">`: what is spread here goes
-// straight onto the trigger, and the trigger honours the field wiring — `id`, the `aria-*`
-// props, `disabled`, `onBlur` — and nothing else. The wider DOM type promised the rest.
-type OptionSelectProps = Omit<SelectTriggerProps, "children"> & {
+// Every `<button>` attribute, because the rest is spread onto the trigger, and the web trigger is
+// radix's `<button>` and honours all of them — the field wiring (`id`, the `aria-*` props,
+// `disabled`, `onBlur`) and anything else a DOM call site already passes.
+type OptionSelectProps = Omit<
+  ComponentProps<"button">,
+  "value" | "onChange" | "type" | "children" | "className" | "disabled"
+> & {
+  className?: string | undefined;
+  disabled?: boolean | undefined;
   options: readonly SelectEntry[];
   value?: string | undefined;
   onValueChange: (value: string) => void;

@@ -104,8 +104,8 @@ the React Native set.
 |---|---|
 | tokens | `tokens` |
 | lib | `utils`, `color`, `readable-text-color` |
-| primitives | `icons`, `button`, `card`, `checkbox`, `code`, `input`, `label`, `textarea`, `switch` |
-| platform-split | `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
+| primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
+| platform-split | `checkbox`, `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
@@ -537,6 +537,29 @@ The calendar is the one that was real work rather than a prop: `calendar-base.ts
 react-day-picker — a library only one platform has — and `date-picker` no longer type-depends on it.
 `calendar.tsx` evaluates the matchers and draws the range; `calendar.web.tsx` passes both branches
 through to `DayPicker`.
+
+### The web halves are now a superset of shadcn's
+
+The rule above held for the port, and it has since been reversed **for the web halves only**. A
+compiled item is installed over a DOM app's own shadcn primitive, and that app's call sites were
+written against shadcn — so an `<Input onChange={(e) => …}>` that stopped compiling was a migration
+cost this registry imposed for nothing, since the web half is a real `<input>` and can honour it.
+The native halves still take the RN vocabulary and nothing else; a web half now takes both.
+
+| Primitive | The web half also takes |
+|---|---|
+| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers, `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
+| `textarea` | the same, for `<textarea>`; uncontrolled when given no `value` |
+| `checkbox` | now platform-split: radix on web — `defaultChecked`, `name`, `value`, `required`, `"indeterminate"`; the native half is uncontrolled too |
+| `switch` | radix's props, `defaultChecked`, and shadcn's `size="sm"`; `onCheckedChange` optional on both |
+| `select` | every shadcn part — the scroll buttons included — with radix's props on each, `SelectTrigger`'s `size`; content defaults to `item-aligned`, as shadcn's does |
+| `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
+| `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
+| `option-select` | every `<button>` prop on the trigger again |
+
+`stories/web/shadcn-superset.type-assertions.tsx` holds a shadcn call site for each, typechecked
+under `tsconfig.web.json` against `compiled/` — a line there that stops compiling is a DOM app that
+stops compiling.
 
 ### Two names that could not come across unchanged
 
