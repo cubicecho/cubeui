@@ -353,6 +353,27 @@
       ]
     },
     {
+      "name": "theme-picker",
+      "type": "registry:ui",
+      "title": "Theme Picker",
+      "description": "Light, Dark and System as radio tiles, and useThemePreference(), which stores the choice and applies it: a class on <html> on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline <script> that paints the stored theme before React mounts.",
+      "registryDependencies": ["@cubeui/icons", "@cubeui/radio-group"],
+      "files": [
+        {
+          "path": "registry/ui/theme-preference-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/theme-preference.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/theme-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "section",
       "type": "registry:component",
       "title": "Section",
@@ -1262,6 +1283,19 @@
         {
           "path": "stories/web/published/sidebar.stories.tsx",
           "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "theme-picker-stories",
+      "type": "registry:ui",
+      "title": "Theme Picker stories",
+      "description": "Storybook stories for @cubeui/theme-picker, installed beside it so they render under your own stylesheet and run as tests under addon-vitest. Needs Storybook 9 or later on @storybook/react-vite.",
+      "registryDependencies": ["@cubeui/theme-picker"],
+      "files": [
+        {
+          "path": "stories/web/published/theme-picker.stories.tsx",
+          "type": "registry:ui"
         }
       ]
     },

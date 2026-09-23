@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 77 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 78 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 77 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 78 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  53 on both platforms · 24 web-only · 0 native-only.
+  54 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -495,6 +495,11 @@
           <td>Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/theme-picker</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Light, Dark and System as radio tiles, and useThemePreference(), which stores the choice and applies it: a class on &lt;html&gt; on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline &lt;script&gt; that paints the stored theme before React mounts.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/toast</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.</td>
@@ -550,7 +555,7 @@ refs: { cubeui: { title: "cubeui", url: "https://cubicecho.github.io/cubeui/stor
   your tree, importing it as <code>@/components/ui/&lt;name&gt;</code>, so they render under your
   stylesheet and run as tests under your addon-vitest. They need Storybook 9 or later on
   <code>@storybook/react-vite</code> and declare no npm dependencies. Available for:
-  <code>badge</code>, <code>button</code>, <code>card</code>, <code>section-heading</code>, <code>segmented</code>, <code>sidebar</code>, <code>toggle-chip</code>.
+  <code>badge</code>, <code>button</code>, <code>card</code>, <code>section-heading</code>, <code>segmented</code>, <code>sidebar</code>, <code>theme-picker</code>, <code>toggle-chip</code>.
 </p>
 
 <pre><code>npx shadcn add @cubeui/button-stories</code></pre>
