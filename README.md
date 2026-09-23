@@ -328,11 +328,16 @@ drew 58px tall beside a 40px button. It lives here rather than as `box-border` o
 so the next raw-DOM half is covered too. Yoga is always border-box, and the native compiler drops
 the rule. `stories/tokens.stories.tsx` measures the input beside the button.
 
-The other two are the same gap for the radix halves (#97). A tab trigger or a dialog's close is a
-raw `<button>`, and the browser drew it with a `2px outset` border, a grey fill, and a colour and
-font of its own instead of inherited ones; a raw `<label>` drew in the browser's serif, because
-nothing set a page font. So `:where(button)` takes `border: 0 solid`, a transparent background and
-`color` / `font: inherit`, and `:where(html)` takes react-native-web's font stack. Both are
+The others are the same gap for the radix halves (#97) and the form fields (#103). A tab trigger
+or a dialog's close is a raw `<button>`, and the browser drew it with a `2px outset` border, a grey
+fill, and a colour and font of its own instead of inherited ones; a raw `<label>` drew in the
+browser's serif, because nothing set a page font. So `:where(button)` takes `border: 0 solid`, a
+transparent background and `color` / `font: inherit`, and `:where(html)` takes react-native-web's
+font stack. The `<input>` and `<textarea>` the `Input` and `Textarea` web halves render do not
+inherit that font either — the browser drew them in Arial and monospace — so
+`:where(input, select, textarea)` takes `color` / `font: inherit` and nothing else, since their
+border and fill are the components' own classes. `color: inherit` reaches the element, not its
+`::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. All of them are
 unlayered and specificity zero. That is only safe because this file imports the utilities
 unlayered as well: an unlayered rule beats every layered one, so beside an `@layer utilities` it
 would override `border` and `bg-*`. In one unlayered cascade a utility is a class and wins on

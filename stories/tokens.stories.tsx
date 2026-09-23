@@ -9,6 +9,7 @@ import { Card, CardContent } from "../registry/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../registry/ui/dialog";
 import { Input } from "../registry/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "../registry/ui/tabs";
+import { Textarea } from "../registry/ui/textarea";
 
 /**
  * What `dist/tokens.native.css` owes an Expo *web* build beyond the palette, asserted on the React
@@ -98,6 +99,69 @@ export const RawButtonsTakeNoBrowserLook: Story = {
     await expect(styled.borderTopWidth).toBe("2px");
     await expect(styled.borderTopColor).toBe(resolved("border", canvasElement));
     await expect(styled.backgroundColor).toBe(resolved("primary", canvasElement));
+  },
+};
+
+/**
+ * `input.web.tsx` and `textarea.web.tsx` render a raw `<input>` and `<textarea>`, and form fields do
+ * not inherit the page font: the user-agent sheet drew the input in Arial and the textarea in
+ * monospace, beside a `<label>` in the page font (#103). The reset hands them `color` and `font`
+ * from their parent at specificity zero, so the components' own `text-foreground` and
+ * `placeholder:text-muted-foreground` still colour them, and a `font-*` or `text-*` class still
+ * wins.
+ */
+export const FormFieldsTakeThePageFont: Story = {
+  render: () => (
+    <div
+      className="bg-background p-6"
+      style={{ display: "flex", flexDirection: "column", gap: 16 }}
+    >
+      <Input placeholder="Title" />
+      <Textarea placeholder="Notes" />
+      <div className="text-destructive" style={{ display: "flex", gap: 8 }}>
+        <input aria-label="Raw input" />
+        <textarea aria-label="Raw textarea" />
+        {/* The reset leaves the fill alone, and the browser's grey one fails contrast. */}
+        <select aria-label="Raw select" className="bg-background">
+          <option>One</option>
+        </select>
+      </div>
+      <input aria-label="Styled input" className="font-mono text-lg text-primary" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = getComputedStyle(document.documentElement).fontFamily;
+    await expect(page).toContain("Segoe UI");
+
+    // The components: the page font, and their own colour classes over the inherited colour.
+    for (const field of [
+      canvas.getByPlaceholderText("Title"),
+      canvas.getByPlaceholderText("Notes"),
+    ]) {
+      const style = getComputedStyle(field);
+      await expect(style.fontFamily).toBe(page);
+      await expect(style.color).toBe(resolved("foreground", canvasElement));
+      await expect(getComputedStyle(field, "::placeholder").color).toBe(
+        resolved("muted-foreground", canvasElement),
+      );
+    }
+
+    // Bare elements: everything inherited, colour included.
+    const parent = getComputedStyle(canvas.getByLabelText("Raw input").parentElement as Element);
+    for (const name of ["Raw input", "Raw textarea", "Raw select"]) {
+      const style = getComputedStyle(canvas.getByLabelText(name));
+      await expect(style.fontFamily).toBe(page);
+      await expect(style.fontSize).toBe(parent.fontSize);
+      await expect(style.color).toBe(parent.color);
+    }
+
+    // And the reset outranks nothing: a font, size and colour utility each still win.
+    const styled = getComputedStyle(canvas.getByLabelText("Styled input"));
+    await expect(styled.fontFamily).not.toBe(page);
+    await expect(styled.fontFamily).toContain("monospace");
+    await expect(styled.fontSize).toBe("18px");
+    await expect(styled.color).toBe(resolved("primary", canvasElement));
   },
 };
 
