@@ -101,6 +101,47 @@ export const ClearIsAReachableButton: Story = {
   },
 };
 
+/** What `var(--<token>)` resolves to right now, in the same colour syntax the browser reports. */
+function tokenColor(token: string) {
+  const probe = document.createElement("span");
+  probe.style.color = `var(--${token})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+  return color;
+}
+
+/**
+ * react-day-picker's stylesheet ships its accent as `blue`, so the chevrons and the selected ring
+ * ignored the theme (#102). They draw from `--primary` now, and follow it into dark mode.
+ */
+export const TheCalendarFollowsTheTheme: Story = {
+  args: { initial: JUNE_10 },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: /Due date/ }));
+    const day = await screen.findByRole("button", { name: /June 10th, 2026/ });
+    const grid = day.closest(".rdp-root");
+    const chevron = grid?.querySelector(".rdp-chevron");
+    if (!grid || !chevron) throw new Error("no react-day-picker root or chevron");
+
+    const check = async () => {
+      const primary = tokenColor("primary");
+      await waitFor(() => expect(getComputedStyle(chevron).fill).toBe(primary));
+      expect(getComputedStyle(day).borderTopColor).toBe(primary);
+      expect(getComputedStyle(chevron).fill).not.toBe("rgb(0, 0, 255)");
+    };
+
+    await check();
+    const wasDark = document.documentElement.classList.contains("dark");
+    document.documentElement.classList.add("dark");
+    try {
+      await check();
+    } finally {
+      document.documentElement.classList.toggle("dark", wasDark);
+    }
+  },
+};
+
 /** The matcher goes straight through, so `{ before: … }` is all a "no past dates" rule takes. */
 export const WithUnavailableDays: Story = {
   args: { initial: JUNE_10, disabledDates: { before: new Date(2026, 5, 10) } },
