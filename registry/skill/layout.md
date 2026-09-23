@@ -446,6 +446,8 @@ Two shells for the shape every list route is: a ladder of states, then rows.
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
   `<QueryError error={error} onRetry={refetch} what="this invoice" describe={describeError} />`.
+  Its root is `role="alert"`, card and `compact` alike, because it replaces what the reader was
+  waiting for — so do not wrap it in another alert.
 - `RowSkeleton` draws `rows` bordered `Card`s — the shape a row is — so the page does not change
   shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
