@@ -5,8 +5,19 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only.** Everything in this file is a DOM component with no React Native half, so
-none of it installs in an Expo project. `SKILL.md`'s last section is the native set.
+**Web only**, except the icons, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
+colour display parts, and the theme picker, which each say so. Everything else here is a DOM
+component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
+section is the native set.
+
+## Icons
+
+Import icons from `@/components/ui/icons` (`@cubeui/icons`), not from `lucide-react` or
+`lucide-react-native` directly. It is the same lucide names on both halves: a plain re-export on
+the web, where an `<svg>` takes `currentColor` from its container, and styled wrappers on native,
+where nothing inherits and a container like `Button` publishes its text colour for the icons
+below it. A component that takes an icon as a prop types it as `IconComponent`. A name missing
+from the set is added to both `icons.tsx` and `icons.web.tsx`.
 
 ## Icon buttons
 
@@ -219,6 +230,41 @@ is a `Popover`. `MultiSelectField` already does.
 - The trigger is a `<button>`, which is labelable, so `htmlFor` works — but the `aria-*` props
   still need the function form of `control`.
 
+`DatePicker` is web-only. On both halves, `@cubeui/date-time-input` is the date-and-time pair
+for a value that is never empty:
+
+```tsx
+<DateTimeInput value={startsAt} onChange={setStartsAt} />
+```
+
+The date comes from a `Calendar` in a `Popover` and the time from an `Input type="time"`, and the
+two always commit one `Date` back — a caller never reassembles one. There is no `null`: for an
+optional date, use `DatePicker` on the web.
+
+## A number edited in place
+
+```tsx
+<InlineNumberEdit
+  value={task.estimate}
+  min={0}
+  format={(n) => `${n} min`}
+  accessibilityLabel="Estimate"
+  saving={update.isPending}
+  onSave={(estimate) => update.mutate({ estimate })}
+/>
+```
+
+`@cubeui/inline-number-edit`, on both halves, for a number read far more often than it is changed
+— a quantity on a row, an estimate on a card — that does not deserve a form. It shows the number
+as text and becomes an input when pressed.
+
+- It commits on blur and on submit; there is no save button. The draft is clamped to
+  `min`/`max`, an unparseable one falls back to `min`, and an unchanged value does not call
+  `onSave` at all.
+- `accessibilityLabel` is required, because the press target's text is a bare number.
+- Inside a pressable row the row's own press fires too. Stopping it is the caller's call, since
+  only the caller knows which press should win.
+
 ## Colour
 
 ```tsx
@@ -241,6 +287,25 @@ is a `Popover`. `MultiSelectField` already does.
   there is no popover to name and no colour well to label.
 - `id` goes to the hex field and the `aria-*` props to the swatch row, so a field's function-form
   `control` can spread onto it.
+
+Showing a colour the user picked is three small items, all on both halves:
+
+```tsx
+<ColorDot color={tag.color} label={tag.name} size="sm" />
+<Card accentColor={project.color} accentLabel={project.name}>…</Card>
+<span style={{ background: tag.color, color: readableTextColor(tag.color) }}>{tag.name}</span>
+```
+
+- **`ColorDot`** (`@cubeui/color-dot`) — a round swatch standing in for a category, status or
+  tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
+  assistive tech; with one, the label is its accessible name.
+- **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), normalised so it
+  stays visible in both themes, and `accentLabel` names it. Pass it on `Card` rather than placing
+  a `ColorBar` yourself — the card owns the `relative overflow-hidden` the stripe needs.
+- **`readableTextColor(color)`** (`@cubeui/readable-text-color`) — black or white ink for text on
+  a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop
+  does not. It returns `undefined` for anything that is not hex, so the text falls back to the
+  inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
 
 ## Password
 

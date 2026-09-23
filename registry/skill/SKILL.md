@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; ThemePicker and useThemePreference on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -76,6 +76,10 @@ at the end.
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
 | A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
+| A date and a time that are never empty, as one `Date` | `DateTimeInput` | [controls.md](controls.md#date-and-date-range) |
+| A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
+| A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
+| An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
 `className` until it is a different component. A shape that shows up three times is a case for a
@@ -207,6 +211,10 @@ views and there is no shell wrapping to hide.
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
 | The app's light / dark / system setting, stored and applied — see [controls.md](controls.md#theme) | `ThemePicker`, `useThemePreference` | `@cubeui/theme-picker` |
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
+| A date and a time that are never empty, as one `Date` — see [controls.md](controls.md#date-and-date-range) | `DateTimeInput` | `@cubeui/date-time-input` |
+| A number on a row or card, edited in place — see [controls.md](controls.md#a-number-edited-in-place) | `InlineNumberEdit` | `@cubeui/inline-number-edit` |
+| A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
+| An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
@@ -225,7 +233,7 @@ it, so `Page` and `PageLayout` draw the same title block — `title`, `descripti
 
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
 `Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Tabs`, `Tooltip`,
-`Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`. They take the props the
+`Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
 web ones take, with three conversions that are the same everywhere:
 
 - **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
