@@ -292,6 +292,31 @@ Two props turn it into the optional, date-only field an Expo app needs for a due
 - It takes `onChange`, not `onValueChange` — it predates the vocabulary, and renaming it would
   break every caller.
 
+Name it the way a form names any control. `id`, `aria-label` and `aria-labelledby` land on the
+trigger, and in `"datetime"` mode the time box is named after the field, so a form with a start and
+an end does not have two boxes called "Time":
+
+```tsx
+<FieldLabel htmlFor="due">Due</FieldLabel>                  {/* web: htmlFor → the trigger */}
+<DateTimeInput id="due" clearable mode="date" value={dueOn} onChange={setDueOn} />
+
+<Label id="starts-label">Starts</Label>                       {/* both halves */}
+<DateTimeInput aria-labelledby="starts-label" value={startsAt} onChange={setStartsAt} />
+{/* trigger "Starts", time box "Starts time" */}
+
+<DateTimeInput aria-label="Ends" value={endsAt} onChange={setEndsAt} />
+{/* trigger "Ends", time box "Ends, time" */}
+```
+
+- `htmlFor` names the trigger only — a label points at one control — so the time box stays
+  "Time". Give a `mode="datetime"` field `aria-labelledby` (or `aria-label`) instead.
+- `htmlFor` is web only: the native `Label` has nothing to associate. `Label id` is on both
+  halves, so `aria-labelledby` is the one that works everywhere; on device React Native takes the
+  `id` as a `nativeID`, and iOS reads no reference at all, so pass `aria-label` when VoiceOver has
+  to hear the name.
+- The name replaces the date on the trigger, as a label does on any button. With none given, the
+  trigger is read by its text and the time box is "Time", as before.
+
 On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
 a `FormField`'s `aria-*` on the trigger.
 
