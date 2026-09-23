@@ -19,6 +19,11 @@ where nothing inherits and a container like `Button` publishes its text colour f
 below it. A component that takes an icon as a prop types it as `IconComponent`. A name missing
 from the set is added to both `icons.tsx` and `icons.web.tsx`.
 
+A tab can carry an icon the same way: `<TabsTrigger value="board"><Calendar /> Board</TabsTrigger>`.
+The trigger lays its children out in a row, puts only the text in a `<Text>`, and hands the icon
+the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
+segmented control to get one.
+
 ## Icon buttons
 
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
