@@ -16,10 +16,38 @@ Import icons from `@/components/ui/icons` (`@cubeui/icons`), not from `lucide-re
 `lucide-react-native` directly. It is the same lucide names on both halves: a plain re-export on
 the web, where an `<svg>` takes `currentColor` from its container, and styled wrappers on native,
 where nothing inherits and a container like `Button` publishes its text colour for the icons
-below it. A component that takes an icon as a prop types it as `IconComponent`. A name missing
-from the set is added to both `icons.tsx` and `icons.web.tsx`.
+below it. A component that takes an icon as a prop types it as `IconComponent`.
 
-A tab can carry an icon the same way: `<TabsTrigger value="board"><Calendar /> Board</TabsTrigger>`.
+**A glyph the set does not ship is wrapped in the app, with the exported `icon`.** Do not copy the
+native wrapper, and do not add to `icons.tsx` — the next `shadcn add` of `@cubeui/icons`
+overwrites it. Write the app's own pair of files, one line per glyph, beside each other so Metro
+picks the `.web.tsx` on web the same way it does for `icons`:
+
+```tsx
+// components/app-icons.tsx — native: the per-icon path, since Metro does not tree-shake
+import TagSource from "lucide-react-native/icons/tag";
+import { icon } from "@/components/ui/icons";
+
+export const Tag = icon(TagSource);
+```
+
+```tsx
+// components/app-icons.web.tsx — web: the barrel, from lucide-react
+import { Tag as TagSource } from "lucide-react";
+import { icon } from "@/components/ui/icons";
+
+export const Tag = icon(TagSource);
+```
+
+On native `icon` is the same wrapper every icon in the set goes through — `className` sizing, the
+`text-foreground` floor and `IconClassContext` — so the app's glyph follows a `Button`'s colour
+like the rest. On web it hands the glyph back unchanged, since an `<svg>` already inherits
+`currentColor`; it exists so both files read the same. Keep the two files' names in step, as
+`icons` does: TypeScript only resolves the native one. A DOM-only app needs only the second file,
+or can import the glyph from `lucide-react` directly. `IconProps` is exported beside `icon` for a
+component that forwards an icon's props.
+
+A tab can carry an icon too: `<TabsTrigger value="board"><Calendar /> Board</TabsTrigger>`.
 The trigger lays its children out in a row, puts only the text in a `<Text>`, and hands the icon
 the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
 segmented control to get one.

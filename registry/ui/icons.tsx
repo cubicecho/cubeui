@@ -27,9 +27,13 @@
  * people route around; these six are the cheapest way to find out that is what
  * was happening.
  *
- * It is copied into your tree, so add to it — but **add to both files**: the web
- * counterpart must export the same names, and TypeScript will not tell you it
- * does not, because it only ever resolves the native file. `npm run
+ * A glyph an app needs and this set does not ship belongs in the app's own
+ * file, wrapped with the exported `icon` (below), rather than in this one:
+ * the next `shadcn add` of this item overwrites whatever was added here.
+ *
+ * Adding to this set is for the registry itself, and it goes in **both files**:
+ * the web counterpart must export the same names, and TypeScript will not tell
+ * you it does not, because it only ever resolves the native file. `npm run
  * registry:check` is what catches a name that exists on one platform only.
  *
  * Names are lucide's canonical ones. Several are reachable under legacy aliases
@@ -74,11 +78,29 @@ import { useContext } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
-type IconProps = Omit<LucideProps, "className"> & {
+/** What a wrapped icon takes: lucide's props, with `className` doing the styling. */
+export type IconProps = Omit<LucideProps, "className"> & {
   className?: string | undefined;
 };
 
-function icon(Source: LucideIcon) {
+/**
+ * Wraps one lucide glyph the way every icon in this file is wrapped. Exported
+ * so an app's extra glyph is one line, not a copy of this function — a copy
+ * that would miss the next change to how `IconClassContext` merges:
+ *
+ * ```tsx
+ * // app-icons.tsx
+ * import TagSource from "lucide-react-native/icons/tag";
+ * import { icon } from "@/components/ui/icons";
+ *
+ * export const Tag = icon(TagSource);
+ * ```
+ *
+ * `icons.web.tsx` exports an `icon` that hands its argument back, so the
+ * `app-icons.web.tsx` beside that file is the same line with the source taken
+ * from `lucide-react`.
+ */
+export function icon(Source: LucideIcon) {
   const Styled = styled(Source, {
     className: {
       target: "style",
