@@ -18,13 +18,13 @@
  *   overrides both.
  *
  * This is the set the registry's own components need, plus a short tail that no
- * component here uses and every app does: `Play`, `Pause`, `Square`, `Sun` and
- * `Moon` — transport controls and a theme toggle. They are the names a consumer
+ * component here uses and every app does: `Play`, `Pause`, `Square`, `Sun`,
+ * `Moon` and `Monitor` — transport controls and a theme toggle. They are the names a consumer
  * reached for first and had to go around this module for, and an icon imported
  * straight from `lucide-react-native` is one that missed `cssInterop`, so
  * `className` does nothing to it and the sizing and colour have to be written
  * as props. A barrel that is only what this registry happens to need is a barrel
- * people route around; these five are the cheapest way to find out that is what
+ * people route around; these six are the cheapest way to find out that is what
  * was happening.
  *
  * It is copied into your tree, so add to it — but **add to both files**: the web
@@ -53,6 +53,7 @@ import ClockSource from "lucide-react-native/icons/clock";
 import CopySource from "lucide-react-native/icons/copy";
 import DownloadSource from "lucide-react-native/icons/download";
 import LoaderCircleSource from "lucide-react-native/icons/loader-circle";
+import MonitorSource from "lucide-react-native/icons/monitor";
 import MoonSource from "lucide-react-native/icons/moon";
 import PauseSource from "lucide-react-native/icons/pause";
 import PencilSource from "lucide-react-native/icons/pencil";
@@ -105,6 +106,7 @@ export const Clock = icon(ClockSource);
 export const Copy = icon(CopySource);
 export const Download = icon(DownloadSource);
 export const LoaderCircle = icon(LoaderCircleSource);
+export const Monitor = icon(MonitorSource);
 export const Moon = icon(MoonSource);
 export const Pause = icon(PauseSource);
 export const Pencil = icon(PencilSource);

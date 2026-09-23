@@ -97,7 +97,8 @@ DOM app keeps its `components.json` line. What changes under it:
   for the old wording.
 
 Expo web can force a theme with `class="dark"` or `class="light"` on `<html>`; see
-[Stage 1](#stage-1--tokens).
+[Stage 1](#stage-1--tokens). `@cubeui/theme-picker` is that picker, with the storage and the class
+wired, on both platforms.
 
 ## Installing into a Biome project
 
@@ -298,6 +299,26 @@ compile outright ("Class-qualified :root selectors are unsupported on native"), 
 outranks the media query's `:root`, and react-native-css drops it without a word;
 `scripts/tokens-dark.test.mjs` asserts the compiled native output is identical with and without it.
 
+**`theme-picker` is that picker, and the wiring beside it.** `ThemePicker` is a
+`RadioGroup variant="card"` of Light, Dark and System, bound by default to `useThemePreference()`
+and controlled when given `value`. The hook is split by platform like any other item, as
+`theme-preference.tsx` / `.web.tsx` over a shared `theme-preference-base.ts`, because
+`Appearance` is not something the compiler can carry to the DOM:
+
+- **On the web** (Expo's and the DOM's) the choice is stored in `localStorage` under
+  `cubeui-theme` and applied as `dark` or `light` on `<html>`. System removes `light`, and it sets
+  `dark` while the device is dark and follows it as it changes. `tokens.web.css` has no media query
+  to fall back on, so a DOM app needs the class. The hook reads nothing at import, and its server
+  snapshot is `system`.
+- **On device** it is `Appearance.setColorScheme`, with `null` for System, and the choice is
+  stored through a `{ getItem, setItem }` adapter the app passes. AsyncStorage fits as it is, so
+  the item adds no storage dependency.
+- **The first paint is `THEME_PRE_PAINT_SCRIPT`**, an exported string for an inline `<script>` in
+  `<head>`, with the literal copy in the skill's `controls.md` for a static `index.html`. It is
+  not a `registry:file`. A file cannot put itself into `index.html`, so the head gets edited either
+  way, and a `<script src>` would add a render-blocking request and break under a base path. A
+  unit test holds the copy to the export.
+
 **The native stylesheet also carries the one line of preflight a web build needs:**
 `*, ::before, ::after { box-sizing: border-box; }`. Preflight itself stays out — it would fight
 react-native-web's unlayered reset — but it was the only thing setting `border-box` on `*`.
@@ -341,7 +362,7 @@ the React Native set.
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field` |
+| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
 | docs | `skill` |
@@ -571,10 +592,10 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 34 generated, 35
-hand-written** (15 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
-from `registry.json` and `registry.web-only.json` in the same run, publishes **all 77 items**, plus
-the 7 story items. `scripts/rn2web/` is about 2100 lines, of which
+react-native-web anywhere in the output. **Every file has a web half — 35 generated, 36
+hand-written** (16 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 78 items**, plus
+the 8 story items. `scripts/rn2web/` is about 2100 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs` is the ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
@@ -961,7 +982,7 @@ npx shadcn add @cubeui/button-stories   # lands components/ui/button.stories.tsx
 
 Rule 10 in `check-registry-build.mjs` holds the import rules against the built JSON, which is what
 a consumer actually receives. The stories in `stories/web/published/` are button, badge, card,
-segmented, toggle-chip, section-heading and sidebar; the Stage 0 stories stay unpublished, because they
+segmented, toggle-chip, section-heading, sidebar and theme-picker; the Stage 0 stories stay unpublished, because they
 compare against the native half and a consumer has no native half to compare.
 
 **`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's

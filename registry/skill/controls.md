@@ -259,3 +259,51 @@ The reveal toggle is behaviour, not a variant, which is why this is a component 
   autofill still see a password field.
 
 `revealable={false}` drops the toggle for a field that should never be shown.
+
+## Theme
+
+```tsx
+// Web: nothing to pass. The picker stores the choice and applies it.
+<ThemePicker />
+
+// Device: pass storage once, where the app starts. The picker writes through it too.
+import AsyncStorage from "@react-native-async-storage/async-storage";
+useThemePreference({ storage: AsyncStorage });
+```
+
+`@cubeui/theme-picker` works on both platforms. `ThemePicker` is a `RadioGroup variant="card"`
+with Light, Dark and System. Do not hand-roll it from `RadioGroup`. The control is the easy part,
+and the storage, the class and the first paint are what hand-rolled versions get wrong.
+
+- **Bound by default.** Without `value`, the picker reads and writes `useThemePreference()`.
+  Pass `value` and it is controlled. It then only calls `onValueChange` and never touches storage,
+  the class or `Appearance`. Use that when the preference lives on the account or in a settings
+  form.
+- **Call `useThemePreference()` at the app's root as well**, not only on the settings screen. That
+  way the choice is applied on every screen, and System keeps following the device. It returns
+  `[preference, setPreference]`, the same state the picker shows.
+- **Web:** the choice goes in `localStorage` under `THEME_STORAGE_KEY` (`"cubeui-theme"`). It is
+  applied as a class on `<html>`: `dark` for Dark, `light` for Light, and for System `dark` only
+  while the device is dark. A DOM app's `tokens.web.css` has only `.dark`, which is why System
+  still sets it. The hook reads nothing at import, so it renders on a server.
+- **Device:** the choice is applied with `Appearance.setColorScheme`, with `null` for System.
+  `storage` is any `{ getItem, setItem }`, sync or async. Wrap MMKV or `expo-secure-store` in two
+  lambdas. Without `storage` the choice lasts until the app closes. The stored value is read
+  asynchronously, so hold the splash screen if a flash of the system theme matters.
+- `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
+
+**Paint the stored theme before React mounts**, or a reload flashes the other palette. Put this in
+`<head>`, before any stylesheet:
+
+```html
+<script>(function(){try{var p=localStorage.getItem("cubeui-theme");var d=p==="dark"||(p!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.documentElement.classList;c.toggle("dark",d);c.toggle("light",p==="light")}catch(e){}})();</script>
+```
+
+Where the head is React, as in Expo's `app/+html.tsx` or a Next layout, render the export rather
+than pasting it:
+
+```tsx
+import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
+
+<script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
+```

@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; ThemePicker and useThemePreference on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -75,6 +75,7 @@ at the end.
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
+| A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
 `className` until it is a different component. A shape that shows up three times is a case for a
@@ -203,7 +204,8 @@ views and there is no shell wrapping to hide.
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A form of any size | `Form` and its bound fields | `@cubeui/form` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
-| Three or four exclusive choices, all on screen (a theme, a visibility) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
+| Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
+| The app's light / dark / system setting, stored and applied — see [controls.md](controls.md#theme) | `ThemePicker`, `useThemePreference` | `@cubeui/theme-picker` |
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
