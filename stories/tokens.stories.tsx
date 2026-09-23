@@ -6,7 +6,9 @@ import { RouteError } from "../registry/layout/route-error";
 import { Section } from "../registry/layout/section";
 import { Button } from "../registry/ui/button";
 import { Card, CardContent } from "../registry/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../registry/ui/dialog";
 import { Input } from "../registry/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "../registry/ui/tabs";
 
 /**
  * What `dist/tokens.native.css` owes an Expo *web* build beyond the palette, asserted on the React
@@ -36,6 +38,66 @@ export const InputBesideButton: Story = {
     await expect(getComputedStyle(input).boxSizing).toBe("border-box");
     await expect(input.getBoundingClientRect().height).toBe(40);
     await expect(input.getBoundingClientRect().height).toBe(button.getBoundingClientRect().height);
+  },
+};
+
+/**
+ * The radix halves render raw `<button>`s — here `tabs.web.tsx` and `dialog.web.tsx`, which is what
+ * Vite resolves these imports to — and with nothing resetting them the user-agent sheet drew each
+ * one with a `2px outset` border and a grey fill, and gave it a colour and font of its own, so an
+ * inactive tab ignored its list's `text-muted-foreground` (#97). The reset is specificity zero, so
+ * the last button is the other half of the claim: a `border` and a `bg-*` utility still win.
+ */
+export const RawButtonsTakeNoBrowserLook: Story = {
+  parameters: {
+    // As in `Tabs/IconInTrigger`: the inactive tab's muted-on-muted pairing is shadcn's, at 4.34:1,
+    // and is a token decision rather than this story's subject.
+    a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } },
+  },
+  render: () => (
+    <div
+      className="bg-background p-6"
+      style={{ display: "flex", flexDirection: "column", gap: 16 }}
+    >
+      <Tabs defaultValue="list">
+        <TabsList>
+          <TabsTrigger value="list">List</TabsTrigger>
+          <TabsTrigger value="board">Board</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <button type="button" className="border-2 border-border bg-primary text-primary-foreground">
+        Styled
+      </button>
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Rename</DialogTitle>
+          <DialogDescription>Give the board a new name.</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // `hidden`, because the open modal marks everything outside it `aria-hidden`.
+    const inactive = canvas.getByRole("tab", { name: "Board", hidden: true });
+    const close = within(document.body).getByRole("button", { name: "Close" });
+
+    for (const button of [inactive, close]) {
+      const style = getComputedStyle(button);
+      await expect(style.borderTopStyle).toBe("solid");
+      await expect(style.borderTopWidth).toBe("0px");
+      await expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)");
+    }
+    // Inherited now, so the list's colour and the page font reach the label.
+    const list = canvas.getByRole("tablist", { hidden: true });
+    await expect(getComputedStyle(inactive).color).toBe(getComputedStyle(list).color);
+    await expect(getComputedStyle(inactive).fontFamily).toBe(getComputedStyle(list).fontFamily);
+    await expect(getComputedStyle(document.documentElement).fontFamily).toContain("Segoe UI");
+
+    const styled = getComputedStyle(canvas.getByRole("button", { name: "Styled", hidden: true }));
+    await expect(styled.borderTopWidth).toBe("2px");
+    await expect(styled.borderTopColor).toBe(resolved("border", canvasElement));
+    await expect(styled.backgroundColor).toBe(resolved("primary", canvasElement));
   },
 };
 
