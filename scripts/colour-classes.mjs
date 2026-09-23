@@ -110,3 +110,148 @@ export function unresolvedColours(source, tokens, fileName) {
 export function tokensIn(css) {
   return new Set([...css.matchAll(/--color-([\w-]+):/g)].map((m) => m[1]));
 }
+
+/**
+ * `border`, `border-2`, `border-t`, `border-x-[3px]`, behind any variants — a utility that draws a
+ * border at all. `border-b-0` draws none and is not one.
+ */
+export function isBorderWidth(cls) {
+  const match = /^border(-[xytrblse])?(-(\d+(\.\d+)?|px|\[[^\]]+\]))?$/.exec(utilityOf(cls));
+  return match !== null && !/^-0(\.0+)?$/.test(match[2] ?? "");
+}
+
+/** The class-joining calls whose arguments are one class list: every string in one is in scope. */
+const JOINERS = new Set(["cn", "cva", "clsx", "twMerge"]);
+
+/** Whether `node`'s parent is still the same class list, climbing out from a string. */
+function joins(node) {
+  const parent = node.parent;
+  if (!parent) return false;
+  if (
+    ts.isParenthesizedExpression(parent) ||
+    ts.isConditionalExpression(parent) ||
+    ts.isBinaryExpression(parent) ||
+    ts.isArrayLiteralExpression(parent) ||
+    ts.isObjectLiteralExpression(parent) ||
+    ts.isPropertyAssignment(parent) ||
+    ts.isTemplateSpan(parent) ||
+    ts.isTemplateExpression(parent) ||
+    ts.isAsExpression(parent) ||
+    ts.isSatisfiesExpression(parent)
+  ) {
+    return true;
+  }
+  return (
+    ts.isCallExpression(parent) &&
+    ts.isIdentifier(parent.expression) &&
+    JOINERS.has(parent.expression.text)
+  );
+}
+
+/** The escape hatch: a comment naming where the colour comes from instead. */
+const ESCAPE = /@border-colour\b/;
+
+/** Whether a comment above the string, up to its statement or property, carries the escape. */
+function excused(node, source) {
+  for (let at = node; at && !ts.isSourceFile(at); at = at.parent) {
+    const ranges = ts.getLeadingCommentRanges(source, at.getFullStart()) ?? [];
+    if (ranges.some((r) => ESCAPE.test(source.slice(r.pos, r.end)))) return true;
+    if (ts.isStatement(at) || ts.isPropertyAssignment(at)) break;
+  }
+  return false;
+}
+
+function parse(source, fileName) {
+  return ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+
+/**
+ * The class strings in a React Native source that draw a border and name no colour for it, as
+ * `line: "…"`.
+ *
+ * React Native's default `borderColor` is black, and react-native-web's base `View` class says
+ * `border: 0 solid black` — a class, so a stylesheet's `* { border-color: var(--border) }` loses
+ * to it. On device and on Expo web a bare `border` is a black line; only the compiled DOM half,
+ * which has no such base class, ever drew it in the theme's colour.
+ *
+ * A string is judged with the class list it is joined into — every string in the same `cn(…)`,
+ * `cva(…)`, conditional, array or object — so `cn("border", on ? "border-primary" : "border-input")`
+ * passes. A string whose colour is added somewhere this cannot see (a constant applied in another
+ * file) says so with a `@border-colour` comment above it, naming where.
+ */
+export function uncolouredBorders(source, fileName = "source.tsx") {
+  const file = parse(source, fileName);
+  const literals = [];
+  const visit = (node) => {
+    if (ts.isStringLiteralLike(node) || ts.isTemplateLiteralToken(node)) literals.push(node);
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+
+  const classesOf = (node) => node.text.split(/\s+/).filter(Boolean);
+  const bad = [];
+  for (const literal of literals) {
+    if (!classesOf(literal).some(isBorderWidth)) continue;
+    let root = literal;
+    while (joins(root)) root = root.parent;
+    const coloured = literals
+      .filter((l) => l.pos >= root.pos && l.end <= root.end)
+      .some((l) => classesOf(l).some((cls) => colourOf(cls)?.family === "border"));
+    if (coloured || excused(literal, source)) continue;
+    const { line } = file.getLineAndCharacterOfPosition(literal.getStart());
+    bad.push(`${line + 1}: "${literal.text.trim()}"`);
+  }
+  return bad;
+}
+
+/**
+ * `Platform.select({ web: undefined, default: "text-foreground" })` and its kin — a colour class
+ * every platform gets but web — as `line: …`.
+ *
+ * `Platform.OS === "web"` is true for the compiled half *and* under react-native-web, and only the
+ * first inherits colour. Under react-native-web a `Text` sets its own `color`, black, so a title
+ * whose ink was left to inheritance on web is black on the dark theme. A colour class is harmless
+ * on the compiled half; set it everywhere.
+ */
+export function weblessColours(source, fileName = "source.tsx") {
+  const file = parse(source, fileName);
+  const bad = [];
+  const visit = (node) => {
+    const callee = ts.isCallExpression(node) ? node.expression : undefined;
+    const options = node.arguments?.[0];
+    if (
+      callee &&
+      ts.isPropertyAccessExpression(callee) &&
+      callee.name.text === "select" &&
+      ts.isIdentifier(callee.expression) &&
+      callee.expression.text === "Platform" &&
+      options &&
+      ts.isObjectLiteralExpression(options)
+    ) {
+      const branches = new Map();
+      for (const p of options.properties) {
+        if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name)) {
+          branches.set(p.name.text, p.initializer);
+        }
+      }
+      const web = branches.get("web");
+      const blank =
+        web === undefined ||
+        (ts.isIdentifier(web) && web.text === "undefined") ||
+        web.kind === ts.SyntaxKind.NullKeyword ||
+        (ts.isStringLiteralLike(web) && web.text.trim() === "");
+      const colours = [...branches]
+        .filter(([name]) => name !== "web")
+        .flatMap(([, value]) =>
+          ts.isStringLiteralLike(value) ? value.text.split(/\s+/).filter((c) => colourOf(c)) : [],
+        );
+      if (blank && colours.length > 0) {
+        const { line } = file.getLineAndCharacterOfPosition(node.getStart());
+        bad.push(`${line + 1}: \`${colours.join(" ")}\` everywhere but web`);
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return bad;
+}

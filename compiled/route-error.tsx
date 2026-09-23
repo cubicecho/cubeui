@@ -116,7 +116,7 @@ export function RouteError({
       {shown ? (
         <div
           data-slot="route-error-details"
-          className="cube-rn-view w-full max-w-md rounded-md border px-3 py-2"
+          className="cube-rn-view w-full max-w-md rounded-md border border-border px-3 py-2"
         >
           {typeof shown === "string" ? (
             <span className="cube-rn-text font-mono text-xs text-muted-foreground">{shown}</span>

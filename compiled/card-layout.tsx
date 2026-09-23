@@ -84,8 +84,11 @@ const SLOT = "block";
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
 const BAR = cn("h-4 rounded-md bg-accent", "animate-pulse");
 
-/** A string slot's colour. The web inherits the card's; the device has to be told it. */
-const INK = undefined;
+/**
+ * A string slot's colour, on every platform. The compiled half would inherit the card's, but
+ * react-native-web is web too and gives every `Text` its own black `color`.
+ */
+const INK = "text-card-foreground";
 
 /** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
 function asText(node: ReactNode) {
