@@ -129,6 +129,11 @@ ships `compiled/`, not the source. The rules that make that work:
 - **Web-only classes go behind `Platform.select`.** A class Yoga cannot read (grid, arbitrary
   variants, `max-w-(--breakpoint-2xl)`) sits in `Platform.select({ web: …, default: … })`, which
   the compiler folds to its web branch. That is how the layout family is on both platforms.
+- **But `web` is not only the compiled half.** An Expo web app runs the native source under
+  react-native-web, where `Platform.OS === "web"` too and nothing is inherited: a bare `border`
+  is black and a `Text` with no colour class is black. Name a border colour beside every border
+  width (`border border-border`) and a text colour on every platform, never
+  `Platform.select({ web: undefined, default: "text-foreground" })` — `registry:check` rule 14.
 - **Declare the item in `registry.json`.** It is the native registry, and the web registry
   (`registry.web.json`) is generated from it plus `registry.web-only.json` — never edit
   `registry.web.json` by hand.
@@ -171,7 +176,7 @@ docs/component-conventions.md         authoring rules, and the open questions
                                       reads the copy that ships
 scripts/rn2web/                       the compiler
 scripts/build-tokens.mjs              the token emitter
-scripts/check-registry-build.mjs      `registry:check`: thirteen rules over what ships
+scripts/check-registry-build.mjs      `registry:check`: fourteen rules over what ships
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/build-page.mjs                the landing page, public/index.html

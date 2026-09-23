@@ -1,4 +1,4 @@
-// Thirteen things that have to be true before a built registry is installable.
+// Fourteen things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -226,12 +226,37 @@
 // install, not merely because one exists somewhere in the repo. Rule 10 is this rule for the story
 // items, which have their own package floor on top; this is the same question for everything else.
 //
+// ## 14. A React Native source names the colour of every border it draws, and of every `Text`
+//
+// Two things only the compiled DOM half has: a stylesheet's `* { border-color: var(--border) }`
+// reaching every element, and colour inherited from the parent. Under react-native-web — an Expo
+// web app running the native source — neither holds, and on device neither ever did. React
+// Native's default `borderColor` is black and react-native-web's base `View` class sets
+// `border: 0 solid black`, which a class beats and a `*` rule does not; and a `Text` there sets its
+// own `color`, black. So `card`, the card surface of `section` and `route-error`'s details box all
+// drew black borders on Expo web and on device (#78), and `PageHeader`'s title was black on the
+// dark theme, because `Platform.select({ web: undefined, … })` left its ink to inheritance on web —
+// and `Platform.OS === "web"` is true under react-native-web too.
+//
+// So in `registry/ui`, `registry/layout` and `registry/lib` (not a `.web.tsx`, which is DOM), a
+// class string with a border-width utility — `border`, `border-2`, `border-t` — has to carry a
+// `border-*` colour, judged with the class list it is joined into: every string in the same
+// `cn(…)`/`cva(…)` call, conditional, array or object. A string whose colour is added where that
+// cannot see, like a `-base.ts` constant each half colours from its own state, says so with a
+// `@border-colour` comment above it naming where. And no `Platform.select` gives a colour class to
+// every platform but web: set it everywhere, which is harmless on the compiled half.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
-import { tokensIn, unresolvedColours } from "./colour-classes.mjs";
+import {
+  tokensIn,
+  uncolouredBorders,
+  unresolvedColours,
+  weblessColours,
+} from "./colour-classes.mjs";
 import { isSource, packageName, packagesIn } from "./imports.mjs";
 
 // Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
@@ -445,6 +470,7 @@ const misapplied = [];
 const uncoloured = [];
 const reexports = [];
 const misplaced = [];
+const inkless = [];
 let checked = 0;
 
 /**
@@ -646,6 +672,20 @@ for (const file of await readdir(SOURCES, { recursive: true })) {
   const where = path.join(SOURCES, file);
   for (const cls of unresolvedColours(await readFile(where, "utf8"), tokens, file)) {
     uncoloured.push(`${where}: \`${cls}\``);
+  }
+}
+
+// Rule 14. What react-native-web and the device do not inherit, a native source names.
+const NATIVE_SOURCES = ["ui", "layout", "lib"].map((dir) => path.join(SOURCES, dir));
+for (const dir of NATIVE_SOURCES) {
+  for (const file of await readdir(dir)) {
+    if (!/\.(tsx|ts)$/.test(file) || /\.(web\.tsx|test\.ts)$/.test(file)) continue;
+    const where = path.join(dir, file);
+    const source = await readFile(where, "utf8");
+    for (const one of uncolouredBorders(source, file)) {
+      inkless.push(`${where}:${one} draws a border and names no colour for it`);
+    }
+    for (const one of weblessColours(source, file)) inkless.push(`${where}:${one}`);
   }
 }
 
@@ -1001,8 +1041,21 @@ if (misplaced.length > 0) {
   );
 }
 
+if (inkless.length > 0) {
+  console.error("\nA React Native source leaves a colour to what only the compiled half has:\n");
+  for (const one of inkless) console.error(`  ${one}`);
+  console.error(
+    "\nReact Native's default border colour is black, react-native-web's base `View` class says" +
+      "\n`border: 0 solid black`, and a react-native-web `Text` sets its own black `color` — so a" +
+      "\nbare `border`, or ink left to inheritance on web, is black on device and on Expo web." +
+      "\nAdd `border-border` (or the right token) beside the width, and name a text colour on every" +
+      "\nplatform. A colour added in another file is marked with a `@border-colour` comment.",
+  );
+}
+
 if (
-  misplaced.length +
+  inkless.length +
+    misplaced.length +
     reexports.length +
     stories.length +
     collisions.length +
@@ -1033,5 +1086,6 @@ console.log(
     "every shared class constant is applied only by the component it is named for, every " +
     "colour class names a token, every published story imports only what the consumer's " +
     "tree will hold, every layout is on both platforms, nothing re-exports with `export … from`, " +
-    "and every import between shipped files resolves where the CLI installs them.",
+    "every import between shipped files resolves where the CLI installs them, and every " +
+    "native source names the colour of the borders and text react-native-web would draw black.",
 );

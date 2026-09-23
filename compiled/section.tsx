@@ -87,7 +87,8 @@ export function Section({
       className={cn(
         "cube-rn-view",
         "min-w-0 gap-3",
-        surface === "card" && "rounded-lg border bg-card p-4 text-card-foreground shadow-sm",
+        surface === "card" &&
+          "rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm",
         className,
       )}
     >
@@ -97,7 +98,7 @@ export function Section({
           className={cn(
             "cube-rn-view",
             "min-w-0 flex-row items-center gap-2",
-            divider && "border-b pb-1",
+            divider && "border-b border-border pb-1",
           )}
         >
           <div className="cube-rn-view min-w-0 flex-1">

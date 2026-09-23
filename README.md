@@ -400,7 +400,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces thirteen rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces fourteen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -470,6 +470,21 @@ relative import in anything shipped, and holds every `@/` specifier to a path th
 `registryDependencies` closure installs — which is also what caught `color-field` importing
 `@/components/color-picker` (a `registry:ui`, so `components/ui/`) and the compiled `toast` using
 `cn` without depending on `utils`.
+
+And that **a native source names the colour of every border and every `Text` it draws** (rule 14).
+Two things only the compiled half has — a stylesheet's `* { border-color: var(--border) }` and
+inherited colour — do not hold under react-native-web, which is what an Expo web app runs the native
+source on, and never held on device. react-native-web's base `View` class is `border: 0 solid black`
+and beats the `*` rule, and its `Text` sets its own black `color`. So `card`, `section`'s card
+surface and `route-error`'s details box drew black borders, and `PageHeader`'s title was black on the
+dark theme because a `Platform.select({ web: undefined, … })` left its ink to inheritance — and
+`Platform.OS === "web"` is true under react-native-web too (#78). In `registry/{ui,layout,lib}`, not
+a `.web.tsx`, a class string with a border width has to carry a `border-*` colour somewhere in the
+class list it is joined into (the same `cn`/`cva` call, conditional, array or object), and no
+`Platform.select` may give a colour class to every platform but web. A constant coloured in another
+file — `CHECKBOX_CLASS`, which each half colours from its checked state — says so with a
+`@border-colour` comment above it. `stories/tokens.stories.tsx` asserts the resolved colours under
+react-native-web.
 
 Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -1026,7 +1041,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
-npm run registry:check # the thirteen rules under Guards, against both built registries
+npm run registry:check # the fourteen rules under Guards, against both built registries
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)

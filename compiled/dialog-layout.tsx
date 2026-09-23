@@ -67,8 +67,11 @@ const CHASSIS = "min-h-0 flex-1 gap-4";
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = "sr-only";
 
-/** A string slot's colour. The web inherits one; the device has to be told it. */
-const INK = undefined;
+/**
+ * A string slot's colour, on every platform. The compiled half would inherit one, but
+ * react-native-web is web too and gives every `Text` its own black `color`.
+ */
+const INK = "text-foreground";
 
 /** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
 function asText(node: ReactNode) {

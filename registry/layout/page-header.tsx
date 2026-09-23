@@ -2,14 +2,16 @@
  * The title block a page wears in a header slot — written once here and compiled for the web by
  * `scripts/rn2web`, so the DOM `PageHeader` and the React Native one are the same component.
  *
- * Three things the web drew with CSS the device cannot, each behind a `Platform.select` the
+ * Two things the web drew with CSS the device cannot, each behind a `Platform.select` the
  * compiler folds so the web output keeps the classes it always had:
  *
  * - the icon is sized with `[&_svg]:size-5`, an arbitrary variant NativeWind has no answer for —
  *   on device, pass the icon at the size you want;
  * - a loading title keeps its name in an `sr-only` heading, which is a clip on the web and a
- *   one-pixel box on device;
- * - text colour inherits on the web and does not on device, so the device names it.
+ *   one-pixel box on device.
+ *
+ * The title's colour is not one of them: it is named on every platform, because react-native-web
+ * does not inherit it either.
  */
 import type { ReactNode } from "react";
 import { Platform, Text, View } from "react-native";
@@ -66,8 +68,13 @@ const SR_ONLY = Platform.select({
   default: "absolute -m-px h-px w-px overflow-hidden",
 });
 
-/** Colour the web inherits and the device has to be told. */
-const INK = Platform.select({ web: undefined, default: "text-foreground" });
+/**
+ * The title's colour, on every platform. The compiled `<h1>` would inherit it, but react-native-web
+ * is web too and gives every `Text` its own black `color` — so leaving it to inheritance on web
+ * drew the title black on the dark theme under Expo web. `titleClassName` comes later in the `cn`
+ * and still wins.
+ */
+const INK = "text-foreground";
 
 /**
  * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
