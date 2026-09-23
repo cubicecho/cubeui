@@ -52,6 +52,10 @@ The trigger lays its children out in a row, puts only the text in a `<Text>`, an
 the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
 segmented control to get one.
 
+Name the tablist when no visible heading does: `<TabsList aria-label="Project view">`, or
+`aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
+it on both halves; a screen reader announces it on entering the tabs.
+
 ## Icon buttons
 
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.

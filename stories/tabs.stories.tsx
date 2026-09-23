@@ -3,7 +3,14 @@ import { useContext } from "react";
 import { Text } from "react-native";
 import { expect, within } from "storybook/test";
 import { IconClassContext } from "@/components/ui/icons-base";
+import {
+  Tabs as CompiledTabs,
+  TabsContent as CompiledTabsContent,
+  TabsList as CompiledTabsList,
+  TabsTrigger as CompiledTabsTrigger,
+} from "../compiled/tabs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
+import { SideBySide } from "./side-by-side";
 
 /**
  * The device trigger used to put everything it was given inside one `<Text>`, so an icon beside a
@@ -67,5 +74,61 @@ export const IconInTrigger: Story = {
 
     await expect(listIcon.dataset.class).toContain("text-foreground");
     await expect(canvas.getByTestId("icon-board").dataset.class).toContain("text-muted-foreground");
+  },
+};
+
+/**
+ * A tablist with no visible heading over it is named by `aria-label`, which is on the shared
+ * contract so a call site written once names it on both halves. The device half puts it on its
+ * `role="tablist"` view; the web half hands it to radix's `List`. `aria-labelledby` is the same
+ * path, pointed at a heading that is on screen.
+ */
+export const NamedTablist: Story = {
+  parameters: {
+    // The inactive-tab contrast, as above.
+    a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } },
+  },
+  render: () => (
+    <SideBySide
+      native={
+        <Tabs defaultValue="list">
+          <TabsList aria-label="Project view">
+            <TabsTrigger value="list">List</TabsTrigger>
+            <TabsTrigger value="board">Board</TabsTrigger>
+          </TabsList>
+          <TabsContent value="list">
+            <Text className="text-foreground">The list.</Text>
+          </TabsContent>
+          <Text nativeID="native-heading" className="text-foreground">
+            Native range
+          </Text>
+          <TabsList aria-labelledby="native-heading">
+            <TabsTrigger value="week">Week</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      }
+      compiled={
+        <CompiledTabs defaultValue="list">
+          <CompiledTabsList aria-label="Compiled project view">
+            <CompiledTabsTrigger value="list">List</CompiledTabsTrigger>
+            <CompiledTabsTrigger value="board">Board</CompiledTabsTrigger>
+          </CompiledTabsList>
+          <CompiledTabsContent value="list">The list.</CompiledTabsContent>
+          <p id="compiled-heading">Compiled range</p>
+          <CompiledTabsList aria-labelledby="compiled-heading">
+            <CompiledTabsTrigger value="week">Week</CompiledTabsTrigger>
+          </CompiledTabsList>
+        </CompiledTabs>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("tablist", { name: "Project view" })).toBeInTheDocument();
+    await expect(canvas.getByRole("tablist", { name: "Native range" })).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("tablist", { name: "Compiled project view" }),
+    ).toBeInTheDocument();
+    await expect(canvas.getByRole("tablist", { name: "Compiled range" })).toBeInTheDocument();
   },
 };
