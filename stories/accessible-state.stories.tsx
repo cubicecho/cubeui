@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Badge } from "../registry/ui/badge";
+import { Checkbox } from "../registry/ui/checkbox";
 import { ColorPicker } from "../registry/ui/color-picker";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 
@@ -104,5 +105,26 @@ export const Badges: Story = {
     // unnamed — one `img`, not two.
     await expect(canvas.queryAllByRole("img").length).toBe(1);
     await expect(canvasElement.querySelectorAll('[aria-hidden="true"]').length).toBe(1);
+  },
+};
+
+/**
+ * A call site shared across both halves is typechecked against the device half, so the name it
+ * gives the box is `accessibilityLabel` — and the web half is a radix `<button>`, which would
+ * otherwise spread that onto the DOM as an unknown attribute and leave the box unnamed. It has to
+ * arrive as `aria-label`, and an `aria-label` passed outright still wins.
+ */
+export const CheckboxName: Story = {
+  render: () => (
+    <div className="flex flex-row gap-2 bg-background p-6">
+      <Checkbox accessibilityLabel="Done" />
+      <Checkbox accessibilityLabel="Ignored" aria-label="Archived" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const done = canvas.getByRole("checkbox", { name: "Done" });
+    await expect(done).not.toHaveAttribute("accessibilitylabel");
+    await expect(canvas.getByRole("checkbox", { name: "Archived" })).toBeInTheDocument();
   },
 };
