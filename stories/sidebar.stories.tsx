@@ -214,6 +214,11 @@ export const States: Story = {
     await expect(canvas.queryAllByRole("list")).toHaveLength(0);
     await expect(canvas.getAllByRole("status", { name: "Loading" })).toHaveLength(2);
     await expect(canvas.getAllByText("Could not load shared projects")).toHaveLength(2);
+    // The compact failure is an alert too, on both halves — it replaces the rows it stands in for.
+    const alerts = canvas.getAllByRole("alert");
+    await expect(alerts).toHaveLength(2);
+    for (const alert of alerts)
+      await expect(alert).toHaveTextContent("Could not load shared projects");
     await expect(canvas.getAllByRole("button", { name: "Try again" })).toHaveLength(2);
 
     // Compact means a nav row's height, not a card's: each placeholder is one row tall.

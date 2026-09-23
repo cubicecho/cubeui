@@ -65,6 +65,11 @@ export const Failed: Story = {
     empty: NoRoles,
   },
   play: async ({ canvas, args }) => {
+    // The failure replaces what the reader was waiting for, so it is announced as an alert — the
+    // counterpart of the loading rung's `status` — and the whole card is that alert.
+    const alert = canvas.getByRole("alert");
+    expect(alert).toHaveTextContent("Could not load your roles");
+    expect(alert).toHaveTextContent("Failed to fetch");
     expect(canvas.getByText("Could not load your roles")).toBeVisible();
     expect(canvas.getByText("Failed to fetch")).toBeVisible();
     await userEvent.click(canvas.getByRole("button", { name: "Try again" }));
