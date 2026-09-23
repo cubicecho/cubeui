@@ -9,7 +9,7 @@
  */
 
 /**
- * Combined date + time picker.
+ * Combined date + time picker — or, with `mode="date"`, a date on its own.
  *
  * - Date is chosen from a `Calendar` in a `Popover` — a dropdown anchored to the
  *   trigger on web, a sheet on native.
@@ -19,37 +19,85 @@
  * Shared by both platforms with no `.web.tsx`: every piece it composes is
  * already a cross-platform primitive. The two halves always commit a single
  * `Date` back through `onChange`, so a caller never has to reassemble one.
+ *
+ * `mode` and `clearable` are props rather than a native `DatePicker` because the
+ * date-only, optional field differs from this one by an input and a Clear row —
+ * the same argument the web `DatePicker` makes for `showTime`. A second native
+ * component would be a second trigger, popover and calendar wiring to keep in
+ * step with this one.
  */
 import { format } from "date-fns";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Calendar } from "./calendar";
-import { Calendar as CalendarIcon } from "./icons";
+import { Calendar as CalendarIcon, X } from "./icons";
 import { Input } from "./input";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
-type DateTimeInputProps = {
-  value: Date;
-  onChange: (next: Date) => void;
-  className?: string;
+type DateTimeInputSharedProps = {
+  /**
+   * `"datetime"` (default) draws the time field beside the date. `"date"` drops
+   * it: a picked day is committed at local midnight, which is what a due date or
+   * a birthday is.
+   */
+  mode?: "datetime" | "date" | undefined;
+  /** What the trigger reads while the value is `null`. Only reachable with `clearable`. */
+  placeholder?: string | undefined;
+  className?: string | undefined;
 };
 
-export function DateTimeInput({ value, onChange, className }: DateTimeInputProps) {
+/**
+ * Discriminated on `clearable`, so `null` is only in the types of a caller that
+ * asked for it: a `Date` and a `(next: Date) => void` still fit the default, and
+ * a caller holding `Date | null` has to say `clearable` — which is also what
+ * draws the Clear row that can hand it a `null`.
+ */
+export type DateTimeInputProps = DateTimeInputSharedProps &
+  (
+    | {
+        clearable?: false | undefined;
+        value: Date;
+        onChange: (next: Date) => void;
+      }
+    | {
+        /** The value may be empty: the trigger shows `placeholder`, and a Clear row commits `null`. */
+        clearable: true;
+        value: Date | null;
+        onChange: (next: Date | null) => void;
+      }
+  );
+
+export function DateTimeInput(props: DateTimeInputProps) {
+  const { mode = "datetime", placeholder = "Pick a date", className } = props;
+  const value = props.value;
+  const withTime = mode === "datetime";
   const [open, setOpen] = useState(false);
-  const timeStr = format(value, "HH:mm");
+
+  function commit(next: Date) {
+    // Both branches take a `Date`; the union of their `onChange`s does not say so.
+    (props.onChange as (next: Date) => void)(next);
+  }
 
   function handleDateSelect(picked: Date | undefined) {
     if (!picked) return;
-    // The calendar only knows a day, so the time is carried over rather than
-    // reset to midnight — picking a new date must not silently move the time.
     const next = new Date(picked);
-    next.setHours(value.getHours(), value.getMinutes(), 0, 0);
-    onChange(next);
+    if (withTime && value) {
+      // The calendar only knows a day, so the time is carried over rather than
+      // reset to midnight — picking a new date must not silently move the time.
+      next.setHours(value.getHours(), value.getMinutes(), 0, 0);
+    } else {
+      // A date-only value, or the first pick into an empty one, is the day at
+      // local midnight — whatever clock the calendar handed back.
+      next.setHours(0, 0, 0, 0);
+    }
+    commit(next);
     setOpen(false);
   }
 
   function handleTimeChange(text: string) {
+    // A time with no date is not a value this control can hold, so it waits.
+    if (!value) return;
     const parts = text.split(":").map(Number);
     const hh = parts[0];
     const mm = parts[1];
@@ -57,23 +105,68 @@ export function DateTimeInput({ value, onChange, className }: DateTimeInputProps
     if (Number.isNaN(hh) || Number.isNaN(mm)) return;
     const next = new Date(value);
     next.setHours(hh, mm, 0, 0);
-    onChange(next);
+    commit(next);
+  }
+
+  function handleClear() {
+    if (props.clearable) props.onChange(null);
+    setOpen(false);
   }
 
   return (
     <div className={cn("cube-rn-view", "flex-row items-center gap-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="flex-1 justify-start text-left font-normal">
+          {/* The `onPress` is not redundant with the trigger's own. On Expo web the
+              popover is radix, which opens from an `onClick` merged onto this
+              button — and react-native-web's `Pressable` replaces any `onClick` it
+              is handed with its own press handler, so the popover never opened
+              there. Opening from `onPress` works on every half; radix's toggle,
+              which runs after it, still closes the popover on a second click. */}
+          <Button
+            variant="outline"
+            className="flex-1 justify-start text-left font-normal"
+            onClick={() => setOpen(true)}
+          >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {format(value, "PPP")}
+            {value ? (
+              format(value, "PPP")
+            ) : (
+              // Its own `Text`, because native has no colour inheritance: a muted
+              // class on the button would never reach the words.
+              <span className="cube-rn-text text-sm text-muted-foreground">{placeholder}</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar selected={value} onSelect={handleDateSelect} defaultMonth={value} />
+          <Calendar
+            selected={value ?? undefined}
+            onSelect={handleDateSelect}
+            defaultMonth={value ?? undefined}
+          />
+          {/* In the popover, not an X inside the trigger: the trigger is a button,
+              and a button inside a button is invalid HTML that no keyboard reaches.
+              The web `DatePicker` puts its Clear in the same place. */}
+          {props.clearable && value ? (
+            <div className="cube-rn-view flex-row justify-end border-t border-border p-1">
+              <Button variant="ghost" size="sm" onClick={handleClear}>
+                <X className="h-4 w-4" />
+                Clear
+              </Button>
+            </div>
+          ) : null}
         </PopoverContent>
       </Popover>
-      <Input type="time" value={timeStr} onChangeText={handleTimeChange} className="w-[120px]" />
+      {withTime ? (
+        <Input
+          type="time"
+          aria-label="Time"
+          value={value ? format(value, "HH:mm") : ""}
+          onChangeText={handleTimeChange}
+          disabled={!value}
+          className="w-[120px]"
+        />
+      ) : null}
     </div>
   );
 }
