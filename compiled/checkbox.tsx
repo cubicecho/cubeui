@@ -37,13 +37,26 @@ export type CheckboxProps = Omit<
   "className"
 > & {
   className?: string | undefined;
+  /**
+   * The device half's name for the box, taken here so a call site shared across both halves —
+   * typechecked against the device half, so this is all it passes — still names it. It becomes
+   * `aria-label`; an `aria-label` of its own wins. Optional, because on the web a
+   * `<Label htmlFor={id}>` can name the box instead.
+   */
+  "aria-label"?: string | undefined;
 };
 
-function Checkbox({ className, ...props }: CheckboxProps) {
+function Checkbox({
+  className,
+  "aria-label": accessibilityLabel,
+  "aria-label": ariaLabel,
+  ...props
+}: CheckboxProps) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       {...props}
+      aria-label={ariaLabel ?? accessibilityLabel}
       className={cn(
         CHECKBOX_CLASS,
         "peer flex border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",

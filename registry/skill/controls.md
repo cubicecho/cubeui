@@ -47,6 +47,11 @@ like the rest. On web it hands the glyph back unchanged, since an `<svg>` alread
 or can import the glyph from `lucide-react` directly. `IconProps` is exported beside `icon` for a
 component that forwards an icon's props.
 
+A tab can carry an icon too: `<TabsTrigger value="board"><Calendar /> Board</TabsTrigger>`.
+The trigger lays its children out in a row, puts only the text in a `<Text>`, and hands the icon
+the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
+segmented control to get one.
+
 ## Icon buttons
 
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.

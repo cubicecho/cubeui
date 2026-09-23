@@ -36,7 +36,7 @@
  * `Form` holds against form libraries. A shell that names one data library is a shell the next
  * app cannot install.
  */
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Card } from "./card";
@@ -46,9 +46,32 @@ import { RefreshCw, TriangleAlert } from "./icons";
 type QueryLike = {
   isPending: boolean;
   isError: boolean;
-  error: Error | null;
+  /**
+   * `unknown` because that is what a failure is: TanStack types it `Error | null`, Apollo hands
+   * over its own error class, and a thrown string is still a throw. An `Error | null` fits.
+   */
+  error: unknown;
   refetch: () => unknown;
 };
+
+/** What a failure says when neither the caller nor the error has anything to say. */
+const FALLBACK = "The server did not answer.";
+
+/** The error's own `message`, which is the transport's wording rather than the app's. */
+function messageOf(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const { message } = error as { message: unknown };
+    if (typeof message === "string") return message;
+  }
+  return "";
+}
+
+const settles = (value: unknown): value is PromiseLike<unknown> =>
+  typeof value === "object" &&
+  value !== null &&
+  typeof (value as { then?: unknown }).then === "function";
 
 export function QueryState({
   query,
@@ -57,6 +80,7 @@ export function QueryState({
   empty,
   rows = 3,
   compact = false,
+  describe,
   className,
 }: {
   query: QueryLike;
@@ -80,6 +104,8 @@ export function QueryState({
    * sidebar, where a card-sized error would be taller than the list it replaced.
    */
   compact?: boolean | undefined;
+  /** What the failure means, in the app's words — handed through to `QueryError`. */
+  describe?: ((error: unknown) => string) | undefined;
   className?: string | undefined;
 }) {
   if (query.isError)
@@ -89,6 +115,7 @@ export function QueryState({
         onRetry={() => query.refetch()}
         what={what}
         compact={compact}
+        {...(describe === undefined ? {} : { describe })}
         {...(className === undefined ? {} : { className })}
       />
     );
@@ -112,21 +139,46 @@ export function QueryState({
  * failed query stays failed, and a screen that renders a failure as an absence tells somebody
  * whose server has gone away that they have no data — which is an invitation to rebuild
  * something that is fine.
+ *
+ * The retry is awaited when it hands back a promise, as every refetch does: the button is disabled
+ * and says "Retrying…" until it settles, so a second press does not stack a second request on a
+ * slow server, and a rejected refetch is caught here rather than escaping as an unhandled
+ * rejection. What the retry failed with is the query's to report, not the button's.
  */
 export function QueryError({
   error,
   onRetry,
   what,
   compact = false,
+  describe,
   className,
 }: {
-  error: Error | null;
-  onRetry: () => void;
+  error: unknown;
+  /** A promise returned here is awaited — see above. */
+  onRetry: () => unknown;
   what: string;
   /** No card, smaller type, a ghost retry — see `QueryState`'s `compact`. */
   compact?: boolean | undefined;
+  /**
+   * What the failure means, in the app's words. Without it the line under the heading is the
+   * error's own `message` — the transport's wording, "Failed to fetch" or "Received status code
+   * 401" — which is right for a bug report and wrong for somebody whose session has expired.
+   */
+  describe?: ((error: unknown) => string) | undefined;
   className?: string | undefined;
 }) {
+  const [retrying, setRetrying] = useState(false);
+  const retry = () => {
+    const result = onRetry();
+    if (!settles(result)) return;
+    setRetrying(true);
+    Promise.resolve(result)
+      .catch(() => {})
+      .finally(() => setRetrying(false));
+  };
+  const reason = (describe ?? messageOf)(error) || FALLBACK;
+  const label = retrying ? "Retrying…" : "Try again";
+
   // The same three parts — what failed, why, try again — at the size of a nav row. No card, since a
   // bordered box inside a rail reads as one more row, and the retry is a ghost button so the rail's
   // only filled control stays the primary action above it.
@@ -142,13 +194,11 @@ export function QueryError({
             Could not load {what}
           </span>
         </div>
-        <span className="cube-rn-text text-muted-foreground text-xs">
-          {error?.message || "The server did not answer."}
-        </span>
+        <span className="cube-rn-text text-muted-foreground text-xs">{reason}</span>
         <div className="cube-rn-view flex-row">
-          <Button variant="ghost" size="xs" onClick={onRetry}>
+          <Button variant="ghost" size="xs" onClick={retry} disabled={retrying}>
             <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-            Try again
+            {label}
           </Button>
         </div>
       </div>
@@ -171,13 +221,11 @@ export function QueryError({
           Could not load {what}
         </span>
       </div>
-      <span className="cube-rn-text text-muted-foreground text-sm">
-        {error?.message || "The server did not answer."}
-      </span>
+      <span className="cube-rn-text text-muted-foreground text-sm">{reason}</span>
       <div className="cube-rn-view flex-row">
-        <Button variant="outline" size="sm" onClick={onRetry}>
+        <Button variant="outline" size="sm" onClick={retry} disabled={retrying}>
           <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-          Try again
+          {label}
         </Button>
       </div>
     </Card>
