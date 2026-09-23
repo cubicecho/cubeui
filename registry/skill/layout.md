@@ -432,9 +432,20 @@ Two shells for the shape every list route is: a ladder of states, then rows.
   pass the length of the rows you are mapping, and let `empty` say which emptiness it is.
 - `query` is structural: anything with `isPending`, `isError`, `error` and `refetch` fits, so the
   shell names no data library. The same line `FormField` holds against form libraries.
+  `error` is `unknown` — an Apollo error, a TanStack `Error | null` and a thrown string all fit.
+- **`describe`** — `(error: unknown) => string` — is what the failure means in the app's words.
+  Without it the line under the heading is the error's own `message`, which is the transport's
+  wording ("Failed to fetch", "Received status code 401"), or "The server did not answer." when
+  there is none. An app with a `describeError` helper passes it here instead of keeping its own
+  failure card: `<QueryState describe={describeError} … />`. `QueryError` takes it too.
+- **Try again awaits the retry.** When `onRetry` (on `QueryState`, the query's `refetch`) returns a
+  promise, the button is disabled and reads "Retrying…" until it settles, so a second press does
+  not stack requests. A rejected retry is caught — Apollo's `refetch` rejects when it fails again
+  — so it never surfaces as an unhandled rejection; the query's own error is what gets shown.
 - It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
+  `<QueryError error={error} onRetry={refetch} what="this invoice" describe={describeError} />`.
 - `RowSkeleton` draws `rows` bordered `Card`s — the shape a row is — so the page does not change
   shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
