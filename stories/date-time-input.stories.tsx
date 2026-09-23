@@ -1,11 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ComponentType, useState } from "react";
+import { type ComponentType, type ReactNode, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { DateTimeInput as CompiledDateTimeInput } from "../compiled/date-time-input";
+import { Label as CompiledLabel } from "../compiled/label";
 import {
   type DateTimeInputProps,
   DateTimeInput as NativeDateTimeInput,
 } from "../registry/ui/date-time-input";
+import { Label as NativeLabel } from "../registry/ui/label";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -153,7 +155,113 @@ export const RequiredDateAndTime: Story = {
     // The time field is there on both halves.
     await expect(native.querySelector("input")).not.toBeNull();
     await expect(compiled.querySelector("input")).not.toBeNull();
+    // Unnamed, the time box keeps the name it always had.
+    await expect(native.querySelector("input")).toHaveAccessibleName("Time");
+    await expect(compiled.querySelector("input")).toHaveAccessibleName("Time");
     await assertRequired(native, "Native starts");
     await assertRequired(compiled, "Compiled starts");
+  },
+};
+
+type LabelComponent = ComponentType<{ id?: string; htmlFor?: string; children?: ReactNode }>;
+
+/**
+ * Three ways a form names the field — issue #101. Each half uses its own `Label`, except for the
+ * `htmlFor` row on the native half: the native `Label` has no `htmlFor` to give, so that row uses
+ * a DOM `<label>` to prove the trigger's `id` still reaches the element under react-native-web.
+ */
+function NamedFields({
+  Field,
+  Label,
+  prefix,
+  htmlForLabel,
+}: {
+  Field: Field;
+  Label: LabelComponent;
+  prefix: string;
+  htmlForLabel: LabelComponent;
+}) {
+  const [due, setDue] = useState<Date | null>(null);
+  const [starts, setStarts] = useState(() => new Date(2026, 8, 3, 9, 0));
+  const [ends, setEnds] = useState(() => new Date(2026, 8, 3, 17, 0));
+  const HtmlForLabel = htmlForLabel;
+  return (
+    <div className="flex flex-col gap-3">
+      <HtmlForLabel htmlFor={`${prefix}-due`}>{`${prefix} due`}</HtmlForLabel>
+      <Field id={`${prefix}-due`} clearable mode="date" value={due} onChange={setDue} />
+      <Label id={`${prefix}-starts-label`}>{`${prefix} starts`}</Label>
+      <Field aria-labelledby={`${prefix}-starts-label`} value={starts} onChange={setStarts} />
+      <Field aria-label={`${prefix} ends`} value={ends} onChange={setEnds} />
+    </div>
+  );
+}
+
+function DomLabel({
+  id,
+  htmlFor,
+  children,
+}: {
+  id?: string;
+  htmlFor?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <label id={id} htmlFor={htmlFor} className="text-sm font-medium">
+      {children}
+    </label>
+  );
+}
+
+async function assertNamed(section: HTMLElement, prefix: string) {
+  const half = within(section);
+  // `htmlFor` → the trigger's `id`. The trigger is named by the label, not by its placeholder.
+  await expect(half.getByRole("button", { name: `${prefix} due` })).toHaveAttribute(
+    "id",
+    `${prefix}-due`,
+  );
+
+  // The date-only field draws no time box, so the two inputs are the starts and ends time boxes.
+  // Read through the accessible-name algorithm rather than `getByLabelText`: the starts box names
+  // itself partly by pointing at its own id, which a label-text query does not follow.
+  const [startsTime, endsTime] = Array.from(section.querySelectorAll("input"));
+  if (!startsTime || !endsTime) throw new Error("both datetime fields should draw a time box");
+
+  // `aria-labelledby` names the trigger, and the time box is the label's name plus "time".
+  await expect(half.getByRole("button", { name: `${prefix} starts` })).toBeInTheDocument();
+  await expect(startsTime).toHaveValue("09:00");
+  await expect(startsTime).toHaveAccessibleName(`${prefix} starts time`);
+
+  // `aria-label` names the trigger, and the time box is derived from it.
+  await expect(half.getByRole("button", { name: `${prefix} ends` })).toBeInTheDocument();
+  await expect(endsTime).toHaveValue("17:00");
+  await expect(endsTime).toHaveAccessibleName(`${prefix} ends, time`);
+}
+
+export const NamedByAForm: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <NamedFields
+          Field={NativeDateTimeInput}
+          Label={NativeLabel}
+          htmlForLabel={DomLabel}
+          prefix="Native"
+        />
+      }
+      compiled={
+        <NamedFields
+          Field={CompiledDateTimeInput}
+          Label={CompiledLabel}
+          htmlForLabel={CompiledLabel}
+          prefix="Compiled"
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const [native, compiled] = Array.from(canvasElement.querySelectorAll("section"));
+    if (!native || !compiled) throw new Error("both halves should render");
+    await assertNamed(native, "Native");
+    await assertNamed(compiled, "Compiled");
   },
 };
