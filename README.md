@@ -319,7 +319,7 @@ and controlled when given `value`. The hook is split by platform like any other 
   way, and a `<script src>` would add a render-blocking request and break under a base path. A
   unit test holds the copy to the export.
 
-**The native stylesheet also carries the one line of preflight a web build needs:**
+**The native stylesheet also carries the few lines of preflight a web build needs.** The first is
 `*, ::before, ::after { box-sizing: border-box; }`. Preflight itself stays out — it would fight
 react-native-web's unlayered reset — but it was the only thing setting `border-box` on `*`.
 react-native-web sets it on every element it renders, so a `View` never noticed; a `.web.tsx` half
@@ -327,6 +327,18 @@ that renders a raw `<input>` or `<textarea>` fell back to `content-box`, and an 
 drew 58px tall beside a 40px button. It lives here rather than as `box-border` on each raw-DOM class
 so the next raw-DOM half is covered too. Yoga is always border-box, and the native compiler drops
 the rule. `stories/tokens.stories.tsx` measures the input beside the button.
+
+The other two are the same gap for the radix halves (#97). A tab trigger or a dialog's close is a
+raw `<button>`, and the browser drew it with a `2px outset` border, a grey fill, and a colour and
+font of its own instead of inherited ones; a raw `<label>` drew in the browser's serif, because
+nothing set a page font. So `:where(button)` takes `border: 0 solid`, a transparent background and
+`color` / `font: inherit`, and `:where(html)` takes react-native-web's font stack. Both are
+unlayered and specificity zero. That is only safe because this file imports the utilities
+unlayered as well: an unlayered rule beats every layered one, so beside an `@layer utilities` it
+would override `border` and `bg-*`. In one unlayered cascade a utility is a class and wins on
+specificity. react-native-web's base class is a class too, so a `Pressable` keeps its look.
+react-native-css drops an element selector on device just as it drops `*`, and
+`tokens-dark.test.mjs` asserts it for each.
 
 ### Why this exists, in one table
 
