@@ -72,6 +72,96 @@ export const Failed: Story = {
   },
 };
 
+/**
+ * The error's `message` is the transport's wording. `describe` is where the app says what it
+ * means — here a 401 read as an expired session, the way an Apollo app's own helper would.
+ */
+export const Described: Story = {
+  args: {
+    query: {
+      ...settled,
+      isError: true,
+      error: new Error("Response not successful: Received status code 401"),
+    },
+    what: "your roles",
+    count: 0,
+    describe: (error) =>
+      error instanceof Error && error.message.includes("401")
+        ? "Your session has expired. Sign in again."
+        : "Something went wrong.",
+  },
+  play: async ({ canvas }) => {
+    expect(canvas.getByText("Your session has expired. Sign in again.")).toBeVisible();
+    expect(canvas.queryByText(/Received status code 401/)).toBeNull();
+  },
+};
+
+/** Not every failure is an `Error`; one with nothing to say still says something. */
+export const NotAnError: Story = {
+  args: {
+    query: { ...settled, isError: true, error: { code: 500 } },
+    what: "your roles",
+    count: 0,
+  },
+  play: async ({ canvas }) => {
+    expect(canvas.getByText("The server did not answer.")).toBeVisible();
+  },
+};
+
+/** Held open by the story, so the play function decides when the refetch lands. */
+let landRetry = () => {};
+
+/** A refetch that has not settled: one request in flight, and the button says so. */
+export const Retrying: Story = {
+  args: {
+    query: {
+      ...settled,
+      isError: true,
+      error: new Error("Failed to fetch"),
+      refetch: fn(
+        () =>
+          new Promise<void>((resolve) => {
+            landRetry = resolve;
+          }),
+      ),
+    },
+    what: "your roles",
+    count: 0,
+  },
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Try again" }));
+    const pending = await canvas.findByRole("button", { name: "Retrying…" });
+    expect(pending).toBeDisabled();
+    // A second press while the first is in flight stacks nothing on the server.
+    await userEvent.click(pending, { pointerEventsCheck: 0 });
+    expect(args.query.refetch).toHaveBeenCalledTimes(1);
+    landRetry();
+    expect(await canvas.findByRole("button", { name: "Try again" })).toBeEnabled();
+  },
+};
+
+/**
+ * Apollo's refetch rejects when it fails again. The rejection is caught rather than left
+ * unhandled — the test run fails on one — and the button comes back for the next try.
+ */
+export const RetryRejected: Story = {
+  args: {
+    query: {
+      ...settled,
+      isError: true,
+      error: new Error("Failed to fetch"),
+      refetch: fn(() => Promise.reject(new Error("Failed to fetch"))),
+    },
+    what: "your roles",
+    count: 0,
+  },
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Try again" }));
+    expect(await canvas.findByRole("button", { name: "Try again" })).toBeEnabled();
+    expect(args.query.refetch).toHaveBeenCalledTimes(1);
+  },
+};
+
 /** It landed, and there is nothing in it. The node is the caller's — usually an `Empty`. */
 export const NothingThere: Story = {
   args: { query: settled, what: "your roles", count: 0, empty: NoRoles },
