@@ -351,7 +351,8 @@ and the storage, the class and the first paint are what hand-rolled versions get
   applied as a class on `<html>`: `dark` for Dark, `light` for Light, and for System `dark` only
   while the device is dark. A DOM app's `tokens.web.css` has only `.dark`, which is why System
   still sets it. The hook reads nothing at import, so it renders on a server.
-- **Device:** the choice is applied with `Appearance.setColorScheme`, with `null` for System.
+- **Device:** the choice is applied with `Appearance.setColorScheme`, with `"unspecified"` for System. That
+  is the spelling React Native 0.82+ requires, and 0.81 treats it the same way.
   `storage` is any `{ getItem, setItem }`, sync or async. Wrap MMKV or `expo-secure-store` in two
   lambdas. Without `storage` the choice lasts until the app closes. The stored value is read
   asynchronously, so hold the splash screen if a flash of the system theme matters.

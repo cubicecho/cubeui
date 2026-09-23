@@ -3,9 +3,9 @@
  * an Expo app's web build — and `theme-preference-base.ts` holds what the two share.
  *
  * Applying the choice is `Appearance.setColorScheme`: the native tokens follow the system
- * appearance through `prefers-color-scheme`, and that call is what moves it for this app. `null`
- * hands it back to the system, which then follows the device by itself — so, unlike the web, System
- * needs no listener here.
+ * appearance through `prefers-color-scheme`, and that call is what moves it for this app.
+ * `"unspecified"` hands it back to the system, which then follows the device by itself — so, unlike
+ * the web, System needs no listener here.
  *
  * Storing it is the app's: `storage` is an adapter over whatever the app already persists with, so
  * the item depends on no storage package. The read is asynchronous, so the stored choice lands a
@@ -35,6 +35,14 @@ let storage: ThemeStorage | null = null;
 let settled = false;
 const listeners = new Set<() => void>();
 
+/**
+ * "Follow the device", in the spelling both sides of React Native 0.82 accept at runtime. From 0.82
+ * `setColorScheme` takes `"unspecified"` and hands `null` to the native module as is; before it,
+ * `null` was the typed spelling but was turned into `"unspecified"` on the way down anyway. The
+ * cast is for the 0.81 types, which do not list the string — it keeps one call compiling on both.
+ */
+const FOLLOW_SYSTEM = "unspecified" as unknown as Parameters<typeof Appearance.setColorScheme>[0];
+
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
   return () => {
@@ -48,7 +56,7 @@ function snapshot() {
 
 function apply(next: ThemePreference) {
   current = next;
-  Appearance.setColorScheme(next === "system" ? null : next);
+  Appearance.setColorScheme(next === "system" ? FOLLOW_SYSTEM : next);
   for (const listener of listeners) listener();
 }
 
