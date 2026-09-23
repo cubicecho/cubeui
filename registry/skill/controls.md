@@ -5,7 +5,7 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only**, except the icons, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
+**Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
 colour display parts, and the theme picker, which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
@@ -55,6 +55,38 @@ segmented control to get one.
 Name the tablist when no visible heading does: `<TabsList aria-label="Project view">`, or
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.
+
+## Segmented control
+
+A row of three or four pills, one current, that switches a view or a period rather than opening a
+panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
+
+```tsx
+<SegmentedGroup aria-label="Scale view" value={view} onValueChange={setView}>
+  <SegmentedButton value="relative">Relative</SegmentedButton>
+  <SegmentedButton value="parallel">Parallel</SegmentedButton>
+</SegmentedGroup>
+```
+
+**Put the pills in a `SegmentedGroup`; do not write the row yourself.** The group is the
+`role="group"` that says what the pills choose between. Without it, a screen reader hears
+"Relative, toggle button, pressed" and nothing about what Relative was chosen from. Name it with
+`aria-label`, or with `aria-labelledby` pointed at a visible heading (`nativeID` on device). Inside
+a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)).
+
+- **`value` and `onValueChange` go on the group**, and each pill takes its own `value`. The group
+  works out which pill is pressed, and a press calls `onValueChange` with that pill's `value`. The
+  value is the caller's: the group keeps no state.
+- **`active` still works.** A pill given `active` uses it instead of the group's `value`, so older
+  call sites with `active={view === "relative"}` keep working inside a group. A pill's own
+  `onPress` (`onClick` on the web) still fires after the group is told.
+- **`variant`**: `framed`, the default, is an input-height box (`h-10`, a border,
+  `bg-background`), so the control lines up beside a `Select` or an `Input`. `plain` is the pills
+  alone, for a toolbar or a nav bar.
+- The pills are toggle buttons with `aria-pressed`, not radios. For a choice that belongs in a
+  form and reads as a list of options, use `RadioGroup`.
+- A pill that navigates is a router link, not a `SegmentedButton`. Give the link
+  `segmentedItemClass(active)` and put it in a `SegmentedGroup variant="plain"` for the name.
 
 ## Icon buttons
 
