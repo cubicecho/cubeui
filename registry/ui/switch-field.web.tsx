@@ -1,15 +1,4 @@
 /**
- * Copied from `registry/ui/switch-field.web.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
- * same passes still ran over it, and for a file already written against the DOM they find nothing
- * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one
- * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one
- * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
- */
-
-/**
  * The web switch field: one `<label htmlFor>` wrapping the switch and its caption, so the whole row
  * is the switch's hit target and the switch is the row's only tab stop. `switch-field.tsx` is the
  * native counterpart and `switch-field-base.ts` holds the contract they share.
@@ -22,10 +11,10 @@
  * the switch itself is a click on interactive content, which a label does not re-activate.
  */
 
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { SWITCH_FIELD_LABEL_CLASS, type SwitchFieldProps } from "@/components/ui/switch-field-base";
 import { cn } from "@/lib/utils";
-import { Label } from "./label";
-import { Switch } from "./switch";
 
 export function SwitchField({
   id,
