@@ -665,7 +665,7 @@
       "name": "date-time-input",
       "type": "registry:ui",
       "title": "Date Time Input",
-      "description": "A date popover and a time field that always commit one Date back.",
+      "description": "A date popover and a time field that commit one Date back — or, with `clearable mode=\"date\"`, an optional date only.",
       "dependencies": ["date-fns@^4.4.0"],
       "registryDependencies": [
         "@cubeui/utils",

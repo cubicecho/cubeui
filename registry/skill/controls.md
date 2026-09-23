@@ -230,16 +230,33 @@ is a `Popover`. `MultiSelectField` already does.
 - The trigger is a `<button>`, which is labelable, so `htmlFor` works — but the `aria-*` props
   still need the function form of `control`.
 
-`DatePicker` is web-only. On both halves, `@cubeui/date-time-input` is the date-and-time pair
-for a value that is never empty:
+`DatePicker` is web-only. On both halves, `@cubeui/date-time-input` is the date field — a date
+and a time as one `Date` by default:
 
 ```tsx
 <DateTimeInput value={startsAt} onChange={setStartsAt} />
 ```
 
 The date comes from a `Calendar` in a `Popover` and the time from an `Input type="time"`, and the
-two always commit one `Date` back — a caller never reassembles one. There is no `null`: for an
-optional date, use `DatePicker` on the web.
+two always commit one `Date` back — a caller never reassembles one. Picking a new day keeps the
+clock.
+
+Two props turn it into the optional, date-only field an Expo app needs for a due date:
+
+```tsx
+<DateTimeInput clearable mode="date" value={dueOn} onChange={setDueOn} placeholder="No due date" />
+```
+
+- `mode="date"` drops the time box, and a picked day is committed at local midnight.
+- `clearable` is what lets the value be `null`: the trigger reads `placeholder` while it is, and a
+  Clear row in the popover commits `null`. It is also what puts `null` in the types — without it
+  `value` is `Date` and `onChange` is `(next: Date) => void`, so a caller holding `Date | null`
+  has to say `clearable`. In `"datetime"` mode the time box waits, disabled, until a date is set.
+- It takes `onChange`, not `onValueChange` — it predates the vocabulary, and renaming it would
+  break every caller.
+
+On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
+a `FormField`'s `aria-*` on the trigger.
 
 ## A number edited in place
 
