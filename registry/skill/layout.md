@@ -255,7 +255,12 @@ be told to hide one of its panes on a phone is that decision arriving late.
           ))}
         />
       }
-      footer={<SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />}
+      footer={
+        <>
+          <SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />
+          <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />
+        </>
+      }
     />
   }
   content={page}
@@ -280,6 +285,11 @@ Three parts, and only `Sidebar` is required:
 - **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
   `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
   `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.
+  **With no `href` it is a button** — `onPress` (`onClick` on the web) instead of `href`, and no
+  `active`: `role="button"`, a `<button type="button">` on the web, never `aria-current`, drawn
+  exactly like the links beside it. That is the footer's Sign out; do not hand-draw it with a
+  `Pressable` and copied classes. The props are a union, so a row with neither `href` nor
+  `onPress`, or `active` on a button, is a type error.
 
 **Routing is the app's.** The row names no router. Wrap it in your router's link with `asChild`
 (expo-router's `Link`), which hands it the press handling; it forwards its ref and every prop it
