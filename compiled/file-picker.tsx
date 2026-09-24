@@ -10,17 +10,29 @@
  */
 
 /**
- * The web file picker: a drop zone over a hidden `<input type="file">`.
+ * The web file picker: a drop zone, or a button, over a hidden `<input type="file">`.
  *
  * Both are DOM-only, which is why this is a `.web.tsx`. The caller never sees a
  * `File` — it gets the decoded text — so the calling screen stays shared.
  */
-import { useRef, useState } from "react";
-import { acceptsFile, type FilePickerProps } from "@/components/ui/file-picker-base";
+import { type DragEvent, type ReactNode, useRef, useState } from "react";
+import {
+  acceptsFile,
+  type FilePickerButtonProps,
+  type FilePickerProps,
+} from "@/components/ui/file-picker-base";
 import { cn } from "@/lib/utils";
+import { buttonTextVariants, buttonVariants } from "./button";
 import { Upload } from "./icons";
 
-export function FilePicker({ onPick, onPickMany, accept, multiple, label, hint }: FilePickerProps) {
+type PickOptions = Pick<FilePickerProps, "onPick" | "onPickMany" | "accept" | "multiple">;
+
+/**
+ * The picking, apart from the look: the hidden input, what a click and a drop
+ * do, and whether something is being dragged over. The zone and the button are
+ * two faces on this one hook, so they cannot disagree about what a pick is.
+ */
+function useFilePick({ onPick, onPickMany, accept, multiple }: PickOptions) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -39,21 +51,46 @@ export function FilePicker({ onPick, onPickMany, accept, multiple, label, hint }
     else for (const file of picked) onPick?.(file.text, file.name);
   }
 
+  const trigger = {
+    type: "button" as const,
+    onClick: () => inputRef.current?.click(),
+    onDragOver: (e: DragEvent) => {
+      e.preventDefault();
+      setDragging(true);
+    },
+    onDragLeave: () => setDragging(false),
+    onDrop: (e: DragEvent) => {
+      e.preventDefault();
+      setDragging(false);
+      void take(e.dataTransfer.files);
+    },
+  };
+
+  const input = (
+    <input
+      ref={inputRef}
+      type="file"
+      {...(accept ? { accept } : {})}
+      {...(multiple ? { multiple: true } : {})}
+      className="hidden"
+      onChange={(e) => {
+        void take(e.target.files);
+        // Allow re-selecting the same file after a reset.
+        e.target.value = "";
+      }}
+    />
+  );
+
+  return { trigger, input, dragging };
+}
+
+export function FilePicker({ label, hint, ...options }: FilePickerProps) {
+  const { trigger, input, dragging } = useFilePick(options);
+
   return (
     <>
       <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          void take(e.dataTransfer.files);
-        }}
+        {...trigger}
         className={cn(
           "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
           dragging
@@ -65,18 +102,48 @@ export function FilePicker({ onPick, onPickMany, accept, multiple, label, hint }
         <span className="cube-rn-text font-medium text-sm">{label}</span>
         {hint ? <span className="cube-rn-text text-xs text-muted-foreground">{hint}</span> : null}
       </button>
-      <input
-        ref={inputRef}
-        type="file"
-        {...(accept ? { accept } : {})}
-        {...(multiple ? { multiple: true } : {})}
-        className="hidden"
-        onChange={(e) => {
-          void take(e.target.files);
-          // Allow re-selecting the same file after a reset.
-          e.target.value = "";
-        }}
-      />
+      {input}
+    </>
+  );
+}
+
+export function FilePickerButton({
+  label,
+  icon = <Upload />,
+  variant,
+  size,
+  className,
+  ...options
+}: FilePickerButtonProps) {
+  const { trigger, input, dragging } = useFilePick(options);
+  // At an icon size the square has no room for words, so `label` is the name alone.
+  const iconOnly = typeof size === "string" && size.startsWith("icon");
+  let content: ReactNode = icon;
+  if (!iconOnly) {
+    content = (
+      <>
+        {icon}
+        <span className={cn("cube-rn-text", buttonTextVariants({ variant, size }))}>{label}</span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {/* `buttonVariants` on a plain `<button>` rather than `Button`: in an Expo web app `Button`
+          is a `Pressable`, which drops the drag handlers a drop needs. */}
+      <button
+        {...trigger}
+        aria-label={label}
+        className={cn(
+          buttonVariants({ variant, size }),
+          dragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+          className,
+        )}
+      >
+        {content}
+      </button>
+      {input}
     </>
   );
 }

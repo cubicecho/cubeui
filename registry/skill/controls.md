@@ -582,5 +582,39 @@ A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidde
   to drops as well as the dialog. A file that does not match is skipped and never read. List the
   extension as well as the MIME type, because browsers often give `.md` and similar files no
   type at all.
-- **Native:** `@cubeui/file-picker` installs, and it takes the same props, but it does not pick.
-  It draws the zone and says on screen that picking is web only. See `SKILL.md`'s last section.
+
+### As a button
+
+Where a drop zone does not fit, such as a page header's actions or a toolbar, use
+`FilePickerButton` from the same item. It takes the same picking props and opens the file dialog
+directly, so you do not need a dialog around a zone.
+
+```tsx
+<PageHeader
+  title="Notes"
+  action={
+    <FilePickerButton
+      variant="ghost"
+      size="icon-sm"
+      label="Upload notes"
+      accept=".md"
+      multiple
+      onPickMany={upload}
+    />
+  }
+/>
+```
+
+- `variant` and `size` are the `Button`'s and are forwarded to it. At an `icon*` size only the
+  icon is drawn. At any other size the label is drawn after the icon.
+- `label` is required and is always the accessible name.
+- `icon` defaults to the upload glyph. Pass a bare `<Plus />` to change it. The button sizes and
+  colours it.
+- It still takes a file dropped onto it, and shows a ring while something is dragged over it.
+- It is a separate component rather than `variant="button"` on `FilePicker`. `variant` already
+  means the button's look, and one prop cannot also choose between two shapes.
+
+- **Native:** `@cubeui/file-picker` installs, and both components take the same props, but they
+  do not pick. `FilePicker` draws the zone and says on screen that picking is web only.
+  `FilePickerButton` draws the button disabled and gives the same reason as its accessibility
+  hint. See `SKILL.md`'s last section.
