@@ -301,7 +301,9 @@ outranks the media query's `:root`, and react-native-css drops it without a word
 
 **`theme-picker` is that picker, and the wiring beside it.** `ThemePicker` is a
 `RadioGroup variant="card"` of Light, Dark and System, bound by default to `useThemePreference()`
-and controlled when given `value`. The hook is split by platform like any other item, as
+and controlled when given `value`. `variant="compact"` is the same three choices as a full-width
+row of icon-only radios (`RadioGroup variant="segmented"`) for a sidebar footer or a header bar,
+each named by its caption, which is also its tooltip on the web (#126). The hook is split by platform like any other item, as
 `theme-preference.tsx` / `.web.tsx` over a shared `theme-preference-base.ts`, because
 `Appearance` is not something the compiler can carry to the DOM:
 

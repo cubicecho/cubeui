@@ -97,8 +97,8 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
   action?: ReactNode | undefined;
   /** Draws a placeholder where the options go, for a form whose values are still loading. */
   loading?: boolean | undefined;
-  /** `row` (the default) or `card` — see `RadioGroup`. */
-  variant?: "row" | "card" | undefined;
+  /** `row` (the default), `card` or `segmented` — see `RadioGroup`. */
+  variant?: "row" | "card" | "segmented" | undefined;
   /** How the options are laid out. Defaults to the variant's own. */
   orientation?: "vertical" | "horizontal" | undefined;
   disabled?: boolean | undefined;
