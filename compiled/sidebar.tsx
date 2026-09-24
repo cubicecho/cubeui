@@ -24,9 +24,11 @@
  * **Routing stays the app's.** The registry names no router — an Expo app has expo-router, a DOM
  * app has react-router or TanStack's, and a shell that imported one would not install in the
  * others. `SidebarNavItem` is a link that takes `href` and forwards the rest of its props and its
- * ref, so the app's own `<Link href asChild>` wraps it and hands it the press handling, the same
- * inverted nesting `button.tsx` settled on. On the web the row is a real `<a href>` either way:
- * with no router around it, it still navigates, opens in a new tab and shows its URL on hover.
+ * ref, so the app's own `<Link href asChild>` (or TanStack's `createLink`) wraps it and hands it
+ * the `href` and the press handling, the same inverted nesting `button.tsx` settled on. On the web
+ * the row is a real `<a href>` either way: with no router around it, it still navigates, opens in
+ * a new tab and shows its URL on hover. With `onPress` and no `href` the same row is a button, for
+ * the footer's Sign out.
  */
 import type { ReactNode } from "react";
 import * as React from "react";
@@ -286,23 +288,123 @@ export function SidebarSection({
   );
 }
 
-export type SidebarNavItemProps = Omit<
-  React.ComponentPropsWithoutRef<"button">,
-  "children" | "className" | "style"
-> & {
-  /** Where the row goes. The `<a href>` on the web; a router `Link` wrapping it supplies it too. */
-  href: string;
+type PressableProps = React.ComponentPropsWithoutRef<"button">;
+
+/** What both forms of the row take. */
+type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "style"> & {
   /** What the row is called. Truncated to one line, never wrapped. */
   label: string;
   /** Before the label. Pass a bare `<Folder />`; the row sizes and colours it. */
   icon?: ReactNode | undefined;
   /** At the far end: how many things are behind the row. */
   count?: number | string | undefined;
-  /** The row for the page on screen — filled, and `aria-current="page"`. */
-  active?: boolean | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
   className?: string | undefined;
 };
+
+/** The row that goes somewhere, and says where itself. */
+type SidebarNavItemLinkProps = {
+  /** Where the row goes. The `<a href>` on the web. */
+  href: string;
+  /** The row for the page on screen — filled, and `aria-current="page"`. */
+  active?: boolean | undefined;
+};
+
+/**
+ * The row that goes somewhere a router link wrapping it names — TanStack's `createLink`, or
+ * expo-router's `<Link href asChild>`. Both hand the row its `href` and its press handler at
+ * render, so writing either here as well is the destination said twice, and two copies that can
+ * drift: the `<a href>` middle-click opens and the route the click goes to.
+ *
+ * No handler of its own for the same reason: a row with no `href` that *does* take one is the
+ * button below, and a row with both `onPress` and `active` is neither.
+ */
+type SidebarNavItemRouterLinkProps = {
+  href?: undefined;
+  /** The row for the page on screen — filled, and `aria-current="page"`. */
+  active?: boolean | undefined;
+  onClick?: never;
+};
+
+/**
+ * The row that does something — Sign out. No `href`, so no `active`: a button is never the page
+ * on screen, and `aria-current` on one would say it was.
+ */
+type SidebarNavItemButtonProps = {
+  href?: never;
+  active?: never;
+  /** What the row does. Required: it is what tells a button row from a router's link row. */
+  onClick: NonNullable<React.ComponentPropsWithoutRef<"button">["onClick"]>;
+};
+
+/**
+ * A row is a link (`href`, and `active` for the current page), a link whose router supplies the
+ * `href`, or a button (`onPress`, never `active`). `onPress` is what tells the last two apart, so
+ * `active` on a button is a type error rather than a row that is quietly half of each.
+ */
+export type SidebarNavItemProps = SidebarNavItemBaseProps &
+  (SidebarNavItemLinkProps | SidebarNavItemRouterLinkProps | SidebarNavItemButtonProps);
+
+/** The row's box, the same for both forms — the classes a hand-drawn Sign out row used to copy. */
+function rowClassName(active: boolean, className: string | undefined) {
+  return cn(
+    "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+    // The web half's icons size from here, as a `Button`'s do; device's from the context below.
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    active
+      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+    className,
+  );
+}
+
+type SidebarNavItemBodyProps = {
+  label: string;
+  icon: ReactNode | undefined;
+  count: number | string | undefined;
+  active: boolean;
+};
+
+/** What is inside the row, the same for both forms: icon, label, count. */
+function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyProps) {
+  // Native inherits no colour, so the label, the count and the icon each carry it. The active
+  // count takes the row's foreground rather than muted: muted on the accent fill is under 4.5:1.
+  const text = active ? "text-sidebar-accent-foreground" : "text-sidebar-foreground";
+
+  return (
+    <>
+      {icon ? (
+        <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
+          {icon}
+        </IconClassContext.Provider>
+      ) : null}
+      <span
+        data-slot="sidebar-nav-item-label"
+        className={cn(
+          "cube-rn-text",
+          "min-w-0 flex-1 truncate text-sm",
+          active && "font-medium",
+          text,
+        )}
+      >
+        {label}
+      </span>
+      {count === undefined ? null : (
+        <span
+          data-slot="sidebar-nav-item-count"
+          className={cn(
+            "cube-rn-text",
+            "shrink-0 text-xs tabular-nums",
+            active ? "text-sidebar-accent-foreground" : "text-muted-foreground",
+          )}
+        >
+          {count}
+        </span>
+      )}
+    </>
+  );
+}
 
 /**
  * One row of a sidebar: a link with an optional icon, a label that truncates, and an optional
@@ -312,25 +414,51 @@ export type SidebarNavItemProps = Omit<
  *
  * ```tsx
  * <Link href={`/projects/${id}`} asChild>
- *   <SidebarNavItem href={`/projects/${id}`} label={name} active={id === current} />
+ *   <SidebarNavItem label={name} active={id === current} />
  * </Link>
+ *
+ * const SidebarLink = createLink(SidebarNavItem); // TanStack Router
+ * <SidebarLink to="/" label="Documents" active={isCurrent} />
  * ```
  *
- * `Link asChild` clones its child with the press handler, and this forwards the ref and every prop
- * it does not name to the `Pressable`, which is what lets the clone land. On a DOM app whose router
- * link has no `asChild`, pass the router's click handler as `onClick` — react-router's
- * `useLinkClickHandler`, TanStack's `createLink` — and the `<a href>` is already there.
+ * `Link asChild` clones its child with the `href` and the press handler, and `createLink` renders
+ * it with both; this forwards the ref and every prop it does not name to the `Pressable`, which is
+ * what lets them land. So neither passes `href` to the row — the router's is the one destination,
+ * and the row is a real `<a href>` all the same. A router that hands out only a click handler —
+ * react-router's `useLinkClickHandler` — passes it as `onClick` beside the row's own `href`.
  *
  * `role="link"` is what makes it a link on both platforms: TalkBack and VoiceOver say "link", and
  * the compiler emits an `<a>`. The current page is said twice, for the same reason `segmented`
  * says its pill twice — `accessibilityState` on device, `aria-current="page"` on the web, which is
  * the one spelling a web screen reader reads and the one react-native-web would have dropped.
+ *
+ * **With `onPress` and no `href` it is a button** — `onClick` on the web, and no `active`.
+ * That is the footer's Sign out: drawn like the Settings row above it, but it does something
+ * rather than going somewhere, so it is `role="button"` on device and a `<button type="button">`
+ * on the web, and never carries `aria-current`. What decides the element is the `href` the row
+ * *renders* with, so a router's row is a link however it was written; a row written with neither
+ * and no router around it has nowhere to go and nothing to do, and is drawn as an inert button.
+ *
+ * ```tsx
+ * <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />
+ * ```
  */
 const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
   ({ href, label, icon, count, active = false, className, ...props }, ref) => {
-    // Native inherits no colour, so the label, the count and the icon each carry it. The active
-    // count takes the row's foreground rather than muted: muted on the accent fill is under 4.5:1.
-    const text = active ? "text-sidebar-accent-foreground" : "text-sidebar-foreground";
+    // Two elements written out rather than one with a chosen role: the compiler picks the tag from
+    // the role, and a button and a link do not share a prop list anyway.
+    if (href === undefined) {
+      return (
+        <button
+          type="button"
+          ref={ref as React.Ref<HTMLButtonElement>}
+          className={cn("cube-rn-view cube-rn-pressable", rowClassName(false, className))}
+          {...(props as React.ComponentPropsWithoutRef<"button">)}
+        >
+          <SidebarNavItemBody label={label} icon={icon} count={count} active={false} />
+        </button>
+      );
+    }
 
     return (
       <a
@@ -338,47 +466,10 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
         // React Native has no `href` and no `aria-current`; the web has both, and needs both.
         href={href}
         aria-current={active ? "page" : undefined}
-        className={cn(
-          "cube-rn-view cube-rn-pressable",
-          "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-          // The web half's icons size from here, as a `Button`'s do; device's from the context below.
-          "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-          active
-            ? "bg-sidebar-accent text-sidebar-accent-foreground"
-            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-          className,
-        )}
+        className={cn("cube-rn-view cube-rn-pressable", rowClassName(active, className))}
         {...(props as React.ComponentPropsWithoutRef<"a">)}
       >
-        {icon ? (
-          <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
-            {icon}
-          </IconClassContext.Provider>
-        ) : null}
-        <span
-          data-slot="sidebar-nav-item-label"
-          className={cn(
-            "cube-rn-text",
-            "min-w-0 flex-1 truncate text-sm",
-            active && "font-medium",
-            text,
-          )}
-        >
-          {label}
-        </span>
-        {count === undefined ? null : (
-          <span
-            data-slot="sidebar-nav-item-count"
-            className={cn(
-              "cube-rn-text",
-              "shrink-0 text-xs tabular-nums",
-              active ? "text-sidebar-accent-foreground" : "text-muted-foreground",
-            )}
-          >
-            {count}
-          </span>
-        )}
+        <SidebarNavItemBody label={label} icon={icon} count={count} active={active} />
       </a>
     );
   },

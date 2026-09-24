@@ -61,7 +61,7 @@ at the end.
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
-| The app's sidebar itself — brand, titled lists of links, settings at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
+| The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
@@ -82,6 +82,8 @@ at the end.
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
+| An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
+| An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
@@ -206,7 +208,7 @@ views and there is no shell wrapping to hide.
 | Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
-| An app's navigation sidebar: a header, titled lists of link rows, a footer | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
@@ -265,5 +267,6 @@ unchanged. The new parts and sizes exist on native too; the radix and DOM passth
 web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
-so on screen, because picking a file needs `expo-document-picker` and a permission flow that is
-the app's choice. The contract is there; the picking is not.
+so on screen, and `FilePickerButton` draws a disabled button that says so as its hint, because picking a file needs `expo-document-picker` and a permission flow that is
+the app's choice. The contract is there, including `multiple` and `onPickMany`. The picking is
+not.
