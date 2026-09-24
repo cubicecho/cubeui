@@ -5,7 +5,8 @@
   "description": "A card with typed text slots, an optional accent bar, and a whole-card press target that stays reachable by keyboard.",
   "registryDependencies": [
     "@cubeui/utils",
-    "@cubeui/color-bar"
+    "@cubeui/color-bar",
+    "@cubeui/tokens"
   ],
   "files": [
     {

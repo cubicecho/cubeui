@@ -12,7 +12,8 @@
     "@cubeui/calendar",
     "@cubeui/icons",
     "@cubeui/input",
-    "@cubeui/popover"
+    "@cubeui/popover",
+    "@cubeui/tokens"
   ],
   "files": [
     {

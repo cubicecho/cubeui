@@ -4,7 +4,8 @@
   "title": "Toast",
   "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

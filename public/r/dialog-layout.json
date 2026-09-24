@@ -7,7 +7,8 @@
     "@cubeui/button",
     "@cubeui/dialog",
     "@cubeui/header-content-footer",
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

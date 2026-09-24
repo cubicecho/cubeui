@@ -6,7 +6,8 @@
   "registryDependencies": [
     "@cubeui/utils",
     "@cubeui/icons",
-    "@cubeui/button"
+    "@cubeui/button",
+    "@cubeui/tokens"
   ],
   "files": [
     {

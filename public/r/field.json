@@ -8,7 +8,8 @@
   ],
   "registryDependencies": [
     "@cubeui/utils",
-    "@cubeui/label"
+    "@cubeui/label",
+    "@cubeui/tokens"
   ],
   "files": [
     {

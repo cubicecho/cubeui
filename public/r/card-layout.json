@@ -5,7 +5,8 @@
   "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
   "registryDependencies": [
     "@cubeui/card",
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {
