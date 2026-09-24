@@ -875,7 +875,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 
 | Primitive | The web half also takes |
 |---|---|
-| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers, `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
+| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers (`onKeyPress` among them, fired from `keydown` as react-native-web does, so it hears Escape), `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
 | `textarea` | the same, for `<textarea>`; uncontrolled when given no `value` |
 | `checkbox` | now platform-split: radix on web — `defaultChecked`, `name`, `value`, `required`, `"indeterminate"`; the native half is uncontrolled too |
 | `switch` | radix's props, `defaultChecked`, and shadcn's `size="sm"`; `onCheckedChange` optional on both |
