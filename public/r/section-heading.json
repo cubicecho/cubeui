@@ -4,7 +4,8 @@
   "title": "Section Heading",
   "description": "The small muted heading above a section of content, with an optional heading `level`.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

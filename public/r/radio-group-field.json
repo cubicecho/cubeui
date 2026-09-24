@@ -9,7 +9,8 @@
   "registryDependencies": [
     "@cubeui/utils",
     "@cubeui/field",
-    "@cubeui/radio-group"
+    "@cubeui/radio-group",
+    "@cubeui/tokens"
   ],
   "files": [
     {

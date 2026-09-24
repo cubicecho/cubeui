@@ -17,6 +17,8 @@ import { TextInput } from "react-native";
 import {
   INPUT_CLASS,
   type InputHandle,
+  type InputKeyPressEvent,
+  type InputKeyPressHandler,
   type InputProps,
   type InputType,
   NATIVE_INPUT_MODE,
@@ -32,6 +34,8 @@ function Input({
   onChangeText,
   onBlur,
   onSubmitEditing,
+  onKeyPress,
+  onEscape,
   placeholder,
   maxLength,
   disabled,
@@ -54,6 +58,10 @@ function Input({
       onChangeText={onChangeText}
       onBlur={onBlur}
       onSubmitEditing={onSubmitEditing}
+      onKeyPress={(event: InputKeyPressEvent) => {
+        onKeyPress?.(event);
+        if (event.nativeEvent.key === "Escape") onEscape?.();
+      }}
       placeholder={placeholder}
       maxLength={maxLength}
       editable={!disabled}
@@ -68,5 +76,5 @@ function Input({
   );
 }
 
-export type { InputHandle, InputProps, InputType };
+export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputProps, InputType };
 export { Input };

@@ -6,7 +6,8 @@
   "registryDependencies": [
     "@cubeui/button",
     "@cubeui/color-dot",
-    "@cubeui/icons"
+    "@cubeui/icons",
+    "@cubeui/tokens"
   ],
   "files": [
     {

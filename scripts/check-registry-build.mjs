@@ -1,4 +1,4 @@
-// Fourteen things that have to be true before a built registry is installable.
+// Fifteen things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -246,6 +246,15 @@
 // `@border-colour` comment above it naming where. And no `Platform.select` gives a colour class to
 // every platform but web: set it everywhere, which is harmless on the compiled half.
 //
+// ## 15. A web item wearing the reset's classes depends on the item that installs the reset
+//
+// `cube-rn-view`, `cube-rn-text` and the rest are defined in `cubeui-reset.css`, which arrives
+// with `tokens` and nowhere else. `toast`, `file-picker` and `card` wore them and depended only on
+// `utils`, so `shadcn add @cubeui/toast` into a fresh app drew an unstyled block where a flex
+// column was meant — no error, since a class that matches nothing is not one (#133).
+// `registry.web.json` derives the dependency from the emitted text; this is the assertion, asked
+// of the `content` that actually shipped, that the derivation reached every item that needs it.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -258,6 +267,7 @@ import {
   weblessColours,
 } from "./colour-classes.mjs";
 import { isSource, packageName, packagesIn } from "./imports.mjs";
+import { RESET_CLASS, TOKENS } from "./rn2web/registry.mjs";
 
 // Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
 // one; they hold the same item names on purpose, and the checks below run over each on its own,
@@ -471,6 +481,7 @@ const uncoloured = [];
 const reexports = [];
 const misplaced = [];
 const inkless = [];
+const resetless = [];
 let checked = 0;
 
 /**
@@ -802,6 +813,18 @@ for (const built of BUILT) {
         reexports.push(`${where}: ${file.path} — \`${statement.replace(/\s+/g, " ")}\``);
       }
     }
+
+    // Rule 15. The web registry only: the reset exists for the compiled half, and a native source
+    // names it in comments that explain why a compiled view is a flex column.
+    const wearsReset =
+      built === BUILT[0] &&
+      (item.files ?? []).some((f) => isSource(f.path) && (f.content ?? "").includes(RESET_CLASS));
+    const tokens = `${NAMESPACE}/${TOKENS}`;
+    if (wearsReset && item.name !== TOKENS && !item.registryDependencies?.includes(tokens)) {
+      resetless.push(
+        `${where}: "${item.name}" wears \`${RESET_CLASS}*\`, not depending on ${tokens}`,
+      );
+    }
   }
 
   for (const item of items.values()) {
@@ -1053,8 +1076,19 @@ if (inkless.length > 0) {
   );
 }
 
+if (resetless.length > 0) {
+  console.error("\nA built item wears the reset's classes without installing the reset:\n");
+  for (const one of resetless) console.error(`  ${one}`);
+  console.error(
+    "\n`cube-rn-*` classes are defined in `cubeui-reset.css`, which only `@cubeui/tokens` installs." +
+      "\n`deriveWebRegistry` in scripts/rn2web/registry.mjs adds the dependency to every web item" +
+      "\nwhose emitted text names one; re-run `npm run build`, or find what bypassed it.",
+  );
+}
+
 if (
-  inkless.length +
+  resetless.length +
+    inkless.length +
     misplaced.length +
     reexports.length +
     stories.length +
@@ -1087,5 +1121,6 @@ console.log(
     "colour class names a token, every published story imports only what the consumer's " +
     "tree will hold, every layout is on both platforms, nothing re-exports with `export … from`, " +
     "every import between shipped files resolves where the CLI installs them, and every " +
-    "native source names the colour of the borders and text react-native-web would draw black.",
+    "native source names the colour of the borders and text react-native-web would draw black, " +
+    "and every item wearing the reset's classes depends on the item that installs it.",
 );
