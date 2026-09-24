@@ -429,8 +429,8 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/ui/badge-base.ts",
