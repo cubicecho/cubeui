@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, and the theme picker, which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -223,9 +223,58 @@ on both platforms:
   trigger. On device it is the popover's centred sheet with `role="menu"`; focus goes back to the
   trigger as an accessibility event. Pass `aria-label` on `MenuContent` when the trigger has no
   text — radix names the web menu after the trigger, native has nothing to point at.
+- **A row whose action moves focus is `focusesElsewhere`** — Rename that mounts an `autoFocus`
+  box, a row that reveals a field. Without it the menu hands focus back to its trigger after it
+  closes, the box blurs, and an `onBlur` commit ends the rename before anything is typed. It
+  covers that row's close only: Escape, a click outside and the other rows still return focus.
+  `<MenuItem label="Rename" focusesElsewhere onSelect={startRename} />`, on both halves.
+- **A toggle list is `MenuCheckboxItem`** — labels on a todo, columns shown in a table, anything
+  on or off, several at once. Do not hand-build `role="checkbox"` rows in a `Popover`, and do not
+  fake one with a `MenuItem` and a trailing `<Check />`:
+
+  ```tsx
+  <MenuContent>
+    {labels.map((l) => (
+      <MenuCheckboxItem
+        key={l.id}
+        icon={<ColorDot color={l.color} />}
+        label={l.name}
+        checked={attached.has(l.id)}
+        onCheckedChange={(on) => setAttached(l.id, on)}
+      />
+    ))}
+  </MenuContent>
+  ```
+
+  It takes `MenuItem`'s row — `icon`, `label`, `trailing`, `disabled` — plus `checked` and
+  `onCheckedChange`, and draws the ✓ itself at the far edge. **The menu stays open** when one is
+  toggled, so a list is set in one go; Escape or a press outside closes it. It has no `onSelect`
+  and no `destructive`: a setting is not an action.
+- **One of N is `MenuRadioGroup` and `MenuRadioItem`** — a filter, a sort order:
+
+  ```tsx
+  <MenuRadioGroup value={sort} onValueChange={setSort}>
+    <MenuRadioItem value="due" label="Due date" />
+    <MenuRadioItem value="created" label="Created" />
+  </MenuRadioGroup>
+  ```
+
+  The group holds `value` and `onValueChange`; each row takes `value` and the same row props.
+  **Choosing a radio row closes the menu**, as radix does on the web and the native half matches:
+  a one-of-N choice is done once it is made. Checkbox and radio rows mix with `MenuItem`s and
+  `MenuSeparator`s in one `MenuContent`; pass the group an `aria-label` when there is more than
+  one.
+- The toggle rows are `menuitemcheckbox` / `menuitemradio` with `aria-checked`, on the web and in
+  an Expo web app. On device React Native has no such role, so they are `checkbox` / `radio`,
+  which is what makes a screen reader say "checked".
 - A popover that is a small form or a note, not a list of actions, stays a `Popover`. Its Done
   button is `PopoverClose asChild`, not a handler that sets `open` to `false`.
-- A value chosen from a list is `Select` or `OptionSelect`, not a menu.
+- **A `Button` under `PopoverTrigger asChild` or `DialogTrigger asChild` opens it by itself**, on
+  every half, Expo web included — leave the popover uncontrolled. Do not hold `open` only so the
+  button can `onPress={() => setOpen(!open)}`; the `Button` hands the trigger's click on from its
+  own press. The same goes for `PopoverClose asChild` and `DialogClose asChild`.
+- A value chosen from a list is `Select` or `OptionSelect`, not a menu. `MenuRadioGroup` is for a
+  view setting that lives behind a menu button — a filter, a sort — not for a form's value.
 
 ## Option select
 
@@ -540,6 +589,9 @@ The reveal toggle is behaviour, not a variant, which is why this is a component 
 // Web: nothing to pass. The picker stores the choice and applies it.
 <ThemePicker />
 
+// A sidebar footer or a header bar: one full-width row of icon-only radios.
+<ThemePicker variant="compact" />
+
 // Device: pass storage once, where the app starts. The picker writes through it too.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 useThemePreference({ storage: AsyncStorage });
@@ -565,6 +617,14 @@ and the storage, the class and the first paint are what hand-rolled versions get
   `storage` is any `{ getItem, setItem }`, sync or async. Wrap MMKV or `expo-secure-store` in two
   lambdas. Without `storage` the choice lasts until the app closes. The stored value is read
   asynchronously, so hold the splash screen if a flash of the system theme matters.
+- **`variant="compact"`** is for where tiles do not fit, such as a 14rem sidebar footer or a 6rem
+  phone header. It draws one row of Sun / Moon / Monitor segments (`RadioGroup
+  variant="segmented"`) and fills its container's width, so size the container, not the picker.
+  It is still a radiogroup of three radios with the same keyboard and the same `value` /
+  `onValueChange` or hook binding. Each caption ("Light", "Dark", "System") is the radio's
+  `aria-label`, and on the web it is also the hover tooltip (`title`). A device has no hover, so
+  there the caption is only the name VoiceOver and TalkBack read. Do not hand-draw an icon-only
+  theme `<fieldset>` beside it.
 - `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
 
 **Paint the stored theme before React mounts**, or a reload flashes the other palette. Put this in
@@ -582,3 +642,65 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
 ```
+
+## File picker
+
+A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidden file input.
+
+```tsx
+<FilePicker
+  label="Upload notes"
+  hint="Drop .md files, or click to choose"
+  accept=".md,text/markdown"
+  multiple
+  onPickMany={(files) => upload(files)} // [{ text, name }, ...]
+/>
+```
+
+- The caller gets each file's decoded text and its name, never a `File`, so the calling screen
+  is the same on both halves.
+- `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
+  either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
+  only `onPick`, `onPick` is called once for each file, in order.
+- `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
+  pick is one file, and a drop keeps the first file that `accept` allows.
+- `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
+  to drops as well as the dialog. A file that does not match is skipped and never read. List the
+  extension as well as the MIME type, because browsers often give `.md` and similar files no
+  type at all.
+
+### As a button
+
+Where a drop zone does not fit, such as a page header's actions or a toolbar, use
+`FilePickerButton` from the same item. It takes the same picking props and opens the file dialog
+directly, so you do not need a dialog around a zone.
+
+```tsx
+<PageHeader
+  title="Notes"
+  action={
+    <FilePickerButton
+      variant="ghost"
+      size="icon-sm"
+      label="Upload notes"
+      accept=".md"
+      multiple
+      onPickMany={upload}
+    />
+  }
+/>
+```
+
+- `variant` and `size` are the `Button`'s and are forwarded to it. At an `icon*` size only the
+  icon is drawn. At any other size the label is drawn after the icon.
+- `label` is required and is always the accessible name.
+- `icon` defaults to the upload glyph. Pass a bare `<Plus />` to change it. The button sizes and
+  colours it.
+- It still takes a file dropped onto it, and shows a ring while something is dragged over it.
+- It is a separate component rather than `variant="button"` on `FilePicker`. `variant` already
+  means the button's look, and one prop cannot also choose between two shapes.
+
+- **Native:** `@cubeui/file-picker` installs, and both components take the same props, but they
+  do not pick. `FilePicker` draws the zone and says on screen that picking is web only.
+  `FilePickerButton` draws the button disabled and gives the same reason as its accessibility
+  hint. See `SKILL.md`'s last section.

@@ -259,3 +259,99 @@ export const NativeOpen: Story = {
     ).toBeInTheDocument();
   },
 };
+
+/**
+ * telos's rename (issue #119): the row mounts an `autoFocus` box whose `onBlur` ends the rename.
+ * Without `focusesElsewhere` the menu puts focus back on its trigger after the close, the box
+ * blurs, and the rename is over before anything is typed.
+ */
+function RenameLane({
+  parts: { Menu, Trigger, Content, Item },
+  name,
+  trigger,
+}: {
+  parts: Parts;
+  name: string;
+  trigger: ReactNode;
+}) {
+  const [renaming, setRenaming] = useState(false);
+  const [lane, setLane] = useState("Backlog");
+  return (
+    <div className="flex flex-col gap-2">
+      <Menu>
+        <Trigger>{trigger}</Trigger>
+        <Content aria-label={name}>
+          <Item label="Rename" focusesElsewhere onSelect={() => setRenaming(true)} />
+          <Item label="Archive" onSelect={() => {}} />
+        </Content>
+      </Menu>
+      {renaming ? (
+        <input
+          aria-label="Lane name"
+          // biome-ignore lint/a11y/noAutofocus: the rename box is what the row opened, as in telos.
+          autoFocus
+          className="rounded-md border border-border px-2 text-foreground"
+          defaultValue={lane}
+          onBlur={(e) => {
+            setLane(e.currentTarget.value);
+            setRenaming(false);
+          }}
+        />
+      ) : (
+        <output aria-label={`${name} lane`}>{lane}</output>
+      )}
+    </div>
+  );
+}
+
+async function expectRenameKeepsFocus(canvasElement: HTMLElement, trigger: HTMLElement) {
+  const canvas = within(canvasElement);
+  await userEvent.click(trigger);
+  const menu = await body().findByRole("menu");
+  await userEvent.click(within(menu).getByRole("menuitem", { name: "Rename" }));
+  await waitFor(() => expect(body().queryByRole("menu")).toBeNull());
+  // Past the close: the box is still there, so it never blurred, and it still has focus.
+  const box = await canvas.findByRole("textbox", { name: "Lane name" });
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  await expect(canvas.queryByRole("textbox", { name: "Lane name" })).toBe(box);
+  await expect(document.activeElement).toBe(box);
+  await userEvent.keyboard("{Control>}a{/Control}Doing");
+  await expect(box).toHaveValue("Doing");
+}
+
+/** A `focusesElsewhere` row keeps the focus it handed out; Escape still returns to the trigger. */
+export const WebFocusesElsewhere: Story = {
+  render: () => (
+    <RenameLane parts={COMPILED} name="Compiled lane actions" trigger="Compiled lane actions" />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("button", { name: "Compiled lane actions" });
+    await expectRenameKeepsFocus(canvasElement, trigger);
+
+    // The flag is spent on that close: the next one, by Escape, puts focus back as usual.
+    trigger.focus();
+    await waitFor(() => expect(canvas.queryByRole("textbox")).toBeNull());
+    await userEvent.keyboard("{Enter}");
+    await body().findByRole("menu");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(body().queryByRole("menu")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  },
+};
+
+/** The same on the native half, which returns focus in its own effect. */
+export const NativeFocusesElsewhere: Story = {
+  render: () => (
+    <RenameLane
+      parts={NATIVE}
+      name="Native lane actions"
+      trigger={<Text className="text-foreground">Native lane actions</Text>}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("button", { name: "Native lane actions" });
+    await expectRenameKeepsFocus(canvasElement, trigger);
+  },
+};

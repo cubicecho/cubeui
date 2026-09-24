@@ -23,6 +23,8 @@ import { SideBySide } from "./side-by-side";
  * in, and is typechecked, not played.
  */
 type PickerProps = {
+  variant?: "card" | "compact" | undefined;
+  className?: string | undefined;
   value?: ThemePreference | undefined;
   onValueChange?: ((value: ThemePreference) => void) | undefined;
   "aria-label"?: string | undefined;
@@ -267,24 +269,124 @@ export const ControlledLeavesThePageAlone: Story = {
       compiled={<Controlled Picker={CompiledThemePicker} onValueChange={onCompiled} />}
     />
   ),
-  play: async ({ canvasElement }) => {
-    const groups = within(canvasElement).getAllByRole("radiogroup", { name: "Controlled" });
-    const spies = [onNative, onCompiled];
-    for (const [index, element] of groups.entries()) {
-      const group = within(element);
-      spies[index]?.mockClear();
-      await expect(group.getByRole("radio", { name: "Dark" })).toHaveAttribute(
-        "aria-checked",
-        "true",
-      );
-      await userEvent.click(group.getByRole("radio", { name: "Light" }));
-      await expect(spies[index]).toHaveBeenCalledWith("light");
-      await waitFor(() =>
-        expect(group.getByRole("radio", { name: "Light" })).toHaveAttribute("aria-checked", "true"),
-      );
+  play: ({ canvasElement }) => assertControlled(canvasElement),
+};
+
+async function assertControlled(canvasElement: HTMLElement) {
+  const groups = within(canvasElement).getAllByRole("radiogroup", { name: "Controlled" });
+  const spies = [onNative, onCompiled];
+  for (const [index, element] of groups.entries()) {
+    const group = within(element);
+    spies[index]?.mockClear();
+    await expect(group.getByRole("radio", { name: "Dark" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+    await userEvent.click(group.getByRole("radio", { name: "Light" }));
+    await expect(spies[index]).toHaveBeenCalledWith("light");
+    await waitFor(() =>
+      expect(group.getByRole("radio", { name: "Light" })).toHaveAttribute("aria-checked", "true"),
+    );
+  }
+  await expect(stored()).toBeNull();
+  await expect(html()).not.toHaveClass("dark");
+  await expect(html()).not.toHaveClass("light");
+}
+
+/**
+ * `variant="compact"` where an app keeps a theme switch: a 14rem sidebar footer and a 6rem header
+ * bar. One row of icon-only radios filling the width it is given — still a radiogroup, each radio
+ * named by its caption, and on the web the caption is also the hover tooltip (`title`). Device has
+ * no hover; there the caption is the screen-reader name only, which is not something a browser
+ * can play.
+ */
+function CompactHarness({ Picker, name }: { Picker: Picker; name: string }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div data-testid={`${name} sidebar`} className="w-56 rounded-md border border-border p-2">
+        <Picker variant="compact" aria-label={`${name} sidebar`} />
+      </div>
+      <div data-testid={`${name} header`} className="w-24">
+        <Picker variant="compact" aria-label={`${name} header`} />
+      </div>
+    </div>
+  );
+}
+
+async function assertCompact(canvasElement: HTMLElement, name: string, tooltips: boolean) {
+  reset();
+  const canvas = within(canvasElement);
+  for (const where of ["sidebar", "header"]) {
+    const group = canvas.getByRole("radiogroup", { name: `${name} ${where}` });
+    const radios = within(group).getAllByRole("radio");
+    await expect(radios.map((r) => r.getAttribute("aria-label"))).toEqual([
+      "Light",
+      "Dark",
+      "System",
+    ]);
+    for (const radio of radios) {
+      // Icon-only: the caption is the name, not text on the screen.
+      await expect(radio.textContent).toBe("");
+      if (tooltips) await expect(radio).toHaveAttribute("title", radio.getAttribute("aria-label"));
     }
-    await expect(stored()).toBeNull();
-    await expect(html()).not.toHaveClass("dark");
-    await expect(html()).not.toHaveClass("light");
+    // It fills the box it is put in, which is how the caller sizes it.
+    const box = canvas.getByTestId(`${name} ${where}`);
+    const inner = box.clientWidth - Number.parseFloat(getComputedStyle(box).paddingLeft) * 2;
+    await expect(Math.round(group.getBoundingClientRect().width)).toBe(Math.round(inner));
+    // One row: every segment on the same line.
+    const tops = new Set(radios.map((r) => Math.round(r.getBoundingClientRect().top)));
+    await expect(tops.size).toBe(1);
+  }
+
+  // Bound to the hook like the tiles: choosing stores it and moves the class, and the other
+  // compact picker on the page follows.
+  const sidebar = within(canvas.getByRole("radiogroup", { name: `${name} sidebar` }));
+  const header = within(canvas.getByRole("radiogroup", { name: `${name} header` }));
+  await userEvent.click(sidebar.getByRole("radio", { name: "Dark" }));
+  await waitFor(() => expect(stored()).toBe("dark"));
+  await expect(html()).toHaveClass("dark");
+  await expect(background()).toBe(DARK);
+
+  // The radio keyboard: arrows move and choose.
+  sidebar.getByRole("radio", { name: "Dark" }).focus();
+  await userEvent.keyboard("{ArrowRight}");
+  await waitFor(() =>
+    expect(sidebar.getByRole("radio", { name: "System" })).toHaveAttribute("aria-checked", "true"),
+  );
+  await expect(stored()).toBe("system");
+  await userEvent.click(header.getByRole("radio", { name: "Light" }));
+  await waitFor(() => expect(stored()).toBe("light"));
+  await expect(html()).toHaveClass("light");
+}
+
+export const Compact: Story = {
+  render: () => (
+    <SideBySide
+      native={<CompactHarness Picker={NativeThemePicker} name="Native" />}
+      compiled={<CompactHarness Picker={CompiledThemePicker} name="Compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    // react-native-web does not forward `title`; the compiled half is the web item that ships it.
+    await assertCompact(canvasElement, "Native", false);
+    await assertCompact(canvasElement, "Compiled", true);
   },
 };
+
+/** Compact takes `value` the same way: it reports, and leaves storage and `<html>` alone. */
+export const CompactControlled: Story = {
+  render: () => (
+    <SideBySide
+      native={<Controlled Picker={NativeCompact} onValueChange={onNative} />}
+      compiled={<Controlled Picker={CompiledCompact} onValueChange={onCompiled} />}
+    />
+  ),
+  play: ({ canvasElement }) => assertControlled(canvasElement),
+};
+
+function NativeCompact(props: PickerProps) {
+  return <NativeThemePicker {...props} variant="compact" />;
+}
+function CompiledCompact(props: PickerProps) {
+  return <CompiledThemePicker {...props} variant="compact" />;
+}

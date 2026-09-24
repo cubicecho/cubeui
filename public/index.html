@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 81 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 82 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 81 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 82 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  57 on both platforms · 24 web-only · 0 native-only.
+  58 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -260,6 +260,11 @@
           <td>A date popover and a time field that commit one Date back — or, with `clearable mode="date"`, an optional date only.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/description-list</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `&lt;dl&gt;` of `&lt;dt&gt;`/`&lt;dd&gt;` groups on the web, `role="list"` on device; `layout="inline"` puts labels beside values and wraps to stacked when narrow.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/detail-header</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>The header row of a detail view: back, colour dot, title, badge, subtitle, actions.</td>
@@ -302,7 +307,7 @@
         <tr>
           <th scope="row"><code>@cubeui/file-picker</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A drop zone over a hidden file input on web. The native half is a placeholder, not an implementation.</td>
+          <td>A drop zone, or a button, over a hidden file input on web. The native half is a placeholder, not an implementation.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/form</code></th>
@@ -367,7 +372,7 @@
         <tr>
           <th scope="row"><code>@cubeui/menu</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A popover of actions: radix DropdownMenu on web (arrow keys, typeahead, focus back on the trigger); the popover's centred sheet with menu and menuitem roles on device. A row takes an icon, a label, a trailing node and a destructive colour, and the menu closes when one is chosen.</td>
+          <td>A popover of actions: radix DropdownMenu on web (arrow keys, typeahead, focus back on the trigger); the popover's centred sheet with menu and menuitem roles on device. A row takes an icon, a label, a trailing node and a destructive colour, and the menu closes when one is chosen. Checkbox rows toggle and keep the menu open; radio rows in a group choose one and close it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/multi-select</code></th>
@@ -427,7 +432,7 @@
         <tr>
           <th scope="row"><code>@cubeui/radio-group</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.</td>
+          <td>An exclusive choice, one source for both platforms: `row` (circle, label, description), `card` (a tile with an icon) or `segmented` (a full-width framed row, icon-only segments allowed), with one tab stop and arrow keys that move and select handled inside.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/radio-group-field</code></th>
@@ -512,7 +517,7 @@
         <tr>
           <th scope="row"><code>@cubeui/theme-picker</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Light, Dark and System as radio tiles, and useThemePreference(), which stores the choice and applies it: a class on &lt;html&gt; on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline &lt;script&gt; that paints the stored theme before React mounts.</td>
+          <td>Light, Dark and System as radio tiles, or with variant="compact" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on &lt;html&gt; on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline &lt;script&gt; that paints the stored theme before React mounts.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/toast</code></th>

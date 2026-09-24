@@ -8,14 +8,27 @@
  * **controlled** instead: it only reports the choice through `onValueChange`, for an app that keeps
  * the preference somewhere of its own (on the account, in a settings form), and the hook is not
  * called at all, so nothing here paints over the app's own choice.
+ *
+ * `variant="compact"` is the same three choices where tiles do not fit — a sidebar footer, a phone
+ * header bar: one row of icon-only segments (`RadioGroup variant="segmented"`) that fills its
+ * container, so the caller sizes it. It is still a radiogroup of three radios, and each caption
+ * ("Light", "Dark", "System") is the radio's accessible name. On the web the caption is also the
+ * hover tooltip (`title`); device has no hover, so there the caption is what VoiceOver and TalkBack
+ * read and nothing is shown.
  */
 
 import { Monitor, Moon, Sun } from "@/components/ui/icons";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useThemePreference } from "@/components/ui/theme-preference";
 import { isThemePreference, type ThemePreference } from "@/components/ui/theme-preference-base";
+import { cn } from "@/lib/utils";
 
 type ThemePickerProps = {
+  /**
+   * `card` (the default): three tiles, icon over caption, for a settings page. `compact`: one
+   * full-width row of icon-only segments, the caption as the name and (on the web) the tooltip.
+   */
+  variant?: "card" | "compact" | undefined;
   /** The checked choice, for a controlled picker. Left out, the picker is bound to the hook. */
   value?: ThemePreference | undefined;
   /** Told of every choice — the only way a controlled picker changes; a bound one also stores it. */
@@ -29,7 +42,14 @@ type ThemePickerProps = {
   "aria-describedby"?: string | undefined;
 };
 
+const OPTIONS = [
+  { value: "light", label: "Light", hint: "Always light", Icon: Sun },
+  { value: "dark", label: "Dark", hint: "Always dark", Icon: Moon },
+  { value: "system", label: "System", hint: "Follow the device", Icon: Monitor },
+] as const;
+
 function ThemeOptions({
+  variant = "card",
   value,
   onValueChange,
   disabled,
@@ -39,9 +59,10 @@ function ThemeOptions({
   "aria-labelledby": ariaLabelledBy,
   "aria-describedby": ariaDescribedBy,
 }: ThemePickerProps) {
+  const compact = variant === "compact";
   return (
     <RadioGroup
-      variant="card"
+      variant={compact ? "segmented" : "card"}
       value={value}
       onValueChange={(next) => {
         if (isThemePreference(next)) onValueChange?.(next);
@@ -53,24 +74,34 @@ function ThemeOptions({
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
     >
-      <RadioGroupItem
-        value="light"
-        label="Light"
-        hint="Always light"
-        icon={<Sun className="h-5 w-5" />}
-      />
-      <RadioGroupItem
-        value="dark"
-        label="Dark"
-        hint="Always dark"
-        icon={<Moon className="h-5 w-5" />}
-      />
-      <RadioGroupItem
-        value="system"
-        label="System"
-        hint="Follow the device"
-        icon={<Monitor className="h-5 w-5" />}
-      />
+      {OPTIONS.map(({ value: option, label, hint, Icon }) =>
+        compact ? (
+          // No `hint`: the segment's web tooltip is then its name, the caption a tile would show.
+          <RadioGroupItem
+            key={option}
+            value={option}
+            aria-label={label}
+            icon={
+              <Icon
+                aria-hidden
+                className={cn(
+                  "h-4 w-4",
+                  // Named, because a native icon has no `currentColor` to inherit from the segment.
+                  value === option ? "text-primary-foreground" : "text-muted-foreground",
+                )}
+              />
+            }
+          />
+        ) : (
+          <RadioGroupItem
+            key={option}
+            value={option}
+            label={label}
+            hint={hint}
+            icon={<Icon className="h-5 w-5" />}
+          />
+        ),
+      )}
     </RadioGroup>
   );
 }

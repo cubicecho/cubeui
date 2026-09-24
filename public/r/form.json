@@ -18,7 +18,8 @@
     "@cubeui/label",
     "@cubeui/select",
     "@cubeui/switch",
-    "@cubeui/textarea"
+    "@cubeui/textarea",
+    "@cubeui/tokens"
   ],
   "files": [
     {
