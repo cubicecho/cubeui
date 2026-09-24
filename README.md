@@ -269,7 +269,7 @@ Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was 
 3, and it needed a real component set to have anything to compile. In the write-ups below,
 "cubeui" on its own in a historical passage means that pre-native registry.
 
-Today the native registry holds 53 items and the web registry 84: 77 components and 7 story
+Today the native registry holds 58 items and the web registry 90: 82 components and 8 story
 items. 24 of the web items are web-only, and every native item has a web half.
 
 
@@ -393,7 +393,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
+| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `description-list` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
@@ -894,7 +894,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 
 | Primitive | The web half also takes |
 |---|---|
-| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers, `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
+| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers (`onKeyPress` among them, fired from `keydown` as react-native-web does, so it hears Escape), `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
 | `textarea` | the same, for `<textarea>`; uncontrolled when given no `value` |
 | `checkbox` | now platform-split: radix on web — `defaultChecked`, `name`, `value`, `required`, `"indeterminate"`; the native half is uncontrolled too |
 | `switch` | radix's props, `defaultChecked`, and shadcn's `size="sm"`; `onCheckedChange` optional on both |

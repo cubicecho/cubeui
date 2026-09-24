@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, a popover menu of actions, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a list of read-only label and value rows, a form, an icon-only button, a popover menu of actions, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -47,7 +47,8 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout` and `Section` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section` and
+`DescriptionList` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
@@ -67,12 +68,13 @@ at the end.
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
-| The app's sidebar itself — brand, titled lists of links, settings at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
+| The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout.md](layout.md) |
 | A heading over a group of fields or rows | `Section` | [layout.md](layout.md) |
+| Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
@@ -88,6 +90,8 @@ at the end.
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
+| An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
+| An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
@@ -122,6 +126,9 @@ The same words mean the same thing in every component, and this is the point of 
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarClassName`** — the sidebar's, by prefix. A prop
   that belongs to a slot wears the slot's name, so it needs no word of its own.
+- **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
+  `SidebarSection` makes it the navigation landmark, named by its `title` or a `label`. A value,
+  never a tag you invent: a part takes only the landmarks its shape can honestly be.
 - **`first`**, **`second`** — the two panes of a `SplitLayout`, as equals. Numbered rather than
   named, because a role pair lies about an even split and a side pair lies once the panes stack or
   the page is read right-to-left.
@@ -171,6 +178,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`count`** — how many rows the page is *about to draw*, which is not what came back.
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
   the DOM attribute of that name and is not this word.
+- **`layout`** — on `DescriptionList`: `inline` (label beside value, stacking by itself when
+  narrow) or `stacked`. Its rows reuse `label`, `hint` and `action`, and their `value` is the fact
+  on display — a node, not a control's held value.
 
 Rules that follow from the vocabulary:
 
@@ -209,13 +219,15 @@ views and there is no shell wrapping to hide.
 | Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
-| An app's navigation sidebar: a header, titled lists of link rows, a footer | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
+| Read-only facts: a label, a value, a hint under it, an action beside it — see [layout.md](layout.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
+| A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/page` |
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
@@ -249,13 +261,19 @@ it, so `Page` and `PageLayout` draw the same title block — `title`, `descripti
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
 `Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Menu`, `Tabs`, `Tooltip`,
 `Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
-web ones take, with three conversions that are the same everywhere:
+web ones take, with four conversions that are the same everywhere:
 
 - **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
   output takes `onPress` too, so a call site does not change when it moves.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.
+- **`onSubmitEditing` and `onEscape`, not `onKeyDown`.** `Input` answers Enter with
+  `onSubmitEditing` and Escape with `onEscape` on both halves, which is all an inline edit — a
+  rename, an "Add lane" field — needs: `onEscape={() => { setDraft(name); setEditing(false); }}`.
+  For any other key, `onKeyPress` is React Native's, reading `e.nativeEvent.key`; the web half
+  fires it from `keydown`, so it hears Escape and the arrows too. Do not drop to a raw
+  `TextInput` for a key. (`Textarea` has none of these yet.)
 - **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
   that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
 
@@ -268,5 +286,6 @@ unchanged. The new parts and sizes exist on native too; the radix and DOM passth
 web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
-so on screen, because picking a file needs `expo-document-picker` and a permission flow that is
-the app's choice. The contract is there; the picking is not.
+so on screen, and `FilePickerButton` draws a disabled button that says so as its hint, because picking a file needs `expo-document-picker` and a permission flow that is
+the app's choice. The contract is there, including `multiple` and `onPickMany`. The picking is
+not.

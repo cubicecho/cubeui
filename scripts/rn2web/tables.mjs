@@ -123,6 +123,22 @@ export const TAG_ROLE = {
 };
 
 /**
+ * Device roles that a `webAs` element says another way, so the compiler drops the role there.
+ *
+ * Unlike `TAG_ROLE`, these are not the element's implicit role — HTML gives these no list role at
+ * all. A `<dl>` is the DOM's list of term-and-description groups; on device the same list is
+ * `role="list"`, and each group `role="listitem"`. The web half cannot keep either: a `list` on
+ * the `<dl>` replaces what it is, and a role on one of its grouping `<div>`s is exactly what makes
+ * the `<dl>` invalid (axe `definition-list`). A `webAs="div"` on a `View` changes no tag — the
+ * element map already makes it a `<div>` — so writing it is only ever this statement: the role
+ * beside it is the device's.
+ */
+export const WEB_AS_REPLACES_ROLE = {
+  dl: "list",
+  div: "listitem",
+};
+
+/**
  * The roles a `<button>` is allowed to carry, and the reason a `Pressable` does not always become
  * one.
  *

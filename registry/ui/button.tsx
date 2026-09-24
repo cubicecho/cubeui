@@ -119,8 +119,37 @@ export type ButtonProps = Omit<React.ComponentProps<typeof Pressable>, "children
     children?: React.ReactNode;
   };
 
+/**
+ * The `onClick` a radix trigger merges onto its child through `Slot` — `<PopoverTrigger asChild>`
+ * over a `Button`. Not a prop anyone passes here; it arrives at run time, so it is typed only as far
+ * as this file uses it.
+ */
+type MergedClick = { onClick?: ((event: unknown) => void) | undefined };
+
+/**
+ * The press, then the click a trigger merged in — in that order, so a caller's `onPress` runs
+ * first, as the child's own handler does under `Slot` on the DOM.
+ *
+ * Needed on Expo web, where this is react-native-web's `Pressable`: it puts its own `onClick` on
+ * the DOM node (the one that calls `onPress`) and drops the one it was handed. So a radix popover
+ * or dialog, which opens from `onClick`, never heard the press and never opened; the menu opens on
+ * `pointerdown` and was fine. Keyboard activation reaches `onPress` too, on keyup, so Enter and
+ * Space open it as well. On device nothing merges an `onClick`, and this is `onPress` unchanged.
+ */
+function pressThenClick<Press extends ((event: never) => void) | null | undefined>(
+  onPress: Press,
+  onClick: MergedClick["onClick"],
+): Press {
+  if (!onClick) return onPress;
+  const both = (event: never) => {
+    onPress?.(event);
+    onClick(event);
+  };
+  return both as Press;
+}
+
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant, size, disabled, asChild, children, ...props }, ref) => {
+  ({ className, variant, size, disabled, asChild, children, onPress, ...props }, ref) => {
     const styling = cn(
       buttonVariants({ variant, size, className }),
       // `disabled:` has no pseudo-class to hang off a Pressable on either
@@ -155,7 +184,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         // typing describes neither side, and the cast is the honest way to say so.
         <Slot.Root
           className={styling}
-          {...({ ...props, disabled } as unknown as React.HTMLAttributes<HTMLElement>)}
+          {...({ ...props, onPress, disabled } as unknown as React.HTMLAttributes<HTMLElement>)}
           ref={ref as unknown as React.Ref<HTMLElement>}
         >
           {body}
@@ -175,6 +204,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         disabled={disabled}
         className={styling}
         {...props}
+        onPress={pressThenClick(onPress, (props as MergedClick).onClick)}
       >
         {body}
       </Pressable>
