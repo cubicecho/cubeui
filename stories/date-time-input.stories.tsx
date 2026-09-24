@@ -166,7 +166,7 @@ export const RequiredDateAndTime: Story = {
 type LabelComponent = ComponentType<{ id?: string; htmlFor?: string; children?: ReactNode }>;
 
 /**
- * Three ways a form names the field — issue #101. Each half uses its own `Label`, except for the
+ * The ways a form names the field — issues #101 and #111. Each half uses its own `Label`, except for the
  * `htmlFor` row on the native half: the native `Label` has no `htmlFor` to give, so that row uses
  * a DOM `<label>` to prove the trigger's `id` still reaches the element under react-native-web.
  */
@@ -184,6 +184,7 @@ function NamedFields({
   const [due, setDue] = useState<Date | null>(null);
   const [starts, setStarts] = useState(() => new Date(2026, 8, 3, 9, 0));
   const [ends, setEnds] = useState(() => new Date(2026, 8, 3, 17, 0));
+  const [review, setReview] = useState<Date | null>(null);
   const HtmlForLabel = htmlForLabel;
   return (
     <div className="flex flex-col gap-3">
@@ -192,6 +193,14 @@ function NamedFields({
       <Label id={`${prefix}-starts-label`}>{`${prefix} starts`}</Label>
       <Field aria-labelledby={`${prefix}-starts-label`} value={starts} onChange={setStarts} />
       <Field aria-label={`${prefix} ends`} value={ends} onChange={setEnds} />
+      <Field
+        aria-label={`${prefix} review`}
+        clearable
+        mode="date"
+        placeholder="No due date"
+        value={review}
+        onChange={setReview}
+      />
     </div>
   );
 }
@@ -214,27 +223,35 @@ function DomLabel({
 
 async function assertNamed(section: HTMLElement, prefix: string) {
   const half = within(section);
-  // `htmlFor` → the trigger's `id`. The trigger is named by the label, not by its placeholder.
-  await expect(half.getByRole("button", { name: `${prefix} due` })).toHaveAttribute(
-    "id",
-    `${prefix}-due`,
-  );
+  const [due, starts, ends, review] = half.getAllByRole("button");
+  if (!due || !starts || !ends || !review) throw new Error("four triggers should render");
 
-  // The date-only field draws no time box, so the two inputs are the starts and ends time boxes.
+  // `htmlFor` → the trigger's `id`, and the label names it. A `<label for>` replaces the
+  // button's contents as its name, so the placeholder is only its text — which is why the skill
+  // sends a field that wants the date in its name to `aria-labelledby` (issue #111).
+  await expect(due).toHaveAttribute("id", `${prefix}-due`);
+  await expect(due).toHaveAccessibleName(`${prefix} due`);
+  await expect(due).toHaveTextContent("Pick a date");
+
+  // The date-only fields draw no time box, so the two inputs are the starts and ends time boxes.
   // Read through the accessible-name algorithm rather than `getByLabelText`: the starts box names
   // itself partly by pointing at its own id, which a label-text query does not follow.
   const [startsTime, endsTime] = Array.from(section.querySelectorAll("input"));
   if (!startsTime || !endsTime) throw new Error("both datetime fields should draw a time box");
 
-  // `aria-labelledby` names the trigger, and the time box is the label's name plus "time".
-  await expect(half.getByRole("button", { name: `${prefix} starts` })).toBeInTheDocument();
+  // `aria-labelledby` names the trigger by the label and then the date, so the date is not lost
+  // to the name (issue #111); the time box is the label's name plus "time".
+  await expect(starts).toHaveAccessibleName(`${prefix} starts September 3rd, 2026`);
   await expect(startsTime).toHaveValue("09:00");
   await expect(startsTime).toHaveAccessibleName(`${prefix} starts time`);
 
-  // `aria-label` names the trigger, and the time box is derived from it.
-  await expect(half.getByRole("button", { name: `${prefix} ends` })).toBeInTheDocument();
+  // `aria-label` is composed with the date, and the time box is derived from the bare label.
+  await expect(ends).toHaveAccessibleName(`${prefix} ends, September 3rd, 2026`);
   await expect(endsTime).toHaveValue("17:00");
   await expect(endsTime).toHaveAccessibleName(`${prefix} ends, time`);
+
+  // Empty, the placeholder stands in for the date in the name.
+  await expect(review).toHaveAccessibleName(`${prefix} review, No due date`);
 }
 
 export const NamedByAForm: Story = {
