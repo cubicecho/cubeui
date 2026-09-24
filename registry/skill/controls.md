@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, and the theme picker, which each say so. Everything else here is a DOM
+colour display parts, the removable badge, and the theme picker, which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -430,6 +430,27 @@ Showing a colour the user picked is three small items, all on both halves:
   a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
   inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
+
+## Removable badge
+
+A tag or filter chip the user can take off is `Badge` with `onRemove`, on both halves:
+
+```tsx
+<Badge
+  backgroundColor={tag.color}
+  textColor={readableTextColor(tag.color)}
+  onRemove={() => untag(tag)}
+>
+  {tag.name}
+</Badge>
+```
+
+- It draws a trailing ✕ in the label's colour — the variant's, or `textColor` — at the badge's
+  icon size. Do not wrap the badge in a second pill with a `Pressable` beside it.
+- The ✕ is a button named `removeLabel`, default `Remove <text>`. On the web it is
+  `type="button"`, so it never submits a form, and its press stops there: the badge's own
+  `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
+- The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
 
 ## Password
 

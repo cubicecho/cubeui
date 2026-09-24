@@ -19,6 +19,14 @@
  * It also takes every `<span>` attribute (`style`, `title`, `onClick`, `data-*`)
  * and shadcn's `asChild`, which hands the classes to the single child — a link
  * dressed as a badge. Those extras are web only.
+ *
+ * `onRemove` adds a trailing ✕ as a `<button type="button">`, so it never
+ * submits a form it sits in, and its click stops at the button so a badge's own
+ * `onClick` does not fire under it. The glyph is `currentColor`, so it follows
+ * the label through `textColor`, a variant or a hover. Its padding is the hit
+ * area and a negative margin of the same size takes it back out of the layout,
+ * which keeps the pill the height it was; it stays inside the pill's edge
+ * because `overflow-hidden` would clip a target that did not.
  */
 import { Slot } from "radix-ui";
 import type * as React from "react";
@@ -27,11 +35,14 @@ import {
   type BadgeVariant,
   badgeContainerVariants,
   badgeHasLabel,
+  badgeIconClass,
+  badgeRemoveLabel,
   badgeTextFallback,
   badgeTextVariants,
   badgeVariants,
 } from "@/components/ui/badge-base";
 import { cn } from "@/lib/utils";
+import { X } from "./icons";
 
 export type { BadgeProps, BadgeVariant };
 
@@ -41,6 +52,8 @@ export function Badge({
   textColor,
   className,
   label,
+  onRemove,
+  removeLabel,
   asChild = false,
   style,
   children,
@@ -79,6 +92,23 @@ export function Badge({
       {...props}
     >
       {shape === "pill" ? children : null}
+      {shape === "pill" && onRemove && !asChild ? (
+        <button
+          type="button"
+          aria-label={removeLabel ?? badgeRemoveLabel(children, label)}
+          className="-my-1 -mr-1.5 -ml-1 inline-flex cursor-pointer items-center justify-center rounded-full p-1 text-inherit outline-none hover:opacity-75 focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-inset"
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove();
+          }}
+          // The keys that press it, stopped too, so a badge's own `onKeyDown` does not act on them.
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+          }}
+        >
+          <X className={badgeIconClass} aria-hidden />
+        </button>
+      ) : null}
     </Comp>
   );
 }
