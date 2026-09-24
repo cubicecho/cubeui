@@ -190,7 +190,33 @@ on both platforms:
   `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
   `icon`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
-  `onSelect`. The icon takes the row's colour — `text-destructive` on a destructive row.
+  `onSelect`, and `link` or `href` for a row that navigates. The icon takes the row's colour —
+  `text-destructive` on a destructive row.
+- **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
+  `Link` as an element with no children, `link`, and the row is drawn inside it — on the web the
+  menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
+  handlers and a router that preloads on intent does, and Enter or a click follows it and closes
+  the menu:
+
+  ```tsx
+  import { Link } from "@tanstack/react-router";
+
+  <MenuItem
+    icon={<ArrowRight />}
+    label="Open"
+    link={<Link to="/projects/$id" params={{ id }} preload="intent" />}
+  />
+  <MenuItem label="Help" href="https://example.com/help" />
+  ```
+
+  Any router's link that renders an `<a>` and forwards its ref fits: React Router's
+  `<Link to prefetch="intent" />`, Next's `<Link href />`. `href` alone is a plain `<a href>`, for
+  a URL no router owns. The row looks exactly like the others, `onSelect` still runs first, and a
+  `disabled` row renders no link at all, so nothing follows it. It is `link={…}` and not
+  `<Link asChild><MenuItem /></Link>` as for `SidebarNavItem`: a menu handed the router's click
+  would see it cancel the browser's navigation and take that as "keep the menu open". On device,
+  `link` takes the row `asChild` — expo-router's `<Link href="/x" />` — and navigates beside
+  `onSelect`; `href` alone there only runs `onSelect`, because there is no URL to open.
 - **A row that deletes is `destructive`, and still goes through a confirm** if the loss is real:
   open a `ConfirmDialog` from its `onSelect`.
 - On the web it is radix `DropdownMenu`: arrow keys, Home/End, typeahead, focus back on the

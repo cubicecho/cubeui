@@ -139,10 +139,11 @@ function MenuItem({
   disabled = false,
   onSelect,
   className,
+  link,
 }: MenuItemProps) {
   const { setOpen } = useContext(MenuContext);
   const ink = destructive ? "text-destructive" : "text-popover-foreground";
-  return (
+  const row = (
     <Pressable
       role="menuitem"
       disabled={disabled}
@@ -173,6 +174,12 @@ function MenuItem({
       </IconClassContext.Provider>
     </Pressable>
   );
+  // `href` alone is only the web's: there is no URL to open on device, and the app's router is
+  // what navigates. Its link takes the row the way it takes a `Button` — `asChild`, which hands
+  // the row its press handler beside the row's own `onSelect`. A disabled row is not handed over.
+  return link && !disabled
+    ? cloneElement(link as ReactElement<{ asChild?: boolean }>, { asChild: true }, row)
+    : row;
 }
 
 function MenuSeparator({ className }: MenuSeparatorProps) {
