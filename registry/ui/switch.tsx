@@ -23,6 +23,7 @@ function Switch({
   onCheckedChange,
   disabled,
   onBlur,
+  accessibilityLabel,
   className,
 }: SwitchProps) {
   // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
@@ -32,6 +33,7 @@ function Switch({
     <Pressable
       role="switch"
       aria-checked={checked}
+      aria-label={accessibilityLabel}
       disabled={disabled}
       onPress={() => {
         setCheckedState(!checked);
