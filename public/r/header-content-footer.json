@@ -4,7 +4,8 @@
   "title": "Header / Content / Footer",
   "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

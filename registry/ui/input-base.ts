@@ -58,6 +58,25 @@ export type InputHandle = {
   select?: () => void;
 };
 
+/**
+ * What `onKeyPress` hands over: the key, as `nativeEvent.key`. React Native's
+ * `TextInputKeyPressEvent` is this shape, and so is a React DOM keyboard event, whose
+ * `nativeEvent` is the browser's `KeyboardEvent` — so one handler reads the key the same way on
+ * both halves. Spelled structurally because this file ships to the web too, where there is no
+ * react-native to import the type from.
+ */
+export type InputKeyPressEvent = { nativeEvent: { key: string } };
+
+/**
+ * A handler of that event, declared as a method so its parameter is checked bivariantly — the
+ * trick React's own event handler types use. A native handler annotated
+ * `(e: TextInputKeyPressEvent) => void` names a narrower event than this one and would otherwise
+ * be refused, though it reads nothing that is not here.
+ */
+export type InputKeyPressHandler = {
+  bivarianceHack(event: InputKeyPressEvent): void;
+}["bivarianceHack"];
+
 export type InputProps = {
   value?: string | undefined;
   /** Uncontrolled: where the text starts, when nothing above is holding `value`. */
@@ -66,6 +85,18 @@ export type InputProps = {
   onBlur?: (() => void) | undefined;
   /** Enter on web, the return key on native. */
   onSubmitEditing?: (() => void) | undefined;
+  /**
+   * Every key as it goes down: React Native's `onKeyPress`. On device that is a hardware keyboard
+   * and whatever the soft one reports; on the web half it fires from `keydown`, as
+   * react-native-web's does, so it hears Escape and the arrows, which a DOM `keypress` never does.
+   */
+  onKeyPress?: InputKeyPressHandler | undefined;
+  /**
+   * Escape — the key an inline edit answers with "put it back the way it was". Fires after any
+   * `onKeyPress`, on both halves. A soft keyboard has no Escape key, so a touch-only screen still
+   * needs its own way out (a blur, a cancel button).
+   */
+  onEscape?: (() => void) | undefined;
   placeholder?: string | undefined;
   type?: InputType | undefined;
   /**

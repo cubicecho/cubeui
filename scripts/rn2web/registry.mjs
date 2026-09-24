@@ -99,6 +99,22 @@ function webText(file, emitted) {
  */
 const NATIVE_ONLY_FILES = new Set(["registry/lib/web-as.d.ts"]);
 
+/** The item that installs the stylesheets, and the prefix every class in the reset carries. */
+export const TOKENS = "tokens";
+export const RESET_CLASS = "cube-rn-";
+
+/**
+ * Printed by the CLI after `shadcn add @cubeui/tokens`, because the one step the install cannot do
+ * is the one that makes it work: nothing loads a stylesheet the app's own CSS does not import.
+ * After `tailwindcss` so the `@theme inline` block has a Tailwind to extend, and before the app's
+ * own palette so an override there wins.
+ */
+const TOKENS_DOCS =
+  'Import the stylesheet from your app\'s CSS entry, after `@import "tailwindcss";` and before ' +
+  'your own palette: `@import "../cubeui-tokens.css";` (the path is relative to that file; ' +
+  "`cubeui-tokens.css` lands next to components.json). It brings `cubeui-reset.css`, the layout " +
+  "defaults every compiled component relies on, and `tw-animate-css` with it.";
+
 /**
  * Files the web half of an item ships and the native half has no counterpart for, so there is
  * nothing in `registry.json` to derive them from. The mirror of `NATIVE_ONLY_FILES` above.
@@ -109,9 +125,13 @@ const NATIVE_ONLY_FILES = new Set(["registry/lib/web-as.d.ts"]);
  * cannot declare that its classes come from somewhere. It rides with `tokens` because that is
  * the one item every DOM consumer installs and the stylesheet that `@import`s it.
  *
- * Deliberately not its own item. `@cubeui/reset` would be a 25-item `registryDependencies` edit
- * and a thing a consumer can decline, and a component whose layout classes are optional is a
- * component that renders wrong rather than one that fails to install.
+ * Deliberately not its own item. `@cubeui/reset` would be one more thing a consumer can decline,
+ * and a component whose layout classes are optional is a component that renders wrong rather than
+ * one that fails to install. What an item wearing the classes *does* do is depend on `tokens`,
+ * and that is derived in `deriveWebRegistry` below rather than written into 30 items (#133). The
+ * cost of riding with `tokens` is that an app wanting only a toast also takes the palette — which
+ * it needs anyway, because every colour class the toast wears names a token (`registry:check`
+ * rule 9).
  *
  * `dependencies` here is the same idea for a package: one the web half needs and the native half
  * must not be made to install. `tw-animate-css` is where `animate-in`, `fade-in-0`, `zoom-in-95`
@@ -120,11 +140,12 @@ const NATIVE_ONLY_FILES = new Set(["registry/lib/web-as.d.ts"]);
  * *is* the native registry and an Expo app has no use for a DOM keyframe library.
  */
 const WEB_ONLY = {
-  tokens: {
+  [TOKENS]: {
     files: [
       { path: "compiled/cube-rn-reset.css", type: "registry:file", target: "~/cubeui-reset.css" },
     ],
     dependencies: ["tw-animate-css@^1.4.0"],
+    docs: TOKENS_DOCS,
   },
 };
 
@@ -237,6 +258,7 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
 
     const next = { ...item, files };
     if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
+    if (WEB_ONLY[item.name]?.docs) next.docs = WEB_ONLY[item.name].docs;
     if (webOnlyNames.has(item.name)) next.description = `${next.description} ${WEB_ONLY_NOTE}`;
     // A package is in the web half either because a web file imports it, or because something a
     // web file imports peers it — `@types/react-dom` is imported by nothing and pins itself to the
@@ -257,6 +279,16 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     const utils = "@cubeui/utils";
     if (needsUtils && item.name !== "utils" && !item.registryDependencies?.includes(utils)) {
       next.registryDependencies = [...(item.registryDependencies ?? []), utils];
+    }
+    // The same move for the stylesheet. A compiled file wearing `cube-rn-view` is written against
+    // `cubeui-reset.css`, which only `tokens` installs, so `shadcn add @cubeui/toast` on its own
+    // drew a block `<div>` where a flex column was meant, with no error (#133). Derived from the
+    // emitted text rather than listed, so it follows the compiler's output as that moves.
+    if (item.name !== TOKENS && files.some((f) => webText(f, emitted).includes(RESET_CLASS))) {
+      const deps = next.registryDependencies ?? item.registryDependencies ?? [];
+      if (!deps.includes(`@cubeui/${TOKENS}`)) {
+        next.registryDependencies = [...deps, `@cubeui/${TOKENS}`];
+      }
     }
     items.push(next);
   }
