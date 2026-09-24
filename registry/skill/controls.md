@@ -518,6 +518,9 @@ The reveal toggle is behaviour, not a variant, which is why this is a component 
 // Web: nothing to pass. The picker stores the choice and applies it.
 <ThemePicker />
 
+// A sidebar footer or a header bar: one full-width row of icon-only radios.
+<ThemePicker variant="compact" />
+
 // Device: pass storage once, where the app starts. The picker writes through it too.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 useThemePreference({ storage: AsyncStorage });
@@ -543,6 +546,14 @@ and the storage, the class and the first paint are what hand-rolled versions get
   `storage` is any `{ getItem, setItem }`, sync or async. Wrap MMKV or `expo-secure-store` in two
   lambdas. Without `storage` the choice lasts until the app closes. The stored value is read
   asynchronously, so hold the splash screen if a flash of the system theme matters.
+- **`variant="compact"`** is for where tiles do not fit, such as a 14rem sidebar footer or a 6rem
+  phone header. It draws one row of Sun / Moon / Monitor segments (`RadioGroup
+  variant="segmented"`) and fills its container's width, so size the container, not the picker.
+  It is still a radiogroup of three radios with the same keyboard and the same `value` /
+  `onValueChange` or hook binding. Each caption ("Light", "Dark", "System") is the radio's
+  `aria-label`, and on the web it is also the hover tooltip (`title`). A device has no hover, so
+  there the caption is only the name VoiceOver and TalkBack read. Do not hand-draw an icon-only
+  theme `<fieldset>` beside it.
 - `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
 
 **Paint the stored theme before React mounts**, or a reload flashes the other palette. Put this in

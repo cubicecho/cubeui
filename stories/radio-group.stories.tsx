@@ -21,7 +21,7 @@ const meta = { title: "Stage 0/RadioGroup" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-function NativeHarness({ variant }: { variant: "row" | "card" }) {
+function NativeHarness({ variant }: { variant: "row" | "card" | "segmented" }) {
   const [value, setValue] = useState<string | undefined>(undefined);
   return (
     <NativeRadioGroup
@@ -37,7 +37,7 @@ function NativeHarness({ variant }: { variant: "row" | "card" }) {
   );
 }
 
-function CompiledHarness({ variant }: { variant: "row" | "card" }) {
+function CompiledHarness({ variant }: { variant: "row" | "card" | "segmented" }) {
   const [value, setValue] = useState<string | undefined>(undefined);
   return (
     <CompiledRadioGroup
@@ -133,6 +133,45 @@ export const Card: Story = {
     await expect(getComputedStyle(compiledTile).flexGrow).toBe("1");
     await expect(getComputedStyle(compiledTile).borderTopWidth).toBe(
       getComputedStyle(nativeTile).borderTopWidth,
+    );
+  },
+};
+
+/**
+ * The `SegmentedGroup` look with the radio contract: one framed row across the container, equal
+ * segments, the checked one filled — and still one tab stop and arrows that move and choose.
+ */
+export const Segmented: Story = {
+  render: () => (
+    <SideBySide
+      native={<NativeHarness variant="segmented" />}
+      compiled={<CompiledHarness variant="segmented" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native theme", "Compiled theme"]) {
+      const group = canvas.getByRole("radiogroup", { name });
+      await assertKeyboard(group);
+      // Full width: the frame is as wide as the column it sits in.
+      const column = group.parentElement as HTMLElement;
+      await expect(Math.round(group.getBoundingClientRect().width)).toBe(
+        Math.round(column.getBoundingClientRect().width),
+      );
+      // Equal segments, and the checked one is the filled one.
+      const radios = within(group).getAllByRole("radio");
+      const widths = radios.map((r) => Math.round(r.getBoundingClientRect().width));
+      await expect(new Set(widths).size).toBe(1);
+      const checked = within(group).getByRole("radio", { checked: true });
+      const unchecked = radios.find((r) => r !== checked) as HTMLElement;
+      await expect(getComputedStyle(checked).backgroundColor).not.toBe(
+        getComputedStyle(unchecked).backgroundColor,
+      );
+    }
+    // A segment draws no description, so it is described by nothing.
+    const compiled = within(canvas.getByRole("radiogroup", { name: "Compiled theme" }));
+    await expect(compiled.getByRole("radio", { name: "System" })).not.toHaveAttribute(
+      "aria-describedby",
     );
   },
 };
