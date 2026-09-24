@@ -151,6 +151,77 @@ export const Default: Story = {
   },
 };
 
+/**
+ * `hideBelow="md"`: under 48rem the rail is not drawn, and from it up it is — a media query in the
+ * stylesheet, not in JavaScript, so there is no first frame with the rail drawn and then removed.
+ *
+ * The play reads the same media query the classes are generated for and checks each half against
+ * it, so it holds in the test runner's phone-width viewport (hidden) and in a desktop Storybook
+ * (shown) alike. The sidebar without `hideBelow` beside each one is drawn at every width.
+ */
+export const HiddenBelow: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Frame>
+          <NativeSidebar
+            label="Native rail"
+            hideBelow="md"
+            content={<NativeNavItem href="#/inbox" label="Inbox" active />}
+          />
+          <NativeSidebar
+            label="Native always"
+            content={<NativeNavItem href="#/inbox" label="Inbox" />}
+          />
+        </Frame>
+      }
+      compiled={
+        <Frame>
+          <CompiledSidebar
+            label="Compiled rail"
+            hideBelow="md"
+            content={<CompiledNavItem href="#/inbox" label="Inbox" active />}
+          />
+          <CompiledSidebar
+            label="Compiled always"
+            content={<CompiledNavItem href="#/inbox" label="Inbox" />}
+          />
+        </Frame>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Tailwind's `md` is 48rem; the rail is drawn exactly when this matches.
+    const wide = window.matchMedia("(min-width: 48rem)").matches;
+
+    const roots = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('[data-testid="sidebar"], [data-slot="sidebar"]'),
+    );
+    await expect(roots).toHaveLength(4);
+    const rails = roots.filter((el) => /rail$/.test(el.getAttribute("aria-label") ?? ""));
+    await expect(rails).toHaveLength(2);
+
+    for (const rail of rails) {
+      // Hidden is `display: none` — no box, and nothing left for a screen reader either.
+      await expect(getComputedStyle(rail).display).toBe(wide ? "flex" : "none");
+      await expect(rail.getBoundingClientRect().width).toBe(wide ? 256 : 0);
+    }
+    for (const name of ["Native rail", "Compiled rail"]) {
+      const landmark = canvas.queryByRole("complementary", { name });
+      if (wide) await expect(landmark).not.toBeNull();
+      else await expect(landmark).toBeNull();
+    }
+
+    // Without `hideBelow` the sidebar is drawn at every width, the same flex column as before.
+    for (const name of ["Native always", "Compiled always"]) {
+      const always = canvas.getByRole("complementary", { name });
+      await expect(getComputedStyle(always).display).toBe("flex");
+      await expect(always.getBoundingClientRect().width).toBe(256);
+    }
+  },
+};
+
 const recent = ["Quarterly review", "Hiring loop"];
 
 /**

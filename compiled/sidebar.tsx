@@ -49,6 +49,22 @@ import { cn } from "@/lib/utils";
  */
 const STACK = "flex flex-col";
 
+/**
+ * Hidden under the breakpoint, shown from it up. `flex` is what the root is on both platforms: a
+ * compiled view is a flex column by its reset, and every view on device is one already.
+ *
+ * Literal classes rather than a composed one, per rule 3: Tailwind's scanner reads source text, so
+ * `` `${bp}:flex` `` names a class that is never generated. It is a media query in the stylesheet,
+ * not one in JavaScript, so the first paint is already right — no frame with the rail drawn and
+ * then taken away.
+ */
+const HIDE_BELOW = {
+  sm: "hidden sm:flex",
+  md: "hidden md:flex",
+  lg: "hidden lg:flex",
+  xl: "hidden xl:flex",
+} as const;
+
 export type SidebarProps = {
   /** The body: sections, rows, whatever the rail lists. The only part that scrolls. */
   content: ReactNode;
@@ -66,6 +82,15 @@ export type SidebarProps = {
    * `start` (the default) draws it on the right, facing the content.
    */
   side?: "start" | "end" | undefined;
+  /**
+   * Under this width the sidebar is not drawn at all; from it up, it is. For a rail that has no
+   * room on a phone, where the page puts its furniture in a bar of its own instead. Absent, it is
+   * drawn at every width.
+   *
+   * Hidden is `display: none`, so it leaves the accessibility tree too, rather than staying a
+   * landmark with nothing visible in it.
+   */
+  hideBelow?: keyof typeof HIDE_BELOW | undefined;
   /** The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. */
   contentRef?: HeaderContentFooterProps["contentRef"];
   /** On the root. A different width is a `w-*` here. */
@@ -91,6 +116,12 @@ export type SidebarProps = {
  *
  * It needs a height, like any sticky chassis: `h-full`, so the ancestors up to the viewport have
  * to give it one or the body grows instead of scrolling.
+ *
+ * **`hideBelow` is its narrow-width answer.** A rail is not a pane that stacks, so under a phone's
+ * width it goes rather than landing on top of the page. `hidden md:flex` in `className` did the
+ * same only while the root's display came from a class merged before the caller's; these are the
+ * same two classes, owned here. Inside a `SidebarLayout` keep `divider="none"`, so the empty pane
+ * spends no gap and draws no rule.
  */
 export function Sidebar({
   content,
@@ -98,6 +129,7 @@ export function Sidebar({
   footer,
   label,
   side = "start",
+  hideBelow,
   contentRef,
   className,
   headerClassName,
@@ -115,6 +147,7 @@ export function Sidebar({
         "cube-rn-view",
         "h-full w-64 min-h-0 shrink-0 border-sidebar-border bg-sidebar",
         side === "start" ? "border-r" : "border-l",
+        hideBelow ? HIDE_BELOW[hideBelow] : undefined,
         className,
       )}
     >
