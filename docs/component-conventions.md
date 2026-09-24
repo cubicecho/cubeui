@@ -97,6 +97,7 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
+| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem`, where `action` would read as a second button in the row. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 
 **List rows and query states add:**

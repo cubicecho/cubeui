@@ -254,6 +254,24 @@
       ]
     },
     {
+      "name": "menu",
+      "type": "registry:ui",
+      "title": "Menu",
+      "description": "A popover of actions: radix DropdownMenu on web (arrow keys, typeahead, focus back on the trigger); the popover's centred sheet with menu and menuitem roles on device. A row takes an icon, a label, a trailing node and a destructive colour, and the menu closes when one is chosen.",
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/popover"],
+      "files": [
+        {
+          "path": "registry/ui/menu-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -978,6 +996,7 @@
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
         "@cubeui/date-picker",
+        "@cubeui/menu",
         "@cubeui/multi-select",
         "@cubeui/option-select",
         "@cubeui/password-input"

@@ -18,7 +18,7 @@
  * `tw-animate-css` is where `animate-in`, `fade-in-0`, `zoom-in-95` and `slide-in-from-*` live.
  * They are not core Tailwind utilities and never were: shadcn's own `init` writes this same import
  * into an app's stylesheet, which is why a component copied out of shadcn's registry appears to
- * work without declaring it. Four items here use them — `dialog`, `popover`, `select` and
+ * work without declaring it. Five items here use them — `dialog`, `popover`, `menu`, `select` and
  * `tooltip` — and what is lost without it is not the animation but the `data-[state]` rules
  * around it.
  *

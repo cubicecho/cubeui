@@ -23,6 +23,7 @@ import { Popover as PopoverPrimitive } from "radix-ui";
 import type * as React from "react";
 import type {
   PopoverAnchorProps,
+  PopoverCloseProps,
   PopoverContentProps,
   PopoverProps,
   PopoverSectionProps,
@@ -93,6 +94,21 @@ function PopoverAnchor({
   );
 }
 
+function PopoverClose({
+  asChild,
+  className,
+  ...props
+}: Wide<PopoverCloseProps, React.ComponentProps<typeof PopoverPrimitive.Close>>) {
+  return (
+    <PopoverPrimitive.Close
+      data-slot="popover-close"
+      asChild={asChild ?? false}
+      {...(className === undefined ? {} : { className })}
+      {...props}
+    />
+  );
+}
+
 function PopoverHeader({
   className,
   ...props
@@ -129,6 +145,7 @@ function PopoverDescription({
 export {
   Popover,
   PopoverAnchor,
+  PopoverClose,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,

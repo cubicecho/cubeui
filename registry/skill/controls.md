@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, and the theme picker, which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the menu, and the theme picker, which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -162,6 +162,44 @@ is always destructive; a confirm that is *not* destructive is a question, and a 
 
 Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
+
+## Menu
+
+**A popover of actions is a `Menu`. Do not hand-build `menuitem` rows in a `Popover`.** A
+`Pressable role="menuitem"` in a popover has no `role="menu"` around it, no arrow keys, does not
+put focus back on the trigger, and its `onSelect` has to close the popover itself. `@cubeui/menu`,
+on both platforms:
+
+```tsx
+<Menu>
+  <MenuTrigger asChild>
+    <Button variant="outline">Lane</Button>
+  </MenuTrigger>
+  <MenuContent align="end">
+    <MenuItem icon={<Pencil />} label="Rename" onSelect={startRename} />
+    <MenuItem icon={<ArrowLeft />} label="Move left" disabled={first} onSelect={moveLeft} />
+    <MenuSeparator />
+    <MenuItem icon={<Trash2 />} label="Delete" destructive onSelect={remove} />
+  </MenuContent>
+</Menu>
+```
+
+- **An icon-only trigger** is an `ActionButton` on the web (see [Icon buttons](#icon-buttons)) and
+  a `Button` with an `aria-label` on device, both under `MenuTrigger asChild`.
+- **The menu closes itself when a row is chosen.** Do not hold `open` to close it from
+  `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
+- **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
+  `icon`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
+  `onSelect`. The icon takes the row's colour — `text-destructive` on a destructive row.
+- **A row that deletes is `destructive`, and still goes through a confirm** if the loss is real:
+  open a `ConfirmDialog` from its `onSelect`.
+- On the web it is radix `DropdownMenu`: arrow keys, Home/End, typeahead, focus back on the
+  trigger. On device it is the popover's centred sheet with `role="menu"`; focus goes back to the
+  trigger as an accessibility event. Pass `aria-label` on `MenuContent` when the trigger has no
+  text — radix names the web menu after the trigger, native has nothing to point at.
+- A popover that is a small form or a note, not a list of actions, stays a `Popover`. Its Done
+  button is `PopoverClose asChild`, not a handler that sets `open` to `false`.
+- A value chosen from a list is `Select` or `OptionSelect`, not a menu.
 
 ## Option select
 
