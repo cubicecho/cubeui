@@ -4,7 +4,8 @@
   "title": "Detail Page",
   "description": "The page shell plus a loading / not-found guard that narrows the entity for its children.",
   "registryDependencies": [
-    "@cubeui/page"
+    "@cubeui/page",
+    "@cubeui/tokens"
   ],
   "files": [
     {

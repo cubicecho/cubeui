@@ -5,7 +5,8 @@
   "description": "A drop zone over a hidden file input on web. The native half is a placeholder, not an implementation.",
   "registryDependencies": [
     "@cubeui/utils",
-    "@cubeui/icons"
+    "@cubeui/icons",
+    "@cubeui/tokens"
   ],
   "files": [
     {

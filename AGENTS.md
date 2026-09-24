@@ -176,7 +176,7 @@ docs/component-conventions.md         authoring rules, and the open questions
                                       reads the copy that ships
 scripts/rn2web/                       the compiler
 scripts/build-tokens.mjs              the token emitter
-scripts/check-registry-build.mjs      `registry:check`: fourteen rules over what ships
+scripts/check-registry-build.mjs      `registry:check`: fifteen rules over what ships
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/build-page.mjs                the landing page, public/index.html

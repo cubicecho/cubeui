@@ -35,6 +35,12 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, contro
 
 Install from the registry, do not copy by hand.
 
+**On the web, import the stylesheet once.** Any item whose markup needs `@cubeui/tokens` pulls
+it in, landing `cubeui-tokens.css` next to `components.json`, but nothing loads a stylesheet the
+app does not import. Put `@import "../cubeui-tokens.css";` in the app's CSS entry, after
+`@import "tailwindcss";` and before the app's own palette. Without it a compiled component lays
+out as stacked blocks and nothing errors.
+
 **Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `tabs`,
 `tooltip`, `badge`, `calendar`, `field`, `toast`, `query-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of

@@ -29,11 +29,23 @@ runtime dependency on this package. Every item, with which platforms it is on, i
 <https://cubicecho.github.io/cubeui/>, and the Storybook is at
 <https://cubicecho.github.io/cubeui/storybook/>.
 
-**Install `@cubeui/tokens` first, and `@import` it.** It lands `cubeui-tokens.css` at the project
+**`@import` `@cubeui/tokens` from your stylesheet.** It lands `cubeui-tokens.css` at the project
 root. On the web that file also `@import`s `cubeui-reset.css` (the layout defaults a compiled
 component relies on; see [Stage 0](#stage-0--the-spike-and-its-verdict)) and `tw-animate-css`.
-A compiled component rendered without it lays out in the wrong direction, and nothing reports an
-error.
+Every web item whose markup wears those layout classes lists `@cubeui/tokens` in its
+`registryDependencies`, so `shadcn add @cubeui/toast` brings it on its own. What the CLI cannot do
+is load it. Import it from the app's CSS entry, after Tailwind and before your own palette, so an
+override of yours wins:
+
+```css
+/* src/index.css */
+@import "tailwindcss";
+@import "../cubeui-tokens.css";
+/* your own :root / .dark overrides after this */
+```
+
+A compiled component rendered without that import lays out in the wrong direction, and nothing
+reports an error.
 
 **On a Vite app, put `compilerOptions.paths` in the root `tsconfig.json` as well.** `npm create
 vite@latest` writes `paths` into `tsconfig.app.json` and leaves the root file a bare `references`
@@ -417,7 +429,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces fourteen rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces fifteen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -502,6 +514,13 @@ class list it is joined into (the same `cn`/`cva` call, conditional, array or ob
 file — `CHECKBOX_CLASS`, which each half colours from its checked state — says so with a
 `@border-colour` comment above it. `stories/tokens.stories.tsx` asserts the resolved colours under
 react-native-web.
+
+And that **a web item wearing the reset's classes depends on `@cubeui/tokens`** (rule 15), the one
+item that installs `cubeui-reset.css`. `toast`, `file-picker`, `card` and 28 more wore
+`cube-rn-view` while depending only on `utils`, so installing one of them alone rendered a block
+where a flex column was meant (#133). `deriveWebRegistry` adds the dependency to any item whose
+emitted text names a `cube-rn-` class, and the rule asks the built `content` whether it did — run
+over the registry as it stood before the fix, it named all 31.
 
 Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -1058,7 +1077,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
-npm run registry:check # the fourteen rules under Guards, against both built registries
+npm run registry:check # the fifteen rules under Guards, against both built registries
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)

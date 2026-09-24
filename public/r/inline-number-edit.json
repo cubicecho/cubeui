@@ -5,7 +5,8 @@
   "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit.",
   "registryDependencies": [
     "@cubeui/input",
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

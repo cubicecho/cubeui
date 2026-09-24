@@ -4,7 +4,8 @@
   "title": "Radio Group",
   "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {
