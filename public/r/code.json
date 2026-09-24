@@ -4,7 +4,8 @@
   "title": "Code",
   "description": "Monospaced inline code and blocks.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

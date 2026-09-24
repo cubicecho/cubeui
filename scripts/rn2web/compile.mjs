@@ -38,6 +38,7 @@ import {
   REFUSED_PROPS,
   TAG_ROLE,
   TYPE_MAP,
+  WEB_AS_REPLACES_ROLE,
 } from "./tables.mjs";
 
 /** A refusal. `line` is 1-based, so it pastes straight into an editor. */
@@ -420,7 +421,12 @@ function transformElement(open, elements, diagnostics) {
     find("webAs").remove();
     // A role the chosen element already has — `role="group"` written for the device on a `View`
     // that is a `<fieldset>` on the web — is the same thing said twice there, so it goes too.
-    dropRole = role !== null && (NATIVE_TAG_FOR_ROLE[role] === webAs || TAG_ROLE[webAs] === role);
+    // So does a role the element says another way, which is `WEB_AS_REPLACES_ROLE`.
+    dropRole =
+      role !== null &&
+      (NATIVE_TAG_FOR_ROLE[role] === webAs ||
+        TAG_ROLE[webAs] === role ||
+        WEB_AS_REPLACES_ROLE[webAs] === role);
   } else if (role === "heading") {
     const levelAttr = find("aria-level");
     const level = literalValue(levelAttr);

@@ -79,3 +79,27 @@ export const Default: Story = {
     if (lightBrowser) await expect(html()).not.toHaveClass("dark");
   },
 };
+
+/**
+ * `variant="compact"` in a 14rem sidebar footer: one full-width row of icon-only radios, each
+ * named by its caption, which is also the hover tooltip.
+ */
+export const Compact: Story = {
+  render: () => (
+    <div className="w-56 bg-background p-2 text-foreground">
+      <ThemePicker variant="compact" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole("radiogroup", { name: "Theme" });
+    const dark = within(group).getByRole("radio", { name: "Dark" });
+    await expect(dark).toHaveAttribute("title", "Dark");
+    await expect(dark.textContent).toBe("");
+
+    await userEvent.click(dark);
+    await waitFor(() => expect(dark).toHaveAttribute("aria-checked", "true"));
+    await expect(html()).toHaveClass("dark");
+    await expect(stored()).toBe("dark");
+  },
+};

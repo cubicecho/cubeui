@@ -74,6 +74,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
+| `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |
@@ -110,8 +111,9 @@ field — because data that has not arrived is not data that came back empty or 
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
+| `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
 
-Three notes on why the layering is where it is:
+Notes on why the layering is where it is:
 
 - **`control` is the one exception to "the body is `content`",** and it earns it: it is the only
   body in the set the shell *wires* rather than places. Everything else that renders a body
@@ -122,6 +124,15 @@ Three notes on why the layering is where it is:
 - **`DisclosureRow` takes `action`, not `actions`,** though it usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.
+- **`PropertyRow` reuses `label`, `hint`, `action` and `value` rather than growing words of its
+  own.** `label` is what the fact is called, `hint` the line read after it, `action` the far end —
+  each what it already means. `value` is the stretch: on a control it is the held value, on a row
+  it is the value on display, a node. Both answer "what is it set to", and a read-only row that
+  called it anything else would be a second word for the same question.
+- **`layout`, not `orientation`,** on `DescriptionList`. `orientation="horizontal"` on a field is
+  horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
+  label beside its value, so `horizontal` would be a lie below that width — the same reason the
+  split panes are `first` and `second` rather than `left` and `right`.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 

@@ -409,7 +409,7 @@
       "name": "radio-group",
       "type": "registry:ui",
       "title": "Radio Group",
-      "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description) or `card` (a tile with an icon), with one tab stop and arrow keys that move and select handled inside.",
+      "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description), `card` (a tile with an icon) or `segmented` (a full-width framed row, icon-only segments allowed), with one tab stop and arrow keys that move and select handled inside.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -436,7 +436,7 @@
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
-      "description": "Light, Dark and System as radio tiles, and useThemePreference(), which stores the choice and applies it: a class on <html> on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline <script> that paints the stored theme before React mounts.",
+      "description": "Light, Dark and System as radio tiles, or with variant=\"compact\" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on <html> on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline <script> that paints the stored theme before React mounts.",
       "registryDependencies": ["@cubeui/icons", "@cubeui/radio-group"],
       "files": [
         {
@@ -466,6 +466,19 @@
       "files": [
         {
           "path": "registry/layout/section.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:component",
+      "title": "Description List",
+      "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/description-list.tsx",
           "type": "registry:component"
         }
       ]
@@ -763,8 +776,8 @@
       "name": "file-picker",
       "type": "registry:ui",
       "title": "File Picker",
-      "description": "A drop zone over a hidden file input on web. The native half is a placeholder, not an implementation.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "description": "A drop zone, or a button, over a hidden file input on web. The native half is a placeholder, not an implementation.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/button"],
       "files": [
         {
           "path": "registry/ui/file-picker-base.ts",

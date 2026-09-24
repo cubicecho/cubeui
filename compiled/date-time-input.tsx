@@ -157,12 +157,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
     <div className={cn("cube-rn-view", "flex-row items-center gap-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          {/* The `onPress` is not redundant with the trigger's own. On Expo web the
-              popover is radix, which opens from an `onClick` merged onto this
-              button — and react-native-web's `Pressable` replaces any `onClick` it
-              is handed with its own press handler, so the popover never opened
-              there. Opening from `onPress` works on every half; radix's toggle,
-              which runs after it, still closes the popover on a second click. */}
           <Button
             variant="outline"
             id={id}
@@ -181,7 +175,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
               ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
             }}
             className="flex-1 justify-start text-left font-normal"
-            onClick={() => setOpen(true)}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {/* Its own `Text` in both states, for the id a reference points at; and because

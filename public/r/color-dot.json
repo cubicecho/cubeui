@@ -4,7 +4,8 @@
   "title": "Color Dot",
   "description": "A small swatch standing in for a colour-coded thing in a list.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

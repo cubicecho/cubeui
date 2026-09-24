@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, and the theme picker, which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -238,6 +238,10 @@ on both platforms:
   which is what makes a screen reader say "checked".
 - A popover that is a small form or a note, not a list of actions, stays a `Popover`. Its Done
   button is `PopoverClose asChild`, not a handler that sets `open` to `false`.
+- **A `Button` under `PopoverTrigger asChild` or `DialogTrigger asChild` opens it by itself**, on
+  every half, Expo web included — leave the popover uncontrolled. Do not hold `open` only so the
+  button can `onPress={() => setOpen(!open)}`; the `Button` hands the trigger's click on from its
+  own press. The same goes for `PopoverClose asChild` and `DialogClose asChild`.
 - A value chosen from a list is `Select` or `OptionSelect`, not a menu. `MenuRadioGroup` is for a
   view setting that lives behind a menu button — a filter, a sort — not for a form's value.
 
@@ -554,6 +558,9 @@ The reveal toggle is behaviour, not a variant, which is why this is a component 
 // Web: nothing to pass. The picker stores the choice and applies it.
 <ThemePicker />
 
+// A sidebar footer or a header bar: one full-width row of icon-only radios.
+<ThemePicker variant="compact" />
+
 // Device: pass storage once, where the app starts. The picker writes through it too.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 useThemePreference({ storage: AsyncStorage });
@@ -579,6 +586,14 @@ and the storage, the class and the first paint are what hand-rolled versions get
   `storage` is any `{ getItem, setItem }`, sync or async. Wrap MMKV or `expo-secure-store` in two
   lambdas. Without `storage` the choice lasts until the app closes. The stored value is read
   asynchronously, so hold the splash screen if a flash of the system theme matters.
+- **`variant="compact"`** is for where tiles do not fit, such as a 14rem sidebar footer or a 6rem
+  phone header. It draws one row of Sun / Moon / Monitor segments (`RadioGroup
+  variant="segmented"`) and fills its container's width, so size the container, not the picker.
+  It is still a radiogroup of three radios with the same keyboard and the same `value` /
+  `onValueChange` or hook binding. Each caption ("Light", "Dark", "System") is the radio's
+  `aria-label`, and on the web it is also the hover tooltip (`title`). A device has no hover, so
+  there the caption is only the name VoiceOver and TalkBack read. Do not hand-draw an icon-only
+  theme `<fieldset>` beside it.
 - `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
 
 **Paint the stored theme before React mounts**, or a reload flashes the other palette. Put this in
@@ -596,3 +611,65 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
 ```
+
+## File picker
+
+A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidden file input.
+
+```tsx
+<FilePicker
+  label="Upload notes"
+  hint="Drop .md files, or click to choose"
+  accept=".md,text/markdown"
+  multiple
+  onPickMany={(files) => upload(files)} // [{ text, name }, ...]
+/>
+```
+
+- The caller gets each file's decoded text and its name, never a `File`, so the calling screen
+  is the same on both halves.
+- `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
+  either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
+  only `onPick`, `onPick` is called once for each file, in order.
+- `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
+  pick is one file, and a drop keeps the first file that `accept` allows.
+- `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
+  to drops as well as the dialog. A file that does not match is skipped and never read. List the
+  extension as well as the MIME type, because browsers often give `.md` and similar files no
+  type at all.
+
+### As a button
+
+Where a drop zone does not fit, such as a page header's actions or a toolbar, use
+`FilePickerButton` from the same item. It takes the same picking props and opens the file dialog
+directly, so you do not need a dialog around a zone.
+
+```tsx
+<PageHeader
+  title="Notes"
+  action={
+    <FilePickerButton
+      variant="ghost"
+      size="icon-sm"
+      label="Upload notes"
+      accept=".md"
+      multiple
+      onPickMany={upload}
+    />
+  }
+/>
+```
+
+- `variant` and `size` are the `Button`'s and are forwarded to it. At an `icon*` size only the
+  icon is drawn. At any other size the label is drawn after the icon.
+- `label` is required and is always the accessible name.
+- `icon` defaults to the upload glyph. Pass a bare `<Plus />` to change it. The button sizes and
+  colours it.
+- It still takes a file dropped onto it, and shows a ring while something is dragged over it.
+- It is a separate component rather than `variant="button"` on `FilePicker`. `variant` already
+  means the button's look, and one prop cannot also choose between two shapes.
+
+- **Native:** `@cubeui/file-picker` installs, and both components take the same props, but they
+  do not pick. `FilePicker` draws the zone and says on screen that picking is web only.
+  `FilePickerButton` draws the button disabled and gives the same reason as its accessibility
+  hint. See `SKILL.md`'s last section.

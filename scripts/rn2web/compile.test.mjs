@@ -193,3 +193,24 @@ test("a heading with no aria-level is still refused", () => {
   assert.equal(code, null);
   assert.match(diagnostics[0].message, /needs an `aria-level`/);
 });
+
+/**
+ * A `<dl>` and its groups. On device the list is `role="list"` and each group `role="listitem"`;
+ * on the web neither role may stay, because a role on the `<dl>` or on one of its `<div>`s is what
+ * makes the `<dl>` invalid. `webAs` names the element, and the role beside it is the device's.
+ */
+test("a device list role is dropped from a webAs dl and its grouping div", () => {
+  const code = ok(
+    'export const A = () => <View webAs="dl" role="list"><View webAs="div" role="listitem">' +
+      '<Text webAs="dt">a</Text><View webAs="dd" /></View></View>;',
+    "Text, View",
+  );
+  assert.equal(code.includes("role="), false, code);
+  assert.match(code, /<dl className="cube-rn-view"><div className="cube-rn-view"><dt /);
+  assert.match(code, /<dd className="cube-rn-view" \/>/);
+});
+
+test("a listitem role on a bare View is still an li", () => {
+  const code = ok('export const A = () => <View role="listitem" />;');
+  assert.match(code, /<li className="cube-rn-view" \/>/);
+});
