@@ -18,6 +18,11 @@ export type SwitchProps = {
   disabled?: boolean | undefined;
   /** See `checkbox-base.ts`: a bound field marks itself touched from this. */
   onBlur?: (() => void) | undefined;
+  /**
+   * The switch's name, as `aria-label`. What names it on device, where there is no
+   * `<label htmlFor>` to borrow one from; on the web a label pointed at `id` can do it instead.
+   */
+  accessibilityLabel?: string | undefined;
   className?: string | undefined;
 };
 

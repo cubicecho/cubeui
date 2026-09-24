@@ -3,9 +3,10 @@
 Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" rule are there and
 are not repeated here.
 
-**Web only**, except `RadioGroupField`. Everything else in this file is a DOM component with no
-React Native half, so none of it installs in an Expo project. `RadioGroupField` is one source
-compiled for both, with the same props on each. `SKILL.md`'s last section is the native set.
+**Web first.** `FormField` and the `@cubeui/app-form` fields are DOM components with no React
+Native half. `RadioGroupField` is one source compiled for both, with the same props on each. An
+Expo project has its own `useAppForm` with the same shape — see [On React Native](#on-react-native)
+at the end.
 
 **Every project using these runs TanStack Form.** Do not introduce a second form library, and do
 not write a form with `useState` and hand-rolled validation beside one written with these.
@@ -472,3 +473,70 @@ export const CurrencyField = bindToForm<CurrencyFieldProps, number>(BoundCurrenc
 
 `app-form.tsx` is the only file allowed to import `@tanstack/react-form`. A field it does not
 hold is still bound through it.
+
+## On React Native
+
+`@cubeui/form` is the native form: one file with `Form`, `Field` and its parts, and `useAppForm`
+built with TanStack `createFormHook` — the web hook's name and shape. Fields are components on
+`field.*` inside `form.AppField`; `SubmitButton` is on the form.
+
+```tsx
+import { createAppForm, Form } from "@/components/ui/form";
+import { DateTimeField } from "@/components/ui/date-time-field";
+import { ColorField } from "@/components/ui/color-picker-field";
+
+// Once, in a module of its own: the two heavy fields join the light ones on `field.*`.
+export const { useAppForm, withForm } = createAppForm({ DateTimeField, ColorField });
+
+const form = useAppForm({ defaultValues: { title: "", done: false, due: null, color: "" }, onSubmit });
+
+<form.AppForm>
+  <Form>
+    <form.AppField name="title" validators={{ onChange: required }}>
+      {(field) => <field.InputField label="Title" />}
+    </form.AppField>
+    <form.AppField name="due">
+      {(field) => <field.DateTimeField label="Due" mode="date" clearable />}
+    </form.AppField>
+    <form.SubmitButton createLabel="Save" disabled={saving} />
+  </Form>
+</form.AppForm>
+```
+
+| Field | Writes | Comes from |
+| --- | --- | --- |
+| `InputField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
+| `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
+| `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
+| `ColorField` | `string` | `@cubeui/color-picker-field` |
+| `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
+
+`useAppForm` from `@cubeui/form` has the first five. `DateTimeField` and `ColorField` are their
+own items for the weight of the calendar and the picker, as on the web; add them with
+`createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
+`color-field` because that is the web item's name.
+
+`CheckboxField`, `SwitchField`, `DateTimeField` and `ColorField` take `label`, `description`,
+`required`, `orientation`, `asGroup` and the `*ClassName` props, plus the control's own.
+`DateTimeField` passes `mode`, `clearable` and `placeholder` through. `InputField`,
+`TextAreaField` and `SelectField` take `label` and the control's props.
+
+How each is named:
+
+- **`DateTimeField`** is `asGroup`: the trigger is `aria-labelledby` the label and then its own
+  date text — "Due September 15th, 2026". The time box is "Due time".
+- **`ColorField`**: the label is `htmlFor` the hex box; the swatch row is a `radiogroup`, which a
+  label cannot name, so it takes `aria-labelledby` the label's id.
+- **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
+  has no `htmlFor`.
+
+`Field asGroup` is the same switch as `FormField`'s: `FieldLabel` gets an id and `FieldControl`
+puts `aria-labelledby` on the control in place of `htmlFor`. Use it for a trigger or a group.
+`useFieldIds()` gives `labelId` to a control nested too deep for `FieldControl` to reach.
+
+`SubmitButton`'s `disabled` is OR-ed with `!canSubmit || isSubmitting`. `disabled={false}` never
+enables an invalid form. The label props are `createLabel`, `editLabel` with `isEdit`, and
+`savingLabel`.
+
+`useFieldError`, `splitProps`, `FieldWrapper` and `bindToForm` are exported for a field the
+registry does not ship, as on the web. `bindToForm` makes the one-line `form`/`name` spelling.

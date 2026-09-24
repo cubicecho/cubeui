@@ -447,8 +447,8 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/ui/badge-base.ts",
@@ -543,7 +543,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms.",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
       "dependencies": [
         "@tanstack/react-form@^1.33.5",
         "@types/react-dom@~19.2.0",
@@ -552,11 +552,13 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
+        "@cubeui/checkbox",
         "@cubeui/field",
         "@cubeui/form-element",
         "@cubeui/input",
         "@cubeui/label",
         "@cubeui/select",
+        "@cubeui/switch",
         "@cubeui/textarea"
       ],
       "files": [
@@ -646,6 +648,32 @@
       "files": [
         {
           "path": "compiled/color-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-time-field",
+      "type": "registry:ui",
+      "title": "Date Time Field",
+      "description": "`DateTimeInput` bound to a `Date | null` form field, named by its label and its date: \"Due September 15th, 2026\". Its own item for the weight of the calendar.",
+      "registryDependencies": ["@cubeui/date-time-input", "@cubeui/form"],
+      "files": [
+        {
+          "path": "compiled/date-time-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "color-picker-field",
+      "type": "registry:ui",
+      "title": "Color Picker Field",
+      "description": "`ColorPicker` bound to a hex-string form field, its swatch row named by the field's label. `ColorField`, under an item name that does not collide with the web-only `color-field`.",
+      "registryDependencies": ["@cubeui/color-picker", "@cubeui/form"],
+      "files": [
+        {
+          "path": "compiled/color-picker-field.tsx",
           "type": "registry:ui"
         }
       ]

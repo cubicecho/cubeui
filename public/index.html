@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 79 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 81 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 79 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 81 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  55 on both platforms · 24 web-only · 0 native-only.
+  57 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -152,7 +152,7 @@
         <tr>
           <th scope="row"><code>@cubeui/badge</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row.</td>
+          <td>A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/button</code></th>
@@ -210,6 +210,11 @@
           <td>Swatches plus a hex field, replacing `&lt;input type="color"&gt;` — which has no native counterpart.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/color-picker-field</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>`ColorPicker` bound to a hex-string form field, its swatch row named by the field's label. `ColorField`, under an item name that does not collide with the web-only `color-field`.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/command</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>shadcn's command palette, re-published from here so it imports the same `cn` every other file in the install does.</td>
@@ -243,6 +248,11 @@
           <th scope="row"><code>@cubeui/date-picker</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/date-time-field</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>`DateTimeInput` bound to a `Date | null` form field, named by its label and its date: "Due September 15th, 2026". Its own item for the weight of the calendar.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/date-time-input</code></th>
@@ -297,7 +307,7 @@
         <tr>
           <th scope="row"><code>@cubeui/form</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms.</td>
+          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/form-dialog</code></th>
