@@ -10,7 +10,8 @@
  * What radix does on the web and this does not: arrow keys and typeahead. A touch screen has
  * neither, and the screen reader walks the rows by swipe. Focus does go back to the trigger when
  * the sheet shuts — by `focus()` under react-native-web, and on device as an accessibility focus
- * event, which is the only focus a `View` has there.
+ * event, which is the only focus a `View` has there — unless the row chosen was
+ * `focusesElsewhere`, whose target keeps it.
  */
 
 import {
@@ -46,12 +47,15 @@ type MenuState = {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: RefObject<View | null>;
+  /** Set by a `focusesElsewhere` row, read and cleared on the close edge. */
+  skipReturnRef: RefObject<boolean>;
 };
 
 const MenuContext = createContext<MenuState>({
   open: false,
   setOpen: () => {},
   triggerRef: { current: null },
+  skipReturnRef: { current: false },
 });
 
 /** Put focus back on the trigger, in whichever sense of focus the platform has. */
@@ -75,15 +79,20 @@ function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) 
   };
 
   const triggerRef = useRef<View | null>(null);
+  const skipReturnRef = useRef(false);
   const wasOpen = useRef(isOpen);
   useEffect(() => {
-    // On the close edge only, however it closed: a row, the backdrop or the back button.
-    if (wasOpen.current && !isOpen) returnFocus(triggerRef.current);
+    // On the close edge only, however it closed: a row, the backdrop or the back button. A
+    // `focusesElsewhere` row has already moved focus to where it belongs, so leave it there.
+    if (wasOpen.current && !isOpen) {
+      if (!skipReturnRef.current) returnFocus(triggerRef.current);
+      skipReturnRef.current = false;
+    }
     wasOpen.current = isOpen;
   }, [isOpen]);
 
   return (
-    <MenuContext.Provider value={{ open: isOpen, setOpen, triggerRef }}>
+    <MenuContext.Provider value={{ open: isOpen, setOpen, triggerRef, skipReturnRef }}>
       <Popover open={isOpen} onOpenChange={setOpen}>
         {children}
       </Popover>
@@ -138,9 +147,10 @@ function MenuItem({
   destructive = false,
   disabled = false,
   onSelect,
+  focusesElsewhere = false,
   className,
 }: MenuItemProps) {
-  const { setOpen } = useContext(MenuContext);
+  const { setOpen, skipReturnRef } = useContext(MenuContext);
   const ink = destructive ? "text-destructive" : "text-popover-foreground";
   return (
     <Pressable
@@ -148,6 +158,7 @@ function MenuItem({
       disabled={disabled}
       aria-disabled={disabled}
       onPress={() => {
+        skipReturnRef.current = focusesElsewhere;
         onSelect?.();
         setOpen(false);
       }}
