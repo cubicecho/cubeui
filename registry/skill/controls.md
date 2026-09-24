@@ -197,9 +197,49 @@ on both platforms:
   trigger. On device it is the popover's centred sheet with `role="menu"`; focus goes back to the
   trigger as an accessibility event. Pass `aria-label` on `MenuContent` when the trigger has no
   text — radix names the web menu after the trigger, native has nothing to point at.
+- **A toggle list is `MenuCheckboxItem`** — labels on a todo, columns shown in a table, anything
+  on or off, several at once. Do not hand-build `role="checkbox"` rows in a `Popover`, and do not
+  fake one with a `MenuItem` and a trailing `<Check />`:
+
+  ```tsx
+  <MenuContent>
+    {labels.map((l) => (
+      <MenuCheckboxItem
+        key={l.id}
+        icon={<ColorDot color={l.color} />}
+        label={l.name}
+        checked={attached.has(l.id)}
+        onCheckedChange={(on) => setAttached(l.id, on)}
+      />
+    ))}
+  </MenuContent>
+  ```
+
+  It takes `MenuItem`'s row — `icon`, `label`, `trailing`, `disabled` — plus `checked` and
+  `onCheckedChange`, and draws the ✓ itself at the far edge. **The menu stays open** when one is
+  toggled, so a list is set in one go; Escape or a press outside closes it. It has no `onSelect`
+  and no `destructive`: a setting is not an action.
+- **One of N is `MenuRadioGroup` and `MenuRadioItem`** — a filter, a sort order:
+
+  ```tsx
+  <MenuRadioGroup value={sort} onValueChange={setSort}>
+    <MenuRadioItem value="due" label="Due date" />
+    <MenuRadioItem value="created" label="Created" />
+  </MenuRadioGroup>
+  ```
+
+  The group holds `value` and `onValueChange`; each row takes `value` and the same row props.
+  **Choosing a radio row closes the menu**, as radix does on the web and the native half matches:
+  a one-of-N choice is done once it is made. Checkbox and radio rows mix with `MenuItem`s and
+  `MenuSeparator`s in one `MenuContent`; pass the group an `aria-label` when there is more than
+  one.
+- The toggle rows are `menuitemcheckbox` / `menuitemradio` with `aria-checked`, on the web and in
+  an Expo web app. On device React Native has no such role, so they are `checkbox` / `radio`,
+  which is what makes a screen reader say "checked".
 - A popover that is a small form or a note, not a list of actions, stays a `Popover`. Its Done
   button is `PopoverClose asChild`, not a handler that sets `open` to `false`.
-- A value chosen from a list is `Select` or `OptionSelect`, not a menu.
+- A value chosen from a list is `Select` or `OptionSelect`, not a menu. `MenuRadioGroup` is for a
+  view setting that lives behind a menu button — a filter, a sort — not for a form's value.
 
 ## Option select
 

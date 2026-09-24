@@ -27,17 +27,23 @@ import { DropdownMenu as MenuPrimitive } from "radix-ui";
 import type * as React from "react";
 import {
   MENU_CONTENT_CLASS,
+  MENU_INDICATOR_CLASS,
   MENU_ITEM_CLASS,
   MENU_ITEM_TEXT_CLASS,
+  MENU_ITEM_WEB_CLASS,
   MENU_SEPARATOR_CLASS,
   MENU_TRAILING_CLASS,
+  type MenuCheckboxItemProps,
   type MenuContentProps,
   type MenuItemProps,
   type MenuProps,
+  type MenuRadioGroupProps,
+  type MenuRadioItemProps,
   type MenuSeparatorProps,
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { cn } from "@/lib/utils";
+import { Check } from "./icons";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -113,7 +119,7 @@ function MenuItem({
       // half of what `IconClassContext` does on native.
       className={cn(
         MENU_ITEM_CLASS,
-        "relative flex cursor-default select-none outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        MENU_ITEM_WEB_CLASS,
         destructive
           ? "text-destructive focus:bg-destructive/10 focus:text-destructive"
           : "text-popover-foreground focus:bg-accent focus:text-accent-foreground",
@@ -144,4 +150,120 @@ function MenuSeparator({
   );
 }
 
-export { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger };
+/**
+ * A toggle row's inside: `MenuItem`'s icon, label and trailing node, then the ✓ slot at the far
+ * edge. `ItemIndicator` renders only while its row is on; the slot around it stays.
+ */
+function ToggleRowBody({
+  icon,
+  label,
+  trailing,
+}: Pick<MenuCheckboxItemProps, "icon" | "label" | "trailing">) {
+  return (
+    <>
+      {icon}
+      <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
+      {typeof trailing === "string" ? (
+        <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
+      ) : (
+        trailing
+      )}
+      <span className={cn(MENU_INDICATOR_CLASS, "flex")}>
+        <MenuPrimitive.ItemIndicator>
+          <Check />
+        </MenuPrimitive.ItemIndicator>
+      </span>
+    </>
+  );
+}
+
+const TOGGLE_ROW_CLASS = cn(
+  MENU_ITEM_CLASS,
+  MENU_ITEM_WEB_CLASS,
+  "text-popover-foreground focus:bg-accent focus:text-accent-foreground",
+);
+
+function MenuCheckboxItem({
+  icon,
+  label,
+  trailing,
+  checked,
+  onCheckedChange,
+  disabled = false,
+  onSelect,
+  className,
+  ...props
+}: Wide<
+  MenuCheckboxItemProps,
+  Omit<React.ComponentProps<typeof MenuPrimitive.CheckboxItem>, "children">
+>) {
+  return (
+    <MenuPrimitive.CheckboxItem
+      data-slot="menu-checkbox-item"
+      disabled={disabled}
+      textValue={label}
+      {...props}
+      checked={checked}
+      onCheckedChange={(next) => onCheckedChange?.(next)}
+      // Radix closes the menu on every select; a toggle list stays open between presses.
+      onSelect={(event) => {
+        onSelect?.(event);
+        event.preventDefault();
+      }}
+      className={cn(TOGGLE_ROW_CLASS, className)}
+    >
+      <ToggleRowBody icon={icon} label={label} trailing={trailing} />
+    </MenuPrimitive.CheckboxItem>
+  );
+}
+
+function MenuRadioGroup({
+  value,
+  onValueChange,
+  ...props
+}: Wide<MenuRadioGroupProps, React.ComponentProps<typeof MenuPrimitive.RadioGroup>>) {
+  return (
+    <MenuPrimitive.RadioGroup
+      data-slot="menu-radio-group"
+      value={value}
+      onValueChange={(next) => onValueChange?.(next)}
+      {...props}
+    />
+  );
+}
+
+/** Choosing one closes the menu — radix's default, kept: a one-of-N choice is done once made. */
+function MenuRadioItem({
+  icon,
+  label,
+  trailing,
+  disabled = false,
+  className,
+  ...props
+}: Wide<
+  MenuRadioItemProps,
+  Omit<React.ComponentProps<typeof MenuPrimitive.RadioItem>, "children">
+>) {
+  return (
+    <MenuPrimitive.RadioItem
+      data-slot="menu-radio-item"
+      disabled={disabled}
+      textValue={label}
+      {...props}
+      className={cn(TOGGLE_ROW_CLASS, className)}
+    >
+      <ToggleRowBody icon={icon} label={label} trailing={trailing} />
+    </MenuPrimitive.RadioItem>
+  );
+}
+
+export {
+  Menu,
+  MenuCheckboxItem,
+  MenuContent,
+  MenuItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuTrigger,
+};
