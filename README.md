@@ -103,26 +103,30 @@ wired, on both platforms.
 ## Installing into a Biome project
 
 Everything this registry ships passes Biome's recommended preset, which the old cubeui could not
-claim. Its primitives were shadcn's, installed untouched, and those do not pass. This repo lints
-every file it ships, with one exception that travels with the files: `a11y/useSemanticElements`
-is off for the compiled tree. That rule asks for `<input type="checkbox">` where a compiled
-component writes `role="checkbox"` on a `<button>`, which is the only thing its React Native
-source could say (see [Where the compiled half is not a
-drop-in](#where-the-compiled-half-is-not-a-drop-in)). A consumer running the recommended preset
-over `components/` wants the same override:
+claim. Its primitives were shadcn's, installed untouched, and those do not pass. One rule needs
+config, and only for the ui folder: `a11y/useSemanticElements`. That rule asks for
+`<input type="checkbox">` where a compiled primitive writes `role="checkbox"` on a `<button>`,
+which is the only thing its React Native source could say (see [Where the compiled half is not a
+drop-in](#where-the-compiled-half-is-not-a-drop-in)). Turn it off for the ui alias folder:
 
 ```jsonc
 // biome.json
 "overrides": [
   {
-    "includes": ["src/components/**"],
+    "includes": ["src/components/ui/**"],
     "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
   }
 ]
 ```
 
-If Biome also lints CSS there, `cubeui-reset.css` needs `complexity/noImportantStyles` off too.
-Its `!important`s copy react-native-web's `pointer-events` rules, and they are there on purpose.
+That override does not reach everything. The shells (`section`, `sidebar`, `section-heading`,
+`radio-group-field`, and so on) install next to the ui folder, in `components/`, not inside it.
+The ones that write a deliberate `role="heading"` or `role="group"` carry their own
+`// biome-ignore lint/a11y/useSemanticElements` comment, written in the React Native source and
+kept by the compiler, so they pass with no config of yours. The same goes for the stylesheets
+`@cubeui/tokens` installs next to `components.json`: `cubeui-reset.css` starts with a
+`biome-ignore-all` for `complexity/noImportantStyles`, because its `!important`s copy
+react-native-web's `pointer-events` rules on purpose (#134).
 
 A shadcn primitive installed from ui.shadcn.com beside these still brings its own lint findings.
 Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
@@ -788,8 +792,13 @@ react-native-web would have rendered anyway.
 `ComponentPropsWithoutRef<"div">`. Both directions were possible and this is a real fork; see open
 decision 6. The stories carry a note at each of the two places it shows.
 
-**`useSemanticElements` is off for `compiled/**` and only there** (`biome.json`, which is strict JSON
-and cannot hold the comment, hence this paragraph). The rule asks for `<input type="checkbox">` where
+**`useSemanticElements` is off for the compiled ui primitives and only there** (`color-picker`,
+`field`, `radio-group` and `segmented` in `biome.json`, which is strict JSON and cannot hold the
+comment, hence this paragraph). Those install into the consumer's ui folder, which the consumer
+already exempts. The compiled shells install outside it, so they are linted here with the rule on
+and carry a `biome-ignore` from their RN source instead; Biome reports those comments as unused in
+`registry/layout/`, since it does not know `<Text role="heading">` becomes a `<span>`. Those four
+warnings are expected (#134). The rule asks for `<input type="checkbox">` where
 the compiled tree writes `role="checkbox"` on a `<button>`, and `<fieldset>` where it writes
 `role="group"`. Both are valid ARIA and both are the only thing the RN source could have said: there
 is no `<input>` on a phone, so those patterns are built from a `Pressable` and a role. Every other

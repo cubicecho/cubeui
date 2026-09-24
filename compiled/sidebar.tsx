@@ -195,6 +195,7 @@ export function SidebarSection({
         >
           <div className="cube-rn-view min-w-0 flex-1">
             {title ? (
+              // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
               <span
                 data-slot="sidebar-section-title"
                 id={titleId}
