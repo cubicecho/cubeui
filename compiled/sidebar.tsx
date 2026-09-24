@@ -24,10 +24,11 @@
  * **Routing stays the app's.** The registry names no router — an Expo app has expo-router, a DOM
  * app has react-router or TanStack's, and a shell that imported one would not install in the
  * others. `SidebarNavItem` is a link that takes `href` and forwards the rest of its props and its
- * ref, so the app's own `<Link href asChild>` wraps it and hands it the press handling, the same
- * inverted nesting `button.tsx` settled on. On the web the row is a real `<a href>` either way:
- * with no router around it, it still navigates, opens in a new tab and shows its URL on hover.
- * Without an `href` the same row is a button, for the footer's Sign out.
+ * ref, so the app's own `<Link href asChild>` (or TanStack's `createLink`) wraps it and hands it
+ * the `href` and the press handling, the same inverted nesting `button.tsx` settled on. On the web
+ * the row is a real `<a href>` either way: with no router around it, it still navigates, opens in
+ * a new tab and shows its URL on hover. With `onPress` and no `href` the same row is a button, for
+ * the footer's Sign out.
  */
 import type { ReactNode } from "react";
 import * as React from "react";
@@ -253,12 +254,28 @@ type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "
   className?: string | undefined;
 };
 
-/** The row that goes somewhere. */
+/** The row that goes somewhere, and says where itself. */
 type SidebarNavItemLinkProps = {
-  /** Where the row goes. The `<a href>` on the web; a router `Link` wrapping it supplies it too. */
+  /** Where the row goes. The `<a href>` on the web. */
   href: string;
   /** The row for the page on screen — filled, and `aria-current="page"`. */
   active?: boolean | undefined;
+};
+
+/**
+ * The row that goes somewhere a router link wrapping it names — TanStack's `createLink`, or
+ * expo-router's `<Link href asChild>`. Both hand the row its `href` and its press handler at
+ * render, so writing either here as well is the destination said twice, and two copies that can
+ * drift: the `<a href>` middle-click opens and the route the click goes to.
+ *
+ * No handler of its own for the same reason: a row with no `href` that *does* take one is the
+ * button below, and a row with both `onPress` and `active` is neither.
+ */
+type SidebarNavItemRouterLinkProps = {
+  href?: undefined;
+  /** The row for the page on screen — filled, and `aria-current="page"`. */
+  active?: boolean | undefined;
+  onClick?: never;
 };
 
 /**
@@ -268,17 +285,17 @@ type SidebarNavItemLinkProps = {
 type SidebarNavItemButtonProps = {
   href?: never;
   active?: never;
-  /** What the row does. Required: a button row with nothing to do is a row that lies. */
+  /** What the row does. Required: it is what tells a button row from a router's link row. */
   onClick: NonNullable<React.ComponentPropsWithoutRef<"button">["onClick"]>;
 };
 
 /**
- * A row is a link (`href`, and `active` for the current page) or a button (`onPress`, never
- * `active`). The two are exclusive, so a row with neither, or `active` on a button, is a type
- * error rather than a row that is quietly half of each.
+ * A row is a link (`href`, and `active` for the current page), a link whose router supplies the
+ * `href`, or a button (`onPress`, never `active`). `onPress` is what tells the last two apart, so
+ * `active` on a button is a type error rather than a row that is quietly half of each.
  */
 export type SidebarNavItemProps = SidebarNavItemBaseProps &
-  (SidebarNavItemLinkProps | SidebarNavItemButtonProps);
+  (SidebarNavItemLinkProps | SidebarNavItemRouterLinkProps | SidebarNavItemButtonProps);
 
 /** The row's box, the same for both forms — the classes a hand-drawn Sign out row used to copy. */
 function rowClassName(active: boolean, className: string | undefined) {
@@ -349,24 +366,30 @@ function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyPr
  *
  * ```tsx
  * <Link href={`/projects/${id}`} asChild>
- *   <SidebarNavItem href={`/projects/${id}`} label={name} active={id === current} />
+ *   <SidebarNavItem label={name} active={id === current} />
  * </Link>
+ *
+ * const SidebarLink = createLink(SidebarNavItem); // TanStack Router
+ * <SidebarLink to="/" label="Documents" active={isCurrent} />
  * ```
  *
- * `Link asChild` clones its child with the press handler, and this forwards the ref and every prop
- * it does not name to the `Pressable`, which is what lets the clone land. On a DOM app whose router
- * link has no `asChild`, pass the router's click handler as `onClick` — react-router's
- * `useLinkClickHandler`, TanStack's `createLink` — and the `<a href>` is already there.
+ * `Link asChild` clones its child with the `href` and the press handler, and `createLink` renders
+ * it with both; this forwards the ref and every prop it does not name to the `Pressable`, which is
+ * what lets them land. So neither passes `href` to the row — the router's is the one destination,
+ * and the row is a real `<a href>` all the same. A router that hands out only a click handler —
+ * react-router's `useLinkClickHandler` — passes it as `onClick` beside the row's own `href`.
  *
  * `role="link"` is what makes it a link on both platforms: TalkBack and VoiceOver say "link", and
  * the compiler emits an `<a>`. The current page is said twice, for the same reason `segmented`
  * says its pill twice — `accessibilityState` on device, `aria-current="page"` on the web, which is
  * the one spelling a web screen reader reads and the one react-native-web would have dropped.
  *
- * **With no `href` it is a button** — `onPress` instead (`onClick` on the web), and no `active`.
+ * **With `onPress` and no `href` it is a button** — `onClick` on the web, and no `active`.
  * That is the footer's Sign out: drawn like the Settings row above it, but it does something
  * rather than going somewhere, so it is `role="button"` on device and a `<button type="button">`
- * on the web, and never carries `aria-current`.
+ * on the web, and never carries `aria-current`. What decides the element is the `href` the row
+ * *renders* with, so a router's row is a link however it was written; a row written with neither
+ * and no router around it has nowhere to go and nothing to do, and is drawn as an inert button.
  *
  * ```tsx
  * <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />

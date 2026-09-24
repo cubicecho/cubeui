@@ -245,7 +245,6 @@ be told to hide one of its panes on a phone is that decision arriving late.
           content={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
               <SidebarNavItem
-                href={`/projects/${p.id}`}
                 label={p.name}
                 icon={<Folder />}
                 count={p.open}
@@ -282,20 +281,33 @@ Three parts, and only `Sidebar` is required:
   holding everything. `status` sits between the title and the list and is where a
   `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
   title's heading rank, 2 by default.
-- **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
-  `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
-  `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.
-  **With no `href` it is a button** — `onPress` (`onClick` on the web) instead of `href`, and no
+- **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
+  line, truncated), `icon?`, `count?`, `active`. It is `role="link"` — an `<a href>` on the web —
+  and `active` fills it from `sidebar-accent` and sets `aria-current="page"`. Hover fills it the
+  same way. **With `onPress` and no `href` it is a button** — `onClick` on the web, and no
   `active`: `role="button"`, a `<button type="button">` on the web, never `aria-current`, drawn
   exactly like the links beside it. That is the footer's Sign out; do not hand-draw it with a
-  `Pressable` and copied classes. The props are a union, so a row with neither `href` nor
-  `onPress`, or `active` on a button, is a type error.
+  `Pressable` and copied classes. The props are a union, so `active` on a button is a type error.
 
-**Routing is the app's.** The row names no router. Wrap it in your router's link with `asChild`
-(expo-router's `Link`), which hands it the press handling; it forwards its ref and every prop it
-does not name. A DOM router with no `asChild` passes its click handler as `onClick` instead —
-react-router's `useLinkClickHandler`, TanStack's `createLink`. With neither, the `<a href>` still
-navigates. `active` is yours to compute from the current route.
+**Routing is the app's.** The row names no router. Wrap it in your router's link and **leave
+`href` off the row** — the router supplies it, so the destination is written once:
+
+```tsx
+<Link href="/settings" asChild>                 {/* expo-router */}
+  <SidebarNavItem label="Settings" active={isSettings} />
+</Link>
+
+const SidebarLink = createLink(SidebarNavItem); // TanStack Router
+<SidebarLink to="/settings" label="Settings" active={isSettings} />
+```
+
+Both render the row with the `href` they built and their own press handler, so it is still a
+real `<a href>` that middle-click and "copy link" read; the row forwards its ref and every prop it
+does not name. Passing `href` beside `to` is the same place written twice, and the two drift. A
+router that hands out only a click handler — react-router's `useLinkClickHandler` — passes it as
+`onClick` beside the row's own `href`. With no router at all, the `<a href>` still navigates.
+`active` is yours to compute from the current route. A row with no `href`, no `onPress` and no
+router around it goes nowhere and does nothing — it is drawn as an inert button.
 
 Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
 A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
