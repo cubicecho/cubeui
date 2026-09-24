@@ -82,6 +82,7 @@ at the end.
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
+| An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
@@ -263,4 +264,5 @@ web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
 so on screen, because picking a file needs `expo-document-picker` and a permission flow that is
-the app's choice. The contract is there; the picking is not.
+the app's choice. The contract is there, including `multiple` and `onPickMany`. The picking is
+not.

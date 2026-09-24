@@ -79,3 +79,107 @@ export const Zone: Story = {
     await waitFor(() => expect(onPick).toHaveBeenCalledWith('{"lanes":[]}', "board.json"));
   },
 };
+
+const onPickMany = fn();
+
+const md = (name: string, text: string) => new File([text], name, { type: "text/markdown" });
+// Browsers often report no type at all for `.md`, which is why `accept` lists the extension.
+const untypedMd = (name: string, text: string) => new File([text], name);
+const png = new File(["\u0089PNG"], "diagram.png", { type: "image/png" });
+
+function fileInput(canvasElement: HTMLElement) {
+  const input = canvasElement.querySelector<HTMLInputElement>('input[type="file"]');
+  if (!input) throw new Error("the picker should render its file input");
+  return input;
+}
+
+/**
+ * Issue #130: dropping a handful of notes kept only the first, and a drop ignored `accept`. With
+ * `multiple` and `onPickMany`, one drop is one call carrying every file `accept` allows, in drop
+ * order — the image dropped among the notes is skipped, not read.
+ */
+export const SeveralDropped: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native label="Upload notes" accept=".md,text/markdown" multiple onPickMany={onPickMany} />
+      }
+      compiled={
+        <Compiled
+          label="Upload notes"
+          hint="Drop .md files, or click to choose"
+          accept=".md,text/markdown"
+          multiple
+          onPick={onPick}
+          onPickMany={onPickMany}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onPick.mockClear();
+    onPickMany.mockClear();
+
+    const zone = canvas.getByRole("button", { name: /Upload notes/ });
+    drop(zone, [md("a.md", "# A"), png, untypedMd("b.md", "# B"), md("c.md", "# C")]);
+
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    await expect(onPickMany).toHaveBeenCalledWith([
+      { text: "# A", name: "a.md" },
+      { text: "# B", name: "b.md" },
+      { text: "# C", name: "c.md" },
+    ]);
+    // `onPickMany` wins: given both, the one-at-a-time callback is not also called.
+    await expect(onPick).not.toHaveBeenCalled();
+
+    // A drop of nothing `accept` allows calls nothing.
+    drop(zone, [png]);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await expect(onPickMany).toHaveBeenCalledTimes(1);
+  },
+};
+
+/**
+ * The dialog path with `multiple` and only `onPick`: the input takes a multi-select, and a caller
+ * that already handles one file at a time is called once per file, in order, with no new code.
+ */
+export const SeveralPicked: Story = {
+  render: () => (
+    <Compiled label="Upload notes" accept=".md,text/markdown" multiple onPick={onPick} />
+  ),
+  play: async ({ canvasElement, userEvent }) => {
+    onPick.mockClear();
+
+    const input = fileInput(canvasElement);
+    await expect(input.multiple).toBe(true);
+    await userEvent.upload(input, [md("a.md", "# A"), md("b.md", "# B"), md("c.md", "# C")]);
+
+    await waitFor(() => expect(onPick).toHaveBeenCalledTimes(3));
+    await expect(onPick).toHaveBeenNthCalledWith(1, "# A", "a.md");
+    await expect(onPick).toHaveBeenNthCalledWith(2, "# B", "b.md");
+    await expect(onPick).toHaveBeenNthCalledWith(3, "# C", "c.md");
+  },
+};
+
+/**
+ * Without `multiple` a pick is one file, and a drop of several keeps the first one `accept`
+ * allows — here the image is dropped first and the board after it, so the board is the pick.
+ */
+export const OneAtATime: Story = {
+  render: () => <Compiled label="Import a board" accept="application/json,.json" onPick={onPick} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onPick.mockClear();
+
+    await expect(fileInput(canvasElement).multiple).toBe(false);
+    drop(canvas.getByRole("button", { name: "Import a board" }), [
+      png,
+      new File(["{}"], "board.json", { type: "application/json" }),
+      new File(["[]"], "other.json", { type: "application/json" }),
+    ]);
+
+    await waitFor(() => expect(onPick).toHaveBeenCalledTimes(1));
+    await expect(onPick).toHaveBeenCalledWith("{}", "board.json");
+  },
+};

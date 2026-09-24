@@ -6,16 +6,27 @@
  */
 import { useRef, useState } from "react";
 import { Text } from "react-native";
-import type { FilePickerProps } from "@/components/ui/file-picker-base";
+import { acceptsFile, type FilePickerProps } from "@/components/ui/file-picker-base";
 import { Upload } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
-export function FilePicker({ onPick, accept, label, hint }: FilePickerProps) {
+export function FilePicker({ onPick, onPickMany, accept, multiple, label, hint }: FilePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
-  async function read(file: File) {
-    onPick(await file.text(), file.name);
+  async function take(list: FileList | null | undefined) {
+    // Copied before the first `await`: the input's `FileList` is emptied when its
+    // value is reset, and a drop's is gone once the event returns. `accept` is
+    // only advisory on the dialog and not applied to a drop at all, so it is
+    // applied here, to both.
+    const allowed = Array.from(list ?? []).filter((file) => acceptsFile(accept, file));
+    const files = multiple ? allowed : allowed.slice(0, 1);
+    if (files.length === 0) return;
+    const picked = await Promise.all(
+      files.map(async (file) => ({ text: await file.text(), name: file.name })),
+    );
+    if (onPickMany) onPickMany(picked);
+    else for (const file of picked) onPick?.(file.text, file.name);
   }
 
   return (
@@ -31,8 +42,7 @@ export function FilePicker({ onPick, accept, label, hint }: FilePickerProps) {
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          const file = e.dataTransfer.files?.[0];
-          if (file) void read(file);
+          void take(e.dataTransfer.files);
         }}
         className={cn(
           "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
@@ -49,10 +59,10 @@ export function FilePicker({ onPick, accept, label, hint }: FilePickerProps) {
         ref={inputRef}
         type="file"
         {...(accept ? { accept } : {})}
+        {...(multiple ? { multiple: true } : {})}
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) void read(file);
+          void take(e.target.files);
           // Allow re-selecting the same file after a reset.
           e.target.value = "";
         }}
