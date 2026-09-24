@@ -359,6 +359,8 @@ an end does not have two boxes called "Time":
   to hear the name — it is composed with the date on device too.
 - With no name given, the trigger is read by its text — the date or the placeholder — and the
   time box is "Time", as before.
+- In a form, `DateTimeField` (`@cubeui/date-time-field`) does the `aria-labelledby` wiring for
+  you — see [forms.md](forms.md#on-react-native).
 
 On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
 a `FormField`'s `aria-*` on the trigger.

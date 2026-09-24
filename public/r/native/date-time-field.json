@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "date-time-field",
+  "title": "Date Time Field",
+  "description": "`DateTimeInput` bound to a `Date | null` form field, named by its label and its date: \"Due September 15th, 2026\". Its own item for the weight of the calendar.",
+  "registryDependencies": [
+    "@cubeui/date-time-input",
+    "@cubeui/form"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/date-time-field.tsx",
+      "content": "/**\n * `DateTimeInput`, bound to a form field holding a `Date | null`.\n *\n * Its own item rather than another export of `@cubeui/form`, for the weight of what it imports: a\n * calendar and `date-fns` on device, `react-day-picker` in the compiled half. A form of plain\n * inputs installs `@cubeui/form` and pulls in none of it — the split the web `date-field` makes.\n *\n * The field is `asGroup`: the label names the trigger by `aria-labelledby`, and `DateTimeInput`\n * follows the label's id with its own value text's, so the trigger is \"Due September 15th, 2026\".\n * A `<label htmlFor>` would name it \"Due\" and drop the date — the part of the field that changes.\n *\n * ```tsx\n * <form.AppField name=\"dueAt\">\n *   {() => <DateTimeField label=\"Due\" mode=\"date\" clearable />}\n * </form.AppField>\n * ```\n *\n * Or on `field.*`, with `createAppForm({ DateTimeField })`, or as one line with `bindToForm`.\n */\nimport { DateTimeInput } from \"@/components/ui/date-time-input\";\nimport { type FieldProps, FieldWrapper, splitProps, useFieldContext } from \"@/components/ui/form\";\n\ntype DateTimeFieldProps = FieldProps & {\n  /** `\"datetime\"` (default) draws the time box beside the date; `\"date\"` is a day at midnight. */\n  mode?: \"datetime\" | \"date\" | undefined;\n  /** Draws a Clear row in the popover, which writes `null`. */\n  clearable?: boolean | undefined;\n  /** What the trigger reads while the value is `null`. */\n  placeholder?: string | undefined;\n};\n\nexport function DateTimeField(props: DateTimeFieldProps) {\n  const [fieldProps, { mode, clearable = false, placeholder }] = splitProps(props);\n  const field = useFieldContext<Date | null>();\n  const value = field.state.value ?? null;\n\n  function commit(next: Date | null) {\n    field.handleChange(next);\n    // Picking a day is the whole interaction, and it happens in a popover, so nothing blurs the\n    // trigger on the way — this is what marks the field touched.\n    field.handleBlur();\n  }\n\n  // `DateTimeInput` only takes `null` when it is `clearable`. An empty field that did not ask for\n  // Clear still has to show its placeholder, so it goes through the clearable branch while it is\n  // empty — which draws no Clear row, because there is nothing to clear.\n  const control =\n    clearable || value === null ? (\n      <DateTimeInput\n        mode={mode}\n        placeholder={placeholder}\n        clearable\n        value={value}\n        onChange={commit}\n      />\n    ) : (\n      <DateTimeInput mode={mode} placeholder={placeholder} value={value} onChange={commit} />\n    );\n\n  return <FieldWrapper asGroup {...fieldProps} control={control} />;\n}\n\nexport type { DateTimeFieldProps };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

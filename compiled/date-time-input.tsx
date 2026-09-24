@@ -66,6 +66,12 @@ type DateTimeInputSharedProps = {
    * reference reads, so it is named "Due time".
    */
   "aria-labelledby"?: string | undefined;
+  /** Web only, on the trigger: native has no description relation. A bound field's hint and error. */
+  "aria-describedby"?: string | undefined;
+  /** Web only, on the trigger. */
+  "aria-invalid"?: boolean | "true" | "false" | undefined;
+  /** Web only, on the trigger. */
+  "aria-required"?: boolean | "true" | "false" | undefined;
 };
 
 /**
@@ -97,6 +103,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
     id,
     "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy,
+    "aria-describedby": ariaDescribedBy,
+    "aria-invalid": ariaInvalid,
+    "aria-required": ariaRequired,
   } = props;
   const value = props.value;
   const withTime = mode === "datetime";
@@ -163,6 +172,14 @@ export function DateTimeInput(props: DateTimeInputProps) {
             // by one to the value text below. `htmlFor` alone cannot do this — see the skill.
             aria-label={ariaLabel ? `${ariaLabel}, ${valueText}` : undefined}
             aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${valueId}` : undefined}
+            // What react-native has no prop for, in the spelling the web reads — the same
+            // arrangement as `ColorPicker`'s swatch row. A bound field's hint and error reach
+            // the trigger this way.
+            {...{
+              ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
+              ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+              ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
+            }}
             className="flex-1 justify-start text-left font-normal"
             onClick={() => setOpen(true)}
           >
