@@ -243,13 +243,19 @@ it, so `Page` and `PageLayout` draw the same title block — `title`, `descripti
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
 `Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Menu`, `Tabs`, `Tooltip`,
 `Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
-web ones take, with three conversions that are the same everywhere:
+web ones take, with four conversions that are the same everywhere:
 
 - **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
   output takes `onPress` too, so a call site does not change when it moves.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.
+- **`onSubmitEditing` and `onEscape`, not `onKeyDown`.** `Input` answers Enter with
+  `onSubmitEditing` and Escape with `onEscape` on both halves, which is all an inline edit — a
+  rename, an "Add lane" field — needs: `onEscape={() => { setDraft(name); setEditing(false); }}`.
+  For any other key, `onKeyPress` is React Native's, reading `e.nativeEvent.key`; the web half
+  fires it from `keydown`, so it hears Escape and the arrows too. Do not drop to a raw
+  `TextInput` for a key. (`Textarea` has none of these yet.)
 - **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
   that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
 
