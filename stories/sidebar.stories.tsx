@@ -140,6 +140,123 @@ export const Default: Story = {
   },
 };
 
+const recent = ["Quarterly review", "Hiring loop"];
+
+/**
+ * `as="nav"` on the sections that are the app's navigation: a `<nav>` on the web and
+ * `role="navigation"` on device, named by the title — or by `label` where there is none — while a
+ * section of recent items stays out of the landmark. Each half names its own, since two landmarks
+ * of one kind sharing a name is what axe's `landmark-unique` reports.
+ */
+export const NavigationLandmark: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Frame>
+          <NativeSidebar
+            label="Native sidebar"
+            content={
+              <>
+                <NativeSection
+                  as="nav"
+                  label="Native main"
+                  content={[
+                    <NativeNavItem key="home" href="#/" label="Home" active />,
+                    <NativeNavItem key="inbox" href="#/inbox" label="Inbox" />,
+                  ]}
+                />
+                <NativeSection
+                  as="nav"
+                  title="Native projects"
+                  content={projects.map((p) => (
+                    <NativeNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
+                  ))}
+                />
+                <NativeSection
+                  title="Native recent"
+                  content={recent.map((name) => (
+                    <NativeNavItem key={name} href={`#/recent/${name}`} label={name} />
+                  ))}
+                />
+              </>
+            }
+          />
+        </Frame>
+      }
+      compiled={
+        <Frame>
+          <CompiledSidebar
+            label="Compiled sidebar"
+            content={
+              <>
+                <CompiledSection
+                  as="nav"
+                  label="Compiled main"
+                  content={[
+                    <CompiledNavItem key="home" href="#/" label="Home" active />,
+                    <CompiledNavItem key="inbox" href="#/inbox" label="Inbox" />,
+                  ]}
+                />
+                <CompiledSection
+                  as="nav"
+                  title="Compiled projects"
+                  content={projects.map((p) => (
+                    <CompiledNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
+                  ))}
+                />
+                <CompiledSection
+                  title="Compiled recent"
+                  content={recent.map((name) => (
+                    <CompiledNavItem key={name} href={`#/recent/${name}`} label={name} />
+                  ))}
+                />
+              </>
+            }
+          />
+        </Frame>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const half of ["Native", "Compiled"]) {
+      const side = within(canvas.getByRole("complementary", { name: `${half} sidebar` }));
+
+      // Two navigation landmarks per half — one named by `label`, one by its title.
+      const navs = side.getAllByRole("navigation");
+      await expect(navs).toHaveLength(2);
+      const main = side.getByRole("navigation", { name: `${half} main` });
+      const projectsNav = side.getByRole("navigation", { name: `${half} projects` });
+      await expect(main.tagName).toBe("NAV");
+      await expect(projectsNav.tagName).toBe("NAV");
+
+      // The landmark holds the whole section: its heading and its list of links.
+      await expect(
+        within(projectsNav).getByRole("heading", { name: `${half} projects` }),
+      ).toBeInTheDocument();
+      await expect(
+        within(projectsNav).getByRole("list", { name: `${half} projects` }),
+      ).toBeInTheDocument();
+      await expect(within(projectsNav).getAllByRole("link")).toHaveLength(3);
+      await expect(within(main).getAllByRole("link")).toHaveLength(2);
+
+      // The section that is not navigation stays out of every landmark but the sidebar's own.
+      const recentList = side.getByRole("list", { name: `${half} recent` });
+      await expect(recentList.closest("nav")).toBeNull();
+    }
+
+    // The landmark adds no box of its own: the navigation section lays out as the plain one does.
+    const [nativeNav, compiledNav] = ["Native", "Compiled"].map((half) =>
+      canvas.getByRole("navigation", { name: `${half} projects` }),
+    );
+    if (!nativeNav || !compiledNav) throw new Error("both halves should render");
+    await expect(compiledNav.getBoundingClientRect().height).toBe(
+      nativeNav.getBoundingClientRect().height,
+    );
+  },
+};
+
 const pending = { isPending: true, isError: false, error: null, refetch: () => undefined };
 const failed = {
   isPending: false,

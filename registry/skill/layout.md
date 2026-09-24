@@ -239,6 +239,7 @@ be told to hide one of its panes on a phone is that decision arriving late.
       header={<Brand />}
       content={
         <SidebarSection
+          as="nav"
           title="Projects"
           action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
           status={<QueryState compact query={projects} what="projects" count={rows.length} />}
@@ -276,7 +277,13 @@ Three parts, and only `Sidebar` is required:
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
   holding everything. `status` sits between the title and the list and is where a
   `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
-  title's heading rank, 2 by default.
+  title's heading rank, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
+  `<nav>` on the web, `role="navigation"` on device — named by its `title`, or by `label` when it
+  has none or two would share one. `Sidebar` is a complementary `<aside>`, so without it the rows
+  are in no navigation landmark at all; do not wrap the section in a hand-written
+  `<nav aria-label>`. Leave it off the sections that are not navigation — recent items, pinned
+  searches — so the landmark holds only the app's own places. `label` without `as="nav"` is a
+  type error.
 - **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
   `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
   `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.

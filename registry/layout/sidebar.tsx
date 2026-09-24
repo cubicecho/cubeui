@@ -123,7 +123,27 @@ export function Sidebar({
   );
 }
 
-export type SidebarSectionProps = {
+/**
+ * A section is a navigation landmark (`as="nav"`, which `label` can name) or it is not, and a
+ * `label` with no landmark to name is a type error rather than a name nothing reads.
+ */
+type SidebarSectionLandmarkProps =
+  | {
+      /**
+       * `nav` makes the section a navigation landmark — `<nav>` on the web, `role="navigation"` on
+       * device — so a screen reader's landmark jump reaches its rows. For the sections that are
+       * the app's navigation; a list of recent items or pinned searches stays out of it.
+       */
+      as: "nav";
+      /**
+       * What the landmark is called — "Main", "Projects". Absent, the `title` names it; give one
+       * when there is no title, or when two navigation sections would otherwise share a name.
+       */
+      label?: string | undefined;
+    }
+  | { as?: undefined; label?: never };
+
+export type SidebarSectionProps = SidebarSectionLandmarkProps & {
   /** The overline over the rows. A short noun — "Projects", "Pinned". */
   title?: ReactNode | undefined;
   /**
@@ -164,8 +184,15 @@ export type SidebarSectionProps = {
  *
  * No list is drawn when there are no rows, so an empty or loading section is the title and its
  * `status` and nothing else — not an empty `<ul>` announced as "list, 0 items".
+ *
+ * **`as="nav"` makes it the navigation landmark.** `Sidebar` is a complementary `<aside>`, and
+ * nothing in a sidebar of links is otherwise navigation, so a landmark jump never reached the rows
+ * and every app wrapped the section in a hand-written `<nav aria-label>`. The whole section is the
+ * landmark — title, status and list — named by the title unless `label` says otherwise.
  */
 export function SidebarSection({
+  as,
+  label,
   title,
   content,
   status,
@@ -176,9 +203,10 @@ export function SidebarSection({
 }: SidebarSectionProps) {
   const titleId = React.useId();
   const rows = React.Children.toArray(content);
+  const sectionClassName = cn("min-w-0 gap-1", className);
 
-  return (
-    <View testID="sidebar-section" className={cn("min-w-0 gap-1", className)}>
+  const body = (
+    <>
       {title || action ? (
         <View
           testID="sidebar-section-heading"
@@ -227,6 +255,27 @@ export function SidebarSection({
           ))}
         </View>
       ) : null}
+    </>
+  );
+
+  // Two roots written out rather than one with a chosen role: the compiler picks the tag from the
+  // role, and a role it cannot read is one it refuses.
+  if (as === "nav") {
+    return (
+      <View
+        role="navigation"
+        testID="sidebar-section"
+        {...(label ? { "aria-label": label } : title ? { "aria-labelledby": titleId } : {})}
+        className={sectionClassName}
+      >
+        {body}
+      </View>
+    );
+  }
+
+  return (
+    <View testID="sidebar-section" className={sectionClassName}>
+      {body}
     </View>
   );
 }
