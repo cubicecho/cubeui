@@ -354,7 +354,21 @@ is not. Any grouped control needs it: a radio group, a segmented control, a swat
 the field itself.
 
 `RadioGroupField` already names its group that way. You only reach for `asGroup` when writing a
-new grouped control by hand.
+new grouped control by hand. A segmented control's group is `SegmentedGroup`, which takes the
+`aria-labelledby` and the rest of the control props on its `role="group"` row:
+
+```tsx
+<FormField
+  label="Scale view"
+  asGroup
+  control={(props) => (
+    <SegmentedGroup {...props} value={view} onValueChange={setView}>
+      <SegmentedButton value="relative">Relative</SegmentedButton>
+      <SegmentedButton value="parallel">Parallel</SegmentedButton>
+    </SegmentedGroup>
+  )}
+/>
+```
 
 ```tsx
 <RadioGroupField

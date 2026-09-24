@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -75,6 +75,7 @@ at the end.
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
+| A row of pills that switches a view or a period, one current | `SegmentedGroup`, `SegmentedButton` | [controls.md](controls.md#segmented-control) |
 | A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
 | A date and a time as one `Date` on both halves — or, with `clearable mode="date"`, an optional date only | `DateTimeInput` | [controls.md](controls.md#date-and-date-range) |
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
@@ -208,6 +209,7 @@ views and there is no shell wrapping to hide.
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A form of any size | `Form` and its bound fields | `@cubeui/form` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
+| A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
 | The app's light / dark / system setting, stored and applied — see [controls.md](controls.md#theme) | `ThemePicker`, `useThemePreference` | `@cubeui/theme-picker` |
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |

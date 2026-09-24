@@ -403,7 +403,7 @@
       "name": "segmented",
       "type": "registry:ui",
       "title": "Segmented",
-      "description": "A pill in a segmented control, as a component and as the two class helpers a router link needs instead.",
+      "description": "A segmented control: the pill, the named row it sits in (which can hold the current value), and the two class helpers a router link needs instead.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
