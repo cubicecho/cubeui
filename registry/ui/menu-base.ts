@@ -9,7 +9,7 @@
  * caller owned `open`. Here the rows are `MenuItem`, the menu closes when one is chosen, and the
  * caller owns nothing unless it wants to.
  */
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 export type MenuProps = {
   /** Both optional, together, as on `Popover`: pass neither and the menu keeps its own state. */
@@ -60,6 +60,20 @@ export type MenuItemProps = {
    */
   focusesElsewhere?: boolean | undefined;
   className?: string | undefined;
+  /**
+   * Where the row goes, with no router: on the web the row is an `<a href>`, so it navigates,
+   * opens in a new tab and shows its URL. On device it does nothing more than `onSelect` — a
+   * native app navigates through its router, which is `link`.
+   */
+  href?: string | undefined;
+  /**
+   * The app's router link, as an element with no children — `<Link to="/x" preload="intent" />`.
+   * The row is drawn inside it, so on the web the menu item *is* the router's `<a>`, and hover and
+   * focus reach the link's own handlers (which is what lets a router preload on intent). On
+   * device it is cloned with `asChild` around the row, the `<Link asChild>` convention. Wins over
+   * `href`; a `disabled` row renders neither and does not navigate.
+   */
+  link?: ReactElement | undefined;
 };
 
 export type MenuSeparatorProps = {

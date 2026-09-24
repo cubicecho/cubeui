@@ -25,7 +25,7 @@
 
 import { DropdownMenu as MenuPrimitive } from "radix-ui";
 import type * as React from "react";
-import { createContext, type RefObject, useContext, useRef, useState } from "react";
+import { cloneElement, createContext, type RefObject, useContext, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import {
   MENU_CONTENT_CLASS,
@@ -136,9 +136,34 @@ function MenuItem({
   onSelect,
   focusesElsewhere = false,
   className,
+  href,
+  link,
   ...props
 }: Wide<MenuItemProps, Omit<React.ComponentProps<typeof MenuPrimitive.Item>, "children">>) {
   const { setOpen, skipReturnRef } = useContext(MenuContext);
+  const row = (
+    <>
+      {icon}
+      <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
+      {typeof trailing === "string" ? (
+        <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
+      ) : (
+        trailing
+      )}
+    </>
+  );
+  // A link row is radix's item rendered *as* the anchor, not an anchor inside the item: the `<a>`
+  // takes `role="menuitem"`, the roving focus and the keys, and the router's link keeps its own
+  // hover and focus handlers. The nesting is not `<Link asChild>` because radix composes its
+  // select after the item's own `onClick` and skips it once that has called `preventDefault` —
+  // which every router's click does — so a menu handed the router's click would never close.
+  // Cloned the other way, the router link is handed radix's click and runs it first. A disabled
+  // row is no link at all, so nothing can follow it.
+  const anchor = disabled ? undefined : link ? (
+    cloneElement(link, undefined, row)
+  ) : href !== undefined ? (
+    <a href={href}>{row}</a>
+  ) : undefined;
   return (
     <MenuPrimitive.Item
       data-slot="menu-item"
@@ -146,6 +171,7 @@ function MenuItem({
       disabled={disabled}
       textValue={label}
       {...props}
+      asChild={anchor !== undefined}
       onSelect={(event) => {
         skipReturnRef.current = focusesElsewhere;
         if (focusesElsewhere) {
@@ -168,13 +194,7 @@ function MenuItem({
         className,
       )}
     >
-      {icon}
-      <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
-      {typeof trailing === "string" ? (
-        <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
-      ) : (
-        trailing
-      )}
+      {anchor ?? row}
     </MenuPrimitive.Item>
   );
 }

@@ -82,7 +82,7 @@ at the end.
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
-| A popover of actions — a ⋯ menu, Rename / Move / Delete on a row | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
+| A popover of actions or links — a ⋯ menu, Rename / Move / Delete on a row, Open in a router `link` | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
 | A popover of on/off rows that stays open — labels on a todo, columns shown — or a one-of-N filter behind a button | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | [controls.md](controls.md#menu) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
 | A row of pills that switches a view or a period, one current | `SegmentedGroup`, `SegmentedButton` | [controls.md](controls.md#segmented-control) |
@@ -165,6 +165,8 @@ The same words mean the same thing in every component, and this is the point of 
   name, not a caption.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
 - **`trailing`** — the far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows.
+- **`link`** — the router's link, as an element with no children (`<Link to="/x" />`), which the
+  row is drawn inside. On `MenuItem`, so the row is the router's own `<a>` and preloads on hover.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
