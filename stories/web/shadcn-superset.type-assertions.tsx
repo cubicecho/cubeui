@@ -70,7 +70,11 @@ export function InputAssertions() {
         value="x"
         onChangeText={(text: string) => text}
         onSubmitEditing={() => {}}
+        onEscape={() => {}}
+        onKeyPress={(event: { nativeEvent: { key: string } }) => event.nativeEvent.key}
       />
+      {/* A DOM `onKeyPress` still gets the React keyboard event. */}
+      <Input onKeyPress={(event) => event.key === "a" && event.currentTarget.select()} />
       {/* @ts-expect-error — `onChange` hands over an event, not the text. */}
       <Input onChange={(text: string) => text} />
     </>

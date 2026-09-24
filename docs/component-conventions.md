@@ -74,6 +74,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
+| `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |

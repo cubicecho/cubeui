@@ -239,13 +239,13 @@ be told to hide one of its panes on a phone is that decision arriving late.
       header={<Brand />}
       content={
         <SidebarSection
+          as="nav"
           title="Projects"
           action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
           status={<QueryState compact query={projects} what="projects" count={rows.length} />}
           content={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
               <SidebarNavItem
-                href={`/projects/${p.id}`}
                 label={p.name}
                 icon={<Folder />}
                 count={p.open}
@@ -255,7 +255,12 @@ be told to hide one of its panes on a phone is that decision arriving late.
           ))}
         />
       }
-      footer={<SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />}
+      footer={
+        <>
+          <SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />
+          <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />
+        </>
+      }
     />
   }
   content={page}
@@ -270,22 +275,71 @@ Three parts, and only `Sidebar` is required:
   it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
-  different width is one `w-*` in `className`.
+  different width is one `w-*` in `className`. `hideBelow` (`sm` / `md` / `lg` / `xl`) removes it
+  under that width (see below).
 - **`SidebarSection`** — an overline `title` over a real list: `role="list"` and one
   `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
   holding everything. `status` sits between the title and the list and is where a
   `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
-  title's heading rank, 2 by default.
-- **`SidebarNavItem`** — the row: `href`, `label` (one line, truncated), `icon?`, `count?`,
-  `active`. It is `role="link"` — an `<a href>` on the web — and `active` fills it from
-  `sidebar-accent` and sets `aria-current="page"`. Hover fills it the same way.
+  title's heading rank, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
+  `<nav>` on the web, `role="navigation"` on device — named by its `title`, or by `label` when it
+  has none or two would share one. `Sidebar` is a complementary `<aside>`, so without it the rows
+  are in no navigation landmark at all; do not wrap the section in a hand-written
+  `<nav aria-label>`. Leave it off the sections that are not navigation — recent items, pinned
+  searches — so the landmark holds only the app's own places. `label` without `as="nav"` is a
+  type error.
+- **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
+  line, truncated), `icon?`, `count?`, `active`. It is `role="link"` — an `<a href>` on the web —
+  and `active` fills it from `sidebar-accent` and sets `aria-current="page"`. Hover fills it the
+  same way. **With `onPress` and no `href` it is a button** — `onClick` on the web, and no
+  `active`: `role="button"`, a `<button type="button">` on the web, never `aria-current`, drawn
+  exactly like the links beside it. That is the footer's Sign out; do not hand-draw it with a
+  `Pressable` and copied classes. The props are a union, so `active` on a button is a type error.
 
-**Routing is the app's.** The row names no router. Wrap it in your router's link with `asChild`
-(expo-router's `Link`), which hands it the press handling; it forwards its ref and every prop it
-does not name. A DOM router with no `asChild` passes its click handler as `onClick` instead —
-react-router's `useLinkClickHandler`, TanStack's `createLink`. With neither, the `<a href>` still
-navigates. `active` is yours to compute from the current route.
+**Routing is the app's.** The row names no router. Wrap it in your router's link and **leave
+`href` off the row** — the router supplies it, so the destination is written once:
+
+```tsx
+<Link href="/settings" asChild>                 {/* expo-router */}
+  <SidebarNavItem label="Settings" active={isSettings} />
+</Link>
+
+const SidebarLink = createLink(SidebarNavItem); // TanStack Router
+<SidebarLink to="/settings" label="Settings" active={isSettings} />
+```
+
+Both render the row with the `href` they built and their own press handler, so it is still a
+real `<a href>` that middle-click and "copy link" read; the row forwards its ref and every prop it
+does not name. Passing `href` beside `to` is the same place written twice, and the two drift. A
+router that hands out only a click handler — react-router's `useLinkClickHandler` — passes it as
+`onClick` beside the row's own `href`. With no router at all, the `<a href>` still navigates.
+`active` is yours to compute from the current route. A row with no `href`, no `onPress` and no
+router around it goes nowhere and does nothing — it is drawn as an inert button.
+
+**On a phone, `hideBelow`.** A rail does not stack; under a narrow width it goes. Pass
+`hideBelow="md"` and the sidebar is `display: none` under `md` and drawn from `md` up. That makes
+it out of the accessibility tree as well as off the screen. It is a media query in the stylesheet,
+so the first paint is already right. Do not write `hidden md:flex` in `className`: that works only
+while the root's own display class happens to merge first. Keep `divider="none"` on the
+`SidebarLayout`, so the empty pane draws no rule and spends no gap. The bar that stands in for the
+rail on a phone is the page's, shown with the matching `md:hidden`:
+
+```tsx
+<SidebarLayout
+  sidebarPosition="start"
+  sidebarWidth="auto"
+  stackBelow="never"
+  divider="none"
+  sidebar={<Sidebar label="Main" hideBelow="md" header={<Brand />} content={nav} />}
+  content={
+    <>
+      <header className="flex items-center gap-2 border-b px-4 py-2 md:hidden">…</header>
+      <main className="min-h-0 flex-1">{page}</main>
+    </>
+  }
+/>
+```
 
 Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
 A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
