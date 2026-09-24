@@ -535,7 +535,15 @@
       "registryDependencies": ["@cubeui/utils", "@cubeui/label", "@cubeui/switch"],
       "files": [
         {
+          "path": "registry/ui/switch-field-base.ts",
+          "type": "registry:ui"
+        },
+        {
           "path": "registry/ui/switch-field.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/switch-field.web.tsx",
           "type": "registry:ui"
         }
       ]
