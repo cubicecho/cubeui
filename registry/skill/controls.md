@@ -324,30 +324,41 @@ Two props turn it into the optional, date-only field an Expo app needs for a due
 - It takes `onChange`, not `onValueChange` — it predates the vocabulary, and renaming it would
   break every caller.
 
-Name it the way a form names any control. `id`, `aria-label` and `aria-labelledby` land on the
-trigger, and in `"datetime"` mode the time box is named after the field, so a form with a start and
+Name it the way a form names any control. `aria-labelledby` and `aria-label` name the trigger by
+the field **and** the date, so a screen reader hears "Due, September 15th, 2026" rather than just
+"Due"; in `"datetime"` mode the time box is named after the field too, so a form with a start and
 an end does not have two boxes called "Time":
 
 ```tsx
-<FieldLabel htmlFor="due">Due</FieldLabel>                  {/* web: htmlFor → the trigger */}
-<DateTimeInput id="due" clearable mode="date" value={dueOn} onChange={setDueOn} />
-
 <Label id="starts-label">Starts</Label>                       {/* both halves */}
 <DateTimeInput aria-labelledby="starts-label" value={startsAt} onChange={setStartsAt} />
-{/* trigger "Starts", time box "Starts time" */}
+{/* trigger "Starts September 3rd, 2026", time box "Starts time" */}
 
 <DateTimeInput aria-label="Ends" value={endsAt} onChange={setEndsAt} />
-{/* trigger "Ends", time box "Ends, time" */}
+{/* trigger "Ends, September 3rd, 2026", time box "Ends, time" */}
+
+<DateTimeInput aria-label="Due" clearable mode="date" placeholder="No due date" value={null} … />
+{/* trigger "Due, No due date" — the placeholder stands in for the date */}
+
+<FieldLabel htmlFor="due">Due</FieldLabel>                  {/* web only, and loses the date */}
+<DateTimeInput id="due" clearable mode="date" value={dueOn} onChange={setDueOn} />
+{/* trigger "Due" — the date is only its text */}
 ```
 
+- **Prefer `aria-labelledby` to `htmlFor`.** A `<label for>` replaces a button's contents as its
+  name, so the trigger is just "Due" and the date is not in it. The component cannot fix that from
+  inside: it never sees the label's id, and pointing the trigger at itself puts the date in the
+  name in Chromium but doubles it when no label exists, and Playwright's name engine drops the
+  label instead. Give the `FieldLabel` an `id` and pass that as
+  `aria-labelledby`; `id` still makes the trigger a target for a label that has nothing better.
 - `htmlFor` names the trigger only — a label points at one control — so the time box stays
-  "Time". Give a `mode="datetime"` field `aria-labelledby` (or `aria-label`) instead.
+  "Time". Another reason a `mode="datetime"` field takes `aria-labelledby` (or `aria-label`).
 - `htmlFor` is web only: the native `Label` has nothing to associate. `Label id` is on both
   halves, so `aria-labelledby` is the one that works everywhere; on device React Native takes the
   `id` as a `nativeID`, and iOS reads no reference at all, so pass `aria-label` when VoiceOver has
-  to hear the name.
-- The name replaces the date on the trigger, as a label does on any button. With none given, the
-  trigger is read by its text and the time box is "Time", as before.
+  to hear the name — it is composed with the date on device too.
+- With no name given, the trigger is read by its text — the date or the placeholder — and the
+  time box is "Time", as before.
 
 On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
 a `FormField`'s `aria-*` on the trigger.
