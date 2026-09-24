@@ -45,7 +45,7 @@ the layout: a call site moves between the two halves unchanged.
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
-**Some web shells are still web-only.** `FormField`, `useAppForm` and the bound fields,
+**Some web shells are still web-only.** `FormField`, the `@cubeui/app-form` fields,
 `ActionButton`, `MultiSelect` and the rest of the controls lean on CSS grid tracks and arbitrary
 variants, which Yoga and NativeWind do not have. In an Expo project those items are a 404, and
 that is the registry telling you the truth rather than shipping a shell that lays out wrong. Use
@@ -207,7 +207,9 @@ views and there is no shell wrapping to hide.
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
-| A form of any size | `Form` and its bound fields | `@cubeui/form` |
+| A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
+| A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
+| A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
@@ -225,8 +227,8 @@ views and there is no shell wrapping to hide.
 One name means different things across the halves, and it is worth knowing before you grep:
 
 - **`Form`.** On the web `@cubeui/form-set` is the eight bound-field items and the form component
-  is `useAppForm`; on native `@cubeui/form` is one file exporting `Form` and its bound fields
-  directly. The item is called `form-set` on the web because `form` is the native component's
+  is `useAppForm`; on native `@cubeui/form` is one file exporting `Form`, `useAppForm` and its bound
+  fields. The item is called `form-set` on the web because `form` is the native component's
   name, and the shadcn CLI resolves a cross-item import by basename — the two cannot share it.
 
 `PageHeader` is one component on both halves: `@cubeui/page-header`. `@cubeui/page` re-exports
