@@ -114,6 +114,7 @@ export function EmptyState({ icon: Icon, title, description, action, level }: Em
         {level === undefined ? (
           <Text className={EMPTY_STATE_TITLE}>{title}</Text>
         ) : (
+          // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
           <Text role="heading" aria-level={level} className={EMPTY_STATE_TITLE}>
             {title}
           </Text>

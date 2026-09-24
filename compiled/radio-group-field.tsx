@@ -173,6 +173,7 @@ function RadioGroupFieldBody({
   ) : null;
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: React Native has no fieldset; role="group" is the cross-platform form
     <div
       role="group"
       data-slot="radio-group-field"
