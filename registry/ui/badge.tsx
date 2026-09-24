@@ -34,19 +34,33 @@
  * wrapped in its own `<Text>` carrying the label class, and an element — an
  * icon — is rendered as it is. shadcn's `asChild` is web only; see `button.tsx`'s
  * header for why it goes the other way round on native.
+ *
+ * `onRemove` adds a trailing ✕ in its own `Pressable`, so a removable tag is not
+ * a second pill the caller draws around this one. The ✕ is the badge's icon
+ * size, which is shorter than the label's line, and `hitSlop` is what makes it
+ * a reasonable target — padding would make the pill taller. Its colour is the
+ * label's, resolved the same way: `textColor`, else the variant's ink.
  */
 import { Children } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import {
   type BadgeProps,
   type BadgeVariant,
   badgeContainerVariants,
   badgeHasLabel,
+  badgeIconClass,
+  badgeInkFallback,
+  badgeInkVariants,
+  badgeRemoveLabel,
   badgeTextFallback,
   badgeTextVariants,
   badgeVariants,
 } from "@/components/ui/badge-base";
+import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+
+/** A 12px glyph grown to about 28 by 28 of touch, without growing the pill. */
+const REMOVE_HIT_SLOP = { top: 8, bottom: 8, left: 6, right: 8 } as const;
 
 export type { BadgeProps, BadgeVariant };
 
@@ -56,10 +70,13 @@ export function Badge({
   textColor,
   className,
   label,
+  onRemove,
+  removeLabel,
   children,
 }: BadgeProps) {
   const shape = badgeHasLabel(children) ? "pill" : "dot";
   const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
+  const inkClass = backgroundColor ? badgeInkFallback : badgeInkVariants({ variant });
 
   return (
     <View
@@ -86,6 +103,21 @@ export function Badge({
             ),
           )
         : null}
+      {shape === "pill" && onRemove ? (
+        <Pressable
+          onPress={onRemove}
+          // The `role` is hand-written because a `<button>` has no native counterpart.
+          role="button"
+          aria-label={removeLabel ?? badgeRemoveLabel(children, label)}
+          hitSlop={REMOVE_HIT_SLOP}
+        >
+          <X
+            className={cn(badgeIconClass, inkClass)}
+            // An inline prop wins over the colour the class maps to, as `style` does on the `Text`.
+            {...(textColor ? { color: textColor } : {})}
+          />
+        </Pressable>
+      ) : null}
     </View>
   );
 }
