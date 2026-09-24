@@ -17,10 +17,17 @@
  * one are served by the same object).
  */
 
-import type { ComponentPropsWithoutRef, HTMLInputTypeAttribute, Ref } from "react";
+import type {
+  ComponentPropsWithoutRef,
+  HTMLInputTypeAttribute,
+  KeyboardEventHandler,
+  Ref,
+} from "react";
 import {
   INPUT_CLASS,
   type InputHandle,
+  type InputKeyPressEvent,
+  type InputKeyPressHandler,
   type InputType,
   type InputProps as SharedInputProps,
 } from "@/components/ui/input-base";
@@ -31,15 +38,29 @@ import { cn } from "@/lib/utils";
  *
  * `onBlur`, `min`/`max`, `value` and `defaultValue` take the DOM's wider types — a `() => void` is
  * still one, and a `string` is still a `string | number | readonly string[]` — and `type` is every
- * DOM input type, of which `InputType` is the cross-platform part.
+ * DOM input type, of which `InputType` is the cross-platform part. `onKeyPress` hands over the
+ * React keyboard event, which is a shared handler's `{ nativeEvent: { key } }` and a shadcn call
+ * site's `e.key` at once.
  */
-export type InputProps = Omit<ComponentPropsWithoutRef<"input">, "type" | "className"> &
+export type InputProps = Omit<
+  ComponentPropsWithoutRef<"input">,
+  "type" | "className" | "onKeyPress"
+> &
   Omit<
     SharedInputProps,
-    "type" | "ref" | "onBlur" | "min" | "max" | "inputMode" | "value" | "defaultValue"
+    | "type"
+    | "ref"
+    | "onBlur"
+    | "min"
+    | "max"
+    | "inputMode"
+    | "value"
+    | "defaultValue"
+    | "onKeyPress"
   > & {
     type?: HTMLInputTypeAttribute | undefined;
     ref?: Ref<HTMLInputElement> | Ref<InputHandle> | undefined;
+    onKeyPress?: KeyboardEventHandler<HTMLInputElement> | undefined;
   };
 
 function Input({
@@ -48,7 +69,9 @@ function Input({
   onChange,
   onChangeText,
   onKeyDown,
+  onKeyPress,
   onSubmitEditing,
+  onEscape,
   ref,
   ...props
 }: InputProps) {
@@ -64,9 +87,18 @@ function Input({
       }}
       onKeyDown={(e) => {
         onKeyDown?.(e);
-        if (e.key === "Enter" && onSubmitEditing && !e.defaultPrevented) {
+        // `keydown`, not the DOM's `keypress`: that one is deprecated and never fires for Escape,
+        // the key `onKeyPress` is most often passed to hear. react-native-web makes the same swap.
+        onKeyPress?.(e);
+        if (e.defaultPrevented) return;
+        if (e.key === "Enter" && onSubmitEditing) {
           e.preventDefault();
           onSubmitEditing();
+        } else if (e.key === "Escape" && onEscape) {
+          // Held back from the browser, which would otherwise clear a `type="search"` box under
+          // a caller that is putting the old value back.
+          e.preventDefault();
+          onEscape();
         }
       }}
       {...props}
@@ -79,5 +111,5 @@ function Input({
   );
 }
 
-export type { InputHandle, InputType };
+export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputType };
 export { Input };
