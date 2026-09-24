@@ -455,6 +455,52 @@ A heading over a group of fields or rows, inside a page or a card.
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
 
+## Description lists
+
+Read-only facts — a label, a value, a line under the value — which is most of a settings page or an
+"about this server" page.
+
+```tsx
+<Section
+  title="Index"
+  content={
+    <DescriptionList
+      content={[
+        <PropertyRow key="e" label="Embedder" value="bge-small" hint="Set with RAGDOWN_EMBEDDER" />,
+        <PropertyRow
+          key="d"
+          label="Docs folder"
+          value={<Code>/data/notes</Code>}
+          action={<Button size="sm" variant="outline" onPress={copy}>Copy</Button>}
+        />,
+        <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
+      ]}
+    />
+  }
+/>
+```
+
+- One source for both platforms: `@cubeui/description-list` in `/r/web` and `/r/native`, exporting
+  `DescriptionList` and `PropertyRow`.
+- `DescriptionList` takes the rows as `content` — `PropertyRow`s and nothing else, as an array
+  with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
+  hold only its term-and-description groups.
+- `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
+  as `<Code>` or a `Badge`), optional `hint` (one muted line under the value, on where it comes
+  from) and optional `action` (the far end: a copy button, an edit link). `labelClassName` and
+  `valueClassName` reach the two halves of the row.
+- The semantics are built in. On the web: a `<dl>`, each row a `<div>` holding a `<dt>` for the
+  label and a `<dd>` holding the value, the hint and the action — the hint and the action are read
+  as part of the value. On device: `role="list"` and `role="listitem"`. Add no roles of your own.
+- `layout="inline"` (the default) puts each label beside its value in a column the labels line up
+  in, and **falls back to stacked by itself** when the list is too narrow for both — it follows the
+  width the list is given, not the window. `layout="stacked"` puts the label above the value at
+  every width. There is no breakpoint prop.
+- A `PropertyRow` only renders inside a `DescriptionList`. A row the user *edits* is not this — it
+  is a field (`FormField`, or `InlineNumberEdit` for a number in place).
+- It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
+  `content` for those.
+
 ## List pages
 
 Two shells for the shape every list route is: a ladder of states, then rows.

@@ -381,7 +381,10 @@ Recorded so the next pass does not re-derive them:
   `CardLayout` already has the slot.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
   copies of a `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project
-  bar: cubicecho has 4 `<dl>` files and they are all in one app.
+  bar: cubicecho has 4 `<dl>` files and they are all in one app. Superseded by
+  `@cubeui/description-list` (#135), once mcp-ragdown's settings page became the second app with a
+  hand-built label / value / hint row — as a list of rows rather than a grid, because the rows
+  are what those settings pages are made of.
 - **`FormButtons`**. Too bound to private project 1's `isNew`/`isDeleted`/restore vocabulary to
   port.
 - **`SliderField` / a slider control.** Asked for and not built, and the grep that suggested it
