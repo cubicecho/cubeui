@@ -20,7 +20,8 @@
           "type": "registry:file",
           "target": "~/cubeui-reset.css"
         }
-      ]
+      ],
+      "docs": "Import the stylesheet from your app's CSS entry, after `@import \"tailwindcss\";` and before your own palette: `@import \"../cubeui-tokens.css\";` (the path is relative to that file; `cubeui-tokens.css` lands next to components.json). It brings `cubeui-reset.css`, the layout defaults every compiled component relies on, and `tw-animate-css` with it."
     },
     {
       "name": "utils",
@@ -87,7 +88,7 @@
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
       ],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/button.tsx",
@@ -100,7 +101,7 @@
       "type": "registry:ui",
       "title": "Card",
       "description": "A card with typed text slots, an optional accent bar, and a whole-card press target that stays reachable by keyboard.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/color-bar"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/color-bar", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/card.tsx",
@@ -131,7 +132,7 @@
       "type": "registry:ui",
       "title": "Code",
       "description": "Monospaced inline code and blocks.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/code.tsx",
@@ -144,7 +145,7 @@
       "type": "registry:ui",
       "title": "Color Bar",
       "description": "The left-edge accent stripe a card wears, readable in both themes and labelled for anyone who cannot see it.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/color"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/color", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/color-bar.tsx",
@@ -157,7 +158,7 @@
       "type": "registry:ui",
       "title": "Color Dot",
       "description": "A small swatch standing in for a colour-coded thing in a list.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/color-dot.tsx",
@@ -348,7 +349,7 @@
       "type": "registry:ui",
       "title": "Radio Group",
       "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description), `card` (a tile with an icon) or `segmented` (a full-width framed row, icon-only segments allowed), with one tab stop and arrow keys that move and select handled inside.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/radio-group.tsx",
@@ -362,7 +363,12 @@
       "title": "Radio Group Field",
       "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
       "dependencies": ["@tanstack/react-form@^1.33.5"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/radio-group"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/field",
+        "@cubeui/radio-group",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/radio-group-field.tsx",
@@ -396,10 +402,23 @@
       "type": "registry:component",
       "title": "Section",
       "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/section.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:component",
+      "title": "Description List",
+      "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/description-list.tsx",
           "type": "registry:component"
         }
       ]
@@ -409,7 +428,7 @@
       "type": "registry:component",
       "title": "Section Heading",
       "description": "The small muted heading above a section of content, with an optional heading `level`.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/section-heading.tsx",
@@ -422,7 +441,7 @@
       "type": "registry:ui",
       "title": "Segmented",
       "description": "A segmented control: the pill, the named row it sits in (which can hold the current value), and the two class helpers a router link needs instead.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/segmented.tsx",
@@ -435,7 +454,7 @@
       "type": "registry:ui",
       "title": "Toggle Chip",
       "description": "A small on/off pill — a filter chip, a day toggle, a swatch — with its colour split across container and label.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/toggle-chip.tsx",
@@ -471,7 +490,7 @@
       "title": "Field",
       "description": "Label, description and error chrome around a control. The unbound half of the form set.",
       "dependencies": ["class-variance-authority@^0.7.1"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/label"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/label", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/field.tsx",
@@ -559,7 +578,8 @@
         "@cubeui/label",
         "@cubeui/select",
         "@cubeui/switch",
-        "@cubeui/textarea"
+        "@cubeui/textarea",
+        "@cubeui/tokens"
       ],
       "files": [
         {
@@ -573,7 +593,12 @@
       "type": "registry:ui",
       "title": "Form Dialog",
       "description": "Dialog chrome for a form, with a footer that leaves the submit control to the caller.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/dialog"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/dialog",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/form-dialog.tsx",
@@ -592,7 +617,7 @@
           "type": "registry:ui"
         }
       ],
-      "registryDependencies": ["@cubeui/utils"]
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"]
     },
     {
       "name": "calendar",
@@ -624,7 +649,8 @@
         "@cubeui/calendar",
         "@cubeui/icons",
         "@cubeui/input",
-        "@cubeui/popover"
+        "@cubeui/popover",
+        "@cubeui/tokens"
       ],
       "files": [
         {
@@ -643,7 +669,8 @@
         "@cubeui/button",
         "@cubeui/input",
         "@cubeui/label",
-        "@cubeui/readable-text-color"
+        "@cubeui/readable-text-color",
+        "@cubeui/tokens"
       ],
       "files": [
         {
@@ -682,8 +709,13 @@
       "name": "file-picker",
       "type": "registry:ui",
       "title": "File Picker",
-      "description": "A drop zone over a hidden file input on web. The native half is a placeholder, not an implementation.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "description": "A drop zone, or a button, over a hidden file input on web. The native half is a placeholder, not an implementation.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/button",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "registry/ui/file-picker-base.ts",
@@ -700,7 +732,7 @@
       "type": "registry:ui",
       "title": "Inline Number Edit",
       "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit.",
-      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
+      "registryDependencies": ["@cubeui/input", "@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/inline-number-edit.tsx",
@@ -713,7 +745,13 @@
       "type": "registry:component",
       "title": "Query State",
       "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/card", "@cubeui/icons"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/card",
+        "@cubeui/icons",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/query-state.tsx",
@@ -726,7 +764,12 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/page-header",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/page.tsx",
@@ -739,7 +782,7 @@
       "type": "registry:component",
       "title": "Detail Page",
       "description": "The page shell plus a loading / not-found guard that narrows the entity for its children.",
-      "registryDependencies": ["@cubeui/page"],
+      "registryDependencies": ["@cubeui/page", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/detail-page.tsx",
@@ -752,7 +795,12 @@
       "type": "registry:component",
       "title": "Detail Header",
       "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/color-dot", "@cubeui/icons"],
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/color-dot",
+        "@cubeui/icons",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/detail-header.tsx",
@@ -765,7 +813,7 @@
       "type": "registry:component",
       "title": "Route Error",
       "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).",
-      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/route-error.tsx",
@@ -778,7 +826,7 @@
       "type": "registry:component",
       "title": "Header / Content / Footer",
       "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/header-content-footer.tsx",
@@ -791,7 +839,7 @@
       "type": "registry:component",
       "title": "Page Header",
       "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/page-header.tsx",
@@ -817,7 +865,7 @@
       "type": "registry:component",
       "title": "Split Layout",
       "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/split-layout.tsx",
@@ -830,7 +878,12 @@
       "type": "registry:component",
       "title": "Sidebar",
       "description": "An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/header-content-footer"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/header-content-footer",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/sidebar.tsx",
@@ -843,7 +896,7 @@
       "type": "registry:component",
       "title": "Card Layout",
       "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/utils"],
+      "registryDependencies": ["@cubeui/card", "@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/card-layout.tsx",
@@ -860,7 +913,8 @@
         "@cubeui/button",
         "@cubeui/dialog",
         "@cubeui/header-content-footer",
-        "@cubeui/utils"
+        "@cubeui/utils",
+        "@cubeui/tokens"
       ],
       "files": [
         {
@@ -1138,6 +1192,7 @@
       "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/card-layout",
+        "@cubeui/description-list",
         "@cubeui/dialog-layout",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",

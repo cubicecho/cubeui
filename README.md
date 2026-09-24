@@ -29,11 +29,23 @@ runtime dependency on this package. Every item, with which platforms it is on, i
 <https://cubicecho.github.io/cubeui/>, and the Storybook is at
 <https://cubicecho.github.io/cubeui/storybook/>.
 
-**Install `@cubeui/tokens` first, and `@import` it.** It lands `cubeui-tokens.css` at the project
+**`@import` `@cubeui/tokens` from your stylesheet.** It lands `cubeui-tokens.css` at the project
 root. On the web that file also `@import`s `cubeui-reset.css` (the layout defaults a compiled
 component relies on; see [Stage 0](#stage-0--the-spike-and-its-verdict)) and `tw-animate-css`.
-A compiled component rendered without it lays out in the wrong direction, and nothing reports an
-error.
+Every web item whose markup wears those layout classes lists `@cubeui/tokens` in its
+`registryDependencies`, so `shadcn add @cubeui/toast` brings it on its own. What the CLI cannot do
+is load it. Import it from the app's CSS entry, after Tailwind and before your own palette, so an
+override of yours wins:
+
+```css
+/* src/index.css */
+@import "tailwindcss";
+@import "../cubeui-tokens.css";
+/* your own :root / .dark overrides after this */
+```
+
+A compiled component rendered without that import lays out in the wrong direction, and nothing
+reports an error.
 
 **On a Vite app, put `compilerOptions.paths` in the root `tsconfig.json` as well.** `npm create
 vite@latest` writes `paths` into `tsconfig.app.json` and leaves the root file a bare `references`
@@ -103,26 +115,30 @@ wired, on both platforms.
 ## Installing into a Biome project
 
 Everything this registry ships passes Biome's recommended preset, which the old cubeui could not
-claim. Its primitives were shadcn's, installed untouched, and those do not pass. This repo lints
-every file it ships, with one exception that travels with the files: `a11y/useSemanticElements`
-is off for the compiled tree. That rule asks for `<input type="checkbox">` where a compiled
-component writes `role="checkbox"` on a `<button>`, which is the only thing its React Native
-source could say (see [Where the compiled half is not a
-drop-in](#where-the-compiled-half-is-not-a-drop-in)). A consumer running the recommended preset
-over `components/` wants the same override:
+claim. Its primitives were shadcn's, installed untouched, and those do not pass. One rule needs
+config, and only for the ui folder: `a11y/useSemanticElements`. That rule asks for
+`<input type="checkbox">` where a compiled primitive writes `role="checkbox"` on a `<button>`,
+which is the only thing its React Native source could say (see [Where the compiled half is not a
+drop-in](#where-the-compiled-half-is-not-a-drop-in)). Turn it off for the ui alias folder:
 
 ```jsonc
 // biome.json
 "overrides": [
   {
-    "includes": ["src/components/**"],
+    "includes": ["src/components/ui/**"],
     "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
   }
 ]
 ```
 
-If Biome also lints CSS there, `cubeui-reset.css` needs `complexity/noImportantStyles` off too.
-Its `!important`s copy react-native-web's `pointer-events` rules, and they are there on purpose.
+That override does not reach everything. The shells (`section`, `sidebar`, `section-heading`,
+`radio-group-field`, and so on) install next to the ui folder, in `components/`, not inside it.
+The ones that write a deliberate `role="heading"` or `role="group"` carry their own
+`// biome-ignore lint/a11y/useSemanticElements` comment, written in the React Native source and
+kept by the compiler, so they pass with no config of yours. The same goes for the stylesheets
+`@cubeui/tokens` installs next to `components.json`: `cubeui-reset.css` starts with a
+`biome-ignore-all` for `complexity/noImportantStyles`, because its `!important`s copy
+react-native-web's `pointer-events` rules on purpose (#134).
 
 A shadcn primitive installed from ui.shadcn.com beside these still brings its own lint findings.
 Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
@@ -257,7 +273,7 @@ Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was 
 3, and it needed a real component set to have anything to compile. In the write-ups below,
 "cubeui" on its own in a historical passage means that pre-native registry.
 
-Today the native registry holds 53 items and the web registry 84: 77 components and 7 story
+Today the native registry holds 58 items and the web registry 90: 82 components and 8 story
 items. 24 of the web items are web-only, and every native item has a web half.
 
 
@@ -383,7 +399,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section` |
+| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `description-list` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
@@ -419,7 +435,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces fourteen rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces fifteen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -504,6 +520,13 @@ class list it is joined into (the same `cn`/`cva` call, conditional, array or ob
 file — `CHECKBOX_CLASS`, which each half colours from its checked state — says so with a
 `@border-colour` comment above it. `stories/tokens.stories.tsx` asserts the resolved colours under
 react-native-web.
+
+And that **a web item wearing the reset's classes depends on `@cubeui/tokens`** (rule 15), the one
+item that installs `cubeui-reset.css`. `toast`, `file-picker`, `card` and 28 more wore
+`cube-rn-view` while depending only on `utils`, so installing one of them alone rendered a block
+where a flex column was meant (#133). `deriveWebRegistry` adds the dependency to any item whose
+emitted text names a `cube-rn-` class, and the rule asks the built `content` whether it did — run
+over the registry as it stood before the fix, it named all 31.
 
 Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -790,8 +813,13 @@ react-native-web would have rendered anyway.
 `ComponentPropsWithoutRef<"div">`. Both directions were possible and this is a real fork; see open
 decision 6. The stories carry a note at each of the two places it shows.
 
-**`useSemanticElements` is off for `compiled/**` and only there** (`biome.json`, which is strict JSON
-and cannot hold the comment, hence this paragraph). The rule asks for `<input type="checkbox">` where
+**`useSemanticElements` is off for the compiled ui primitives and only there** (`color-picker`,
+`field`, `radio-group` and `segmented` in `biome.json`, which is strict JSON and cannot hold the
+comment, hence this paragraph). Those install into the consumer's ui folder, which the consumer
+already exempts. The compiled shells install outside it, so they are linted here with the rule on
+and carry a `biome-ignore` from their RN source instead; Biome reports those comments as unused in
+`registry/layout/`, since it does not know `<Text role="heading">` becomes a `<span>`. Those four
+warnings are expected (#134). The rule asks for `<input type="checkbox">` where
 the compiled tree writes `role="checkbox"` on a `<button>`, and `<fieldset>` where it writes
 `role="group"`. Both are valid ARIA and both are the only thing the RN source could have said: there
 is no `<input>` on a phone, so those patterns are built from a `Pressable` and a role. Every other
@@ -877,7 +905,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 
 | Primitive | The web half also takes |
 |---|---|
-| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers, `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
+| `input` | every `<input>` prop: `onChange(event)` beside `onChangeText`, `name`, `defaultValue`, any `type`, `onKeyDown` and the other handlers (`onKeyPress` among them, fired from `keydown` as react-native-web does, so it hears Escape), `aria-*`/`data-*`; its `ref` is the `HTMLInputElement`, which already has `InputHandle`'s `focus` and `select` |
 | `textarea` | the same, for `<textarea>`; uncontrolled when given no `value` |
 | `checkbox` | now platform-split: radix on web — `defaultChecked`, `name`, `value`, `required`, `"indeterminate"`; the native half is uncontrolled too |
 | `switch` | radix's props, `defaultChecked`, and shadcn's `size="sm"`; `onCheckedChange` optional on both |
@@ -1060,7 +1088,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
-npm run registry:check # the fourteen rules under Guards, against both built registries
+npm run registry:check # the fifteen rules under Guards, against both built registries
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)

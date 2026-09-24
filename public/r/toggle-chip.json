@@ -4,7 +4,8 @@
   "title": "Toggle Chip",
   "description": "A small on/off pill — a filter chip, a day toggle, a swatch — with its colour split across container and label.",
   "registryDependencies": [
-    "@cubeui/utils"
+    "@cubeui/utils",
+    "@cubeui/tokens"
   ],
   "files": [
     {

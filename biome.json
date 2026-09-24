@@ -28,11 +28,12 @@
   },
   "overrides": [
     {
-      "includes": ["compiled/cube-rn-reset.css"],
-      "linter": { "rules": { "complexity": { "noImportantStyles": "off" } } }
-    },
-    {
-      "includes": ["compiled/**"],
+      "includes": [
+        "compiled/color-picker.tsx",
+        "compiled/field.tsx",
+        "compiled/radio-group.tsx",
+        "compiled/segmented.tsx"
+      ],
       "linter": { "rules": { "a11y": { "useSemanticElements": "off" } } }
     }
   ],
