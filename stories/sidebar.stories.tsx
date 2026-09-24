@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { Text } from "react-native";
-import { expect, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
+import { ArrowRight as CompiledArrowRight, Settings as CompiledSettings } from "../compiled/icons";
 import { QueryState as CompiledQueryState } from "../compiled/query-state";
 import {
   SidebarNavItem as CompiledNavItem,
@@ -14,6 +15,7 @@ import {
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
 } from "../registry/layout/sidebar";
+import { ArrowRight as NativeArrowRight, Settings as NativeSettings } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -137,6 +139,100 @@ export const Default: Story = {
       getComputedStyle(native).backgroundColor,
     );
     await expect(compiled.getBoundingClientRect().width).toBe(native.getBoundingClientRect().width);
+  },
+};
+
+const onSignOut = fn();
+
+/**
+ * The footer's Sign out: the same row with no `href`, which makes it a button — `role="button"` on
+ * device, a `<button type="button">` once compiled, never `aria-current` — drawn exactly like the
+ * Settings link above it.
+ */
+export const ActionRow: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Frame>
+          <NativeSidebar
+            label="Native sidebar"
+            content={null}
+            footer={
+              <>
+                <NativeNavItem href="#/settings" label="Settings" icon={<NativeSettings />} />
+                <NativeNavItem label="Sign out" icon={<NativeArrowRight />} onPress={onSignOut} />
+              </>
+            }
+          />
+        </Frame>
+      }
+      compiled={
+        <Frame>
+          <CompiledSidebar
+            label="Compiled sidebar"
+            content={null}
+            footer={
+              <>
+                <CompiledNavItem href="#/settings" label="Settings" icon={<CompiledSettings />} />
+                <CompiledNavItem
+                  label="Sign out"
+                  icon={<CompiledArrowRight />}
+                  onClick={onSignOut}
+                />
+              </>
+            }
+          />
+        </Frame>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onSignOut.mockClear();
+
+    const halves = [
+      canvas.getByRole("complementary", { name: "Native sidebar" }),
+      canvas.getByRole("complementary", { name: "Compiled sidebar" }),
+    ];
+    for (const [index, half] of halves.entries()) {
+      const side = within(half);
+
+      // A button, not a link, and never the current page.
+      const signOut = side.getByRole("button", { name: "Sign out" });
+      await expect(side.queryByRole("link", { name: "Sign out" })).toBeNull();
+      await expect(signOut).not.toHaveAttribute("aria-current");
+      await expect(signOut).not.toHaveAttribute("href");
+
+      // It does what it is for.
+      await userEvent.click(signOut);
+      await expect(onSignOut).toHaveBeenCalledTimes(index + 1);
+
+      // The same row as the link above it: box, icon and ink all match.
+      const settings = side.getByRole("link", { name: "Settings" });
+      const [a, b] = [settings, signOut].map((row) => getComputedStyle(row));
+      if (!a || !b) throw new Error("both rows should render");
+      for (const prop of ["height", "paddingLeft", "borderRadius", "columnGap"] as const) {
+        await expect(b[prop]).toBe(a[prop]);
+      }
+      const svg = (row: HTMLElement) => {
+        const icon = row.querySelector("svg");
+        if (!icon) throw new Error("the row should draw its icon");
+        return icon.getBoundingClientRect();
+      };
+      await expect(svg(signOut).width).toBe(svg(settings).width);
+      await expect(svg(signOut).height).toBe(svg(settings).height);
+      const label = (row: HTMLElement, text: string) =>
+        getComputedStyle(within(row).getByText(text));
+      await expect(label(signOut, "Sign out").color).toBe(label(settings, "Settings").color);
+      await expect(label(signOut, "Sign out").textAlign).toBe(
+        label(settings, "Settings").textAlign,
+      );
+    }
+
+    // On the web it is a real `<button type="button">`, so it submits no form it sits in.
+    const compiled = within(halves[1] as HTMLElement).getByRole("button", { name: "Sign out" });
+    await expect(compiled.tagName).toBe("BUTTON");
+    await expect(compiled).toHaveAttribute("type", "button");
   },
 };
 
