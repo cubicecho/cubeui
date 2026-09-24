@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, and the theme picker, which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -556,3 +556,31 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
 ```
+
+## File picker
+
+A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidden file input.
+
+```tsx
+<FilePicker
+  label="Upload notes"
+  hint="Drop .md files, or click to choose"
+  accept=".md,text/markdown"
+  multiple
+  onPickMany={(files) => upload(files)} // [{ text, name }, ...]
+/>
+```
+
+- The caller gets each file's decoded text and its name, never a `File`, so the calling screen
+  is the same on both halves.
+- `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
+  either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
+  only `onPick`, `onPick` is called once for each file, in order.
+- `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
+  pick is one file, and a drop keeps the first file that `accept` allows.
+- `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
+  to drops as well as the dialog. A file that does not match is skipped and never read. List the
+  extension as well as the MIME type, because browsers often give `.md` and similar files no
+  type at all.
+- **Native:** `@cubeui/file-picker` installs, and it takes the same props, but it does not pick.
+  It draws the zone and says on screen that picking is web only. See `SKILL.md`'s last section.
