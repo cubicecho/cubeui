@@ -38,7 +38,14 @@ export default defineConfig({
         // `from "react-native"` in this repo's files to it.
         // `@tanstack/react-form` for the same reason: only `radio-group.stories.tsx` reaches it, so
         // it is discovered mid-run, and the first cold run lost all four of that file's stories.
-        optimizeDeps: { include: ["react-native-css/components", "@tanstack/react-form"] },
+        // `@tanstack/react-router` likewise: only the sidebar's router-link story imports it.
+        optimizeDeps: {
+          include: [
+            "react-native-css/components",
+            "@tanstack/react-form",
+            "@tanstack/react-router",
+          ],
+        },
         test: {
           name: "storybook",
           // One browser session at a time. Run in parallel, a session drops its websocket partway
