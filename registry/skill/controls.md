@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -564,6 +564,28 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+
+## Spinner
+
+A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `LoaderCircle` and add
+`animate-spin`, and do not reach for `ActivityIndicator`:
+
+```tsx
+<Button disabled={saving} onPress={save}>
+  {saving ? <Spinner label="Saving" /> : null}
+  <Text>Save</Text>
+</Button>
+
+<Spinner label="Loading servers" className="size-6 text-muted-foreground" />
+```
+
+- It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
+  one thing on the screen could be.
+- `className` sizes and colours it; the default is `size-4`. On the web the glyph is
+  `currentColor`; on native it takes a `Button`'s ink the way any icon there does.
+- Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
+  platform's own spinner, a different shape on each.
+- A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
 ## Password
 
