@@ -45,7 +45,7 @@ export function FilePicker({ onPick, accept, label, hint }: FilePickerProps) {
           if (file) void read(file);
         }}
         className={cn(
-          "w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+          "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
           dragging
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25 hover:border-muted-foreground/50",
