@@ -215,6 +215,7 @@ views and there is no shell wrapping to hide.
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
+| A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/page` |
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
