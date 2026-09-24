@@ -5,6 +5,8 @@
  * `.web.tsx` file on web, so that file cannot import the shared pieces from
  * `./file-picker` without importing itself.
  */
+import type { ReactNode } from "react";
+import type { ButtonProps } from "@/components/ui/button";
 
 /** One picked file: its decoded text and its name. */
 export type PickedFile = { text: string; name: string };
@@ -22,8 +24,8 @@ type FilePickerCommonProps = {
    * `accept` allows.
    */
   multiple?: boolean | undefined;
+  /** What is being picked. On the zone it is the visible heading; on the button, the accessible name. */
   label: string;
-  hint?: string | undefined;
 };
 
 /**
@@ -51,7 +53,31 @@ type FilePickerCallbacks =
       onPickMany: (files: PickedFile[]) => void;
     };
 
-export type FilePickerProps = FilePickerCommonProps & FilePickerCallbacks;
+export type FilePickerProps = FilePickerCommonProps &
+  FilePickerCallbacks & {
+    /** The zone's second line, under `label`: what to drop, or where it goes. */
+    hint?: string | undefined;
+  };
+
+/**
+ * The same picker as a `Button`, for where a drop zone does not fit — a page
+ * header's actions, a toolbar. It still takes a drop onto itself.
+ *
+ * A component of its own rather than a `variant="button"` on `FilePicker`,
+ * because `variant` and `size` are the `Button`'s, forwarded as they are, and a
+ * prop cannot mean both the button's look and which of two shapes to draw.
+ */
+export type FilePickerButtonProps = FilePickerCommonProps &
+  FilePickerCallbacks &
+  Pick<ButtonProps, "variant" | "size"> & {
+    /**
+     * Drawn before the label, or alone at an `icon*` size, where `label` is only
+     * the accessible name. Pass a bare `<Upload />`; the button sizes and
+     * colours it. Defaults to the upload icon.
+     */
+    icon?: ReactNode | undefined;
+    className?: string | undefined;
+  };
 
 /**
  * Whether `file` is one `accept` allows, by the rules the `<input accept>`

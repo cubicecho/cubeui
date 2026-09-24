@@ -1,7 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, waitFor, within } from "storybook/test";
-import { FilePicker as Compiled } from "../compiled/file-picker";
-import { FilePicker as Native } from "../registry/ui/file-picker.tsx";
+import {
+  FilePicker as Compiled,
+  FilePickerButton as CompiledButton,
+} from "../compiled/file-picker";
+import { Plus } from "../compiled/icons";
+import { PageHeader } from "../compiled/page-header";
+import {
+  FilePicker as Native,
+  FilePickerButton as NativeButton,
+} from "../registry/ui/file-picker.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -181,5 +189,116 @@ export const OneAtATime: Story = {
 
     await waitFor(() => expect(onPick).toHaveBeenCalledTimes(1));
     await expect(onPick).toHaveBeenCalledWith("{}", "board.json");
+  },
+};
+
+/** The `compiled` column of a `SideBySide`, so a query does not also find the native half. */
+function compiledColumn(canvasElement: HTMLElement) {
+  const column = canvasElement.querySelectorAll("section")[1];
+  if (!(column instanceof HTMLElement)) throw new Error("the story should render both halves");
+  return column;
+}
+
+/**
+ * Stops a click on the file input from opening the browser's dialog, which a test cannot close,
+ * and counts it instead. Counting the click is the proof a trigger opens the dialog.
+ */
+function catchDialog(input: HTMLInputElement) {
+  const opened = fn();
+  // Once: `userEvent.upload` clicks the input too, and gives up if that click is prevented.
+  input.addEventListener(
+    "click",
+    (e) => {
+      e.preventDefault();
+      opened();
+    },
+    { once: true },
+  );
+  return opened;
+}
+
+/**
+ * Issue #131: the picker as a compact trigger, so a page header's Upload action opens the file
+ * dialog directly instead of opening a dialog that holds a drop zone. `variant` and `size` are the
+ * `Button`'s. At an `icon*` size only the icon shows and `label` is the accessible name. The
+ * button still takes a drop onto itself.
+ *
+ * The native half draws the same button, disabled, and gives the reason as its hint.
+ */
+export const AsAButton: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-row items-center gap-2">
+          <NativeButton variant="ghost" size="icon-sm" label="Upload notes" onPick={onPick} />
+          <NativeButton variant="outline" label="Import a board" onPick={onPick} />
+        </div>
+      }
+      compiled={
+        <PageHeader
+          title="Notes"
+          action={
+            <>
+              <CompiledButton
+                variant="ghost"
+                size="icon-sm"
+                label="Upload notes"
+                accept=".md,text/markdown"
+                multiple
+                onPickMany={onPickMany}
+              />
+              <CompiledButton
+                variant="outline"
+                icon={<Plus />}
+                label="Import a board"
+                accept=".json"
+                onPick={onPick}
+              />
+            </>
+          }
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement, userEvent }) => {
+    const compiled = within(compiledColumn(canvasElement));
+    onPick.mockClear();
+    onPickMany.mockClear();
+
+    // Named by `label`. At an icon size it is the icon alone; otherwise the label shows too.
+    const upload = compiled.getByRole("button", { name: "Upload notes" });
+    const board = compiled.getByRole("button", { name: "Import a board" });
+    await expect(upload.textContent).toBe("");
+    await expect(upload.querySelector("svg")).not.toBeNull();
+    await expect(board).toHaveTextContent("Import a board");
+    // The caller's `size` reached the Button: `icon-sm` is a 36px square.
+    await expect(upload.getBoundingClientRect().width).toBe(36);
+    await expect(upload.getBoundingClientRect().height).toBe(36);
+
+    // A press opens the file dialog straight away. The input is the button's next sibling.
+    const uploadInput = upload.nextElementSibling;
+    if (!(uploadInput instanceof HTMLInputElement)) throw new Error("the input should follow");
+    await expect(uploadInput.multiple).toBe(true);
+    const opened = catchDialog(uploadInput);
+    await userEvent.click(upload);
+    await expect(opened).toHaveBeenCalledTimes(1);
+
+    // The dialog's answer, and a drop onto the button itself, both reach the callback.
+    await userEvent.upload(uploadInput, [md("a.md", "# A"), md("b.md", "# B")]);
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    await expect(onPickMany).toHaveBeenLastCalledWith([
+      { text: "# A", name: "a.md" },
+      { text: "# B", name: "b.md" },
+    ]);
+    drop(upload, [png, md("c.md", "# C")]);
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(2));
+    await expect(onPickMany).toHaveBeenLastCalledWith([{ text: "# C", name: "c.md" }]);
+
+    // The native half says it cannot pick, rather than pressing and doing nothing.
+    const native = within(canvasElement.querySelectorAll("section")[0] as HTMLElement);
+    for (const name of ["Upload notes", "Import a board"]) {
+      await expect(native.getByRole("button", { name })).toHaveAttribute("aria-disabled", "true");
+    }
+    await expect(onPick).not.toHaveBeenCalled();
   },
 };
