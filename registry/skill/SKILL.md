@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, DateTimeInput, InlineNumberEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a form, an icon-only button, a popover menu of actions, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -35,7 +35,7 @@ npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, contro
 
 Install from the registry, do not copy by hand.
 
-**Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `tabs`,
+**Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `tabs`,
 `tooltip`, `badge`, `calendar`, `field`, `toast`, `query-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
@@ -74,6 +74,7 @@ at the end.
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
+| A popover of actions — a ⋯ menu, Rename / Move / Delete on a row | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
 | A row of pills that switches a view or a period, one current | `SegmentedGroup`, `SegmentedButton` | [controls.md](controls.md#segmented-control) |
 | A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
@@ -148,6 +149,7 @@ The same words mean the same thing in every component, and this is the point of 
 - **`label`** — on `ActionButton` and `ConfirmButton` it is required, and it is the accessible
   name, not a caption.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
+- **`trailing`** — the far end of a row, after its `label`: a shortcut, a count. On `MenuItem`.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
@@ -219,6 +221,7 @@ views and there is no shell wrapping to hide.
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
+| A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 
@@ -234,7 +237,7 @@ it, so `Page` and `PageLayout` draw the same title block — `title`, `descripti
 `icon`, `breadcrumbs`, `loading`, and a `level` (default 1) for the heading's rank.
 
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
-`Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Tabs`, `Tooltip`,
+`Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Menu`, `Tabs`, `Tooltip`,
 `Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
 web ones take, with three conversions that are the same everywhere:
 
@@ -249,7 +252,7 @@ web ones take, with three conversions that are the same everywhere:
 The web halves go the other way too: `Button`, `Dialog`, `Popover`, `Tooltip`, `Tabs`, `Label`
 and `Badge` are a **superset of shadcn's own** there. Every part also takes the props of the radix
 part or DOM element it renders, and shadcn's extra parts and sizes exist — `DialogClose`,
-`DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverHeader`, controlled `Tabs`,
+`DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, controlled `Tabs`,
 `TooltipContent sideOffset`, `Badge asChild`, `size="icon-sm"`. So a shadcn call site compiles
 unchanged. The new parts and sizes exist on native too; the radix and DOM passthrough props are
 web only, and a native call site keeps to the shared contract.

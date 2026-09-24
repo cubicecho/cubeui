@@ -102,6 +102,7 @@
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
         "@cubeui/date-picker",
+        "@cubeui/menu",
         "@cubeui/multi-select",
         "@cubeui/option-select",
         "@cubeui/password-input"

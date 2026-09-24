@@ -377,7 +377,7 @@ the React Native set.
 | tokens | `tokens` |
 | lib | `utils`, `color`, `readable-text-color` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
-| platform-split | `checkbox`, `dialog`, `popover`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
+| platform-split | `checkbox`, `dialog`, `popover`, `menu`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
@@ -885,7 +885,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `option-select` | every `<button>` prop on the trigger again |
 | `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
-| `popover` | radix's props on every part; `PopoverAnchor`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
+| `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
 | `tooltip` | radix's props on every part — `open`/`onOpenChange` on `Tooltip`, `sideOffset`/`align` on the content, `className` on the trigger |
 | `tabs` | radix's props on every part; controlled `value`/`onValueChange` and `TabsTrigger disabled` (on both halves) |
 | `badge` | now platform-split: a `<span>` with every span prop, `asChild`, element children; `ghost`/`link` variants and `badgeVariants` (on both halves) |
