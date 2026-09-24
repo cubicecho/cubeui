@@ -16,8 +16,8 @@
  * Radix is the reason this half is hand-written rather than compiled: `role="menu"` with the
  * trigger as its name, arrow keys and Home/End between the rows (skipping disabled ones),
  * typeahead on each row's label, focus moved into the menu on open and back to the trigger on
- * close, and the menu closing when a row is chosen. None of that is layout, so none of it could
- * come out of the React Native source.
+ * close (unless the row chosen is `focusesElsewhere`), and the menu closing when a row is
+ * chosen. None of that is layout, so none of it could come out of the React Native source.
  *
  * Each part also takes the props of the radix part it renders — `side`, `sideOffset`, `modal`,
  * `onCloseAutoFocus` — on top of the contract. Those extras are web only.
@@ -25,6 +25,8 @@
 
 import { DropdownMenu as MenuPrimitive } from "radix-ui";
 import type * as React from "react";
+import { createContext, type RefObject, useContext, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   MENU_CONTENT_CLASS,
   MENU_INDICATOR_CLASS,
@@ -48,22 +50,41 @@ import { Check } from "./icons";
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
 
+type MenuState = {
+  setOpen: (open: boolean) => void;
+  /**
+   * Whether the close in progress was caused by a `focusesElsewhere` row. A ref rather than state:
+   * it is written when the row is chosen and read in `onCloseAutoFocus` after the close animation,
+   * and nothing renders from it.
+   */
+  skipReturnRef: RefObject<boolean>;
+};
+
+const MenuContext = createContext<MenuState>({
+  setOpen: () => {},
+  skipReturnRef: { current: false },
+});
+
 function Menu({
   open,
   onOpenChange,
-  defaultOpen,
+  defaultOpen = false,
   ...props
 }: Wide<MenuProps, React.ComponentProps<typeof MenuPrimitive.Root>>) {
-  // Spread rather than passed: radix switches to uncontrolled only when `open` is absent, and an
-  // explicit `undefined` is not absent.
+  // The menu holds the open state rather than leaving it to radix, the same arrangement as
+  // `menu.tsx`, because a `focusesElsewhere` row has to close the menu itself before its action
+  // runs — see `MenuItem`.
+  const [uncontrolled, setUncontrolled] = useState(defaultOpen);
+  const isOpen = open ?? uncontrolled;
+  const setOpen = (next: boolean) => {
+    if (open === undefined) setUncontrolled(next);
+    onOpenChange?.(next);
+  };
+  const skipReturnRef = useRef(false);
   return (
-    <MenuPrimitive.Root
-      data-slot="menu"
-      {...props}
-      {...(open === undefined ? {} : { open })}
-      {...(onOpenChange === undefined ? {} : { onOpenChange })}
-      {...(defaultOpen === undefined ? {} : { defaultOpen })}
-    />
+    <MenuContext.Provider value={{ setOpen, skipReturnRef }}>
+      <MenuPrimitive.Root data-slot="menu" {...props} open={isOpen} onOpenChange={setOpen} />
+    </MenuContext.Provider>
   );
 }
 
@@ -78,8 +99,10 @@ function MenuContent({
   className,
   align = "center",
   sideOffset = 4,
+  onCloseAutoFocus,
   ...props
 }: Wide<MenuContentProps, React.ComponentProps<typeof MenuPrimitive.Content>>) {
+  const { skipReturnRef } = useContext(MenuContext);
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Content
@@ -92,6 +115,13 @@ function MenuContent({
           className,
         )}
         {...props}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event);
+          // Radix focuses the trigger unless the event is prevented. A `focusesElsewhere` row
+          // has already focused its target by now, and the trigger would take it back.
+          if (skipReturnRef.current) event.preventDefault();
+          skipReturnRef.current = false;
+        }}
       />
     </MenuPrimitive.Portal>
   );
@@ -104,9 +134,11 @@ function MenuItem({
   destructive = false,
   disabled = false,
   onSelect,
+  focusesElsewhere = false,
   className,
   ...props
 }: Wide<MenuItemProps, Omit<React.ComponentProps<typeof MenuPrimitive.Item>, "children">>) {
+  const { setOpen, skipReturnRef } = useContext(MenuContext);
   return (
     <MenuPrimitive.Item
       data-slot="menu-item"
@@ -114,7 +146,17 @@ function MenuItem({
       disabled={disabled}
       textValue={label}
       {...props}
-      onSelect={() => onSelect?.()}
+      onSelect={(event) => {
+        skipReturnRef.current = focusesElsewhere;
+        if (focusesElsewhere) {
+          // Radix runs this while the menu is still open and trapping focus, so an `autoFocus`
+          // the action mounts is pulled straight back into the menu. Close it first — flushed,
+          // so the trap is released — and only then hand focus away.
+          event.preventDefault();
+          flushSync(() => setOpen(false));
+        }
+        onSelect?.();
+      }}
       // Icons inherit `currentColor` here, so the row's text colour is the icon's too — the web
       // half of what `IconClassContext` does on native.
       className={cn(

@@ -197,6 +197,11 @@ on both platforms:
   trigger. On device it is the popover's centred sheet with `role="menu"`; focus goes back to the
   trigger as an accessibility event. Pass `aria-label` on `MenuContent` when the trigger has no
   text — radix names the web menu after the trigger, native has nothing to point at.
+- **A row whose action moves focus is `focusesElsewhere`** — Rename that mounts an `autoFocus`
+  box, a row that reveals a field. Without it the menu hands focus back to its trigger after it
+  closes, the box blurs, and an `onBlur` commit ends the rename before anything is typed. It
+  covers that row's close only: Escape, a click outside and the other rows still return focus.
+  `<MenuItem label="Rename" focusesElsewhere onSelect={startRename} />`, on both halves.
 - **A toggle list is `MenuCheckboxItem`** — labels on a todo, columns shown in a table, anything
   on or off, several at once. Do not hand-build `role="checkbox"` rows in a `Popover`, and do not
   fake one with a `MenuItem` and a trailing `<Check />`:
