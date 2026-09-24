@@ -405,6 +405,19 @@
       ]
     },
     {
+      "name": "description-list",
+      "type": "registry:component",
+      "title": "Description List",
+      "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/description-list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
@@ -1138,6 +1151,7 @@
       "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/card-layout",
+        "@cubeui/description-list",
         "@cubeui/dialog-layout",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",
