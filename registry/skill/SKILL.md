@@ -118,6 +118,9 @@ The same words mean the same thing in every component, and this is the point of 
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarClassName`** — the sidebar's, by prefix. A prop
   that belongs to a slot wears the slot's name, so it needs no word of its own.
+- **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
+  `SidebarSection` makes it the navigation landmark, named by its `title` or a `label`. A value,
+  never a tag you invent: a part takes only the landmarks its shape can honestly be.
 - **`first`**, **`second`** — the two panes of a `SplitLayout`, as equals. Numbered rather than
   named, because a role pair lies about an even split and a side pair lies once the panes stack or
   the page is read right-to-left.
