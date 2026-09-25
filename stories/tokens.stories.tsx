@@ -8,6 +8,7 @@ import { Button } from "../registry/ui/button";
 import { Card, CardContent } from "../registry/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../registry/ui/dialog";
 import { Input } from "../registry/ui/input";
+import { Switch } from "../registry/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "../registry/ui/tabs";
 import { Textarea } from "../registry/ui/textarea";
 
@@ -46,8 +47,9 @@ export const InputBesideButton: Story = {
  * The radix halves render raw `<button>`s — here `tabs.web.tsx` and `dialog.web.tsx`, which is what
  * Vite resolves these imports to — and with nothing resetting them the user-agent sheet drew each
  * one with a `2px outset` border and a grey fill, and gave it a colour and font of its own, so an
- * inactive tab ignored its list's `text-muted-foreground` (#97). The reset is specificity zero, so
- * the last button is the other half of the claim: a `border` and a `bg-*` utility still win.
+ * inactive tab ignored its list's `text-muted-foreground` (#97), and the browser's padding too
+ * (#175). The reset is specificity zero, so the last button is the other half of the claim: a
+ * `border`, a `px-*` and a `bg-*` utility still win.
  */
 export const RawButtonsTakeNoBrowserLook: Story = {
   parameters: {
@@ -66,7 +68,10 @@ export const RawButtonsTakeNoBrowserLook: Story = {
           <TabsTrigger value="board">Board</TabsTrigger>
         </TabsList>
       </Tabs>
-      <button type="button" className="border-2 border-border bg-primary text-primary-foreground">
+      <button
+        type="button"
+        className="border-2 border-border bg-primary px-2 text-primary-foreground"
+      >
         Styled
       </button>
       <Dialog open>
@@ -89,6 +94,10 @@ export const RawButtonsTakeNoBrowserLook: Story = {
       await expect(style.borderTopWidth).toBe("0px");
       await expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)");
     }
+    // The close is an icon and nothing else, so its box is the icon's once the padding is gone.
+    // `offsetWidth`, which ignores transforms: the dialog is still mid `zoom-in-95` here.
+    await expect(getComputedStyle(close).paddingLeft).toBe("0px");
+    await expect(close.offsetWidth).toBe(16);
     // Inherited now, so the list's colour and the page font reach the label.
     const list = canvas.getByRole("tablist", { hidden: true });
     await expect(getComputedStyle(inactive).color).toBe(getComputedStyle(list).color);
@@ -97,8 +106,50 @@ export const RawButtonsTakeNoBrowserLook: Story = {
 
     const styled = getComputedStyle(canvas.getByRole("button", { name: "Styled", hidden: true }));
     await expect(styled.borderTopWidth).toBe("2px");
+    await expect(styled.paddingLeft).toBe("8px");
     await expect(styled.borderTopColor).toBe(resolved("border", canvasElement));
     await expect(styled.backgroundColor).toBe(resolved("primary", canvasElement));
+  },
+};
+
+/**
+ * `switch.web.tsx` is radix's `Switch.Root`, a raw `<button>`, and the reset left it the
+ * user-agent padding — `1px 6px` in Chrome. The thumb sat 6px in from the track's border, and
+ * `translate-x-4` pushed it past the far end when on (#175). The track is `w-9` with a 2px border,
+ * 32px inside, and the thumb 16px: off, it sits against the left border; on, against the right.
+ * Rendered checked from the start rather than clicked, so there is no transform mid-transition to
+ * measure.
+ */
+export const SwitchThumbSitsInItsTrack: Story = {
+  render: () => (
+    <div className="bg-background p-6" style={{ display: "flex", gap: 16 }}>
+      <Switch aria-label="Off" />
+      <Switch aria-label="On" defaultChecked />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const [name, checked] of [
+      ["Off", false],
+      ["On", true],
+    ] as const) {
+      const track = canvas.getByRole("switch", { name });
+      const thumb = track.querySelector("[data-slot=switch-thumb]");
+      if (!thumb) throw new Error(`the ${name} switch should render a thumb`);
+      const style = getComputedStyle(track);
+      await expect(style.paddingLeft).toBe("0px");
+      await expect(style.paddingRight).toBe("0px");
+
+      const border = Number.parseFloat(style.borderLeftWidth);
+      await expect(border).toBe(2);
+      const outer = track.getBoundingClientRect();
+      const inner = { left: outer.left + border, right: outer.right - border };
+      const box = thumb.getBoundingClientRect();
+      await expect(box.left).toBeGreaterThanOrEqual(inner.left);
+      await expect(box.right).toBeLessThanOrEqual(inner.right);
+      if (checked) await expect(box.right).toBe(inner.right);
+      else await expect(box.left).toBe(inner.left);
+    }
   },
 };
 
