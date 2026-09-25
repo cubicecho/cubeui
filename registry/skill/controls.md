@@ -598,6 +598,10 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   draws none.
 - `title` and `description` are nodes, so a link can sit inside the description. `action` is the
   far end — one button that deals with it.
+- shadcn's compound form also works, so a port can leave its call sites alone:
+  `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
+  The icon child goes into the icon box (and replaces the default glyph); the parts go into the
+  column. New code uses the props.
 - A failed *fetch* on a list page is `QueryState`'s rung, and a crashed route is `RouteError`;
   `Alert` is for what the screen says while it works.
 

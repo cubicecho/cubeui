@@ -1,10 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { expect, within } from "storybook/test";
-import { Alert as Compiled } from "../compiled/alert";
+import {
+  Alert as Compiled,
+  AlertDescription as CompiledDescription,
+  AlertTitle as CompiledTitle,
+} from "../compiled/alert";
 import { Button as CompiledButton } from "../compiled/button";
-import { Alert as Native } from "../registry/ui/alert";
+import { TriangleAlert as CompiledTriangle } from "../compiled/icons";
+import {
+  Alert as Native,
+  AlertDescription as NativeDescription,
+  AlertTitle as NativeTitle,
+} from "../registry/ui/alert";
 import { Button as NativeButton } from "../registry/ui/button";
+import { TriangleAlert as NativeTriangle } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -121,5 +131,54 @@ export const Default: Story = {
     );
     await expect(getComputedStyle(nativeWarning).stroke).not.toBe(foreground);
     for (const svg of glyph("No icon, just the line.")) await expect(svg).toBeNull();
+  },
+};
+
+/**
+ * shadcn's compound form, as a DOM call site writes it: an icon, `AlertTitle`, `AlertDescription`
+ * as children. The icon goes into the icon box and takes the variant's ink and size, the parts go
+ * into the column, and the description takes the variant's ink from the context.
+ */
+export const ShadcnParts: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native variant="warning">
+          <NativeTriangle />
+          <NativeTitle>Unsaved changes</NativeTitle>
+          <NativeDescription>Leaving now discards them.</NativeDescription>
+        </Native>
+      }
+      compiled={
+        <Compiled variant="warning">
+          <CompiledTriangle />
+          <CompiledTitle>Unsaved changes</CompiledTitle>
+          <CompiledDescription>Leaving now discards them.</CompiledDescription>
+        </Compiled>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const alerts = canvas.getAllByRole("status");
+    await expect(alerts).toHaveLength(2);
+    for (const alert of alerts) {
+      const svgs = alert.querySelectorAll("svg");
+      // The caller's icon only: children replace the variant's own glyph.
+      await expect(svgs).toHaveLength(1);
+      const svg = svgs[0];
+      if (!svg) throw new Error("the icon should render");
+      await expect(svg.getBoundingClientRect().width).toBe(16);
+      const title = within(alert).getByText("Unsaved changes");
+      const description = within(alert).getByText("Leaving now discards them.");
+      // Icon first, then the column: the title sits right of the icon, the description under it.
+      await expect(title.getBoundingClientRect().left).toBeGreaterThan(
+        svg.getBoundingClientRect().right,
+      );
+      await expect(description.getBoundingClientRect().top).toBeGreaterThan(
+        title.getBoundingClientRect().top,
+      );
+      await expect(getComputedStyle(svg).stroke).not.toBe(getComputedStyle(title).color);
+    }
   },
 };
