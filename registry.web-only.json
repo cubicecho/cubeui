@@ -34,7 +34,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -317,53 +317,12 @@
       ]
     },
     {
-      "name": "password-input",
-      "type": "registry:component",
-      "title": "Password Input",
-      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form.",
-      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/password-input.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
       "name": "primitive",
       "type": "registry:component",
       "title": "Vendored Primitives",
       "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item", "@cubeui/table"],
       "files": []
-    },
-    {
-      "name": "separator",
-      "type": "registry:ui",
-      "title": "Separator",
-      "description": "shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/separator.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
-      "name": "skeleton",
-      "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/skeleton.tsx",
-          "type": "registry:ui"
-        }
-      ]
     },
     {
       "name": "table",

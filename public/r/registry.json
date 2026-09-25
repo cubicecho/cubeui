@@ -214,6 +214,19 @@
       ]
     },
     {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/password-input.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
@@ -566,6 +579,36 @@
       "files": [
         {
           "path": "compiled/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skeleton-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role=\"separator\"` with `decorative={false}`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1464,53 +1507,12 @@
       ]
     },
     {
-      "name": "password-input",
-      "type": "registry:component",
-      "title": "Password Input",
-      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/password-input.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
       "name": "primitive",
       "type": "registry:component",
       "title": "Vendored Primitives",
       "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item", "@cubeui/table"],
       "files": []
-    },
-    {
-      "name": "separator",
-      "type": "registry:ui",
-      "title": "Separator",
-      "description": "shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/separator.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
-      "name": "skeleton",
-      "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/skeleton.tsx",
-          "type": "registry:ui"
-        }
-      ]
     },
     {
       "name": "table",
