@@ -5,7 +5,7 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
+**Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `ColorPicker` and the
 colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
@@ -320,11 +320,13 @@ on both platforms:
   trigger. On device it is the popover's centred sheet with `role="menu"`; focus goes back to the
   trigger as an accessibility event. Pass `aria-label` on `MenuContent` when the trigger has no
   text — radix names the web menu after the trigger, native has nothing to point at.
-- **A row whose action moves focus is `focusesElsewhere`** — Rename that mounts an `autoFocus`
-  box, a row that reveals a field. Without it the menu hands focus back to its trigger after it
-  closes, the box blurs, and an `onBlur` commit ends the rename before anything is typed. It
-  covers that row's close only: Escape, a click outside and the other rows still return focus.
-  `<MenuItem label="Rename" focusesElsewhere onSelect={startRename} />`, on both halves.
+- **A row whose action moves focus is `focusesElsewhere`** — a row that reveals a field and
+  focuses it. Without it the menu hands focus back to its trigger after it closes, and the field
+  loses the focus it was just given. It covers that row's close only: Escape, a click outside and
+  the other rows still return focus.
+  `<MenuItem label="Add note" focusesElsewhere onSelect={showNoteField} />`, on both halves.
+- **A Rename row opens a form** — a `FormDialog` with the name in a field and a Save button —
+  not a text that turns into an input where it sits. See [No inline edits](SKILL.md#no-inline-edits).
 - **A toggle list is `MenuCheckboxItem`** — labels on a todo, columns shown in a table, anything
   on or off, several at once. Do not hand-build `role="checkbox"` rows in a `Popover`, and do not
   fake one with a `MenuItem` and a trailing `<Check />`:
@@ -640,107 +642,6 @@ an end does not have two boxes called "Time":
 
 `DatePicker` is the richer one — `format`, `disabledDates`, `calendarProps`, a range picker, and
 a `FormField`'s `aria-*` on the trigger — and takes `onValueChange`.
-
-## A number edited in place
-
-```tsx
-<InlineNumberEdit
-  value={task.estimate}
-  min={0}
-  format={(n) => `${n} min`}
-  accessibilityLabel="Estimate"
-  onSave={(estimate) => update.mutateAsync({ estimate })}
-/>
-```
-
-`@cubeui/inline-number-edit`, on both halves, for a number read far more often than it is changed
-— a quantity on a row, an estimate on a card — that does not deserve a form. It shows the number
-as text and becomes an input when pressed.
-
-- It commits on blur and on submit; there is no save button. **Escape puts the old value back.**
-  The draft is clamped to `min`/`max`, an unparseable one falls back to `min`, and an unchanged
-  value does not call `onSave` at all.
-- **Return the save's promise** (`mutateAsync`, not `mutate`) and the edit waits for it, exactly
-  as `InlineTextEdit`'s does — [below](#saving-and-failing). `saving` is for a save the caller
-  started some other way; it greys the number and blocks the press.
-- `accessibilityLabel` is required, because the press target's text is a bare number.
-- Inside a pressable row the row's own press fires too. Stopping it is the caller's call, since
-  only the caller knows which press should win.
-
-## A line of text edited in place
-
-```tsx
-// Pressing the text starts the edit. Returning the promise holds the edit open until it settles.
-<InlineTextEdit
-  value={device.name}
-  label="Device name"
-  onSave={(name) => rename.mutateAsync({ name })}
-/>
-
-// A Rename row starts it: the caller holds `editing`, and the title is a heading, not a button.
-const [renaming, setRenaming] = useState(false);
-<InlineTextEdit
-  value={lane.name}
-  level={3}
-  label={`Rename ${lane.name}`}
-  editing={renaming}
-  onEditingChange={setRenaming}
-  className="font-medium"
-  onSave={onRename}
-/>
-<MenuItem label="Rename" focusesElsewhere onSelect={() => setRenaming(true)} />
-```
-
-`@cubeui/inline-text-edit`, on both halves, for a rename — a lane, a chat, a document title — that
-does not deserve a dialog. `InlineNumberEdit`'s sibling: it shows the text and becomes an input.
-
-- It commits on submit and on blur, and **Escape puts the old value back**. The draft is trimmed;
-  an empty one is refused — the old value stays — unless `allowEmpty`, and an unchanged one does
-  not call `onSave` at all. Do not re-check either in `onSave`.
-- **`onSave` may return a promise**, and should when the save can fail — see
-  [Saving and failing](#saving-and-failing). A save that returns nothing ends the edit at once.
-- **Who holds `editing` starts the edit.** Left alone, pressing the text starts it, and
-  `onEditingChange` alone tells you when without taking over. Passed `editing`, the start is
-  yours — a Rename menu row, a pencil button — and the text is only text, so a `level` heading
-  stays a heading. The component calls `onEditingChange(false)` when the edit ends; you do not.
-- **A menu row that starts it is `focusesElsewhere`**, or the menu takes focus back after it
-  closes, the box blurs, and the rename ends before anything is typed.
-- `label` is required. It names the input, and it is the press's hint — the press itself is named
-  by the text it shows. With nothing shown (an empty value, no `placeholder`) it names the press.
-- `placeholder` is the input's, and is drawn muted in place of an empty value. `level` (1–3) draws
-  the text as that heading. `className` is the text's, `inputClassName` the input's. `disabled`
-  stops a press from starting an edit. `maxLength` is the input's.
-- One line only. A multi-line note (`Textarea`) is not this: `Textarea` has no `onEscape` yet, and
-  Enter is a newline there, so the commit keys would be different ones.
-
-### Saving and failing
-
-Both inline edits take the same contract: `onSave` returns `void` or a promise.
-
-```tsx
-<InlineTextEdit
-  value={folder.title}
-  label="Folder title"
-  onSave={async (title) => {
-    const res = await fetch(`/api/folders/${folder.id}`, { method: "PATCH", body: title });
-    if (!res.ok) throw new Error(res.status === 409 ? "A folder has that name" : "Could not save");
-  }}
-/>
-```
-
-- **While the promise runs** the box stays open on the draft and keeps its focus. It is read-only
-  (not disabled — that would drop the focus), its wrapper is `aria-busy`, and a `Spinner` named
-  "Saving" turns beside it. Enter, blur and Escape are not heard until it settles.
-- **Resolved**, the edit ends, as a sync save does. Update `value` from the save, or from the
-  query it invalidates; the component shows `value`, never the draft, once it closes.
-- **Rejected**, the box stays open on the draft, with the rejection's message under it as a
-  `FieldError` — `role="alert"`, so it is announced — and the box `aria-invalid`, described by it.
-  **Throw an `Error` whose message the user should read**; a string thrown is shown too, anything
-  else marks the box invalid with no words. Enter tries again; Escape puts the old value back.
-- A sync `onSave` that throws is a failure the same way. Do not catch it to toast it: the error
-  belongs next to the box the user is looking at.
-- Do not hold your own pending flag for this and pass it back — the component already has one.
-  `InlineNumberEdit`'s `saving` is for a save it did not start.
 
 ## Progress
 
