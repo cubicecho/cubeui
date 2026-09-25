@@ -1,18 +1,16 @@
-/**
- * Compiled from `registry/layout/disclosure-row.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
 import type { ReactNode } from "react";
 import * as React from "react";
+import { Platform, Pressable, Text } from "react-native";
+import { ChevronRight } from "@/components/ui/icons";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemTitle,
+} from "@/components/ui/item";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "./icons";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "./item";
 
 type DisclosureRowProps = {
   open: boolean;
@@ -78,56 +76,58 @@ export function DisclosureRow({
   const isOpen = open && Boolean(content);
 
   return (
-    <Item data-slot="disclosure-row" variant="outline" className={cn("items-start", className)}>
-      <button
-        type="button"
-        data-slot="disclosure-row-trigger"
+    <Item testID="disclosure-row" variant="outline" className={cn("items-start", className)}>
+      <Pressable
+        testID="disclosure-row-trigger"
+        role="button"
         aria-expanded={open}
+        accessibilityState={{ expanded: open }}
         // Web only, and only while it is open: React Native has no `aria-controls`, and pointing it
         // at an id that is not in the document is a broken reference rather than a hint — the
         // body is unmounted when closed, which is what keeps a list of two hundred rows cheap.
-        {...(isOpen ? { "aria-controls": contentId } : {})}
-        onClick={() => onOpenChange(!open)}
+        {...(Platform.OS === "web" && isOpen ? { "aria-controls": contentId } : {})}
+        onPress={() => onOpenChange(!open)}
         className={cn(
-          "cube-rn-view cube-rn-pressable",
           "min-w-0 flex-1 flex-row items-start gap-2 rounded",
-          "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          Platform.select({
+            web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            default: undefined,
+          }),
         )}
       >
         <ChevronRight
           aria-hidden
           className={cn(
             "mt-0.5 size-4 shrink-0 text-muted-foreground",
-            "transition-transform",
+            Platform.select({ web: "transition-transform", default: undefined }),
             open && "rotate-90",
           )}
         />
         <ItemContent className="min-w-0">
           <ItemTitle className="flex-wrap">
             {badges}
-            <span
-              data-slot="disclosure-row-title"
+            <Text
+              testID="disclosure-row-title"
               className={cn(
-                "cube-rn-text",
                 "min-w-0 shrink font-medium text-foreground text-sm leading-snug",
                 // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
                 // what `line-clamp-1` becomes and what `truncate` does not.
-                "truncate",
+                Platform.select({ web: "truncate", default: "line-clamp-1" }),
               )}
             >
               {title}
-            </span>
+            </Text>
             {meta}
           </ItemTitle>
           {description ? <ItemDescription>{description}</ItemDescription> : null}
         </ItemContent>
-      </button>
+      </Pressable>
 
       {action ? <ItemActions className="gap-1">{action}</ItemActions> : null}
 
       {isOpen ? (
         <ItemFooter
-          id={contentId}
+          nativeID={contentId}
           className={cn(
             "min-w-0 flex-col items-stretch gap-2 border-border border-t pt-3",
             contentClassName,

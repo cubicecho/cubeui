@@ -196,8 +196,9 @@
 // web had its own copies and the device had a different `PageHeader` with different props, and the
 // two drifted the way any pair kept by hand does. So a native layout item with no web item beside
 // it is an error (its compile was refused, and the web registry dropped it without failing), and so
-// is a layout in the web `layout` set with no native item, unless it is named in
-// `WEB_ONLY` (rule 16) with the reason it cannot be one yet.
+// is a layout in the web `layout` set with no native item. There are no exceptions: the last one,
+// `disclosure-row`, was a `<button>` inside shadcn's web-only `Item` until both were ported, and a
+// layout that cannot be drawn natively is a case to argue in review, not a line to add here.
 //
 // ## 12. Nothing re-exports with `export … from`
 //
@@ -263,7 +264,6 @@
 // has no native half, and one that is not named fails the build — a new web-only item is a decision
 // to argue in review, not a file dropped in `registry/web/`. A line whose item is gone from the
 // tier fails too, so porting an item and forgetting its line cannot leave room for the next one.
-// Rule 11 reads its exceptions from the same list.
 //
 // Run after `npm run registry:build`.
 
@@ -869,15 +869,13 @@ const LAYOUT_DIR = "registry/layout/";
 const LAYOUT_BUNDLE = "layout";
 // Rule 16. Every web-only item that ships a file, and why it has no React Native half. Each one is
 // a named debt, not a category: when the reason goes, so does the line, and nothing is added
-// without one. Rule 11 takes its exceptions from here too.
+// without one. Rule 11 takes no exceptions from here: a layout is never web-only.
 const WEB_ONLY = {
   "alert-dialog": "only `confirm-button` uses it; goes when that is rebuilt on `ConfirmDialog`",
   "app-form": "the web form layer; to merge into `form`",
   "color-field": "a bound field of `app-form`; to merge into `form`",
   "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
-  "disclosure-row":
-    "a `<button>` in shadcn's `Item`; to be rebuilt on `Disclosure` and the native `item`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
   "multi-select": "DOM over `popover` and `command`, which both have native halves now; next",
@@ -904,7 +902,7 @@ if (webItems && nativeItems) {
   const bundle = webItems.find((i) => i.name === LAYOUT_BUNDLE);
   for (const dependency of bundle?.registryDependencies ?? []) {
     const name = dependency.split("/").pop();
-    if (onNative.has(name) || name in WEB_ONLY) continue;
+    if (onNative.has(name)) continue;
     oneSided.push(`"${name}" is in the web \`${LAYOUT_BUNDLE}\` set and has no React Native half`);
   }
 }

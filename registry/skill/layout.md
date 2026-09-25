@@ -6,8 +6,8 @@ are not repeated here.
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections, disclosures, sidebars and the top bar are written once in React Native and compiled to
 the web, so the same item installs in a Vite app and an Expo app with the same props. The
-list-page parts at the end are the exception: `DisclosureRow` and `Table` are web-only, and
-`QueryState` is its own item on each half; `ListItem` is on both, like the shells. On a device,
+list-page parts at the end are the exception: `Table` is web-only, and `QueryState` is its own
+item on each half; `DisclosureRow` and `ListItem` are on both, like the shells. On a device,
 four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -642,8 +642,8 @@ counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `use
 - The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
   disclosure is the heading of its part of the page; `contentClassName` to indent the body.
-- A row in a list that opens onto its detail is `DisclosureRow` (web), which adds the row's
-  `badges`, `meta` and surface.
+- A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badges`,
+  `meta` and surface.
 
 ## Description lists
 
@@ -900,7 +900,11 @@ and which one is a question of **where the list is**, not how much there is to s
 - `description` shows whether the row is open or shut; `content` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
 - It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
-  A row that does **not** open onto a body is `ListItem`, below — on both halves.
+  A row that does **not** open onto a body is `ListItem`, below.
+- One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
+  `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
+  string `meta`, `action` or `content` is wrapped in a `Text` for you; pass the badges, the action
+  and the body as native elements, `onPress` where the web takes `onClick`.
 
 ### ListItem
 

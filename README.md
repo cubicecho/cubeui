@@ -483,8 +483,9 @@ Tailwind ships.
 And that **every layout is on both platforms** (rule 11). The layout shells are written once in
 `registry/layout/` and the web half is compiled from them, so a native layout with no web item beside
 it — its compile was refused, and the web registry dropped it without failing — is an error, and so is
-a layout in the web `layout` set with no native item, unless `WEB_ONLY` in the script names
-why (`disclosure-row`, a `<button>` inside shadcn's `Item`, until it is rebuilt on the native `item`; `section` was on the list until #61).
+a layout in the web `layout` set with no native item. The rule has no exceptions: `section` was one
+until #61, and `disclosure-row`, a `<button>` inside the then web-only `Item`, was the last, until it
+was rebuilt on the native `item`. A layout that cannot be drawn natively is a case to argue in review.
 
 And that **the web-only tier only shrinks** (rule 16). Every item is meant to come from React Native,
 so each web-only item that ships a file is named in `WEB_ONLY` in the script with the reason it has

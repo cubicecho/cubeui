@@ -102,20 +102,6 @@
       ]
     },
     {
-      "name": "disclosure-row",
-      "type": "registry:component",
-      "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.",
-      "registryDependencies": ["@cubeui/item", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/disclosure-row.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
       "name": "field-row",
       "type": "registry:component",
       "title": "Field Row",
