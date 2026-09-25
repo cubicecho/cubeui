@@ -5,6 +5,7 @@
   "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/card-layout",
+    "@cubeui/centered-layout",
     "@cubeui/description-list",
     "@cubeui/dialog-layout",
     "@cubeui/disclosure-row",

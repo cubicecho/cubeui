@@ -950,6 +950,19 @@
       ]
     },
     {
+      "name": "centered-layout",
+      "type": "registry:component",
+      "title": "Centered Layout",
+      "description": "A page that is one card, centred both ways: a sign-in, a token gate, a check-your-email screen. Full height, padded off the edges, a `max-w-sm` `CardLayout` taking every card slot; on device a scroll view that keeps the form above the keyboard.",
+      "registryDependencies": ["@cubeui/card-layout", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/centered-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "dialog-layout",
       "type": "registry:component",
       "title": "Dialog Layout",

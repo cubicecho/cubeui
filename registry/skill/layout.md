@@ -369,6 +369,41 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
 `content` and leaves `loading` off.
 
+## Centered pages
+
+The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
+of its own. `CenteredLayout` is that page — full height, centred both ways, `p-4` off the edges —
+around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under the same names.
+
+```tsx
+<CenteredLayout
+  icon={<KeyRound />}
+  title="Authentication required"
+  description="Enter the router token from settings.json."
+  content={
+    <form id="token" onSubmit={submit}>
+      <FormField label="Token" control={<Input type="password" value={token} onChangeText={setToken} />} />
+    </form>
+  }
+  footerActions={
+    <Button type="submit" form="token" disabled={!token.trim()}>
+      Unlock
+    </Button>
+  }
+/>
+```
+
+Render it *instead of* the app shell, not inside it: on the web its root is the page's `<main>`,
+and `min-h-svh` tall. `className` is that page — a `bg-background`, a different padding.
+`cardClassName` is the card: `cardClassName="max-w-md"` for a wider one, which replaces the cap.
+
+On device the root is a `ScrollView` filling the screen, so a form in the card stays reachable
+when the keyboard comes up, and a tap on the submit button is not spent dismissing the keyboard.
+Do not wrap it in a `KeyboardAvoidingView` or a `ScrollView` of your own.
+
+A sign-in with no card — a heading and a form on the bare background — is not this shape; lay
+that out with `Page` or by hand rather than stripping the card with `cardClassName`.
+
 ## Dialogs
 
 ```tsx
