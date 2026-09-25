@@ -407,6 +407,19 @@
       ]
     },
     {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/option-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
@@ -1433,19 +1446,6 @@
       "files": [
         {
           "path": "compiled/multi-select-field.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "option-select",
-      "type": "registry:component",
-      "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/option-select.tsx",
           "type": "registry:component"
         }
       ]

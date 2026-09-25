@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -363,9 +363,13 @@ day and could not keep the name: the shadcn CLI resolves a cross-item import by 
 file's basename, so two files called `select.tsx` in one install sent `app-form`'s import to the
 primitive and broke the install.
 
-- The trigger is what carries the wiring. Radix's `Select` root renders no DOM, so an `id` or an
-  `aria-invalid` put on it goes nowhere — this takes the rest of a `<button>`'s props and spreads
-  them on the trigger, which is why it drops straight into `FormField`'s **function form**:
+- **On both halves.** Radix's listbox under the trigger on the web; the `Select` sheet on device,
+  in an Expo app, with the same `options`, groups, separators and notes. Same import,
+  `@/components/option-select`, on both.
+- The trigger is what carries the wiring. The `Select` root renders nothing, so an `id` or an
+  `aria-invalid` put on it goes nowhere — this takes the rest of the trigger's props (every
+  `<button>` prop on the web; `id`, the `aria-*` props and `onBlur` on device) and spreads them on
+  the trigger, which is why it drops straight into `FormField`'s **function form**:
   `control={(wired) => <OptionSelect {...wired} options={…} … />}`.
 - Full width by default, because a column of selects that each shrink to their longest option is
   ragged. Pass `className="w-40"` for a toolbar; the later width wins.

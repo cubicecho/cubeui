@@ -856,7 +856,7 @@ keeps the family on both sides.
 |---|---|---|---|
 | universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
 | native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
-| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `OptionSelect`, `FormField`, `MultiSelect` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `FormField`, `MultiSelect`, `DatePicker` |
 
 **The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
@@ -920,7 +920,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `select` | every shadcn part — the scroll buttons included — with radix's props on each, `SelectTrigger`'s `size`; content defaults to `item-aligned`, as shadcn's does |
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
-| `option-select` | every `<button>` prop on the trigger again |
+| `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
 | `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |

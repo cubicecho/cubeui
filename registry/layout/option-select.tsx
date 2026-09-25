@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { useMemo } from "react";
+import { Platform, Text, View } from "react-native";
 import {
   SelectContent,
   SelectGroup,
@@ -109,11 +110,29 @@ function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
   return blocks;
 }
 
-// Every `<button>` attribute, because the rest is spread onto the trigger, and the web trigger is
-// radix's `<button>` and honours all of them — the field wiring (`id`, the `aria-*` props,
-// `disabled`, `onBlur`) and anything else a DOM call site already passes.
+/** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
+const SR_ONLY = Platform.select({
+  web: "sr-only",
+  default: "absolute -m-px h-px w-px overflow-hidden",
+});
+
+/** Never seen, but react-native-web gives every `Text` its own black `color` all the same. */
+const NOTE_INK = "text-foreground";
+
+/**
+ * A note in the menu is a row, and one `Text` rather than a box around one, because the element
+ * carrying the words is the one that has to be `aria-hidden`. On device a `Text` in a column is
+ * already a row; the compiled `<span>` is inline, where its padding takes no room, so it says so.
+ */
+const NOTE_ROW = Platform.select({ web: "block", default: undefined });
+
+// The trigger's props, because the rest is spread onto the trigger — the field wiring (`id`, the
+// `aria-*` props, `disabled`, `onBlur`) and anything else a call site already passes. Taken from
+// `SelectTrigger` rather than spelled out, so each half gets its own: on the web that trigger is
+// radix's `<button>` and honours every attribute one does, and on device it is the subset
+// `select-base.ts` names.
 type OptionSelectProps = Omit<
-  ComponentProps<"button">,
+  ComponentProps<typeof SelectTrigger>,
   "value" | "onChange" | "type" | "children" | "className" | "disabled"
 > & {
   className?: string | undefined;
@@ -139,7 +158,8 @@ type OptionSelectProps = Omit<
 };
 
 /**
- * A select taking a list of options, rather than seven primitives to assemble.
+ * A select taking a list of options, rather than seven primitives to assemble. On both halves:
+ * radix's listbox under the trigger on the web, the `Select` sheet on device.
  *
  * The other four pickers in this set ship twice — a control taking `value` and `onValueChange`,
  * and a bound field wrapping it. Select shipped once, as `SelectField`, so the only way to get
@@ -147,9 +167,10 @@ type OptionSelectProps = Omit<
  * hand-write the trigger, the value, the content and the mapped items, and there are ten of
  * those across these projects.
  *
- * They are hand-written wrong in the same place every time. **Radix's `Select` root renders no
- * DOM**, so an `id` or an `aria-invalid` put on it goes nowhere; both belong on the trigger.
- * Which is why this takes the rest of a `<button>`'s props and spreads them there — the shape
+ * They are hand-written wrong in the same place every time. **The `Select` root renders
+ * nothing** — radix's draws no DOM and the device's is a context — so an `id` or an
+ * `aria-invalid` put on it goes nowhere; both belong on the trigger. Which is why this takes the
+ * rest of the trigger's props and spreads them there — the shape
  * `FormField`'s function form hands its control, so this drops into one without a wrapper:
  *
  * ```tsx
@@ -184,6 +205,13 @@ export function OptionSelect({
 }: OptionSelectProps) {
   const blocks = useMemo(() => blocksOf(options), [options]);
   const notes = useMemo(() => options.filter(isNote), [options]);
+  // Handed to `SelectValue` rather than left for the select to find. Radix mirrors the chosen
+  // item's text into the trigger by itself, but the device's sheet is not mounted while it is
+  // closed and has nothing to mirror from — so the label is looked up here, once, for both.
+  const chosen = useMemo(
+    () => options.find((entry): entry is SelectOption => "value" in entry && entry.value === value),
+    [options, value],
+  );
 
   return (
     <SelectRoot
@@ -196,20 +224,23 @@ export function OptionSelect({
       {/* Full width by default, because a select in a field is one and a trigger that shrinks to
           its longest option makes a column of them ragged. `cn` lets a caller say otherwise. */}
       <SelectTrigger {...props} className={cn("w-full", className)}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder}>{chosen?.label}</SelectValue>
       </SelectTrigger>
       {/*
         Where the notes are announced from. It sits here rather than in the menu because the menu
-        is the listbox and a listbox may own only options and groups — and because radix unmounts
-        the menu on close, while a live region has to be in the document *before* its text is to
-        be read out at all. The root draws nothing, so this is a sibling of the trigger.
+        is the listbox and a listbox may own only options and groups — and because the menu is
+        unmounted on close (radix's popper, the device's sheet), while a live region has to be in
+        the tree *before* its text is to be read out at all. The root draws nothing, so this is a
+        sibling of the trigger.
       */}
-      <span role="status" aria-live="polite" className="sr-only">
+      <View role="status" aria-live="polite" className={SR_ONLY}>
         {notes.map((entry, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: a message about the list has no id
-          <span key={`note-${index}`}>{entry.note}</span>
+          <Text key={`note-${index}`} className={NOTE_INK}>
+            {entry.note}
+          </Text>
         ))}
-      </span>
+      </View>
       <SelectContent className={contentClassName}>
         {/*
           Keyed by position, and it has to be: a rule has no identity of its own, and a heading
@@ -223,16 +254,20 @@ export function OptionSelect({
           }
           if (isNote(block)) {
             return (
-              <div
+              <Text
                 // biome-ignore lint/suspicious/noArrayIndexKey: nor does a message about the list
                 key={`block-${index}`}
                 // Hidden here and announced from the live region above. A listbox may own only
                 // options and groups, which is why radix hides its own separator the same way.
-                aria-hidden="true"
-                className={cn("px-2 py-1.5 text-muted-foreground text-sm", block.className)}
+                aria-hidden
+                className={cn(
+                  NOTE_ROW,
+                  "px-2 py-1.5 text-muted-foreground text-sm",
+                  block.className,
+                )}
               >
                 {block.note}
-              </div>
+              </Text>
             );
           }
           return (

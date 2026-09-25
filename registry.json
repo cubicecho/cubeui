@@ -467,6 +467,19 @@
       ]
     },
     {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/option-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",

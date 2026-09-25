@@ -886,7 +886,6 @@ const WEB_ONLY = {
   item: "shadcn's parts; to be rebuilt on `ListItem`",
   "multi-select": "built on the web-only `command`; a native half is planned",
   "multi-select-field": "a bound field over the web-only `multi-select`",
-  "option-select": "to become an options-array form of `Select`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
   "password-input": "to be rebuilt on `Input`'s `leading` and `trailing` slots",
   separator: "hand-written before the native tier; to be ported",
