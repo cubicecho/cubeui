@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ConfirmButton, MultiSelect, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, InlineNumberEdit, SearchInput, PasswordInput, InlineTextEdit, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ConfirmButton, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, InlineNumberEdit, SearchInput, PasswordInput, InlineTextEdit, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -54,7 +54,7 @@ React Native and compiled to the web, so `@cubeui/page-layout` installs in an Ex
 Vite one alike, with the same props.
 
 **Some web shells are still web-only.** `FormField`, the `@cubeui/app-form` fields,
-`MultiSelect` and the rest of the web-only controls lean on CSS grid tracks and arbitrary
+`ConfirmButton` and the rest of the web-only controls lean on CSS grid tracks and arbitrary
 variants, which Yoga and NativeWind do not have. In an Expo project those items are a 404, and
 that is the registry telling you the truth rather than shipping a shell that lays out wrong. Use
 the native set for those shapes instead — see [Shapes on React Native](#shapes-on-react-native)
@@ -303,6 +303,7 @@ views and there is no shell wrapping to hide.
 | How much of something is done — an upload, a context window — see [controls.md](controls.md#progress) | `Progress` | `@cubeui/progress` |
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leading`, `Input trailing` | `@cubeui/input` |
+| A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#multi-select) | `MultiSelect` | `@cubeui/multi-select` |
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
 | A search box over rows that filter as you type, each chosen by a press — see [controls.md](controls.md#command) | `Command` and its parts | `@cubeui/command` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |

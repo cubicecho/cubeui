@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -493,7 +493,8 @@ a picker or a palette needs a list that is not a tag picker.
 
 ## Multi-select
 
-A tag picker: a trigger showing what is chosen, a searchable list behind it.
+A tag picker: a trigger showing what is chosen, a searchable list behind it. **On both halves**,
+at `components/multi-select`, over `Popover`, `Command` and `Badge`.
 
 ```tsx
 <MultiSelect
@@ -531,6 +532,15 @@ its status by having it typed into its name, and it says it on the chip too.
 Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
 inside a `FormField` — but pass them through the **function form** of `control`, since its root
 is a `Popover`. `MultiSelectField` already does.
+
+- **On the web** the list is radix's popover over cmdk: portalled, the width of the trigger,
+  arrow keys and Enter, and the create row pinned to the bottom of a long list.
+- **On device** the trigger opens `Popover`'s native sheet over `Command`'s native list, and a
+  row is chosen by pressing it. Every chip on the trigger is also removable with its ✕ — a
+  `Badge` with `onRemove` — since there is no keyboard to reopen the list and untick it with.
+  The search matches every word on both halves (`matchesEveryWord`), so the same typing finds the
+  same rows.
+- `MultiSelectField`, the bound one, is still web only.
 
 ## Date and date range
 

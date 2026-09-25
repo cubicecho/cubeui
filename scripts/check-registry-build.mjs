@@ -878,8 +878,7 @@ const WEB_ONLY = {
   "date-field": "a bound field of `app-form`; to merge into `form`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
-  "multi-select": "DOM over `popover` and `command`, which both have native halves now; next",
-  "multi-select-field": "a bound field over the web-only `multi-select`",
+  "multi-select-field": "a bound field of `app-form`; to merge into `form`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
