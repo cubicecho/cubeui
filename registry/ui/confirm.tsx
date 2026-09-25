@@ -10,6 +10,9 @@
  * if (await confirm({ title: "Delete list?", description: "…" })) remove();
  * ```
  *
+ * `requireText: folder.name` asks for the name to be typed first, for a delete
+ * that is big and cannot be undone.
+ *
  * The dialog closes as soon as the choice is made, so the in-flight state
  * belongs to whatever the caller does next — a row that greys itself out while
  * its mutation runs, not a button inside a prompt the user already dismissed.
@@ -24,6 +27,13 @@ export type ConfirmOptions = {
   /** Verb on the destructive button. Defaults to "Delete". */
   confirmLabel?: string;
   cancelLabel?: string;
+  /**
+   * The text to type before the destructive button unlocks — the name of what is deleted.
+   * `ConfirmDialog`'s, passed through.
+   */
+  requireText?: string | undefined;
+  /** The input's label. Defaults to "Type **{requireText}** to confirm". */
+  requireTextLabel?: ReactNode;
 };
 
 type Confirm = (options: ConfirmOptions) => Promise<boolean>;
@@ -64,6 +74,8 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         description={pending?.description ?? ""}
         confirmLabel={pending?.confirmLabel ?? "Delete"}
         {...(pending?.cancelLabel ? { cancelLabel: pending.cancelLabel } : {})}
+        requireText={pending?.requireText}
+        requireTextLabel={pending?.requireTextLabel}
         onConfirm={() => settle(true)}
       />
     </ConfirmContext.Provider>

@@ -10,7 +10,7 @@
  */
 
 import type { ComponentProps, ReactNode } from "react";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 import { ActionButton } from "@/components/action-button";
 import {
@@ -23,6 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./alert-dialog";
+import { Input } from "./input";
+import { Label } from "./label";
 
 type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onClick"> & {
   /** The question, as a heading. "Delete this workspace?" */
@@ -35,6 +37,14 @@ type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onClick"> &
   /** The verb on the button that does it. */
   confirmLabel?: ReactNode | undefined;
   cancelLabel?: ReactNode | undefined;
+  /**
+   * The text to type before the confirm button unlocks — the name of the folder, the
+   * repository, the workspace. Matched exactly. For a delete that is big and cannot be undone;
+   * left out, the dialog asks with one click.
+   */
+  requireText?: string | undefined;
+  /** The input's label. Defaults to "Type **{requireText}** to confirm". */
+  requireTextLabel?: ReactNode | undefined;
   onConfirm: () => void;
 };
 
@@ -63,30 +73,70 @@ type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onClick"> &
  *
  * Destructive only, deliberately. `confirmLabel` reaches Discard, Revoke, Remove and Reset — a
  * confirm that is *not* destructive is a question, and a question is `DialogLayout`.
+ *
+ * `requireText` is the type-the-name mode — GitHub's repository delete. The box empties each time
+ * the dialog opens, so the name is typed once per delete rather than once per session.
  */
 export function ConfirmButton({
   title,
   description,
   confirmLabel = "Delete",
   cancelLabel = "Cancel",
+  requireText,
+  requireTextLabel,
   onConfirm,
   disabled,
   ...props
 }: ConfirmButtonProps) {
   const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const inputId = useId();
+  const locked = requireText !== undefined && typed !== requireText;
 
   return (
     <>
-      <ActionButton {...props} disabled={disabled} onClick={() => setOpen(true)} />
+      <ActionButton
+        {...props}
+        disabled={disabled}
+        onClick={() => {
+          setTyped("");
+          setOpen(true);
+        }}
+      />
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent data-slot="confirm-button-dialog">
           <AlertDialogHeader>
             <AlertDialogTitle>{title}</AlertDialogTitle>
             <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
+          {requireText !== undefined ? (
+            <div className="grid gap-2">
+              <Label htmlFor={inputId}>
+                {requireTextLabel ?? (
+                  <span>
+                    Type <strong className="font-semibold">{requireText}</strong> to confirm
+                  </span>
+                )}
+              </Label>
+              <Input
+                id={inputId}
+                value={typed}
+                onChangeText={setTyped}
+                // `AlertDialogAction` closes the dialog on its own click; Enter has to do both.
+                onSubmitEditing={() => {
+                  if (locked) return;
+                  setOpen(false);
+                  onConfirm();
+                }}
+                autoFocus
+                autoComplete="off"
+                spellCheck={false}
+              />
+            </div>
+          ) : null}
           <AlertDialogFooter>
             <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={onConfirm}>
+            <AlertDialogAction variant="destructive" disabled={locked} onClick={onConfirm}>
               {confirmLabel}
             </AlertDialogAction>
           </AlertDialogFooter>

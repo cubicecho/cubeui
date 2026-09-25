@@ -85,6 +85,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
 | `defaultOpen` | Where a thing that opens starts, when it holds its own open state. The primitives' word already (`Dialog`, `Popover`, `Menu`), taken by a shell once `Disclosure` held its own: an uncontrolled shell with no starting state is a `useState` the caller writes anyway. |
 | `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
+| `requireText` | Confirming asks for a name first: the text to type before the destructive button unlocks, matched exactly. On `ConfirmDialog`, `confirm()` and `ConfirmButton`; its label is `requireTextLabel`, by prefix. The caller hands over the name, as it hands over `hasUnsavedChanges` — whether the typed text matches is the dialog's own interaction, so the dialog holds it. |
 
 **Form components add:**
 

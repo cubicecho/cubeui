@@ -119,3 +119,83 @@ export const ItDoesNotSubmitTheFormAroundIt: Story = {
     expect(args.onSubmit).not.toHaveBeenCalled();
   },
 };
+
+const typeTheName = {
+  label: "Delete folder",
+  title: "Delete this folder?",
+  description: "Its notes go with it.",
+  requireText: "work",
+  requireTextLabel: "Type work to delete it",
+} as const;
+
+/**
+ * `requireText`: the confirm is disabled until the box holds the name exactly, and a wrong value
+ * leaves it that way — case, a trailing space and a prefix all count as wrong.
+ */
+export const TypeTheName: Story = {
+  args: typeTheName,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Delete folder" }));
+    const dialog = await within(document.body).findByRole("alertdialog");
+    const box = await within(dialog).findByRole("textbox", { name: "Type work to delete it" });
+    const confirm = within(dialog).getByRole("button", { name: "Delete" });
+    await expect(confirm).toBeDisabled();
+
+    for (const wrong of ["Work", "work ", "wor"]) {
+      await userEvent.clear(box);
+      await userEvent.type(box, wrong);
+      await expect(confirm).toBeDisabled();
+    }
+    expect(args.onConfirm).not.toHaveBeenCalled();
+
+    await userEvent.clear(box);
+    await userEvent.type(box, "work");
+    await expect(confirm).toBeEnabled();
+    await userEvent.click(confirm);
+    expect(args.onConfirm).toHaveBeenCalledOnce();
+    await waitFor(() => expect(within(document.body).queryByRole("alertdialog")).toBeNull());
+  },
+};
+
+/** Enter confirms only on a match, and closes the dialog as the button does. */
+export const EnterConfirmsOnlyOnAMatch: Story = {
+  args: typeTheName,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Delete folder" }));
+    const dialog = await within(document.body).findByRole("alertdialog");
+    const box = await within(dialog).findByRole("textbox", { name: "Type work to delete it" });
+
+    await userEvent.type(box, "wrok{Enter}");
+    expect(args.onConfirm).not.toHaveBeenCalled();
+    expect(within(document.body).getByRole("alertdialog")).toBeInTheDocument();
+
+    await userEvent.clear(box);
+    await userEvent.type(box, "work{Enter}");
+    expect(args.onConfirm).toHaveBeenCalledOnce();
+    await waitFor(() => expect(within(document.body).queryByRole("alertdialog")).toBeNull());
+  },
+};
+
+/** The box is empty each time the dialog opens: the name is typed once per delete. */
+export const EmptyOnEveryOpening: Story = {
+  args: typeTheName,
+  play: async ({ canvas }) => {
+    const open = async () => {
+      await userEvent.click(canvas.getByRole("button", { name: "Delete folder" }));
+      const dialog = await within(document.body).findByRole("alertdialog");
+      return {
+        dialog,
+        box: await within(dialog).findByRole("textbox", { name: "Type work to delete it" }),
+      };
+    };
+
+    const first = await open();
+    await userEvent.type(first.box, "work");
+    await userEvent.click(within(first.dialog).getByRole("button", { name: "Cancel" }));
+    await waitFor(() => expect(within(document.body).queryByRole("alertdialog")).toBeNull());
+
+    const second = await open();
+    await expect(second.box).toHaveValue("");
+    await expect(within(second.dialog).getByRole("button", { name: "Delete" })).toBeDisabled();
+  },
+};
