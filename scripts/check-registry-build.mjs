@@ -1,4 +1,4 @@
-// Fifteen things that have to be true before a built registry is installable.
+// Sixteen things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -197,7 +197,7 @@
 // two drifted the way any pair kept by hand does. So a native layout item with no web item beside
 // it is an error (its compile was refused, and the web registry dropped it without failing), and so
 // is a layout in the web `layout` set with no native item, unless it is named in
-// `WEB_ONLY_LAYOUTS` with the reason it cannot be one yet.
+// `WEB_ONLY` (rule 16) with the reason it cannot be one yet.
 //
 // ## 12. Nothing re-exports with `export … from`
 //
@@ -254,6 +254,16 @@
 // column was meant — no error, since a class that matches nothing is not one (#133).
 // `registry.web.json` derives the dependency from the emitted text; this is the assertion, asked
 // of the `content` that actually shipped, that the derivation reached every item that needs it.
+//
+// ## 16. The web-only tier only shrinks
+//
+// Every item is meant to come from React Native: written once, compiled for the web. The web-only
+// tier in `registry.web-only.json` is what predates that, plus the few things React Native cannot
+// draw. So each web-only item that ships a file is named in `WEB_ONLY`, below, with the reason it
+// has no native half, and one that is not named fails the build — a new web-only item is a decision
+// to argue in review, not a file dropped in `registry/web/`. A line whose item is gone from the
+// tier fails too, so porting an item and forgetting its line cannot leave room for the next one.
+// Rule 11 reads its exceptions from the same list.
 //
 // Run after `npm run registry:build`.
 
@@ -857,10 +867,31 @@ for (const built of BUILT) {
 // added to `registry/web/` is a second copy of a thing that should have one.
 const LAYOUT_DIR = "registry/layout/";
 const LAYOUT_BUNDLE = "layout";
-// Layouts in the web bundle with no React Native half yet, and why. Each one is a named debt, not
-// a category: when the reason goes, so does the line.
-const WEB_ONLY_LAYOUTS = {
+// Rule 16. Every web-only item that ships a file, and why it has no React Native half. Each one is
+// a named debt, not a category: when the reason goes, so does the line, and nothing is added
+// without one. Rule 11 takes its exceptions from here too.
+const WEB_ONLY = {
+  "action-button": "hand-written before the native tier; to be ported",
+  "alert-dialog": "only `confirm-button` uses it; goes when that is rebuilt on `ConfirmDialog`",
+  "app-form": "the web form layer; to merge into `form`",
+  "color-field": "a bound field of `app-form`; to merge into `form`",
+  command: "built on `cmdk`, which has no React Native build; a native half is planned",
+  "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
+  "date-field": "a bound field of `app-form`; to merge into `form`",
+  "date-picker": "built on react-day-picker's range mode; `date-time-input` is to take ranges",
   "disclosure-row": "built on the web-only `item`",
+  empty: "shadcn's parts; to map onto `EmptyState`",
+  "field-row": "part of the web form layer; to merge into `form`",
+  "form-field": "part of the web form layer; to merge into `form`",
+  item: "shadcn's parts; to be rebuilt on `ListItem`",
+  "multi-select": "built on the web-only `command`; a native half is planned",
+  "multi-select-field": "a bound field over the web-only `multi-select`",
+  "option-select": "to become an options-array form of `Select`",
+  "password-field": "a bound field of `app-form`; to merge into `form`",
+  "password-input": "to be rebuilt on `Input`'s `leading` and `trailing` slots",
+  separator: "hand-written before the native tier; to be ported",
+  skeleton: "hand-written before the native tier; to be ported",
+  table: "React Native has no table element; on device the rows are `ListItem`s",
 };
 const namesIn = async (built) => {
   const text = await readFile(path.join(built, "registry.json"), "utf8").catch(() => null);
@@ -881,8 +912,26 @@ if (webItems && nativeItems) {
   const bundle = webItems.find((i) => i.name === LAYOUT_BUNDLE);
   for (const dependency of bundle?.registryDependencies ?? []) {
     const name = dependency.split("/").pop();
-    if (onNative.has(name) || name in WEB_ONLY_LAYOUTS) continue;
+    if (onNative.has(name) || name in WEB_ONLY) continue;
     oneSided.push(`"${name}" is in the web \`${LAYOUT_BUNDLE}\` set and has no React Native half`);
+  }
+}
+
+const webOnlyText = await readFile("registry.web-only.json", "utf8");
+const webOnlyItems = JSON.parse(webOnlyText).items;
+const undeclared = [];
+const declared = new Set();
+for (const item of webOnlyItems) {
+  // A bundle ships no file of its own; what it gathers is judged item by item.
+  if ((item.files ?? []).length === 0) continue;
+  declared.add(item.name);
+  if (!(item.name in WEB_ONLY)) {
+    undeclared.push(`"${item.name}" is web-only and \`WEB_ONLY\` does not say why`);
+  }
+}
+for (const name of Object.keys(WEB_ONLY)) {
+  if (!declared.has(name)) {
+    undeclared.push(`"${name}" is named in \`WEB_ONLY\` and is no longer a web-only item`);
   }
 }
 
@@ -1039,7 +1088,7 @@ if (oneSided.length > 0) {
       "\nwhose compile was refused drops out of the web registry without failing the build; run" +
       "\n`npm run compile` for the reason. A layout added to `registry/web/` instead is a second" +
       "\ncopy to keep in step — write it in `registry/layout/`, or name why it cannot be in" +
-      "\n`WEB_ONLY_LAYOUTS` in this file.",
+      "\n`WEB_ONLY` in this file.",
   );
 }
 
@@ -1086,8 +1135,21 @@ if (resetless.length > 0) {
   );
 }
 
+if (undeclared.length > 0) {
+  console.error("\nThe web-only tier changed:\n");
+  for (const one of undeclared) console.error(`  ${one}`);
+  console.error(
+    "\nEvery item is written once in React Native and compiled for the web. A new item in" +
+      "\n`registry.web-only.json` is one more thing kept by hand on one platform; write it in" +
+      "\n`registry/ui` or `registry/layout` instead, or add it to `WEB_ONLY` in this file with the" +
+      "\nreason it cannot be, and make that case in review. An item that has gained a native half" +
+      "\ntakes its line out of `WEB_ONLY` with it.",
+  );
+}
+
 if (
-  resetless.length +
+  undeclared.length +
+    resetless.length +
     inkless.length +
     misplaced.length +
     reexports.length +
@@ -1120,7 +1182,8 @@ console.log(
     "every shared class constant is applied only by the component it is named for, every " +
     "colour class names a token, every published story imports only what the consumer's " +
     "tree will hold, every layout is on both platforms, nothing re-exports with `export … from`, " +
-    "every import between shipped files resolves where the CLI installs them, and every " +
+    "every import between shipped files resolves where the CLI installs them, every " +
     "native source names the colour of the borders and text react-native-web would draw black, " +
-    "and every item wearing the reset's classes depends on the item that installs it.",
+    "every item wearing the reset's classes depends on the item that installs it, and every " +
+    `web-only item is one of the ${Object.keys(WEB_ONLY).length} \`WEB_ONLY\` names, with its reason.`,
 );

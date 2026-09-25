@@ -437,7 +437,7 @@ both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces fifteen rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces sixteen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -483,8 +483,14 @@ Tailwind ships.
 And that **every layout is on both platforms** (rule 11). The layout shells are written once in
 `registry/layout/` and the web half is compiled from them, so a native layout with no web item beside
 it — its compile was refused, and the web registry dropped it without failing — is an error, and so is
-a layout in the web `layout` set with no native item, unless `WEB_ONLY_LAYOUTS` in the script names
+a layout in the web `layout` set with no native item, unless `WEB_ONLY` in the script names
 why (`disclosure-row`, which is built on the web-only `item`; `section` was on the list until #61).
+
+And that **the web-only tier only shrinks** (rule 16). Every item is meant to come from React Native,
+so each web-only item that ships a file is named in `WEB_ONLY` in the script with the reason it has
+no native half — `cmdk`, react-day-picker, no table element on a device, or a port not done yet. A
+web-only item the list does not name fails the build, and so does a line whose item has left the
+tier, so a port takes its line with it and the list cannot quietly make room for the next one.
 
 And that **nothing re-exports with `export … from` a path** (rule 12). The shadcn CLI rewrites a
 file's import declarations against the consumer's aliases and leaves re-export declarations exactly
@@ -1090,7 +1096,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
-npm run registry:check # the fifteen rules under Guards, against both built registries
+npm run registry:check # the sixteen rules under Guards, against both built registries
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)
