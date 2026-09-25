@@ -874,6 +874,28 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   platform's own spinner, a different shape on each.
 - A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
+## Separator
+
+```tsx
+<Separator />
+<Separator orientation="vertical" />
+<Separator decorative={false} />
+```
+
+`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-border`, as long as its
+container. Use it rather than a `border-b` on the group above or a `h-px` view.
+
+- `orientation` is `horizontal` (the default) or `vertical`. A vertical one fills its row's height:
+  `self-stretch` on device, shadcn's `h-full` on the web. Give it a height (`h-4`) when the row is
+  taller than the rule should be.
+- `decorative` is on by default and hides the rule from assistive tech, since what it divides is
+  already divided. `decorative={false}` makes it a `role="separator"`, for a boundary nothing else
+  on the screen says.
+- On the web it still writes `data-orientation`, so shadcn's
+  `className="data-[orientation=vertical]:h-4"` works unchanged; a plain `h-4` works too.
+- `Menu` has its own `MenuSeparator`, and `Field` its own `FieldSeparator` with a word in the
+  middle. Use those inside them.
+
 ## Password
 
 A password or a pasted secret is `PasswordInput`, on both halves. Do not write
