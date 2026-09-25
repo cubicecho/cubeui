@@ -4,6 +4,9 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
 import { ThemePicker as NativeThemePicker } from "../registry/ui/theme-picker";
 import {
+  PALETTE_PREFERENCES,
+  PALETTE_STORAGE_KEY,
+  type PalettePreference,
   THEME_PRE_PAINT_SCRIPT,
   THEME_STORAGE_KEY,
   type ThemePreference,
@@ -28,6 +31,7 @@ type PickerProps = {
   value?: ThemePreference | undefined;
   onValueChange?: ((value: ThemePreference) => void) | undefined;
   "aria-label"?: string | undefined;
+  palettes?: readonly PalettePreference[] | undefined;
 };
 type Picker = ComponentType<PickerProps>;
 
@@ -38,10 +42,17 @@ const stored = () => window.localStorage.getItem(THEME_STORAGE_KEY);
 const background = () => getComputedStyle(html()).getPropertyValue("--background").trim();
 const LIGHT = "#ffffff";
 const DARK = "#0a0a0a";
+const MONOKAI = "#272822";
+const storedPalette = () => window.localStorage.getItem(PALETTE_STORAGE_KEY);
+/** A button radio is `disabled`; the native half's is a `div`, so it can only say `aria-disabled`. */
+const disabled = (radio: HTMLElement) =>
+  radio.hasAttribute("disabled") || radio.getAttribute("aria-disabled") === "true";
 
 function reset() {
   html().classList.remove("dark", "light");
+  html().removeAttribute("data-palette");
   window.localStorage.removeItem(THEME_STORAGE_KEY);
+  window.localStorage.removeItem(PALETTE_STORAGE_KEY);
 }
 
 const meta = {
@@ -54,12 +65,18 @@ const meta = {
       light: html().classList.contains("light"),
     };
     const before = stored();
+    const beforePalette = storedPalette();
+    const attribute = html().getAttribute("data-palette");
     reset();
     return () => {
       html().classList.toggle("dark", classes.dark);
       html().classList.toggle("light", classes.light);
+      if (attribute === null) html().removeAttribute("data-palette");
+      else html().setAttribute("data-palette", attribute);
       if (before === null) window.localStorage.removeItem(THEME_STORAGE_KEY);
       else window.localStorage.setItem(THEME_STORAGE_KEY, before);
+      if (beforePalette === null) window.localStorage.removeItem(PALETTE_STORAGE_KEY);
+      else window.localStorage.setItem(PALETTE_STORAGE_KEY, beforePalette);
     };
   },
 } satisfies Meta;
@@ -175,6 +192,56 @@ export const PrePaint: Story = {
     await expect(run("system")).toBe("");
     await expect(run(null)).toBe("");
     await expect(background()).toBe(LIGHT);
+
+    // A dark-only palette is dark over a stored Light, and wears its attribute.
+    window.localStorage.setItem(PALETTE_STORAGE_KEY, "monokai");
+    await expect(run("light")).toBe("dark");
+    await expect(html()).toHaveAttribute("data-palette", "monokai");
+    await expect(background()).toBe(MONOKAI);
+  },
+};
+
+/**
+ * The palette choice under the theme: Monokai wears `data-palette`, is dark over a light browser,
+ * and disables the theme choice while it is on; Default takes all three back.
+ */
+async function assertPalettes(canvasElement: HTMLElement, name: string, index: number) {
+  reset();
+  const canvas = within(canvasElement);
+  const theme = within(canvas.getByRole("radiogroup", { name }));
+  const palette = within(
+    canvas.getAllByRole("radiogroup", { name: "Palette" })[index] as HTMLElement,
+  );
+
+  await expect(palette.getByRole("radio", { name: /Default/ })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await userEvent.click(palette.getByRole("radio", { name: /Monokai/ }));
+  await waitFor(() => expect(html()).toHaveAttribute("data-palette", "monokai"));
+  await expect(storedPalette()).toBe("monokai");
+  await expect(html()).toHaveClass("dark");
+  await expect(background()).toBe(MONOKAI);
+  await expect(disabled(theme.getByRole("radio", { name: "Light" }))).toBe(true);
+
+  await userEvent.click(palette.getByRole("radio", { name: /Default/ }));
+  await waitFor(() => expect(html()).not.toHaveAttribute("data-palette"));
+  await expect(storedPalette()).toBe("default");
+  await expect(html()).not.toHaveClass("dark");
+  await expect(background()).toBe(LIGHT);
+  await expect(disabled(theme.getByRole("radio", { name: "Light" }))).toBe(false);
+}
+
+export const Palettes: Story = {
+  render: () => (
+    <SideBySide
+      native={<NativeThemePicker aria-label="Native theme" palettes={PALETTE_PREFERENCES} />}
+      compiled={<CompiledThemePicker aria-label="Compiled theme" palettes={PALETTE_PREFERENCES} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await assertPalettes(canvasElement, "Native theme", 0);
+    await assertPalettes(canvasElement, "Compiled theme", 1);
   },
 };
 

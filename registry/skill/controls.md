@@ -1083,11 +1083,48 @@ and the storage, the class and the first paint are what hand-rolled versions get
   theme `<fieldset>` beside it.
 - `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
 
-**Paint the stored theme before React mounts**, or a reload flashes the other palette. Put this in
+### Palettes
+
+A palette is a second choice beside the theme: whose colours, where the theme is light or dark.
+`PALETTE_PREFERENCES` lists them — `"default"` (cubeui's own) and `"monokai"`. Monokai is dark
+only, so it is in `DARK_ONLY_PALETTES`, and while it is chosen the app is dark whatever the theme
+says.
+
+- **`<ThemePicker palettes={PALETTE_PREFERENCES} />`** adds a Palette radiogroup under the
+  theme. While a dark-only palette is chosen the theme radios are disabled, and they come back
+  as they were when Default is chosen again. Controlled, it takes `palette` and
+  `onPaletteChange` beside `value` and `onValueChange`.
+- **`usePalettePreference()`** returns `[palette, setPalette]`, for a control of your own. It
+  takes the same `storage` as `useThemePreference`.
+- **Web:** stored under `PALETTE_STORAGE_KEY` (`"cubeui-palette"`) and applied as
+  `data-palette="monokai"` on `<html>`, which the tokens stylesheet keys on. The pre-paint
+  script below reads it too. `useThemePreference()` at the root applies both.
+- **Device:** there is no `<html>`, so wrap the app's root in **`PaletteProvider`**, inside
+  nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
+  so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
+  web `PaletteProvider` renders its children and nothing more, so one root serves both.
+- The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
+  set a screen is painted with, for a chart or anything else that takes a colour as a prop.
+
+```tsx
+const storage = { getItem: (k) => mmkv.getString(k) ?? null, setItem: (k, v) => mmkv.set(k, v) };
+
+export default function Root() {
+  useThemePreference({ storage });
+  usePalettePreference({ storage });
+  return (
+    <PaletteProvider>
+      <Stack />
+    </PaletteProvider>
+  );
+}
+```
+
+**Paint the stored theme and palette before React mounts**, or a reload flashes the other one. Put this in
 `<head>`, before any stylesheet:
 
 ```html
-<script>(function(){try{var p=localStorage.getItem("cubeui-theme");var d=p==="dark"||(p!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);var c=document.documentElement.classList;c.toggle("dark",d);c.toggle("light",p==="light")}catch(e){}})();</script>
+<script>(function(){try{var s=localStorage,p=s.getItem("cubeui-theme"),q=s.getItem("cubeui-palette"),k=["monokai"].indexOf(q)>=0,d=k||p==="dark"||(p!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches),e=document.documentElement,c=e.classList;c.toggle("dark",d);c.toggle("light",!k&&p==="light");if(["monokai"].indexOf(q)>=0)e.setAttribute("data-palette",q)}catch(e){}})();</script>
 ```
 
 Where the head is React, as in Expo's `app/+html.tsx` or a Next layout, render the export rather

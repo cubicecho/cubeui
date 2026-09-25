@@ -22,7 +22,7 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { compile } from "react-native-css/compiler";
-import { names } from "../tokens/palette.mjs";
+import { names, palettes } from "../tokens/palette.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -79,6 +79,7 @@ const WEB_ONLY = [
   /^\*,\n::before,\n::after \{[\s\S]*?\n\}/m,
   /^:where\((button|html|input, select, textarea)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html\.(dark|light)\) \{[\s\S]*?\n\}/gm,
+  /^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{[\s\S]*?\n\}/gm,
 ];
 
 test("the web-only rules compile to nothing on native", async () => {
@@ -96,6 +97,10 @@ test("the web-only rules compile to nothing on native", async () => {
   );
   assert.match(css, /^:where\(html\) \{\n {2}font-family: [^;]+;\n\}/m);
   assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 2);
+  assert.equal(
+    (css.match(/^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{/gm) ?? []).length,
+    Object.values(palettes).flatMap((modes) => Object.keys(modes)).length,
+  );
   assert.equal(/box-sizing|:where\(|:is\(html/.test(without), false, "the strip missed something");
   assert.deepEqual(await stylesheet(css), await stylesheet(without));
 });
@@ -132,4 +137,21 @@ test("the manual override carries the whole palette, in both directions", () => 
   assert.equal(lightRoot.length, names.length);
   assert.deepEqual(declarations(css, ":is(html.light)"), lightRoot);
   assert.deepEqual(declarations(css, ":is(html.dark)"), declarations(system, ":root"));
+});
+
+test("each palette's block carries the whole palette, and is dropped on device", async () => {
+  const css = readFileSync(join(root, "dist/tokens.native.css"), "utf8");
+  const probe = ".probe { color: red; }";
+  const alone = await stylesheet(probe);
+  for (const [name, modes] of Object.entries(palettes)) {
+    const both = modes.light && modes.dark;
+    for (const mode of Object.keys(modes)) {
+      const selector = `:is(html${both && mode === "dark" ? ".dark" : ""}[data-palette="${name}"])`;
+      const body = declarations(css, selector);
+      assert.equal(body.length, names.length, `${selector} is missing tokens`);
+      // Dropped, not turned into a style or a variable: an attribute selector is the same
+      // unsupported shape to the compiler as the class one above, but that is its call, not ours.
+      assert.deepEqual(await stylesheet(`${probe}\n${selector} {\n${body.join("\n")}\n}`), alone);
+    }
+  }
 });

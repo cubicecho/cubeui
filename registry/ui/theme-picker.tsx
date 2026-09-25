@@ -15,12 +15,24 @@
  * ("Light", "Dark", "System") is the radio's accessible name. On the web the caption is also the
  * hover tooltip (`title`); device has no hover, so there the caption is what VoiceOver and TalkBack
  * read and nothing is shown.
+ *
+ * `palettes` adds a second choice under the first, of palette — `PALETTE_PREFERENCES`, or the ones
+ * the app offers — bound to `usePalettePreference()` the same way, or controlled by `palette` and
+ * `onPaletteChange`. While a dark-only palette is chosen the theme choice is disabled rather than
+ * hidden: it still says what the app goes back to when the palette changes.
  */
 
+import { View } from "react-native";
 import { Monitor, Moon, Sun } from "@/components/ui/icons";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useThemePreference } from "@/components/ui/theme-preference";
-import { isThemePreference, type ThemePreference } from "@/components/ui/theme-preference-base";
+import { usePalettePreference, useThemePreference } from "@/components/ui/theme-preference";
+import {
+  DARK_ONLY_PALETTES,
+  isPalettePreference,
+  isThemePreference,
+  type PalettePreference,
+  type ThemePreference,
+} from "@/components/ui/theme-preference-base";
 import { cn } from "@/lib/utils";
 
 type ThemePickerProps = {
@@ -40,6 +52,17 @@ type ThemePickerProps = {
   "aria-label"?: string | undefined;
   "aria-labelledby"?: string | undefined;
   "aria-describedby"?: string | undefined;
+  /** Offer a palette as well, under the theme: these, in this order. Left out, no palette choice. */
+  palettes?: readonly PalettePreference[] | undefined;
+  /** The checked palette, for a controlled picker. Left out, the palette is bound to its hook. */
+  palette?: PalettePreference | undefined;
+  /** Told of every palette chosen; a bound picker also stores it. */
+  onPaletteChange?: ((value: PalettePreference) => void) | undefined;
+};
+
+const PALETTE_OPTIONS: Record<PalettePreference, { label: string; description: string }> = {
+  default: { label: "Default", description: "cubeui's own colours" },
+  monokai: { label: "Monokai", description: "The editor theme. Dark only" },
 };
 
 const OPTIONS = [
@@ -50,6 +73,9 @@ const OPTIONS = [
 
 function ThemeOptions({
   variant = "card",
+  palettes: _palettes,
+  palette: _palette,
+  onPaletteChange: _onPaletteChange,
   value,
   onValueChange,
   disabled,
@@ -120,8 +146,70 @@ function BoundThemePicker({ onValueChange, ...props }: ThemePickerProps) {
   );
 }
 
-function ThemePicker(props: ThemePickerProps) {
+function ThemeChoice(props: ThemePickerProps) {
   return props.value === undefined ? <BoundThemePicker {...props} /> : <ThemeOptions {...props} />;
+}
+
+type PaletteSectionProps = ThemePickerProps & { palettes: readonly PalettePreference[] };
+
+function PaletteSection({
+  palettes,
+  palette,
+  onPaletteChange,
+  variant = "card",
+  className,
+  ...props
+}: PaletteSectionProps) {
+  const compact = variant === "compact";
+  const darkOnly = palette !== undefined && DARK_ONLY_PALETTES.includes(palette);
+  return (
+    <View className={cn("gap-3", className)}>
+      <ThemeChoice {...props} variant={variant} disabled={props.disabled || darkOnly} />
+      <RadioGroup
+        variant={compact ? "segmented" : "card"}
+        value={palette}
+        onValueChange={(next) => {
+          if (isPalettePreference(next)) onPaletteChange?.(next);
+        }}
+        disabled={props.disabled}
+        aria-label="Palette"
+      >
+        {palettes.map((option) => (
+          <RadioGroupItem
+            key={option}
+            value={option}
+            label={PALETTE_OPTIONS[option].label}
+            description={compact ? undefined : PALETTE_OPTIONS[option].description}
+            hint={compact ? PALETTE_OPTIONS[option].description : undefined}
+          />
+        ))}
+      </RadioGroup>
+    </View>
+  );
+}
+
+function BoundPaletteSection({ onPaletteChange, ...props }: PaletteSectionProps) {
+  const [palette, setPalette] = usePalettePreference();
+  return (
+    <PaletteSection
+      {...props}
+      palette={palette}
+      onPaletteChange={(next) => {
+        setPalette(next);
+        onPaletteChange?.(next);
+      }}
+    />
+  );
+}
+
+function ThemePicker(props: ThemePickerProps) {
+  const { palettes } = props;
+  if (!palettes) return <ThemeChoice {...props} />;
+  return props.palette === undefined ? (
+    <BoundPaletteSection {...props} palettes={palettes} />
+  ) : (
+    <PaletteSection {...props} palettes={palettes} />
+  );
 }
 
 export type { ThemePickerProps };

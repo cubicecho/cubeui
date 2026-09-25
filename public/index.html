@@ -577,7 +577,7 @@
         <tr>
           <th scope="row"><code>@cubeui/theme-picker</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Light, Dark and System as radio tiles, or with variant="compact" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on &lt;html&gt; on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline &lt;script&gt; that paints the stored theme before React mounts.</td>
+          <td>Light, Dark and System as radio tiles, or with variant="compact" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on &lt;html&gt; on the web, Appearance.setColorScheme on device, where the app passes its own storage. With palettes={PALETTE_PREFERENCES} it adds a palette choice beside the theme (default, or the dark-only monokai), stored by usePalettePreference() and applied as data-palette on &lt;html&gt; on the web and by PaletteProvider on device. THEME_PRE_PAINT_SCRIPT is the inline &lt;script&gt; that paints the stored theme and palette before React mounts.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/toast</code></th>
