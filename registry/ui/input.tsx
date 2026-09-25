@@ -88,6 +88,9 @@ function Input({
       aria-labelledby={ariaLabelledBy}
       inputMode={inputMode ?? NATIVE_INPUT_MODE[type] ?? "text"}
       secureTextEntry={type === "password"}
+      // What a DOM `type="search"` is without being told, so a screen reader on device says
+      // "search field" too.
+      role={type === "search" ? "searchbox" : undefined}
       className={cn(
         INPUT_CLASS,
         leading != null && INPUT_LEADING_PAD_CLASS,

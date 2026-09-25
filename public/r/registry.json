@@ -197,6 +197,23 @@
       ]
     },
     {
+      "name": "search-input",
+      "type": "registry:ui",
+      "title": "Search input",
+      "description": "A search box: Input with a Search icon inside at its start, type=search (a searchbox), named by `label` (default Search), and a named clear button while it holds text.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/search-input-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/search-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
