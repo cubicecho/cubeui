@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the progress bar, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -501,6 +501,31 @@ as text and becomes an input when pressed.
 - `accessibilityLabel` is required, because the press target's text is a bare number.
 - Inside a pressable row the row's own press fires too. Stopping it is the caller's call, since
   only the caller knows which press should win.
+
+## Progress
+
+```tsx
+<Progress value={done} max={turns} label="Re-embedding progress" valueLabel={`${done} of ${turns} turns`} />
+<Progress value={job.progress * 100} label={`${job.name} upload`} />
+```
+
+`@cubeui/progress`, on both halves, for a bar showing how much of something is done — an upload,
+a re-embed, a context window filling. It is one self-closing element: do not draw a track `div`
+with a filled `div` and a `style.width` inside it.
+
+- `value` is shadcn's: 0 to `max`, and `max` is 100 by default, so a percentage needs nothing
+  else. It is clamped to `[0, max]`, so an overshoot draws a full bar, not a longer one.
+- It is `role="progressbar"` with `aria-valuemin`, `aria-valuemax` and `aria-valuenow`. `label`
+  is its accessible name; give one, since a bar with no name is read as "progress bar, 40%".
+  `aria-label` works too, so a shadcn call site ports unchanged.
+- `valueLabel` is the value in words, read instead of the number ("1,204 of 5,880 turns"). Leave
+  it out when the percentage is what the number means.
+- No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
+  animate. A wait with no known end wants a spinner, not an empty bar.
+- `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
+  (`bg-destructive` for a context window nearly full). Colours are tokens, as everywhere.
+- A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not
+  this component.
 
 ## Colour
 

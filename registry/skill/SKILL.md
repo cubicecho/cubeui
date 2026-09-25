@@ -89,6 +89,7 @@ at the end.
 | A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
 | A date and a time as one `Date` on both halves — or, with `clearable mode="date"`, an optional date only | `DateTimeInput` | [controls.md](controls.md#date-and-date-range) |
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
+| How much of something is done: an upload, a re-embed, a context window filling | `Progress` | [controls.md](controls.md#progress) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
 | An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
@@ -241,6 +242,7 @@ views and there is no shell wrapping to hide.
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A date and a time as one `Date`, or an optional date only (`clearable mode="date"`) — see [controls.md](controls.md#date-and-date-range) | `DateTimeInput` | `@cubeui/date-time-input` |
 | A number on a row or card, edited in place — see [controls.md](controls.md#a-number-edited-in-place) | `InlineNumberEdit` | `@cubeui/inline-number-edit` |
+| How much of something is done — an upload, a context window — see [controls.md](controls.md#progress) | `Progress` | `@cubeui/progress` |
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
