@@ -381,6 +381,10 @@ Recorded so the next pass does not re-derive them:
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than
   upstreamed — `dim` is one `className` on `ItemContent`, which is not a component. What `Item`
   had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
+  `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
+  so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leading`,
+  `title`, `description`, `meta`, `action`, and an optional pressable middle. Rebuilding `Item`'s
+  call sites and `DisclosureRow` on it is the follow-up.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5

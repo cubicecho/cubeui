@@ -5,16 +5,22 @@
   "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/card-layout",
+    "@cubeui/centered-layout",
     "@cubeui/description-list",
     "@cubeui/dialog-layout",
+    "@cubeui/disclosure",
     "@cubeui/disclosure-row",
     "@cubeui/header-content-footer",
+    "@cubeui/list-item",
     "@cubeui/page-header",
     "@cubeui/page-layout",
     "@cubeui/query-state",
     "@cubeui/section",
+    "@cubeui/setting-row",
     "@cubeui/sidebar",
-    "@cubeui/split-layout"
+    "@cubeui/split-layout",
+    "@cubeui/stat-tile",
+    "@cubeui/top-bar-layout"
   ],
   "files": [],
   "type": "registry:component"

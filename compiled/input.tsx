@@ -26,6 +26,12 @@
  * of `ComponentProps<"input">`, both change handlers fire, and the ref is the
  * element (which already satisfies `InputHandle`, so shared call sites holding
  * one are served by the same object).
+ *
+ * `leading` and `trailing` are the one place the root changes. Without them the
+ * root is the `<input>`, exactly shadcn's; with one, the input sits in a
+ * `relative` box beside an absolutely placed slot, as `PasswordInput` places its
+ * eye. `className` and every DOM prop still land on the `<input>`, so `id`,
+ * `aria-*` and the ref reach the control a `<label>` points at.
  */
 
 import type {
@@ -36,6 +42,11 @@ import type {
 } from "react";
 import {
   INPUT_CLASS,
+  INPUT_LEADING_CLASS,
+  INPUT_LEADING_PAD_CLASS,
+  INPUT_TRAILING_CLASS,
+  INPUT_TRAILING_PAD_CLASS,
+  INPUT_WRAPPER_CLASS,
   type InputHandle,
   type InputKeyPressEvent,
   type InputKeyPressHandler,
@@ -83,10 +94,13 @@ function Input({
   onKeyPress,
   onSubmitEditing,
   onEscape,
+  leading,
+  trailing,
+  wrapperClassName,
   ref,
   ...props
 }: InputProps) {
-  return (
+  const field = (
     <input
       // The element is the handle: it has `focus` and `select`, which is all `InputHandle` asks.
       ref={ref as Ref<HTMLInputElement>}
@@ -116,11 +130,38 @@ function Input({
       className={cn(
         INPUT_CLASS,
         "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive",
+        leading != null && INPUT_LEADING_PAD_CLASS,
+        trailing != null && INPUT_TRAILING_PAD_CLASS,
         className,
       )}
     />
   );
+
+  if (leading == null && trailing == null) return field;
+
+  return (
+    <div data-slot="input-wrapper" className={cn(INPUT_WRAPPER_CLASS, wrapperClassName)}>
+      {leading != null ? (
+        <span data-slot="input-leading" className={cn(INPUT_LEADING_CLASS, SLOT_ICON)}>
+          {leading}
+        </span>
+      ) : null}
+      {field}
+      {trailing != null ? (
+        <span data-slot="input-trailing" className={cn(INPUT_TRAILING_CLASS, SLOT_ICON)}>
+          {trailing}
+        </span>
+      ) : null}
+    </div>
+  );
 }
+
+/**
+ * On the web an `<svg>` takes `currentColor`, so the slot carries the ink and the icon only needs
+ * its size — pinned to the child rather than set on it, so a bare `<Search />` fits. A trailing
+ * button's own `hover:text-*` still wins, being on the button.
+ */
+const SLOT_ICON = "text-muted-foreground [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
 export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputType };
 export { Input };
