@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/layout/action-button.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * A button whose reason can always be read — including when it cannot be pressed. One source for
  * both platforms; `rn2web` compiles it for the DOM, where it is a `<button>` that takes `onClick`
  * and the rest of `<button>`'s props, as `Button` does.
@@ -93,9 +83,10 @@
  */
 import type { ComponentProps, ReactNode } from "react";
 import { useId } from "react";
+import { Platform, Text } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 type ActionButtonProps = Omit<ComponentProps<typeof Button>, "aria-label"> & {
   /**
@@ -153,7 +144,7 @@ export function ActionButton({
   skipDelayDuration,
   disabled,
   className,
-  onClick: onPress,
+  onPress,
   children,
   "aria-describedby": ariaDescribedBy,
   ...props
@@ -171,9 +162,11 @@ export function ActionButton({
       // on device the prop is what swallows the long press — with them, the explanation.
       // `opacity-50` is what `disabled` would have drawn.
       aria-disabled={disabled || undefined}
-      aria-describedby={describedBy}
+      {...(Platform.OS === "web"
+        ? { "aria-describedby": describedBy }
+        : { accessibilityHint: typeof hint === "string" ? hint : undefined })}
       className={cn(disabled && "opacity-50", className)}
-      onClick={(event) => {
+      onPress={(event) => {
         if (disabled) {
           event.preventDefault();
           return;
@@ -190,11 +183,12 @@ export function ActionButton({
   // child, and text inside the button would be dead weight anyway — `aria-label` already
   // overrides the content for the name. Web only: `aria-describedby` is how the web reads it, and
   // the device has the accessibility hint instead.
-  const description = hint ? (
-    <span id={hintId} className="cube-rn-text sr-only text-foreground">
-      {hint}
-    </span>
-  ) : null;
+  const description =
+    Platform.OS === "web" && hint ? (
+      <Text nativeID={hintId} className="sr-only text-foreground">
+        {hint}
+      </Text>
+    ) : null;
 
   // `tooltip={false}` drops the tooltip, not the explanation: the hint is still the reason the
   // control is the way it is, and it is still the only place a screen reader can get it.

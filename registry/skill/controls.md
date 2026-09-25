@@ -133,6 +133,26 @@ save the form as well as do its own job — and why Enter in that field pressed 
 implicit submission goes to the first submit button in tree order and never through a click.
 A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
 
+**`@cubeui/action-button` is on both halves**, with the same props and the one conversion every
+pressable has: `onPress` on a device, `onClick` on the web.
+
+```tsx
+<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} onPress={remove}>
+  <Trash2 />
+</ActionButton>
+```
+
+- On device the tooltip opens on a **long press**, and a `disabled` one still hears it — that is
+  the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver announce the
+  button as unavailable.
+- A string `hint` is the button's accessibility hint, read after `label`. A `hint` that is a node
+  is only the tooltip there; pass a string when it has to be heard.
+- `delayDuration`, `skipDelayDuration`, `type` and `aria-describedby` are web only. A device has
+  no hover to delay and no form to submit.
+- Under react-native-web (an Expo app's web build) `Pressable` overwrites `aria-disabled` with its
+  own `disabled`, so there a disabled `ActionButton` refuses the press and reads its hint but is
+  not announced as unavailable. The compiled web half, which a DOM app installs, is not affected.
+
 ## Copy button
 
 A button that puts a string on the clipboard is `CopyButton`, on both halves. Do not write the

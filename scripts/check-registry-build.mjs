@@ -871,7 +871,6 @@ const LAYOUT_BUNDLE = "layout";
 // a named debt, not a category: when the reason goes, so does the line, and nothing is added
 // without one. Rule 11 takes its exceptions from here too.
 const WEB_ONLY = {
-  "action-button": "hand-written before the native tier; to be ported",
   "alert-dialog": "only `confirm-button` uses it; goes when that is rebuilt on `ConfirmDialog`",
   "app-form": "the web form layer; to merge into `form`",
   "color-field": "a bound field of `app-form`; to merge into `form`",
