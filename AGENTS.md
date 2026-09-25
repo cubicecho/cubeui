@@ -372,11 +372,19 @@ Recorded so the next pass does not re-derive them:
   mcp-router, mcp-skills-manager, notes — and the two mcp apps are near-forks (their
   `token-gate.tsx` differs by 4 lines out of 67). Not built as a shell: the layout half is
   `@cubeui/sidebar`, and the genuinely shared part between the mcp apps is auth, which is rule 5.
+  The one layout piece still hand-written in six of them — the `md:hidden` bar with the brand and
+  icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brand`,
+  `nav` and `action`, a widening rather than a new `app-shell` item, which would also have
+  collided with mcp-ragdown's own `components/app-shell.tsx` on install.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
   `flex items-start justify-between` across 8 projects. Settled: once kanban installed
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than
   upstreamed — `dim` is one `className` on `ItemContent`, which is not a component. What `Item`
   had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
+  `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
+  so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leading`,
+  `title`, `description`, `meta`, `action`, and an optional pressable middle. Rebuilding `Item`'s
+  call sites and `DisclosureRow` on it is the follow-up.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5

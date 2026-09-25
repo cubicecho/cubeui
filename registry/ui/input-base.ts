@@ -6,7 +6,7 @@
  * importing itself.
  */
 
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
 
 /**
  * Everything but `text`, `number`, `password` and the four keyboard types falls back to plain text
@@ -127,8 +127,44 @@ export type InputProps = {
    */
   "aria-labelledby"?: string | undefined;
   autoFocus?: boolean | undefined;
+  /**
+   * An icon drawn inside the field at its start — a `<Search />`, a `<Clock />` — with the text
+   * padded past it. Pass it bare: the input sizes it and mutes it, and it takes no pointer, so a
+   * press on it lands in the field. Thirteen search boxes wrote this by hand as an absolute icon
+   * and a `pl-8`, each with its own offset.
+   */
+  leading?: ReactNode | undefined;
+  /**
+   * The far end of the field, inside it: one icon-sized control, such as a clear button. The text
+   * stops short of it. Unlike `leading` it is pressable, so give a button its own name.
+   */
+  trailing?: ReactNode | undefined;
+  /**
+   * The class of the box that holds the field and its `leading` / `trailing`, which only exists
+   * when one of them is passed. `className` stays on the field itself, as it is on every input, so
+   * size the pair here: `wrapperClassName="w-64"`.
+   */
+  wrapperClassName?: string | undefined;
   ref?: Ref<InputHandle> | undefined;
 };
+
+/** The box a `leading` or `trailing` is positioned in. Full width, as the field is on its own. */
+export const INPUT_WRAPPER_CLASS = "relative w-full min-w-0";
+
+/** Where `leading` sits: an icon-wide cell at the field's start, muted, never the press target. */
+export const INPUT_LEADING_CLASS =
+  "pointer-events-none absolute inset-y-0 left-0 flex w-9 flex-row items-center justify-center";
+
+/** Where `trailing` sits: the same cell at the far end, which does take a press. */
+export const INPUT_TRAILING_CLASS =
+  "absolute inset-y-0 right-0 flex w-9 flex-row items-center justify-center";
+
+/** The icon inside either slot, handed down through `IconClassContext`: on device nothing inherits. */
+export const INPUT_SLOT_ICON_CLASS = "size-4 shrink-0 text-muted-foreground";
+
+/** The text's padding past a slot, so it never runs under the icon. */
+export const INPUT_LEADING_PAD_CLASS = "pl-9";
+export const INPUT_TRAILING_PAD_CLASS = "pr-9";
 
 export const INPUT_CLASS =
   "border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";

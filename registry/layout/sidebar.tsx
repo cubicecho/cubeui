@@ -80,6 +80,9 @@ export type SidebarProps = {
    *
    * Hidden is `display: none`, so it leaves the accessibility tree too, rather than staying a
    * landmark with nothing visible in it.
+   *
+   * Inside a `SidebarLayout`, pass `sidebarHideBelow` to the layout instead: it hides the pane at
+   * the same breakpoint and draws the bar that stands in for the rail, from the one value.
    */
   hideBelow?: keyof typeof HIDE_BELOW | undefined;
   /** The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. */
@@ -111,8 +114,9 @@ export type SidebarProps = {
  * **`hideBelow` is its narrow-width answer.** A rail is not a pane that stacks, so under a phone's
  * width it goes rather than landing on top of the page. `hidden md:flex` in `className` did the
  * same only while the root's display came from a class merged before the caller's; these are the
- * same two classes, owned here. Inside a `SidebarLayout` keep `divider="none"`, so the empty pane
- * spends no gap and draws no rule.
+ * same two classes, owned here. Inside a `SidebarLayout` the layout's `sidebarHideBelow` is the
+ * same switch one level up — it hides the pane rather than leaving an empty one, and draws the
+ * bar that stands in for the rail under the same breakpoint.
  */
 export function Sidebar({
   content,
