@@ -20,7 +20,7 @@
  */
 
 import { useImperativeHandle, useRef } from "react";
-import { TextInput, View } from "react-native";
+import { Platform, TextInput, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import {
   INPUT_CLASS,
@@ -53,10 +53,13 @@ function Input({
   placeholder,
   maxLength,
   disabled,
+  readOnly,
   autoFocus,
   id,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   leading,
   trailing,
   wrapperClassName,
@@ -81,11 +84,19 @@ function Input({
       }}
       placeholder={placeholder}
       maxLength={maxLength}
-      editable={!disabled}
+      editable={!disabled && !readOnly}
       autoFocus={autoFocus}
       id={id}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
+      // What react-native has no prop for, in the spelling react-native-web reads — the same
+      // arrangement as `DateTimeInput`'s trigger.
+      {...(Platform.OS === "web"
+        ? {
+            ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
+            ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+          }
+        : {})}
       inputMode={inputMode ?? NATIVE_INPUT_MODE[type] ?? "text"}
       secureTextEntry={type === "password"}
       // What a DOM `type="search"` is without being told, so a screen reader on device says

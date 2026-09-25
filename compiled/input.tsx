@@ -79,6 +79,8 @@ export type InputProps = Omit<
     | "value"
     | "defaultValue"
     | "onKeyPress"
+    | "aria-describedby"
+    | "aria-invalid"
   > & {
     type?: HTMLInputTypeAttribute | undefined;
     ref?: Ref<HTMLInputElement> | Ref<InputHandle> | undefined;

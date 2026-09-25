@@ -101,7 +101,7 @@ at the end.
 | A light / dark / system setting, stored and applied | `ThemePicker`, `useThemePreference` | [controls.md](controls.md#theme) |
 | A date and a time as one `Date` on both halves — or, with `clearable mode="date"`, an optional date only | `DateTimeInput` | [controls.md](controls.md#date-and-date-range) |
 | A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
-| A name or title renamed in place — pressed, or from a Rename row or button — Enter or blur saves, Escape cancels | `InlineTextEdit` | [controls.md](controls.md#a-line-of-text-edited-in-place) |
+| A name or title renamed in place — pressed, or from a Rename row or button — Enter or blur saves, Escape cancels, an async save shows pending and its error | `InlineTextEdit` | [controls.md](controls.md#a-line-of-text-edited-in-place) |
 | How much of something is done: an upload, a re-embed, a context window filling | `Progress` | [controls.md](controls.md#progress) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leading`, `Input trailing` | [controls.md](controls.md#an-icon-in-an-input) |

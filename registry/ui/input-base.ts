@@ -110,6 +110,11 @@ export type InputProps = {
   min?: number | undefined;
   max?: number | undefined;
   disabled?: boolean | undefined;
+  /**
+   * Shown and focusable, but not editable: the value is on its way somewhere. Unlike `disabled` it
+   * keeps the focus it has, so the caret is still there when the field opens again.
+   */
+  readOnly?: boolean | undefined;
   className?: string | undefined;
   /**
    * Ties the control to its `<label>` on the web. React Native takes `id` as its `nativeID`, so on
@@ -126,6 +131,13 @@ export type InputProps = {
    * none, so a native caller that needs the name everywhere passes `aria-label` too.
    */
   "aria-labelledby"?: string | undefined;
+  /**
+   * What says more about the field — its hint, its error — by id. Web only: React Native has no
+   * description relation, so on device the error is read where it is drawn.
+   */
+  "aria-describedby"?: string | undefined;
+  /** The value was refused: a validator's error, a save that failed. Web only, as above. */
+  "aria-invalid"?: boolean | "true" | "false" | undefined;
   autoFocus?: boolean | undefined;
   /**
    * An icon drawn inside the field at its start — a `<Search />`, a `<Clock />` — with the text

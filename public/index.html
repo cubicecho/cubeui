@@ -367,12 +367,12 @@
         <tr>
           <th scope="row"><code>@cubeui/inline-number-edit</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A number shown as text, becoming an input when pressed. Commits on blur and on submit.</td>
+          <td>A number shown as text, becoming an input when pressed. Commits on blur and on submit, and Escape cancels. A save that returns a promise holds the edit open: pending while it runs, the error under the draft if it fails.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/inline-text-edit</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved.</td>
+          <td>A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved. A save that returns a promise holds the edit open: pending while it runs, the error under the draft if it fails.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/input</code></th>
