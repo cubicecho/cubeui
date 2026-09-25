@@ -509,7 +509,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
           key="d"
           label="Docs folder"
           value={<Code>/data/notes</Code>}
-          action={<Button size="sm" variant="outline" onPress={copy}>Copy</Button>}
+          action={<CopyButton value="/data/notes" label="Copy docs folder" />}
         />,
         <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
       ]}
