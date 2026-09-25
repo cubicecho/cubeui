@@ -352,20 +352,6 @@
       "files": []
     },
     {
-      "name": "separator",
-      "type": "registry:ui",
-      "title": "Separator",
-      "description": "shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/separator.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
       "name": "skeleton",
       "type": "registry:ui",
       "title": "Skeleton",

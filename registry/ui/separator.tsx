@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/ui/separator.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * A one-pixel rule between groups: shadcn's `Separator`, on both halves. `rn2web` compiles the web
  * half from this file; it is no longer Radix's, because all Radix added was the role and the
  * `data-orientation`, and both are written here.
@@ -31,14 +21,15 @@
  * `h-full`, which a flex row that stretches its children already resolves.
  */
 import type * as React from "react";
+import { Platform, View } from "react-native";
 import { cn } from "@/lib/utils";
 
 const ORIENTATIONS = {
   horizontal: "h-px w-full",
-  vertical: "h-full w-px",
+  vertical: Platform.select({ web: "h-full w-px", default: "w-px self-stretch" }),
 } as const;
 
-type SeparatorProps = Omit<React.ComponentPropsWithoutRef<"div">, "className" | "children"> & {
+type SeparatorProps = Omit<React.ComponentProps<typeof View>, "className" | "children"> & {
   className?: string | undefined;
   /** Which way the rule runs. `horizontal` divides stacked groups, `vertical` side-by-side ones. */
   orientation?: keyof typeof ORIENTATIONS | undefined;
@@ -56,8 +47,8 @@ function Separator({
   ...props
 }: SeparatorProps) {
   return (
-    <div
-      data-slot="separator"
+    <View
+      testID="separator"
       {...(decorative
         ? ({ "aria-hidden": true } as const)
         : ({
@@ -66,9 +57,9 @@ function Separator({
             // ignores it; react-native-web and the compiled half write it.
             "aria-orientation": orientation === "vertical" ? "vertical" : undefined,
           } as const))}
-      data-orientation={orientation}
-      className={cn("cube-rn-view", "shrink-0 bg-border", ORIENTATIONS[orientation], className)}
-      {...(props as React.ComponentPropsWithoutRef<"div">)}
+      {...(Platform.OS === "web" ? ({ "data-orientation": orientation } as const) : {})}
+      className={cn("shrink-0 bg-border", ORIENTATIONS[orientation], className)}
+      {...props}
     />
   );
 }
