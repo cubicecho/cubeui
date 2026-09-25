@@ -5,6 +5,9 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
+**Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
+colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
 colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
@@ -539,6 +542,46 @@ as text and becomes an input when pressed.
 - `accessibilityLabel` is required, because the press target's text is a bare number.
 - Inside a pressable row the row's own press fires too. Stopping it is the caller's call, since
   only the caller knows which press should win.
+
+## A line of text edited in place
+
+```tsx
+// Pressing the text starts the edit.
+<InlineTextEdit value={device.name} label="Device name" onSave={(name) => rename.mutate({ name })} />
+
+// A Rename row starts it: the caller holds `editing`, and the title is a heading, not a button.
+const [renaming, setRenaming] = useState(false);
+<InlineTextEdit
+  value={lane.name}
+  level={3}
+  label={`Rename ${lane.name}`}
+  editing={renaming}
+  onEditingChange={setRenaming}
+  className="font-medium"
+  onSave={onRename}
+/>
+<MenuItem label="Rename" focusesElsewhere onSelect={() => setRenaming(true)} />
+```
+
+`@cubeui/inline-text-edit`, on both halves, for a rename — a lane, a chat, a document title — that
+does not deserve a dialog. `InlineNumberEdit`'s sibling: it shows the text and becomes an input.
+
+- It commits on submit and on blur, and **Escape puts the old value back**. The draft is trimmed;
+  an empty one is refused — the old value stays — unless `allowEmpty`, and an unchanged one does
+  not call `onSave` at all. Do not re-check either in `onSave`.
+- **Who holds `editing` starts the edit.** Left alone, pressing the text starts it, and
+  `onEditingChange` alone tells you when without taking over. Passed `editing`, the start is
+  yours — a Rename menu row, a pencil button — and the text is only text, so a `level` heading
+  stays a heading. The component calls `onEditingChange(false)` when the edit ends; you do not.
+- **A menu row that starts it is `focusesElsewhere`**, or the menu takes focus back after it
+  closes, the box blurs, and the rename ends before anything is typed.
+- `label` is required. It names the input, and it is the press's hint — the press itself is named
+  by the text it shows. With nothing shown (an empty value, no `placeholder`) it names the press.
+- `placeholder` is the input's, and is drawn muted in place of an empty value. `level` (1–3) draws
+  the text as that heading. `className` is the text's, `inputClassName` the input's. `disabled`
+  stops a press from starting an edit. `maxLength` is the input's.
+- One line only. A multi-line note (`Textarea`) is not this: `Textarea` has no `onEscape` yet, and
+  Enter is a newline there, so the commit keys would be different ones.
 
 ## Progress
 

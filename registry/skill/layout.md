@@ -546,7 +546,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
   width the list is given, not the window. `layout="stacked"` puts the label above the value at
   every width. There is no breakpoint prop.
 - A `PropertyRow` only renders inside a `DescriptionList`. A row the user *edits* is not this — it
-  is a field (`FormField`, or `InlineNumberEdit` for a number in place).
+  is a field (`FormField`, or `InlineNumberEdit` / `InlineTextEdit` for a number or a name in
+  place).
 - It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
   `content` for those.
 
