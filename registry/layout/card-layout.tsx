@@ -34,6 +34,12 @@ export type CardLayoutProps = {
    * rendered inside a `Text`, so pass text or inline text nodes.
    */
   title?: ReactNode | undefined;
+  /**
+   * Which heading the title is, `1 | 2 | 3` — 3 by default, a card under a page title. A card that
+   * *is* the page (a sign-in, a token gate, a lone settings panel) passes `1`, so the page has an
+   * `<h1>`. The title is the same size at every level: pick the rank by where it sits.
+   */
+  level?: 1 | 2 | 3 | undefined;
   /** One line on what the card holds, or what changing it costs. */
   description?: ReactNode | undefined;
   /**
@@ -108,6 +114,7 @@ function asText(node: ReactNode) {
 export function CardLayout({
   content,
   title,
+  level = 3,
   description,
   icon,
   action,
@@ -145,7 +152,9 @@ export function CardLayout({
                   `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts the
                   ascenders and descenders off it. The negative margin gives the space back, so
                   the header keeps the height shadcn drew it at. */}
-              <CardTitle className="-my-1 min-w-0 shrink truncate py-1">{title}</CardTitle>
+              <CardTitle level={level} className="-my-1 min-w-0 shrink truncate py-1">
+                {title}
+              </CardTitle>
             </View>
           ) : null}
           {description ? <CardDescription>{description}</CardDescription> : null}

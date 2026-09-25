@@ -381,6 +381,12 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
 `content` and leaves `loading` off.
 
+`level` is which heading the title is, `1 | 2 | 3`, and it defaults to 3 — right for a card on a
+page that already has a title. When the card **is** the page — a sign-in, a token gate, a lone
+settings panel with nothing above it — pass `level={1}`, so the page's only heading is its `<h1>`.
+The title is the same size at every level; the rank says where the card sits, not how it looks.
+`CardTitle` takes the same `level` if you are composing `Card` by hand.
+
 ## Centered pages
 
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
