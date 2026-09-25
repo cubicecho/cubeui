@@ -134,6 +134,11 @@ Notes on why the layering is where it is:
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
   it is the value on display, a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
+- **`SettingRow`'s `action` may be a function,** handed `{ titleId, descriptionId }`, and that is
+  not a new word. It is `footerActions`' move on `DialogLayout`: the shell has something the
+  caller's node needs — there a guarded close, here the id the control's `aria-labelledby` points
+  at — and a function is the one way to hand it into a node the shell did not write. A plain node
+  still works, and is right for a button whose own text is its name.
 - **`CopyButton` takes `value` for the string it copies,** with no `onValueChange`, because it
   never changes it. The same stretch as `PropertyRow`'s: the button is set to that string. The
   call sites it replaced said `text`, and a new word for it would have been the only one in the

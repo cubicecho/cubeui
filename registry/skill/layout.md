@@ -552,6 +552,58 @@ Read-only facts — a label, a value, a line under the value — which is most o
 - It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
   `content` for those.
 
+## Setting rows
+
+One row of a settings page: what the setting is called and what it does at the start, the control
+that changes it at the end.
+
+```tsx
+<Section
+  title="Appearance"
+  surface="card"
+  content={
+    <>
+      <SettingRow
+        title="Dark mode"
+        description="Switch between light and dark theme."
+        action={({ titleId }) => (
+          <Switch aria-labelledby={titleId} checked={dark} onCheckedChange={setDark} />
+        )}
+      />
+      <SettingRow
+        title="Theme"
+        action={({ titleId }) => <Select aria-labelledby={titleId} value={theme} … />}
+      />
+      <SettingRow
+        description="Forget every turn and session. This cannot be undone."
+        action={<ConfirmButton label="Clear all memory" … />}
+      />
+    </>
+  }
+/>
+```
+
+- One source for both platforms: `@cubeui/setting-row` in `/r/web` and `/r/native`.
+- `title` (what the setting is called), `description` (one line on what it does), `action` (the
+  control). `title` is optional for a row whose button already says what it does.
+- **`action` as a function is how the title names the control.** It is handed `{ titleId,
+  descriptionId }`; put `aria-labelledby={titleId}` on a switch, select or input so its name is
+  the visible title rather than a second string. On the web a control that takes it can also have
+  `aria-describedby={descriptionId}`. iOS does not read `aria-labelledby`, so a native call site
+  that must be named on an iPhone passes `accessibilityLabel` as well. A **button** is a plain node:
+  its own text is its name, and pointing it at the title would rename it.
+- It **wraps rather than breaking at a width**: the control sits beside the text while both fit
+  and drops under it, at the start, when they do not — following the width the row is given, not
+  the window. A switch stays beside its title on a phone; a select or a wide button goes under.
+  There is no breakpoint prop.
+- It draws no surface, no border and no heading. Put the rows in a `Section` (`surface="card"`) or
+  `CardLayout` `content`; the gap between them is the parent's.
+- **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
+  the switch with its caption beside it, the whole row one hit target. Take `SettingRow` for any
+  other control — a select, a button, an input — and for a switch that needs a description or
+  sits at the far end of a settings card. A read-only fact is `PropertyRow`, not this; a value
+  inside a form is a field (`FormField`, the bound fields).
+
 ## Stat tiles
 
 One figure on a card — a label, the number, a line under it. A row of them is the top of a

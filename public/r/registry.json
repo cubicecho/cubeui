@@ -480,6 +480,19 @@
       ]
     },
     {
+      "name": "setting-row",
+      "type": "registry:component",
+      "title": "Setting Row",
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `action` at the end, dropping under the text when the row is too narrow for both. `action` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/setting-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "stat-tile",
       "type": "registry:component",
       "title": "Stat Tile",
@@ -1332,6 +1345,7 @@
         "@cubeui/page-layout",
         "@cubeui/query-state",
         "@cubeui/section",
+        "@cubeui/setting-row",
         "@cubeui/sidebar",
         "@cubeui/split-layout",
         "@cubeui/stat-tile"

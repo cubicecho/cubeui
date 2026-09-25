@@ -306,8 +306,11 @@ stays the character it is. Anything more is a markdown renderer and belongs behi
 `horizontal` puts the control first and the label beside it — the arrangement whose label is part
 of the control's hit target. Stacked, a 16px box sits on a line of its own above its own caption.
 
-A **settings row** — a title and a paragraph on the left, a switch pushed to the far right — is
-not this. That is a row, not a field; build it with `CardLayout` or `Section`.
+A **settings row** — a title and a paragraph on the left, a switch, select or button pushed to
+the far right — is not this. That is a row, not a field: use `SettingRow`
+([layout.md](layout.md#setting-rows)), inside a `Section` or `CardLayout`. A lone boolean with its
+caption beside it and no description is `SwitchField` (`@cubeui/switch-field`); anything more —
+another control, a description, the switch at the far end — is `SettingRow`.
 
 ### When the props belong on something nested
 

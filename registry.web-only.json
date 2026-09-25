@@ -255,6 +255,7 @@
         "@cubeui/page-layout",
         "@cubeui/query-state",
         "@cubeui/section",
+        "@cubeui/setting-row",
         "@cubeui/sidebar",
         "@cubeui/split-layout",
         "@cubeui/stat-tile"

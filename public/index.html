@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 91 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 92 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 91 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 92 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  67 on both platforms · 24 web-only · 0 native-only.
+  68 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -508,6 +508,11 @@
           <th scope="row"><code>@cubeui/separator</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/setting-row</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>One row of a settings page: a `title` and `description` at the start, the control that changes it in `action` at the end, dropping under the text when the row is too narrow for both. `action` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/sidebar</code></th>
