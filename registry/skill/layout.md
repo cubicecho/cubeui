@@ -881,6 +881,15 @@ and which one is a question of **where the list is**, not how much there is to s
 - Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
   paddings and alignments; the shell is the one place it is decided.
+- **shadcn's compound form is `@cubeui/empty`, on both halves.** `Empty`, `EmptyHeader`,
+  `EmptyMedia` (`variant="icon"` for the bubble), `EmptyTitle`, `EmptyDescription` and
+  `EmptyContent`, with shadcn's names and props, installed to `components/ui/empty`. The block
+  above is built on them, so they draw the same thing — which is not shadcn's look: the title is
+  `text-sm`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
+  Write `EmptyState` in new code; the parts are there so a shadcn call site ports unchanged, and
+  for the rare empty state that needs a second button or an image where the icon goes.
+  `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
+  screen.
 
 ### DisclosureRow
 
@@ -920,7 +929,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  ghost `Button`s (or `ActionButton`s, on the web); the row adds the gap.
+  ghost `Button`s (or `ActionButton`s); the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
@@ -928,8 +937,13 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-border bg-card"`.
-- On the web `Item` still exists for rows it already draws; rebuilding `Item` and `DisclosureRow`
-  on `ListItem` is planned, so prefer `ListItem` in new code, and always in shared or native code.
+- `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
+  line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
+  (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
+  names, props and metrics: `ItemMedia` is `leading`, `ItemContent` the middle, `ItemTitle` and
+  `ItemDescription` the two lines, `ItemActions` the `action`. On a device a string in a part is
+  wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
+  hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
 
 ### Table
 

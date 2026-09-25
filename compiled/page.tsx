@@ -25,6 +25,7 @@ import { Children, type ReactNode } from "react";
 import { PageHeader, type PageHeaderProps } from "@/components/page-header";
 import type { IconComponent } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
 
 type PageProps = {
   className?: string;
@@ -125,11 +126,12 @@ type EmptyStateProps = {
     }
 );
 
-const EMPTY_STATE_TITLE = "font-medium text-sm text-foreground";
-
 /**
  * The centred icon / title / description / action shown when a list is empty — or, at
  * `compact`, the one muted line shown when a short list inside a card or sidebar is.
+ *
+ * The block is drawn by `@cubeui/empty`'s parts, so shadcn's compound `Empty` and this one-line
+ * form are the same empty state. The compact line is its own: it has none of their parts.
  *
  * The heading is `role="heading"` + `aria-level`, the same as `Section`'s: a heading on device,
  * where VoiceOver and TalkBack navigate by it, and on the web a `<span>` carrying the rank, since
@@ -164,26 +166,21 @@ export function EmptyState({
     );
   }
   return (
-    <div className={cn("cube-rn-view", "w-full items-center gap-3 py-10", className)}>
-      <div className="cube-rn-view rounded-full bg-muted p-3">
-        <Icon className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <div className="cube-rn-view items-center">
+    <Empty className={className}>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Icon />
+        </EmptyMedia>
         {level === undefined ? (
-          <span className={cn("cube-rn-text", EMPTY_STATE_TITLE)}>{title}</span>
+          <EmptyTitle>{title}</EmptyTitle>
         ) : (
-          // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-          <span role="heading" aria-level={level} className={cn("cube-rn-text", EMPTY_STATE_TITLE)}>
+          <EmptyTitle role="heading" aria-level={level}>
             {title}
-          </span>
+          </EmptyTitle>
         )}
-        {description ? (
-          <span className="cube-rn-text text-center text-sm text-muted-foreground">
-            {description}
-          </span>
-        ) : null}
-      </div>
+        {description ? <EmptyDescription>{description}</EmptyDescription> : null}
+      </EmptyHeader>
       {action}
-    </div>
+    </Empty>
   );
 }

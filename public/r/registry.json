@@ -123,6 +123,19 @@
       ]
     },
     {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -210,6 +223,19 @@
         {
           "path": "compiled/search-input.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "compiled/password-input.tsx",
+          "type": "registry:component"
         }
       ]
     },
@@ -425,6 +451,19 @@
       ]
     },
     {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/option-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
@@ -524,6 +563,24 @@
       ]
     },
     {
+      "name": "action-button",
+      "type": "registry:component",
+      "title": "Action Button",
+      "description": "An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/tooltip",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/action-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
@@ -571,6 +628,36 @@
       "files": [
         {
           "path": "compiled/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skeleton-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role=\"separator\"` with `decorative={false}`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -629,6 +716,28 @@
           "path": "compiled/spinner.tsx",
           "type": "registry:ui"
         }
+      ]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/item-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/item.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
       ]
     },
     {
@@ -813,6 +922,28 @@
       ]
     },
     {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "dependencies": ["date-fns@^4.4.0"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/icons",
+        "@cubeui/input",
+        "@cubeui/popover",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "color-picker",
       "type": "registry:ui",
       "title": "Color Picker",
@@ -945,6 +1076,7 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
+        "@cubeui/empty",
         "@cubeui/page-header",
         "@cubeui/tokens"
       ],
@@ -1156,19 +1288,6 @@
       ]
     },
     {
-      "name": "action-button",
-      "type": "registry:component",
-      "title": "Action Button",
-      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/action-button.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",
@@ -1267,26 +1386,6 @@
       ]
     },
     {
-      "name": "date-picker",
-      "type": "registry:component",
-      "title": "Date Picker",
-      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/calendar",
-        "@cubeui/input",
-        "@cubeui/popover",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "compiled/date-picker.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
-    },
-    {
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
@@ -1299,20 +1398,6 @@
         }
       ],
       "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
-      "name": "empty",
-      "type": "registry:ui",
-      "title": "Empty",
-      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/empty.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["class-variance-authority@^0.7.1"]
     },
     {
       "name": "field-row",
@@ -1362,24 +1447,6 @@
         "@cubeui/radio-group-field"
       ],
       "files": []
-    },
-    {
-      "name": "item",
-      "type": "registry:ui",
-      "title": "Item",
-      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/separator", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/item.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ]
     },
     {
       "name": "layout",
@@ -1442,19 +1509,6 @@
       ]
     },
     {
-      "name": "option-select",
-      "type": "registry:component",
-      "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/option-select.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "password-field",
       "type": "registry:component",
       "title": "Password Field",
@@ -1468,53 +1522,12 @@
       ]
     },
     {
-      "name": "password-input",
-      "type": "registry:component",
-      "title": "Password Input",
-      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/input", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/password-input.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
       "name": "primitive",
       "type": "registry:component",
       "title": "Vendored Primitives",
-      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
+      "description": "The shadcn primitives cubeui publishes, so a change made here reaches every project. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item", "@cubeui/table"],
       "files": []
-    },
-    {
-      "name": "separator",
-      "type": "registry:ui",
-      "title": "Separator",
-      "description": "shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/separator.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
-      "name": "skeleton",
-      "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/skeleton.tsx",
-          "type": "registry:ui"
-        }
-      ]
     },
     {
       "name": "table",
