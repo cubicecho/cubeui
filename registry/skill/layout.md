@@ -881,6 +881,15 @@ and which one is a question of **where the list is**, not how much there is to s
 - Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
   paddings and alignments; the shell is the one place it is decided.
+- **shadcn's compound form is `@cubeui/empty`, on both halves.** `Empty`, `EmptyHeader`,
+  `EmptyMedia` (`variant="icon"` for the bubble), `EmptyTitle`, `EmptyDescription` and
+  `EmptyContent`, with shadcn's names and props, installed to `components/ui/empty`. The block
+  above is built on them, so they draw the same thing — which is not shadcn's look: the title is
+  `text-sm`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
+  Write `EmptyState` in new code; the parts are there so a shadcn call site ports unchanged, and
+  for the rare empty state that needs a second button or an image where the icon goes.
+  `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
+  screen.
 
 ### DisclosureRow
 

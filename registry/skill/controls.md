@@ -5,8 +5,8 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+**Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
+colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -383,9 +383,13 @@ day and could not keep the name: the shadcn CLI resolves a cross-item import by 
 file's basename, so two files called `select.tsx` in one install sent `app-form`'s import to the
 primitive and broke the install.
 
-- The trigger is what carries the wiring. Radix's `Select` root renders no DOM, so an `id` or an
-  `aria-invalid` put on it goes nowhere — this takes the rest of a `<button>`'s props and spreads
-  them on the trigger, which is why it drops straight into `FormField`'s **function form**:
+- **On both halves.** Radix's listbox under the trigger on the web; the `Select` sheet on device,
+  in an Expo app, with the same `options`, groups, separators and notes. Same import,
+  `@/components/option-select`, on both.
+- The trigger is what carries the wiring. The `Select` root renders nothing, so an `id` or an
+  `aria-invalid` put on it goes nowhere — this takes the rest of the trigger's props (every
+  `<button>` prop on the web; `id`, the `aria-*` props and `onBlur` on device) and spreads them on
+  the trigger, which is why it drops straight into `FormField`'s **function form**:
   `control={(wired) => <OptionSelect {...wired} options={…} … />}`.
 - Full width by default, because a column of selects that each shrink to their longest option is
   ragged. Pass `className="w-40"` for a toolbar; the later width wins.
@@ -495,15 +499,27 @@ is a `Popover`. `MultiSelectField` already does.
 <DateRangePicker value={window} onValueChange={setWindow} numberOfMonths={2} />
 ```
 
-- `showTime` adds a time input inside the popover; without it the value is the date at midnight.
-- `format` is a `date-fns` pattern for the trigger's text; `disabledDates` is passed to the
-  calendar; `calendarProps` reaches the rest of `react-day-picker` without a prop per feature.
-- `clearable` (on by default) puts a clear in the popover, and clearing sets `null`.
-- The trigger is a `<button>`, which is labelable, so `htmlFor` works — but the `aria-*` props
-  still need the function form of `control`.
+**On both halves**, from `@cubeui/date-picker` (it installs to `components/date-picker`). The
+web half is compiled from the React Native source and draws react-day-picker, as it always did; on
+device the popover is a centred sheet and the months stack.
 
-`DatePicker` is web-only. On both halves, `@cubeui/date-time-input` is the date field — a date
-and a time as one `Date` by default:
+- `showTime` adds a time input inside the popover, which stays open after a day is picked so the
+  time can follow. A first pick is the day at midnight; picking a new day keeps the value's clock.
+- `format` is a `date-fns` pattern for the trigger's text; `disabledDates` is passed to the
+  calendar. `calendarProps` takes the calendar's shared props (`startMonth`, `weekStartsOn`,
+  `defaultMonth`) on both halves, and on the web the rest of react-day-picker's too.
+- `clearable` (on by default) puts a clear in the popover, and clearing sets `null`.
+- The range picker closes on the second press after it opens, so the first press starts a range
+  rather than ending one. Its value is a `DateRange` (`{ from, to? }`), exported beside it.
+- The trigger is a button, which is labelable, so `htmlFor` works on the web — but the `aria-*`
+  props still need the function form of `control`. `aria-describedby`, `aria-invalid` and
+  `aria-required` are web only.
+- `combineDateAndTime(day, clock)` and `setTime(day, "14:30")` are exported for the same
+  arithmetic at a call site.
+
+`DatePicker` owns a full-width trigger and puts its time box in the popover. The other date field
+on both halves is `@cubeui/date-time-input` — the time box beside the trigger, and a date and a
+time as one `Date` by default:
 
 ```tsx
 <DateTimeInput value={startsAt} onChange={setStartsAt} />
@@ -565,8 +581,8 @@ an end does not have two boxes called "Time":
 - In a form, `DateTimeField` (`@cubeui/date-time-field`) does the `aria-labelledby` wiring for
   you — see [forms.md](forms.md#on-react-native).
 
-On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
-a `FormField`'s `aria-*` on the trigger.
+`DatePicker` is the richer one — `format`, `disabledDates`, `calendarProps`, a range picker, and
+a `FormField`'s `aria-*` on the trigger — and takes `onValueChange`.
 
 ## A number edited in place
 
@@ -894,23 +910,77 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   platform's own spinner, a different shape on each.
 - A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
-## Password
+## Skeleton
 
 ```tsx
-<PasswordInput value={token} onChange={(e) => setToken(e.target.value)} />
+<Skeleton className="h-4 w-[250px]" />
+<View role="status" aria-label="Loading profile" className="gap-2">
+  <Skeleton className="h-4 w-1/3" aria-hidden />
+  <Skeleton className="h-3 w-2/3" aria-hidden />
+</View>
 ```
 
-The reveal toggle is behaviour, not a variant, which is why this is a component and not a
-`type="password"` prop. Three things a hand-written eye gets wrong, and this gets right:
+`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-accent` block that pulses
+while what it stands in for loads. `className` is its size.
 
-- The toggle is `type="button"`. A bare `<button>` inside a `<form>` submits it, so the usual
-  hand-rolled version submits the login form when you ask to see what you typed.
-- Its accessible name changes with its state — "Show password" / "Hide password" — rather than
-  being a fixed "Toggle" that tells a screen reader nothing about what will happen.
+- It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
+  (down to half and back, two seconds) run by `Animated`. No Reanimated needed.
+- It says nothing to assistive tech itself, as shadcn's does not. Hide each block with
+  `aria-hidden` and put them in a `role="status"` named for what is loading.
+- Reach for a shell's `loading` first. `CardLayout`, `QueryState`, `StatTile`, `PageHeader` and
+  the form fields each draw their own skeleton for the part the request fills. `Skeleton` is for a
+  part no shell covers.
+
+## Separator
+
+```tsx
+<Separator />
+<Separator orientation="vertical" />
+<Separator decorative={false} />
+```
+
+`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-border`, as long as its
+container. Use it rather than a `border-b` on the group above or a `h-px` view.
+
+- `orientation` is `horizontal` (the default) or `vertical`. A vertical one fills its row's height:
+  `self-stretch` on device, shadcn's `h-full` on the web. Give it a height (`h-4`) when the row is
+  taller than the rule should be.
+- `decorative` is on by default and hides the rule from assistive tech, since what it divides is
+  already divided. `decorative={false}` makes it a `role="separator"`, for a boundary nothing else
+  on the screen says.
+- On the web it still writes `data-orientation`, so shadcn's
+  `className="data-[orientation=vertical]:h-4"` works unchanged; a plain `h-4` works too.
+- `Menu` has its own `MenuSeparator`, and `Field` its own `FieldSeparator` with a word in the
+  middle. Use those inside them.
+
+## Password
+
+A password or a pasted secret is `PasswordInput`, on both halves. Do not write
+`<Input type="password">` with an eye button placed over it by hand.
+
+```tsx
+<PasswordInput value={token} onChangeText={setToken} />                  {/* both halves */}
+<PasswordInput value={token} onChange={(e) => setToken(e.target.value)} /> {/* web too */}
+```
+
+`@cubeui/password-input` installs to `components/password-input`. It is `Input` with
+`type="password"` and a show/hide button in its `trailing` slot, so it takes `Input`'s props on
+each half — `onChangeText` everywhere, and on the web `onChange`, `name`, `autoComplete` and a ref
+to the `<input>` as well. The reveal toggle is behaviour, not a variant, which is why this is a
+component and not a `type="password"` prop. Three things a hand-written eye gets wrong, and this
+gets right:
+
+- The toggle does not submit. It is `type="button"` on the web, where a bare `<button>` inside a
+  `<form>` submits it, so the usual hand-rolled version submits the login form when you ask to see
+  what you typed.
+- Its accessible name changes with its state — "Show password" / "Hide password", or `showLabel` /
+  `hideLabel` — rather than being a fixed "Toggle" that tells a screen reader nothing about what
+  will happen.
 - It swaps the input's real `type`, not a CSS mask, so a password manager and the browser's own
-  autofill still see a password field.
+  autofill still see a password field. On device that `type` is `secureTextEntry`.
 
-`revealable={false}` drops the toggle for a field that should never be shown.
+`revealable={false}` drops the toggle for a field that should never be shown. `className` is the
+field's and `wrapperClassName` the box around the field and its eye. `leading` still takes an icon.
 
 ## Theme
 
