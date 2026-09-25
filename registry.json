@@ -140,6 +140,19 @@
       ]
     },
     {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -239,6 +252,19 @@
         {
           "path": "registry/ui/search-input.web.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/password-input.tsx",
+          "type": "registry:component"
         }
       ]
     },
@@ -347,6 +373,28 @@
         },
         {
           "path": "registry/ui/menu.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props MultiSelect uses on both.",
+      "dependencies": ["cmdk@^1.1.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/dialog", "@cubeui/icons", "@cubeui/input"],
+      "files": [
+        {
+          "path": "registry/ui/command-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/command.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/command.web.tsx",
           "type": "registry:ui"
         }
       ]
@@ -462,6 +510,19 @@
       "files": [
         {
           "path": "registry/layout/radio-group-field.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/option-select.tsx",
           "type": "registry:component"
         }
       ]
@@ -583,6 +644,19 @@
       ]
     },
     {
+      "name": "action-button",
+      "type": "registry:component",
+      "title": "Action Button",
+      "description": "An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/action-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
@@ -630,6 +704,40 @@
       "files": [
         {
           "path": "registry/ui/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skeleton-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role=\"separator\"` with `decorative={false}`.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -914,6 +1022,27 @@
       ]
     },
     {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "dependencies": ["date-fns@^4.4.0"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/icons",
+        "@cubeui/input",
+        "@cubeui/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "color-picker",
       "type": "registry:ui",
       "title": "Color Picker",
@@ -1028,7 +1157,12 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/empty",
+        "@cubeui/page-header"
+      ],
       "files": [
         {
           "path": "registry/layout/page.tsx",

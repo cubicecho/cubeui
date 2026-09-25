@@ -881,6 +881,15 @@ and which one is a question of **where the list is**, not how much there is to s
 - Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
   paddings and alignments; the shell is the one place it is decided.
+- **shadcn's compound form is `@cubeui/empty`, on both halves.** `Empty`, `EmptyHeader`,
+  `EmptyMedia` (`variant="icon"` for the bubble), `EmptyTitle`, `EmptyDescription` and
+  `EmptyContent`, with shadcn's names and props, installed to `components/ui/empty`. The block
+  above is built on them, so they draw the same thing — which is not shadcn's look: the title is
+  `text-sm`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
+  Write `EmptyState` in new code; the parts are there so a shadcn call site ports unchanged, and
+  for the rare empty state that needs a second button or an image where the icon goes.
+  `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
+  screen.
 
 ### DisclosureRow
 
@@ -924,7 +933,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  ghost `Button`s (or `ActionButton`s, on the web); the row adds the gap.
+  ghost `Button`s (or `ActionButton`s); the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an

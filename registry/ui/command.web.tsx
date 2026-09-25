@@ -1,6 +1,19 @@
+/**
+ * The web command list: shadcn's parts over `cmdk`, which owns the roving highlight, the arrow
+ * keys, Enter and the fuzzy ranking. `command.tsx` is the native counterpart — cmdk has no React
+ * Native build — and `command-base.ts` the contract the two share.
+ *
+ * Hand-written rather than compiled because there is nothing to compile it from: the native half
+ * is a different implementation of the same parts, not a source for this one. Every part takes
+ * cmdk's full props, a superset of the contract, so a shadcn call site compiles unchanged; the
+ * props the native half does not honour are listed in `command-base.ts`.
+ *
+ * The Search glyph is `@cubeui/icons`' rather than lucide's directly, so this file is also what an
+ * Expo web app can run without a second icon package.
+ */
 import { Command as CommandPrimitive } from "cmdk";
-import { SearchIcon } from "lucide-react";
 import type * as React from "react";
+import { COMMAND_DIALOG_DESCRIPTION, COMMAND_DIALOG_TITLE } from "@/components/ui/command-base";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Search } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
@@ -24,8 +38,8 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
 }
 
 function CommandDialog({
-  title = "Command Palette",
-  description = "Search for a command to run...",
+  title = COMMAND_DIALOG_TITLE,
+  description = COMMAND_DIALOG_DESCRIPTION,
   children,
   className,
   showCloseButton = true,
@@ -60,7 +74,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot="command-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <Search className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
@@ -114,7 +128,10 @@ function CommandSeparator({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
   return (
+    // Decorative: cmdk writes `role="separator"`, which a `listbox` may not hold. Hidden, the
+    // rule is still drawn and no longer read. See `command-base.ts`.
     <CommandPrimitive.Separator
+      aria-hidden
       data-slot="command-separator"
       className={cn("-mx-1 h-px bg-border", className)}
       {...props}
