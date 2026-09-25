@@ -322,6 +322,15 @@ compile outright ("Class-qualified :root selectors are unsupported on native"), 
 outranks the media query's `:root`, and react-native-css drops it without a word;
 `scripts/tokens-dark.test.mjs` asserts the compiled native output is identical with and without it.
 
+**A palette is a second choice beside light and dark.** `palettes` in `tokens/palette.mjs` holds
+each one's colours for the modes it has; Monokai has only `dark`, so choosing it makes the app dark.
+Both stylesheets gain a block per palette keyed on `data-palette` on `<html>` — the native one as
+`:is(html[data-palette="monokai"])`, which the device compile drops like the class overrides — and
+`cubeui-theme.ts` gains `palettes`, `paletteFor(scheme, palette)` and `cssVariables(palette)`. On
+device there is no `<html>`, so `PaletteProvider` hands `cssVariables` to NativeWind's
+`VariableContextProvider`. `scripts/palette-contrast.test.mjs` holds every palette's text pairs to
+4.5:1, which is why Monokai's comment grey and its classic pink are lightened.
+
 **`theme-picker` is that picker, and the wiring beside it.** `ThemePicker` is a
 `RadioGroup variant="card"` of Light, Dark and System, bound by default to `useThemePreference()`
 and controlled when given `value`. `variant="compact"` is the same three choices as a full-width

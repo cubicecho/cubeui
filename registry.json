@@ -553,8 +553,13 @@
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
-      "description": "Light, Dark and System as radio tiles, or with variant=\"compact\" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on <html> on the web, Appearance.setColorScheme on device, where the app passes its own storage. THEME_PRE_PAINT_SCRIPT is the inline <script> that paints the stored theme before React mounts.",
-      "registryDependencies": ["@cubeui/icons", "@cubeui/radio-group"],
+      "description": "Light, Dark and System as radio tiles, or with variant=\"compact\" as a full-width row of icon-only radios for a sidebar or header, and useThemePreference(), which stores the choice and applies it: a class on <html> on the web, Appearance.setColorScheme on device, where the app passes its own storage. With palettes={PALETTE_PREFERENCES} it adds a palette choice beside the theme (default, or the dark-only monokai), stored by usePalettePreference() and applied as data-palette on <html> on the web and by PaletteProvider on device. THEME_PRE_PAINT_SCRIPT is the inline <script> that paints the stored theme and palette before React mounts.",
+      "dependencies": [
+        "nativewind@^5.0.0-rc.0",
+        "react-native-css@3.1.0-rc.0",
+        "tailwindcss@^4.3.3"
+      ],
+      "registryDependencies": ["@cubeui/icons", "@cubeui/radio-group", "@cubeui/tokens"],
       "files": [
         {
           "path": "registry/ui/theme-preference-base.ts",
