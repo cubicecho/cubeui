@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 83 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 89 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 83 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 89 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  59 on both platforms · 24 web-only · 0 native-only.
+  65 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -138,6 +138,11 @@
           <th scope="row"><code>@cubeui/action-button</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>An icon button with a required accessible name, and a tooltip that survives being disabled.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/alert</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action. `default`, `info`, `warning` or `destructive`; only `destructive` is announced as an `alert`, the rest as a polite `status`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert-dialog</code></th>
@@ -240,6 +245,11 @@
           <td>Every cubeui control in one install.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/copy-button</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/date-field</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>A date and a date range as one line each, over fields the compiler checked hold a Date and a DateRange.</td>
@@ -283,6 +293,11 @@
           <th scope="row"><code>@cubeui/dialog-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/disclosure</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A titled part of a screen whose body shows and hides: "Show completed (3)", "Raw output". The header is one button with a turning chevron and `aria-expanded`, an optional `action` sits beside it rather than inside it, and `content` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/disclosure-row</code></th>
@@ -357,7 +372,7 @@
         <tr>
           <th scope="row"><code>@cubeui/input</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Single-line text entry. Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.</td>
+          <td>Single-line text entry, with an optional icon at its start (`leading`) or an icon-sized control at its end (`trailing`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/item</code></th>
@@ -430,6 +445,11 @@
           <td>The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/progress</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A horizontal bar showing how much of something is done: `role="progressbar"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/query-state</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.</td>
@@ -453,6 +473,11 @@
           <th scope="row"><code>@cubeui/route-error</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/search-input</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A search box: Input with a Search icon inside at its start, type=search (a searchbox), named by `label` (default Search), and a named clear button while it holds text.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/section</code></th>
@@ -493,6 +518,11 @@
           <th scope="row"><code>@cubeui/skill</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>How to use these components, for agents working in a consuming project. Installs into .claude/skills/ as a router plus layout, form and control references, and says which half of the registry — DOM or React Native — the project is on.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/spinner</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A loading indicator: the LoaderCircle glyph turning, one `role="status"` named by `label`, sized and coloured by `className`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/split-layout</code></th>

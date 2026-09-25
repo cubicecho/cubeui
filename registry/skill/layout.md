@@ -4,7 +4,7 @@ Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" ru
 are not repeated here.
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
-sections and sidebars are written once in React Native and compiled to the web, so the same item
+sections, disclosures and sidebars are written once in React Native and compiled to the web, so the same item
 installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
 the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
 device, four things differ, and none of them changes a call site:
@@ -242,7 +242,15 @@ be told to hide one of its panes on a phone is that decision arriving late.
           as="nav"
           title="Projects"
           action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
-          status={<QueryState compact query={projects} what="projects" count={rows.length} />}
+          status={
+            <QueryState
+              compact
+              query={projects}
+              what="projects"
+              count={rows.length}
+              empty={<EmptyState compact title="No projects yet." className="px-2" />}
+            />
+          }
           content={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
               <SidebarNavItem
@@ -355,7 +363,7 @@ A row in the footer takes no `SidebarSection` — a list item with no list aroun
   content={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
-  empty={<p className="text-sm text-muted-foreground">No categories yet.</p>}
+  empty={<EmptyState compact title="No categories yet." />}
   footerActions={<Button onClick={save}>Save</Button>}
 />
 ```
@@ -363,6 +371,9 @@ A row in the footer takes no `SidebarSection` — a list item with no list aroun
 `empty` replaces the body when `content` is empty — which is what `items.map(…)` returns for
 empty data, so write the `map` plainly and let the shell handle the nothing case. Do not write
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
+
+What goes in `empty` inside a card is one muted line, `<EmptyState compact … />` — see
+[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-muted-foreground">`.
 
 `loading` replaces it with a skeleton and outranks `empty`, so a card that is still fetching does
 not first announce that it is empty. Pass the query's pending flag straight in; do not write
@@ -455,6 +466,44 @@ A heading over a group of fields or rows, inside a page or a card.
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
 
+## Disclosure
+
+A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
+over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
+counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `useState` beside it.
+
+```tsx
+<Disclosure
+  title="Raw output"
+  action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
+  content={<Code>{json}</Code>}
+/>
+
+<Disclosure
+  title={`${showCompleted ? "Hide" : "Show"} completed (${completed.length})`}
+  open={showCompleted}
+  onOpenChange={setShowCompleted}
+  content={completed.map((todo) => <TodoRow key={todo.id} todo={todo} />)}
+/>
+```
+
+- One source for both platforms: `@cubeui/disclosure` in `/r` and `/r/native`.
+- The **whole header is one button** with a chevron that turns, so it is reached by Tab and
+  toggled by Enter and Space. `aria-expanded` is on it, and on the web `aria-controls` names the
+  body while the body is there.
+- **`action` sits beside the button, not inside it**, so pressing it does not toggle the section.
+  Do not put a control in `title`.
+- `content` is **not mounted while shut** — a long list behind it costs nothing, and anything that
+  must survive closing (a draft, a scroll position) belongs to the caller.
+- Uncontrolled by default, shut: pass `defaultOpen` to start open. Pass `open` and `onOpenChange`
+  when the caller needs the state — a title that says Hide once open, a deep link, a "show the
+  failure" button elsewhere on the page. `onOpenChange` alone listens without taking over.
+- The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
+  under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
+  disclosure is the heading of its part of the page; `contentClassName` to indent the body.
+- A row in a list that opens onto its detail is `DisclosureRow` (web), which adds the row's
+  `badges`, `meta` and surface.
+
 ## Description lists
 
 Read-only facts — a label, a value, a line under the value — which is most of a settings page or an
@@ -471,7 +520,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
           key="d"
           label="Docs folder"
           value={<Code>/data/notes</Code>}
-          action={<Button size="sm" variant="outline" onPress={copy}>Copy</Button>}
+          action={<CopyButton value="/data/notes" label="Copy docs folder" />}
         />,
         <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
       ]}
@@ -557,6 +606,45 @@ Two shells for the shape every list route is: a ladder of states, then rows.
 - **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
   small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
   it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
+
+### Empty states
+
+`EmptyState` (`@cubeui/page`, on both halves) is what an empty list says. It comes in two shapes,
+and which one is a question of **where the list is**, not how much there is to say:
+
+```tsx
+// The list is the page, or the page's main region: the centred block.
+<EmptyState
+  icon={Inbox}
+  title="No agents yet"
+  description="An agent runs the lanes you give it."
+  action={<Button onPress={create}>New agent</Button>}
+/>
+
+// The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
+<EmptyState
+  compact
+  title="No labels yet."
+  action={<Button variant="link" size="xs" onPress={create}>Add one</Button>}
+/>
+```
+
+- **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `action`
+  under them, centred, with `py-10` around it. `icon` is required: it is a component
+  (`icon={Inbox}`), not an element, and the shell sizes it.
+- **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
+  empty state *is* the screen — a first run, a record not found, a dead link — so a screen reader
+  has a heading to land on. Otherwise leave it off; the page already has its heading.
+- **`compact`** is one muted `text-sm` line: an optional small `icon` inline before the words, the
+  `title`, then the `action` on the same line (it wraps under on a narrow column). No bubble, no
+  centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
+  never a heading, so `level` is a **type error** with `compact`, and so is `description`: the
+  whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
+  Use it for `CardLayout`'s `empty`, a compact `QueryState`'s `empty`, and the empty body of a
+  popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
+- Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
+  yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
+  paddings and alignments; the shell is the one place it is decided.
 
 ### DisclosureRow
 

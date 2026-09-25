@@ -49,6 +49,8 @@
     "scripts",
     "stories",
     "tokens",
+    // Declarations for the Expo modules a native item imports and this repo does not install.
+    "types",
     "nativewind-env.d.ts",
     "vitest.config.ts"
   ]
