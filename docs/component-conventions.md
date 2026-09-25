@@ -130,6 +130,10 @@ Notes on why the layering is where it is:
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
   it is the value on display, a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
+- **`CopyButton` takes `value` for the string it copies,** with no `onValueChange`, because it
+  never changes it. The same stretch as `PropertyRow`'s: the button is set to that string. The
+  call sites it replaced said `text`, and a new word for it would have been the only one in the
+  set.
 - **`layout`, not `orientation`,** on `DescriptionList`. `orientation="horizontal"` on a field is
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
