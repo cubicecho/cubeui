@@ -242,7 +242,15 @@ be told to hide one of its panes on a phone is that decision arriving late.
           as="nav"
           title="Projects"
           action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
-          status={<QueryState compact query={projects} what="projects" count={rows.length} />}
+          status={
+            <QueryState
+              compact
+              query={projects}
+              what="projects"
+              count={rows.length}
+              empty={<EmptyState compact title="No projects yet." className="px-2" />}
+            />
+          }
           content={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
               <SidebarNavItem
@@ -355,7 +363,7 @@ A row in the footer takes no `SidebarSection` — a list item with no list aroun
   content={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
-  empty={<p className="text-sm text-muted-foreground">No categories yet.</p>}
+  empty={<EmptyState compact title="No categories yet." />}
   footerActions={<Button onClick={save}>Save</Button>}
 />
 ```
@@ -363,6 +371,9 @@ A row in the footer takes no `SidebarSection` — a list item with no list aroun
 `empty` replaces the body when `content` is empty — which is what `items.map(…)` returns for
 empty data, so write the `map` plainly and let the shell handle the nothing case. Do not write
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
+
+What goes in `empty` inside a card is one muted line, `<EmptyState compact … />` — see
+[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-muted-foreground">`.
 
 `loading` replaces it with a skeleton and outranks `empty`, so a card that is still fetching does
 not first announce that it is empty. Pass the query's pending flag straight in; do not write
@@ -594,6 +605,45 @@ Two shells for the shape every list route is: a ladder of states, then rows.
 - **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
   small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
   it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
+
+### Empty states
+
+`EmptyState` (`@cubeui/page`, on both halves) is what an empty list says. It comes in two shapes,
+and which one is a question of **where the list is**, not how much there is to say:
+
+```tsx
+// The list is the page, or the page's main region: the centred block.
+<EmptyState
+  icon={Inbox}
+  title="No agents yet"
+  description="An agent runs the lanes you give it."
+  action={<Button onPress={create}>New agent</Button>}
+/>
+
+// The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
+<EmptyState
+  compact
+  title="No labels yet."
+  action={<Button variant="link" size="xs" onPress={create}>Add one</Button>}
+/>
+```
+
+- **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `action`
+  under them, centred, with `py-10` around it. `icon` is required: it is a component
+  (`icon={Inbox}`), not an element, and the shell sizes it.
+- **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
+  empty state *is* the screen — a first run, a record not found, a dead link — so a screen reader
+  has a heading to land on. Otherwise leave it off; the page already has its heading.
+- **`compact`** is one muted `text-sm` line: an optional small `icon` inline before the words, the
+  `title`, then the `action` on the same line (it wraps under on a narrow column). No bubble, no
+  centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
+  never a heading, so `level` is a **type error** with `compact`, and so is `description`: the
+  whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
+  Use it for `CardLayout`'s `empty`, a compact `QueryState`'s `empty`, and the empty body of a
+  popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
+- Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
+  yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
+  paddings and alignments; the shell is the one place it is decided.
 
 ### DisclosureRow
 
