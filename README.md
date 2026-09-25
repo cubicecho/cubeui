@@ -977,6 +977,14 @@ radix: the hidden `<input>` behind `name` / `required` for a native `<form>` sub
 The pulse on device is `Animated`, because the compiler refuses `Animated` and NativeWind resolves
 `animate-pulse` on device only through Reanimated, which the registry does not depend on.
 
+`separator` has left it the same way: `registry/ui/separator.tsx`, compiled, with shadcn's
+`orientation` and `decorative`. Decorative is hidden from assistive tech on both halves
+(`aria-hidden`, where Radix wrote `role="none"`), and `decorative={false}` is `role="separator"`.
+The web half still writes `data-orientation`, so a shadcn call site's
+`data-[orientation=vertical]:h-4` still sizes it. Its own size is now a plain class per orientation,
+so a bare `h-4` from the caller wins too, which it did not over Radix's variant. `asChild` went
+with Radix.
+
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
 rewritten to `./` like any other — inside `compiled/`. What ships gets the alias back (rule 13).

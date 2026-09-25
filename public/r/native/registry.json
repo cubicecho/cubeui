@@ -243,6 +243,19 @@
       ]
     },
     {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/password-input.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
@@ -622,22 +635,14 @@
       ]
     },
     {
-      "name": "skeleton",
+      "name": "separator",
       "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "title": "Separator",
+      "description": "shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role=\"separator\"` with `decorative={false}`.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
-          "path": "registry/ui/skeleton-base.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/skeleton.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "registry/ui/skeleton.web.tsx",
+          "path": "registry/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
