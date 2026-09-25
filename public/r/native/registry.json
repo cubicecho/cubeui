@@ -807,6 +807,19 @@
       ]
     },
     {
+      "name": "inline-text-edit",
+      "type": "registry:ui",
+      "title": "Inline Text Edit",
+      "description": "A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/input"],
+      "files": [
+        {
+          "path": "registry/ui/inline-text-edit.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "query-state",
       "type": "registry:component",
       "title": "Query State",
