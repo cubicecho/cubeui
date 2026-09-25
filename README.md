@@ -352,8 +352,9 @@ fill, and a colour and font of its own instead of inherited ones; a raw `<label>
 browser's serif, because nothing set a page font. The browser's `1px 6px` padding stayed on the
 button too, which put the switch's thumb 6px in from its track and pushed it out past the far end
 when on (#175). So `:where(button)` takes `border: 0 solid`, `padding: 0`, a transparent background
-and `color` / `font: inherit`, and `:where(html)` takes react-native-web's font stack. The `<input>` and `<textarea>` the `Input` and `Textarea` web halves render do not
-inherit that font either — the browser drew them in Arial and monospace — so
+and `color` / `font: inherit`, and `:where(html)` takes react-native-web's font stack. The
+`<input>` and `<textarea>` the `Input` and `Textarea` web halves render do not inherit that font
+either — the browser drew them in Arial and monospace — so
 `:where(input, select, textarea)` takes `color` / `font: inherit` and nothing else, since their
 border and fill are the components' own classes. `color: inherit` reaches the element, not its
 `::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. All of them are
