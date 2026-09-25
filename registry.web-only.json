@@ -366,19 +366,6 @@
       "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
     },
     {
-      "name": "skeleton",
-      "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/skeleton.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "table",
       "type": "registry:ui",
       "title": "Table",

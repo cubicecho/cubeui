@@ -42,7 +42,7 @@ app does not import. Put `@import "../cubeui-tokens.css";` in the app's CSS entr
 out as stacked blocks and nothing errors.
 
 **Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `tabs`,
-`tooltip`, `badge`, `calendar`, `field`, `toast`, `query-state` — same item name, same props,
+`tooltip`, `badge`, `calendar`, `field`, `skeleton`, `toast`, `query-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
 
@@ -111,6 +111,7 @@ at the end.
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls.md](controls.md#alert) |
 | A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls.md](controls.md#spinner) |
+| A pulsing block standing in for content that has not arrived, inside a part no shell's `loading` covers | `Skeleton` | [controls.md](controls.md#skeleton) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
@@ -302,6 +303,7 @@ views and there is no shell wrapping to hide.
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
 | A callout — a warning, a note, the last error — see [controls.md](controls.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
+| A pulsing placeholder block — see [controls.md](controls.md#skeleton) | `Skeleton` | `@cubeui/skeleton` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |

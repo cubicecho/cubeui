@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "skeleton",
+  "title": "Skeleton",
+  "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/skeleton-base.ts",
+      "content": "/**\n * What `skeleton.tsx` (native) and `skeleton.web.tsx` (web) share. Its own module because Metro\n * resolves `./skeleton` to `skeleton.web.tsx` on web.\n */\n\n/** The block's look when the call site names only a size: shadcn's. */\nexport const skeletonClass = \"rounded-md bg-accent\";\n\n/**\n * One pulse, in ms, down to half opacity and back: Tailwind's `animate-pulse`, which the web half\n * uses, is `2s cubic-bezier(0.4, 0, 0.6, 1)` over exactly that.\n */\nexport const PULSE_DURATION = 2000;\n\n/** The opacity at the bottom of a pulse, `animate-pulse`'s `50%` keyframe. */\nexport const PULSE_LOW = 0.5;\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/skeleton.tsx",
+      "content": "/**\n * A block standing in for content that has not arrived: shadcn's `Skeleton`, on both halves.\n * `skeleton.web.tsx` is the web counterpart and `skeleton-base.ts` holds what they share.\n *\n * The web half pulses with `animate-pulse`, and a CSS keyframe is a class NativeWind resolves to\n * nothing on device without Reanimated, which this registry does not ask a consumer to install.\n * So the pulse here is `Animated` on the native driver — the same opacity curve, the same two\n * seconds — which is also why the web half is hand-written: the compiler refuses `Animated`.\n *\n * The animated view is `View` wrapped by `createAnimatedComponent` rather than `Animated.View`,\n * because `View` is the one NativeWind hands a `className` to; `Animated.View` would drop the\n * caller's size, and a skeleton is nothing but its size.\n *\n * It says nothing to assistive tech by itself, as shadcn's does not: a placeholder is the caller's\n * to hide (`aria-hidden`) or to put inside a `role=\"status\"` that says what is loading.\n */\nimport type * as React from \"react\";\nimport { useEffect, useRef } from \"react\";\nimport { Animated, Easing, View } from \"react-native\";\nimport { PULSE_DURATION, PULSE_LOW, skeletonClass } from \"@/components/ui/skeleton-base\";\nimport { cn } from \"@/lib/utils\";\n\ntype SkeletonProps = Omit<React.ComponentProps<typeof View>, \"className\"> & {\n  /** Its size, and anything else about its box: `h-4 w-1/3`. Rounded and `bg-accent` already. */\n  className?: string | undefined;\n};\n\nconst PulsingView = Animated.createAnimatedComponent(View);\n\nfunction Skeleton({ className, style, ...props }: SkeletonProps) {\n  const opacity = useRef(new Animated.Value(1)).current;\n\n  useEffect(() => {\n    const half = {\n      duration: PULSE_DURATION / 2,\n      easing: Easing.bezier(0.4, 0, 0.6, 1),\n      useNativeDriver: true,\n    };\n    const loop = Animated.loop(\n      Animated.sequence([\n        Animated.timing(opacity, { toValue: PULSE_LOW, ...half }),\n        Animated.timing(opacity, { toValue: 1, ...half }),\n      ]),\n    );\n    loop.start();\n    return () => loop.stop();\n  }, [opacity]);\n\n  return (\n    <PulsingView\n      testID=\"skeleton\"\n      {...props}\n      className={cn(skeletonClass, className)}\n      style={[style, { opacity }]}\n    />\n  );\n}\n\nexport type { SkeletonProps };\nexport { Skeleton };\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/skeleton.web.tsx",
+      "content": "/**\n * The web skeleton: shadcn's, a `<div>` with `animate-pulse`, every `<div>` prop passed through.\n * `skeleton.tsx` is the native counterpart and says why this half is hand-written; `skeleton-base.ts`\n * holds what they share.\n */\nimport type * as React from \"react\";\nimport { skeletonClass } from \"@/components/ui/skeleton-base\";\nimport { cn } from \"@/lib/utils\";\n\ntype SkeletonProps = React.ComponentProps<\"div\">;\n\nfunction Skeleton({ className, ...props }: SkeletonProps) {\n  return (\n    <div data-slot=\"skeleton\" className={cn(\"animate-pulse\", skeletonClass, className)} {...props} />\n  );\n}\n\nexport type { SkeletonProps };\nexport { Skeleton };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

@@ -890,7 +890,6 @@ const WEB_ONLY = {
   "password-field": "a bound field of `app-form`; to merge into `form`",
   "password-input": "to be rebuilt on `Input`'s `leading` and `trailing` slots",
   separator: "hand-written before the native tier; to be ported",
-  skeleton: "hand-written before the native tier; to be ported",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
 const namesIn = async (built) => {

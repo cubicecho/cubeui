@@ -622,6 +622,27 @@
       ]
     },
     {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skeleton-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",

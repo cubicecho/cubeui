@@ -972,6 +972,11 @@ native (`registry/ui/radio-group.tsx`) and compiled like any other universal ite
 radix: the hidden `<input>` behind `name` / `required` for a native `<form>` submit, `dir`, and
 `asChild`.
 
+`skeleton` has left it too: `registry/ui/skeleton.tsx` for React Native, with a hand-written
+`skeleton.web.tsx` that is still shadcn's `<div>` with `animate-pulse`. On the web nothing changes.
+The pulse on device is `Animated`, because the compiler refuses `Animated` and NativeWind resolves
+`animate-pulse` on device only through Reanimated, which the registry does not depend on.
+
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
 rewritten to `./` like any other — inside `compiled/`. What ships gets the alias back (rule 13).
