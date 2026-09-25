@@ -851,6 +851,28 @@
       ]
     },
     {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "dependencies": ["date-fns@^4.4.0"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/icons",
+        "@cubeui/input",
+        "@cubeui/popover",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/date-picker.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "color-picker",
       "type": "registry:ui",
       "title": "Color Picker",
@@ -1317,26 +1339,6 @@
           "type": "registry:component"
         }
       ]
-    },
-    {
-      "name": "date-picker",
-      "type": "registry:component",
-      "title": "Date Picker",
-      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/calendar",
-        "@cubeui/input",
-        "@cubeui/popover",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "compiled/date-picker.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
     },
     {
       "name": "disclosure-row",

@@ -138,11 +138,11 @@ ships `compiled/`, not the source. The rules that make that work:
   `registry.web.json` by hand.
 
 **The web-only tier is `registry/web/`.** Hand-written DOM components with no React Native half:
-`MultiSelect`, `DatePicker`, `FormField`, `app-form` and the bound fields, and the
+`MultiSelect`, `FormField`, `app-form` and the bound fields, and the
 rest. They are declared in `registry.web-only.json`, and the directory *is* the declaration — every
 file there is web-only because of where it is. `registry/web/ui/` is the same tier for the
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an
-RN source is genuinely impossible or unwanted (a Radix popover, `cmdk`, `react-day-picker`), not
+RN source is genuinely impossible or unwanted (a Radix popover, `cmdk`), not
 because the compiler refused once; and a layout does not go here at all — `registry:check`
 rule 11 holds the layout family on both platforms, with `disclosure-row` its only exception. The
 tier only shrinks: rule 16 fails on a web-only item that `WEB_ONLY` in the script does not name with

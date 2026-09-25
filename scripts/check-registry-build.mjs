@@ -878,7 +878,6 @@ const WEB_ONLY = {
   command: "built on `cmdk`, which has no React Native build; a native half is planned",
   "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
-  "date-picker": "built on react-day-picker's range mode; `date-time-input` is to take ranges",
   "disclosure-row": "built on the web-only `item`",
   empty: "shadcn's parts; to map onto `EmptyState`",
   "field-row": "part of the web form layer; to merge into `form`",

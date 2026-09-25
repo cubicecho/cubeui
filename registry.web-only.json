@@ -129,26 +129,6 @@
       ]
     },
     {
-      "name": "date-picker",
-      "type": "registry:component",
-      "title": "Date Picker",
-      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/calendar",
-        "@cubeui/input",
-        "@cubeui/popover",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "registry/web/date-picker.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
-    },
-    {
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
