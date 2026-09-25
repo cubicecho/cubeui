@@ -544,6 +544,19 @@
       ]
     },
     {
+      "name": "stat-tile",
+      "type": "registry:component",
+      "title": "Stat Tile",
+      "description": "One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `icon` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.",
+      "registryDependencies": ["@cubeui/card", "@cubeui/icons", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/stat-tile.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
