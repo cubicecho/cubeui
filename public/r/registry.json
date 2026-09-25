@@ -485,6 +485,23 @@
       ]
     },
     {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy button",
+      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/copy-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/copy-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
@@ -1049,6 +1066,7 @@
         "@cubeui/action-button",
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
+        "@cubeui/copy-button",
         "@cubeui/date-picker",
         "@cubeui/menu",
         "@cubeui/multi-select",

@@ -549,6 +549,28 @@
       ]
     },
     {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy button",
+      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "dependencies": ["expo-clipboard@^57.0.2"],
+      "files": [
+        {
+          "path": "registry/ui/copy-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
