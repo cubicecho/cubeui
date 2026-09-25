@@ -467,6 +467,19 @@
       ]
     },
     {
+      "name": "disclosure-row",
+      "type": "registry:component",
+      "title": "Disclosure Row",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.",
+      "registryDependencies": ["@cubeui/item", "@cubeui/icons", "@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/disclosure-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:component",
       "title": "Description List",
@@ -1303,20 +1316,6 @@
         }
       ],
       "dependencies": ["date-fns@^4.4.0", "lucide-react@^1.34.0"]
-    },
-    {
-      "name": "disclosure-row",
-      "type": "registry:component",
-      "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/item", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/disclosure-row.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "empty",

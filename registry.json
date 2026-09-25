@@ -531,6 +531,19 @@
       ]
     },
     {
+      "name": "disclosure-row",
+      "type": "registry:component",
+      "title": "Disclosure Row",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.",
+      "registryDependencies": ["@cubeui/item", "@cubeui/icons", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/disclosure-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:component",
       "title": "Description List",
