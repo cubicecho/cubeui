@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  71 on both platforms · 24 web-only · 0 native-only.
+  74 on both platforms · 21 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -261,7 +261,7 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/date-picker</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.</td>
         </tr>
         <tr>
@@ -416,8 +416,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/option-select</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page</code></th>
@@ -441,8 +441,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/password-input</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A password box with a reveal button that is named, changes its name, and does not submit the form.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/popover</code></th>
@@ -511,8 +511,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/separator</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role="separator"` with `decorative={false}`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/setting-row</code></th>
@@ -526,8 +526,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/skeleton</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/skill</code></th>

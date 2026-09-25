@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/ui/password-input.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * A password box with an eye on it: `Input` with `type="password"` and a named show/hide button in
  * its `trailing` slot. Written once, in React Native, and compiled for the web — the web half is a
  * real `<input>` whose `type` flips, the native one a `TextInput` whose `secureTextEntry` does.
@@ -48,9 +38,9 @@
  * ```
  */
 import { useState } from "react";
-import { Button } from "./button";
-import { Eye, EyeOff } from "./icons";
-import { Input, type InputProps } from "./input";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "@/components/ui/icons";
+import { Input, type InputProps } from "@/components/ui/input";
 
 export type PasswordInputProps = Omit<InputProps, "type" | "trailing"> & {
   /** The reveal button's name while the value is hidden. */
@@ -83,7 +73,7 @@ export function PasswordInput({
             size="icon-xs"
             aria-label={visible ? hideLabel : showLabel}
             disabled={disabled}
-            onClick={() => setShown((was) => !was)}
+            onPress={() => setShown((was) => !was)}
           >
             {visible ? <EyeOff /> : <Eye />}
           </Button>

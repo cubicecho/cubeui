@@ -856,7 +856,7 @@ keeps the family on both sides.
 |---|---|---|---|
 | universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
 | native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
-| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `OptionSelect`, `FormField`, `MultiSelect` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `FormField`, `MultiSelect`, `DatePicker` |
 
 **The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
@@ -921,7 +921,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `select` | every shadcn part — the scroll buttons included — with radix's props on each, `SelectTrigger`'s `size`; content defaults to `item-aligned`, as shadcn's does |
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
-| `option-select` | every `<button>` prop on the trigger again |
+| `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
 | `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
@@ -972,6 +972,19 @@ native (`registry/ui/radio-group.tsx`) and compiled like any other universal ite
 `RadioGroupItem` is still the bare circle for a caller's own `<Label htmlFor>`. What went with
 radix: the hidden `<input>` behind `name` / `required` for a native `<form>` submit, `dir`, and
 `asChild`.
+
+`skeleton` has left it too: `registry/ui/skeleton.tsx` for React Native, with a hand-written
+`skeleton.web.tsx` that is still shadcn's `<div>` with `animate-pulse`. On the web nothing changes.
+The pulse on device is `Animated`, because the compiler refuses `Animated` and NativeWind resolves
+`animate-pulse` on device only through Reanimated, which the registry does not depend on.
+
+`separator` has left it the same way: `registry/ui/separator.tsx`, compiled, with shadcn's
+`orientation` and `decorative`. Decorative is hidden from assistive tech on both halves
+(`aria-hidden`, where Radix wrote `role="none"`), and `decorative={false}` is `role="separator"`.
+The web half still writes `data-orientation`, so a shadcn call site's
+`data-[orientation=vertical]:h-4` still sizes it. Its own size is now a plain class per orientation,
+so a bare `h-4` from the caller wins too, which it did not over Radix's variant. `asChild` went
+with Radix.
 
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is

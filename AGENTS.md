@@ -62,11 +62,10 @@ Read this before adding anything:
 
    **This registry now publishes its own primitives**, so "what shadcn ships" is two lists. The
    first is this repo's: `registry/ui/` holds a native-first `button`, `card`, `dialog`, `field`,
-   `input`, `select`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
+   `input`, `select`, `separator`, `skeleton`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`,
-   `separator`, `skeleton`. **Check those two directories before you write markup**; a shell
+   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`. **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.
@@ -139,7 +138,7 @@ ships `compiled/`, not the source. The rules that make that work:
   `registry.web.json` by hand.
 
 **The web-only tier is `registry/web/`.** Hand-written DOM components with no React Native half:
-`OptionSelect`, `MultiSelect`, `FormField`, `app-form` and the bound fields, and the
+`MultiSelect`, `FormField`, `app-form` and the bound fields, and the
 rest. They are declared in `registry.web-only.json`, and the directory *is* the declaration — every
 file there is web-only because of where it is. `registry/web/ui/` is the same tier for the
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an
