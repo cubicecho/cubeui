@@ -260,6 +260,7 @@ for the app's navigation rail, which has a bar to stand in for it.
                 label={p.name}
                 icon={<Folder />}
                 count={p.open}
+                status={p.shared ? { label: "Shared", icon: <Users /> } : undefined}
                 active={p.id === current}
               />
             </Link>
@@ -301,9 +302,14 @@ Three parts, and only `Sidebar` is required:
   searches — so the landmark holds only the app's own places. `label` without `as="nav"` is a
   type error.
 - **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
-  line, truncated), `icon?`, `count?`, `active`. It is `role="link"` — an `<a href>` on the web —
-  and `active` fills it from `sidebar-accent` and sets `aria-current="page"`. Hover fills it the
-  same way. **With `onPress` and no `href` it is a button** — `onClick` on the web, and no
+  line, truncated), `icon?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
+  the web — and `active` fills it from `sidebar-accent` and sets `aria-current="page"`. Hover fills
+  it the same way. **`status={{ label, icon? }}` marks the row's state** — "MCP on", "offline",
+  "draft" — before the count, and the row is named "Work, MCP on, 2": clipped text inside the row
+  on the web, part of its `accessibilityLabel` on device. With an `icon` the icon is what is seen
+  and is decorative; without one the label is drawn, small and muted. Do not put a status in the
+  leading `icon` or hand-write the row's `aria-label` to say it — a caller's `aria-label` replaces
+  the whole name the row builds. **With `onPress` and no `href` it is a button** — `onClick` on the web, and no
   `active`: `role="button"`, a `<button type="button">` on the web, never `aria-current`, drawn
   exactly like the links beside it. That is the footer's Sign out; do not hand-draw it with a
   `Pressable` and copied classes. The props are a union, so `active` on a button is a type error.

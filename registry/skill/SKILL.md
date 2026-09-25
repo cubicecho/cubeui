@@ -208,6 +208,10 @@ The same words mean the same thing in every component, and this is the point of 
 **List rows and query states add:**
 
 - **`badges`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
+- **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
+  title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, icon? }` before
+  the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `icon`, when
+  given, is what is seen instead of it — decorative, never read.
 - **`leading`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
   given, not sized like `icon`, and never inside the row's pressed area. On `ListItem`.
 - **`meta`** — the grey line of facts beside the title: a name, a time, a count. On `ListItem` it
