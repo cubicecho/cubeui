@@ -871,10 +871,8 @@ const LAYOUT_BUNDLE = "layout";
 // a named debt, not a category: when the reason goes, so does the line, and nothing is added
 // without one. Rule 11 takes no exceptions from here: a layout is never web-only.
 const WEB_ONLY = {
-  "alert-dialog": "only `confirm-button` uses it; goes when that is rebuilt on `ConfirmDialog`",
   "app-form": "the web form layer; to merge into `form`",
   "color-field": "a bound field of `app-form`; to merge into `form`",
-  "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",

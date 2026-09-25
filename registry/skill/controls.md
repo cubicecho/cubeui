@@ -221,6 +221,13 @@ is always destructive; a confirm that is *not* destructive is a question, and a 
 Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
+**`@cubeui/confirm-button` is on both halves**, with the same props. The press opens the question,
+so it takes neither `onPress` nor `onClick`; `onConfirm` is the one that acts. The dialog is
+`ConfirmDialog`, the one `confirm()` raises, so the three draw the same card: an `alertdialog`
+with Cancel first and the destructive verb last, no corner close, and a press beside it that does
+not answer it. On device the back button is Cancel, and the trigger's tooltip is `ActionButton`'s
+long press.
+
 ### Type the name to confirm
 
 For a delete that is big and cannot be undone — a whole folder of notes, a workspace, a

@@ -214,3 +214,21 @@ test("a listitem role on a bare View is still an li", () => {
   const code = ok('export const A = () => <View role="listitem" />;');
   assert.match(code, /<li className="cube-rn-view" \/>/);
 });
+
+/**
+ * A `registry:component` imports another as `@/components/x`. When `x` is compiled that is a
+ * sibling like any `ui/` one, and pointing it at `./x` is what keeps a side-by-side story from
+ * typechecking the compiled file against the React Native half. A web-only name is left alone.
+ */
+test("a compiled component's alias becomes a sibling import, and a web-only one is kept", () => {
+  const { code, diagnostics } = compileSource({
+    filePath: "x.tsx",
+    text:
+      'import { View } from "react-native";\nimport { A } from "@/components/a";\n' +
+      'import { B } from "@/components/b";\nexport const X = () => <View><A /><B /></View>;',
+    compiledNames: new Set(["a"]),
+  });
+  assert.deepEqual(diagnostics, []);
+  assert.match(code, /from "\.\/a"/);
+  assert.match(code, /from "@\/components\/b"/);
+});

@@ -22,10 +22,10 @@
  * web layout centred, and a phone is narrower than the first breakpoint anyway.
  */
 import { Children, type ReactNode } from "react";
-import { PageHeader, type PageHeaderProps } from "@/components/page-header";
 import type { IconComponent } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
+import { PageHeader, type PageHeaderProps } from "./page-header";
 
 type PageProps = {
   className?: string;

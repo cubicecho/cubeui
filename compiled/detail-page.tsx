@@ -17,7 +17,7 @@
  * early return of its own.
  */
 import type { ReactNode } from "react";
-import { Page } from "@/components/page";
+import { Page } from "./page";
 
 type DetailPageProps<T> = {
   /** The loaded entity, or null/undefined while loading or when missing. */

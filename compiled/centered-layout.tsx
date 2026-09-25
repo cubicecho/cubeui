@@ -29,8 +29,8 @@
  *   the keyboard. Android resizes the window for the keyboard itself.
  */
 import type { ReactNode } from "react";
-import { CardLayout, type CardLayoutProps } from "@/components/card-layout";
 import { cn } from "@/lib/utils";
+import { CardLayout, type CardLayoutProps } from "./card-layout";
 
 export type CenteredLayoutProps = Omit<CardLayoutProps, "className"> & {
   /** The body of the card: the form, the message. */

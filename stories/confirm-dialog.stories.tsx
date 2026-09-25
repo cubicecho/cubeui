@@ -51,11 +51,11 @@ function Folder({ Dialog, name }: { Dialog: typeof NativeDialog; name: string })
   );
 }
 
-const dialog = () => body().findByRole("dialog");
+const dialog = () => body().findByRole("alertdialog");
 const box = async () =>
   within(await dialog()).findByRole("textbox", { name: "Type work to confirm" });
 const deleteButton = async () => within(await dialog()).findByRole("button", { name: "Delete" });
-const closed = () => waitFor(() => expect(body().queryByRole("dialog")).toBeNull());
+const closed = () => waitFor(() => expect(body().queryByRole("alertdialog")).toBeNull());
 
 /** Wrong text keeps it locked; the exact text unlocks it; the button confirms once. */
 export const TypeTheName: Story = {

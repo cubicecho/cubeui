@@ -65,8 +65,8 @@ Read this before adding anything:
    `input`, `select`, `separator`, `skeleton`, `tabs`, `command` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `table` (`command`, `empty` and
-   `item` were three, and are native-first now). **Check those two directories before you write markup**; a shell
+   upstream primitives the web tier needs — `table` (`alert-dialog`, `command`, `empty` and `item`
+   were four, and are native-first now). **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.
@@ -139,7 +139,7 @@ ships `compiled/`, not the source. The rules that make that work:
   `registry.web.json` by hand.
 
 **The web-only tier is `registry/web/`.** Hand-written DOM components with no React Native half:
-`ConfirmButton`, `FormField`, `app-form` and the bound fields, and the
+`FormField`, `app-form` and the bound fields, `table`, and the
 rest. They are declared in `registry.web-only.json`, and the directory *is* the declaration — every
 file there is web-only because of where it is. `registry/web/ui/` is the same tier for the
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an

@@ -865,6 +865,20 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics)
       continue;
     }
 
+    /*
+     * `@/components/x` is a sibling too when `x` is compiled: a `registry:component` — a layout,
+     * `action-button` — imports another by that alias. Left alone it typechecked against the
+     * React Native half from a side-by-side story, which passed only while the two halves' props
+     * happened to agree; `confirm-button` hands `ActionButton` an `onClick`, and they do not. A
+     * name that is not compiled here is a web-only item, which has no other half to reach, so it
+     * is left for the CLI rather than refused.
+     */
+    const component = spec.match(/^@\/components\/([^/]+)$/);
+    if (component && compiledNames.has(component[1]) && !neutralNames.has(component[1])) {
+      decl.setModuleSpecifier(`./${component[1]}`);
+      continue;
+    }
+
     const sibling = spec.match(/^@\/components\/(?:ui|layout)\/(.+)$/);
     if (!sibling) continue;
     const name = sibling[1];

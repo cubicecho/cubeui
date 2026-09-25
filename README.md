@@ -93,6 +93,13 @@ DOM app keeps its `components.json` line. What changes under it:
 - **`DialogLayout`'s discard question is a `Dialog` with `role="alertdialog"`.** It is no longer
   radix's `AlertDialog`. `getByRole("alertdialog")` still finds it. Selectors on
   `alert-dialog-*` data-slots do not.
+- **`ConfirmButton`'s dialog is `ConfirmDialog`**, the one `confirm()` raises, now that the button
+  is written once in React Native and compiled. Its props, its install path and
+  `getByRole("alertdialog")` are unchanged, and so is the rest of what radix's `AlertDialog` did:
+  no corner close, a click beside it does not answer it, Cancel is first. Selectors on
+  `alert-dialog-*` data-slots and on `data-slot="confirm-button-dialog"` find nothing now.
+  `ConfirmDialog` and `confirm()` became an `alertdialog` with it; a test asking them for
+  `getByRole("dialog")` asks for `"alertdialog"` now.
 - **`ColorPicker` is inline: a swatch row and a hex box, with no popover.** It installs at
   `components/ui/color-picker.tsx` rather than `components/color-picker.tsx`, so the old file
   stays behind. Delete it and fix the import. The old props (`onValueChange`, `swatches`,
@@ -857,7 +864,7 @@ keeps the family on both sides.
 |---|---|---|---|
 | universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
 | native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
-| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `FormField`, `ConfirmButton`, `Table` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `FormField`, `AppForm`, `Table` |
 
 **The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
@@ -992,6 +999,15 @@ part names, `EmptyMedia`'s `variant`, the `data-slot`s and the `components/ui/em
 and it changed its look rather than its API: the parts draw what `EmptyState` draws — the muted
 bubble, a `text-sm` title, `py-10` — because `EmptyState` is now built on them. A call site that
 wants shadcn's `text-lg` title, `p-6 md:p-12` or `flex-1` passes it as a `className`.
+
+`alert-dialog` has a native half as well, though it did not leave the list the same way: its web
+half is still shadcn's file over radix, now `registry/ui/alert-dialog.web.tsx`, so a DOM app that
+installed it gets the same file back. The native half is the same part names over the native
+`Dialog`, as an `alertdialog` with no close button that a press beside it does not dismiss.
+`AlertDialogAction` and `AlertDialogCancel` take `onPress` there, and the web half's source
+declares `onPress` too, because an Expo web app runs that file under the native types. The copy
+compiled for a DOM app declares it as `onClick`, with the mouse event, and still runs before the
+close, so `preventDefault` holds the dialog open as it does in shadcn.
 
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is

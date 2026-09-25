@@ -16,9 +16,9 @@ import {
   splitProps,
   useFieldContext,
   useFieldError,
-} from "@/components/app-form";
-import { FormField } from "@/components/form-field";
-import { MultiSelect, type MultiSelectOption } from "@/components/multi-select";
+} from "./app-form";
+import { FormField } from "./form-field";
+import { MultiSelect, type MultiSelectOption } from "./multi-select";
 
 type MultiSelectFieldProps = FieldProps &
   Omit<
