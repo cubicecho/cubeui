@@ -109,7 +109,8 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `meta` | The grey line of facts beside the title: a name, a time, a count. |
+| `leading` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `icon` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badges` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
+| `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `action` — still facts about the title, placed where a list scans them. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
@@ -124,7 +125,7 @@ Notes on why the layering is where it is:
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
-- **`DisclosureRow` takes `action`, not `actions`,** though it usually holds three buttons. The
+- **`DisclosureRow` and `ListItem` take `action`, not `actions`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.
 - **`PropertyRow` reuses `label`, `hint`, `action` and `value` rather than growing words of its

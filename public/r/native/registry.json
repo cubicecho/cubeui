@@ -505,6 +505,19 @@
       ]
     },
     {
+      "name": "list-item",
+      "type": "registry:component",
+      "title": "List Item",
+      "description": "One row of a list: `leading` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `action` at the far end. With `onPress` the middle is one button and `leading` and `action` stay separate controls beside it, never nested in it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/list-item.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "disclosure",
       "type": "registry:component",
       "title": "Disclosure",

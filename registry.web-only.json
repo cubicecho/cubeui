@@ -250,6 +250,7 @@
         "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",
+        "@cubeui/list-item",
         "@cubeui/page-header",
         "@cubeui/page-layout",
         "@cubeui/query-state",
