@@ -94,6 +94,7 @@ at the end.
 | An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls.md](controls.md#alert) |
+| A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls.md](controls.md#spinner) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls.md](controls.md#icons) |
 
 If none of them fits, use the shadcn primitives directly — do **not** bend a shell with
@@ -245,6 +246,7 @@ views and there is no shell wrapping to hide.
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
 | A callout — a warning, a note, the last error — see [controls.md](controls.md#alert) | `Alert` | `@cubeui/alert` |
+| A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |

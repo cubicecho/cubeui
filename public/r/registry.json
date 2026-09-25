@@ -498,6 +498,23 @@
       ]
     },
     {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A loading indicator: the LoaderCircle glyph turning, one `role=\"status\"` named by `label`, sized and coloured by `className`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/spinner-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/spinner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
