@@ -155,6 +155,12 @@ stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `
 `cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token
 (`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9.
 
+**A checked, pressed or current control is `selection`, not `primary`.** Checkbox, switch, radio,
+segmented pill, toggle chip, a calendar's picked day, a selected stat tile: `bg-selection`,
+`text-selection-foreground`, `border-selection`. `primary` is for the thing to press — a button, a
+badge, a progress bar. Keeping the two apart is why a chosen option does not look like a button,
+and why a palette can colour its highlight without recolouring every button.
+
 ## Status
 
 Published to <https://cubicecho.github.io/cubeui/> by `.github/workflows/pages.yml` on every push

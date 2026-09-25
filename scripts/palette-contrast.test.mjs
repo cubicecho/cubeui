@@ -22,6 +22,7 @@ const PAIRS = [
   ["muted-foreground", "background"],
   ["muted-foreground", "card"],
   ["accent-foreground", "accent"],
+  ["selection-foreground", "selection"],
   ["destructive-foreground", "destructive"],
   ["destructive", "background"],
   ["destructive", "card"],

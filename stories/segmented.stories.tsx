@@ -70,7 +70,7 @@ export const Row: Story = {
     const [nativeMonth] = canvas.getAllByRole("button", { name: "Month" });
     await expect(nativeMonth?.getAttribute("aria-pressed")).toBe("false");
 
-    // The styling claim: whatever the element, the active pill is the one with the primary
+    // The styling claim: whatever the element, the active pill is the one with the selection
     // background, on both halves and from the same class.
     const background = (el: Element) => getComputedStyle(el).backgroundColor;
     await expect(background(compiledWeek)).toBe(background(nativeWeek));

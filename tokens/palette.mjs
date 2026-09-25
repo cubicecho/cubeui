@@ -19,7 +19,9 @@
  * shipped (`preview/index.css`), which the web emitter reproduced byte for byte
  * until the two registries merged. `destructive-foreground` and the eight
  * `sidebar-*` tokens were added here — shadcn's own set, which that stylesheet
- * never carried.
+ * never carried. `selection` and `selection-foreground` are cubeui's own, not
+ * shadcn's: the fill of a checked, pressed or current control, kept apart from
+ * `primary` so a chosen option does not look like a button to press.
  *
  * `a` is alpha in [0,1] and is omitted when opaque.
  */
@@ -45,6 +47,8 @@ export const light = {
   "muted-foreground": { l: 0.556, c: 0, h: 0 },
   accent: { l: 0.97, c: 0, h: 0 },
   "accent-foreground": { l: 0.205, c: 0, h: 0 },
+  selection: { l: 0.5461, c: 0.2152, h: 262.881 }, // #2563EB, blue-600 in sRGB
+  "selection-foreground": { l: 1, c: 0, h: 0 },
   destructive: { l: 0.577, c: 0.245, h: 27.325 },
   "destructive-foreground": { l: 1, c: 0, h: 0 },
   border: { l: 0.922, c: 0, h: 0 },
@@ -76,6 +80,8 @@ export const dark = {
   "muted-foreground": { l: 0.708, c: 0, h: 0 },
   accent: { l: 0.371, c: 0, h: 0 },
   "accent-foreground": { l: 0.985, c: 0, h: 0 },
+  selection: { l: 0.7137, c: 0.1434, h: 254.624 }, // #60A5FA, blue-400 in sRGB
+  "selection-foreground": { l: 0.145, c: 0, h: 0 },
   destructive: { l: 0.704, c: 0.191, h: 22.216 },
   // Dark text, not white: dark `destructive` is a light coral, and white on it is 2.89:1 — short
   // of the 4.5:1 a button label needs. Near-black is 6.85:1. Light mode's white is 4.77:1.
@@ -124,8 +130,10 @@ export const palettes = {
       "secondary-foreground": { l: 0.9775, c: 0.0079, h: 106.545 },
       muted: { l: 0.3574, c: 0.0184, h: 103.002 },
       "muted-foreground": { l: 0.7456, c: 0.0367, h: 96.421 }, // #B3AD93
-      accent: { l: 0.3994, c: 0.0163, h: 102.424 }, // #49483E, the selection
+      accent: { l: 0.3994, c: 0.0163, h: 102.424 }, // #49483E, the editor's selection highlight
       "accent-foreground": { l: 0.9775, c: 0.0079, h: 106.545 },
+      selection: { l: 0.7012, c: 0.1812, h: 298.062 }, // #AE81FF, the purple, as the sidebar's
+      "selection-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
       destructive: { l: 0.7058, c: 0.1936, h: 8.454 }, // #FF6188
       "destructive-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
       border: { l: 0.3994, c: 0.0163, h: 102.424 },
