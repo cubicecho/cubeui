@@ -15,11 +15,8 @@
  */
 import type { ReactNode } from "react";
 
-import {
-  type HeaderContentFooterProps,
-  StickyHeaderContentFooter,
-} from "@/components/header-content-footer";
-import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
+import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./header-content-footer";
+import { PageHeader, type PageHeaderLevel } from "./page-header";
 
 export type PageLayoutProps = {
   /** The page. The only slot that scrolls. */

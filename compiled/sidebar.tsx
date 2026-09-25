@@ -32,12 +32,9 @@
  */
 import type { ReactNode } from "react";
 import * as React from "react";
-import {
-  type HeaderContentFooterProps,
-  StickyHeaderContentFooter,
-} from "@/components/header-content-footer";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
+import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./header-content-footer";
 
 /**
  * A chassis slot laid out as a column with gaps between what it holds.

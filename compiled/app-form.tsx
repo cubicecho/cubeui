@@ -13,12 +13,12 @@ import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { useState } from "react";
-import { FormField } from "@/components/form-field";
-import type { SelectEntry, SelectOption, SelectSeparatorEntry } from "@/components/option-select";
-import { OptionSelect } from "@/components/option-select";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
+import { FormField } from "./form-field";
 import { Input } from "./input";
+import type { SelectEntry, SelectOption, SelectSeparatorEntry } from "./option-select";
+import { OptionSelect } from "./option-select";
 import { Switch } from "./switch";
 import { Textarea } from "./textarea";
 

@@ -16,9 +16,9 @@ import {
   splitProps,
   useFieldContext,
   useFieldError,
-} from "@/components/app-form";
-import { FormField } from "@/components/form-field";
+} from "./app-form";
 import { COLOR_SWATCHES, ColorPicker, isHexColor, normalizeHex } from "./color-picker";
+import { FormField } from "./form-field";
 
 type ColorFieldProps = FieldProps &
   Omit<

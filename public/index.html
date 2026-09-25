@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  71 on both platforms · 24 web-only · 0 native-only.
+  73 on both platforms · 22 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -146,8 +146,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert-dialog</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's modal that interrupts to ask, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's modal that interrupts to ask, with the same part names on both halves: radix's `AlertDialog` on the web, the native `Dialog` as an `alertdialog` with no close button on device.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
@@ -236,8 +236,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/confirm-button</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A destructive button that asks first, with a required description of what is lost.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A destructive button that asks first, with a required description of what is lost: an `ActionButton` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/confirm-dialog</code></th>

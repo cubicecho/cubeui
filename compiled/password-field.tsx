@@ -16,9 +16,9 @@ import {
   splitProps,
   useFieldContext,
   useFieldError,
-} from "@/components/app-form";
-import { FormField } from "@/components/form-field";
-import { PasswordInput } from "@/components/password-input";
+} from "./app-form";
+import { FormField } from "./form-field";
+import { PasswordInput } from "./password-input";
 
 type PasswordFieldProps = FieldProps &
   Omit<ComponentProps<typeof PasswordInput>, "id" | "value" | "onChangeText" | "onBlur">;

@@ -524,6 +524,19 @@
       ]
     },
     {
+      "name": "confirm-button",
+      "type": "registry:component",
+      "title": "Confirm Button",
+      "description": "A destructive button that asks first, with a required description of what is lost: an `ActionButton` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.",
+      "registryDependencies": ["@cubeui/action-button", "@cubeui/confirm-dialog"],
+      "files": [
+        {
+          "path": "compiled/confirm-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",
@@ -658,6 +671,20 @@
         },
         {
           "path": "compiled/switch-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "shadcn's modal that interrupts to ask, with the same part names on both halves: radix's `AlertDialog` on the web, the native `Dialog` as an `alertdialog` with no close button on device.",
+      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "registryDependencies": ["@cubeui/button", "@cubeui/dialog", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "compiled/alert-dialog.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1156,20 +1183,6 @@
       ]
     },
     {
-      "name": "alert-dialog",
-      "type": "registry:ui",
-      "title": "Alert Dialog",
-      "description": "shadcn's modal that interrupts to ask, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/alert-dialog.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
@@ -1217,24 +1230,6 @@
         }
       ],
       "dependencies": ["cmdk@^1.1.1", "lucide-react@^1.34.0"]
-    },
-    {
-      "name": "confirm-button",
-      "type": "registry:component",
-      "title": "Confirm Button",
-      "description": "A destructive button that asks first, with a required description of what is lost. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/action-button",
-        "@cubeui/alert-dialog",
-        "@cubeui/input",
-        "@cubeui/label"
-      ],
-      "files": [
-        {
-          "path": "compiled/confirm-button.tsx",
-          "type": "registry:component"
-        }
-      ]
     },
     {
       "name": "control",

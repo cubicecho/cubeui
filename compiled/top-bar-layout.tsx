@@ -18,13 +18,13 @@
  * spelled differently or forgot.
  */
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 import {
   HeaderContentFooter,
   type HeaderContentFooterWidth,
   PAGE_COLUMN,
   PROSE_COLUMN,
-} from "@/components/header-content-footer";
-import { cn } from "@/lib/utils";
+} from "./header-content-footer";
 
 /**
  * The bar's inner row, capped to the same column as the page below it, so the brand sits over the

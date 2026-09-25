@@ -4,20 +4,6 @@
   "homepage": "https://cubicecho.github.io/cubeui",
   "items": [
     {
-      "name": "alert-dialog",
-      "type": "registry:ui",
-      "title": "Alert Dialog",
-      "description": "shadcn's modal that interrupts to ask, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/alert-dialog.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"]
-    },
-    {
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
@@ -65,24 +51,6 @@
         }
       ],
       "dependencies": ["cmdk@^1.1.1", "lucide-react@^1.34.0"]
-    },
-    {
-      "name": "confirm-button",
-      "type": "registry:component",
-      "title": "Confirm Button",
-      "description": "A destructive button that asks first, with a required description of what is lost.",
-      "registryDependencies": [
-        "@cubeui/action-button",
-        "@cubeui/alert-dialog",
-        "@cubeui/input",
-        "@cubeui/label"
-      ],
-      "files": [
-        {
-          "path": "registry/web/confirm-button.tsx",
-          "type": "registry:component"
-        }
-      ]
     },
     {
       "name": "control",

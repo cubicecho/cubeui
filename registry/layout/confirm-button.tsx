@@ -1,17 +1,7 @@
-/**
- * Compiled from `registry/layout/confirm-button.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
 import type { ComponentProps, ReactNode } from "react";
 import { useState } from "react";
-import { ActionButton } from "./action-button";
-import { ConfirmDialog } from "./confirm-dialog";
+import { ActionButton } from "@/components/action-button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 /*
  * Both press names, because the compiler renames a prop where it is declared or passed and not a
@@ -91,7 +81,7 @@ export function ConfirmButton({
 
   return (
     <>
-      <ActionButton {...props} onClick={() => setOpen(true)} />
+      <ActionButton {...props} onPress={() => setOpen(true)} />
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}

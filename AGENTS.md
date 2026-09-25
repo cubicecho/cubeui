@@ -65,7 +65,7 @@ Read this before adding anything:
    `input`, `select`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`,
+   upstream primitives the web tier needs — `command`, `empty`, `item`,
    `separator`, `skeleton`. **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a

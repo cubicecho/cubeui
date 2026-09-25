@@ -18,8 +18,9 @@ type ConfirmDialogProps = {
   onOpenChange: (open: boolean) => void;
   title: ReactNode;
   description: ReactNode;
-  confirmLabel?: string;
-  cancelLabel?: string;
+  /** The verb on the destructive button. A node, so it can carry an icon beside the word. */
+  confirmLabel?: ReactNode;
+  cancelLabel?: ReactNode;
   /**
    * The text the user has to type before the destructive button unlocks — the name of the
    * folder, the repository, the workspace. Matched exactly: case and spaces count. Left out, the
@@ -45,6 +46,12 @@ type ConfirmDialogProps = {
  * `requireText` is the type-the-name mode, for a delete that is big and cannot be
  * undone: a labelled input, and the destructive button stays disabled — Enter
  * included — until it holds that text exactly.
+ *
+ * It is an `alertdialog`, as radix's `AlertDialog` was and as `DialogLayout`'s discard question
+ * is: a question that interrupts, announced as one. So it has no corner close button and a press
+ * on the backdrop does not answer it — the two ways out are Cancel and Escape (the back button on
+ * Android), and a stray click beside the card is neither yes nor no. Cancel is first in the
+ * footer, so it is where focus lands when there is no box to type in.
  */
 export function ConfirmDialog({
   open,
@@ -59,7 +66,12 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[360px]">
+      <DialogContent
+        role="alertdialog"
+        showCloseButton={false}
+        onInteractOutside={holdOpen}
+        className="sm:max-w-[360px]"
+      >
         {/* Keyed by the text, so a prompt raised over an open one for something else starts
             empty too. Closing unmounts the body on both platforms, which is what empties the
             box between openings. */}
@@ -79,11 +91,14 @@ export function ConfirmDialog({
   );
 }
 
+/** A press beside the card is not an answer; `preventDefault` is how both halves' `Dialog` hear it. */
+const holdOpen = (event: Event) => event.preventDefault();
+
 type ConfirmDialogBodyProps = {
   title: ReactNode;
   description: ReactNode;
-  confirmLabel: string;
-  cancelLabel: string;
+  confirmLabel: ReactNode;
+  cancelLabel: ReactNode;
   requireText: string | undefined;
   requireTextLabel: ReactNode;
   onCancel: () => void;

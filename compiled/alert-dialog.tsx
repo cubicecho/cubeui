@@ -1,5 +1,5 @@
 /**
- * Copied from `registry/web/ui/alert-dialog.tsx` by `scripts/rn2web`.
+ * Copied from `registry/ui/alert-dialog.web.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
  * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
@@ -137,19 +137,32 @@ function AlertDialogMedia({ className, ...props }: React.ComponentProps<"div">) 
   );
 }
 
+/**
+ * The native half's press, under the name the native half gives it. An Expo web app installs the
+ * native registry and gets this file at runtime, so `onPress` is what its call sites pass; left to
+ * the spread it reached radix's `<button>` as an unknown DOM prop and never ran. It is handed to
+ * radix as `onClick`, which runs it before the close and lets `preventDefault` hold the dialog
+ * open. The compiled copy declares this prop as `onClick` (rn2web's rename), so a DOM call site
+ * sees shadcn's `onClick` with shadcn's event, and nothing else.
+ */
+type NativePress = { onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined };
+
 function AlertDialogAction({
   className,
   variant = "default",
   size = "default",
+  onClick: onPress,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Action> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size">) {
+}: Omit<React.ComponentProps<typeof AlertDialogPrimitive.Action>, "onClick"> &
+  Pick<React.ComponentProps<typeof Button>, "variant" | "size"> &
+  NativePress) {
   return (
     <Button variant={variant} size={size} asChild>
       <AlertDialogPrimitive.Action
         data-slot="alert-dialog-action"
         className={cn(className)}
         {...props}
+        onClick={onPress}
       />
     </Button>
   );
@@ -159,15 +172,18 @@ function AlertDialogCancel({
   className,
   variant = "outline",
   size = "default",
+  onClick: onPress,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size">) {
+}: Omit<React.ComponentProps<typeof AlertDialogPrimitive.Cancel>, "onClick"> &
+  Pick<React.ComponentProps<typeof Button>, "variant" | "size"> &
+  NativePress) {
   return (
     <Button variant={variant} size={size} asChild>
       <AlertDialogPrimitive.Cancel
         data-slot="alert-dialog-cancel"
         className={cn(className)}
         {...props}
+        onClick={onPress}
       />
     </Button>
   );
