@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, CopyButton, DateTimeInput, InlineNumberEdit, SearchInput, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a list of read-only label and value rows, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput, Disclosure on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, CopyButton, DateTimeInput, InlineNumberEdit, SearchInput, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a list of read-only label and value rows, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -47,8 +47,8 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section` and
-`DescriptionList` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section`,
+`Disclosure` and `DescriptionList` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
@@ -77,6 +77,7 @@ at the end.
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
+| A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Disclosure` | [layout.md](layout.md#disclosure) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
@@ -151,6 +152,8 @@ The same words mean the same thing in every component, and this is the point of 
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
   and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
+- **`defaultOpen`** — where it starts, when the thing holds its own open state: `Disclosure`, and
+  the `Dialog`, `Popover` and `Menu` primitives. Pass it instead of `open`, never beside it.
 - **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
   called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
   is not something the caller renders.
@@ -236,6 +239,7 @@ views and there is no shell wrapping to hide.
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
+| A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout.md](layout.md#disclosure) | `Disclosure` | `@cubeui/disclosure` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout.md](layout.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
 | A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/page` |

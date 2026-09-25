@@ -441,6 +441,19 @@
       ]
     },
     {
+      "name": "disclosure",
+      "type": "registry:component",
+      "title": "Disclosure",
+      "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `action` sits beside it rather than inside it, and `content` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/disclosure.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:component",
       "title": "Description List",
@@ -1272,6 +1285,7 @@
         "@cubeui/card-layout",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
+        "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",
         "@cubeui/page-header",
