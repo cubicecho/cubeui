@@ -7,12 +7,13 @@
  * compiling is an app that stops compiling. The `@ts-expect-error` lines are the other direction:
  * they fail if a type is widened to `any` and the positive lines pass for the wrong reason.
  *
- * Covered: input, textarea, checkbox, switch, select (every part), field (every part) and
+ * Covered: alert (every part), input, textarea, checkbox, switch, select (every part), field (every part) and
  * `OptionSelect`'s `<button>` trigger props.
  */
 
 import { useRef } from "react";
 import { OptionSelect } from "@/components/option-select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -26,6 +27,7 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
+import { CircleAlert } from "@/components/ui/icons";
 import { Input, type InputHandle } from "@/components/ui/input";
 import {
   Select,
@@ -95,6 +97,26 @@ export function TextareaAssertions() {
         aria-invalid
       />
       <Textarea value="x" onChangeText={(text: string) => text} />
+    </>
+  );
+}
+
+export function AlertAssertions() {
+  return (
+    <>
+      <Alert>
+        <CircleAlert />
+        <AlertTitle>Heads up!</AlertTitle>
+        <AlertDescription>You can add components to your app using the cli.</AlertDescription>
+      </Alert>
+      <Alert variant="destructive" className="max-w-md">
+        <AlertTitle className="line-clamp-1">Unable to process your payment.</AlertTitle>
+        <AlertDescription>
+          <p>Please verify your billing information and try again.</p>
+        </AlertDescription>
+      </Alert>
+      {/* @ts-expect-error — shadcn's alert has no `success` variant, and neither does this one. */}
+      <Alert variant="success" />
     </>
   );
 }

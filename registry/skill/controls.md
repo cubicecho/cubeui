@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -564,6 +564,46 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+
+## Alert
+
+A callout — a tinted, bordered box saying something about the screen it is on — is `Alert`, on
+both halves. Do not hand-draw `rounded-md border border-amber-500/50 bg-amber-500/10` with an icon
+and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than explaining it:
+
+```tsx
+<Alert
+  variant="warning"
+  title="Store this token securely"
+  description="It will not be shown again."
+/>
+
+<Alert
+  variant="destructive"
+  title="Last error"
+  description={server.lastError}
+  action={<Button size="sm" variant="outline" onPress={restart}>Restart</Button>}
+/>
+```
+
+- `variant` is `default` (on the card), `info`, `warning` or `destructive`. It sets the tint, the
+  icon and the role — nothing else is coloured: the title and the line under it stay the
+  foreground on a tint, because the variant's own hue on its own tint is under 4.5:1. Do not pass
+  `text-amber-*` to fix that.
+- **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
+  `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
+  once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
+- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`). Pass a bare
+  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
+  draws none.
+- `title` and `description` are nodes, so a link can sit inside the description. `action` is the
+  far end — one button that deals with it.
+- shadcn's compound form also works, so a port can leave its call sites alone:
+  `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
+  The icon child goes into the icon box (and replaces the default glyph); the parts go into the
+  column. New code uses the props.
+- A failed *fetch* on a list page is `QueryState`'s rung, and a crashed route is `RouteError`;
+  `Alert` is for what the screen says while it works.
 
 ## Spinner
 

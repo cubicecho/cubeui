@@ -127,6 +127,19 @@
       ]
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action. `default`, `info`, `warning` or `destructive`; only `destructive` is announced as an `alert`, the rest as a polite `status`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/alert.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
