@@ -246,6 +246,42 @@
   --sidebar-ring: #a1a1a1;
 }
 
+/*
+ * The palettes beside the default, for Expo web: the same `data-palette` blocks the DOM build has,
+ * in the same `:is()` as the two above and after them, so a palette wins on document order. On
+ * device the compiler drops these too, and a palette reaches the variables through
+ * `PaletteProvider` instead; `tokens-dark.test.mjs` holds that they compile to nothing.
+ */
+:is(html[data-palette="monokai"]) {
+  --background: #272822;
+  --foreground: #f8f8f2;
+  --card: #2d2e27;
+  --card-foreground: #f8f8f2;
+  --popover: #3e3d32;
+  --popover-foreground: #f8f8f2;
+  --primary: #a6e22e;
+  --primary-foreground: #272822;
+  --secondary: #3e3d32;
+  --secondary-foreground: #f8f8f2;
+  --muted: #3e3d32;
+  --muted-foreground: #b3ad93;
+  --accent: #49483e;
+  --accent-foreground: #f8f8f2;
+  --destructive: #ff6188;
+  --destructive-foreground: #272822;
+  --border: #49483e;
+  --input: #57564a;
+  --ring: #66d9ef;
+  --sidebar: #1e1f1c;
+  --sidebar-foreground: #f8f8f2;
+  --sidebar-primary: #ae81ff;
+  --sidebar-primary-foreground: #272822;
+  --sidebar-accent: #3e3d32;
+  --sidebar-accent-foreground: #f8f8f2;
+  --sidebar-border: #49483e;
+  --sidebar-ring: #66d9ef;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

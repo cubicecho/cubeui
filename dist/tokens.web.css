@@ -91,6 +91,41 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/*
+ * The palettes beside the default, chosen in the app: `data-palette` on `<html>`, which
+ * `usePalettePreference` and the pre-paint script set. (0,1,1) and later in the file, so a palette
+ * outranks `:root` and `.dark` both.
+ */
+html[data-palette="monokai"] {
+  --background: oklch(0.2737 0.0109 114.803);
+  --foreground: oklch(0.9775 0.0079 106.545);
+  --card: oklch(0.2977 0.0124 113.753);
+  --card-foreground: oklch(0.9775 0.0079 106.545);
+  --popover: oklch(0.3574 0.0184 103.002);
+  --popover-foreground: oklch(0.9775 0.0079 106.545);
+  --primary: oklch(0.8414 0.2044 127.286);
+  --primary-foreground: oklch(0.2737 0.0109 114.803);
+  --secondary: oklch(0.3574 0.0184 103.002);
+  --secondary-foreground: oklch(0.9775 0.0079 106.545);
+  --muted: oklch(0.3574 0.0184 103.002);
+  --muted-foreground: oklch(0.7456 0.0367 96.421);
+  --accent: oklch(0.3994 0.0163 102.424);
+  --accent-foreground: oklch(0.9775 0.0079 106.545);
+  --destructive: oklch(0.7058 0.1936 8.454);
+  --destructive-foreground: oklch(0.2737 0.0109 114.803);
+  --border: oklch(0.3994 0.0163 102.424);
+  --input: oklch(0.4503 0.019 103.225);
+  --ring: oklch(0.8269 0.108 211.963);
+  --sidebar: oklch(0.2371 0.0058 121.889);
+  --sidebar-foreground: oklch(0.9775 0.0079 106.545);
+  --sidebar-primary: oklch(0.7012 0.1812 298.062);
+  --sidebar-primary-foreground: oklch(0.2737 0.0109 114.803);
+  --sidebar-accent: oklch(0.3574 0.0184 103.002);
+  --sidebar-accent-foreground: oklch(0.9775 0.0079 106.545);
+  --sidebar-border: oklch(0.3994 0.0163 102.424);
+  --sidebar-ring: oklch(0.8269 0.108 211.963);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
