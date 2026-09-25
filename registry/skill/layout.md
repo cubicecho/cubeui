@@ -193,7 +193,8 @@ the slots is spelled the same on each.
 - **`stackBelow` is the width under which the two stop sitting side by side and stack instead**
   — `md`, `lg` (the default), `xl`, or `never` to keep them side by side at every width. Stacking is the narrow-width answer: a phone
   has room for one pane after the other even when it has none for two abreast. Do not add
-  `hidden md:block` to fight it.
+  `hidden md:block` to fight it; a navigation rail that should go rather than stack is
+  `sidebarHideBelow` (see [Sidebar](#on-a-phone-a-bar-instead-of-the-rail)).
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
   hairline between them — the app shell), or `none` (flush, nothing drawn). Do not draw the rule
   yourself with a `border-r` on the sidebar: that is a line between the panes only until the layout
@@ -225,7 +226,8 @@ the slots is spelled the same on each.
 A split is the right shape when both panes are on the screen together and the selection moves
 between them. It is the wrong shape when the detail is a place you *go* — if there is a
 `/things/:id` route, keep the route and let the detail be its own page. A `SidebarLayout` that has to
-be told to hide one of its panes on a phone is that decision arriving late.
+be told to hide a *detail* pane on a phone is that decision arriving late — `sidebarHideBelow` is
+for the app's navigation rail, which has a bar to stand in for it.
 
 ## Sidebar
 
@@ -284,8 +286,8 @@ Three parts, and only `Sidebar` is required:
   it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
-  different width is one `w-*` in `className`. `hideBelow` (`sm` / `md` / `lg` / `xl`) removes it
-  under that width (see below).
+  different width is one `w-*` in `className`. `sidebarHideBelow` on the layout removes it
+  under a width and draws a bar in its place (see below).
 - **`SidebarSection`** — an overline `title` over a real list: `role="list"` and one
   `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
@@ -326,32 +328,60 @@ router that hands out only a click handler — react-router's `useLinkClickHandl
 `active` is yours to compute from the current route. A row with no `href`, no `onPress` and no
 router around it goes nowhere and does nothing — it is drawn as an inert button.
 
-**On a phone, `hideBelow`.** A rail does not stack; under a narrow width it goes. Pass
-`hideBelow="md"` and the sidebar is `display: none` under `md` and drawn from `md` up. That makes
-it out of the accessibility tree as well as off the screen. It is a media query in the stylesheet,
-so the first paint is already right. Do not write `hidden md:flex` in `className`: that works only
-while the root's own display class happens to merge first. Keep `divider="none"` on the
-`SidebarLayout`, so the empty pane draws no rule and spends no gap. The bar that stands in for the
-rail on a phone is the page's, shown with the matching `md:hidden`:
+Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
+A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
+
+### On a phone, a bar instead of the rail
+
+A rail does not stack; under a narrow width it goes, and a bar over the page stands in for it.
+That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is three slots:
 
 ```tsx
 <SidebarLayout
+  className="h-svh"
   sidebarPosition="start"
   sidebarWidth="auto"
-  stackBelow="never"
   divider="none"
-  sidebar={<Sidebar label="Main" hideBelow="md" header={<Brand />} content={nav} />}
-  content={
-    <>
-      <header className="flex items-center gap-2 border-b px-4 py-2 md:hidden">…</header>
-      <main className="min-h-0 flex-1">{page}</main>
-    </>
-  }
+  sidebarHideBelow="md"
+  sidebar={<Sidebar label="Main" header={<Brand />} content={nav} footer={<Settings />} />}
+  brand={<Brand />}
+  nav={NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+    <Link key={to} to={to} aria-label={label} className="rounded-md p-2 …">
+      <Icon className="size-4" />
+    </Link>
+  ))}
+  navLabel="Main"
+  action={<><LockButton /><ThemeToggle /></>}
+  content={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
 />
 ```
 
-Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
-A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
+- **Under `md`** the sidebar pane is `display: none` — off the screen and out of the accessibility
+  tree — and the bar is drawn over `content`: a `<header>` (the banner) with `brand` at the start,
+  `nav` inside a `<nav>` named by `navLabel`, and `action` at the far end. **From `md` up** it is
+  the other way round. `sm`, `lg` and `xl` move the switch.
+- **One breakpoint, said once.** Leave `Sidebar`'s own `hideBelow` off; the layout hides the rail
+  and shows the bar from the same value, so the two cannot disagree. Do not hand-write the
+  `md:hidden` header in `content` — that is the copy this replaces, and its `<nav>` was the one
+  that went unnamed.
+- **`nav` requires `navLabel`**, and the bar's slots require `sidebarHideBelow` — both type errors
+  otherwise. `stackBelow` is not taken with it (a rail that hides does not stack) and neither is
+  `divider="line"` (with the rail gone the rule would be a line down the edge of the screen);
+  `divider="none"` is right for a `Sidebar`, which draws its own border.
+- **The bar holds what the rail's header and footer hold** — the brand, the places, the theme and
+  sign-out buttons — because on a narrow screen it is the only place they are. Anything that
+  should show at every width belongs in the page, not the bar.
+- **No state.** Which of the two is drawn is a media query in the stylesheet, so the first paint is
+  right and nothing opens or closes. A drawer that slides the rail over the page is a different
+  component; this is not it.
+- **On device** NativeWind reads the same breakpoint off the window: a phone draws the bar and a
+  tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
+- `headerClassName` is on the bar. With no `brand`, `nav` or `action`, `sidebarHideBelow` still
+  hides the rail and draws nothing in its place.
+
+`Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
+in a `SidebarLayout`. Do not write `hidden md:flex` in `className` for either: that works only
+while the root's own display class happens to merge first.
 
 ## Top bar
 

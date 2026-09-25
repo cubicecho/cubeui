@@ -372,6 +372,10 @@ Recorded so the next pass does not re-derive them:
   mcp-router, mcp-skills-manager, notes — and the two mcp apps are near-forks (their
   `token-gate.tsx` differs by 4 lines out of 67). Not built as a shell: the layout half is
   `@cubeui/sidebar`, and the genuinely shared part between the mcp apps is auth, which is rule 5.
+  The one layout piece still hand-written in six of them — the `md:hidden` bar with the brand and
+  icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brand`,
+  `nav` and `action`, a widening rather than a new `app-shell` item, which would also have
+  collided with mcp-ragdown's own `components/app-shell.tsx` on install.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
   `flex items-start justify-between` across 8 projects. Settled: once kanban installed
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than

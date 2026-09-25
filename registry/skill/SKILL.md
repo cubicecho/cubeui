@@ -74,6 +74,7 @@ at the end.
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
+| An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brand`, `nav`, `action` | [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) |
 | The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `TopBarLayout` | [layout.md](layout.md#top-bar) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
@@ -146,6 +147,13 @@ The same words mean the same thing in every component, and this is the point of 
   you pass them.
 - **`sidebar`** — the second surface in a `SidebarLayout`. `content` is still the main one, so the
   pair reads the way it does everywhere else.
+- **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the
+  sidebar's, by prefix. A prop that belongs to a slot wears the slot's name, so it needs no word of
+  its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place.
+- **`brand`** — the start of an app's bar: the mark and name. On `SidebarLayout` the bar is drawn
+  only where the sidebar is hidden, so pass what the sidebar's header shows.
+- **`nav`** — an app bar's navigation: the places, as icon links. The shell draws the `<nav>` and
+  `navLabel` names it — do not wrap it in one yourself. The bar's far end is the core `action`.
 - **`brand`** — the start of an app's top bar: the logo and the app's name, usually a link home.
   On `TopBarLayout`; a sidebar's brand is its `header`.
 - **`nav`** — the primary links in a `TopBarLayout`'s bar, after the brand. Pass the links; the
@@ -259,6 +267,7 @@ views and there is no shell wrapping to hide.
 | Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
+| The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | An app with no sidebar: a bar across the top — brand, links, actions — over a screen that scrolls — see [layout.md](layout.md#top-bar) | `TopBarLayout` | `@cubeui/top-bar-layout` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |

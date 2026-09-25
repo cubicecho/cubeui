@@ -73,8 +73,9 @@ field — because data that has not arrived is not data that came back empty or 
 | `first`, `second` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
-| `brand` | The start of an app's top bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page. |
-| `nav` | The primary links in a top bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists; `navLabel` names it by prefix. |
+| `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
+| `brand` | The start of an app's top bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1`, `SidebarLayout` on every page. |
+| `nav` | The primary links in a top bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists; `navLabel`, `<nav>` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `cardClassName` | On `CenteredLayout`, the card, where `className` is the page around it. The card is not a slot the caller fills, so it takes its prefix from the shell it is: the one page shell whose root is not the thing it draws. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
@@ -150,6 +151,11 @@ Notes on why the layering is where it is:
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
   split panes are `first` and `second` rather than `left` and `right`.
+- **`SidebarLayout`'s bar reuses `action` and takes `brand` and `nav`, not a `mobileNav`.** The bar
+  is a header, so its far end is the core `action`; `brand` and `nav` are the words the top bar
+  of an app without a sidebar takes too, so the same three parts are called the same thing
+  whether a sidebar is beside them or not. `mobile` was the obvious prefix and a wrong one: the
+  bar is drawn under a breakpoint, which is a narrow desktop window as often as it is a phone.
 - **`StatTile` reuses `PropertyRow`'s `label`, `value` and `hint`,** because a tile is the same
   three parts on a card: what the figure is called, the figure, the line read after it. Its one
   word of its own is `selected`, which `ToggleChip` already took and the vocabulary had not yet
