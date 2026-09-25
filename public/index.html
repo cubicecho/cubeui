@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  72 on both platforms · 23 web-only · 0 native-only.
+  80 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -136,8 +136,8 @@
   <tbody>
         <tr>
           <th scope="row"><code>@cubeui/action-button</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>An icon button with a required accessible name, and a tooltip that survives being disabled.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert</code></th>
@@ -261,7 +261,7 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/date-picker</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.</td>
         </tr>
         <tr>
@@ -306,13 +306,13 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/disclosure-row</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/empty</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's empty state, re-published from here so the voice every project uses for "there is nothing yet" is edited in one place.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/field</code></th>
@@ -381,8 +381,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/item</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/label</code></th>
@@ -406,8 +406,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/multi-select</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A combobox that selects more than one thing, over Popover and Command: searchable on every word, with an optional create row and coloured chips. On the web radix and cmdk make it portalled and keyboard-operable; on device it opens the native sheet, and each chip is also removable with its ✕.</td>
+          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
+          <td>A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/multi-select-field</code></th>
@@ -416,8 +416,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/option-select</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page</code></th>
@@ -441,8 +441,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/password-input</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>A password box with a reveal button that is named, changes its name, and does not submit the form.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/popover</code></th>
@@ -452,7 +452,7 @@
         <tr>
           <th scope="row"><code>@cubeui/primitive</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.</td>
+          <td>The shadcn primitives cubeui publishes, so a change made here reaches every project.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/progress</code></th>
@@ -511,8 +511,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/separator</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's rule, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role="separator"` with `decorative={false}`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/setting-row</code></th>
@@ -526,8 +526,8 @@
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/skeleton</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/skill</code></th>

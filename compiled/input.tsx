@@ -29,7 +29,7 @@
  *
  * `leading` and `trailing` are the one place the root changes. Without them the
  * root is the `<input>`, exactly shadcn's; with one, the input sits in a
- * `relative` box beside an absolutely placed slot, as `PasswordInput` places its
+ * `relative` box beside an absolutely placed slot, which is where `PasswordInput` puts its
  * eye. `className` and every DOM prop still land on the `<input>`, so `id`,
  * `aria-*` and the ref reach the control a `<label>` points at.
  */

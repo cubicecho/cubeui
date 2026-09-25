@@ -7,7 +7,7 @@
  * compiling is an app that stops compiling. The `@ts-expect-error` lines are the other direction:
  * they fail if a type is widened to `any` and the positive lines pass for the wrong reason.
  *
- * Covered: alert (every part), input, textarea, checkbox, switch, select (every part), field (every part) and
+ * Covered: alert (every part), empty (every part), input, textarea, checkbox, switch, select (every part), field (every part) and
  * `OptionSelect`'s `<button>` trigger props.
  */
 
@@ -15,6 +15,14 @@ import { useRef } from "react";
 import { OptionSelect } from "@/components/option-select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Field,
   FieldContent,
@@ -126,6 +134,37 @@ export function AlertAssertions() {
       </Alert>
       {/* @ts-expect-error — shadcn's alert has no `success` variant, and neither does this one. */}
       <Alert variant="success" />
+    </>
+  );
+}
+
+export function EmptyAssertions() {
+  const root = useRef<HTMLDivElement>(null);
+  return (
+    <>
+      <Empty ref={root} className="border border-dashed py-10">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <CircleAlert aria-hidden />
+          </EmptyMedia>
+          <EmptyTitle>No projects yet</EmptyTitle>
+          <EmptyDescription>
+            Make one, or <a href="/docs">read the docs</a>.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <button type="button">New project</button>
+        </EmptyContent>
+      </Empty>
+      <Empty id="none" aria-live="polite">
+        <EmptyMedia variant="default" className="size-12">
+          <img src="/a.png" alt="" />
+        </EmptyMedia>
+        <EmptyMedia variant={null} />
+        <EmptyTitle className="text-lg">Nothing</EmptyTitle>
+      </Empty>
+      {/* @ts-expect-error — shadcn's EmptyMedia has `default` and `icon`, and so does this one. */}
+      <EmptyMedia variant="avatar" />
     </>
   );
 }

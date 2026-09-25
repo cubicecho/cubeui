@@ -20,11 +20,11 @@
  * already a cross-platform primitive. The two halves always commit a single
  * `Date` back through `onChange`, so a caller never has to reassemble one.
  *
- * `mode` and `clearable` are props rather than a native `DatePicker` because the
+ * `mode` and `clearable` are props rather than a second component because the
  * date-only, optional field differs from this one by an input and a Clear row —
- * the same argument the web `DatePicker` makes for `showTime`. A second native
- * component would be a second trigger, popover and calendar wiring to keep in
- * step with this one.
+ * the same argument `DatePicker` makes for `showTime`. `DatePicker` is on both
+ * platforms now too, with its own full-width trigger and the time box inside the
+ * popover; folding the two into one is still open.
  */
 import { format } from "date-fns";
 import { useId, useState } from "react";
@@ -201,7 +201,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           />
           {/* In the popover, not an X inside the trigger: the trigger is a button,
               and a button inside a button is invalid HTML that no keyboard reaches.
-              The web `DatePicker` puts its Clear in the same place. */}
+              `DatePicker` puts its Clear in the same place. */}
           {props.clearable && value ? (
             <div className="cube-rn-view flex-row justify-end border-t border-border p-1">
               <Button variant="ghost" size="sm" onClick={handleClear}>
