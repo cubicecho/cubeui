@@ -114,6 +114,7 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
+| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, icon? }` before the count, whose `label` is part of the row's name and whose `icon` is decoration drawn instead of it. |
 | `leading` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `icon` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badges` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `action` — still facts about the title, placed where a list scans them. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
@@ -160,6 +161,14 @@ Notes on why the layering is where it is:
   three parts on a card: what the figure is called, the figure, the line read after it. Its one
   word of its own is `selected`, which `ToggleChip` already took and the vocabulary had not yet
   written down — `pressed` is the ARIA spelling of one platform, and a prop is read on both.
+- **`SidebarNavItem` takes `status`, not `badges` and not a node.** `SidebarSection` already said
+  `status` for the section's own state, so the row's state is the same word one level down.
+  `badges` is drawn before the title and is a node, and a row's marker sits after its label,
+  before the count. It is an object rather than a node because its words have to reach the row's
+  name: on the web the row is named by the text inside it, which a clipped label joins, but on
+  device a pressable is one element named by an `accessibilityLabel` string, and a node's text
+  cannot be read back out into one. Its fields are `label` and `icon` with their usual meanings —
+  the label is what is read, as on `ActionButton`, and the icon is sized and coloured by the row.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 

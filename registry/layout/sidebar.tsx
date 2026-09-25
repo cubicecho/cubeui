@@ -322,6 +322,24 @@ export function SidebarSection({
 
 type PressableProps = React.ComponentProps<typeof Pressable>;
 
+/**
+ * A row's status: words, and the glyph that stands for them. An object rather than a node because
+ * the words have to reach the row's accessible name on device, and a node's text cannot be read
+ * back out into an `accessibilityLabel`.
+ */
+export type SidebarNavItemStatus = {
+  /** What is read, and what is drawn when there is no `icon`. */
+  label: string;
+  /** What is drawn instead of the label. Decorative: the label is what a screen reader hears. */
+  icon?: ReactNode | undefined;
+};
+
+/** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
+const SR_ONLY = Platform.select({
+  web: "sr-only",
+  default: "absolute -m-px h-px w-px overflow-hidden",
+});
+
 /** What both forms of the row take. */
 type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "style"> & {
   /** What the row is called. Truncated to one line, never wrapped. */
@@ -330,6 +348,13 @@ type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "
   icon?: ReactNode | undefined;
   /** At the far end: how many things are behind the row. */
   count?: number | string | undefined;
+  /**
+   * What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`.
+   * `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With
+   * an `icon` the icon is what is seen and the label is read only; without one the label is drawn,
+   * small and muted. `SidebarSection`'s `status` is the same word for the section's own state.
+   */
+  status?: SidebarNavItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
   className?: string | undefined;
 };
@@ -395,14 +420,16 @@ type SidebarNavItemBodyProps = {
   label: string;
   icon: ReactNode | undefined;
   count: number | string | undefined;
+  status: SidebarNavItemStatus | undefined;
   active: boolean;
 };
 
-/** What is inside the row, the same for both forms: icon, label, count. */
-function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyProps) {
+/** What is inside the row, the same for both forms: icon, label, status, count. */
+function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the accent fill is under 4.5:1.
   const text = active ? "text-sidebar-accent-foreground" : "text-sidebar-foreground";
+  const muted = active ? "text-sidebar-accent-foreground" : "text-muted-foreground";
 
   return (
     <>
@@ -417,13 +444,26 @@ function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyPr
       >
         {label}
       </Text>
+      {status?.icon ? (
+        <View testID="sidebar-nav-item-status-icon" aria-hidden className="shrink-0">
+          <IconClassContext.Provider value={cn("size-4 shrink-0", muted)}>
+            {status.icon}
+          </IconClassContext.Provider>
+        </View>
+      ) : null}
+      {/* With an icon the words are read and not seen: a clip, as a loading page title's is. */}
+      {status ? (
+        <Text
+          testID="sidebar-nav-item-status"
+          className={cn("shrink-0 text-xs", status.icon ? SR_ONLY : muted)}
+        >
+          {status.label}
+        </Text>
+      ) : null}
       {count === undefined ? null : (
         <Text
           testID="sidebar-nav-item-count"
-          className={cn(
-            "shrink-0 text-xs tabular-nums",
-            active ? "text-sidebar-accent-foreground" : "text-muted-foreground",
-          )}
+          className={cn("shrink-0 text-xs tabular-nums", muted)}
         >
           {count}
         </Text>
@@ -433,8 +473,9 @@ function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyPr
 }
 
 /**
- * One row of a sidebar: a link with an optional icon, a label that truncates, and an optional
- * count, filled from `sidebar-accent` when it is the current page and on hover.
+ * One row of a sidebar: a link with an optional icon, a label that truncates, an optional
+ * `status` and an optional count, filled from `sidebar-accent` when it is the current page and on
+ * hover.
  *
  * Wrap it in the router's own link rather than passing a router to it:
  *
@@ -470,13 +511,31 @@ function SidebarNavItemBody({ label, icon, count, active }: SidebarNavItemBodyPr
  * ```
  */
 const SidebarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, SidebarNavItemProps>(
-  ({ href, label, icon, count, active = false, className, ...props }, ref) => {
+  ({ href, label, icon, count, status, active = false, className, ...props }, ref) => {
     // Two elements written out rather than one with a chosen role: the compiler picks the tag from
     // the role, and a button and a link do not share a prop list anyway.
     if (href === undefined) {
       return (
-        <Pressable ref={ref} role="button" className={rowClassName(false, className)} {...props}>
-          <SidebarNavItemBody label={label} icon={icon} count={count} active={false} />
+        <Pressable
+          ref={ref}
+          role="button"
+          className={rowClassName(false, className)}
+          {...(Platform.OS === "web"
+            ? {}
+            : {
+                accessibilityLabel: [label, status?.label, count]
+                  .filter((part) => part !== undefined)
+                  .join(", "),
+              })}
+          {...props}
+        >
+          <SidebarNavItemBody
+            label={label}
+            icon={icon}
+            count={count}
+            status={status}
+            active={false}
+          />
         </Pressable>
       );
     }
@@ -486,14 +545,26 @@ const SidebarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, Side
         ref={ref}
         role="link"
         accessibilityState={{ selected: active }}
-        // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+        // React Native has no `href` and no `aria-current`; the web has both, and needs both. The
+        // web names the row from the text inside it; device reads a pressable as one element, so
+        // its name is joined here — before `props`, so a caller's own label still wins.
         {...(Platform.OS === "web"
           ? ({ href, "aria-current": active ? "page" : undefined } as const)
-          : {})}
+          : {
+              accessibilityLabel: [label, status?.label, count]
+                .filter((part) => part !== undefined)
+                .join(", "),
+            })}
         className={rowClassName(active, className)}
         {...props}
       >
-        <SidebarNavItemBody label={label} icon={icon} count={count} active={active} />
+        <SidebarNavItemBody
+          label={label}
+          icon={icon}
+          count={count}
+          status={status}
+          active={active}
+        />
       </Pressable>
     );
   },
