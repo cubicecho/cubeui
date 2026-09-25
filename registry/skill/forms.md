@@ -332,7 +332,9 @@ and put the props where they go:
 ```
 
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
-element itself and needs none of this.
+element itself and needs none of this. An `Input` with a `leading` icon or a `trailing` button is
+still one of them: its root becomes a box around the field, but `id` and every `aria-*` land on the
+field itself, where the label points.
 
 Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect` and
 `DatePicker` take the rest of a `<button>`'s props and put them there, so the function form
