@@ -877,10 +877,10 @@ const WEB_ONLY = {
   command: "built on `cmdk`, which has no React Native build; a native half is planned",
   "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
-  "disclosure-row": "built on the web-only `item`",
+  "disclosure-row":
+    "a `<button>` in shadcn's `Item`; to be rebuilt on `Disclosure` and the native `item`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
-  item: "shadcn's parts; to be rebuilt on `ListItem`",
   "multi-select": "built on the web-only `command`; a native half is planned",
   "multi-select-field": "a bound field over the web-only `multi-select`",
   "password-field": "a bound field of `app-form`; to merge into `form`",

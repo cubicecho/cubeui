@@ -42,7 +42,7 @@ app does not import. Put `@import "../cubeui-tokens.css";` in the app's CSS entr
 out as stacked blocks and nothing errors.
 
 **Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `tabs`,
-`tooltip`, `badge`, `calendar`, `field`, `separator`, `skeleton`, `toast`, `empty`, `query-state` — same item name, same props,
+`tooltip`, `badge`, `calendar`, `field`, `item`, `separator`, `skeleton`, `toast`, `empty`, `query-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
 

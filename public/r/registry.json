@@ -701,6 +701,28 @@
       ]
     },
     {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/item-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/item.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "@types/react-dom@~19.2.0",
+        "class-variance-authority@^0.7.1",
+        "radix-ui@^1.6.7"
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
@@ -1421,24 +1443,6 @@
         "@cubeui/radio-group-field"
       ],
       "files": []
-    },
-    {
-      "name": "item",
-      "type": "registry:ui",
-      "title": "Item",
-      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/separator", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/item.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ]
     },
     {
       "name": "layout",

@@ -65,8 +65,8 @@ Read this before adding anything:
    `input`, `select`, `separator`, `skeleton`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `item` (`empty` was one,
-   and is native-first now). **Check those two directories before you write markup**; a shell
+   upstream primitives the web tier needs — `alert-dialog`, `command`, `table` (`empty` and `item`
+   were two, and are native-first now). **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.
@@ -80,7 +80,7 @@ Read this before adding anything:
 
    **Re-publishing is not wrapping** either. A file in `registry/web/ui/` is shadcn's, adapted
    only to import `cn` from `@/lib/utils` like everything else here. The point is the
-   *distribution*: a project installing `@cubeui/item` takes its list row from here, so a change
+   *distribution*: a project installing `@cubeui/alert-dialog` takes its confirm from here, so a change
    made once reaches all of them. The cost is owning shadcn's update cadence for those files, so
    the test for adding one is whether you would ever want to change it centrally — and whether a
    shell here imports it, since a bare upstream `registryDependencies` name splits a consumer's
@@ -386,8 +386,9 @@ Recorded so the next pass does not re-derive them:
   had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
   `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leading`,
-  `title`, `description`, `meta`, `action`, and an optional pressable middle. Rebuilding `Item`'s
-  call sites and `DisclosureRow` on it is the follow-up.
+  `title`, `description`, `meta`, `action`, and an optional pressable middle. `Item` itself now
+  has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
+  shared through `item-base.ts`); rebuilding `DisclosureRow` on it is the follow-up.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot. `EmptyState` did ship later, in `@cubeui/page`, and `empty`
   is now shadcn's parts on both halves drawn the same way — `EmptyState` is built on them.
