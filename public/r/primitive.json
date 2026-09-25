@@ -5,7 +5,8 @@
   "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
   "registryDependencies": [
     "@cubeui/empty",
-    "@cubeui/item"
+    "@cubeui/item",
+    "@cubeui/table"
   ],
   "files": [],
   "type": "registry:component"

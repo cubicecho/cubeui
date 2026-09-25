@@ -77,6 +77,7 @@ at the end.
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
+| Rows with columns — the same facts on every row, read down as well as across (web only; on native use `DescriptionList` or `Card` rows) | `Table` and its parts | [layout.md](layout.md#table) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |

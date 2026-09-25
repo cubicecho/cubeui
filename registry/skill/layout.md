@@ -6,7 +6,8 @@ are not repeated here.
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections and sidebars are written once in React Native and compiled to the web, so the same item
 installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
-the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
+the exception: `DisclosureRow` and `Table` are web-only, and `QueryState` is its own item on each
+half. On a
 device, four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -568,3 +569,45 @@ Two shells for the shape every list route is: a ladder of states, then rows.
 - It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
   A list of rows that do **not** open needs no shell at all: use `Item`, `ItemContent`,
   `ItemTitle`, `ItemDescription` and `ItemActions` directly.
+
+### Table
+
+When the rows have **columns** — the same four facts on every row, read down as well as across —
+the list is a table, not a stack of `Item`s. `@cubeui/table` is shadcn's `Table`, `TableHeader`,
+`TableBody`, `TableFooter`, `TableRow`, `TableHead`, `TableCell` and `TableCaption`, installed to
+`components/ui/table`, so a shadcn call site keeps compiling unchanged.
+
+```tsx
+<Table>
+  <TableCaption>Servers in this workspace</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead className="text-right">Tools</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {servers.map((s) => (
+      <TableRow key={s.id}>
+        <TableHead>{s.name}</TableHead>
+        <TableCell className="text-right">{s.tools}</TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+```
+
+- It is a primitive, so it takes `children` like shadcn's. The `QueryState` ladder goes above it
+  exactly as it does above a list of rows.
+- **`TableHead` scopes itself**: `scope="col"` inside `TableHeader`, `scope="row"` anywhere else.
+  So the first cell of a body row — the thing the row is *about* — is a `TableHead`, not a
+  `TableCell`, and a screen reader names the row before reading each cell of it. Pass `scope`
+  to override.
+- **A `TableCaption` names the table.** Give one to every table that is not already under a
+  heading saying what it is; `className="sr-only"` keeps the name without the line.
+- Too wide for its column, it scrolls sideways inside its own container rather than widening the
+  page, and the container becomes a tab stop while it does so a keyboard can scroll it too.
+- No sorting, filtering or pagination: nothing here uses them. Sort the array you map.
+- **Web only — no native twin.** React Native has no table element, and a phone has no width for
+  columns. On native, draw the same data as rows: `DescriptionList` / `PropertyRow` for one
+  record's facts, and a list of `Card` rows for many records. There is no `ListItem`.
