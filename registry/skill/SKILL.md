@@ -47,8 +47,8 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section` and
-`DescriptionList` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section`,
+`DescriptionList` and `ListItem` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
@@ -76,6 +76,7 @@ at the end.
 | A heading over a group of fields or rows | `Section` | [layout.md](layout.md) |
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
+| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout.md](layout.md#listitem) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
@@ -174,7 +175,10 @@ The same words mean the same thing in every component, and this is the point of 
 **List rows and query states add:**
 
 - **`badges`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
-- **`meta`** — the grey line of facts beside the title: a name, a time, a count.
+- **`leading`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
+  given, not sized like `icon`, and never inside the row's pressed area. On `ListItem`.
+- **`meta`** — the grey line of facts beside the title: a name, a time, a count. On `ListItem` it
+  sits at the row's far end, before `action`.
 - **`query`** — a `{ isPending, isError, error, refetch }`, taken structurally so no shell names a
   data library.
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
@@ -248,6 +252,7 @@ views and there is no shell wrapping to hide.
 | An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
+| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actions` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
 

@@ -6,7 +6,8 @@ are not repeated here.
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections and sidebars are written once in React Native and compiled to the web, so the same item
 installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
-the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
+the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half.
+`ListItem` is on both. On a
 device, four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -566,5 +567,42 @@ Two shells for the shape every list route is: a ladder of states, then rows.
 - `description` shows whether the row is open or shut; `content` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
 - It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
-  A list of rows that do **not** open needs no shell at all: use `Item`, `ItemContent`,
-  `ItemTitle`, `ItemDescription` and `ItemActions` directly.
+  A row that does **not** open onto a body is `ListItem`, below — on both halves.
+
+### ListItem
+
+One row of a list — an avatar or a checkbox, a name over a line, a date and a few buttons at the
+far end — optionally pressable. One source for both platforms: `@cubeui/list-item`.
+
+```tsx
+{people.map((p) => (
+  <ListItem
+    key={p.id}
+    leading={<Avatar person={p} />}
+    title={`${p.firstName} ${p.lastName}`}
+    description={p.email}
+    meta={relativeTime(p.lastContactedAt)}
+    onPress={() => router.push(`/persons/${p.id}`)}
+    action={<Button size="sm" variant="ghost" onPress={() => remove(p.id)}>Delete</Button>}
+  />
+))}
+```
+
+- `leading` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
+  sized the way `icon` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
+  area — a `Checkbox` there is its own control (telos' todo row).
+- `title` is one line and truncates; `description` is the muted line under it, two lines at most.
+  `titleClassName` reaches the title (a done todo's `line-through`).
+- `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
+  `text-xs` muted for you. It is inside the pressed area.
+- `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
+  ghost `Button`s (or `ActionButton`s, on the web); the row adds the gap.
+- `onPress` makes the middle — `title`, `description`, `meta` — one button (a real `<button>` on
+  the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
+  focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
+  `<a>`, which is the button-in-a-button this avoids. For a route, call the router in `onPress`.
+- No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
+  `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
+  `className="rounded-lg border border-border bg-card"`.
+- On the web `Item` still exists for rows it already draws; rebuilding `Item` and `DisclosureRow`
+  on `ListItem` is planned, so prefer `ListItem` in new code, and always in shared or native code.
