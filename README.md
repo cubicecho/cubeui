@@ -972,6 +972,12 @@ native (`registry/ui/radio-group.tsx`) and compiled like any other universal ite
 radix: the hidden `<input>` behind `name` / `required` for a native `<form>` submit, `dir`, and
 `asChild`.
 
+`empty` has left `registry/web/ui/` the same way (`registry/ui/empty.tsx`). It keeps shadcn's six
+part names, `EmptyMedia`'s `variant`, the `data-slot`s and the `components/ui/empty` install path,
+and it changed its look rather than its API: the parts draw what `EmptyState` draws — the muted
+bubble, a `text-sm` title, `py-10` — because `EmptyState` is now built on them. A call site that
+wants shadcn's `text-lg` title, `p-6 md:p-12` or `flex-1` passes it as a `className`.
+
 With no upstream names left, the compiler's third case for an import specifier goes too: every
 `@/components/ui/*` an emitted file reaches for is now either compiled or passed through, so it is
 rewritten to `./` like any other — inside `compiled/`. What ships gets the alias back (rule 13).

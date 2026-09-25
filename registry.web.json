@@ -123,6 +123,19 @@
       ]
     },
     {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/empty.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -927,6 +940,7 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
+        "@cubeui/empty",
         "@cubeui/page-header",
         "@cubeui/tokens"
       ],
@@ -1297,20 +1311,6 @@
       "dependencies": ["lucide-react@^1.34.0"]
     },
     {
-      "name": "empty",
-      "type": "registry:ui",
-      "title": "Empty",
-      "description": "shadcn's empty state, re-published from here so the voice every project uses for \"there is nothing yet\" is edited in one place. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/empty.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["class-variance-authority@^0.7.1"]
-    },
-    {
       "name": "field-row",
       "type": "registry:component",
       "title": "Field Row",
@@ -1481,7 +1481,7 @@
       "name": "primitive",
       "type": "registry:component",
       "title": "Vendored Primitives",
-      "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project. Web-only: no React Native half.",
+      "description": "The shadcn primitives cubeui publishes, so a change made here reaches every project. Web-only: no React Native half.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item", "@cubeui/table"],
       "files": []
     },

@@ -1,14 +1,4 @@
 /**
- * Compiled from `registry/ui/empty.tsx` by `scripts/rn2web`.
- * Do not edit — edit the source and re-run `npm run compile`.
- *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
- */
-
-/**
  * shadcn's `Empty` parts on both platforms, drawn as cubeui's empty state — see `ui/button.tsx`
  * for the conversion rules.
  *
@@ -36,40 +26,39 @@
  */
 
 import * as React from "react";
+import { Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
 // `className` is re-declared rather than inherited: nativewind types it as `className?: string`,
 // which under `exactOptionalPropertyTypes` rejects the `cond ? "x" : undefined` call sites pass.
-type ViewProps = Omit<React.ComponentPropsWithoutRef<"div">, "className"> & {
+type ViewProps = Omit<React.ComponentProps<typeof View>, "className"> & {
   className?: string | undefined;
 };
-type TextProps = Omit<React.ComponentPropsWithoutRef<"span">, "className"> & {
+type TextProps = Omit<React.ComponentProps<typeof Text>, "className"> & {
   className?: string | undefined;
 };
 
-const Empty = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
-  <div
-    ref={ref as React.Ref<HTMLDivElement>}
-    data-slot="empty"
-    className={cn(
-      "cube-rn-view",
-      "w-full min-w-0 items-center justify-center gap-3 rounded-lg border-dashed border-border py-10",
-      className,
-    )}
-    {...(props as React.ComponentPropsWithoutRef<"div">)}
-  />
-));
+const Empty = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
+  ({ className, ...props }, ref) => (
+    <View
+      ref={ref}
+      testID="empty"
+      className={cn(
+        "w-full min-w-0 items-center justify-center gap-3 rounded-lg border-dashed border-border py-10",
+        className,
+      )}
+      {...props}
+    />
+  ),
+);
 Empty.displayName = "Empty";
 
-const EmptyHeader = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
-  <div
-    ref={ref as React.Ref<HTMLDivElement>}
-    data-slot="empty-header"
-    className={cn("cube-rn-view", "items-center", className)}
-    {...(props as React.ComponentPropsWithoutRef<"div">)}
-  />
-));
+const EmptyHeader = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
+  ({ className, ...props }, ref) => (
+    <View ref={ref} testID="empty-header" className={cn("items-center", className)} {...props} />
+  ),
+);
 EmptyHeader.displayName = "EmptyHeader";
 
 export type EmptyMediaVariant = "default" | "icon";
@@ -85,7 +74,7 @@ type EmptyMediaProps = ViewProps & {
   variant?: EmptyMediaVariant | null | undefined;
 };
 
-const EmptyMedia = React.forwardRef<HTMLDivElement, EmptyMediaProps>(
+const EmptyMedia = React.forwardRef<React.ElementRef<typeof View>, EmptyMediaProps>(
   ({ className, variant, children, ...props }, ref) => {
     const box = cn(
       "mb-3 shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -94,67 +83,60 @@ const EmptyMedia = React.forwardRef<HTMLDivElement, EmptyMediaProps>(
     );
     if (variant === "icon") {
       return (
-        <div
-          ref={ref as React.Ref<HTMLDivElement>}
-          data-slot="empty-icon"
-          className={cn("cube-rn-view", box)}
-          {...(props as React.ComponentPropsWithoutRef<"div">)}
-        >
+        <View ref={ref} testID="empty-icon" className={box} {...props}>
           <IconClassContext.Provider value="h-6 w-6 text-muted-foreground">
             {children}
           </IconClassContext.Provider>
-        </div>
+        </View>
       );
     }
     return (
-      <div
-        ref={ref as React.Ref<HTMLDivElement>}
-        data-slot="empty-icon"
-        className={cn("cube-rn-view", box)}
-        {...(props as React.ComponentPropsWithoutRef<"div">)}
-      >
+      <View ref={ref} testID="empty-icon" className={box} {...props}>
         {children}
-      </div>
+      </View>
     );
   },
 );
 EmptyMedia.displayName = "EmptyMedia";
 
-const EmptyTitle = React.forwardRef<HTMLSpanElement, TextProps>(({ className, ...props }, ref) => (
-  <span
-    ref={ref as React.Ref<HTMLSpanElement>}
-    data-slot="empty-title"
-    className={cn("cube-rn-text", "font-medium text-sm text-foreground", className)}
-    {...(props as React.ComponentPropsWithoutRef<"span">)}
-  />
-));
+const EmptyTitle = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
+  ({ className, ...props }, ref) => (
+    <Text
+      ref={ref}
+      testID="empty-title"
+      className={cn("font-medium text-sm text-foreground", className)}
+      {...props}
+    />
+  ),
+);
 EmptyTitle.displayName = "EmptyTitle";
 
-const EmptyDescription = React.forwardRef<HTMLSpanElement, TextProps>(
+const EmptyDescription = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
   ({ className, ...props }, ref) => (
-    <span
-      ref={ref as React.Ref<HTMLSpanElement>}
-      data-slot="empty-description"
+    <Text
+      ref={ref}
+      testID="empty-description"
       className={cn(
-        "cube-rn-text",
         "text-center text-sm text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
         className,
       )}
-      {...(props as React.ComponentPropsWithoutRef<"span">)}
+      {...props}
     />
   ),
 );
 EmptyDescription.displayName = "EmptyDescription";
 
 /** What to do about it: a button or two, under the words. */
-const EmptyContent = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
-  <div
-    ref={ref as React.Ref<HTMLDivElement>}
-    data-slot="empty-content"
-    className={cn("cube-rn-view", "w-full min-w-0 max-w-sm items-center gap-3", className)}
-    {...(props as React.ComponentPropsWithoutRef<"div">)}
-  />
-));
+const EmptyContent = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
+  ({ className, ...props }, ref) => (
+    <View
+      ref={ref}
+      testID="empty-content"
+      className={cn("w-full min-w-0 max-w-sm items-center gap-3", className)}
+      {...props}
+    />
+  ),
+);
 EmptyContent.displayName = "EmptyContent";
 
 export { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle };
