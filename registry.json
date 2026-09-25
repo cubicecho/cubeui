@@ -127,6 +127,19 @@
       ]
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action. `default`, `info`, `warning` or `destructive`; only `destructive` is announced as an `alert`, the rest as a polite `status`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/alert.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -567,6 +580,49 @@
         "@types/react-dom@~19.2.0",
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
+      ]
+    },
+    {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy button",
+      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "dependencies": ["expo-clipboard@^57.0.2"],
+      "files": [
+        {
+          "path": "registry/ui/copy-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A loading indicator: the LoaderCircle glyph turning, one `role=\"status\"` named by `label`, sized and coloured by `className`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/spinner-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/spinner.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/spinner.web.tsx",
+          "type": "registry:ui"
+        }
       ]
     },
     {
