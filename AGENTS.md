@@ -62,11 +62,10 @@ Read this before adding anything:
 
    **This registry now publishes its own primitives**, so "what shadcn ships" is two lists. The
    first is this repo's: `registry/ui/` holds a native-first `button`, `card`, `dialog`, `field`,
-   `input`, `select`, `separator`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
+   `input`, `select`, `separator`, `skeleton`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`,
-   `skeleton`. **Check those two directories before you write markup**; a shell
+   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`. **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.

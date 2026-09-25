@@ -972,6 +972,11 @@ native (`registry/ui/radio-group.tsx`) and compiled like any other universal ite
 radix: the hidden `<input>` behind `name` / `required` for a native `<form>` submit, `dir`, and
 `asChild`.
 
+`skeleton` has left it too: `registry/ui/skeleton.tsx` for React Native, with a hand-written
+`skeleton.web.tsx` that is still shadcn's `<div>` with `animate-pulse`. On the web nothing changes.
+The pulse on device is `Animated`, because the compiler refuses `Animated` and NativeWind resolves
+`animate-pulse` on device only through Reanimated, which the registry does not depend on.
+
 `separator` has left it the same way: `registry/ui/separator.tsx`, compiled, with shadcn's
 `orientation` and `decorative`. Decorative is hidden from assistive tech on both halves
 (`aria-hidden`, where Radix wrote `role="none"`), and `decorative={false}` is `role="separator"`.

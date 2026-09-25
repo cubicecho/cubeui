@@ -34,7 +34,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields \u2014 InputField, TextareaField, SelectField, CheckboxField, SwitchField \u2014 that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -336,19 +336,6 @@
       "description": "The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.",
       "registryDependencies": ["@cubeui/empty", "@cubeui/item", "@cubeui/table"],
       "files": []
-    },
-    {
-      "name": "skeleton",
-      "type": "registry:ui",
-      "title": "Skeleton",
-      "description": "shadcn's loading placeholder, re-published from here so it imports the same `cn` every other file in the install does.",
-      "registryDependencies": ["@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/skeleton.tsx",
-          "type": "registry:ui"
-        }
-      ]
     },
     {
       "name": "table",

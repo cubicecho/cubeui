@@ -874,6 +874,27 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   platform's own spinner, a different shape on each.
 - A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
+## Skeleton
+
+```tsx
+<Skeleton className="h-4 w-[250px]" />
+<View role="status" aria-label="Loading profile" className="gap-2">
+  <Skeleton className="h-4 w-1/3" aria-hidden />
+  <Skeleton className="h-3 w-2/3" aria-hidden />
+</View>
+```
+
+`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-accent` block that pulses
+while what it stands in for loads. `className` is its size.
+
+- It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
+  (down to half and back, two seconds) run by `Animated`. No Reanimated needed.
+- It says nothing to assistive tech itself, as shadcn's does not. Hide each block with
+  `aria-hidden` and put them in a `role="status"` named for what is loading.
+- Reach for a shell's `loading` first. `CardLayout`, `QueryState`, `StatTile`, `PageHeader` and
+  the form fields each draw their own skeleton for the part the request fills. `Skeleton` is for a
+  part no shell covers.
+
 ## Separator
 
 ```tsx

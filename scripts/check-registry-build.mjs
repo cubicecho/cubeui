@@ -888,7 +888,6 @@ const WEB_ONLY = {
   "multi-select-field": "a bound field over the web-only `multi-select`",
   "option-select": "to become an options-array form of `Select`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
-  skeleton: "hand-written before the native tier; to be ported",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
 const namesIn = async (built) => {
