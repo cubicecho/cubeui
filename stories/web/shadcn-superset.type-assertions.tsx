@@ -73,6 +73,15 @@ export function InputAssertions() {
         onEscape={() => {}}
         onKeyPress={(event: { nativeEvent: { key: string } }) => event.nativeEvent.key}
       />
+      {/* The slots sit beside every DOM prop, which still land on the field. */}
+      <Input
+        id="q"
+        aria-invalid
+        onChange={(event) => event.target.value}
+        leading={<span />}
+        trailing={<button type="button" aria-label="Clear" />}
+        wrapperClassName="w-64"
+      />
       {/* A DOM `onKeyPress` still gets the React keyboard event. */}
       <Input onKeyPress={(event) => event.key === "a" && event.currentTarget.select()} />
       {/* @ts-expect-error — `onChange` hands over an event, not the text. */}

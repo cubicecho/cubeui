@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the icon in an input, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -543,6 +543,36 @@ Showing a colour the user picked is three small items, all on both halves:
   a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
   inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
+
+## An icon in an input
+
+An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the input in a
+`relative` div with an absolute icon and a `pl-8` on the input:
+
+```tsx
+<Input aria-label="Filter servers" placeholder="Filter servers" leading={<Search />} />
+
+<Input
+  aria-label="Lane name"
+  value={name}
+  onChangeText={setName}
+  leading={<Pencil />}
+  trailing={
+    <Button variant="ghost" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
+      <Undo2 />
+    </Button>
+  }
+  wrapperClassName="w-64"
+/>
+```
+
+- Pass a bare icon. The input sizes it (`size-4`), mutes it, and pads the text past it. It takes no
+  press, so a tap on it lands in the field.
+- `trailing` is the far end, inside the field: one icon-sized control. It is pressable, so it
+  needs its own name. The text stops short of it.
+- `className` stays on the field, as on any input. With a slot, the field sits in a box that is
+  `w-full`; size that box with `wrapperClassName`. Without a slot there is no box, and the root is
+  the field, as before.
 
 ## Removable badge
 
