@@ -14,7 +14,8 @@
     "@cubeui/query-state",
     "@cubeui/section",
     "@cubeui/sidebar",
-    "@cubeui/split-layout"
+    "@cubeui/split-layout",
+    "@cubeui/top-bar-layout"
   ],
   "files": [],
   "type": "registry:component"

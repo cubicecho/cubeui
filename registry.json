@@ -924,6 +924,19 @@
       ]
     },
     {
+      "name": "top-bar-layout",
+      "type": "registry:component",
+      "title": "Top Bar Layout",
+      "description": "An app shell with a bar across the top and no sidebar: brand at the start, navigation after it that scrolls sideways when narrow, actions at the end, and the page below — a banner and a main landmark, the bar sticky on the web.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/header-content-footer"],
+      "files": [
+        {
+          "path": "registry/layout/top-bar-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "sidebar",
       "type": "registry:component",
       "title": "Sidebar",

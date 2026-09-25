@@ -73,6 +73,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `first`, `second` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
+| `brand` | The start of an app's top bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page. |
+| `nav` | The primary links in a top bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists; `navLabel` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
