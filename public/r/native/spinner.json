@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spinner",
+  "title": "Spinner",
+  "description": "A loading indicator: the LoaderCircle glyph turning, one `role=\"status\"` named by `label`, sized and coloured by `className`.",
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/icons"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/spinner-base.ts",
+      "content": "/**\n * The contract `spinner.tsx` (native) and `spinner.web.tsx` (web) both implement.\n * Its own module because Metro resolves `./spinner` to `spinner.web.tsx` on web.\n */\n\nexport type SpinnerProps = {\n  /**\n   * The spinner's accessible name, announced by its `role=\"status\"`. Say what is\n   * loading when the screen has more than one thing that could be.\n   */\n  label?: string | undefined;\n  /** Size and colour: `size-6`, `text-muted-foreground`. The default is `size-4`. */\n  className?: string | undefined;\n};\n\n/** The glyph's size when the call site names none, shadcn's. */\nexport const spinnerClass = \"size-4\";\n\n/** One turn, in ms: Tailwind's `animate-spin`, which the web half uses. */\nexport const SPIN_DURATION = 1000;\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/spinner.tsx",
+      "content": "/**\n * A loading indicator: the `LoaderCircle` glyph, turning. `spinner.web.tsx` is\n * the web counterpart and `spinner-base.ts` holds what they share.\n *\n * Not `ActivityIndicator`. That one draws the platform's own spinner, which is\n * a different shape on iOS, on Android and in the browser, and takes a colour\n * prop but no class. This is the same glyph the web half turns, sized and\n * coloured by `className` through `@cubeui/icons` — so inside a `Button` it\n * takes the button's ink from `IconClassContext`, as any icon there does.\n *\n * The turn is `Animated` on the native driver, one linear turn a second, which\n * is Tailwind's `animate-spin`. The compiler refuses `Animated`, which is why\n * the web half is hand-written rather than compiled from this file.\n */\nimport { useEffect, useRef } from \"react\";\nimport { Animated, Easing } from \"react-native\";\nimport { LoaderCircle } from \"@/components/ui/icons\";\nimport { SPIN_DURATION, type SpinnerProps, spinnerClass } from \"@/components/ui/spinner-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport type { SpinnerProps };\n\nexport function Spinner({ label = \"Loading\", className }: SpinnerProps) {\n  const turn = useRef(new Animated.Value(0)).current;\n\n  useEffect(() => {\n    const loop = Animated.loop(\n      Animated.timing(turn, {\n        toValue: 1,\n        duration: SPIN_DURATION,\n        easing: Easing.linear,\n        useNativeDriver: true,\n      }),\n    );\n    loop.start();\n    return () => loop.stop();\n  }, [turn]);\n\n  const rotate = turn.interpolate({ inputRange: [0, 1], outputRange: [\"0deg\", \"360deg\"] });\n\n  return (\n    <Animated.View\n      role=\"status\"\n      aria-label={label}\n      style={{ alignSelf: \"flex-start\", transform: [{ rotate }] }}\n    >\n      <LoaderCircle className={cn(spinnerClass, className)} aria-hidden />\n    </Animated.View>\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/spinner.web.tsx",
+      "content": "/**\n * The web spinner: shadcn's — `LoaderCircle` with `animate-spin`, a\n * `role=\"status\"` named `Loading`. `spinner.tsx` is the native counterpart and\n * its header says why it is not `ActivityIndicator`; `spinner-base.ts` holds\n * what they share.\n *\n * It takes `label` and `className` and nothing else, as the native half does:\n * shadcn's spreads the rest of the `<svg>`'s attributes, and a call site that\n * passed one is rare enough to wrap the glyph itself.\n *\n * The glyph is `currentColor`, so it takes the colour of the text around it —\n * a button's label, a muted line — unless `className` names one.\n */\nimport { LoaderCircle } from \"@/components/ui/icons\";\nimport { type SpinnerProps, spinnerClass } from \"@/components/ui/spinner-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport type { SpinnerProps };\n\nexport function Spinner({ label = \"Loading\", className }: SpinnerProps) {\n  return (\n    <LoaderCircle\n      data-slot=\"spinner\"\n      role=\"status\"\n      aria-label={label}\n      className={cn(spinnerClass, \"animate-spin\", className)}\n    />\n  );\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
