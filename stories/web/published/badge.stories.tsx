@@ -136,3 +136,50 @@ export const Removable: Story = {
     );
   },
 };
+
+/**
+ * `asChild` hands the badge to its one child — a tag that links to its search, say. It renders
+ * (it used to throw: the ✕'s empty slot was a second child, and `Slot` takes exactly one), the
+ * child stays the caller's `<a>`, and it is drawn as the plain badge beside it is. `onRemove` is
+ * ignored under `asChild` rather than breaking it.
+ */
+export const AsChild: Story = {
+  render: () => (
+    <>
+      <Badge variant="secondary">plain</Badge>
+      <Badge variant="secondary" asChild>
+        {/* biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route */}
+        <a href="#">#tag</a>
+      </Badge>
+      <Badge variant="secondary" asChild onRemove={fn()}>
+        {/* biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route */}
+        <a href="#">#removable</a>
+      </Badge>
+    </>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole("link", { name: "#tag" });
+    await expect(link.tagName).toBe("A");
+    await expect(link).toHaveAttribute("href", "#");
+    await expect(link).toHaveAttribute("data-slot", "badge");
+
+    const look = (el: Element) => {
+      const style = getComputedStyle(el);
+      return {
+        display: style.display,
+        padding: style.padding,
+        radius: style.borderTopLeftRadius,
+        background: style.backgroundColor,
+        color: style.color,
+        fontSize: style.fontSize,
+      };
+    };
+    await expect(look(link)).toEqual(look(canvas.getByText("plain")));
+    await expect(getComputedStyle(link).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+
+    // No ✕ under `asChild`: its one child is the whole badge.
+    await expect(canvas.getByRole("link", { name: "#removable" })).toBeInTheDocument();
+    await expect(canvas.queryAllByRole("button")).toHaveLength(0);
+  },
+};
