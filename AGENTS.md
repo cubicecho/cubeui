@@ -145,7 +145,7 @@ file there is web-only because of where it is. `registry/web/ui/` is the same ti
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an
 RN source is genuinely impossible or unwanted (a Radix popover, `cmdk`, `react-day-picker`), not
 because the compiler refused once; and a layout does not go here at all — `registry:check`
-rule 11 holds the layout family on both platforms, with `disclosure-row` its only exception. The
+rule 11 holds the layout family on both platforms, with no exceptions. The
 tier only shrinks: rule 16 fails on a web-only item that `WEB_ONLY` in the script does not name with
 its reason, and on a line left behind after its item gained a native half. Adding a line is a case
 to make in the PR, not a way round the rule.
@@ -388,7 +388,8 @@ Recorded so the next pass does not re-derive them:
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leading`,
   `title`, `description`, `meta`, `action`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`); rebuilding `DisclosureRow` on it is the follow-up.
+  shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
+  so the row that opens is on both halves too.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
