@@ -11,7 +11,11 @@ import {
 import { type ReactNode, useState } from "react";
 import { Text } from "react-native";
 import { expect, fn, userEvent, within } from "storybook/test";
-import { ArrowRight as CompiledArrowRight, Settings as CompiledSettings } from "../compiled/icons";
+import {
+  ArrowRight as CompiledArrowRight,
+  CircleCheck as CompiledCircleCheck,
+  Settings as CompiledSettings,
+} from "../compiled/icons";
 import { QueryState as CompiledQueryState } from "../compiled/query-state";
 import {
   SidebarNavItem as CompiledNavItem,
@@ -24,7 +28,11 @@ import {
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
 } from "../registry/layout/sidebar";
-import { ArrowRight as NativeArrowRight, Settings as NativeSettings } from "../registry/ui/icons";
+import {
+  ArrowRight as NativeArrowRight,
+  CircleCheck as NativeCircleCheck,
+  Settings as NativeSettings,
+} from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -623,5 +631,95 @@ export const States: Story = {
     );
     await expect(bars).toHaveLength(4);
     for (const bar of Array.from(bars)) await expect(bar.getBoundingClientRect().height).toBe(32);
+  },
+};
+
+const folders = [
+  { id: "work", name: "Work", count: 2, status: "MCP on", icon: true },
+  { id: "home", name: "Home", count: 5, status: "human-only", icon: false },
+];
+
+/**
+ * A row's `status`, beside its count: with an icon the icon is what is seen and the words are
+ * read only, and without one the words are drawn. Either way they are part of the row's name, in
+ * reading order — "Work, MCP on, 2" — and the icon is decoration a screen reader skips.
+ */
+export const Status: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Frame>
+          <NativeSidebar
+            label="Native sidebar"
+            content={
+              <NativeSection
+                title="Folders"
+                content={folders.map((f) => (
+                  <NativeNavItem
+                    key={f.id}
+                    href={`#/folders/${f.id}`}
+                    label={f.name}
+                    count={f.count}
+                    status={
+                      f.icon
+                        ? { label: f.status, icon: <NativeCircleCheck /> }
+                        : { label: f.status }
+                    }
+                  />
+                ))}
+              />
+            }
+          />
+        </Frame>
+      }
+      compiled={
+        <Frame>
+          <CompiledSidebar
+            label="Compiled sidebar"
+            content={
+              <CompiledSection
+                title="Folders"
+                content={folders.map((f) => (
+                  <CompiledNavItem
+                    key={f.id}
+                    href={`#/folders/${f.id}`}
+                    label={f.name}
+                    count={f.count}
+                    status={
+                      f.icon
+                        ? { label: f.status, icon: <CompiledCircleCheck /> }
+                        : { label: f.status }
+                    }
+                  />
+                ))}
+              />
+            }
+          />
+        </Frame>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ["Native sidebar", "Compiled sidebar"]) {
+      const side = within(canvas.getByRole("complementary", { name }));
+
+      // The status is in the row's name, between the label and the count.
+      const work = side.getByRole("link", { name: /^Work\s*MCP on\s*2$/ });
+      const home = side.getByRole("link", { name: /^Home\s*human-only\s*5$/ });
+
+      // With an icon, the words are read and not seen, and the icon is seen and not read.
+      const hidden = within(work).getByText("MCP on");
+      await expect(hidden.getBoundingClientRect().width).toBeLessThanOrEqual(1);
+      const icon = work.querySelector("svg");
+      if (!icon) throw new Error("the status icon should be drawn");
+      await expect(icon.closest('[aria-hidden="true"]')).not.toBeNull();
+      await expect(icon.getBoundingClientRect().width).toBeGreaterThan(0);
+
+      // Without one, the words are drawn.
+      const shown = within(home).getByText("human-only");
+      await expect(shown.getBoundingClientRect().width).toBeGreaterThan(1);
+    }
   },
 };

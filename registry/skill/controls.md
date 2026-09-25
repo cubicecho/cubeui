@@ -201,6 +201,38 @@ is always destructive; a confirm that is *not* destructive is a question, and a 
 Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
+### Type the name to confirm
+
+For a delete that is big and cannot be undone — a whole folder of notes, a workspace, a
+repository — pass `requireText`, and the dialog asks for the name before it acts:
+
+```tsx
+<ConfirmButton
+  label="Delete folder"
+  title="Delete this folder?"
+  description="Its 214 notes go with it, and so does their history."
+  requireText={folder.name}
+  requireTextLabel={<>Type <strong>{folder.name}</strong> to delete it</>}
+  onConfirm={() => deleteFolder(folder.id)}
+>
+  <Trash2 />
+</ConfirmButton>
+```
+
+It is the same prop on all three, so a call site moves between them unchanged:
+`<ConfirmDialog requireText={…} />` and `confirm({ …, requireText: folder.name })` on both halves.
+
+- A labelled input sits under the description, and the destructive button stays **disabled until
+  the input holds `requireText` exactly** — case and spaces count, nothing is trimmed.
+- **Enter confirms only when it matches.** Enter on a wrong value does nothing.
+- The input is **empty each time the dialog opens**: the name is typed once per delete.
+- `requireTextLabel` is the label, and defaults to "Type **{requireText}** to confirm". Pass
+  one to say the verb. It is the input's accessible name, so keep the name in it.
+
+Do not build this from `DialogLayout`, an `Input` and a disabled `Button`. Save it for the rare
+delete that earns it: asking for a typed name on every row teaches people to type without
+reading, and then it protects nothing.
+
 ## Menu
 
 **A popover of actions is a `Menu`. Do not hand-build `menuitem` rows in a `Popover`.** A
@@ -636,7 +668,7 @@ with a filled `div` and a `style.width` inside it.
 - `valueLabel` is the value in words, read instead of the number ("1,204 of 5,880 turns"). Leave
   it out when the percentage is what the number means.
 - No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
-  animate. A wait with no known end wants a spinner, not an empty bar.
+  animate. A wait with no known end wants a [`Spinner`](#spinner), not an empty bar.
 - `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
   (`bg-destructive` for a context window nearly full). Colours are tokens, as everywhere.
 - A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not

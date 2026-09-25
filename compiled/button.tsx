@@ -166,22 +166,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled && "opacity-50",
     );
 
-    const body = (
-      // Icons inside a button take the variant's text colour. On web they
-      // already inherit it, so `icons.web.tsx` ignores this; native has no
-      // inheritance and this is where the colour comes from.
-      <IconClassContext.Provider value={buttonTextVariants({ variant, size })}>
-        {React.Children.map(children, (child) =>
-          typeof child === "string" || typeof child === "number" ? (
-            <span className={cn("cube-rn-text", buttonTextVariants({ variant, size }))}>
-              {child}
-            </span>
-          ) : (
-            child
-          ),
-        )}
-      </IconClassContext.Provider>
-    );
+    // Labels and icons inside a button take the variant's text colour. On web they
+    // already inherit it, so `icons.web.tsx` ignores this; native has no
+    // inheritance and this is where the colour comes from.
+    const labelClass = buttonTextVariants({ variant, size });
 
     // Two returns rather than one variable element: `Slot.Root` is typed for the DOM
     // and `Pressable` for a `View`, and a union of the two types nothing usefully —
@@ -189,21 +177,28 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // against the element it actually renders.
     if (asChild) {
       return (
-        // `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
-        // for the DOM, but it renders nothing itself — it clones its child with these
-        // props merged in. The element that receives them is the caller's, so the DOM
-        // typing describes neither side, and the cast is the honest way to say so.
-        <Slot.Root
-          className={styling}
-          {...({
-            ...props,
-            onClick: onPress,
-            disabled,
-          } as unknown as React.HTMLAttributes<HTMLElement>)}
-          ref={ref as unknown as React.Ref<HTMLElement>}
-        >
-          {body}
-        </Slot.Root>
+        // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
+        // one child. Inside, the provider was the child: `Slot` merged the classes and
+        // the press onto it, it dropped them, and the caller's `<a>` or radix `Action`
+        // rendered unstyled (#156). No string wrapping here either — an `asChild` child
+        // is an element by definition, and wrapping it would hand `Slot` the wrong one.
+        <IconClassContext.Provider value={labelClass}>
+          {/* `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
+              for the DOM, but it renders nothing itself — it clones its child with these
+              props merged in. The element that receives them is the caller's, so the DOM
+              typing describes neither side, and the cast is the honest way to say so. */}
+          <Slot.Root
+            className={styling}
+            {...({
+              ...props,
+              onClick: onPress,
+              disabled,
+            } as unknown as React.HTMLAttributes<HTMLElement>)}
+            ref={ref as unknown as React.Ref<HTMLElement>}
+          >
+            {children}
+          </Slot.Root>
+        </IconClassContext.Provider>
       );
     }
 
@@ -216,7 +211,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...(props as React.ComponentPropsWithoutRef<"button">)}
         onClick={pressThenClick(onPress, (props as MergedClick).onClick)}
       >
-        {body}
+        <IconClassContext.Provider value={labelClass}>
+          {React.Children.map(children, (child) =>
+            typeof child === "string" || typeof child === "number" ? (
+              <span className={cn("cube-rn-text", labelClass)}>{child}</span>
+            ) : (
+              child
+            ),
+          )}
+        </IconClassContext.Provider>
       </button>
     );
   },

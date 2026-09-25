@@ -93,7 +93,7 @@ at the end.
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
-| A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
+| A button that deletes, discards, revokes or resets — with `requireText`, only once its name is typed | `ConfirmButton` | [controls.md](controls.md#type-the-name-to-confirm) |
 | A popover of actions or links — a ⋯ menu, Rename / Move / Delete on a row, Open in a router `link` | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
 | A popover of on/off rows that stays open — labels on a todo, columns shown — or a one-of-N filter behind a button | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | [controls.md](controls.md#menu) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
@@ -177,6 +177,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
   called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
   is not something the caller renders.
+- **`requireText`** — on `ConfirmDialog`, `confirm()` and `ConfirmButton`. The text to type
+  before the destructive button unlocks: the folder's name, for a delete that is big and cannot be
+  undone. Matched exactly, Enter included. Its label is `requireTextLabel`, by prefix.
 
 **Form components add:**
 
@@ -208,6 +211,10 @@ The same words mean the same thing in every component, and this is the point of 
 **List rows and query states add:**
 
 - **`badges`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
+- **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
+  title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, icon? }` before
+  the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `icon`, when
+  given, is what is seen instead of it — decorative, never read.
 - **`leading`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
   given, not sized like `icon`, and never inside the row's pressed area. On `ListItem`.
 - **`meta`** — the grey line of facts beside the title: a name, a time, a count. On `ListItem` it
@@ -297,7 +304,7 @@ views and there is no shell wrapping to hide.
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
-| An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
+| An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
@@ -320,8 +327,12 @@ Everything else in the native set is the primitive of the same name: `Button`, `
 `Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
 web ones take, with four conversions that are the same everywhere:
 
-- **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
-  output takes `onPress` too, so a call site does not change when it moves.
+- **`onPress` on a device, `onClick` on the web.** Every pressable in the native set takes
+  `onPress`; its compiled web half renders a real `<button>` and takes `onClick`, with the rest of
+  the `<button>` props. So a DOM app writes `onClick` on `Button`, `Card`, `ListItem`, `StatTile`,
+  `SidebarNavItem` and the rest, and the examples in these files that say `onPress` read as
+  `onClick` there. Code shared between the halves has no one name to write; keep the handler and
+  pass it under each half's name.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.

@@ -730,7 +730,12 @@
       "type": "registry:ui",
       "title": "Confirm Dialog",
       "description": "A destructive-action confirmation dialog: Cancel plus one destructive button.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/dialog"],
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/dialog",
+        "@cubeui/input",
+        "@cubeui/label"
+      ],
       "files": [
         {
           "path": "registry/ui/confirm-dialog.tsx",

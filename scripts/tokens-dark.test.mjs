@@ -115,7 +115,7 @@ test("an element selector is dropped on native, as `*` is", async () => {
   );
   for (const rule of [
     "*, ::before, ::after { box-sizing: border-box; }",
-    ":where(button) { border: 0 solid; background-color: transparent; color: inherit; font: inherit; }",
+    ":where(button) { border: 0 solid; padding: 0; background-color: transparent; color: inherit; font: inherit; }",
     "button { border: 0 solid; background-color: transparent; }",
     ":where(input, select, textarea) { color: inherit; font: inherit; }",
     ":where(html) { font-family: Arial, sans-serif; }",

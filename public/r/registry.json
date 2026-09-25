@@ -649,7 +649,13 @@
       "type": "registry:ui",
       "title": "Confirm Dialog",
       "description": "A destructive-action confirmation dialog: Cancel plus one destructive button.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/dialog"],
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/dialog",
+        "@cubeui/input",
+        "@cubeui/label",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/confirm-dialog.tsx",
@@ -1212,7 +1218,12 @@
       "type": "registry:component",
       "title": "Confirm Button",
       "description": "A destructive button that asks first, with a required description of what is lost. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/action-button", "@cubeui/alert-dialog"],
+      "registryDependencies": [
+        "@cubeui/action-button",
+        "@cubeui/alert-dialog",
+        "@cubeui/input",
+        "@cubeui/label"
+      ],
       "files": [
         {
           "path": "compiled/confirm-button.tsx",

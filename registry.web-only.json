@@ -84,7 +84,12 @@
       "type": "registry:component",
       "title": "Confirm Button",
       "description": "A destructive button that asks first, with a required description of what is lost.",
-      "registryDependencies": ["@cubeui/action-button", "@cubeui/alert-dialog"],
+      "registryDependencies": [
+        "@cubeui/action-button",
+        "@cubeui/alert-dialog",
+        "@cubeui/input",
+        "@cubeui/label"
+      ],
       "files": [
         {
           "path": "registry/web/confirm-button.tsx",
