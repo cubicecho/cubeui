@@ -62,11 +62,11 @@ Read this before adding anything:
 
    **This registry now publishes its own primitives**, so "what shadcn ships" is two lists. The
    first is this repo's: `registry/ui/` holds a native-first `button`, `card`, `dialog`, `field`,
-   `input`, `select`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
-   API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
-   (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`,
-   `separator`, `skeleton`. **Check those two directories before you write markup**; a shell
+   `input`, `select`, `tabs`, `command` and the rest, and each one's web half is a **superset of
+   shadcn's API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps
+   compiling (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/`
+   re-publishes the upstream primitives the web tier needs — `alert-dialog`, `empty`, `item`,
+   `separator`, `skeleton`, `table`. **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.
@@ -143,7 +143,7 @@ ships `compiled/`, not the source. The rules that make that work:
 rest. They are declared in `registry.web-only.json`, and the directory *is* the declaration — every
 file there is web-only because of where it is. `registry/web/ui/` is the same tier for the
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an
-RN source is genuinely impossible or unwanted (a Radix popover, `cmdk`, `react-day-picker`), not
+RN source is genuinely impossible or unwanted (a Radix popover, `react-day-picker`), not
 because the compiler refused once; and a layout does not go here at all — `registry:check`
 rule 11 holds the layout family on both platforms, with `disclosure-row` its only exception. The
 tier only shrinks: rule 16 fails on a web-only item that `WEB_ONLY` in the script does not name with

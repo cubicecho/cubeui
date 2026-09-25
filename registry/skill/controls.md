@@ -427,6 +427,46 @@ const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, 
 - `SelectField` takes `onOpenChange` too, so a fetched list inside a form does not have to drop
   to `FormField`'s function form to get one word through.
 
+## Command
+
+A search box over a list of rows that filters as you type: shadcn's `Command` parts, on both
+halves, at `components/ui/command`. `MultiSelect` is built on it, and it is what to reach for when
+a picker or a palette needs a list that is not a tag picker.
+
+```tsx
+<Command label="Search projects">
+  <CommandInput value={search} onValueChange={setSearch} placeholder="Search…" />
+  <CommandList>
+    <CommandEmpty>No projects.</CommandEmpty>
+    <CommandGroup heading="Recent">
+      {recent.map((p) => (
+        <CommandItem key={p.id} value={p.name} keywords={[p.slug]} onSelect={() => open(p.id)}>
+          {p.name}
+          <CommandShortcut>{p.key}</CommandShortcut>
+        </CommandItem>
+      ))}
+    </CommandGroup>
+  </CommandList>
+</Command>
+```
+
+- **The web half is cmdk**, so it keeps a highlighted row, arrow keys and Enter, and ranks by a
+  fuzzy score. **The native half is its own list**, because cmdk has no React Native build: a
+  search `Input` over pressable rows, and a row is chosen by pressing it. There is no highlight on
+  device, so cmdk's `value`, `onValueChange`, `loop` and `vimBindings` on `Command` are web only.
+- **The native default filter wants every typed word**, in any order and any case, and keeps the
+  list in the order you wrote it; cmdk's fuzzy scorer re-sorts. Pass `filter` — cmdk's
+  `(value, search, keywords) => number` — and both halves give the same answer.
+  `matchesEveryWord` from `@/components/ui/command-base` is the native default, to hand the web
+  half too.
+- **Give `CommandItem` a `value`** whenever the row holds more than its name. Without one, cmdk
+  matches the row's `textContent` and native its text children, and both include a
+  `CommandShortcut` or a badge in what is searched and handed to `onSelect`.
+- `label` on `Command` names the search box, `label` on `CommandList` the list (default
+  "Suggestions"). `forceMount` keeps a group or a row drawn through the filter — a "Create …" row.
+- `CommandDialog` is the palette in a `Dialog`, on both halves; `title` and `description` name it
+  and are not drawn.
+
 ## Multi-select
 
 A tag picker: a trigger showing what is chosen, a searchable list behind it.
