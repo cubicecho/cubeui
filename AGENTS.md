@@ -145,7 +145,10 @@ file there is web-only because of where it is. `registry/web/ui/` is the same ti
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an
 RN source is genuinely impossible or unwanted (a Radix popover, `cmdk`, `react-day-picker`), not
 because the compiler refused once; and a layout does not go here at all — `registry:check`
-rule 11 holds the layout family on both platforms, with `disclosure-row` its only exception.
+rule 11 holds the layout family on both platforms, with `disclosure-row` its only exception. The
+tier only shrinks: rule 16 fails on a web-only item that `WEB_ONLY` in the script does not name with
+its reason, and on a line left behind after its item gained a native half. Adding a line is a case
+to make in the PR, not a way round the rule.
 
 **Tokens are `tokens/palette.mjs`**, and nowhere else. `npm run tokens:build` emits the web
 stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `oklch()`) and
@@ -176,7 +179,7 @@ docs/component-conventions.md         authoring rules, and the open questions
                                       reads the copy that ships
 scripts/rn2web/                       the compiler
 scripts/build-tokens.mjs              the token emitter
-scripts/check-registry-build.mjs      `registry:check`: fifteen rules over what ships
+scripts/check-registry-build.mjs      `registry:check`: sixteen rules over what ships
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/build-page.mjs                the landing page, public/index.html
