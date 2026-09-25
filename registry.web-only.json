@@ -246,6 +246,7 @@
         "@cubeui/card-layout",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
+        "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",
         "@cubeui/page-header",

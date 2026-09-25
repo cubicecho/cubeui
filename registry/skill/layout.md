@@ -4,7 +4,7 @@ Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" ru
 are not repeated here.
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
-sections and sidebars are written once in React Native and compiled to the web, so the same item
+sections, disclosures and sidebars are written once in React Native and compiled to the web, so the same item
 installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
 the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half. On a
 device, four things differ, and none of them changes a call site:
@@ -454,6 +454,44 @@ A heading over a group of fields or rows, inside a page or a card.
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
+
+## Disclosure
+
+A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
+over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
+counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `useState` beside it.
+
+```tsx
+<Disclosure
+  title="Raw output"
+  action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
+  content={<Code>{json}</Code>}
+/>
+
+<Disclosure
+  title={`${showCompleted ? "Hide" : "Show"} completed (${completed.length})`}
+  open={showCompleted}
+  onOpenChange={setShowCompleted}
+  content={completed.map((todo) => <TodoRow key={todo.id} todo={todo} />)}
+/>
+```
+
+- One source for both platforms: `@cubeui/disclosure` in `/r` and `/r/native`.
+- The **whole header is one button** with a chevron that turns, so it is reached by Tab and
+  toggled by Enter and Space. `aria-expanded` is on it, and on the web `aria-controls` names the
+  body while the body is there.
+- **`action` sits beside the button, not inside it**, so pressing it does not toggle the section.
+  Do not put a control in `title`.
+- `content` is **not mounted while shut** — a long list behind it costs nothing, and anything that
+  must survive closing (a draft, a scroll position) belongs to the caller.
+- Uncontrolled by default, shut: pass `defaultOpen` to start open. Pass `open` and `onOpenChange`
+  when the caller needs the state — a title that says Hide once open, a deep link, a "show the
+  failure" button elsewhere on the page. `onOpenChange` alone listens without taking over.
+- The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
+  under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
+  disclosure is the heading of its part of the page; `contentClassName` to indent the body.
+- A row in a list that opens onto its detail is `DisclosureRow` (web), which adds the row's
+  `badges`, `meta` and surface.
 
 ## Description lists
 
