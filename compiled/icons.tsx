@@ -53,6 +53,7 @@ export {
   Clock,
   Copy,
   Download,
+  Info,
   LoaderCircle,
   Monitor,
   Moon,
