@@ -101,6 +101,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. |
 | `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
+| `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
 
 **List rows and query states add:**
 
@@ -134,6 +135,10 @@ Notes on why the layering is where it is:
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
   split panes are `first` and `second` rather than `left` and `right`.
+- **`StatTile` reuses `PropertyRow`'s `label`, `value` and `hint`,** because a tile is the same
+  three parts on a card: what the figure is called, the figure, the line read after it. Its one
+  word of its own is `selected`, which `ToggleChip` already took and the vocabulary had not yet
+  written down — `pressed` is the ARIA spelling of one platform, and a prop is read on both.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 
@@ -321,6 +326,12 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    interactive — a focus ring, a role, a keyboard target — which is behaviour, and rule 5 keeps
    behaviour with the caller. Revisit either if three call sites in two projects disagree about
    the shape.
+
+   That happened for `onClick`/`selected`, on a narrower shell rather than on this one: the
+   status pages of kanban_server and task_server both hand-wrote a pressable count tile with
+   `aria-pressed` and `border-primary bg-accent`, and `StatTile` takes `onPress` and `selected`
+   for them. Its press is `Card`'s own, so the focus ring, the role and the keyboard target are
+   the primitive's rather than the shell's. `CardLayout` still takes neither.
 4. **Where installed files land, and how items import each other.** *Settled — and verified by
    installing into a scratch project whose aliases deliberately differ from ours.* Registry
    sources import each other as a consumer would — `@/components/ui/button`,

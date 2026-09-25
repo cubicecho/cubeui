@@ -501,6 +501,49 @@ Read-only facts — a label, a value, a line under the value — which is most o
 - It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
   `content` for those.
 
+## Stat tiles
+
+One figure on a card — a label, the number, a line under it. A row of them is the top of a
+dashboard or a status page; pressable, they are the filter over the list below.
+
+```tsx
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <StatTile label="Turns" value={formatCount(engine.turns)} />
+  <StatTile label="Entities" value={formatCount(engine.entities)} hint={`${edges} edges`} />
+  <StatTile label="Uptime" value={formatUptime(uptime)} hint={`v${version}`} icon={<Clock />} />
+  <StatTile label="Embeddings" value={count} loading={isPending} />
+</div>
+
+// The filter tile: a toggle, one heap shown at a time.
+{HEAPS.map((heap) => (
+  <StatTile
+    key={heap}
+    label={LABELS[heap]}
+    value={counts[heap]}
+    selected={shown === heap}
+    onPress={() => setShown(shown === heap ? null : heap)}
+    valueClassName={heap === "attention" && counts[heap] > 0 ? "text-destructive" : undefined}
+  />
+))}
+```
+
+- One source for both platforms: `@cubeui/stat-tile`, exporting `StatTile`. On the web the press
+  prop is `onClick`, as it is on the compiled `Card`.
+- `label` is what the figure is called, `value` the figure — a string or number drawn large in
+  tabular numerals, or a node (a `ColorDot` beside a name) placed as is — and `hint` one muted line
+  under it. `icon` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
+- `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
+  toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
+  a primary border on the accent. Without `selected` it is a plain button (a tile that opens a
+  page); without `onPress`, `selected` is ignored.
+- `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
+  the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.
+- `valueClassName` is for the figure's colour — a count worth noticing in `text-destructive`.
+  There is no `tone` or `size` prop.
+- It lays out one tile, not the row: the grid is the caller's, since the column count is the
+  page's decision. A label-over-number pair with no card around it is a `DescriptionList` with
+  `layout="stacked"`, not this.
+
 ## List pages
 
 Two shells for the shape every list route is: a ladder of states, then rows.
