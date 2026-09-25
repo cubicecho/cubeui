@@ -909,10 +909,10 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `text-xs` muted for you. It is inside the pressed area.
 - `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
   ghost `Button`s (or `ActionButton`s, on the web); the row adds the gap.
-- `onPress` makes the middle — `title`, `description`, `meta` — one button (a real `<button>` on
-  the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
+- `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
+  (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
-  `<a>`, which is the button-in-a-button this avoids. For a route, call the router in `onPress`.
+  `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-border bg-card"`.
