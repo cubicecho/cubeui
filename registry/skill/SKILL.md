@@ -87,6 +87,7 @@ at the end.
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout.md](layout.md#empty-states) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
 | A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Disclosure` | [layout.md](layout.md#disclosure) |
+| Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `DescriptionList`) | `Table` and its parts | [layout.md](layout.md#table) |
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
