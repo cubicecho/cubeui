@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the icon in an input, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the icon in an input, the search box, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -573,6 +573,51 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
 - `className` stays on the field, as on any input. With a slot, the field sits in a box that is
   `w-full`; size that box with `wrapperClassName`. Without a slot there is no box, and the root is
   the field, as before.
+- A search box is not this: it is `SearchInput`, below, which is this plus the name and the ✕.
+
+## Search
+
+A box that filters or searches is `SearchInput`, on both halves. Do not build it from `Input
+leading={<Search />}`, and never from a `relative` div, an absolute glyph and a `pl-8`:
+
+```tsx
+<SearchInput placeholder="Search servers" value={query} onChangeText={setQuery} />
+
+<SearchInput label="Filter spells" defaultValue={initial} onChangeText={setQuery} wrapperClassName="w-64" />
+```
+
+- It is `type="search"`, so a screen reader hears a search field (`role="searchbox"` on device
+  too) and a phone raises its search keyboard.
+- `label` is its accessible name, default "Search". A placeholder is not a name. `aria-label`
+  wins over `label`; a box named by `aria-labelledby` or a `<label htmlFor>` (an `id`, as in
+  `FormField`) gets no default, so the visible label is what is read.
+- The ✕ shows only while there is text, is a button named `clearLabel` (default "Clear search"),
+  empties the box, and puts focus back in it. `clearable={false}` drops it. The browser's own
+  ✕ is hidden, so there is one.
+- It takes the rest of `Input`'s props except `type`, `leading` and `trailing`: `onChangeText` on
+  both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
+  the user had cleared the box. Controlled or not, it clears.
+- `className` is on the field; size the box with `wrapperClassName`.
+
+### Filter bar
+
+A list page's filter bar is a search box, a select or two, and the buttons that act on the list,
+in one wrapping row. There is no component for it — it is one `div`:
+
+```tsx
+<div className="flex flex-wrap items-center gap-2">
+  <SearchInput placeholder="Search runs" value={query} onChangeText={setQuery} wrapperClassName="w-64" />
+  <OptionSelect options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
+  <Button variant="outline" onClick={reset}>Reset</Button>
+</div>
+```
+
+- `flex-wrap`, so a narrow window stacks the controls rather than squeezing them; `items-center`
+  and `gap-2` so a select and a button sit on the search box's line.
+- Give the search box and each select a width: both are full width by default, and in a row
+  that means one control takes the line.
+- Put it above the list, inside the page's content, not in `PageHeader`'s `actions` — those are
+  the page's actions, not the list's.
 
 ## Removable badge
 
