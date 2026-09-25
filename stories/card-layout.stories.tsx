@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Text } from "react-native";
 import { expect, within } from "storybook/test";
+import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
 import { CardLayout as Native } from "../registry/layout/card-layout";
+import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -80,5 +83,71 @@ export const Level: Story = {
   play: async ({ canvasElement }) => {
     const { compiled } = await titles(canvasElement, 2);
     await expect(compiled.tagName).toBe("H2");
+  },
+};
+
+const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
+
+/** Three buttons in `footerActions`, in a card as narrow as a phone. */
+function NarrowCard({ half }: { half: "native" | "compiled" }) {
+  const Card = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  return (
+    <div data-testid={`${half}-frame`} style={{ width: 320 }}>
+      <Card
+        title="Journal"
+        content={
+          half === "native" ? (
+            <Text className="text-sm text-foreground">Notes kept by the agent.</Text>
+          ) : (
+            <p className="text-sm">Notes kept by the agent.</p>
+          )
+        }
+        footerActions={
+          <>
+            {actionLabels.map((label) => (
+              <Button key={label} variant="outline" size="sm">
+                {label}
+              </Button>
+            ))}
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+/**
+ * `footerActions` in a 320px card (#159). The row used to hold its buttons on one line and run
+ * the first one out past the card's left edge; now it shrinks to the footer and wraps, and the
+ * line that wraps stays against the right edge. Held on both halves.
+ */
+export const NarrowFooterActions: Story = {
+  args: { title: "Journal" },
+  render: () => (
+    <SideBySide native={<NarrowCard half="native" />} compiled={<NarrowCard half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      const frame = within(canvasElement).getByTestId(`${half}-frame`);
+      const card = frame.firstElementChild;
+      if (!card) throw new Error(`the ${half} card should render`);
+      const box = card.getBoundingClientRect();
+      const buttons = actionLabels.map((name) =>
+        within(frame).getByRole("button", { name }).getBoundingClientRect(),
+      );
+      const [first, , last] = buttons;
+      if (!first || !last) throw new Error("expected three buttons");
+      // `half` rides along in each value so a failure names which half broke.
+      await expect({
+        half,
+        // Inside the card, left and right.
+        inside: buttons.every((b) => b.left >= box.left && b.right <= box.right),
+        // Wrapped: the last button is on a line below the first.
+        wrapped: last.top >= first.bottom,
+        // Right-aligned: the wrapped line ends near the card's right edge, not at its left.
+        endAligned: box.right - last.right < box.width / 4,
+      }).toEqual({ half, inside: true, wrapped: true, endAligned: true });
+    }
   },
 };

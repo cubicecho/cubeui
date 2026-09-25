@@ -320,8 +320,12 @@ Everything else in the native set is the primitive of the same name: `Button`, `
 `Calendar`, `Badge`, `Segmented`, `ToggleChip`, `ColorPicker`, `Toast`, `Code`. They take the props the
 web ones take, with four conversions that are the same everywhere:
 
-- **`onPress`, not `onClick`.** Every pressable in the set, on both halves — the compiled web
-  output takes `onPress` too, so a call site does not change when it moves.
+- **`onPress` on a device, `onClick` on the web.** Every pressable in the native set takes
+  `onPress`; its compiled web half renders a real `<button>` and takes `onClick`, with the rest of
+  the `<button>` props. So a DOM app writes `onClick` on `Button`, `Card`, `ListItem`, `StatTile`,
+  `SidebarNavItem` and the rest, and the examples in these files that say `onPress` read as
+  `onClick` there. Code shared between the halves has no one name to write; keep the handler and
+  pass it under each half's name.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.
