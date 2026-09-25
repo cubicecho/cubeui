@@ -898,21 +898,32 @@ container. Use it rather than a `border-b` on the group above or a `h-px` view.
 
 ## Password
 
+A password or a pasted secret is `PasswordInput`, on both halves. Do not write
+`<Input type="password">` with an eye button placed over it by hand.
+
 ```tsx
-<PasswordInput value={token} onChange={(e) => setToken(e.target.value)} />
+<PasswordInput value={token} onChangeText={setToken} />                  {/* both halves */}
+<PasswordInput value={token} onChange={(e) => setToken(e.target.value)} /> {/* web too */}
 ```
 
-The reveal toggle is behaviour, not a variant, which is why this is a component and not a
-`type="password"` prop. Three things a hand-written eye gets wrong, and this gets right:
+`@cubeui/password-input` installs to `components/password-input`. It is `Input` with
+`type="password"` and a show/hide button in its `trailing` slot, so it takes `Input`'s props on
+each half — `onChangeText` everywhere, and on the web `onChange`, `name`, `autoComplete` and a ref
+to the `<input>` as well. The reveal toggle is behaviour, not a variant, which is why this is a
+component and not a `type="password"` prop. Three things a hand-written eye gets wrong, and this
+gets right:
 
-- The toggle is `type="button"`. A bare `<button>` inside a `<form>` submits it, so the usual
-  hand-rolled version submits the login form when you ask to see what you typed.
-- Its accessible name changes with its state — "Show password" / "Hide password" — rather than
-  being a fixed "Toggle" that tells a screen reader nothing about what will happen.
+- The toggle does not submit. It is `type="button"` on the web, where a bare `<button>` inside a
+  `<form>` submits it, so the usual hand-rolled version submits the login form when you ask to see
+  what you typed.
+- Its accessible name changes with its state — "Show password" / "Hide password", or `showLabel` /
+  `hideLabel` — rather than being a fixed "Toggle" that tells a screen reader nothing about what
+  will happen.
 - It swaps the input's real `type`, not a CSS mask, so a password manager and the browser's own
-  autofill still see a password field.
+  autofill still see a password field. On device that `type` is `secureTextEntry`.
 
-`revealable={false}` drops the toggle for a field that should never be shown.
+`revealable={false}` drops the toggle for a field that should never be shown. `className` is the
+field's and `wrapperClassName` the box around the field and its eye. `leading` still takes an icon.
 
 ## Theme
 
