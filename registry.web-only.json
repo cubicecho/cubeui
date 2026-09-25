@@ -101,6 +101,7 @@
         "@cubeui/action-button",
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
+        "@cubeui/copy-button",
         "@cubeui/date-picker",
         "@cubeui/menu",
         "@cubeui/multi-select",
@@ -244,16 +245,21 @@
       "description": "Every cubeui layout shell in one install.",
       "registryDependencies": [
         "@cubeui/card-layout",
+        "@cubeui/centered-layout",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
+        "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/header-content-footer",
+        "@cubeui/list-item",
         "@cubeui/page-header",
         "@cubeui/page-layout",
         "@cubeui/query-state",
         "@cubeui/section",
+        "@cubeui/setting-row",
         "@cubeui/sidebar",
-        "@cubeui/split-layout"
+        "@cubeui/split-layout",
+        "@cubeui/stat-tile"
       ],
       "files": []
     },

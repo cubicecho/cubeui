@@ -127,6 +127,19 @@
       ]
     },
     {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action. `default`, `info`, `warning` or `destructive`; only `destructive` is announced as an `alert`, the rest as a polite `status`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/alert.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -191,8 +204,8 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "Single-line text entry. Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "Single-line text entry, with an optional icon at its start (`leading`) or an icon-sized control at its end (`trailing`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/ui/input-base.ts",
@@ -204,6 +217,27 @@
         },
         {
           "path": "registry/ui/input.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "search-input",
+      "type": "registry:ui",
+      "title": "Search input",
+      "description": "A search box: Input with a Search icon inside at its start, type=search (a searchbox), named by `label` (default Search), and a named clear button while it holds text.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/search-input-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/search-input.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/search-input.web.tsx",
           "type": "registry:ui"
         }
       ]
@@ -471,6 +505,32 @@
       ]
     },
     {
+      "name": "list-item",
+      "type": "registry:component",
+      "title": "List Item",
+      "description": "One row of a list: `leading` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `action` at the far end. With `onPress` the middle is one button and `leading` and `action` stay separate controls beside it, never nested in it.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/list-item.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "disclosure",
+      "type": "registry:component",
+      "title": "Disclosure",
+      "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `action` sits beside it rather than inside it, and `content` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/layout/disclosure.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:component",
       "title": "Description List",
@@ -479,6 +539,32 @@
       "files": [
         {
           "path": "registry/layout/description-list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "setting-row",
+      "type": "registry:component",
+      "title": "Setting Row",
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `action` at the end, dropping under the text when the row is too narrow for both. `action` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/field"],
+      "files": [
+        {
+          "path": "registry/layout/setting-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "stat-tile",
+      "type": "registry:component",
+      "title": "Stat Tile",
+      "description": "One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `icon` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.",
+      "registryDependencies": ["@cubeui/card", "@cubeui/icons", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/stat-tile.tsx",
           "type": "registry:component"
         }
       ]
@@ -523,6 +609,19 @@
       ]
     },
     {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "A horizontal bar showing how much of something is done: `role=\"progressbar\"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
@@ -546,6 +645,49 @@
         "@types/react-dom@~19.2.0",
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
+      ]
+    },
+    {
+      "name": "copy-button",
+      "type": "registry:ui",
+      "title": "Copy button",
+      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "dependencies": ["expo-clipboard@^57.0.2"],
+      "files": [
+        {
+          "path": "registry/ui/copy-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/copy-button.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A loading indicator: the LoaderCircle glyph turning, one `role=\"status\"` named by `label`, sized and coloured by `className`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/spinner-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/spinner.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/spinner.web.tsx",
+          "type": "registry:ui"
+        }
       ]
     },
     {
@@ -807,6 +949,19 @@
       ]
     },
     {
+      "name": "inline-text-edit",
+      "type": "registry:ui",
+      "title": "Inline Text Edit",
+      "description": "A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/input"],
+      "files": [
+        {
+          "path": "registry/ui/inline-text-edit.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "query-state",
       "type": "registry:component",
       "title": "Query State",
@@ -945,6 +1100,19 @@
       "files": [
         {
           "path": "registry/layout/card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "centered-layout",
+      "type": "registry:component",
+      "title": "Centered Layout",
+      "description": "A page that is one card, centred both ways: a sign-in, a token gate, a check-your-email screen. Full height, padded off the edges, a `max-w-sm` `CardLayout` taking every card slot; on device a scroll view that keeps the form above the keyboard.",
+      "registryDependencies": ["@cubeui/card-layout", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/centered-layout.tsx",
           "type": "registry:component"
         }
       ]
