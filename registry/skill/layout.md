@@ -4,11 +4,11 @@ Read [SKILL.md](SKILL.md) first — the slot vocabulary and the "no children" ru
 are not repeated here.
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
-sections, disclosures, sidebars and the top bar are written once in React Native and compiled to the web, so the same item
-installs in a Vite app and an Expo app with the same props. The list-page parts at the end are
-the exception: `DisclosureRow` is web-only, and `QueryState` is its own item on each half.
-`ListItem` is on both. On a
-device, four things differ, and none of them changes a call site:
+sections, disclosures, sidebars and the top bar are written once in React Native and compiled to
+the web, so the same item installs in a Vite app and an Expo app with the same props. The
+list-page parts at the end are the exception: `DisclosureRow` is web-only, and `QueryState` is its
+own item on each half; `ListItem` is on both, like the shells. On a device, four things differ,
+and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
   `ScrollView` there (a `<div>` on the web), and `contentClassName` styles its content container.

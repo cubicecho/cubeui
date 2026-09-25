@@ -47,14 +47,9 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`, `DialogLayout`, `Section` and
-`DescriptionList` are written once in
-
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `CenteredLayout`,
-`DialogLayout`, `Section` and `DescriptionList` are written once in
-
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section`,
-`Disclosure`, `DescriptionList`, `ListItem`, `StatTile` and `SettingRow` are written once in
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`,
+`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DescriptionList`, `ListItem`, `StatTile`
+and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
 
@@ -150,18 +145,14 @@ The same words mean the same thing in every component, and this is the point of 
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the
   sidebar's, by prefix. A prop that belongs to a slot wears the slot's name, so it needs no word of
   its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place.
-- **`brand`** — the start of an app's bar: the mark and name. On `SidebarLayout` the bar is drawn
-  only where the sidebar is hidden, so pass what the sidebar's header shows.
-- **`nav`** — an app bar's navigation: the places, as icon links. The shell draws the `<nav>` and
-  `navLabel` names it — do not wrap it in one yourself. The bar's far end is the core `action`.
-- **`brand`** — the start of an app's top bar: the logo and the app's name, usually a link home.
-  On `TopBarLayout`; a sidebar's brand is its `header`.
-- **`nav`** — the primary links in a `TopBarLayout`'s bar, after the brand. Pass the links; the
-  shell draws the navigation landmark around them. `navLabel` names it, by prefix.
+- **`brand`** — the start of an app's bar: the logo and the app's name, usually a link home. On
+  `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
+  so there pass what the sidebar's header shows.
+- **`nav`** — an app bar's navigation, after the brand: the primary links on `TopBarLayout`, the
+  places as icon links on `SidebarLayout`'s bar. The shell draws the `<nav>` and `navLabel` names
+  it, by prefix — do not wrap it in one yourself. The bar's far end is the core `action`.
 - **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
   `max-w-md` here for a wider card than the default `max-w-sm`.
-- **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarClassName`** — the sidebar's, by prefix. A prop
-  that belongs to a slot wears the slot's name, so it needs no word of its own.
 - **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
   `SidebarSection` makes it the navigation landmark, named by its `title` or a `label`. A value,
   never a tag you invent: a part takes only the landmarks its shape can honestly be.

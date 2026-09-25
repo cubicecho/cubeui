@@ -74,8 +74,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
-| `brand` | The start of an app's top bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1`, `SidebarLayout` on every page. |
-| `nav` | The primary links in a top bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists; `navLabel`, `<nav>` names it by prefix. |
+| `brand` | The start of an app's bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and on `SidebarLayout`'s bar, drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
+| `nav` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `cardClassName` | On `CenteredLayout`, the card, where `className` is the page around it. The card is not a slot the caller fills, so it takes its prefix from the shell it is: the one page shell whose root is not the thing it draws. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
