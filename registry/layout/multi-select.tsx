@@ -1,8 +1,9 @@
-import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { useId, useMemo, useState } from "react";
+import { Platform, Text, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ColorDot } from "@/components/ui/color-dot";
 import {
   Command,
   CommandEmpty,
@@ -11,6 +12,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { matchesEveryWord } from "@/components/ui/command-base";
+import { Check, ChevronsUpDown, Plus, X } from "@/components/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { readableTextColor } from "@/lib/readable-text-color";
 import { cn } from "@/lib/utils";
@@ -38,8 +41,8 @@ export type MultiSelectOption = {
    * it, in the order they were given rather than sorted — a board's lanes are ordered, and
    * alphabetical would be wrong.
    *
-   * The heading is also searched, so typing a lane's name still finds the cards in it. cmdk
-   * hides a heading whose options are all filtered out, which is what you want.
+   * The heading is also searched, so typing a lane's name still finds the cards in it. A heading
+   * whose options are all filtered out hides itself, on both halves, which is what you want.
    */
   group?: string | undefined;
   /**
@@ -113,36 +116,26 @@ export function isAddableOptionName(name: string, options: readonly MultiSelectO
 }
 
 /**
- * cmdk's filter, replaced: every whitespace-separated word must appear somewhere.
- *
- * The default is a fuzzy scorer that ranks, which is right for a command palette and wrong for a
- * list of tags — typing "back end" should find "Backend infrastructure", and the words being in
- * the other order should not matter. Returns 1 or 0 because there is no ranking to do here; the
- * list is already in the order the caller wanted.
- */
-function matchesAllWords(haystack: string, search: string): number {
-  const words = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return 1;
-  const target = haystack.toLocaleLowerCase();
-  return words.every((word) => target.includes(word)) ? 1 : 0;
-}
-
-/**
  * The two colour props a tag-coloured chip needs, as a spread.
  *
  * `Badge` takes them as props rather than as a `style`, because the same component
  * renders a `<Text>` on native and there is no inheritance to carry the label colour
- * down to it. The transparent border is a class for the same reason — a border
- * colour is one of the things the two platforms spell differently.
+ * down to it.
  */
 function chipColors(color: string | undefined) {
   if (!color) return {};
   return { backgroundColor: color, textColor: readableTextColor(color) };
 }
 
+/** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
+const SR_ONLY = Platform.select({
+  web: "sr-only",
+  default: "absolute -m-px h-px w-px overflow-hidden",
+});
+
 type MultiSelectProps = Omit<
-  ComponentProps<"button">,
-  "value" | "onChange" | "type" | "children"
+  ComponentProps<typeof Button>,
+  "value" | "onChange" | "type" | "children" | "variant" | "size" | "asChild" | "onPress"
 > & {
   options: readonly MultiSelectOption[];
   value: readonly string[];
@@ -152,17 +145,17 @@ type MultiSelectProps = Omit<
   searchPlaceholder?: string | undefined;
   /**
    * The search box's accessible name. cmdk points its input at a hidden `<label>` it renders
-   * from `Command`'s `label`, so without this the search box is a `combobox` with no name at
-   * all — a placeholder is not one.
+   * from `Command`'s `label`, and the native half makes it the input's `aria-label`, so without
+   * this the search box has no name at all — a placeholder is not one.
    */
   searchLabel?: string | undefined;
   /**
-   * What the popover is called. It is a `role="dialog"`, and a dialog needs a name.
+   * What the popover is called. On the web it is a `role="dialog"`, and a dialog needs a name.
    *
    * The name is rendered inside it rather than borrowed from the trigger with
    * `aria-labelledby`: a label that lives outside the dialog resolves to nothing the moment the
    * thing it points at is hidden, removed or re-keyed, and then the failure is a silent one that
-   * only an axe run catches.
+   * only an axe run catches. On device it is the first thing a screen reader reads in the sheet.
    */
   popoverLabel?: string | undefined;
   /** What the list says when the search matches nothing and there is nothing to add. */
@@ -183,10 +176,50 @@ type MultiSelectProps = Omit<
 };
 
 /**
+ * One line of an option that is not its name — the hint under it or the meta at its end — with
+ * the id the row's `aria-describedby` points at. A string gets its own `Text`, since colour does
+ * not inherit on native; anything else (a `Badge`) is placed as it is, in a box carrying the id.
+ */
+function OptionLine({
+  id,
+  slot,
+  className,
+  children,
+}: {
+  id: string | undefined;
+  slot: string;
+  className: string;
+  children: ReactNode;
+}) {
+  if (typeof children === "string" || typeof children === "number") {
+    return (
+      <Text nativeID={id} testID={slot} className={cn("text-xs text-muted-foreground", className)}>
+        {children}
+      </Text>
+    );
+  }
+  return (
+    <View nativeID={id} testID={slot} className={className}>
+      {children}
+    </View>
+  );
+}
+
+/**
+ * The muted lines answering the highlight. cmdk paints the highlighted row `bg-accent`, and muted
+ * text on it is 4.34:1 — under the 4.5 a body-size string needs, so whichever row the arrow keys
+ * are on is the one that cannot be read. There is no highlight on device.
+ */
+const ON_HIGHLIGHT = Platform.select({
+  web: "group-data-[selected=true]:text-accent-foreground/80",
+  default: "",
+});
+
+/**
  * One option, which is up to four things: the tick, the colour dot, what it is called, and what
  * else is true of it.
  *
- * Its own component because the rows are drawn inside a run now rather than in one flat map, and
+ * Its own component because the rows are drawn inside a run rather than in one flat map, and
  * because everything about the row that is not the label is a *description* — which takes two
  * ids, an explicit name, and a layout that changes when there is a second line. That is more
  * than belongs in a nested map.
@@ -230,10 +263,8 @@ function OptionRow({
       // In reading order: the end of the row, then the line under it.
       aria-describedby={[metaId, hintId].filter(Boolean).join(" ") || undefined}
       onSelect={() => onToggle(option.value)}
-      // `group` so the two muted lines can answer the highlight. cmdk paints the highlighted row
-      // `bg-accent`, and muted text on it is 4.34:1 — under the 4.5 a body-size string needs, so
-      // whichever row the arrow keys are on is the one that cannot be read.
-      className={cn("group", stacked && "items-start")}
+      // `group` so the two muted lines can answer the highlight — see `ON_HIGHLIGHT`.
+      className={cn(Platform.select({ web: "group", default: "" }), stacked && "items-start")}
     >
       <Check
         className={cn(
@@ -244,37 +275,26 @@ function OptionRow({
         aria-hidden
       />
       {option.color ? (
-        <span
-          className={cn("size-2.5 shrink-0 rounded-full", stacked && "mt-1.5")}
-          style={{ backgroundColor: option.color }}
-          aria-hidden
-        />
+        <ColorDot color={option.color} size="sm" className={cn(stacked && "mt-1.5")} />
       ) : null}
-      <span className="min-w-0 flex-1">
-        <span className="block truncate">{option.label}</span>
+      <View className="min-w-0 flex-1">
+        <Text className="truncate text-sm text-popover-foreground">{option.label}</Text>
         {option.hint ? (
           // Wrapped rather than truncated: a reason cut off at the edge of the
           // popover is the same as no reason.
-          <span
-            id={hintId}
-            data-slot="multi-select-option-hint"
-            className="block text-muted-foreground text-xs group-data-[selected=true]:text-accent-foreground/80"
-          >
+          <OptionLine id={hintId} slot="multi-select-option-hint" className={ON_HIGHLIGHT}>
             {option.hint}
-          </span>
+          </OptionLine>
         ) : null}
-      </span>
+      </View>
       {option.meta ? (
-        <span
+        <OptionLine
           id={metaId}
-          data-slot="multi-select-option-meta"
-          className={cn(
-            "shrink-0 text-muted-foreground text-xs group-data-[selected=true]:text-accent-foreground/80",
-            stacked && "mt-0.5",
-          )}
+          slot="multi-select-option-meta"
+          className={cn("shrink-0", ON_HIGHLIGHT, stacked && "mt-0.5")}
         >
           {option.meta}
-        </span>
+        </OptionLine>
       ) : null}
     </CommandItem>
   );
@@ -290,14 +310,18 @@ function OptionRow({
  * one is the one that matters, because it looks like a combobox and is not operable as one — it
  * cannot be opened, moved through or chosen from without a mouse.
  *
- * So this is the first shape, kept: a real `Popover` (portalled, focus-trapped, closes on Escape
- * and on outside click without anyone writing the listener) over cmdk, which owns the roving
- * focus and the typeahead.
+ * So this is the first shape, kept: a real `Popover` over a `Command`, on both halves. On the web
+ * that is radix (portalled, focus-trapped, closes on Escape and on outside click without anyone
+ * writing the listener) over cmdk, which owns the roving focus and the typeahead. On device it is
+ * the native popover's centred sheet over the native command list, where a row is chosen by
+ * pressing it.
  *
  * **Clearing is in the footer, not on the trigger.** The obvious place for an `X` is inside the
  * trigger, and the trigger is a `<button>` — a button inside a button is not valid HTML and the
- * inner one is unreachable by keyboard in every browser. Chips get their own remove buttons only
- * when they are outside the trigger, which they are not here, so the footer holds the one Clear.
+ * inner one is unreachable by keyboard in every browser. So on the web the chips have no remove
+ * buttons and the footer holds the one Clear. On device a `Pressable` inside a `Pressable` is
+ * fine — the inner one takes the touch — so there each chip is a removable `Badge` as well, for
+ * the thumb; the sheet's rows and its Clear are still the way a screen reader does it.
  */
 export function MultiSelect({
   options,
@@ -348,10 +372,10 @@ export function MultiSelect({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          data-slot="multi-select-trigger"
+        <Button
+          testID="multi-select-trigger"
           id={triggerId}
-          type="button"
+          variant="outline"
           role="combobox"
           // `aria-controls` and `aria-haspopup` are Radix's, through `asChild`, and point at the
           // popover it owns. cmdk mints the listbox id itself and overwrites any id passed to
@@ -359,17 +383,18 @@ export function MultiSelect({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "flex min-h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1.5 text-sm shadow-xs outline-none transition-[color,box-shadow]",
-            "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-            "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
-            "disabled:cursor-not-allowed disabled:opacity-50",
+            "h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal",
+            Platform.select({
+              web: "whitespace-normal shadow-xs aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:cursor-not-allowed",
+              default: "",
+            }),
             className,
           )}
           {...props}
         >
-          <span className="flex min-w-0 flex-wrap items-center gap-1">
+          <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
             {selected.length === 0 ? (
-              <span className="text-muted-foreground">{placeholder}</span>
+              <Text className="text-sm text-muted-foreground">{placeholder}</Text>
             ) : (
               <>
                 {shown.map((option) => (
@@ -377,33 +402,48 @@ export function MultiSelect({
                     key={option.value}
                     variant="secondary"
                     {...chipColors(option.color)}
-                    className="max-w-40 truncate border-transparent"
+                    className={Platform.select({
+                      web: "max-w-40 truncate",
+                      default: "max-w-40",
+                    })}
+                    // Device only: on the web this would be a button inside the trigger's button.
+                    {...(Platform.OS !== "web" && !disabled
+                      ? { onRemove: () => toggle(option.value) }
+                      : {})}
                   >
                     {option.label}
                   </Badge>
                 ))}
                 {overflow > 0 ? (
-                  <span className="text-muted-foreground text-xs">
+                  <Text className="text-xs text-muted-foreground">
                     {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
-                  </span>
+                  </Text>
                 ) : null}
               </>
             )}
-          </span>
+          </View>
           <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </button>
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent
         align="start"
-        aria-labelledby={titleId}
-        // Matches the trigger, so the list does not jump narrower than the thing that opened it.
-        className={cn("w-[var(--radix-popover-trigger-width)] p-0", contentClassName)}
+        // radix names its dialog from this; the native sheet has no dialog role to name, and the
+        // title below is simply the first thing read in it.
+        {...(Platform.OS === "web" ? { "aria-labelledby": titleId } : {})}
+        className={cn(
+          Platform.select({
+            // Matches the trigger, so the list does not jump narrower than the thing that opened it.
+            web: "w-[var(--radix-popover-trigger-width)] p-0",
+            default: "w-80 max-w-full p-0",
+          }),
+          contentClassName,
+        )}
       >
-        <span id={titleId} className="sr-only">
+        <Text nativeID={titleId} className={cn(SR_ONLY, "text-popover-foreground")}>
           {popoverLabel}
-        </span>
-        <Command label={searchLabel} filter={matchesAllWords} shouldFilter={searchable}>
+        </Text>
+        <Command label={searchLabel} filter={matchesEveryWord} shouldFilter={searchable}>
           {searchable ? (
             <CommandInput
               value={search}
@@ -433,8 +473,14 @@ export function MultiSelect({
             {canCreate ? (
               // An explicit row, not an Enter handler on the input: cmdk already consumes Enter
               // to choose the highlighted item, so a keydown listener races it and wins only
-              // sometimes. A row is a thing you can see, arrow to, and click.
-              <CommandGroup forceMount className="sticky bottom-0 border-t bg-popover">
+              // sometimes. A row is a thing you can see, arrow to, and press.
+              <CommandGroup
+                forceMount
+                className={cn(
+                  "border-t border-border bg-popover",
+                  Platform.select({ web: "sticky bottom-0", default: "" }),
+                )}
+              >
                 <CommandItem
                   forceMount
                   value={`__create__${search}`}
@@ -444,9 +490,9 @@ export function MultiSelect({
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  <span className="truncate">
+                  <Text className="min-w-0 flex-1 truncate text-sm text-popover-foreground">
                     {createLabel} “{search.trim()}”
-                  </span>
+                  </Text>
                 </CommandItem>
               </CommandGroup>
             ) : null}
@@ -454,17 +500,17 @@ export function MultiSelect({
         </Command>
 
         {clearable && selected.length > 0 ? (
-          <div className="flex justify-end border-t p-1">
+          <View className="flex-row justify-end border-t border-border p-1">
             <Button
-              type="button"
               variant="ghost"
               size="sm"
               className="text-muted-foreground"
-              onClick={() => onValueChange([])}
+              onPress={() => onValueChange([])}
             >
-              <X className="size-4" aria-hidden /> Clear
+              <X className="size-4" aria-hidden />
+              Clear
             </Button>
-          </div>
+          </View>
         ) : null}
       </PopoverContent>
     </Popover>

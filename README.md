@@ -856,7 +856,7 @@ keeps the family on both sides.
 |---|---|---|---|
 | universal | compiled from RN, or `-base` + `.tsx` + `.web.tsx` | `registry.json` | `button`, `card`, `select` |
 | native-only | `.tsx` only | `registry.json` | the `Modal` sheet half of `dialog` |
-| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `OptionSelect`, `FormField`, `MultiSelect` |
+| **web-only** | `registry/web/*.tsx`, hand-written | `registry.web-only.json` | `OptionSelect`, `FormField`, `DatePicker` |
 
 **The directory is the declaration.** A `.web.tsx` inside `registry/ui` must have a `.tsx` beside
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there

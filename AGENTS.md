@@ -139,7 +139,7 @@ ships `compiled/`, not the source. The rules that make that work:
   `registry.web.json` by hand.
 
 **The web-only tier is `registry/web/`.** Hand-written DOM components with no React Native half:
-`OptionSelect`, `MultiSelect`, `DatePicker`, `FormField`, `app-form` and the bound fields, and the
+`OptionSelect`, `DatePicker`, `FormField`, `app-form` and the bound fields, and the
 rest. They are declared in `registry.web-only.json`, and the directory *is* the declaration — every
 file there is web-only because of where it is. `registry/web/ui/` is the same tier for the
 re-published primitives, so they still install to `components/ui/`. Put an item here only when an

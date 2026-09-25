@@ -425,6 +425,29 @@
       ]
     },
     {
+      "name": "multi-select",
+      "type": "registry:component",
+      "title": "Multi Select",
+      "description": "A combobox that selects more than one thing, over Popover and Command: searchable on every word, with an optional create row and coloured chips. On the web radix and cmdk make it portalled and keyboard-operable; on device it opens the native sheet, and each chip is also removable with its ✕.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/badge",
+        "@cubeui/button",
+        "@cubeui/color-dot",
+        "@cubeui/command",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/readable-text-color",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/multi-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
@@ -1406,27 +1429,6 @@
         "@cubeui/top-bar-layout"
       ],
       "files": []
-    },
-    {
-      "name": "multi-select",
-      "type": "registry:component",
-      "title": "Multi Select",
-      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips. Web-only: no React Native half.",
-      "registryDependencies": [
-        "@cubeui/badge",
-        "@cubeui/button",
-        "@cubeui/command",
-        "@cubeui/popover",
-        "@cubeui/readable-text-color",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "compiled/multi-select.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
     },
     {
       "name": "multi-select-field",

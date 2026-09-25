@@ -489,6 +489,28 @@
       ]
     },
     {
+      "name": "multi-select",
+      "type": "registry:component",
+      "title": "Multi Select",
+      "description": "A combobox that selects more than one thing, over Popover and Command: searchable on every word, with an optional create row and coloured chips. On the web radix and cmdk make it portalled and keyboard-operable; on device it opens the native sheet, and each chip is also removable with its ✕.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/badge",
+        "@cubeui/button",
+        "@cubeui/color-dot",
+        "@cubeui/command",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/readable-text-color"
+      ],
+      "files": [
+        {
+          "path": "registry/layout/multi-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",

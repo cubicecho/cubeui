@@ -256,27 +256,6 @@
       "files": []
     },
     {
-      "name": "multi-select",
-      "type": "registry:component",
-      "title": "Multi Select",
-      "description": "A combobox that selects more than one thing: portalled, keyboard-operable, searchable on every word, with an optional create row and coloured chips.",
-      "registryDependencies": [
-        "@cubeui/badge",
-        "@cubeui/button",
-        "@cubeui/command",
-        "@cubeui/popover",
-        "@cubeui/readable-text-color",
-        "@cubeui/utils"
-      ],
-      "files": [
-        {
-          "path": "registry/web/multi-select.tsx",
-          "type": "registry:component"
-        }
-      ],
-      "dependencies": ["lucide-react@^1.34.0"]
-    },
-    {
       "name": "multi-select-field",
       "type": "registry:component",
       "title": "Multi Select Field",
