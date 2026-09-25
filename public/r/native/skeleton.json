@@ -19,7 +19,7 @@
     },
     {
       "path": "registry/ui/skeleton.web.tsx",
-      "content": "/**\n * The web skeleton: shadcn's, a `<div>` with `animate-pulse`, every `<div>` prop passed through.\n * `skeleton.tsx` is the native counterpart and says why this half is hand-written; `skeleton-base.ts`\n * holds what they share.\n */\nimport type * as React from \"react\";\nimport { skeletonClass } from \"@/components/ui/skeleton-base\";\nimport { cn } from \"@/lib/utils\";\n\ntype SkeletonProps = React.ComponentProps<\"div\">;\n\nfunction Skeleton({ className, ...props }: SkeletonProps) {\n  return (\n    <div data-slot=\"skeleton\" className={cn(\"animate-pulse\", skeletonClass, className)} {...props} />\n  );\n}\n\nexport type { SkeletonProps };\nexport { Skeleton };\n",
+      "content": "/**\n * The web skeleton: shadcn's, a `<div>` with `animate-pulse`, every `<div>` prop passed through.\n * `skeleton.tsx` is the native counterpart and says why this half is hand-written; `skeleton-base.ts`\n * holds what they share.\n */\nimport type * as React from \"react\";\nimport { skeletonClass } from \"@/components/ui/skeleton-base\";\nimport { cn } from \"@/lib/utils\";\n\ntype SkeletonProps = React.ComponentProps<\"div\">;\n\nfunction Skeleton({ className, ...props }: SkeletonProps) {\n  return (\n    <div\n      data-slot=\"skeleton\"\n      className={cn(\"animate-pulse\", skeletonClass, className)}\n      {...props}\n    />\n  );\n}\n\nexport type { SkeletonProps };\nexport { Skeleton };\n",
       "type": "registry:ui"
     }
   ],
