@@ -42,6 +42,8 @@ export {
   Clock,
   Copy,
   Download,
+  Eye,
+  EyeOff,
   Info,
   LoaderCircle,
   Monitor,

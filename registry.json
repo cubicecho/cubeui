@@ -243,6 +243,19 @@
       ]
     },
     {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/password-input.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
