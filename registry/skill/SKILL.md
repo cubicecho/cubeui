@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput, Disclosure, StatTile, SettingRow on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, CopyButton, DateTimeInput, InlineNumberEdit, SearchInput, InlineTextEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ActionButton, ConfirmButton, OptionSelect, MultiSelect, DatePicker, ColorPicker, PasswordInput, Disclosure, StatTile, SettingRow, CenteredLayout on the web; Menu, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, CopyButton, DateTimeInput, InlineNumberEdit, SearchInput, InlineTextEdit, ColorDot, readableTextColor and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -47,6 +47,9 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `CenteredLayout`,
+`DialogLayout`, `Section` and `DescriptionList` are written once in
+
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `CardLayout`, `DialogLayout`, `Section`,
 `Disclosure`, `DescriptionList`, `ListItem`, `StatTile` and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
@@ -72,6 +75,7 @@ at the end.
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout.md](layout.md) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout.md](layout.md) |
+| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredLayout` | [layout.md](layout.md#centered-pages) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout.md](layout.md) |
 | A heading over a group of fields or rows | `Section` | [layout.md](layout.md) |
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout.md](layout.md#setting-rows) |
@@ -137,6 +141,8 @@ The same words mean the same thing in every component, and this is the point of 
   you pass them.
 - **`sidebar`** — the second surface in a `SidebarLayout`. `content` is still the main one, so the
   pair reads the way it does everywhere else.
+- **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
+  `max-w-md` here for a wider card than the default `max-w-sm`.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarClassName`** — the sidebar's, by prefix. A prop
   that belongs to a slot wears the slot's name, so it needs no word of its own.
 - **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
@@ -246,6 +252,7 @@ views and there is no shell wrapping to hide.
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
+| A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout.md](layout.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record | `DetailPage`, `DetailHeader` | `@cubeui/detail-page` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |

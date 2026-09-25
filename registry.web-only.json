@@ -245,6 +245,7 @@
       "description": "Every cubeui layout shell in one install.",
       "registryDependencies": [
         "@cubeui/card-layout",
+        "@cubeui/centered-layout",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
         "@cubeui/disclosure",
