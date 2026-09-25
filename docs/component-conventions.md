@@ -79,6 +79,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `trigger` | What opens a dialog, when the dialog owns its own open state. |
 | `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
+| `defaultOpen` | Where a thing that opens starts, when it holds its own open state. The primitives' word already (`Dialog`, `Popover`, `Menu`), taken by a shell once `Disclosure` held its own: an uncontrolled shell with no starting state is a `useState` the caller writes anyway. |
 | `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
 
 **Form components add:**
@@ -98,7 +99,8 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
-| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. |
+| `leading` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `icon` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
+| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. On `Input` it is the same place in a field — the far end, inside it — and holds one icon-sized control, a clear button. |
 | `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
@@ -108,7 +110,8 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `meta` | The grey line of facts beside the title: a name, a time, a count. |
+| `leading` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `icon` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badges` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
+| `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `action` — still facts about the title, placed where a list scans them. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
@@ -123,7 +126,7 @@ Notes on why the layering is where it is:
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
-- **`DisclosureRow` takes `action`, not `actions`,** though it usually holds three buttons. The
+- **`DisclosureRow` and `ListItem` take `action`, not `actions`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.
 - **`PropertyRow` reuses `label`, `hint`, `action` and `value` rather than growing words of its
@@ -131,6 +134,10 @@ Notes on why the layering is where it is:
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
   it is the value on display, a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
+- **`CopyButton` takes `value` for the string it copies,** with no `onValueChange`, because it
+  never changes it. The same stretch as `PropertyRow`'s: the button is set to that string. The
+  call sites it replaced said `text`, and a new word for it would have been the only one in the
+  set.
 - **`layout`, not `orientation`,** on `DescriptionList`. `orientation="horizontal"` on a field is
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
