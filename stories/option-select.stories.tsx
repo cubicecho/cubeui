@@ -3,11 +3,14 @@ import type { ComponentProps } from "react";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { OptionSelect, type SelectEntry } from "../compiled/option-select";
+import { OptionSelect as Native } from "../registry/layout/option-select";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
+import { SideBySide } from "./side-by-side";
 
 /**
- * The compiled half, because `option-select` is a web-only item: there is no React Native source
- * to stand it beside, and the file in `compiled/` is the one a DOM consumer installs.
+ * Mostly the compiled half, because the file in `compiled/` is the one a DOM consumer installs and
+ * its radix listbox is where the wiring can go wrong. `BothHalves` stands the React Native source
+ * beside it.
  *
  * `FormField` is written out by hand below rather than imported. `stories/` belongs to the native
  * tsconfig project, and `compiled/form-field` reaches for `@/components/ui/skeleton`, which is a
@@ -382,5 +385,61 @@ export const Disabled: Story = {
     const trigger = canvas.getByRole("combobox", { name: "On success" });
     expect(trigger).toBeDisabled();
     expect(trigger).toHaveTextContent("Stay here");
+  },
+};
+
+/**
+ * The React Native source beside the compiled one: the same options, the same trigger, and on
+ * both the chosen option's label in it — which the device has to be handed, because its sheet is
+ * not mounted while it is closed and has nothing to mirror the label from.
+ */
+export const BothHalves: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex w-[280px] flex-col gap-2">
+          <Native
+            aria-label="Native, chosen"
+            options={DESTINATIONS}
+            value="qa"
+            onValueChange={() => {}}
+          />
+          <Native
+            aria-label="Native, empty"
+            placeholder="Pick one"
+            options={[...LISTS, { note: "Still loading…" }]}
+            onValueChange={() => {}}
+          />
+        </div>
+      }
+      compiled={
+        <div className="flex w-[280px] flex-col gap-2">
+          <OptionSelect
+            aria-label="Compiled, chosen"
+            options={DESTINATIONS}
+            value="qa"
+            onValueChange={() => {}}
+          />
+          <OptionSelect
+            aria-label="Compiled, empty"
+            placeholder="Pick one"
+            options={[...LISTS, { note: "Still loading…" }]}
+            onValueChange={() => {}}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvas }) => {
+    for (const half of ["Native", "Compiled"]) {
+      expect(canvas.getByLabelText(`${half}, chosen`)).toHaveTextContent("QA");
+      expect(canvas.getByLabelText(`${half}, empty`)).toHaveTextContent("Pick one");
+    }
+    // Every one keeps a live region mounted, and the note is announced from it on both halves
+    // whether or not the menu is open.
+    const live = canvas.getAllByRole("status");
+    expect(live).toHaveLength(4);
+    expect(live.filter((region) => region.textContent?.includes("Still loading…"))).toHaveLength(2);
   },
 };
