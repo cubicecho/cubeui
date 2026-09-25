@@ -878,18 +878,13 @@ const WEB_ONLY = {
   command: "built on `cmdk`, which has no React Native build; a native half is planned",
   "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
-  "date-picker": "built on react-day-picker's range mode; `date-time-input` is to take ranges",
   "disclosure-row": "built on the web-only `item`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
   item: "shadcn's parts; to be rebuilt on `ListItem`",
   "multi-select": "built on the web-only `command`; a native half is planned",
   "multi-select-field": "a bound field over the web-only `multi-select`",
-  "option-select": "to become an options-array form of `Select`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
-  "password-input": "to be rebuilt on `Input`'s `leading` and `trailing` slots",
-  separator: "hand-written before the native tier; to be ported",
-  skeleton: "hand-written before the native tier; to be ported",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
 const namesIn = async (built) => {

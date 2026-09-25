@@ -256,6 +256,19 @@
       ]
     },
     {
+      "name": "password-input",
+      "type": "registry:component",
+      "title": "Password Input",
+      "description": "A password box with a reveal button that is named, changes its name, and does not submit the form: Input with type=password (secureTextEntry on device) and a show/hide button in its trailing slot.",
+      "registryDependencies": ["@cubeui/input", "@cubeui/button", "@cubeui/icons"],
+      "files": [
+        {
+          "path": "registry/ui/password-input.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "label",
       "type": "registry:ui",
       "title": "Label",
@@ -480,6 +493,19 @@
       ]
     },
     {
+      "name": "option-select",
+      "type": "registry:component",
+      "title": "OptionSelect",
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
+      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/option-select.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "theme-picker",
       "type": "registry:ui",
       "title": "Theme Picker",
@@ -630,6 +656,40 @@
       "files": [
         {
           "path": "registry/ui/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/skeleton-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/skeleton.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "shadcn's one-pixel rule, `orientation` and `decorative` as shadcn's: hidden from assistive tech by default, a `role=\"separator\"` with `decorative={false}`.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/separator.tsx",
           "type": "registry:ui"
         }
       ]
@@ -884,6 +944,27 @@
         {
           "path": "registry/ui/date-time-input.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:component",
+      "title": "Date Picker",
+      "description": "A date and optionally a time behind a popover, plus a range picker that closes when the range is complete. Clearing is a real button, not one nested in another.",
+      "dependencies": ["date-fns@^4.4.0"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/calendar",
+        "@cubeui/icons",
+        "@cubeui/input",
+        "@cubeui/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/date-picker.tsx",
+          "type": "registry:component"
         }
       ]
     },
