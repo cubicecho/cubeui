@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the removable badge, the progress bar, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -132,6 +132,44 @@ to write it at the call site, and you should not go back to a bare `<Button>` to
 save the form as well as do its own job — and why Enter in that field pressed the trash, since
 implicit submission goes to the first submit button in tree order and never through a click.
 A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+
+## Copy button
+
+A button that puts a string on the clipboard is `CopyButton`, on both halves. Do not write the
+`useState(copied)` and the `setTimeout(…, 1500)` again:
+
+```tsx
+<PropertyRow
+  label="Endpoint"
+  value={<Code>{url}</Code>}
+  action={<CopyButton value={url} label="Copy endpoint URL" />}
+/>
+
+<View className="relative">
+  <Code>{snippet}</Code>
+  <CopyButton
+    value={snippet}
+    label="Copy snippet"
+    className="absolute top-2 right-2"
+    onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
+  />
+</View>
+```
+
+- It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
+  The accessible name is `label` (default `Copy` — name what is copied when there is more than
+  one) and `Copied` while the tick shows.
+- `variant` and `size` go to the `Button` underneath; the defaults are `ghost` and `icon-sm`.
+  `className` is the button's, for placing it.
+- The tick appears only if the write happened. A refused write — an insecure origin, a denied
+  permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.
+  The toast is yours to raise, from either.
+- The web half writes with `navigator.clipboard`, and falls back to `execCommand("copy")` where
+  that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
+  the native item installs; a DOM app installs nothing extra.
+- It is `type="button"` on the web, so it never submits the form it sits in.
+- Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
+  always set, which are the two things `ActionButton` exists to guarantee.
 
 ## Destructive buttons
 
@@ -569,6 +607,81 @@ Showing a colour the user picked is three small items, all on both halves:
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
   inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
 
+## An icon in an input
+
+An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the input in a
+`relative` div with an absolute icon and a `pl-8` on the input:
+
+```tsx
+<Input aria-label="Filter servers" placeholder="Filter servers" leading={<Search />} />
+
+<Input
+  aria-label="Lane name"
+  value={name}
+  onChangeText={setName}
+  leading={<Pencil />}
+  trailing={
+    <Button variant="ghost" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
+      <Undo2 />
+    </Button>
+  }
+  wrapperClassName="w-64"
+/>
+```
+
+- Pass a bare icon. The input sizes it (`size-4`), mutes it, and pads the text past it. It takes no
+  press, so a tap on it lands in the field.
+- `trailing` is the far end, inside the field: one icon-sized control. It is pressable, so it
+  needs its own name. The text stops short of it.
+- `className` stays on the field, as on any input. With a slot, the field sits in a box that is
+  `w-full`; size that box with `wrapperClassName`. Without a slot there is no box, and the root is
+  the field, as before.
+- A search box is not this: it is `SearchInput`, below, which is this plus the name and the ✕.
+
+## Search
+
+A box that filters or searches is `SearchInput`, on both halves. Do not build it from `Input
+leading={<Search />}`, and never from a `relative` div, an absolute glyph and a `pl-8`:
+
+```tsx
+<SearchInput placeholder="Search servers" value={query} onChangeText={setQuery} />
+
+<SearchInput label="Filter spells" defaultValue={initial} onChangeText={setQuery} wrapperClassName="w-64" />
+```
+
+- It is `type="search"`, so a screen reader hears a search field (`role="searchbox"` on device
+  too) and a phone raises its search keyboard.
+- `label` is its accessible name, default "Search". A placeholder is not a name. `aria-label`
+  wins over `label`; a box named by `aria-labelledby` or a `<label htmlFor>` (an `id`, as in
+  `FormField`) gets no default, so the visible label is what is read.
+- The ✕ shows only while there is text, is a button named `clearLabel` (default "Clear search"),
+  empties the box, and puts focus back in it. `clearable={false}` drops it. The browser's own
+  ✕ is hidden, so there is one.
+- It takes the rest of `Input`'s props except `type`, `leading` and `trailing`: `onChangeText` on
+  both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
+  the user had cleared the box. Controlled or not, it clears.
+- `className` is on the field; size the box with `wrapperClassName`.
+
+### Filter bar
+
+A list page's filter bar is a search box, a select or two, and the buttons that act on the list,
+in one wrapping row. There is no component for it — it is one `div`:
+
+```tsx
+<div className="flex flex-wrap items-center gap-2">
+  <SearchInput placeholder="Search runs" value={query} onChangeText={setQuery} wrapperClassName="w-64" />
+  <OptionSelect options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
+  <Button variant="outline" onClick={reset}>Reset</Button>
+</div>
+```
+
+- `flex-wrap`, so a narrow window stacks the controls rather than squeezing them; `items-center`
+  and `gap-2` so a select and a button sit on the search box's line.
+- Give the search box and each select a width: both are full width by default, and in a row
+  that means one control takes the line.
+- Put it above the list, inside the page's content, not in `PageHeader`'s `actions` — those are
+  the page's actions, not the list's.
+
 ## Removable badge
 
 A tag or filter chip the user can take off is `Badge` with `onRemove`, on both halves:
@@ -589,6 +702,68 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+
+## Alert
+
+A callout — a tinted, bordered box saying something about the screen it is on — is `Alert`, on
+both halves. Do not hand-draw `rounded-md border border-amber-500/50 bg-amber-500/10` with an icon
+and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than explaining it:
+
+```tsx
+<Alert
+  variant="warning"
+  title="Store this token securely"
+  description="It will not be shown again."
+/>
+
+<Alert
+  variant="destructive"
+  title="Last error"
+  description={server.lastError}
+  action={<Button size="sm" variant="outline" onPress={restart}>Restart</Button>}
+/>
+```
+
+- `variant` is `default` (on the card), `info`, `warning` or `destructive`. It sets the tint, the
+  icon and the role — nothing else is coloured: the title and the line under it stay the
+  foreground on a tint, because the variant's own hue on its own tint is under 4.5:1. Do not pass
+  `text-amber-*` to fix that.
+- **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
+  `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
+  once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
+- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`). Pass a bare
+  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
+  draws none.
+- `title` and `description` are nodes, so a link can sit inside the description. `action` is the
+  far end — one button that deals with it.
+- shadcn's compound form also works, so a port can leave its call sites alone:
+  `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
+  The icon child goes into the icon box (and replaces the default glyph); the parts go into the
+  column. New code uses the props.
+- A failed *fetch* on a list page is `QueryState`'s rung, and a crashed route is `RouteError`;
+  `Alert` is for what the screen says while it works.
+
+## Spinner
+
+A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `LoaderCircle` and add
+`animate-spin`, and do not reach for `ActivityIndicator`:
+
+```tsx
+<Button disabled={saving} onPress={save}>
+  {saving ? <Spinner label="Saving" /> : null}
+  <Text>Save</Text>
+</Button>
+
+<Spinner label="Loading servers" className="size-6 text-muted-foreground" />
+```
+
+- It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
+  one thing on the screen could be.
+- `className` sizes and colours it; the default is `size-4`. On the web the glyph is
+  `currentColor`; on native it takes a `Button`'s ink the way any icon there does.
+- Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
+  platform's own spinner, a different shape on each.
+- A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
 ## Password
 
