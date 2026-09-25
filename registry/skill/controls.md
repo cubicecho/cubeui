@@ -631,7 +631,7 @@ with a filled `div` and a `style.width` inside it.
 - `valueLabel` is the value in words, read instead of the number ("1,204 of 5,880 turns"). Leave
   it out when the percentage is what the number means.
 - No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
-  animate. A wait with no known end wants a spinner, not an empty bar.
+  animate. A wait with no known end wants a [`Spinner`](#spinner), not an empty bar.
 - `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
   (`bg-destructive` for a context window nearly full). Colours are tokens, as everywhere.
 - A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not

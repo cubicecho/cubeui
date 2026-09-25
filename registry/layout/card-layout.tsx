@@ -87,6 +87,14 @@ const BAR = cn("h-4 rounded-md bg-accent", Platform.OS === "web" && "animate-pul
  */
 const INK = "text-card-foreground";
 
+/**
+ * The `footerActions` row. It shrinks to the footer and wraps rather than holding its buttons on
+ * one line: a view does not shrink by default on either half, so three buttons in a phone-width
+ * card ran past its left edge instead of moving the last one down. `justify-end` keeps a wrapped
+ * line against the right edge, where the primary action is.
+ */
+const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
+
 /** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
 function asText(node: ReactNode) {
   return typeof node === "string" || typeof node === "number" ? (
@@ -177,9 +185,7 @@ export function CardLayout({
           )}
         >
           {asText(footer)}
-          {footerActions ? (
-            <View className="flex-row items-center gap-2">{footerActions}</View>
-          ) : null}
+          {footerActions ? <View className={ACTIONS}>{footerActions}</View> : null}
         </CardFooter>
       ) : null}
     </Card>
