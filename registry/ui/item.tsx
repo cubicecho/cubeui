@@ -17,7 +17,8 @@
  *   there — and that `Text` carries the part's type and ink, because nothing inherits on native.
  *   An element you pass (a `Badge`, an icon) is placed as it is.
  * - `ItemMedia` does not size what is in it: there is no `[&_svg]` selector. Pass an icon at
- *   `size-4`, an image at `size-full`.
+ *   `size-4`, an image at `size-full`. Nor does it move to the top of a row with a description,
+ *   which shadcn does with `:has()`; it stays centred, and `className="self-start"` lifts it.
  * - `asChild` is radix's `Slot`, as `Button`'s is: `<Item asChild><Pressable onPress={open}>…`
  *   makes the whole row the pressable. On the web it is shadcn's, onto an `<a>` or a `<button>`.
  * - `ItemSeparator` is a hairline `View`; it takes `orientation` and `decorative` so a shadcn call

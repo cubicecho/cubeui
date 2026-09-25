@@ -24,12 +24,14 @@ import {
   ItemMedia,
   ItemSeparator,
   ItemTitle,
-} from "../registry/ui/item";
+} from "../registry/ui/item.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
  * shadcn's `Item` parts drawn by either half: the native source under react-native-web on the
- * left, the web half — shadcn's markup — on the right. The same call site, part for part.
+ * left, the web half — shadcn's markup — on the right. The same call site, part for part. The
+ * native file is imported as `item.tsx` by name because the harness resolves `.web.tsx` first, and
+ * a bare `item` would put the web half on both sides.
  */
 const meta = { title: "Stage 0/Item" } satisfies Meta;
 export default meta;
@@ -131,7 +133,15 @@ export const Outline: Story = {
     const [n, c] = boxes;
     if (!n?.row || !n.title || !c?.row || !c.title) throw new Error("both rows should measure");
     await expect(Math.abs(n.title.left - n.row.left - (c.title.left - c.row.left))).toBeLessThan(1);
-    await expect(Math.abs(n.row.height - c.row.height)).toBeLessThan(2);
+    await expect(Math.abs(n.title.top - n.row.top - (c.title.top - c.row.top))).toBeLessThan(1);
+    // The description is the same two clipped lines on both. (Not the row's height: the web half's
+    // description is shadcn's `<p>`, and this harness loads no preflight to take its margin off.)
+    const [nd, cd] = [".native-root", ".compiled-root"].map((selector) =>
+      slot(rootOf(canvasElement, selector), "item-description").getBoundingClientRect(),
+    );
+    if (!nd || !cd) throw new Error("both descriptions should measure");
+    await expect(Math.abs(nd.height - cd.height)).toBeLessThan(2);
+    await expect(Math.abs(nd.width - cd.width)).toBeLessThan(2);
   },
 };
 
