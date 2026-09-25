@@ -226,24 +226,6 @@
       "files": []
     },
     {
-      "name": "item",
-      "type": "registry:ui",
-      "title": "Item",
-      "description": "shadcn's list row, re-published from here so the row shared by every list in every project is edited in one place.",
-      "registryDependencies": ["@cubeui/separator", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/ui/item.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ]
-    },
-    {
       "name": "layout",
       "type": "registry:component",
       "title": "Layout Set",

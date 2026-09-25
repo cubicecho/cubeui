@@ -484,7 +484,7 @@ And that **every layout is on both platforms** (rule 11). The layout shells are 
 `registry/layout/` and the web half is compiled from them, so a native layout with no web item beside
 it — its compile was refused, and the web registry dropped it without failing — is an error, and so is
 a layout in the web `layout` set with no native item, unless `WEB_ONLY` in the script names
-why (`disclosure-row`, which is built on the web-only `item`; `section` was on the list until #61).
+why (`disclosure-row`, a `<button>` inside shadcn's `Item`, until it is rebuilt on the native `item`; `section` was on the list until #61).
 
 And that **the web-only tier only shrinks** (rule 16). Every item is meant to come from React Native,
 so each web-only item that ships a file is named in `WEB_ONLY` in the script with the reason it has
@@ -862,7 +862,7 @@ keeps the family on both sides.
 it — that rule is what catches a native half someone deleted — so a web-only item cannot live there
 without either weakening the rule or carrying a marker field that has to be kept honest.
 `registry/web/` needs neither: every file in it is web-only because of where it is, and
-`registry/web/ui/` mirrors `registry:ui` vs `registry:component` so `item` still installs to
+`registry/web/ui/` mirrors `registry:ui` vs `registry:component` so `empty` still installs to
 `components/ui/` where cubeui's consumers already have it.
 
 **And the published item says so.** The tier was invisible from outside this repo — `section` had

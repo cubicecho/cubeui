@@ -928,8 +928,13 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-border bg-card"`.
-- On the web `Item` still exists for rows it already draws; rebuilding `Item` and `DisclosureRow`
-  on `ListItem` is planned, so prefer `ListItem` in new code, and always in shared or native code.
+- `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
+  line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
+  (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
+  names, props and metrics: `ItemMedia` is `leading`, `ItemContent` the middle, `ItemTitle` and
+  `ItemDescription` the two lines, `ItemActions` the `action`. On a device a string in a part is
+  wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
+  hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
 
 ### Table
 
