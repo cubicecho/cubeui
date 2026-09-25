@@ -866,8 +866,14 @@
       "name": "inline-number-edit",
       "type": "registry:ui",
       "title": "Inline Number Edit",
-      "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit.",
-      "registryDependencies": ["@cubeui/input", "@cubeui/utils", "@cubeui/tokens"],
+      "description": "A number shown as text, becoming an input when pressed. Commits on blur and on submit, and Escape cancels. A save that returns a promise holds the edit open: pending while it runs, the error under the draft if it fails.",
+      "registryDependencies": [
+        "@cubeui/input",
+        "@cubeui/field",
+        "@cubeui/spinner",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/inline-number-edit.tsx",
@@ -879,8 +885,14 @@
       "name": "inline-text-edit",
       "type": "registry:ui",
       "title": "Inline Text Edit",
-      "description": "A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/input", "@cubeui/tokens"],
+      "description": "A line of text, or a heading, that becomes an input when edited — a rename. Commits on blur and on submit, Escape cancels, and an empty or unchanged draft is not saved. A save that returns a promise holds the edit open: pending while it runs, the error under the draft if it fails.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/input",
+        "@cubeui/field",
+        "@cubeui/spinner",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/inline-text-edit.tsx",

@@ -556,8 +556,7 @@ a `FormField`'s `aria-*` on the trigger.
   min={0}
   format={(n) => `${n} min`}
   accessibilityLabel="Estimate"
-  saving={update.isPending}
-  onSave={(estimate) => update.mutate({ estimate })}
+  onSave={(estimate) => update.mutateAsync({ estimate })}
 />
 ```
 
@@ -565,9 +564,12 @@ a `FormField`'s `aria-*` on the trigger.
 — a quantity on a row, an estimate on a card — that does not deserve a form. It shows the number
 as text and becomes an input when pressed.
 
-- It commits on blur and on submit; there is no save button. The draft is clamped to
-  `min`/`max`, an unparseable one falls back to `min`, and an unchanged value does not call
-  `onSave` at all.
+- It commits on blur and on submit; there is no save button. **Escape puts the old value back.**
+  The draft is clamped to `min`/`max`, an unparseable one falls back to `min`, and an unchanged
+  value does not call `onSave` at all.
+- **Return the save's promise** (`mutateAsync`, not `mutate`) and the edit waits for it, exactly
+  as `InlineTextEdit`'s does — [below](#saving-and-failing). `saving` is for a save the caller
+  started some other way; it greys the number and blocks the press.
 - `accessibilityLabel` is required, because the press target's text is a bare number.
 - Inside a pressable row the row's own press fires too. Stopping it is the caller's call, since
   only the caller knows which press should win.
@@ -575,8 +577,12 @@ as text and becomes an input when pressed.
 ## A line of text edited in place
 
 ```tsx
-// Pressing the text starts the edit.
-<InlineTextEdit value={device.name} label="Device name" onSave={(name) => rename.mutate({ name })} />
+// Pressing the text starts the edit. Returning the promise holds the edit open until it settles.
+<InlineTextEdit
+  value={device.name}
+  label="Device name"
+  onSave={(name) => rename.mutateAsync({ name })}
+/>
 
 // A Rename row starts it: the caller holds `editing`, and the title is a heading, not a button.
 const [renaming, setRenaming] = useState(false);
@@ -598,6 +604,8 @@ does not deserve a dialog. `InlineNumberEdit`'s sibling: it shows the text and b
 - It commits on submit and on blur, and **Escape puts the old value back**. The draft is trimmed;
   an empty one is refused — the old value stays — unless `allowEmpty`, and an unchanged one does
   not call `onSave` at all. Do not re-check either in `onSave`.
+- **`onSave` may return a promise**, and should when the save can fail — see
+  [Saving and failing](#saving-and-failing). A save that returns nothing ends the edit at once.
 - **Who holds `editing` starts the edit.** Left alone, pressing the text starts it, and
   `onEditingChange` alone tells you when without taking over. Passed `editing`, the start is
   yours — a Rename menu row, a pencil button — and the text is only text, so a `level` heading
@@ -611,6 +619,35 @@ does not deserve a dialog. `InlineNumberEdit`'s sibling: it shows the text and b
   stops a press from starting an edit. `maxLength` is the input's.
 - One line only. A multi-line note (`Textarea`) is not this: `Textarea` has no `onEscape` yet, and
   Enter is a newline there, so the commit keys would be different ones.
+
+### Saving and failing
+
+Both inline edits take the same contract: `onSave` returns `void` or a promise.
+
+```tsx
+<InlineTextEdit
+  value={folder.title}
+  label="Folder title"
+  onSave={async (title) => {
+    const res = await fetch(`/api/folders/${folder.id}`, { method: "PATCH", body: title });
+    if (!res.ok) throw new Error(res.status === 409 ? "A folder has that name" : "Could not save");
+  }}
+/>
+```
+
+- **While the promise runs** the box stays open on the draft and keeps its focus. It is read-only
+  (not disabled — that would drop the focus), its wrapper is `aria-busy`, and a `Spinner` named
+  "Saving" turns beside it. Enter, blur and Escape are not heard until it settles.
+- **Resolved**, the edit ends, as a sync save does. Update `value` from the save, or from the
+  query it invalidates; the component shows `value`, never the draft, once it closes.
+- **Rejected**, the box stays open on the draft, with the rejection's message under it as a
+  `FieldError` — `role="alert"`, so it is announced — and the box `aria-invalid`, described by it.
+  **Throw an `Error` whose message the user should read**; a string thrown is shown too, anything
+  else marks the box invalid with no words. Enter tries again; Escape puts the old value back.
+- A sync `onSave` that throws is a failure the same way. Do not catch it to toast it: the error
+  belongs next to the box the user is looking at.
+- Do not hold your own pending flag for this and pass it back — the component already has one.
+  `InlineNumberEdit`'s `saving` is for a save it did not start.
 
 ## Progress
 

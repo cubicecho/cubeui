@@ -22,6 +22,7 @@ import type {
   MenuProps,
   MenuTriggerProps,
 } from "../registry/ui/menu-base";
+import { deferredSave } from "./deferred-save";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -238,6 +239,114 @@ export const FromAMenu: Story = {
         await expect(
           canvas.getByRole("heading", { level: 3, name: `${name} today` }),
         ).toBeVisible();
+      });
+    }
+  },
+};
+
+const asyncSaves = { Native: deferredSave<string>(), Compiled: deferredSave<string>() };
+
+function Slow({ Edit, name }: { Edit: typeof Native; name: "Native" | "Compiled" }) {
+  const [value, setValue] = useState("Backlog");
+  const saves = asyncSaves[name];
+  return (
+    <div className="flex flex-col gap-2">
+      <Edit
+        value={value}
+        label={`${name} slow lane name`}
+        onSave={(next) => saves.save(next).then(() => setValue(next))}
+      />
+      <button type="button" className="self-start text-foreground text-xs">
+        {`${name} slow elsewhere`}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * `onSave` returns a promise: the box stays on the draft, disabled and busy with a spinner, until
+ * it settles. A rejection keeps the box open with the error under it, and Enter retries or Escape
+ * gives up.
+ */
+export const AsyncSave: Story = {
+  render: () => (
+    <SideBySide
+      native={<Slow Edit={Native} name="Native" />}
+      compiled={<Slow Edit={Compiled} name="Compiled" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ["Compiled", "Native"] as const) {
+      const saves = asyncSaves[name];
+      const label = `${name} slow lane name`;
+      const box = () => canvas.getByRole("textbox", { name: label });
+      const half = () =>
+        canvas.getByRole("button", { name: `${name} slow elsewhere` }).parentElement as HTMLElement;
+      const start = async (text: string) => {
+        await userEvent.click(within(half()).getByRole("button", { name: text }));
+        await waitFor(() => expect(document.activeElement).toBe(box()));
+      };
+
+      await step(`${name}: a slow save shows pending, then the text`, async () => {
+        saves.calls.mockClear();
+        await start("Backlog");
+        await userEvent.clear(box());
+        await userEvent.type(box(), "Doing{Enter}");
+        await expect(saves.calls).toHaveBeenCalledWith("Doing");
+        await expect(box()).toHaveValue("Doing");
+        await expect(box()).toHaveAttribute("readonly");
+        await expect(document.activeElement).toBe(box());
+        await expect(box().closest("[aria-busy='true']")).not.toBeNull();
+        await expect(within(half()).getByRole("status", { name: "Saving" })).toBeVisible();
+
+        saves.settle("resolve");
+        await waitFor(() => expect(canvas.queryByRole("textbox", { name: label })).toBeNull());
+        await expect(within(half()).getByRole("button", { name: "Doing" })).toBeVisible();
+        await expect(within(half()).queryByRole("status")).toBeNull();
+      });
+
+      await step(`${name}: a failed save keeps the draft and shows the error`, async () => {
+        saves.calls.mockClear();
+        await start("Doing");
+        await userEvent.clear(box());
+        await userEvent.type(box(), "Taken{Enter}");
+        saves.settle(new Error("That name is taken"));
+
+        await waitFor(() => expect(box()).not.toHaveAttribute("readonly"));
+        await expect(box()).toHaveValue("Taken");
+        await expect(box()).toHaveAttribute("aria-invalid", "true");
+        await expect(box()).toHaveAccessibleDescription("That name is taken");
+        await expect(within(half()).getByRole("alert")).toHaveTextContent("That name is taken");
+        await expect(within(half()).queryByRole("status")).toBeNull();
+        // The box kept the focus throughout, so the next key reaches it.
+        await waitFor(() => expect(document.activeElement).toBe(box()));
+      });
+
+      await step(`${name}: Escape after a failure puts the old value back`, async () => {
+        await userEvent.keyboard("{Escape}");
+        await expect(canvas.queryByRole("textbox", { name: label })).toBeNull();
+        await expect(within(half()).queryByRole("alert")).toBeNull();
+        await expect(within(half()).getByRole("button", { name: "Doing" })).toBeVisible();
+        await expect(saves.calls).toHaveBeenCalledTimes(1);
+      });
+
+      await step(`${name}: Enter after a failure tries again`, async () => {
+        saves.calls.mockClear();
+        await start("Doing");
+        await userEvent.clear(box());
+        await userEvent.type(box(), "Done{Enter}");
+        saves.settle(new Error("Offline"));
+        await waitFor(() => expect(box()).toHaveAccessibleDescription("Offline"));
+        await waitFor(() => expect(document.activeElement).toBe(box()));
+
+        await userEvent.keyboard("{Enter}");
+        await expect(saves.calls).toHaveBeenCalledTimes(2);
+        await expect(saves.calls).toHaveBeenLastCalledWith("Done");
+        saves.settle("resolve");
+        await waitFor(() => expect(canvas.queryByRole("textbox", { name: label })).toBeNull());
+        await expect(within(half()).getByRole("button", { name: "Done" })).toBeVisible();
       });
     }
   },
