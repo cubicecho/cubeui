@@ -415,15 +415,15 @@ the React Native set.
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `inline-text-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
+| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
-`inline-number-edit` (a value, a range and a formatter, rather than minutes clamped to 1440), and
-`status-chip` stopped naming a project's three lifecycle states — first as a tone, and then, in
+`inline-number-edit`, which was later removed with `inline-text-edit` (see AGENTS.md: no inline
+edits), and `status-chip` stopped naming a project's three lifecycle states — first as a tone, and then, in
 open decision 4, as `badge`.
 
 **`file-picker` is web-only.** Its native half draws the zone and says so on screen; it does not

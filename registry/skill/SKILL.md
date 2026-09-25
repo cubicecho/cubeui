@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, InlineNumberEdit, SearchInput, PasswordInput, InlineTextEdit, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -102,8 +102,6 @@ at the end.
 | A light / dark / system setting, or a palette such as Monokai, stored and applied | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` | [controls.md](controls.md#theme) |
 | A date and a time as one `Date` on both halves — or, with `clearable mode="date"`, an optional date only | `DateTimeInput` | [controls.md](controls.md#date-and-date-range) |
 | A date, a date with its time in the popover, or a start and an end, behind one full-width trigger, on both halves | `DatePicker`, `DateRangePicker` | [controls.md](controls.md#date-and-date-range) |
-| A number on a row or card, edited in place without a form | `InlineNumberEdit` | [controls.md](controls.md#a-number-edited-in-place) |
-| A name or title renamed in place — pressed, or from a Rename row or button — Enter or blur saves, Escape cancels, an async save shows pending and its error | `InlineTextEdit` | [controls.md](controls.md#a-line-of-text-edited-in-place) |
 | How much of something is done: an upload, a re-embed, a context window filling | `Progress` | [controls.md](controls.md#progress) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leading`, `Input trailing` | [controls.md](controls.md#an-icon-in-an-input) |
@@ -257,6 +255,23 @@ A draggable split divider is the same case: the width it drags is state, so it b
 `react-resizable-panels`, not to `SplitLayout`. A stored sidebar collapse is the same case again —
 `sidebar={open ? <Nav /> : undefined}` is the whole feature, and the caller already holds `open`.
 
+## No inline edits
+
+Every edit is an explicit form: a field that always looks like a field, and a Save that says it
+is saving. A value never turns into an input where it sits — no click-to-rename title, no number
+on a row that becomes a box on press, no commit on blur. The set used to ship `InlineTextEdit`
+and `InlineNumberEdit`; they were removed, and nothing replaces them.
+
+- **A rename or a one-value change** is a `FormDialog` opened from a Rename row, a pencil
+  `ActionButton`, or the row itself, with the value in a bound field and Save / Cancel.
+- **A settings page** is a form with its fields showing, or a `SettingRow` whose `action` is a
+  real control — a `Switch`, an `OptionSelect` — that is always drawn as one.
+- **An "Add lane" box** that appears at the end of a list is a field, not an edit: it holds
+  nothing until typed into, and Enter adds it.
+
+Do not hand-build the shape either — a `Pressable` text swapped for an `Input` on press is the
+same thing without the name.
+
 ## Shapes on React Native
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it, and
@@ -298,8 +313,6 @@ views and there is no shell wrapping to hide.
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A date and a time as one `Date`, or an optional date only (`clearable mode="date"`) — see [controls.md](controls.md#date-and-date-range) | `DateTimeInput` | `@cubeui/date-time-input` |
 | A date, a date and time, or a date range, behind one trigger — see [controls.md](controls.md#date-and-date-range) | `DatePicker`, `DateRangePicker` | `@cubeui/date-picker` |
-| A number on a row or card, edited in place — see [controls.md](controls.md#a-number-edited-in-place) | `InlineNumberEdit` | `@cubeui/inline-number-edit` |
-| A name or title renamed in place, pressed or from a Rename row — see [controls.md](controls.md#a-line-of-text-edited-in-place) | `InlineTextEdit` | `@cubeui/inline-text-edit` |
 | How much of something is done — an upload, a context window — see [controls.md](controls.md#progress) | `Progress` | `@cubeui/progress` |
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leading`, `Input trailing` | `@cubeui/input` |
@@ -350,8 +363,8 @@ take the props the web ones take, with four conversions that are the same everyw
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.
 - **`onSubmitEditing` and `onEscape`, not `onKeyDown`.** `Input` answers Enter with
-  `onSubmitEditing` and Escape with `onEscape` on both halves, which is all an inline edit — a
-  rename, an "Add lane" field — needs: `onEscape={() => { setDraft(name); setEditing(false); }}`.
+  `onSubmitEditing` and Escape with `onEscape` on both halves, which is all an "Add lane" field
+  needs: `onEscape={() => { setDraft(""); setAdding(false); }}`.
   For any other key, `onKeyPress` is React Native's, reading `e.nativeEvent.key`; the web half
   fires it from `keydown`, so it hears Escape and the arrows too. Do not drop to a raw
   `TextInput` for a key. (`Textarea` has none of these yet.)
