@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `ColorPicker` and the
-colour display parts, the icon in an input, the removable badge, the menu, the theme picker, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -132,6 +132,44 @@ to write it at the call site, and you should not go back to a bare `<Button>` to
 save the form as well as do its own job — and why Enter in that field pressed the trash, since
 implicit submission goes to the first submit button in tree order and never through a click.
 A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+
+## Copy button
+
+A button that puts a string on the clipboard is `CopyButton`, on both halves. Do not write the
+`useState(copied)` and the `setTimeout(…, 1500)` again:
+
+```tsx
+<PropertyRow
+  label="Endpoint"
+  value={<Code>{url}</Code>}
+  action={<CopyButton value={url} label="Copy endpoint URL" />}
+/>
+
+<View className="relative">
+  <Code>{snippet}</Code>
+  <CopyButton
+    value={snippet}
+    label="Copy snippet"
+    className="absolute top-2 right-2"
+    onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
+  />
+</View>
+```
+
+- It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
+  The accessible name is `label` (default `Copy` — name what is copied when there is more than
+  one) and `Copied` while the tick shows.
+- `variant` and `size` go to the `Button` underneath; the defaults are `ghost` and `icon-sm`.
+  `className` is the button's, for placing it.
+- The tick appears only if the write happened. A refused write — an insecure origin, a denied
+  permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.
+  The toast is yours to raise, from either.
+- The web half writes with `navigator.clipboard`, and falls back to `execCommand("copy")` where
+  that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
+  the native item installs; a DOM app installs nothing extra.
+- It is `type="button"` on the web, so it never submits the form it sits in.
+- Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
+  always set, which are the two things `ActionButton` exists to guarantee.
 
 ## Destructive buttons
 
@@ -594,6 +632,68 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+
+## Alert
+
+A callout — a tinted, bordered box saying something about the screen it is on — is `Alert`, on
+both halves. Do not hand-draw `rounded-md border border-amber-500/50 bg-amber-500/10` with an icon
+and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than explaining it:
+
+```tsx
+<Alert
+  variant="warning"
+  title="Store this token securely"
+  description="It will not be shown again."
+/>
+
+<Alert
+  variant="destructive"
+  title="Last error"
+  description={server.lastError}
+  action={<Button size="sm" variant="outline" onPress={restart}>Restart</Button>}
+/>
+```
+
+- `variant` is `default` (on the card), `info`, `warning` or `destructive`. It sets the tint, the
+  icon and the role — nothing else is coloured: the title and the line under it stay the
+  foreground on a tint, because the variant's own hue on its own tint is under 4.5:1. Do not pass
+  `text-amber-*` to fix that.
+- **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
+  `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
+  once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
+- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`). Pass a bare
+  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
+  draws none.
+- `title` and `description` are nodes, so a link can sit inside the description. `action` is the
+  far end — one button that deals with it.
+- shadcn's compound form also works, so a port can leave its call sites alone:
+  `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
+  The icon child goes into the icon box (and replaces the default glyph); the parts go into the
+  column. New code uses the props.
+- A failed *fetch* on a list page is `QueryState`'s rung, and a crashed route is `RouteError`;
+  `Alert` is for what the screen says while it works.
+
+## Spinner
+
+A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `LoaderCircle` and add
+`animate-spin`, and do not reach for `ActivityIndicator`:
+
+```tsx
+<Button disabled={saving} onPress={save}>
+  {saving ? <Spinner label="Saving" /> : null}
+  <Text>Save</Text>
+</Button>
+
+<Spinner label="Loading servers" className="size-6 text-muted-foreground" />
+```
+
+- It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
+  one thing on the screen could be.
+- `className` sizes and colours it; the default is `size-4`. On the web the glyph is
+  `currentColor`; on native it takes a `Button`'s ink the way any icon there does.
+- Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
+  platform's own spinner, a different shape on each.
+- A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
 
 ## Password
 

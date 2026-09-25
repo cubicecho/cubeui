@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 82 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 85 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 82 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 85 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  58 on both platforms · 24 web-only · 0 native-only.
+  61 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -138,6 +138,11 @@
           <th scope="row"><code>@cubeui/action-button</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>An icon button with a required accessible name, and a tooltip that survives being disabled.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/alert</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action. `default`, `info`, `warning` or `destructive`; only `destructive` is announced as an `alert`, the rest as a polite `status`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert-dialog</code></th>
@@ -238,6 +243,11 @@
           <th scope="row"><code>@cubeui/control</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>Every cubeui control in one install.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/copy-button</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/date-field</code></th>
@@ -488,6 +498,11 @@
           <th scope="row"><code>@cubeui/skill</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>How to use these components, for agents working in a consuming project. Installs into .claude/skills/ as a router plus layout, form and control references, and says which half of the registry — DOM or React Native — the project is on.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/spinner</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A loading indicator: the LoaderCircle glyph turning, one `role="status"` named by `label`, sized and coloured by `className`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/split-layout</code></th>
