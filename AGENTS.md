@@ -65,7 +65,8 @@ Read this before adding anything:
    `input`, `select`, `separator`, `skeleton`, `tabs` and the rest, and each one's web half is a **superset of shadcn's
    API** — installed over a DOM app's own `components/ui/`, so a shadcn call site keeps compiling
    (README, "The web halves are now a superset of shadcn's"). `registry/web/ui/` re-publishes the
-   upstream primitives the web tier needs — `alert-dialog`, `command`, `empty`, `item`. **Check those two directories before you write markup**; a shell
+   upstream primitives the web tier needs — `alert-dialog`, `command`, `item` (`empty` was one,
+   and is native-first now). **Check those two directories before you write markup**; a shell
    composes what is there. The second list is upstream's —
    `curl -s https://ui.shadcn.com/r/index.json` — and it is where to look before inventing a
    primitive this registry does not have yet.
@@ -388,7 +389,8 @@ Recorded so the next pass does not re-derive them:
   `title`, `description`, `meta`, `action`, and an optional pressable middle. Rebuilding `Item`'s
   call sites and `DisclosureRow` on it is the follow-up.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
-  `CardLayout` already has the slot.
+  `CardLayout` already has the slot. `EmptyState` did ship later, in `@cubeui/page`, and `empty`
+  is now shadcn's parts on both halves drawn the same way — `EmptyState` is built on them.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
   copies of a `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project
   bar: cubicecho has 4 `<dl>` files and they are all in one app. Superseded by
