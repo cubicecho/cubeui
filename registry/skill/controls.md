@@ -5,7 +5,7 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only**, except the icons, the segmented control, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
+**Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `InlineNumberEdit`, `InlineTextEdit`, `ColorPicker` and the
 colour display parts, the removable badge, the spinner, the alert, the menu, the theme picker, the copy button, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
@@ -475,15 +475,27 @@ is a `Popover`. `MultiSelectField` already does.
 <DateRangePicker value={window} onValueChange={setWindow} numberOfMonths={2} />
 ```
 
-- `showTime` adds a time input inside the popover; without it the value is the date at midnight.
-- `format` is a `date-fns` pattern for the trigger's text; `disabledDates` is passed to the
-  calendar; `calendarProps` reaches the rest of `react-day-picker` without a prop per feature.
-- `clearable` (on by default) puts a clear in the popover, and clearing sets `null`.
-- The trigger is a `<button>`, which is labelable, so `htmlFor` works — but the `aria-*` props
-  still need the function form of `control`.
+**On both halves**, from `@cubeui/date-picker` (it installs to `components/date-picker`). The
+web half is compiled from the React Native source and draws react-day-picker, as it always did; on
+device the popover is a centred sheet and the months stack.
 
-`DatePicker` is web-only. On both halves, `@cubeui/date-time-input` is the date field — a date
-and a time as one `Date` by default:
+- `showTime` adds a time input inside the popover, which stays open after a day is picked so the
+  time can follow. A first pick is the day at midnight; picking a new day keeps the value's clock.
+- `format` is a `date-fns` pattern for the trigger's text; `disabledDates` is passed to the
+  calendar. `calendarProps` takes the calendar's shared props (`startMonth`, `weekStartsOn`,
+  `defaultMonth`) on both halves, and on the web the rest of react-day-picker's too.
+- `clearable` (on by default) puts a clear in the popover, and clearing sets `null`.
+- The range picker closes on the second press after it opens, so the first press starts a range
+  rather than ending one. Its value is a `DateRange` (`{ from, to? }`), exported beside it.
+- The trigger is a button, which is labelable, so `htmlFor` works on the web — but the `aria-*`
+  props still need the function form of `control`. `aria-describedby`, `aria-invalid` and
+  `aria-required` are web only.
+- `combineDateAndTime(day, clock)` and `setTime(day, "14:30")` are exported for the same
+  arithmetic at a call site.
+
+`DatePicker` owns a full-width trigger and puts its time box in the popover. The other date field
+on both halves is `@cubeui/date-time-input` — the time box beside the trigger, and a date and a
+time as one `Date` by default:
 
 ```tsx
 <DateTimeInput value={startsAt} onChange={setStartsAt} />
@@ -545,8 +557,8 @@ an end does not have two boxes called "Time":
 - In a form, `DateTimeField` (`@cubeui/date-time-field`) does the `aria-labelledby` wiring for
   you — see [forms.md](forms.md#on-react-native).
 
-On the web, `DatePicker` is still the richer one — `format`, `disabledDates`, `calendarProps` and
-a `FormField`'s `aria-*` on the trigger.
+`DatePicker` is the richer one — `format`, `disabledDates`, `calendarProps`, a range picker, and
+a `FormField`'s `aria-*` on the trigger — and takes `onValueChange`.
 
 ## A number edited in place
 

@@ -488,7 +488,7 @@ why (`disclosure-row`, which is built on the web-only `item`; `section` was on t
 
 And that **the web-only tier only shrinks** (rule 16). Every item is meant to come from React Native,
 so each web-only item that ships a file is named in `WEB_ONLY` in the script with the reason it has
-no native half — `cmdk`, react-day-picker, no table element on a device, or a port not done yet. A
+no native half — `cmdk`, no table element on a device, or a port not done yet. A
 web-only item the list does not name fails the build, and so does a line whose item has left the
 tier, so a port takes its line with it and the list cannot quietly make room for the next one.
 
@@ -899,7 +899,8 @@ the list of genuine capability gaps the port found:
 
 The calendar is the one that was real work rather than a prop: `calendar-base.ts` now declares
 `DateRange` and `DateMatcher` itself, discriminated on `mode`, so the shared type does not come from
-react-day-picker — a library only one platform has — and `date-picker` no longer type-depends on it.
+react-day-picker — a library only one platform has — and `date-picker` no longer type-depends on it,
+which is what let `date-picker` itself be written once in React Native later.
 `calendar.tsx` evaluates the matchers and draws the range; `calendar.web.tsx` passes both branches
 through to `DayPicker`.
 
