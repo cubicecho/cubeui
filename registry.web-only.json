@@ -304,19 +304,6 @@
       ]
     },
     {
-      "name": "option-select",
-      "type": "registry:component",
-      "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups and separators, and the id and aria props landing on the trigger where Radix needs them.",
-      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/option-select.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "password-field",
       "type": "registry:component",
       "title": "Password Field",
