@@ -273,8 +273,8 @@ Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was 
 3, and it needed a real component set to have anything to compile. In the write-ups below,
 "cubeui" on its own in a historical passage means that pre-native registry.
 
-Today the native registry holds 59 items and the web registry 91: 83 components and 8 story
-items. 24 of the web items are web-only, and every native item has a web half.
+Today the native registry holds 60 items and the web registry 91: 83 components and 8 story
+items. 23 of the web items are web-only, and every native item has a web half.
 
 
 ## Stage 1 — tokens
@@ -397,7 +397,7 @@ the React Native set.
 | tokens | `tokens` |
 | lib | `utils`, `color`, `readable-text-color` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
-| platform-split | `checkbox`, `dialog`, `popover`, `menu`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
+| platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `inline-number-edit`, `inline-text-edit`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
@@ -488,7 +488,7 @@ why (`disclosure-row`, a `<button>` inside shadcn's `Item`, until it is rebuilt 
 
 And that **the web-only tier only shrinks** (rule 16). Every item is meant to come from React Native,
 so each web-only item that ships a file is named in `WEB_ONLY` in the script with the reason it has
-no native half — `cmdk`, no table element on a device, or a port not done yet. A
+no native half — no table element on a device, or a port not done yet. A
 web-only item the list does not name fails the build, and so does a line whose item has left the
 tier, so a port takes its line with it and the list cannot quietly make room for the next one.
 

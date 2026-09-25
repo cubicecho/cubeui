@@ -378,6 +378,28 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props MultiSelect uses on both.",
+      "dependencies": ["cmdk@^1.1.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/dialog", "@cubeui/icons", "@cubeui/input"],
+      "files": [
+        {
+          "path": "registry/ui/command-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/command.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/command.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",

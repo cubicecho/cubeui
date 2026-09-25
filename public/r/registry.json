@@ -329,6 +329,24 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props MultiSelect uses on both.",
+      "dependencies": ["cmdk@^1.1.1"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/dialog", "@cubeui/icons", "@cubeui/input"],
+      "files": [
+        {
+          "path": "registry/ui/command-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/command.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -1317,20 +1335,6 @@
           "type": "registry:component"
         }
       ]
-    },
-    {
-      "name": "command",
-      "type": "registry:ui",
-      "title": "Command",
-      "description": "shadcn's command palette, re-published from here so it imports the same `cn` every other file in the install does. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/dialog", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "compiled/command.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": ["cmdk@^1.1.1", "lucide-react@^1.34.0"]
     },
     {
       "name": "confirm-button",
