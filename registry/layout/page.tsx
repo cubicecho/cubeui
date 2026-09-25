@@ -14,6 +14,13 @@
 import { Children, type ReactNode } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { PageHeader, type PageHeaderProps } from "@/components/page-header";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import type { IconComponent } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
@@ -116,11 +123,12 @@ type EmptyStateProps = {
     }
 );
 
-const EMPTY_STATE_TITLE = "font-medium text-sm text-foreground";
-
 /**
  * The centred icon / title / description / action shown when a list is empty — or, at
  * `compact`, the one muted line shown when a short list inside a card or sidebar is.
+ *
+ * The block is drawn by `@cubeui/empty`'s parts, so shadcn's compound `Empty` and this one-line
+ * form are the same empty state. The compact line is its own: it has none of their parts.
  *
  * The heading is `role="heading"` + `aria-level`, the same as `Section`'s: a heading on device,
  * where VoiceOver and TalkBack navigate by it, and on the web a `<span>` carrying the rank, since
@@ -151,24 +159,21 @@ export function EmptyState({
     );
   }
   return (
-    <View className={cn("w-full items-center gap-3 py-10", className)}>
-      <View className="rounded-full bg-muted p-3">
-        <Icon className="h-6 w-6 text-muted-foreground" />
-      </View>
-      <View className="items-center">
+    <Empty className={className}>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Icon />
+        </EmptyMedia>
         {level === undefined ? (
-          <Text className={EMPTY_STATE_TITLE}>{title}</Text>
+          <EmptyTitle>{title}</EmptyTitle>
         ) : (
-          // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-          <Text role="heading" aria-level={level} className={EMPTY_STATE_TITLE}>
+          <EmptyTitle role="heading" aria-level={level}>
             {title}
-          </Text>
+          </EmptyTitle>
         )}
-        {description ? (
-          <Text className="text-center text-sm text-muted-foreground">{description}</Text>
-        ) : null}
-      </View>
+        {description ? <EmptyDescription>{description}</EmptyDescription> : null}
+      </EmptyHeader>
       {action}
-    </View>
+    </Empty>
   );
 }

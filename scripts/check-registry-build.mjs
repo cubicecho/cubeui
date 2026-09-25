@@ -871,26 +871,19 @@ const LAYOUT_BUNDLE = "layout";
 // a named debt, not a category: when the reason goes, so does the line, and nothing is added
 // without one. Rule 11 takes its exceptions from here too.
 const WEB_ONLY = {
-  "action-button": "hand-written before the native tier; to be ported",
   "alert-dialog": "only `confirm-button` uses it; goes when that is rebuilt on `ConfirmDialog`",
   "app-form": "the web form layer; to merge into `form`",
   "color-field": "a bound field of `app-form`; to merge into `form`",
   command: "built on `cmdk`, which has no React Native build; a native half is planned",
   "confirm-button": "built on the web-only `alert-dialog`; to be rebuilt on `ConfirmDialog`",
   "date-field": "a bound field of `app-form`; to merge into `form`",
-  "date-picker": "built on react-day-picker's range mode; `date-time-input` is to take ranges",
   "disclosure-row":
     "a `<button>` in shadcn's `Item`; to be rebuilt on `Disclosure` and the native `item`",
-  empty: "shadcn's parts; to map onto `EmptyState`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
   "multi-select": "built on the web-only `command`; a native half is planned",
   "multi-select-field": "a bound field over the web-only `multi-select`",
-  "option-select": "to become an options-array form of `Select`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
-  "password-input": "to be rebuilt on `Input`'s `leading` and `trailing` slots",
-  separator: "hand-written before the native tier; to be ported",
-  skeleton: "hand-written before the native tier; to be ported",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
 const namesIn = async (built) => {
