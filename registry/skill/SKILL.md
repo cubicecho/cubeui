@@ -93,7 +93,7 @@ at the end.
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
-| A button that deletes, discards, revokes or resets | `ConfirmButton` | [controls.md](controls.md) |
+| A button that deletes, discards, revokes or resets — with `requireText`, only once its name is typed | `ConfirmButton` | [controls.md](controls.md#type-the-name-to-confirm) |
 | A popover of actions or links — a ⋯ menu, Rename / Move / Delete on a row, Open in a router `link` | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
 | A popover of on/off rows that stays open — labels on a todo, columns shown — or a one-of-N filter behind a button | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | [controls.md](controls.md#menu) |
 | A select, a tag picker, a date picker, a colour picker, a password box | the controls | [controls.md](controls.md) |
@@ -177,6 +177,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
   called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
   is not something the caller renders.
+- **`requireText`** — on `ConfirmDialog`, `confirm()` and `ConfirmButton`. The text to type
+  before the destructive button unlocks: the folder's name, for a delete that is big and cannot be
+  undone. Matched exactly, Enter included. Its label is `requireTextLabel`, by prefix.
 
 **Form components add:**
 
@@ -301,7 +304,7 @@ views and there is no shell wrapping to hide.
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
-| An action that deletes, discards, revokes or resets | `ConfirmDialog` | `@cubeui/confirm-dialog` |
+| An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
