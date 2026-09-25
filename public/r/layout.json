@@ -19,7 +19,8 @@
     "@cubeui/setting-row",
     "@cubeui/sidebar",
     "@cubeui/split-layout",
-    "@cubeui/stat-tile"
+    "@cubeui/stat-tile",
+    "@cubeui/top-bar-layout"
   ],
   "files": [],
   "type": "registry:component"
