@@ -416,7 +416,7 @@ across the container's width, like `SegmentedGroup` but still radios, with one t
 keys. A segment shows its `icon`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
 radio's name and, when no `hint` is given, its web tooltip. On device, give the icon its colour
-yourself (`text-primary-foreground` when checked, `text-muted-foreground` otherwise), because a
+yourself (`text-selection-foreground` when checked, `text-muted-foreground` otherwise), because a
 native icon has no `currentColor` to inherit.
 
 Outside a form, the same thing is `RadioGroup` and `RadioGroupItem` from `@cubeui/radio-group`,

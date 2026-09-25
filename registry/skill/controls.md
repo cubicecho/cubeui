@@ -1004,6 +1004,10 @@ says.
   nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
+- **A checked, pressed or current control is drawn in `selection`**, not `primary`: blue in the
+  default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
+  `bg-selection` and `text-selection-foreground` too, so it follows the palette; `primary` stays
+  the colour of a button to press.
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 

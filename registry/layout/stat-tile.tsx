@@ -8,7 +8,7 @@
  * sizes, eunomia's `StatTiles` uppercases its label and zeromem's does not, auto-cal's `ScoreCard`
  * is the native one, and telos and ethos draw the label-over-figure pair with no card at all. The
  * other half of the evidence is the *filter* tile: kanban_server's status page and task_server's
- * both draw a `<button aria-pressed>` of a count and a label, with `border-primary bg-accent` when
+ * both draw a `<button aria-pressed>` of a count and a label, with `border-selection bg-accent` when
  * its heap is the one shown below — the same tile, pressable.
  *
  * So the one thing it adds to a card is that press, and it is `Card`'s own: given `onPress`, the
@@ -125,7 +125,7 @@ export function StatTile({
   const classes = cn(
     "min-w-0 gap-1 p-4",
     onPress !== undefined && PRESSABLE,
-    toggle && selected && "border-primary bg-accent",
+    toggle && selected && "border-selection bg-accent",
     className,
   );
 
