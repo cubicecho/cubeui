@@ -570,6 +570,19 @@
       ]
     },
     {
+      "name": "action-button",
+      "type": "registry:component",
+      "title": "Action Button",
+      "description": "An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/action-button.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "section-heading",
       "type": "registry:component",
       "title": "Section Heading",

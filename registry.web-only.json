@@ -4,19 +4,6 @@
   "homepage": "https://cubicecho.github.io/cubeui",
   "items": [
     {
-      "name": "action-button",
-      "type": "registry:component",
-      "title": "Action Button",
-      "description": "An icon button with a required accessible name, and a tooltip that survives being disabled.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/tooltip", "@cubeui/utils"],
-      "files": [
-        {
-          "path": "registry/web/action-button.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",

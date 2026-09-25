@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  70 on both platforms · 25 web-only · 0 native-only.
+  71 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -136,8 +136,8 @@
   <tbody>
         <tr>
           <th scope="row"><code>@cubeui/action-button</code></th>
-          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>An icon button with a required accessible name, and a tooltip that survives being disabled.</td>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert</code></th>
