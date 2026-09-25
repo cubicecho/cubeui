@@ -192,3 +192,46 @@ export const TheBooleanFormStillAsks: Story = {
     await keepEditing();
   },
 };
+
+const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
+
+/**
+ * Three `footerActions` in a 320px dialog (#159). The row wraps rather than running its first
+ * button out past the dialog's left edge, and the wrapped line stays against the right edge. The
+ * same row as `CardLayout`'s, whose story holds the native half; this one holds the dialog's.
+ */
+export const NarrowFooterActionsWrap: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Journal"
+      className="sm:max-w-[320px]"
+      content={<p>Notes kept by the agent.</p>}
+      footerActions={
+        <>
+          {actionLabels.map((label) => (
+            <Button key={label} variant="outline" size="sm">
+              {label}
+            </Button>
+          ))}
+        </>
+      }
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Journal" });
+    const box = dialog.getBoundingClientRect();
+    await expect(box.width).toBeLessThanOrEqual(320);
+    const buttons = actionLabels.map((name) =>
+      within(dialog).getByRole("button", { name }).getBoundingClientRect(),
+    );
+    const [first, , last] = buttons;
+    if (!first || !last) throw new Error("expected three buttons");
+    await expect({
+      inside: buttons.every((b) => b.left >= box.left && b.right <= box.right),
+      wrapped: last.top >= first.bottom,
+      endAligned: box.right - last.right < box.width / 4,
+    }).toEqual({ inside: true, wrapped: true, endAligned: true });
+  },
+};

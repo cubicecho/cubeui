@@ -474,6 +474,12 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
+The `footerActions` row **wraps when the card is narrow**: three buttons in a phone-width card
+put the last one on a second line, still against the right edge, rather than running the first
+out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
+reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
+`<div>` of your own to get it.
+
 ## Centered pages
 
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
