@@ -18,7 +18,7 @@
  * sizes, eunomia's `StatTiles` uppercases its label and zeromem's does not, auto-cal's `ScoreCard`
  * is the native one, and telos and ethos draw the label-over-figure pair with no card at all. The
  * other half of the evidence is the *filter* tile: kanban_server's status page and task_server's
- * both draw a `<button aria-pressed>` of a count and a label, with `border-selection bg-accent` when
+ * both draw a `<button aria-pressed>` of a count and a label, highlighted when
  * its heap is the one shown below — the same tile, pressable.
  *
  * So the one thing it adds to a card is that press, and it is `Card`'s own: given `onPress`, the
@@ -78,17 +78,6 @@ type StatTileProps = {
 /** The icon's box: sized from outside on the web, and by `IconClassContext` on device. */
 const ICON_BOX = cn("shrink-0", "[&_svg]:size-4 [&_svg]:shrink-0");
 
-/**
- * The muted parts' ink — the label, the hint and the icon. A selected tile is on `bg-accent`, where
- * `text-muted-foreground` is 4.3:1 in the light theme and worse in the dark, so the hand-written
- * filter tiles' labels all failed contrast the moment they were chosen. On the accent they take
- * the accent's own foreground.
- */
-const MUTED_INK = {
-  idle: "text-muted-foreground",
-  selected: "text-accent-foreground",
-} as const;
-
 /** A bar standing in for the figure — `Skeleton`'s look, on both platforms, at one line of it. */
 const BAR = cn("h-8 w-20 rounded-md bg-accent", "animate-pulse");
 
@@ -97,7 +86,7 @@ const BAR = cn("h-8 w-20 rounded-md bg-accent", "animate-pulse");
  * text and draws no focus ring of its own. None of it is a class the device can read.
  */
 const PRESSABLE =
-  "text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
  * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
@@ -121,11 +110,13 @@ export function StatTile({
   // `accessibilityState`; the device reads `accessibilityState` and has no `aria-pressed`.
   const pressed = toggle ? { "aria-pressed": selected } : {};
 
-  const ink = MUTED_INK[toggle && selected ? "selected" : "idle"];
+  // The label, hint and icon. A selected tile keeps its card fill and is marked by its border
+  // alone, so this ink is the same whether or not it is chosen.
+  const ink = "text-muted-foreground";
   const classes = cn(
     "min-w-0 gap-1 p-4",
     onPress !== undefined && PRESSABLE,
-    toggle && selected && "border-selection bg-accent",
+    toggle && selected && "border-selection",
     className,
   );
 

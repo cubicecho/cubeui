@@ -124,7 +124,7 @@ export function ListItem({
       className={cn(
         "cube-rn-view",
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2.5",
-        onPress && "transition-colors hover:bg-muted/60",
+        onPress && "transition-colors hover:bg-muted",
         className,
       )}
     >

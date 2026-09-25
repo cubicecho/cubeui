@@ -32,12 +32,6 @@ function ProbeIcon({ name }: { name: string }) {
 }
 
 export const IconInTrigger: Story = {
-  parameters: {
-    // Known and not this story's subject: an inactive tab is `text-muted-foreground` on
-    // `bg-muted`, shadcn's own pairing and the web half's too, at 4.34:1. That is a token
-    // decision for both halves, and it is left to one; everything else axe checks still runs.
-    a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } },
-  },
   render: () => (
     <div className="bg-background p-6">
       <Tabs defaultValue="list">
@@ -72,7 +66,7 @@ export const IconInTrigger: Story = {
     // The run of strings and numbers stays one label.
     await expect(within(board).getByText("Board 3")).toBeInTheDocument();
 
-    await expect(listIcon.dataset.class).toContain("text-foreground");
+    await expect(listIcon.dataset.class).toContain("text-selection-foreground");
     await expect(canvas.getByTestId("icon-board").dataset.class).toContain("text-muted-foreground");
   },
 };
@@ -84,10 +78,6 @@ export const IconInTrigger: Story = {
  * path, pointed at a heading that is on screen.
  */
 export const NamedTablist: Story = {
-  parameters: {
-    // The inactive-tab contrast, as above.
-    a11y: { config: { rules: [{ id: "color-contrast", enabled: false }] } },
-  },
   render: () => (
     <SideBySide
       native={

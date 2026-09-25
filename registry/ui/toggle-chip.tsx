@@ -75,7 +75,7 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
       className={cn(
         "rounded-md border",
         size === "sm" ? "px-2 py-1" : "px-3 py-2",
-        selected ? "border-selection bg-selection" : "border-border bg-background hover:bg-muted",
+        selected ? "border-selection bg-selection" : "border-border bg-background hover:bg-accent",
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element
