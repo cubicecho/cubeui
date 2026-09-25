@@ -557,6 +557,19 @@
       ]
     },
     {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "A horizontal bar showing how much of something is done: `role=\"progressbar\"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/ui/progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",

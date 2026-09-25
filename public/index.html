@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 86 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 87 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
@@ -80,7 +80,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 86 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 87 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -125,7 +125,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  62 on both platforms · 24 web-only · 0 native-only.
+  63 on both platforms · 24 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -433,6 +433,11 @@
           <th scope="row"><code>@cubeui/primitive</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>The shadcn primitives cubeui re-publishes unchanged, so a change made here reaches every project.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/progress</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A horizontal bar showing how much of something is done: `role="progressbar"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/query-state</code></th>
