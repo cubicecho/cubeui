@@ -864,7 +864,7 @@
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it.",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, action) that stands in for a navigation rail on a narrow screen.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {

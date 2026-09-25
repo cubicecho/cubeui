@@ -73,7 +73,9 @@ field — because data that has not arrived is not data that came back empty or 
 | `first`, `second` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
-| `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
+| `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
+| `brand` | The start of an app's bar: the mark and the name the sidebar's header shows. On `SidebarLayout`, drawn only where the sidebar is not. |
+| `nav` | An app bar's navigation: the places, usually as icon links, inside a `<nav>` named by `navLabel`. The landmark is the shell's, because the hand-written one is the one that went unnamed. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
@@ -134,6 +136,11 @@ Notes on why the layering is where it is:
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
   split panes are `first` and `second` rather than `left` and `right`.
+- **`SidebarLayout`'s bar reuses `action` and takes `brand` and `nav`, not a `mobileNav`.** The bar
+  is a header, so its far end is the core `action`; `brand` and `nav` are the words the top bar
+  of an app without a sidebar takes too, so the same three parts are called the same thing
+  whether a sidebar is beside them or not. `mobile` was the obvious prefix and a wrong one: the
+  bar is drawn under a breakpoint, which is a narrow desktop window as often as it is a phone.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 
