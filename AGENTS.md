@@ -156,10 +156,26 @@ stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `
 (`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9.
 
 **A checked, pressed or current control is `selection`, not `primary`.** Checkbox, switch, radio,
-segmented pill, toggle chip, a calendar's picked day, a selected stat tile: `bg-selection`,
-`text-selection-foreground`, `border-selection`. `primary` is for the thing to press — a button, a
-badge, a progress bar. Keeping the two apart is why a chosen option does not look like a button,
-and why a palette can colour its highlight without recolouring every button.
+segmented pill, active tab, current sidebar row, toggle chip, a calendar's picked day, a selected
+stat tile: `bg-selection`, `text-selection-foreground`, `border-selection`. `primary` is for the
+thing to press — a button, a badge, a progress bar. Keeping the two apart is why a chosen option
+does not look like a button, and why a palette can colour its highlight without recolouring every
+button.
+
+**Hover is grey, chosen is `selection`, rest is no fill.** Every interactive thing has these three
+states and no more, and none of them borrows another's colour:
+
+- *Rest* — no fill (or the framed control's `bg-background`).
+- *Hover, or a menu's keyboard highlight* — transient, and grey. A control whose text turns
+  `accent-foreground` on hover (a button, pill, tab, chip, menu row) takes `bg-accent`; a row
+  that keeps muted text on it (list item, `Item`, table row, stat tile) takes `bg-muted`, since
+  muted text on dark `accent` is under 4.5:1. The sidebar's rows take `sidebar-accent`.
+- *Chosen* — checked, pressed, current, selected: persistent, and `selection`. A control is
+  filled (`bg-selection text-selection-foreground`); a card is ringed (`border-selection`, its fill
+  unchanged so it does not read as hovered); a table row is tinted (`bg-selection/15`).
+
+A chosen state drawn in `accent` or `muted` is the bug this rule exists for: it looks like a hover
+that stuck.
 
 ## Status
 

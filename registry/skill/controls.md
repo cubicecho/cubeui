@@ -1007,7 +1007,9 @@ says.
 - **A checked, pressed or current control is drawn in `selection`**, not `primary`: blue in the
   default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
   `bg-selection` and `text-selection-foreground` too, so it follows the palette; `primary` stays
-  the colour of a button to press.
+  the colour of a button to press. The active tab and the sidebar's current row are `selection`
+  too. Hover is grey and never `selection`: `hover:bg-accent` on a control, `hover:bg-muted` on a
+  row with muted text in it. A chosen card is ringed with `border-selection`, not filled.
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 

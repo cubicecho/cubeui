@@ -167,11 +167,9 @@ export const Filter: Story = {
       await expect(needsYou).toHaveAttribute("aria-pressed", "true");
       await expect(running).toHaveAttribute("aria-pressed", "false");
       await expect(scope.getByText("Showing attention, opened 0")).toBeVisible();
-      // On the accent the label leaves muted grey for the accent's foreground, which is what keeps
-      // it legible there; axe, which runs on every story, is the contrast check itself.
-      await expect(getComputedStyle(within(needsYou).getByText("Needs you")).color).not.toBe(
-        getComputedStyle(within(running).getByText("Running")).color,
-      );
+      // Chosen is the selection border, and only that: the fill stays the card's, so a chosen tile
+      // does not look like a hovered one.
+      await waitFor(() => expect(getComputedStyle(needsYou).borderColor).not.toBe(idle));
 
       // Another moves it; pressing that one again turns the filter off.
       await userEvent.click(running);

@@ -303,8 +303,8 @@ Three parts, and only `Sidebar` is required:
   type error.
 - **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
   line, truncated), `icon?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
-  the web — and `active` fills it from `sidebar-accent` and sets `aria-current="page"`. Hover fills
-  it the same way. **`status={{ label, icon? }}` marks the row's state** — "MCP on", "offline",
+  the web — and `active` fills it with `selection` and sets `aria-current="page"`. Hover fills it
+  from `sidebar-accent`, so the current page never looks like the row under the pointer. **`status={{ label, icon? }}` marks the row's state** — "MCP on", "offline",
   "draft" — before the count, and the row is named "Work, MCP on, 2": clipped text inside the row
   on the web, part of its `accessibilityLabel` on device. With an `icon` the icon is what is seen
   and is decorative; without one the label is drawn, small and muted. Do not put a status in the
@@ -777,7 +777,7 @@ dashboard or a status page; pressable, they are the filter over the list below.
   under it. `icon` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
   toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
-  a `selection` border on the accent. Without `selected` it is a plain button (a tile that opens a
+  a `selection` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.

@@ -410,7 +410,7 @@ function rowClassName(active: boolean, className: string | undefined) {
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     active
-      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+      ? "bg-selection text-selection-foreground"
       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
     className,
   );
@@ -427,9 +427,9 @@ type SidebarNavItemBodyProps = {
 /** What is inside the row, the same for both forms: icon, label, status, count. */
 function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
-  // count takes the row's foreground rather than muted: muted on the accent fill is under 4.5:1.
-  const text = active ? "text-sidebar-accent-foreground" : "text-sidebar-foreground";
-  const muted = active ? "text-sidebar-accent-foreground" : "text-muted-foreground";
+  // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
+  const text = active ? "text-selection-foreground" : "text-sidebar-foreground";
+  const muted = active ? "text-selection-foreground" : "text-muted-foreground";
 
   return (
     <>
@@ -479,8 +479,8 @@ function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavIt
 
 /**
  * One row of a sidebar: a link with an optional icon, a label that truncates, an optional
- * `status` and an optional count, filled from `sidebar-accent` when it is the current page and on
- * hover.
+ * `status` and an optional count. The current page is filled with `selection`, as every chosen
+ * control is; hover fills it from `sidebar-accent`.
  *
  * Wrap it in the router's own link rather than passing a router to it:
  *

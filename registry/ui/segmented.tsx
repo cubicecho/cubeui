@@ -28,7 +28,7 @@ export function segmentedItemClass(active: boolean, className?: string) {
     "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
     active
       ? "bg-selection text-selection-foreground"
-      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
     className,
   );
 }
@@ -196,7 +196,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
           // Inside the frame a pill is 4px shorter, so it fits the input-height
           // box instead of spilling past its padding.
           group?.framed ? "rounded-md px-3 py-1" : "rounded-md px-3 py-1.5",
-          current ? "bg-selection" : "hover:bg-muted",
+          current ? "bg-selection" : "hover:bg-accent",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
           // colour can only come from inheriting it here.
