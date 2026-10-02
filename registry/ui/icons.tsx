@@ -27,6 +27,12 @@
  * people route around; these six are the cheapest way to find out that is what
  * was happening.
  *
+ * And seven that two apps had each wrapped for themselves with `icon` (#210):
+ * `FileText`, `Folder`, `KeyRound`, `Lock`, `Plug`, `Tag` and `Ellipsis`. A
+ * glyph wrapped in one app is what `icon` is for; the same line in a second
+ * app's `app-icons.tsx` is the duplication this module exists to remove, so
+ * that is the bar for the next one.
+ *
  * A glyph an app needs and this set does not ship belongs in the app's own
  * file, wrapped with the exported `icon` (below), rather than in this one:
  * the next `shadcn add` of this item overwrites whatever was added here.
@@ -57,21 +63,28 @@ import CircleCheckSource from "lucide-react-native/icons/circle-check";
 import ClockSource from "lucide-react-native/icons/clock";
 import CopySource from "lucide-react-native/icons/copy";
 import DownloadSource from "lucide-react-native/icons/download";
+import EllipsisSource from "lucide-react-native/icons/ellipsis";
 import EyeSource from "lucide-react-native/icons/eye";
 import EyeOffSource from "lucide-react-native/icons/eye-off";
+import FileTextSource from "lucide-react-native/icons/file-text";
+import FolderSource from "lucide-react-native/icons/folder";
 import InfoSource from "lucide-react-native/icons/info";
+import KeyRoundSource from "lucide-react-native/icons/key-round";
 import LoaderCircleSource from "lucide-react-native/icons/loader-circle";
+import LockSource from "lucide-react-native/icons/lock";
 import MonitorSource from "lucide-react-native/icons/monitor";
 import MoonSource from "lucide-react-native/icons/moon";
 import PauseSource from "lucide-react-native/icons/pause";
 import PencilSource from "lucide-react-native/icons/pencil";
 import PlaySource from "lucide-react-native/icons/play";
+import PlugSource from "lucide-react-native/icons/plug";
 import PlusSource from "lucide-react-native/icons/plus";
 import RefreshCwSource from "lucide-react-native/icons/refresh-cw";
 import SearchSource from "lucide-react-native/icons/search";
 import SettingsSource from "lucide-react-native/icons/settings";
 import SquareSource from "lucide-react-native/icons/square";
 import SunSource from "lucide-react-native/icons/sun";
+import TagSource from "lucide-react-native/icons/tag";
 import Trash2Source from "lucide-react-native/icons/trash-2";
 import TriangleAlertSource from "lucide-react-native/icons/triangle-alert";
 import Undo2Source from "lucide-react-native/icons/undo-2";
@@ -94,10 +107,10 @@ export type IconProps = Omit<LucideProps, "className"> & {
  *
  * ```tsx
  * // app-icons.tsx
- * import TagSource from "lucide-react-native/icons/tag";
+ * import ArchiveSource from "lucide-react-native/icons/archive";
  * import { icon } from "@/components/ui/icons";
  *
- * export const Tag = icon(TagSource);
+ * export const Archive = icon(ArchiveSource);
  * ```
  *
  * `icons.web.tsx` exports an `icon` that hands its argument back, so the
@@ -132,21 +145,28 @@ export const CircleCheck = icon(CircleCheckSource);
 export const Clock = icon(ClockSource);
 export const Copy = icon(CopySource);
 export const Download = icon(DownloadSource);
+export const Ellipsis = icon(EllipsisSource);
 export const Eye = icon(EyeSource);
 export const EyeOff = icon(EyeOffSource);
+export const FileText = icon(FileTextSource);
+export const Folder = icon(FolderSource);
 export const Info = icon(InfoSource);
+export const KeyRound = icon(KeyRoundSource);
 export const LoaderCircle = icon(LoaderCircleSource);
+export const Lock = icon(LockSource);
 export const Monitor = icon(MonitorSource);
 export const Moon = icon(MoonSource);
 export const Pause = icon(PauseSource);
 export const Pencil = icon(PencilSource);
 export const Play = icon(PlaySource);
+export const Plug = icon(PlugSource);
 export const Plus = icon(PlusSource);
 export const RefreshCw = icon(RefreshCwSource);
 export const Search = icon(SearchSource);
 export const Settings = icon(SettingsSource);
 export const Square = icon(SquareSource);
 export const Sun = icon(SunSource);
+export const Tag = icon(TagSource);
 export const Trash2 = icon(Trash2Source);
 export const TriangleAlert = icon(TriangleAlertSource);
 export const Undo2 = icon(Undo2Source);

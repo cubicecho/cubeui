@@ -109,6 +109,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
+| `labelHideBelow` | Under this width, or `always`, a control with an `icon` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
 
 **List rows and query states add:**
 
@@ -140,6 +141,12 @@ Notes on why the layering is where it is:
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
   it is the value on display, a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
+- **A monospace value on `PropertyRow` is `valueClassName="font-mono"`, not a `mono` prop.** A
+  path or an id wants a different font, which is a look, and a boolean for a look is what
+  AGENTS.md's rule 2 turns away: the next one is `muted`, then `small`. The slot already had a
+  class prop; what it lacked was reach, because it stopped at the value's wrapper and on device a
+  `Text` inherits nothing from one. So for a string value it is the class of the text itself, as
+  `StatTile`'s already was, and no word was added.
 - **`SettingRow`'s `action` may be a function,** handed `{ titleId, descriptionId }`, and that is
   not a new word. It is `footerActions`' move on `DialogLayout`: the shell has something the
   caller's node needs — there a guarded close, here the id the control's `aria-labelledby` points
@@ -180,6 +187,13 @@ Notes on why the layering is where it is:
   the label is what is read, as on `ActionButton`, and the icon is sized and coloured by the row.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
+- **`labelHideBelow` is that prefix at work, on the group and not the pill.** `Sidebar` already
+  says `hideBelow` for "gone under this width", and what goes here is the label, so the word is
+  the two joined rather than an `iconOnly` that could say nothing about width. `always` is the
+  one value `hideBelow` does not have, for a row that is icons at every width. It is on
+  `SegmentedGroup` because a row where one pill has dropped its label and the next has not is a
+  mistake no call site wants, and a prop on each pill would make it expressible. The label stays
+  required: hidden, it is the pill's name, which is what `ActionButton`'s `label` already means.
 
 ## 3. Variants are literal class maps
 

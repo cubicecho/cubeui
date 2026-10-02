@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -94,6 +94,7 @@ at the end.
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
+| A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
 | A button that deletes, discards, revokes or resets — with `requireText`, only once its name is typed | `ConfirmButton` | [controls.md](controls.md#type-the-name-to-confirm) |
 | A popover of actions or links — a ⋯ menu, Rename / Move / Delete on a row, Open in a router `link` | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
 | A popover of on/off rows that stays open — labels on a todo, columns shown — or a one-of-N filter behind a button | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | [controls.md](controls.md#menu) |
@@ -108,7 +109,7 @@ at the end.
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leading`, `Input trailing` | [controls.md](controls.md#an-icon-in-an-input) |
 | A search or filter box — named, with a ✕ that clears it — alone or in a filter bar | `SearchInput` | [controls.md](controls.md#search) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
-| An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
+| An upload of one file or several, dropped or picked — as text, as bytes (`read="bytes"`, for a `.zip` or an image), or a whole folder (`directory`) | `FilePicker` | [controls.md](controls.md#file-picker) |
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls.md](controls.md#alert) |
 | A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls.md](controls.md#spinner) |
@@ -136,7 +137,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`empty`** — what the body says when `content` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `empty` is not consulted.
-- **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one.
+- **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one. In a DOM
+  app a bare `border` or `border-t` here draws in the app's border colour, as it does on a
+  `<div>`; in an Expo app nothing sets that default, so name the colour too (`border border-border`).
 
 **Page, split and dialog shells add:**
 
@@ -211,6 +214,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
   `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
+- **`labelHideBelow`** — under this width (`sm` / `md` / `lg` / `xl`), or `always`, a control with
+  an `icon` draws the icon alone. Its label is still its name. On `SegmentedGroup`, for every pill
+  in the row.
 
 **List rows and query states add:**
 
@@ -328,6 +334,7 @@ views and there is no shell wrapping to hide.
 | An icon-only button, with a tooltip on a long press and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `ActionButton` | `@cubeui/action-button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls.md](controls.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
+| A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button — see [controls.md](controls.md#code-block) | `CodeBlock` | `@cubeui/code` |
 | A callout — a warning, a note, the last error — see [controls.md](controls.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | A pulsing placeholder block — see [controls.md](controls.md#skeleton) | `Skeleton` | `@cubeui/skeleton` |
@@ -386,5 +393,5 @@ web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
 so on screen, and `FilePickerButton` draws a disabled button that says so as its hint, because picking a file needs `expo-document-picker` and a permission flow that is
-the app's choice. The contract is there, including `multiple` and `onPickMany`. The picking is
-not.
+the app's choice. The contract is there, including `multiple`, `read` and `onPickMany`. The
+picking is not, and `directory` is web only.

@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the code block, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -18,6 +18,18 @@ the web, where an `<svg>` takes `currentColor` from its container, and styled wr
 where nothing inherits and a container like `Button` publishes its text colour for the icons
 below it. A component that takes an icon as a prop types it as `IconComponent`.
 
+The set, on both halves — check it before wrapping a glyph in the app:
+
+- **Arrows and chevrons:** `ArrowLeft`, `ArrowRight`, `ChevronDown`, `ChevronLeft`,
+  `ChevronRight`, `ChevronUp`, `ChevronsUpDown`
+- **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
+  `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
+- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
+- **Files and labels:** `FileText`, `Folder`, `Tag`
+- **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`
+- **Time:** `Calendar`, `Clock`
+- **Transport and theme:** `Play`, `Pause`, `Square`, `Sun`, `Moon`, `Monitor`
+
 **A glyph the set does not ship is wrapped in the app, with the exported `icon`.** Do not copy the
 native wrapper, and do not add to `icons.tsx` — the next `shadcn add` of `@cubeui/icons`
 overwrites it. Write the app's own pair of files, one line per glyph, beside each other so Metro
@@ -25,18 +37,18 @@ picks the `.web.tsx` on web the same way it does for `icons`:
 
 ```tsx
 // components/app-icons.tsx — native: the per-icon path, since Metro does not tree-shake
-import TagSource from "lucide-react-native/icons/tag";
+import ArchiveSource from "lucide-react-native/icons/archive";
 import { icon } from "@/components/ui/icons";
 
-export const Tag = icon(TagSource);
+export const Archive = icon(ArchiveSource);
 ```
 
 ```tsx
 // components/app-icons.web.tsx — web: the barrel, from lucide-react
-import { Tag as TagSource } from "lucide-react";
+import { Archive as ArchiveSource } from "lucide-react";
 import { icon } from "@/components/ui/icons";
 
-export const Tag = icon(TagSource);
+export const Archive = icon(ArchiveSource);
 ```
 
 On native `icon` is the same wrapper every icon in the set goes through — `className` sizing, the
@@ -68,6 +80,15 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
 </SegmentedGroup>
 ```
 
+With an icon on each pill, and the labels dropped on a narrow screen:
+
+```tsx
+<SegmentedGroup aria-label="Editor view" labelHideBelow="sm" value={view} onValueChange={setView}>
+  <SegmentedButton value="edit" icon={<Pencil />}>Edit</SegmentedButton>
+  <SegmentedButton value="preview" icon={<Eye />}>Preview</SegmentedButton>
+</SegmentedGroup>
+```
+
 **Put the pills in a `SegmentedGroup`; do not write the row yourself.** The group is the
 `role="group"` that says what the pills choose between. Without it, a screen reader hears
 "Relative, toggle button, pressed" and nothing about what Relative was chosen from. Name it with
@@ -83,6 +104,14 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 - **`variant`**: `framed`, the default, is an input-height box (`h-10`, a border,
   `bg-background`), so the control lines up beside a `Select` or an `Input`. `plain` is the pills
   alone, for a toolbar or a nav bar.
+- **`icon` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two
+  out in a row, sizes the icon and gives it the label's colour, chosen or not, on both platforms.
+  Do not write the row, the icon's size or a `<span>` for the label yourself, and do not put the
+  icon in `children`, where on device it takes no colour.
+- **`labelHideBelow` on the group** makes the pills icons alone: `always`, or under a width
+  (`sm` / `md` / `lg` / `xl`) with the label back above it. It is on the group because the pills
+  in a row should agree. The string child is still required and is still the pill's name, so
+  write no `aria-label`. A pill with no `icon` keeps its label.
 - The pills are toggle buttons with `aria-pressed`, not radios. For a choice that belongs in a
   form and reads as a list of options, use `RadioGroup`.
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
@@ -161,20 +190,25 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 ```tsx
 <PropertyRow
   label="Endpoint"
-  value={<Code>{url}</Code>}
+  value={url}
+  valueClassName="font-mono"
   action={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 
-<View className="relative">
-  <Code>{snippet}</Code>
-  <CopyButton
-    value={snippet}
-    label="Copy snippet"
-    className="absolute top-2 right-2"
-    onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
-  />
-</View>
+<CodeBlock
+  content={snippet}
+  action={
+    <CopyButton
+      value={snippet}
+      label="Copy snippet"
+      onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
+    />
+  }
+/>
 ```
+
+Beside a block of text it goes in the block's `action` — see [Code block](#code-block) — not in
+an `absolute` corner over it.
 
 - It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
@@ -190,6 +224,59 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 - It is `type="button"` on the web, so it never submits the form it sits in.
 - Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
   always set, which are the two things `ActionButton` exists to guarantee.
+
+## Code block
+
+A block of preformatted text — a config file, a command to paste, a JSON payload, a log — is
+`CodeBlock`, from `@cubeui/code` beside the inline `Code`, on both halves. Do not write a `<pre>`
+with `rounded-md border bg-muted p-3 font-mono text-xs` on it: that class list was retyped on
+eleven screens and came out with four fills, a border on about half and three paddings.
+
+```tsx
+<CodeBlock content={json} />
+
+<CodeBlock
+  content={command}
+  action={<CopyButton value={command} label="Copy command" />}
+/>
+
+<CodeBlock content={log} wrap maxHeight="md" />
+```
+
+- **`content` is a string**, drawn as written: its newlines and its indentation are kept. It is not
+  a node, and there is no syntax highlighting. Build the string first (`JSON.stringify(value, null,
+  2)`), then pass it.
+- **`action`** is the block's far end, at the top: a `CopyButton`. It has a column of its own, so
+  the text never runs under it — there is no `pr-12` to remember and nothing to position. What is
+  copied is the button's `value`, which need not be `content`: a snippet shown with a placeholder
+  can copy the real token.
+- **`wrap`** is what a line too long for the block does. Off, the default, the line runs on and
+  the block scrolls sideways: right for code and config, where a wrapped line reads as two. On, it
+  wraps, inside a word if it has to: right for output, a log, or one long value.
+- **`maxHeight`** — `sm`, `md` or `lg` (ten, fifteen and twenty-four rem) — caps the block, which
+  then scrolls inside itself. Left out, the block is as tall as its text. Do not pass a `max-h-*`
+  in `className`: the scroller is inside the root, so the text would spill out of the box instead.
+- `className` is the root's, for its width or margin. The fill, the border and the padding are
+  the block's and are the same on every one; do not restate them.
+- On the web the text is a `<pre>`, and a block that can scroll is a tab stop so a keyboard can
+  read the end of the line. On a device it is a `ScrollView` and the text is selectable.
+
+**A value to copy — an endpoint, a token, one command — is the same block**, with `wrap` and a
+`CopyButton`. There is no second component for it, and it is not a read-only `Input`, which
+reads as a field somebody could type in:
+
+```tsx
+<CodeBlock
+  content={url}
+  wrap
+  action={<CopyButton value={url} label="Copy endpoint URL" />}
+/>
+```
+
+One line of text makes a block one line tall, button included. A value that already has a label
+beside it on a settings page is a `PropertyRow` with the string as its `value`,
+`valueClassName="font-mono"` and the `CopyButton` as its `action` instead (see
+[Copy button](#copy-button)); the block is for the value that stands alone.
 
 ## Destructive buttons
 
@@ -1045,7 +1132,8 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 ## File picker
 
-A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidden file input.
+A file the user uploads is `FilePicker`: a drop zone over a hidden file input. Do not write a
+hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a folder either.
 
 ```tsx
 <FilePicker
@@ -1053,21 +1141,50 @@ A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidde
   hint="Drop .md files, or click to choose"
   accept=".md,text/markdown"
   multiple
-  onPickMany={(files) => upload(files)} // [{ text, name }, ...]
+  onPickMany={(files) => upload(files)} // [{ name, path, type, text }, ...]
 />
 ```
 
-- The caller gets each file's decoded text and its name, never a `File`, so the calling screen
-  is the same on both halves.
+- The caller gets plain data for each file, never a `File`, so the calling screen is the same on
+  both halves. A picked file is `{ name, path, type, text, bytes? }`: `type` is the MIME type, or
+  `""` when the browser does not know it, and `path` is `name` unless a folder was picked.
 - `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
   either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
   only `onPick`, `onPick` is called once for each file, in order.
+- `onPick` carries the text and the name and nothing else. Take `onPickMany` for `bytes`, `path`
+  or `type`, including when the pick is one file: it is then a list of one.
+- `read` is what to read from each file. `"text"`, the default, decodes it, which is right for
+  JSON and Markdown and corrupts a `.zip` or an image. `read="bytes"` gives the file undecoded as
+  `bytes`, a `Uint8Array`, and leaves `text` as `""`.
+- `directory` picks a folder instead of files. The dialog chooses a folder, a dropped folder is
+  walked, and every file under it arrives in one call. Each file's `path` is its place in the
+  folder, with the folder's own name first: `my-skill/assets/logo.png`. `multiple` is not needed,
+  and `accept` still skips what it does not allow. Web only.
 - `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
   pick is one file, and a drop keeps the first file that `accept` allows.
 - `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
   to drops as well as the dialog. A file that does not match is skipped and never read. List the
   extension as well as the MIME type, because browsers often give `.md` and similar files no
   type at all.
+
+A skill uploaded as an archive, and one uploaded as a folder with its images:
+
+```tsx
+<FilePickerButton
+  variant="outline"
+  label="Choose .md or .zip"
+  accept=".md,.zip,application/zip"
+  read="bytes"
+  onPickMany={([file]) => importSkill(file.name, file.bytes)}
+/>
+<FilePickerButton
+  variant="outline"
+  label="Choose folder"
+  directory
+  read="bytes"
+  onPickMany={(files) => importFolder(files)} // each with its `path` and `bytes`
+/>
+```
 
 ### As a button
 

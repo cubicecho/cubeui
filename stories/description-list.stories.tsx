@@ -33,6 +33,7 @@ type Row = ComponentType<{
   value: ReactNode;
   hint?: ReactNode;
   action?: ReactNode;
+  valueClassName?: string;
 }>;
 
 const nativeCopy = (
@@ -165,6 +166,102 @@ export const Stacked: Story = {
       const term = within(list).getByText("Docs folder").getBoundingClientRect();
       const value = within(list).getByText("/data/notes").getBoundingClientRect();
       await expect(value.top).toBeGreaterThanOrEqual(term.bottom);
+    }
+  },
+};
+
+const LONG_PATH = "/var/lib/ragdown/workspaces/engineering-handbook/documents/2026/onboarding";
+
+/**
+ * Machine values: a path, a version, a port. A number is drawn through the same `Text` a string
+ * is, so it takes the class too.
+ */
+function machineRows(PropertyRow: Row, path: string) {
+  return [
+    <PropertyRow
+      key="docs"
+      label="Docs folder"
+      value={path}
+      valueClassName="font-mono"
+      hint="Set with RAGDOWN_DOCS_DIR"
+    />,
+    <PropertyRow key="port" label="Port" value={8787} valueClassName="font-mono" />,
+    <PropertyRow key="embedder" label="Embedder" value="bge-small" />,
+  ];
+}
+
+const isMonospace = (el: Element) => /mono/i.test(getComputedStyle(el).fontFamily);
+
+/**
+ * `valueClassName` reaches a string value's own text, so a path is monospace on both halves with
+ * no `<code>` at the call site. The native half is the one that matters: a `Text` there inherits
+ * nothing, so a class left on the wrapper around it never arrived.
+ */
+export const MonospaceValue: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native className="native-root" content={machineRows(NativeRow, "/data/notes")} />}
+      compiled={
+        <Compiled className="compiled-root" content={machineRows(CompiledRow, "/data/notes")} />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const sizes: string[] = [];
+    for (const root of [".native-root", ".compiled-root"]) {
+      const list = canvasElement.querySelector<HTMLElement>(root);
+      if (!list) throw new Error(`${root} should render`);
+      const path = within(list).getByText("/data/notes");
+      await expect(isMonospace(path)).toBe(true);
+      await expect(isMonospace(within(list).getByText("8787"))).toBe(true);
+
+      // Only the font changed: the size and the colour are still the plain value's.
+      const plain = within(list).getByText("bge-small");
+      await expect(isMonospace(plain)).toBe(false);
+      await expect(getComputedStyle(path).fontSize).toBe(getComputedStyle(plain).fontSize);
+      await expect(getComputedStyle(path).color).toBe(getComputedStyle(plain).color);
+      await expect(isMonospace(within(list).getByText("Docs folder"))).toBe(false);
+      // Nor the hint, on either half: the class is on the text, not on the `<dd>` the hint is in.
+      await expect(isMonospace(within(list).getByText("Set with RAGDOWN_DOCS_DIR"))).toBe(false);
+      sizes.push(getComputedStyle(path).fontSize);
+    }
+    await expect(sizes[0]).toBe(sizes[1]);
+  },
+};
+
+/**
+ * A long path with no spaces in a narrow column: it breaks inside the row rather than widening
+ * the list, in monospace as it did in the page font.
+ */
+export const MonospaceValueWhenNarrow: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div style={{ width: 240 }}>
+          <Native className="native-root" content={machineRows(NativeRow, LONG_PATH)} />
+        </div>
+      }
+      compiled={
+        <div style={{ width: 240 }}>
+          <Compiled className="compiled-root" content={machineRows(CompiledRow, LONG_PATH)} />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const root of [".native-root", ".compiled-root"]) {
+      const list = canvasElement.querySelector<HTMLElement>(root);
+      if (!list) throw new Error(`${root} should render`);
+      const path = within(list).getByText(LONG_PATH);
+      await expect(isMonospace(path)).toBe(true);
+
+      const listBox = list.getBoundingClientRect();
+      const pathBox = path.getBoundingClientRect();
+      await expect(listBox.width).toBeLessThanOrEqual(240);
+      await expect(list.scrollWidth).toBeLessThanOrEqual(list.clientWidth);
+      await expect(pathBox.right).toBeLessThanOrEqual(listBox.right + 0.5);
+      // More than one line of `text-sm`, so it wrapped rather than being clipped.
+      await expect(pathBox.height).toBeGreaterThan(30);
     }
   },
 };
