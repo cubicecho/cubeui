@@ -480,6 +480,14 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
+The header `action` **is in the header's flow, and wraps**. It sits at the far end, level with the
+title, while the title has room beside it; the title truncates short of it rather than running
+underneath; and when the card is too narrow for both, the action goes on a line of its own under
+the title. One control or a fragment of them — `action={<><ViewToggle /><Button>Save</Button></>}`
+is laid out as a row. So a long title with two controls is still a `CardLayout`: do not switch to
+`Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
+`CardAction`, which is absolute and reserves no room.
+
 The `footerActions` row **wraps when the card is narrow**: three buttons in a phone-width card
 put the last one on a second line, still against the right edge, rather than running the first
 out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
@@ -602,6 +610,11 @@ A heading over a group of fields or rows, inside a page or a card.
   background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
   the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
+- The heading row **wraps**. An `action` sits at the far end while the title and description have
+  room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
+  So a toolbar is an `action` even on a phone: pass the buttons as a fragment and they are rowed
+  and wrap inside the section. Do not move a wide toolbar into the top of `content` to keep the
+  description readable, and do not wrap it in a `flex flex-wrap` `<div>` of your own.
 - It is the smallest thing in the registry and it exists because three projects wrote
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
@@ -617,7 +630,7 @@ counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `use
 <Disclosure
   title="Raw output"
   action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
-  content={<Code>{json}</Code>}
+  content={<CodeBlock content={json} />}
 />
 
 <Disclosure

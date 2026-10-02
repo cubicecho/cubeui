@@ -178,7 +178,7 @@
       "name": "code",
       "type": "registry:ui",
       "title": "Code",
-      "description": "Monospaced inline code and blocks.",
+      "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, a wrap prop to wrap long lines instead of scrolling sideways, and a maxHeight that scrolls.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {

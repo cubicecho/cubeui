@@ -5,10 +5,12 @@
  * `expo-document-picker` and a file-system read for the URI it returns, both of
  * which are app-level choices with their own permission flow — so rather than
  * ship a drop zone that silently opens nothing, this says so on screen and
- * neither `onPick` nor `onPickMany` is ever called. `multiple` and `accept` are
- * taken so a shared call site typechecks, and do nothing here; an implementation
- * would hand them to `expo-document-picker` as its `multiple` and `type`, and can
- * filter what comes back with `acceptsFile` the way the web half does. Replace
+ * neither `onPick` nor `onPickMany` is ever called. `multiple`, `accept`, `read`
+ * and `directory` are taken so a shared call site typechecks, and do nothing
+ * here; an implementation would hand the first two to `expo-document-picker` as
+ * its `multiple` and `type`, can filter what comes back with `acceptsFile` the
+ * way the web half does, and fills `bytes` as a `Uint8Array` for `read="bytes"`.
+ * `directory` is web only: that picker has no folder mode. Replace
  * this file in your app once those are wired up; `file-picker-base.ts` is the
  * contract to implement, and `file-picker.web.tsx` is a working reference for
  * the shape.
