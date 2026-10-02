@@ -108,7 +108,7 @@ at the end.
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leading`, `Input trailing` | [controls.md](controls.md#an-icon-in-an-input) |
 | A search or filter box — named, with a ✕ that clears it — alone or in a filter bar | `SearchInput` | [controls.md](controls.md#search) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
-| An upload of one text file or several, dropped or picked | `FilePicker` | [controls.md](controls.md#file-picker) |
+| An upload of one file or several, dropped or picked — as text, as bytes (`read="bytes"`, for a `.zip` or an image), or a whole folder (`directory`) | `FilePicker` | [controls.md](controls.md#file-picker) |
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls.md](controls.md#alert) |
 | A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls.md](controls.md#spinner) |
@@ -385,5 +385,5 @@ web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says
 so on screen, and `FilePickerButton` draws a disabled button that says so as its hint, because picking a file needs `expo-document-picker` and a permission flow that is
-the app's choice. The contract is there, including `multiple` and `onPickMany`. The picking is
-not.
+the app's choice. The contract is there, including `multiple`, `read` and `onPickMany`. The
+picking is not, and `directory` is web only.

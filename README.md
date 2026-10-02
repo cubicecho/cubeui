@@ -429,7 +429,10 @@ open decision 4, as `badge`.
 **`file-picker` is web-only.** Its native half draws the zone and says so on screen; it does not
 pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
 choice with its own permission flow, so the registry ships the contract and the working web half
-rather than a control that silently opens nothing.
+rather than a control that silently opens nothing. The contract stays one a native half can
+implement: a picked file is a name, a path, a type, its text and — with `read="bytes"` — a
+`Uint8Array`, never the DOM's `File`. `directory`, which picks a folder, is the one prop that is
+web only.
 
 The `tokens` item installs `dist/tokens.native.css` as `cubeui-tokens.css` at the project root —
 `@import` it from the app's own `global.css` — and `dist/cubeui-theme.ts` as `@/lib/cubeui-theme`,
