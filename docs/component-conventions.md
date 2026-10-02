@@ -75,7 +75,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
 | `brand` | The start of an app's bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and on `SidebarLayout`'s bar, drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
-| `nav` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
+| `nav` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `cardClassName` | On `CenteredLayout`, the card, where `className` is the page around it. The card is not a slot the caller fills, so it takes its prefix from the shell it is: the one page shell whose root is not the thing it draws. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
@@ -115,7 +115,7 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, icon? }` before the count, whose `label` is part of the row's name and whose `icon` is decoration drawn instead of it. |
+| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, icon? }` before the count, whose `label` is part of the row's name and whose `icon` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `SidebarLayout`'s bar a node: one line of the app's own state, between `nav` and `action`, and the first part of the bar to give way. |
 | `leading` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `icon` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badges` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `action` — still facts about the title, placed where a list scans them. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
@@ -158,6 +158,14 @@ Notes on why the layering is where it is:
   of an app without a sidebar takes too, so the same three parts are called the same thing
   whether a sidebar is beside them or not. `mobile` was the obvious prefix and a wrong one: the
   bar is drawn under a breakpoint, which is a narrow desktop window as often as it is a phone.
+- **The bar's one line of words is `status`, and `BarNavItem` takes the row's props.** An app's
+  "3/5 servers running" is the state a thing is in, said in place — the meaning `status` already
+  has on `SidebarSection` and `SidebarNavItem` — so the bar's slot is that word rather than a new
+  one. It is not `meta` (the smaller line under a title) and not `description` (prose under a
+  heading): the bar has neither. `BarNavItem` is a second component rather than a `compact` prop
+  on `SidebarNavItem`, because it is a different element with a different contract — `icon` and
+  the tooltip are required parts of it, and it is never a button — but its props are the row's
+  own (`label`, `icon`, `active`, `count`, `status`, `href`), so one array of places renders both.
 - **`StatTile` reuses `PropertyRow`'s `label`, `value` and `hint`,** because a tile is the same
   three parts on a card: what the figure is called, the figure, the line read after it. Its one
   word of its own is `selected`, which `ToggleChip` already took and the vocabulary had not yet

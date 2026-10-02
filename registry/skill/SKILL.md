@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -69,7 +69,8 @@ at the end.
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout.md](layout.md) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout.md](layout.md) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout.md](layout.md) |
-| An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brand`, `nav`, `action` | [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) |
+| An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brand`, `nav`, `status`, `action` | [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) |
+| A place in that bar: an icon link with a name, a tooltip, the current-page fill, a count or a status dot | `BarNavItem` | [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) |
 | The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout.md](layout.md) |
 | An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `TopBarLayout` | [layout.md](layout.md#top-bar) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout.md](layout.md) |
@@ -152,8 +153,9 @@ The same words mean the same thing in every component, and this is the point of 
   `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
   so there pass what the sidebar's header shows.
 - **`nav`** — an app bar's navigation, after the brand: the primary links on `TopBarLayout`, the
-  places as icon links on `SidebarLayout`'s bar. The shell draws the `<nav>` and `navLabel` names
-  it, by prefix — do not wrap it in one yourself. The bar's far end is the core `action`.
+  places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the `<nav>` and
+  `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
+  `action`.
 - **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
   `max-w-md` here for a wider card than the default `max-w-sm`.
 - **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
@@ -216,7 +218,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
   title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, icon? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `icon`, when
-  given, is what is seen instead of it — decorative, never read.
+  given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
+  drawn as a dot on the icon. On `SidebarLayout`'s bar, a node: one line of the app's own state
+  ("3/5 servers running") between `nav` and `action`, the first part of the bar to give way.
 - **`leading`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
   given, not sized like `icon`, and never inside the row's pressed area. On `ListItem`.
 - **`meta`** — the grey line of facts beside the title: a name, a time, a count. On `ListItem` it
@@ -286,6 +290,7 @@ views and there is no shell wrapping to hide.
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout.md](layout.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |
+| A place in that bar: an icon link named by `label`, with a count badge or a status dot | `BarNavItem` | `@cubeui/sidebar` |
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | An app with no sidebar: a bar across the top — brand, links, actions — over a screen that scrolls — see [layout.md](layout.md#top-bar) | `TopBarLayout` | `@cubeui/top-bar-layout` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
