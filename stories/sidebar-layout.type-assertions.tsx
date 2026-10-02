@@ -23,10 +23,13 @@ export function SidebarLayoutTypeAssertions() {
         brand="App"
         nav="links"
         navLabel="Main"
+        status="3/5 servers running"
         action="theme"
       />
       {/* @ts-expect-error the bar's slots need a breakpoint to be drawn under */}
       <Native content="page" sidebar="rail" brand="App" />
+      {/* @ts-expect-error the bar's status needs a bar, and so a breakpoint */}
+      <Native content="page" sidebar="rail" status="3/5 servers running" />
       {/* @ts-expect-error the bar's navigation landmark is always named */}
       <Native content="page" sidebar="rail" sidebarHideBelow="md" nav="links" />
       {/* @ts-expect-error a rail that hides does not stack */}
@@ -41,7 +44,10 @@ export function SidebarLayoutTypeAssertions() {
         brand="App"
         nav="links"
         navLabel="Main"
+        status="3/5 servers running"
       />
+      {/* @ts-expect-error the bar's status needs a bar, and so a breakpoint */}
+      <Compiled content="page" sidebar="rail" status="3/5 servers running" />
       {/* @ts-expect-error the bar's navigation landmark is always named */}
       <Compiled content="page" sidebar="rail" sidebarHideBelow="md" nav="links" />
       {/* @ts-expect-error a label with no navigation to name */}

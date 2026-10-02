@@ -1279,7 +1279,7 @@
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, action) that stands in for a navigation rail on a narrow screen.",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -1305,8 +1305,14 @@
       "name": "sidebar",
       "type": "registry:component",
       "title": "Sidebar",
-      "description": "An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/header-content-footer"],
+      "description": "An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/badge",
+        "@cubeui/tooltip",
+        "@cubeui/header-content-footer"
+      ],
       "files": [
         {
           "path": "registry/layout/sidebar.tsx",
