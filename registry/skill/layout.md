@@ -280,7 +280,8 @@ for the app's navigation rail, which has a bar to stand in for it.
 ```
 
 `@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
-Three parts, and only `Sidebar` is required:
+Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
+that replaces the rail on a phone — see below):
 
 - **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-sidebar` at a
   fixed `w-64` with a `border-sidebar-border` rule on the edge facing the page (`side="end"` moves
@@ -340,7 +341,7 @@ A row in the footer takes no `SidebarSection` — a list item with no list aroun
 ### On a phone, a bar instead of the rail
 
 A rail does not stack; under a narrow width it goes, and a bar over the page stands in for it.
-That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is three slots:
+That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is four slots:
 
 ```tsx
 <SidebarLayout
@@ -351,20 +352,51 @@ That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is three slots:
   sidebarHideBelow="md"
   sidebar={<Sidebar label="Main" header={<Brand />} content={nav} footer={<Settings />} />}
   brand={<Brand />}
-  nav={NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-    <Link key={to} to={to} aria-label={label} className="rounded-md p-2 …">
-      <Icon className="size-4" />
-    </Link>
+  nav={NAV_ITEMS.map(({ to, label, icon: Icon, count }) => (
+    <BarLink key={to} to={to} label={label} icon={<Icon />} count={count} active={isActive(to)} />
   ))}
   navLabel="Main"
+  status={`${running}/${servers} servers running`}
   action={<><LockButton /><ThemeToggle /></>}
   content={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
 />
+
+const BarLink = createLink(BarNavItem);         // beside createLink(SidebarNavItem)
 ```
+
+**`BarNavItem` is the bar's link** — `SidebarNavItem` with only the icon drawn, from
+`@cubeui/sidebar`. Do not hand-write the bar's links as router `<Link>`s with a class string: that
+is the copy this replaces.
+
+- **The same props as the row** — `label`, `icon`, `active`, `count?`, `status?`, `href?` — so the
+  app's list of places is one array, mapped once into `SidebarSection` with `SidebarNavItem` and
+  once into `nav` with `BarNavItem`. A count on a sidebar row is then on the bar too.
+- **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
+  (hover or focus on the web, a long press on device). **`icon` is required** too — it is all that
+  is drawn. Pass it bare; the item sizes and colours it.
+- **`active`** fills it with `selection` and sets `aria-current="page"`; hover is grey. Compute it
+  from the route, as for the row.
+- **`count`** is a small badge on the icon's corner and **`status={{ label }}`** a dot on the other;
+  both are in the name the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
+  fit in, so pass a long count already capped (`"99+"`). The status's `icon` is not drawn here.
+- **It binds to a router as the row does**: `createLink(BarNavItem)`, `<Link href asChild>` around
+  it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
+- **It is always a link.** A button in the bar is an `ActionButton` in `action`.
+- **Size the list to the bar.** Each item is 32px and the `nav` neither scrolls nor wraps; a phone
+  fits about five beside a brand mark and two actions. An app with more places than that picks the
+  ones the bar shows.
+
+**`status` is one line saying what state the app is in** — "3/5 servers running", "128 turns in 9
+sessions" — drawn between the `nav` and the `action`, against the action. It takes the width the
+rest of the bar leaves and nothing more, so it is the first thing to give way: a string is cut
+short with an ellipsis, then gone, before the brand, a place or an action moves. Pass a string
+where you can; a node (a `Skeleton` while it loads, a figure in bold) is clipped to the same box
+and lays itself out. Do not put the line in `action` — that slot never shrinks, and a long status
+there pushes the buttons off the screen.
 
 - **Under `md`** the sidebar pane is `display: none` — off the screen and out of the accessibility
   tree — and the bar is drawn over `content`: a `<header>` (the banner) with `brand` at the start,
-  `nav` inside a `<nav>` named by `navLabel`, and `action` at the far end. **From `md` up** it is
+  `nav` inside a `<nav>` named by `navLabel`, `status` after it, and `action` at the far end. **From `md` up** it is
   the other way round. `sm`, `lg` and `xl` move the switch.
 - **One breakpoint, said once.** Leave `Sidebar`'s own `hideBelow` off; the layout hides the rail
   and shows the bar from the same value, so the two cannot disagree. Do not hand-write the
@@ -382,8 +414,8 @@ That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is three slots:
   component; this is not it.
 - **On device** NativeWind reads the same breakpoint off the window: a phone draws the bar and a
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
-- `headerClassName` is on the bar. With no `brand`, `nav` or `action`, `sidebarHideBelow` still
-  hides the rail and draws nothing in its place.
+- `headerClassName` is on the bar. With no `brand`, `nav`, `status` or `action`,
+  `sidebarHideBelow` still hides the rail and draws nothing in its place.
 
 `Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
 in a `SidebarLayout`. Do not write `hidden md:flex` in `className` for either: that works only
@@ -673,7 +705,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
         <PropertyRow
           key="d"
           label="Docs folder"
-          value={<Code>/data/notes</Code>}
+          value="/data/notes"
+          valueClassName="font-mono"
           action={<CopyButton value="/data/notes" label="Copy docs folder" />}
         />,
         <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
@@ -689,9 +722,17 @@ Read-only facts — a label, a value, a line under the value — which is most o
   with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
   hold only its term-and-description groups.
 - `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
-  as `<Code>` or a `Badge`), optional `hint` (one muted line under the value, on where it comes
+  as a `Badge`), optional `hint` (one muted line under the value, on where it comes
   from) and optional `action` (the far end: a copy button, an edit link). `labelClassName` and
   `valueClassName` reach the two halves of the row.
+- **A path, a version, a port or an id is a string with `valueClassName="font-mono"`.**
+  When the value is a string or a number, `valueClassName` is the class of its text — a font, a
+  size, a colour — and of nothing else, so the hint and the action keep the page font and it reads
+  the same on a device, where a `Text` inherits nothing. Do not pass a raw `<code>` or a `<Code>`
+  for it: `Code` is a chip for a token inside a sentence, and round a whole value it is a grey box
+  on every row. A long path wraps inside the row; add `break-all` to break it at any character.
+  When the value is a node, the text is yours — put the class on it — and `valueClassName` is the
+  value's half of the row.
 - The semantics are built in. On the web: a `<dl>`, each row a `<div>` holding a `<dt>` for the
   label and a `<dd>` holding the value, the hint and the action — the hint and the action are read
   as part of the value. On device: `role="list"` and `role="listitem"`. Add no roles of your own.
