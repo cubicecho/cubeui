@@ -212,6 +212,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
   `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
+- **`labelHideBelow`** — under this width (`sm` / `md` / `lg` / `xl`), or `always`, a control with
+  an `icon` draws the icon alone. Its label is still its name. On `SegmentedGroup`, for every pill
+  in the row.
 
 **List rows and query states add:**
 
