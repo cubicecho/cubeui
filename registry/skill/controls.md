@@ -18,6 +18,18 @@ the web, where an `<svg>` takes `currentColor` from its container, and styled wr
 where nothing inherits and a container like `Button` publishes its text colour for the icons
 below it. A component that takes an icon as a prop types it as `IconComponent`.
 
+The set, on both halves — check it before wrapping a glyph in the app:
+
+- **Arrows and chevrons:** `ArrowLeft`, `ArrowRight`, `ChevronDown`, `ChevronLeft`,
+  `ChevronRight`, `ChevronUp`, `ChevronsUpDown`
+- **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
+  `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
+- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
+- **Files and labels:** `FileText`, `Folder`, `Tag`
+- **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`
+- **Time:** `Calendar`, `Clock`
+- **Transport and theme:** `Play`, `Pause`, `Square`, `Sun`, `Moon`, `Monitor`
+
 **A glyph the set does not ship is wrapped in the app, with the exported `icon`.** Do not copy the
 native wrapper, and do not add to `icons.tsx` — the next `shadcn add` of `@cubeui/icons`
 overwrites it. Write the app's own pair of files, one line per glyph, beside each other so Metro
@@ -25,18 +37,18 @@ picks the `.web.tsx` on web the same way it does for `icons`:
 
 ```tsx
 // components/app-icons.tsx — native: the per-icon path, since Metro does not tree-shake
-import TagSource from "lucide-react-native/icons/tag";
+import ArchiveSource from "lucide-react-native/icons/archive";
 import { icon } from "@/components/ui/icons";
 
-export const Tag = icon(TagSource);
+export const Archive = icon(ArchiveSource);
 ```
 
 ```tsx
 // components/app-icons.web.tsx — web: the barrel, from lucide-react
-import { Tag as TagSource } from "lucide-react";
+import { Archive as ArchiveSource } from "lucide-react";
 import { icon } from "@/components/ui/icons";
 
-export const Tag = icon(TagSource);
+export const Archive = icon(ArchiveSource);
 ```
 
 On native `icon` is the same wrapper every icon in the set goes through — `className` sizing, the
