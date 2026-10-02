@@ -630,7 +630,7 @@ counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `use
 <Disclosure
   title="Raw output"
   action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
-  content={<Code>{json}</Code>}
+  content={<CodeBlock content={json} />}
 />
 
 <Disclosure
