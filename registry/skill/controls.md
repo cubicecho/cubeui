@@ -68,6 +68,15 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
 </SegmentedGroup>
 ```
 
+With an icon on each pill, and the labels dropped on a narrow screen:
+
+```tsx
+<SegmentedGroup aria-label="Editor view" labelHideBelow="sm" value={view} onValueChange={setView}>
+  <SegmentedButton value="edit" icon={<Pencil />}>Edit</SegmentedButton>
+  <SegmentedButton value="preview" icon={<Eye />}>Preview</SegmentedButton>
+</SegmentedGroup>
+```
+
 **Put the pills in a `SegmentedGroup`; do not write the row yourself.** The group is the
 `role="group"` that says what the pills choose between. Without it, a screen reader hears
 "Relative, toggle button, pressed" and nothing about what Relative was chosen from. Name it with
@@ -83,6 +92,14 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 - **`variant`**: `framed`, the default, is an input-height box (`h-10`, a border,
   `bg-background`), so the control lines up beside a `Select` or an `Input`. `plain` is the pills
   alone, for a toolbar or a nav bar.
+- **`icon` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two
+  out in a row, sizes the icon and gives it the label's colour, chosen or not, on both platforms.
+  Do not write the row, the icon's size or a `<span>` for the label yourself, and do not put the
+  icon in `children`, where on device it takes no colour.
+- **`labelHideBelow` on the group** makes the pills icons alone: `always`, or under a width
+  (`sm` / `md` / `lg` / `xl`) with the label back above it. It is on the group because the pills
+  in a row should agree. The string child is still required and is still the pill's name, so
+  write no `aria-label`. A pill with no `icon` keeps its label.
 - The pills are toggle buttons with `aria-pressed`, not radios. For a choice that belongs in a
   form and reads as a list of options, use `RadioGroup`.
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
