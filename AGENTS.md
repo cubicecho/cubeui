@@ -240,6 +240,11 @@ what `command` and `calendar` are written on, so they arrive with the primitive 
 because of a shell. They are still the reason `multi-select` and `date-picker` are separate
 registry items — a form of plain inputs installs `@cubeui/app-form` and pulls in none of them.
 
+`react-markdown` and `remark-gfm` are the same case: `markdown` is written on them, and they are
+declared by that one item. `markdown` and `markdown-editor` are in no bundle for the same reason
+`multi-select` is its own item — nothing installs a Markdown parser except the app that asked for
+one.
+
 ## The forms assume TanStack Form
 
 **Every project these components are installed into runs [TanStack Form](https://tanstack.com/form).**

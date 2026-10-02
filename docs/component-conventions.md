@@ -109,6 +109,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
+| `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
+| `defaultView` | The view a control starts in when it holds its own, as `defaultOpen` is for a thing that opens. |
 | `labelHideBelow` | Under this width, or `always`, a control with an `icon` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
 
 **List rows and query states add:**
@@ -133,6 +135,18 @@ Notes on why the layering is where it is:
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
+- **`Markdown` takes `content` as a string, and three props that are not this vocabulary's.**
+  `content` is the body, as it is everywhere; it is a string for `CodeBlock`'s reason — the
+  component draws the text, it does not place a node. `components`, `remarkPlugins` and
+  `urlTransform` are react-markdown's names, kept because they are that library's contracts
+  handed straight through and its documentation is what explains them; renaming them would be a
+  second vocabulary for one library. The package is declared in `dependencies` as rule 10
+  asks; the three props are not a licence for a shell to grow option props.
+- **`MarkdownEditor`'s `view` is state a shell is allowed to hold** for the reason `defaultOpen`
+  is: it is which part is showing, not data. The source is `value`/`onValueChange` and is never
+  held. It also draws three words of its own — Edit, Split, Preview — as `ThemePicker` draws
+  Light, Dark and System: a toggle every call site labels identically is three props nobody
+  needed.
 - **`DisclosureRow` and `ListItem` take `action`, not `actions`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.

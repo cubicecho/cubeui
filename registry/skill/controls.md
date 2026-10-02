@@ -278,6 +278,109 @@ beside it on a settings page is a `PropertyRow` with the string as its `value`,
 `valueClassName="font-mono"` and the `CopyButton` as its `action` instead (see
 [Copy button](#copy-button)); the block is for the value that stands alone.
 
+## Markdown
+
+A Markdown string drawn as a document — a note, a README, a skill's instructions, a model's
+answer — is `Markdown`, from `@cubeui/markdown`. **Web only.** Do not install `react-markdown`
+and write a `components` map: that map was written three times and came out with three heading
+scales, two blockquote rules and code blocks that matched nothing else on the page.
+
+```tsx
+<Markdown content={skill.instructions} />
+
+<Markdown content={file.text} empty={<p className="text-muted-foreground">This file is empty.</p>} />
+```
+
+- **`content` is the Markdown source, a string.** It is the only required prop.
+- **Every element is one the page already has.** A fenced block is a [`CodeBlock`](#code-block),
+  a code span is `Code`, a table is the [`Table`](layout.md#table) with its headers scoped, a
+  rule is a `Separator`, a task item (`- [x]`) is a disabled `Checkbox` named by its item, and
+  the headings are `PageHeader`'s sizes carried down six levels. There is no class to pass per
+  element and no `prose` plugin to install.
+- **GitHub-flavoured Markdown is on**: tables, task lists, strikethrough, bare URLs as links.
+  There is no syntax highlighting, as `CodeBlock` has none.
+- **`empty`** is what a blank `content` draws. Left out, a blank document draws nothing at all.
+- **`headingId`** — `(text) => id` — gives each heading an id from its text, so a table of
+  contents or a `#fragment` can point at one. Left out, no heading has an id.
+- `className` is the root's: its width, its margin. The document is as wide as what it is put in
+  and does not cap its own line length; put it in a `width="prose"` page or a pane.
+- A long URL breaks rather than widening the document, and a table or code block too wide for it
+  scrolls inside itself.
+
+**Raw HTML is never rendered.** HTML inside the Markdown is shown as the text it is, and there is
+no prop that turns it on: the content is as often a repository's or a model's as yours. **URLs
+are filtered** too — relative addresses and the `http`, `https`, `mailto`, `irc`, `ircs` and
+`xmpp` schemes are kept, and anything else, `javascript:` and `data:` included, is blanked. Neither is something to remember per call
+site.
+
+Three props are `react-markdown`'s own, for the app whose documents are more than plain Markdown.
+They are named as it names them so its documentation applies:
+
+```tsx
+import { defaultUrlTransform } from "react-markdown";
+
+<Markdown
+  content={doc.text}
+  headingId={slug}
+  components={{ a: DocLink, img: DocImage }}
+  remarkPlugins={[remarkWikilinks]}
+  urlTransform={(url) => (url.startsWith("wikilink:") ? url : defaultUrlTransform(url))}
+/>
+```
+
+- **`components`** replaces elements by tag, laid over the built-in map — the router's `<Link>`
+  for `a`, an image the app resolves for `img`. A replaced `a` or `img` needs no class: links and
+  images are styled from the document's root, so yours look like the ones they replaced. Declare
+  the components outside the render, or pass a memoised object; a new one each render remounts
+  the document.
+- **`remarkPlugins`** run after remark-gfm. There is no `rehypePlugins`, which is where raw HTML
+  would come back in.
+- **`urlTransform`** replaces the URL policy. Let your own scheme through and hand everything else
+  to `defaultUrlTransform`, as above — returning the URL unchanged for all of them is the hole the
+  default closes.
+
+Text a model is still writing is this component with `content` growing; it re-renders the
+document, it does not animate it.
+
+### Markdown editor
+
+A Markdown source to write, with its rendering beside it, is `MarkdownEditor`, from
+`@cubeui/markdown-editor`. **Web only.** Do not write a textarea, a `Markdown` and a three-way
+toggle by hand.
+
+```tsx
+const [body, setBody] = useState(skill.instructions);
+
+<MarkdownEditor aria-label="Instructions" value={body} onValueChange={setBody} />
+
+<FormField
+  label="Instructions"
+  control={<MarkdownEditor value={body} onValueChange={setBody} placeholder="# My skill" />}
+/>
+```
+
+- **`value`, `onValueChange`** — the source is yours. The editor keeps no copy, and saving, a
+  dirty flag and autosave are the screen's: put the Save button in the `action` of the `Section`
+  or card the editor sits in.
+- **The toggle is drawn for you** — Edit, Split, Preview, a `SegmentedGroup` at the editor's far
+  end, above the panes. `edit` is the source alone, `preview` the document alone, `split` both.
+- **`view`, `onViewChange`** hold the view outside, to keep it in the URL or a preference.
+  **`defaultView`** is where it starts when you do not (`split` unless given). Pass `view` or
+  `defaultView`, never both.
+- **Under `lg`, `split` shows the source alone.** Two columns do not fit, and stacked the
+  preview would be a screen below the line being typed. Preview is one press away.
+- **`empty`** is what the preview draws while the source is blank. Left out, an empty box.
+- **Every other prop is the textarea's** — `id`, `placeholder`, `disabled`, `name`, `onBlur`,
+  `aria-label`, `aria-invalid`, `spellCheck` (off unless given) — so it is a `FormField`'s
+  `control` like any other, and outside one it needs an `aria-label`.
+- The textarea stays mounted in all three views, so undo history and the cursor survive a look at
+  the preview. Beside the preview it is as tall as the preview; alone it is sixteen rem and
+  resizes by its corner.
+- **Nothing in the preview is editable**, and nothing becomes a field when it is pressed. The
+  source is edited in the textarea and only there.
+- The preview is the plain `Markdown`. Documents that need their own `components` or plugins put
+  a `Textarea` and their own `<Markdown>` in a `SplitLayout` instead.
+
 ## Destructive buttons
 
 ```tsx
