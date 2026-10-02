@@ -151,3 +151,136 @@ export const NarrowFooterActions: Story = {
     }
   },
 };
+
+const longTitle = "skills/ticket-workflow/references/checkpoint-template.md";
+const headerWidths = [280, 390, 640] as const;
+
+/** A file path as the title and two controls as the `action`, at one width. */
+function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: number }) {
+  const Card = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  return (
+    <div data-testid={`${half}-${width}`} style={{ width }}>
+      <Card
+        title={longTitle}
+        action={
+          <>
+            <Button variant="outline">Preview</Button>
+            <Button>Save</Button>
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+function LongTitleCards({ half }: { half: "native" | "compiled" }) {
+  return (
+    <div className="flex flex-col gap-4">
+      {headerWidths.map((width) => (
+        <LongTitleCard key={width} half={half} width={width} />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * A long `title` beside a two-control `action` (#211). The action used to be `CardAction`, an
+ * absolute box that reserved no width, so the title ran underneath it. Now it is in the header's
+ * flow: beside the title where both fit, the title truncating short of it, and under the title
+ * where they do not. At three widths, on both halves, the two never share a pixel.
+ */
+export const LongTitleWithAction: Story = {
+  args: { title: longTitle },
+  render: () => (
+    <SideBySide
+      native={<LongTitleCards half="native" />}
+      compiled={<LongTitleCards half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      for (const width of headerWidths) {
+        const frame = within(canvasElement).getByTestId(`${half}-${width}`);
+        const card = frame.firstElementChild;
+        if (!card) throw new Error(`the ${half} card should render`);
+        const box = card.getBoundingClientRect();
+        const scope = within(frame);
+        const title = scope.getByRole("heading", { name: longTitle }).getBoundingClientRect();
+        const preview = scope.getByRole("button", { name: "Preview" }).getBoundingClientRect();
+        const save = scope.getByRole("button", { name: "Save" }).getBoundingClientRect();
+        const apart = (button: DOMRect) =>
+          title.right <= button.left || title.bottom <= button.top || button.bottom <= title.top;
+        // `half` and `width` ride along so a failure names which case broke.
+        await expect({
+          half,
+          width,
+          // No overlap: each control is wholly beside the title or wholly under it.
+          apart: apart(preview) && apart(save),
+          // Both shown: the title keeps a readable run, and everything is inside the card.
+          titleShown: title.width >= 150,
+          inside: [title, preview, save].every((r) => r.left >= box.left && r.right <= box.right),
+          // The two controls stay on one line, in the order they were passed.
+          together: Math.abs(preview.top - save.top) < 1 && preview.right <= save.left,
+        }).toEqual({ half, width, apart: true, titleShown: true, inside: true, together: true });
+      }
+    }
+  },
+};
+
+/** One small button as the `action`, at a phone's width, with and without a description. */
+function SmallActionCards({ half }: { half: "native" | "compiled" }) {
+  const Card = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  const add = (
+    <Button variant="outline" size="sm">
+      Add
+    </Button>
+  );
+  return (
+    <div style={{ width: 390 }} className="flex flex-col gap-4">
+      <div data-testid={`${half}-described`}>
+        <Card title="Categories" description="Deleting one keeps its activities." action={add} />
+      </div>
+      <div data-testid={`${half}-titled`}>
+        <Card title="Categories" action={add} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The other side of #211: an action that fits does not move. One button stays where `CardAction`
+ * put it — the header's top corner at its far end, 24px in from each edge — on both halves, with
+ * a description under the title and without one.
+ */
+export const SmallActionStaysInCorner: Story = {
+  args: { title: "Categories" },
+  render: () => (
+    <SideBySide
+      native={<SmallActionCards half="native" />}
+      compiled={<SmallActionCards half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      for (const form of ["described", "titled"] as const) {
+        const frame = within(canvasElement).getByTestId(`${half}-${form}`);
+        const card = frame.firstElementChild;
+        if (!card) throw new Error(`the ${half} card should render`);
+        const box = card.getBoundingClientRect();
+        const button = within(frame).getByRole("button", { name: "Add" }).getBoundingClientRect();
+        // The card's 1px border, then the header's `p-6`.
+        await expect({
+          half,
+          form,
+          fromTop: Math.round(button.top - box.top),
+          fromEnd: Math.round(box.right - button.right),
+        }).toEqual({ half, form, fromTop: 25, fromEnd: 25 });
+        // Beside a title and a description the button is the shorter of the two, so being in
+        // the flow costs the header nothing: the card is as tall as it was.
+        if (form === "described") await expect(Math.round(box.height)).toBe(100);
+      }
+    }
+  },
+};

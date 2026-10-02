@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { expect, within } from "storybook/test";
+import { Button as CompiledButton } from "../compiled/button";
 import { Section as Compiled } from "../compiled/section";
 import { Section as Native } from "../registry/layout/section";
+import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -86,5 +88,137 @@ export const CardSurface: Story = {
     await expect(compiledStyle.borderTopWidth).toBe(nativeStyle.borderTopWidth);
     await expect(compiledStyle.paddingTop).toBe(nativeStyle.paddingTop);
     await expect(compiledStyle.backgroundColor).toBe(nativeStyle.backgroundColor);
+  },
+};
+
+const toolbarLabels = ["New file", "New folder", "Add files", "Add folder", "Export"] as const;
+const toolbarDescription = "Files live under the skill's folder; you can also edit them on disk.";
+
+/**
+ * One half's phone-width column: a section whose `action` is a five-button toolbar, twice — once
+ * as a fragment, which the shell rows and wraps, and once as the caller's own wrapping row, which
+ * is what an app that already wrote `flex flex-wrap` hands it.
+ */
+function WideActionSections({ half }: { half: "native" | "compiled" }) {
+  const Section = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  const buttons = toolbarLabels.map((label) => (
+    <Button key={label} variant="outline" size="sm">
+      {label}
+    </Button>
+  ));
+  const row =
+    half === "native" ? (
+      <View className="flex-row flex-wrap items-center gap-2">{buttons}</View>
+    ) : (
+      <div className="flex flex-wrap items-center gap-2">{buttons}</div>
+    );
+  return (
+    <div style={{ width: 390 }} className="flex flex-col gap-8">
+      <div data-testid={`${half}-fragment`}>
+        <Section title="Files" description={toolbarDescription} action={buttons} content={body} />
+      </div>
+      {/* A second title, because two regions with one name are one landmark too many. */}
+      <div data-testid={`${half}-row`}>
+        <Section title="Assets" description={toolbarDescription} action={row} content={body} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A five-button `action` at 390px (#211). The heading row used not to wrap, and the action never
+ * shrinks, so the text column was left with what remained — the description at one character a
+ * line. Now the text keeps its floor and an action that does not fit beside it drops under it, at
+ * the start, where its own buttons wrap inside the section. Held on both halves, and for both
+ * ways a caller hands over a toolbar.
+ */
+export const WideActionNarrow: Story = {
+  args: { title: "Files" },
+  render: () => (
+    <SideBySide
+      native={<WideActionSections half="native" />}
+      compiled={<WideActionSections half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      for (const form of ["fragment", "row"] as const) {
+        const frame = within(canvasElement).getByTestId(`${half}-${form}`);
+        const box = frame.getBoundingClientRect();
+        const description = within(frame).getByText(toolbarDescription).getBoundingClientRect();
+        const buttons = toolbarLabels.map((name) =>
+          within(frame).getByRole("button", { name }).getBoundingClientRect(),
+        );
+        const [first] = buttons;
+        if (!first) throw new Error("expected five buttons");
+        // `half` and `form` ride along so a failure names which case broke.
+        await expect({
+          half,
+          form,
+          // Readable: the description has the whole line, not what the toolbar left over.
+          readable: description.width > box.width - 2,
+          // Dropped: the toolbar starts under the text, at the section's start.
+          dropped: first.top >= description.bottom && Math.abs(first.left - box.left) < 1,
+          // Contained: no button runs out of the section, either side.
+          contained: buttons.every((b) => b.left >= box.left - 1 && b.right <= box.right + 1),
+        }).toEqual({ half, form, readable: true, dropped: true, contained: true });
+      }
+    }
+  },
+};
+
+/** One half's phone-width section with a single small button as its `action`. */
+function SmallActionSection({ half }: { half: "native" | "compiled" }) {
+  const Section = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  return (
+    <div data-testid={`${half}-small`} style={{ width: 390 }}>
+      <Section
+        title="Files"
+        description={toolbarDescription}
+        action={
+          <Button variant="outline" size="sm">
+            Export
+          </Button>
+        }
+        content={body}
+      />
+    </div>
+  );
+}
+
+/**
+ * The other side of #211: an action that fits does not move. One button at 390px stays at the
+ * heading row's far end, centred on the text beside it, exactly where it sat before the row
+ * learned to wrap.
+ */
+export const SmallActionStaysBeside: Story = {
+  args: { title: "Files" },
+  render: () => (
+    <SideBySide
+      native={<SmallActionSection half="native" />}
+      compiled={<SmallActionSection half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      const frame = within(canvasElement).getByTestId(`${half}-small`);
+      const box = frame.getBoundingClientRect();
+      const title = within(frame).getByRole("heading", { name: "Files" }).getBoundingClientRect();
+      const description = within(frame).getByText(toolbarDescription).getBoundingClientRect();
+      const button = within(frame).getByRole("button", { name: "Export" }).getBoundingClientRect();
+      const textMiddle = (title.top + description.bottom) / 2;
+      const buttonMiddle = (button.top + button.bottom) / 2;
+      await expect({
+        half,
+        // At the far end, flush with the section's edge.
+        atEnd: Math.abs(button.right - box.right) < 1,
+        // Beside the text, past its end, with the row's 8px gap between them.
+        beside: Math.abs(button.left - description.right - 8) < 1,
+        // Centred on the text block, as `items-center` always had it.
+        centred: Math.abs(buttonMiddle - textMiddle) < 1,
+      }).toEqual({ half, atEnd: true, beside: true, centred: true });
+    }
   },
 };
