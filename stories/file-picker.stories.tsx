@@ -10,6 +10,7 @@ import {
   FilePicker as Native,
   FilePickerButton as NativeButton,
 } from "../registry/ui/file-picker.tsx";
+import type { PickedFile } from "../registry/ui/file-picker-base";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -90,6 +91,14 @@ export const Zone: Story = {
 
 const onPickMany = fn();
 
+/** What a text pick of a loose file hands back: its `path` is its name, and no `bytes`. */
+const text = (name: string, text: string, type = "text/markdown"): PickedFile => ({
+  name,
+  path: name,
+  type,
+  text,
+});
+
 const md = (name: string, text: string) => new File([text], name, { type: "text/markdown" });
 // Browsers often report no type at all for `.md`, which is why `accept` lists the extension.
 const untypedMd = (name: string, text: string) => new File([text], name);
@@ -133,10 +142,11 @@ export const SeveralDropped: Story = {
     drop(zone, [md("a.md", "# A"), png, untypedMd("b.md", "# B"), md("c.md", "# C")]);
 
     await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    // The untyped one reports no type, rather than a guess from its extension.
     await expect(onPickMany).toHaveBeenCalledWith([
-      { text: "# A", name: "a.md" },
-      { text: "# B", name: "b.md" },
-      { text: "# C", name: "c.md" },
+      text("a.md", "# A"),
+      text("b.md", "# B", ""),
+      text("c.md", "# C"),
     ]);
     // `onPickMany` wins: given both, the one-at-a-time callback is not also called.
     await expect(onPick).not.toHaveBeenCalled();
@@ -286,13 +296,10 @@ export const AsAButton: Story = {
     // The dialog's answer, and a drop onto the button itself, both reach the callback.
     await userEvent.upload(uploadInput, [md("a.md", "# A"), md("b.md", "# B")]);
     await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
-    await expect(onPickMany).toHaveBeenLastCalledWith([
-      { text: "# A", name: "a.md" },
-      { text: "# B", name: "b.md" },
-    ]);
+    await expect(onPickMany).toHaveBeenLastCalledWith([text("a.md", "# A"), text("b.md", "# B")]);
     drop(upload, [png, md("c.md", "# C")]);
     await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(2));
-    await expect(onPickMany).toHaveBeenLastCalledWith([{ text: "# C", name: "c.md" }]);
+    await expect(onPickMany).toHaveBeenLastCalledWith([text("c.md", "# C")]);
 
     // The native half says it cannot pick, rather than pressing and doing nothing.
     const native = within(canvasElement.querySelectorAll("section")[0] as HTMLElement);
@@ -300,5 +307,193 @@ export const AsAButton: Story = {
       await expect(native.getByRole("button", { name })).toHaveAttribute("aria-disabled", "true");
     }
     await expect(onPick).not.toHaveBeenCalled();
+  },
+};
+
+/** The files the last `onPickMany` call was handed. */
+function lastPick(): PickedFile[] {
+  return onPickMany.mock.lastCall?.[0] ?? [];
+}
+
+// The start of a real archive, then bytes that are not UTF-8: `file.text()` turns each of the
+// last four into U+FFFD, which is three bytes going back, so the archive no longer opens.
+const ZIP = [0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0xff, 0xfe, 0x80, 0xc3];
+const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const bytesFile = (name: string, bytes: number[], type: string) =>
+  new File([new Uint8Array(bytes)], name, { type });
+
+/**
+ * Issue #207: a picker that only decodes text cannot take a `.zip` or an image, so an app that
+ * uploads one kept its own hidden input. With `read="bytes"` the file comes back byte for byte in
+ * `bytes`, with its `type`, and `text` is left empty rather than holding a corrupted decode.
+ */
+export const Binary: Story = {
+  render: () => (
+    <CompiledButton
+      variant="outline"
+      label="Choose .md or .zip"
+      accept=".md,.zip,application/zip"
+      read="bytes"
+      onPickMany={onPickMany}
+    />
+  ),
+  play: async ({ canvasElement, userEvent }) => {
+    onPickMany.mockClear();
+
+    const archive = bytesFile("skill.zip", ZIP, "application/zip");
+    // The premise: decoded and encoded again, these are not the bytes that went in.
+    const decoded = new TextEncoder().encode(await archive.text());
+    await expect(Array.from(decoded)).not.toEqual(ZIP);
+
+    await userEvent.upload(fileInput(canvasElement), archive);
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+
+    const [picked] = lastPick();
+    await expect(picked?.bytes).toBeInstanceOf(Uint8Array);
+    await expect(Array.from(picked?.bytes ?? [])).toEqual(ZIP);
+    await expect(picked).toMatchObject({
+      name: "skill.zip",
+      path: "skill.zip",
+      type: "application/zip",
+      text: "",
+    });
+  },
+};
+
+/** A file as a folder dialog hands it over: `webkitRelativePath` filled, the folder's name first. */
+function inFolder(path: string, file: File) {
+  Object.defineProperty(file, "webkitRelativePath", { value: path });
+  return file;
+}
+
+/**
+ * The folder dialog's answer. A test cannot drive that dialog, and `userEvent.upload` keeps one
+ * file on an input without `multiple`, where a real folder pick fills the list with all of them.
+ */
+function pickFolder(input: HTMLInputElement, files: File[]) {
+  Object.defineProperty(input, "files", { value: files, configurable: true });
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+  // The picker has copied the list by now. Left in place, the stand-in would shadow the input's
+  // own `files`, and a real pick made in the canvas afterwards would hand back these again.
+  Reflect.deleteProperty(input, "files");
+}
+
+/**
+ * Issue #207: `directory` makes the dialog choose a folder, and every file under it arrives in one
+ * call with where it sat as its `path` — so the tree keeps its shape. Here with `read="bytes"`,
+ * since a folder holds images beside its Markdown. `multiple` is not needed: a folder is all of
+ * its files.
+ */
+export const Folder: Story = {
+  render: () => (
+    <CompiledButton
+      variant="outline"
+      label="Choose folder"
+      directory
+      read="bytes"
+      onPickMany={onPickMany}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    onPickMany.mockClear();
+
+    const input = fileInput(canvasElement);
+    await expect(input.webkitdirectory).toBe(true);
+
+    pickFolder(input, [
+      inFolder("my-skill/SKILL.md", md("SKILL.md", "# My skill")),
+      inFolder("my-skill/assets/logo.png", bytesFile("logo.png", PNG, "image/png")),
+      inFolder("my-skill/reference/api.md", md("api.md", "# API")),
+    ]);
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+
+    const picked = lastPick();
+    await expect(picked.map((file) => [file.path, file.name, file.type])).toEqual([
+      ["my-skill/SKILL.md", "SKILL.md", "text/markdown"],
+      ["my-skill/assets/logo.png", "logo.png", "image/png"],
+      ["my-skill/reference/api.md", "api.md", "text/markdown"],
+    ]);
+    await expect(Array.from(picked[1]?.bytes ?? [])).toEqual(PNG);
+    await expect(new TextDecoder().decode(picked[0]?.bytes)).toBe("# My skill");
+  },
+};
+
+type Tree = File | { [name: string]: Tree };
+
+/**
+ * A `FileSystemEntry` over a plain tree, since a test cannot make a real one. A folder's reader
+ * hands its children back two at a time and then an empty batch, the way a browser pages a big
+ * folder, so reading only the first batch would show up here as missing files.
+ */
+function entry(name: string, tree: Tree, parent = ""): FileSystemEntry {
+  const fullPath = `${parent}/${name}`;
+  if (tree instanceof File) {
+    const file = (resolve: (file: File) => void) => resolve(tree);
+    return { isFile: true, isDirectory: false, name, fullPath, file } as unknown as FileSystemEntry;
+  }
+  const children = Object.entries(tree).map(([child, sub]) => entry(child, sub, fullPath));
+  const createReader = () => ({
+    readEntries: (resolve: (batch: FileSystemEntry[]) => void) => resolve(children.splice(0, 2)),
+  });
+  return {
+    isFile: false,
+    isDirectory: true,
+    name,
+    fullPath,
+    createReader,
+  } as unknown as FileSystemEntry;
+}
+
+/**
+ * A `drop` of folders. The browser builds a real `DataTransfer`'s entries from the disk, so the
+ * event carries a stand-in with only what a drop handler reads: `items`, each with its entry.
+ */
+function dropEntries(target: Element, entries: FileSystemEntry[]) {
+  const event = new Event("drop", { bubbles: true, cancelable: true });
+  const items = entries.map((dropped) => ({ kind: "file", webkitGetAsEntry: () => dropped }));
+  Object.defineProperty(event, "dataTransfer", { value: { items, files: [] } });
+  target.dispatchEvent(event);
+}
+
+/**
+ * A folder dropped on the zone follows the same `path` rule as one picked in the dialog: the tree
+ * is walked, every level of it, and each file reports its place under the folder's own name.
+ * `accept` still applies, so the image in the folder is skipped and never read.
+ */
+export const FolderDropped: Story = {
+  render: () => (
+    <Compiled
+      label="Add a folder of notes"
+      hint="Drop a folder, or click to choose one"
+      accept=".md,text/markdown"
+      directory
+      onPickMany={onPickMany}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onPickMany.mockClear();
+
+    dropEntries(canvas.getByRole("button", { name: /Add a folder of notes/ }), [
+      entry("notes", {
+        "index.md": md("index.md", "# Index"),
+        "cover.png": png,
+        drafts: {
+          "one.md": md("one.md", "# One"),
+          "two.md": md("two.md", "# Two"),
+          old: { "three.md": md("three.md", "# Three") },
+        },
+        "todo.md": md("todo.md", "# Todo"),
+      }),
+    ]);
+
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    await expect(lastPick()).toEqual([
+      { ...text("index.md", "# Index"), path: "notes/index.md" },
+      { ...text("one.md", "# One"), path: "notes/drafts/one.md" },
+      { ...text("two.md", "# Two"), path: "notes/drafts/two.md" },
+      { ...text("three.md", "# Three"), path: "notes/drafts/old/three.md" },
+      { ...text("todo.md", "# Todo"), path: "notes/todo.md" },
+    ]);
   },
 };
