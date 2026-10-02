@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the code block, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -165,16 +165,20 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
   action={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 
-<View className="relative">
-  <Code>{snippet}</Code>
-  <CopyButton
-    value={snippet}
-    label="Copy snippet"
-    className="absolute top-2 right-2"
-    onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
-  />
-</View>
+<CodeBlock
+  content={snippet}
+  action={
+    <CopyButton
+      value={snippet}
+      label="Copy snippet"
+      onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
+    />
+  }
+/>
 ```
+
+Beside a block of text it goes in the block's `action` — see [Code block](#code-block) — not in
+an `absolute` corner over it.
 
 - It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
@@ -190,6 +194,58 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 - It is `type="button"` on the web, so it never submits the form it sits in.
 - Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
   always set, which are the two things `ActionButton` exists to guarantee.
+
+## Code block
+
+A block of preformatted text — a config file, a command to paste, a JSON payload, a log — is
+`CodeBlock`, from `@cubeui/code` beside the inline `Code`, on both halves. Do not write a `<pre>`
+with `rounded-md border bg-muted p-3 font-mono text-xs` on it: that class list was retyped on
+eleven screens and came out with four fills, a border on about half and three paddings.
+
+```tsx
+<CodeBlock content={json} />
+
+<CodeBlock
+  content={command}
+  action={<CopyButton value={command} label="Copy command" />}
+/>
+
+<CodeBlock content={log} wrap maxHeight="md" />
+```
+
+- **`content` is a string**, drawn as written: its newlines and its indentation are kept. It is not
+  a node, and there is no syntax highlighting. Build the string first (`JSON.stringify(value, null,
+  2)`), then pass it.
+- **`action`** is the block's far end, at the top: a `CopyButton`. It has a column of its own, so
+  the text never runs under it — there is no `pr-12` to remember and nothing to position. What is
+  copied is the button's `value`, which need not be `content`: a snippet shown with a placeholder
+  can copy the real token.
+- **`wrap`** is what a line too long for the block does. Off, the default, the line runs on and
+  the block scrolls sideways: right for code and config, where a wrapped line reads as two. On, it
+  wraps, inside a word if it has to: right for output, a log, or one long value.
+- **`maxHeight`** — `sm`, `md` or `lg` (ten, fifteen and twenty-four rem) — caps the block, which
+  then scrolls inside itself. Left out, the block is as tall as its text. Do not pass a `max-h-*`
+  in `className`: the scroller is inside the root, so the text would spill out of the box instead.
+- `className` is the root's, for its width or margin. The fill, the border and the padding are
+  the block's and are the same on every one; do not restate them.
+- On the web the text is a `<pre>`, and a block that can scroll is a tab stop so a keyboard can
+  read the end of the line. On a device it is a `ScrollView` and the text is selectable.
+
+**A value to copy — an endpoint, a token, one command — is the same block**, with `wrap` and a
+`CopyButton`. There is no second component for it, and it is not a read-only `Input`, which
+reads as a field somebody could type in:
+
+```tsx
+<CodeBlock
+  content={url}
+  wrap
+  action={<CopyButton value={url} label="Copy endpoint URL" />}
+/>
+```
+
+One line of text makes a block one line tall, button included. A value that already has a label
+beside it on a settings page is a `PropertyRow` with a `Code` value and the `CopyButton` as its
+`action` instead (see [Copy button](#copy-button)); the block is for the value that stands alone.
 
 ## Destructive buttons
 
