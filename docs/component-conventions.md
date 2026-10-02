@@ -140,6 +140,12 @@ Notes on why the layering is where it is:
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
   it is the value on display, a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
+- **A monospace value on `PropertyRow` is `valueClassName="font-mono"`, not a `mono` prop.** A
+  path or an id wants a different font, which is a look, and a boolean for a look is what
+  AGENTS.md's rule 2 turns away: the next one is `muted`, then `small`. The slot already had a
+  class prop; what it lacked was reach, because it stopped at the value's wrapper and on device a
+  `Text` inherits nothing from one. So for a string value it is the class of the text itself, as
+  `StatTile`'s already was, and no word was added.
 - **`SettingRow`'s `action` may be a function,** handed `{ titleId, descriptionId }`, and that is
   not a new word. It is `footerActions`' move on `DialogLayout`: the shell has something the
   caller's node needs — there a guarded close, here the id the control's `aria-labelledby` points

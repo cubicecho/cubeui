@@ -161,7 +161,8 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 ```tsx
 <PropertyRow
   label="Endpoint"
-  value={<Code>{url}</Code>}
+  value={url}
+  valueClassName="font-mono"
   action={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 

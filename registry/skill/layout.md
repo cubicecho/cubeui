@@ -660,7 +660,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
         <PropertyRow
           key="d"
           label="Docs folder"
-          value={<Code>/data/notes</Code>}
+          value="/data/notes"
+          valueClassName="font-mono"
           action={<CopyButton value="/data/notes" label="Copy docs folder" />}
         />,
         <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
@@ -676,9 +677,17 @@ Read-only facts — a label, a value, a line under the value — which is most o
   with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
   hold only its term-and-description groups.
 - `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
-  as `<Code>` or a `Badge`), optional `hint` (one muted line under the value, on where it comes
+  as a `Badge`), optional `hint` (one muted line under the value, on where it comes
   from) and optional `action` (the far end: a copy button, an edit link). `labelClassName` and
   `valueClassName` reach the two halves of the row.
+- **A path, a version, a port or an id is a string with `valueClassName="font-mono"`.**
+  When the value is a string or a number, `valueClassName` is the class of its text — a font, a
+  size, a colour — and of nothing else, so the hint and the action keep the page font and it reads
+  the same on a device, where a `Text` inherits nothing. Do not pass a raw `<code>` or a `<Code>`
+  for it: `Code` is a chip for a token inside a sentence, and round a whole value it is a grey box
+  on every row. A long path wraps inside the row; add `break-all` to break it at any character.
+  When the value is a node, the text is yours — put the class on it — and `valueClassName` is the
+  value's half of the row.
 - The semantics are built in. On the web: a `<dl>`, each row a `<div>` holding a `<dt>` for the
   label and a `<dd>` holding the value, the hint and the action — the hint and the action are read
   as part of the value. On device: `role="list"` and `role="listitem"`. Add no roles of your own.
