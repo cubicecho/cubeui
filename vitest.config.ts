@@ -39,11 +39,14 @@ export default defineConfig({
         // `@tanstack/react-form` for the same reason: only `radio-group.stories.tsx` reaches it, so
         // it is discovered mid-run, and the first cold run lost all four of that file's stories.
         // `@tanstack/react-router` likewise: only the sidebar's router-link story imports it.
+        // `react-markdown` and `remark-gfm` likewise: only the two Markdown story files reach them.
         optimizeDeps: {
           include: [
             "react-native-css/components",
             "@tanstack/react-form",
             "@tanstack/react-router",
+            "react-markdown",
+            "remark-gfm",
           ],
         },
         test: {

@@ -876,6 +876,9 @@ const WEB_ONLY = {
   "date-field": "a bound field of `app-form`; to merge into `form`",
   "field-row": "part of the web form layer; to merge into `form`",
   "form-field": "part of the web form layer; to merge into `form`",
+  markdown:
+    "drawn by react-markdown, which emits DOM elements and bare strings; React Native has neither, and `table`, which it composes, is web-only too",
+  "markdown-editor": "a preview beside a textarea, and the preview is `markdown`",
   "multi-select-field": "a bound field of `app-form`; to merge into `form`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
   table: "React Native has no table element; on device the rows are `ListItem`s",
