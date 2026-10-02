@@ -190,7 +190,8 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 ```tsx
 <PropertyRow
   label="Endpoint"
-  value={<Code>{url}</Code>}
+  value={url}
+  valueClassName="font-mono"
   action={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 
@@ -273,8 +274,9 @@ reads as a field somebody could type in:
 ```
 
 One line of text makes a block one line tall, button included. A value that already has a label
-beside it on a settings page is a `PropertyRow` with a `Code` value and the `CopyButton` as its
-`action` instead (see [Copy button](#copy-button)); the block is for the value that stands alone.
+beside it on a settings page is a `PropertyRow` with the string as its `value`,
+`valueClassName="font-mono"` and the `CopyButton` as its `action` instead (see
+[Copy button](#copy-button)); the block is for the value that stands alone.
 
 ## Destructive buttons
 
