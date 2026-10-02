@@ -1045,7 +1045,8 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 ## File picker
 
-A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidden file input.
+A file the user uploads is `FilePicker`: a drop zone over a hidden file input. Do not write a
+hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a folder either.
 
 ```tsx
 <FilePicker
@@ -1053,21 +1054,50 @@ A file the user uploads, read as text, is `FilePicker`: a drop zone over a hidde
   hint="Drop .md files, or click to choose"
   accept=".md,text/markdown"
   multiple
-  onPickMany={(files) => upload(files)} // [{ text, name }, ...]
+  onPickMany={(files) => upload(files)} // [{ name, path, type, text }, ...]
 />
 ```
 
-- The caller gets each file's decoded text and its name, never a `File`, so the calling screen
-  is the same on both halves.
+- The caller gets plain data for each file, never a `File`, so the calling screen is the same on
+  both halves. A picked file is `{ name, path, type, text, bytes? }`: `type` is the MIME type, or
+  `""` when the browser does not know it, and `path` is `name` unless a folder was picked.
 - `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
   either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
   only `onPick`, `onPick` is called once for each file, in order.
+- `onPick` carries the text and the name and nothing else. Take `onPickMany` for `bytes`, `path`
+  or `type`, including when the pick is one file: it is then a list of one.
+- `read` is what to read from each file. `"text"`, the default, decodes it, which is right for
+  JSON and Markdown and corrupts a `.zip` or an image. `read="bytes"` gives the file undecoded as
+  `bytes`, a `Uint8Array`, and leaves `text` as `""`.
+- `directory` picks a folder instead of files. The dialog chooses a folder, a dropped folder is
+  walked, and every file under it arrives in one call. Each file's `path` is its place in the
+  folder, with the folder's own name first: `my-skill/assets/logo.png`. `multiple` is not needed,
+  and `accept` still skips what it does not allow. Web only.
 - `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
   pick is one file, and a drop keeps the first file that `accept` allows.
 - `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
   to drops as well as the dialog. A file that does not match is skipped and never read. List the
   extension as well as the MIME type, because browsers often give `.md` and similar files no
   type at all.
+
+A skill uploaded as an archive, and one uploaded as a folder with its images:
+
+```tsx
+<FilePickerButton
+  variant="outline"
+  label="Choose .md or .zip"
+  accept=".md,.zip,application/zip"
+  read="bytes"
+  onPickMany={([file]) => importSkill(file.name, file.bytes)}
+/>
+<FilePickerButton
+  variant="outline"
+  label="Choose folder"
+  directory
+  read="bytes"
+  onPickMany={(files) => importFolder(files)} // each with its `path` and `bytes`
+/>
+```
 
 ### As a button
 
