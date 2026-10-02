@@ -817,7 +817,12 @@ react-native-web would have rendered anyway.
   carried, because Yoga's defaults are not CSS's. It also carries the four `pointer-events` classes,
   transcribed rule for rule from react-native-web's style compiler — including the `!important`,
   because `box-none` and `box-only` describe a view and its children disagreeing, which CSS says with
-  two rules and not one value.
+  two rules and not one value. One thing it does not carry is the border *colour*: react-native-web's
+  `border: 0 solid black` is `border-width` and `border-style` here, longhand, because the shorthand
+  resets the colour too and a class outranks the `* { @apply border-border }` a shadcn app sets its
+  default with — so a bare `border` in a caller's `className` drew in the text colour on a compiled
+  root and in `--border` on the `<div>` beside it (#206). `stories/web/reset.stories.tsx` holds it,
+  on both themes.
 - **A `<button>` may not carry any role.** `BUTTON_ROLES` is the list it legitimately takes — the
   ARIA checkbox, radio, switch, tab and menu-item patterns are all built on a real `<button>`. Any
   other role and the `Pressable` compiles to the generic box with the role on it, which is what
