@@ -278,8 +278,8 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 
 **Raw HTML is never rendered.** HTML inside the Markdown is shown as the text it is, and there is
 no prop that turns it on: the content is as often a repository's or a model's as yours. **URLs
-are filtered** too — `http`, `https`, `mailto` and relative addresses are kept, and anything
-else, `javascript:` and `data:` included, is blanked. Neither is something to remember per call
+are filtered** too — relative addresses and the `http`, `https`, `mailto`, `irc`, `ircs` and
+`xmpp` schemes are kept, and anything else, `javascript:` and `data:` included, is blanked. Neither is something to remember per call
 site.
 
 Three props are `react-markdown`'s own, for the app whose documents are more than plain Markdown.
