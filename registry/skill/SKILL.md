@@ -135,7 +135,9 @@ The same words mean the same thing in every component, and this is the point of 
 - **`empty`** — what the body says when `content` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `empty` is not consulted.
-- **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one.
+- **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one. In a DOM
+  app a bare `border` or `border-t` here draws in the app's border colour, as it does on a
+  `<div>`; in an Expo app nothing sets that default, so name the colour too (`border border-border`).
 
 **Page, split and dialog shells add:**
 
