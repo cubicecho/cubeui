@@ -87,3 +87,14 @@ jobs:
           test -f storybook-static/index.json
           test ! -e storybook-static/r
           ! grep -q 'components for React Native and the DOM' storybook-static/index.html
+
+      # The same check `pages.yml` makes for the links on the landing page, here so a PR that
+      # renames a gallery story finds out before the deploy does.
+      - name: The gallery stories the landing page links to were built
+        run: |
+          for id in gallery-web--everything gallery-mobile--everything; do
+            if ! grep -q "\"$id\"" storybook-static/index.json; then
+              echo "::error::the landing page links to '$id', which is not in the built Storybook"
+              exit 1
+            fi
+          done

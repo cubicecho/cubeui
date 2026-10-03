@@ -58,6 +58,13 @@
     border: 1px solid var(--line); border-radius: 999px; padding: 0.05rem 0.5rem; color: var(--muted);
   }
   .tag-both { border-color: var(--accent); color: var(--accent); }
+  .galleries {
+    list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+  .galleries li { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
+  .galleries a { display: block; font-weight: 600; }
+  .galleries span { color: var(--muted); font-size: 0.9rem; }
   .counts { color: var(--muted); font-size: 0.9rem; }
   footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
   @media (max-width: 40rem) {
@@ -83,6 +90,28 @@
   A shadcn registry of 95 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
+</p>
+
+<h2>See it</h2>
+
+<p>
+  Every item, drawn on one page per platform: scroll it instead of opening a story at a time.
+</p>
+
+<ul class="galleries">
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=gallery-web--everything&amp;viewMode=story">Everything on the web</a>
+    <span>the compiled DOM components and the web-only tier, at page width</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/mobile/">Everything on mobile</a>
+    <span>the React Native sources, in a frame the width of a phone, drawn by react-native-web</span>
+  </li>
+</ul>
+
+<p>
+  Both are stories in <a href="https://cubicecho.github.io/cubeui/storybook/">the Storybook</a>, under <code>Gallery</code>,
+  where each item also has stories of its own with its props and its tests.
 </p>
 
 <h2>Install</h2>
@@ -648,6 +677,8 @@ refs: { cubeui: { title: "cubeui", url: "https://cubicecho.github.io/cubeui/stor
 <footer>
   <a href="https://github.com/cubicecho/cubeui">github.com/cubicecho/cubeui</a> ·
   <a href="https://cubicecho.github.io/cubeui/storybook/">the Storybook</a> ·
+  <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=gallery-web--everything&amp;viewMode=story">everything on the web</a> ·
+  <a href="https://cubicecho.github.io/cubeui/mobile/">everything on mobile</a> ·
   <a href="https://cubicecho.github.io/cubeui/r/registry.json">the DOM registry index</a> ·
   <a href="https://cubicecho.github.io/cubeui/r/native/registry.json">the Expo one</a> ·
   part of <a href="https://cubicecho.com">cubicecho</a>
