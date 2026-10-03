@@ -196,6 +196,9 @@ registry.json                         the native registry, and the source of the
 registry.web-only.json                the web-only tier's items
 registry.web.json                     generated — do not edit
 stories/                              Storybook, and the tests: every story is one
+stories/gallery/, stories/web/gallery.stories.tsx
+                                      every item on one page, per platform. A new item goes under
+                                      a section in each it ships on, or the story fails
 docs/component-conventions.md         authoring rules, and the open questions
 .claude/skills/cubeui/SKILL.md        a pointer at registry/skill/, so this repo's own agent
                                       reads the copy that ships

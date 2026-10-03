@@ -1073,6 +1073,31 @@ mechanism 2, below.
 
 `pages.yml` deploys from `main` only, so the Storybook, like the registry, is whatever `main` holds.
 
+### The two galleries
+
+A story per item answers "how does `Select` behave" and not "what is in here". For that there are
+two stories under `Gallery`, each every item of one platform on one page, and the landing page
+links to both as pages of their own:
+
+- **`Gallery/Web`** (`stories/web/gallery.stories.tsx`) — the compiled DOM halves and the web-only
+  tier, at page width. The link is `storybook/iframe.html?id=…`, the canvas without Storybook's
+  sidebar around it.
+- **`Gallery/Mobile`** (`stories/gallery/mobile.stories.tsx`) — the React Native sources at a
+  phone's width. It is react-native-web drawing them, as every native story here is, so it shows
+  the layout and the states and not a device's fonts or its native pickers. The link is
+  `/mobile/`, a second page `page:build` generates (`public/mobile/index.html`) that holds the
+  canvas in a frame 414 wide. **The frame is not decoration**: a breakpoint class reads the
+  window, so the canvas opened at desktop width draws every shell at its desktop arrangement
+  inside a narrow column — `Page`'s card grid went to four columns of one letter each. For the
+  same reason the story sets `globals.viewport` to a phone inside Storybook.
+
+Both render in the frame in `stories/gallery/gallery.tsx`, and both are **checked against the
+registry they show**: the story's `play` fails if an item in `registry.json` (or
+`registry.web.json`) is neither under a section nor named in the file's `NOT_SHOWN` list with the
+reason it cannot be drawn. A hand-kept page of everything is wrong the first time an item is
+added, which is the same reason the landing page is generated. `ci.yml` and `pages.yml` both check
+the built `index.json` holds the two story ids the landing page links to.
+
 ### Stories through the registry
 
 The other half of #45: a story installed *into* the consumer, where it renders under the app's own
