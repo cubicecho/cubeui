@@ -21,7 +21,6 @@ platform it is.
 ```bash
 npx shadcn@latest add @cubeui/tokens   # the palette, and the stylesheets compiled items need
 npx shadcn@latest add @cubeui/layout   # or a single item: @cubeui/card-layout
-npx shadcn@latest add @cubeui/skill    # the agent skill, into .claude/skills/
 ```
 
 Components are copied into your tree and rewritten against your own path aliases. There is no
@@ -151,32 +150,18 @@ A shadcn primitive installed from ui.shadcn.com beside these still brings its ow
 Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
 the next `shadcn add` overwrites the edit.
 
-## The agent skill is a per-developer install
+## The agent skill
 
-`npx shadcn@latest add @cubeui/skill` writes four Markdown files into your project's
-`.claude/skills/cubeui/`, which is where an agent looks for them. Most projects gitignore
-`.claude/`, so by default the skill is installed **per developer**. The person who ran the command
-has it; their teammates and CI do not, and each of them re-runs it for themselves, and again when
-this registry changes.
+How to use these components, written for an agent, is four Markdown files in [`skill/`](skill):
+`SKILL.md`, which routes, and `layout.md`, `forms.md` and `controls.md`, which it routes to. They
+are plain files in this repository and not a registry item, so nothing installs them for you.
+Download them and put them wherever your agent reads skills: a skills directory in the project or
+in your home directory, a skills server, or anywhere else. Keep the four together, because
+`SKILL.md` links the other three by relative path, and fetch them again when the registry changes.
 
-That is deliberate, and it is the same deal as any other tool a developer installs into their own
-working directory. A team that would rather share one copy un-ignores the one directory:
-
-```gitignore
-.claude/*
-!.claude/skills/
-```
-
-Then the skill is reviewed and updated like any other file in the repo, and `shadcn add` is run
-once by whoever is upgrading rather than by everyone.
-
-What the skill will not do is live somewhere tracked *and* be found automatically. The agent
-looks in `.claude/skills/`, and a copy in `docs/` is a copy somebody has to remember to point at.
-
-In this repository the four files live in [`registry/skill/`](registry/skill), which is what the
-`skill` item ships and what `.claude/skills/cubeui/SKILL.md` points at, so there is one copy of
-each rather than two that drift. The skill opens with which half the project is in, because the
-web-only shells are a 404 in an Expo project.
+The skill opens with which half the project is in, because the web-only shells are a 404 in an
+Expo project. In this repository `.claude/skills/cubeui/SKILL.md` is a pointer at `skill/`, so
+there is one copy of each file rather than two that drift.
 
 ## Every slot is a prop, including the body
 
@@ -1132,12 +1117,13 @@ the framework's own only ever loads a file called `tsconfig.json`.
 
 ### The skill
 
-`@cubeui/skill` installs `SKILL.md` plus `layout.md`, `forms.md` and `controls.md` into
-`.claude/skills/cubeui/`, using shadcn's `files[].target` (`~` is the project root there, not
-`$HOME`). It came across with cubeui's three references nearly unchanged — they describe the
-web-only tier, which did not change — and a rewritten `SKILL.md`, because the one thing an agent now
-has to know first is **which half it is in**: the shells are a 404 in an Expo project, and the native
-set is its own smaller vocabulary rather than a port of this one.
+[`skill/`](skill) holds `SKILL.md` plus `layout.md`, `forms.md` and `controls.md`. It was a registry
+item, `@cubeui/skill`, that wrote them into `.claude/skills/cubeui/` with shadcn's `files[].target`.
+That assumed one agent and one place to keep a skill, so the item was removed and the files are
+now copied by whoever wants them. It came across with cubeui's three references nearly unchanged —
+they describe the web-only tier, which did not change — and a rewritten `SKILL.md`, because the one
+thing an agent now has to know first is **which half it is in**: the shells are a 404 in an Expo
+project, and the native set is its own smaller vocabulary rather than a port of this one.
 
 ## Commands
 
