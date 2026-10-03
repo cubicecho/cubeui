@@ -77,7 +77,16 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** The form as it opens: each field shows the default it was given. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("textbox", { name: "Name" })).toHaveValue("");
+    expect(canvas.getByRole("radio", { name: /Private/ })).toBeChecked();
+    expect(canvas.getByRole("radio", { name: /Team/ })).not.toBeChecked();
+    expect(canvas.getByLabelText("Share token")).toHaveValue("");
+  },
+};
 
 /**
  * Every one of them is named, including the radio group — which is the one HTML would not let a

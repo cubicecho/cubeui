@@ -96,7 +96,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** The form as it opens: each field shows its default value. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByLabelText(/^Title/)).toHaveValue("");
+    expect(canvas.getByLabelText(/^Minutes/)).toHaveDisplayValue("25");
+    expect(canvas.getByRole("button", { name: "Save" })).toBeVisible();
+  },
+};
 
 /**
  * The reason each of these goes through `FormField` rather than being drawn at the call site:

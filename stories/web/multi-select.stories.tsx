@@ -59,9 +59,26 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** Nothing chosen: a closed, named combobox with no chips on it. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger).not.toHaveTextContent("Work");
+  },
+};
 
-export const WithSelection: Story = { args: { initial: ["work", "urgent"] } };
+/** What is chosen is read off the trigger, by label and not by value. */
+export const WithSelection: Story = {
+  args: { initial: ["work", "urgent"] },
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "Tags" });
+    expect(trigger).toHaveTextContent("Work");
+    expect(trigger).toHaveTextContent("Urgent");
+    expect(trigger).not.toHaveTextContent("Frontend");
+  },
+};
 
 /**
  * The one the hand-rolled version cannot do. Tab to it, Enter to open, arrow, Enter to choose,

@@ -54,6 +54,16 @@ export const Default: Story = {
     headerContent: <Input aria-label="Search workspaces" placeholder="Search workspaces" />,
     content: <Rows />,
   },
+  play: async ({ canvas, canvasElement }) => {
+    // Every slot that was passed is drawn.
+    expect(canvas.getByRole("heading", { name: "Workspaces" })).toBeVisible();
+    expect(canvas.getByText("Each one exposes the servers you choose.")).toBeVisible();
+    expect(canvas.getByRole("button", { name: "New workspace" })).toBeVisible();
+    expect(canvas.getByRole("textbox", { name: "Search workspaces" })).toBeVisible();
+    // And the page does not scroll sideways.
+    const page = canvasElement.ownerDocument.documentElement;
+    expect(page.scrollWidth).toBeLessThanOrEqual(page.clientWidth);
+  },
 };
 
 /**
