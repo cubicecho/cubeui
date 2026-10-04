@@ -123,7 +123,7 @@ export function DialogCompat() {
           <Button variant="outline">Open</Button>
         </DialogTrigger>
         <DialogPortal>
-          <DialogOverlay className="bg-black/50" />
+          <DialogOverlay className="bg-overlay/50" />
         </DialogPortal>
         <DialogClose className="absolute" id="close" />
       </Dialog>

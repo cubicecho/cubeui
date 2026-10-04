@@ -22,7 +22,7 @@ const FAMILIES = ["ring-offset", "border", "ring", "text", "bg", "fill", "stroke
 
 /**
  * Suffixes a family takes that are not a colour. Anything a family is given that is neither in
- * here, nor a token, nor a themeless colour is reported — so a utility this list has not
+ * here, nor a token, nor a colourless keyword is reported — so a utility this list has not
  * heard of fails loudly and gets added, rather than passing unexamined.
  */
 const NOT_COLOUR = {
@@ -37,12 +37,12 @@ const NOT_COLOUR = {
 };
 
 /**
- * The colours that need no token: the two that are the same in every theme, and the keywords.
- * A shade of Tailwind's palette (`green-700`) is not one of them. It does generate a class, but
- * it is a colour no palette can change, so it goes in `tokens/palette.mjs` under the name of what
- * it means and the component names that.
+ * The keywords that need no token, because none of them is a colour: no fill, and the text's own.
+ * `black`, `white` and a shade of Tailwind's palette (`green-700`) are not among them. Each does
+ * generate a class, but it is a colour no palette can change, so it goes in `tokens/palette.mjs`
+ * under the name of what it means and the component names that.
  */
-const THEMELESS = /^(black|white|transparent|current|inherit)$/;
+const THEMELESS = /^(transparent|current|inherit)$/;
 
 /** Every string a file spells, from both plain and template literals — the places a class can be. */
 function stringsIn(source, fileName = "source.tsx") {
@@ -95,7 +95,7 @@ export function colourOf(cls) {
 }
 
 /**
- * The colour utilities in `source` that name neither a token in `tokens` nor a themeless colour,
+ * The colour utilities in `source` that name neither a token in `tokens` nor a colourless keyword,
  * each once, in the order they first appear.
  */
 export function unresolvedColours(source, tokens, fileName) {

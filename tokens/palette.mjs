@@ -56,12 +56,14 @@ export const light = {
   // The status colours, which shadcn's set has no answer for past `destructive`. Each is one of
   // Tailwind's shades under the name of what it means, and the same in every palette until one
   // has a reason to differ: white on the two fills is 5.0:1, and `info` is an icon and a tint,
-  // never a fill, so it has no foreground.
+  // never a fill, so it has no foreground. `overlay` is the scrim behind a dialog, drawn at an
+  // opacity the component picks (`bg-overlay/80`): black in every palette so far.
   success: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
   "success-foreground": { l: 1, c: 0, h: 0 },
   warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
   "warning-foreground": { l: 1, c: 0, h: 0 },
   info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
+  overlay: { l: 0, c: 0, h: 0 },
   border: { l: 0.922, c: 0, h: 0 },
   input: { l: 0.922, c: 0, h: 0 },
   ring: { l: 0.708, c: 0, h: 0 },
@@ -102,6 +104,7 @@ export const dark = {
   warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
   "warning-foreground": { l: 1, c: 0, h: 0 },
   info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
+  overlay: { l: 0, c: 0, h: 0 },
   border: { l: 1, c: 0, h: 0, a: 0.1 },
   input: { l: 1, c: 0, h: 0, a: 0.15 },
   ring: { l: 0.556, c: 0, h: 0 },
@@ -157,6 +160,7 @@ export const palettes = {
       warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
       "warning-foreground": { l: 1, c: 0, h: 0 },
       info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
+      overlay: { l: 0, c: 0, h: 0 },
       border: { l: 0.3994, c: 0.0163, h: 102.424 },
       input: { l: 0.4503, c: 0.019, h: 103.225 }, // #57564A
       ring: { l: 0.8269, c: 0.108, h: 211.963 }, // #66D9EF, the blue

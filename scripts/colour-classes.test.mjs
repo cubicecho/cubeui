@@ -59,7 +59,7 @@ test("utilities that are not colours are not read as one", () => {
   }
 });
 
-test("only a colour that is neither a token nor themeless is reported", () => {
+test("only a colour that is neither a token nor a colourless keyword is reported", () => {
   const source = `
     // text-in-text inherits, and bg-input-background is what a call site used to copy.
     /** \`text-destructive-foreground\` in TSDoc is prose too. */
@@ -68,6 +68,8 @@ test("only a colour that is neither a token nor themeless is reported", () => {
     const c = <div className="border-border ring-ring/50 text-destructive-foreground" />;
   `;
   assert.deepEqual(unresolvedColours(source, tokens), [
+    "text-white",
+    "bg-black",
     "bg-green-700",
     "text-destructive-foreground",
     "bg-sidebar-accent",

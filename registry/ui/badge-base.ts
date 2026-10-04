@@ -115,7 +115,7 @@ export const badgeContainerVariants = cva("shrink-0 rounded-full border border-t
 const BADGE_INK = {
   default: "text-primary-foreground",
   secondary: "text-secondary-foreground",
-  destructive: "text-white",
+  destructive: "text-destructive-foreground",
   outline: "text-foreground",
   ghost: "text-foreground",
   link: "text-primary",

@@ -286,9 +286,9 @@ items. 23 of the web items are web-only, and every native item has a web half.
 
 ## Stage 1 — tokens
 
-`tokens/palette.mjs` is the single source of truth: 32 token names in light and dark, stored as
+`tokens/palette.mjs` is the single source of truth: 33 token names in light and dark, stored as
 OKLCH components — the 18 cubeui has always carried, `destructive-foreground`, shadcn's eight
-`sidebar-*` tokens, and the five status tokens (`success`, `warning`, their `-foreground`s, and `info`). `npm run tokens:build` emits three encodings of it into `dist/`:
+`sidebar-*` tokens, the five status tokens (`success`, `warning`, their `-foreground`s, and `info`), and `overlay`. `npm run tokens:build` emits three encodings of it into `dist/`:
 
 | Output | Encoding | For |
 |---|---|---|
@@ -1265,8 +1265,9 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
    site when it happens — it is an edit to `tokens/palette.mjs` and one class map.
 
    **It has happened.** `success`, `warning` and `info` are tokens, with the same values the
-   palette classes had, and `registry:check` rule 9 no longer lets a shade of Tailwind's palette
-   through: a component names what a colour means, and `tokens/palette.mjs` says which shade it is.
+   palette classes had, and `registry:check` rule 9 no longer lets `black`, `white` or a shade of
+   Tailwind's palette through (a dialog's scrim is `overlay`): a component names what a colour
+   means, and `tokens/palette.mjs` says which shade it is.
 
    **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
    does not overlap `color-dot`: that one takes a literal colour for a category whose hue is

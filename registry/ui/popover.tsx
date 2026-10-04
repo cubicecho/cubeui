@@ -69,7 +69,7 @@ function PopoverContent({ className, children }: PopoverContentProps) {
   const { open, setOpen } = useContext(PopoverContext);
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-      <View className="flex-1 items-center justify-center bg-black/60 p-6">
+      <View className="flex-1 items-center justify-center bg-overlay/60 p-6">
         <Pressable
           className="absolute inset-0"
           onPress={() => setOpen(false)}

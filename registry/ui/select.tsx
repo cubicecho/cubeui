@@ -125,7 +125,7 @@ function SelectContent({ className, children }: SelectContentProps) {
   const { open, setOpen } = useContext(SelectContext);
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-      <View className="flex-1 items-center justify-center bg-black/60 p-6">
+      <View className="flex-1 items-center justify-center bg-overlay/60 p-6">
         {/* Sibling, not parent: `Pressable` has no `stopPropagation`. */}
         <Pressable
           className="absolute inset-0"

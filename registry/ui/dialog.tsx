@@ -148,7 +148,7 @@ function DialogPortal({ children }: DialogPortalProps) {
  * draws is the one that does.
  */
 function DialogOverlay({ className }: DialogOverlayProps) {
-  return <View pointerEvents="none" className={cn("absolute inset-0 bg-black/80", className)} />;
+  return <View pointerEvents="none" className={cn("absolute inset-0 bg-overlay/80", className)} />;
 }
 
 function DialogContent({
@@ -172,7 +172,7 @@ function DialogContent({
     if (!event.defaultPrevented) close();
   };
   return (
-    <View className="flex-1 items-center justify-center bg-black/80 p-6">
+    <View className="flex-1 items-center justify-center bg-overlay/80 p-6">
       {/* The backdrop is a sibling laid out underneath rather than a parent of
           the card, because `Pressable` has no `stopPropagation` — nesting the
           card inside it would make every press on the card close the dialog. */}
