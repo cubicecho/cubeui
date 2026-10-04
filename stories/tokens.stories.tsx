@@ -113,6 +113,39 @@ export const RawButtonsTakeNoBrowserLook: Story = {
 };
 
 /**
+ * radix's `Dialog.Title` and `Dialog.Description` are a raw `<h2>` and `<p>`, and the user-agent
+ * margins put 35px between a dialog's title and its description, where the header's gap asks for
+ * 6px (#250). The reset is specificity zero, so a margin utility on a paragraph still wins.
+ */
+export const HeadingsTakeNoBrowserMargin: Story = {
+  render: () => (
+    <div className="bg-background p-6">
+      <p className="my-4 text-foreground">Spaced</p>
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Rename</DialogTitle>
+          <DialogDescription>Give the board a new name.</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(document.body);
+    const title = page.getByRole("heading", { name: "Rename" });
+    const description = page.getByText("Give the board a new name.");
+
+    for (const element of [title, description]) {
+      const style = getComputedStyle(element);
+      await expect(style.marginTop).toBe("0px");
+      await expect(style.marginBottom).toBe("0px");
+    }
+
+    const spaced = getComputedStyle(within(canvasElement).getByText("Spaced"));
+    await expect(spaced.marginTop).toBe("16px");
+  },
+};
+
+/**
  * `switch.web.tsx` is radix's `Switch.Root`, a raw `<button>`, and the reset left it the
  * user-agent padding — `1px 6px` in Chrome. The thumb sat 6px in from the track's border, and
  * `translate-x-4` pushed it past the far end when on (#175). The track is `w-9` with a 2px border,

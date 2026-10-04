@@ -69,15 +69,15 @@ const declarations = (css, selector) => {
 };
 
 /**
- * The rules that exist for Expo *web* and nothing else: the `box-sizing`, `<button>`, form-field
- * and page-font resets raw DOM controls need, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
+ * The rules that exist for Expo *web* and nothing else: the `box-sizing`, `<button>`, form-field,
+ * heading-margin and page-font resets raw DOM controls need, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
  * safe to ship in the one stylesheet because the native compiler drops them — and the spellings
  * that look equivalent do not get dropped: `:root.dark` fails the compile, `html.dark` becomes a
  * class style. So what is asserted is the compiler's own output, with and without them.
  */
 const WEB_ONLY = [
   /^\*,\n::before,\n::after \{[\s\S]*?\n\}/m,
-  /^:where\((button|html|input, select, textarea)\) \{[\s\S]*?\n\}/gm,
+  /^:where\((button|html|input, select, textarea|h1, h2, h3, h4, h5, h6, p)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html\.(dark|light)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{[\s\S]*?\n\}/gm,
 ];
@@ -95,6 +95,7 @@ test("the web-only rules compile to nothing on native", async () => {
     css,
     /^:where\(input, select, textarea\) \{\n {2}color: inherit;\n {2}font: inherit;\n\}/m,
   );
+  assert.match(css, /^:where\(h1, h2, h3, h4, h5, h6, p\) \{\n {2}margin: 0;\n\}/m);
   assert.match(css, /^:where\(html\) \{\n {2}font-family: [^;]+;\n\}/m);
   assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 2);
   assert.equal(
@@ -123,6 +124,7 @@ test("an element selector is dropped on native, as `*` is", async () => {
     ":where(button) { border: 0 solid; padding: 0; background-color: transparent; color: inherit; font: inherit; }",
     "button { border: 0 solid; background-color: transparent; }",
     ":where(input, select, textarea) { color: inherit; font: inherit; }",
+    ":where(h1, h2, h3, h4, h5, h6, p) { margin: 0; }",
     ":where(html) { font-family: Arial, sans-serif; }",
   ]) {
     assert.deepEqual(await stylesheet(`${probe}\n${rule}`), alone, rule);

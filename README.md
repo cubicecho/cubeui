@@ -359,7 +359,9 @@ and `color` / `font: inherit`, and `:where(html)` takes react-native-web's font 
 either — the browser drew them in Arial and monospace — so
 `:where(input, select, textarea)` takes `color` / `font: inherit` and nothing else, since their
 border and fill are the components' own classes. `color: inherit` reaches the element, not its
-`::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. All of them are
+`::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. Headings and
+paragraphs lose their margins (#250): radix's dialog title and description are a raw `<h2>` and
+`<p>`, and the browser's margins opened a 35px hole in every dialog header. All of them are
 unlayered and specificity zero. That is only safe because this file imports the utilities
 unlayered as well: an unlayered rule beats every layered one, so beside an `@layer utilities` it
 would override `border` and `bg-*`. In one unlayered cascade a utility is a class and wins on
