@@ -17,8 +17,15 @@
  * `""`; a bound field passes one either way.)
  */
 
-import type { ComponentPropsWithoutRef, KeyboardEventHandler, Ref } from "react";
 import {
+  type ComponentPropsWithoutRef,
+  type KeyboardEventHandler,
+  type Ref,
+  useLayoutEffect,
+  useRef,
+} from "react";
+import {
+  fitRows,
   isSubmitKey,
   type TextareaProps as SharedTextareaProps,
   TEXTAREA_CLASS,
@@ -47,18 +54,39 @@ function Textarea({
   onKeyPress,
   onSubmitEditing,
   onEscape,
+  rows,
+  maxRows,
   className,
   ref,
   ...props
 }: TextareaProps) {
+  const inner = useRef<HTMLTextAreaElement | null>(null);
+  const grows = maxRows !== undefined;
+  const minRows = rows ?? 1;
+  const refit = () => {
+    if (grows && inner.current) fitRows(inner.current, minRows, maxRows);
+  };
+  // After every render and not only a changed `value`: the text can also arrive as a new
+  // `defaultValue`, and the box can change width under it.
+  useLayoutEffect(refit);
+
   return (
     <textarea
-      // The element is the handle: it has `focus`, which is all `TextareaHandle` asks.
-      ref={ref as Ref<HTMLTextAreaElement>}
+      // The element is the handle: it has `focus`, which is all `TextareaHandle` asks. It is kept
+      // here too, to be measured.
+      ref={(element) => {
+        inner.current = element;
+        const outer = ref as Ref<HTMLTextAreaElement> | undefined;
+        if (typeof outer === "function") return outer(element);
+        if (outer) outer.current = element;
+      }}
       data-slot="textarea"
+      rows={grows ? minRows : rows}
       onChange={(e) => {
         onChange?.(e);
         onChangeText?.(e.target.value);
+        // An uncontrolled box does not render again on a keystroke.
+        refit();
       }}
       onKeyDown={(e) => {
         onKeyDown?.(e);
@@ -80,6 +108,8 @@ function Textarea({
         // counterpart; `disabled:` is the DOM attribute doing what the native
         // half spells out as `disabled && "opacity-50"`.
         "resize-y disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative aria-invalid:focus:border-active",
+        // A box that sizes itself has no corner to drag, and lets go of the class's 80px floor.
+        grows && "min-h-0 resize-none",
         className,
       )}
     />

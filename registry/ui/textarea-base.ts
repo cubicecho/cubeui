@@ -67,8 +67,17 @@ export type TextareaProps = {
   /** Escape, after any `onKeyPress`. A soft keyboard has no such key. */
   onEscape?: (() => void) | undefined;
   placeholder?: string | undefined;
-  /** Visible lines; the box grows no further and scrolls instead. */
+  /**
+   * Visible lines; the box grows no further and scrolls instead. With `maxRows` it is where the
+   * box starts, one line when left out.
+   */
   rows?: number | undefined;
+  /**
+   * Makes the box grow with its text: from `rows` up to this many lines, and scrolling past
+   * them. A chat composer is `rows={1} maxRows={6}`. It shrinks again when the text does, so a
+   * message that was sent leaves a one-line box behind.
+   */
+  maxRows?: number | undefined;
   maxLength?: number | undefined;
   disabled?: boolean | undefined;
   className?: string | undefined;
@@ -76,6 +85,40 @@ export type TextareaProps = {
   id?: string | undefined;
   ref?: Ref<TextareaHandle> | undefined;
 };
+
+/** A line of `text-sm`, and the `py-2` above and below the text, in pixels. */
+const LINE_HEIGHT = 20;
+const PADDING = 16;
+
+/** How tall the box is at a number of rows, border left out. */
+export function rowsHeight(rows: number): number {
+  return rows * LINE_HEIGHT + PADDING;
+}
+
+/** The part of a `<textarea>` that `fitRows` reads and writes. */
+export type GrowingBox = {
+  style: { height: string; overflowY: string };
+  scrollHeight: number;
+  offsetHeight: number;
+  clientHeight: number;
+};
+
+/**
+ * Sizes a `<textarea>` to its text, held between two numbers of rows.
+ *
+ * The height is let go first, because `scrollHeight` is never less than the box: a box left at
+ * six lines would report six lines for ever, and never shrink after a send. The scrollbar is
+ * only allowed once the cap is reached, so it does not flash in and out as a line is added.
+ */
+export function fitRows(box: GrowingBox, minRows: number, maxRows: number): void {
+  const border = box.offsetHeight - box.clientHeight;
+  box.style.height = "auto";
+  const text = box.scrollHeight;
+  const max = rowsHeight(Math.max(minRows, maxRows));
+  const height = Math.min(Math.max(text, rowsHeight(minRows)), max);
+  box.style.height = `${height + border}px`;
+  box.style.overflowY = text > max ? "auto" : "hidden";
+}
 
 /**
  * The placeholder colour rides here as a `placeholder:` variant, the same way

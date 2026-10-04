@@ -306,7 +306,7 @@
       "name": "textarea",
       "type": "registry:ui",
       "title": "Textarea",
-      "description": "Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device.",
+      "description": "Multi-line text entry. Keeps a real DOM textarea on web; a multiline TextInput on device. Takes a submit key, a ref, and maxRows to grow with its text.",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {

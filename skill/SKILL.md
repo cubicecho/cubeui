@@ -405,6 +405,12 @@ take the props the web ones take, with four conversions that are the same everyw
   `onSubmitEditing` is Enter **without Shift**, since Shift+Enter is a new line, and only on the
   web. On a device the return key adds a line and a send button is the way out. A `ref` on either
   gives `focus()`, for putting the caret back after a send.
+- **`maxRows` on `Textarea`, not `onContentSizeChange` and a height in state.** With it the box
+  grows with its text from `rows` (one line when left out) to `maxRows`, scrolls past that, and
+  shrinks again when the text goes. A chat composer is
+  `<Textarea rows={1} maxRows={6} onSubmitEditing={send} ref={box} />` on both halves. Without
+  `maxRows`, `rows` is a fixed height as before. The rows are counted at the box's own `text-sm`
+  line; a `className` that changes the text size changes what a row is.
 - **No children and no `asChild` on `Button`.** The label is `content`, the icon is `iconSlot`, and a
   button that navigates takes the link as `linkSlot={<Link href="/docs" />}` — see
   [controls.md](controls.md#button). `loading` is the state for "pressed, still working".

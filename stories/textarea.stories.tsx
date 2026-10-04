@@ -9,8 +9,8 @@ import { SideBySide } from "./side-by-side";
 
 /**
  * What a chat composer needs of a `Textarea` (#237), on both halves: Enter sends through
- * `onSubmitEditing` while Shift+Enter is still a new line, Escape is `onEscape`, and a ref puts
- * the caret back.
+ * `onSubmitEditing` while Shift+Enter is still a new line, Escape is `onEscape`, a ref puts
+ * the caret back, and `maxRows` grows the box with the message.
  */
 const meta = { title: "RN Parity/Textarea" } satisfies Meta;
 export default meta;
@@ -109,6 +109,51 @@ export const Focus: Story = {
       await userEvent.click(canvas.getByRole("button", { name: `Reply on ${half}` }));
       const name = `${half[0]?.toUpperCase()}${half.slice(1)} reply`;
       await expect(canvas.getByPlaceholderText(name)).toHaveFocus();
+    }
+  },
+};
+
+/**
+ * `maxRows` makes the box grow with its text, from `rows` to the cap, and shrink again when the
+ * text goes: one line, then up to four, then scrolling.
+ */
+export const Grows: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native defaultValue="" rows={1} maxRows={4} placeholder="Native composer" />}
+      compiled={
+        <Compiled
+          aria-label="Compiled composer"
+          rows={1}
+          maxRows={4}
+          placeholder="Compiled composer"
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const newLine = "{Shift>}{Enter}{/Shift}";
+
+    for (const half of ["Compiled", "Native"]) {
+      await step(half, async () => {
+        const box = canvas.getByPlaceholderText(`${half} composer`);
+        const one = box.offsetHeight;
+
+        await userEvent.click(box);
+        await userEvent.keyboard(`a${newLine}b${newLine}c`);
+        const three = box.offsetHeight;
+        const line = (three - one) / 2;
+        await expect(line).toBeGreaterThan(0);
+
+        // Ten lines are as tall as four, and the rest is scrolled to.
+        await userEvent.keyboard(`${newLine}d${newLine}e${newLine}f${newLine}g${newLine}h`);
+        await expect(box.offsetHeight).toBe(one + 3 * line);
+        await expect(box.scrollHeight).toBeGreaterThan(box.clientHeight);
+
+        await userEvent.clear(box);
+        await expect(box.offsetHeight).toBe(one);
+      });
     }
   },
 };
