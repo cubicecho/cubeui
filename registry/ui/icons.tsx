@@ -33,6 +33,10 @@
  * app's `app-icons.tsx` is the duplication this module exists to remove, so
  * that is the bar for the next one.
  *
+ * And five more that an app wrapped for a file manager's rows (#232): `FilePen`
+ * and `FolderPen` for a rename, `ArrowDownWideNarrow` for a sort menu, `UserRound`
+ * for a thing only a person may touch, and `Library` for a collection.
+ *
  * A glyph an app needs and this set does not ship belongs in the app's own
  * file, wrapped with the exported `icon` (below), rather than in this one:
  * the next `shadcn add` of this item overwrites whatever was added here.
@@ -49,6 +53,7 @@
  */
 
 import type { LucideIcon, LucideProps } from "lucide-react-native";
+import ArrowDownWideNarrowSource from "lucide-react-native/icons/arrow-down-wide-narrow";
 import ArrowLeftSource from "lucide-react-native/icons/arrow-left";
 import ArrowRightSource from "lucide-react-native/icons/arrow-right";
 import CalendarSource from "lucide-react-native/icons/calendar";
@@ -66,10 +71,13 @@ import DownloadSource from "lucide-react-native/icons/download";
 import EllipsisSource from "lucide-react-native/icons/ellipsis";
 import EyeSource from "lucide-react-native/icons/eye";
 import EyeOffSource from "lucide-react-native/icons/eye-off";
+import FilePenSource from "lucide-react-native/icons/file-pen";
 import FileTextSource from "lucide-react-native/icons/file-text";
 import FolderSource from "lucide-react-native/icons/folder";
+import FolderPenSource from "lucide-react-native/icons/folder-pen";
 import InfoSource from "lucide-react-native/icons/info";
 import KeyRoundSource from "lucide-react-native/icons/key-round";
+import LibrarySource from "lucide-react-native/icons/library";
 import LoaderCircleSource from "lucide-react-native/icons/loader-circle";
 import LockSource from "lucide-react-native/icons/lock";
 import MonitorSource from "lucide-react-native/icons/monitor";
@@ -89,6 +97,7 @@ import Trash2Source from "lucide-react-native/icons/trash-2";
 import TriangleAlertSource from "lucide-react-native/icons/triangle-alert";
 import Undo2Source from "lucide-react-native/icons/undo-2";
 import UploadSource from "lucide-react-native/icons/upload";
+import UserRoundSource from "lucide-react-native/icons/user-round";
 import XSource from "lucide-react-native/icons/x";
 import { styled } from "nativewind";
 import { useContext } from "react";
@@ -131,6 +140,7 @@ export function icon(Source: LucideIcon) {
   };
 }
 
+export const ArrowDownWideNarrow = icon(ArrowDownWideNarrowSource);
 export const ArrowLeft = icon(ArrowLeftSource);
 export const ArrowRight = icon(ArrowRightSource);
 export const Calendar = icon(CalendarSource);
@@ -148,10 +158,13 @@ export const Download = icon(DownloadSource);
 export const Ellipsis = icon(EllipsisSource);
 export const Eye = icon(EyeSource);
 export const EyeOff = icon(EyeOffSource);
+export const FilePen = icon(FilePenSource);
 export const FileText = icon(FileTextSource);
 export const Folder = icon(FolderSource);
+export const FolderPen = icon(FolderPenSource);
 export const Info = icon(InfoSource);
 export const KeyRound = icon(KeyRoundSource);
+export const Library = icon(LibrarySource);
 export const LoaderCircle = icon(LoaderCircleSource);
 export const Lock = icon(LockSource);
 export const Monitor = icon(MonitorSource);
@@ -171,4 +184,5 @@ export const Trash2 = icon(Trash2Source);
 export const TriangleAlert = icon(TriangleAlertSource);
 export const Undo2 = icon(Undo2Source);
 export const Upload = icon(UploadSource);
+export const UserRound = icon(UserRoundSource);
 export const X = icon(XSource);

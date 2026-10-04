@@ -21,12 +21,13 @@ below it. A component that takes an icon as a prop types it as `IconComponent`.
 The set, on both halves — check it before wrapping a glyph in the app:
 
 - **Arrows and chevrons:** `ArrowLeft`, `ArrowRight`, `ChevronDown`, `ChevronLeft`,
-  `ChevronRight`, `ChevronUp`, `ChevronsUpDown`
+  `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
   `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
 - **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
-- **Files and labels:** `FileText`, `Folder`, `Tag`
-- **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`
+- **Files and labels:** `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and `FolderPen` (rename
+  or move a file, a folder)
+- **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`, `UserRound`
 - **Time:** `Calendar`, `Clock`
 - **Transport and theme:** `Play`, `Pause`, `Square`, `Sun`, `Moon`, `Monitor`
 
