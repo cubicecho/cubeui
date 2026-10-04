@@ -3,7 +3,7 @@ node_modules/
 *.log
 
 # Agent worktrees. The rest of .claude/ is tracked on purpose: .claude/skills/cubeui/ is the
-# pointer that makes this repo's own agent read the skill that ships.
+# pointer that makes this repo's own agent read the skill in skill/.
 .claude/worktrees/
 
 # dist/ is committed on purpose: the emitted tokens are the artefact consumers
