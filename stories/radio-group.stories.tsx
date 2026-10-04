@@ -30,8 +30,8 @@ function NativeHarness({ variant }: { variant: "row" | "card" | "segmented" }) {
       onValueChange={setValue}
       variant={variant}
     >
-      <RadioGroupItem value="light" label="Light" hint="Always light" icon={<Text>☀</Text>} />
-      <RadioGroupItem value="dark" label="Dark" hint="Always dark" icon={<Text>☾</Text>} />
+      <RadioGroupItem value="light" label="Light" hint="Always light" iconSlot={<Text>☀</Text>} />
+      <RadioGroupItem value="dark" label="Dark" hint="Always dark" iconSlot={<Text>☾</Text>} />
       <RadioGroupItem value="system" label="System" description="Follows the device." />
     </NativeRadioGroup>
   );
@@ -46,8 +46,8 @@ function CompiledHarness({ variant }: { variant: "row" | "card" | "segmented" })
       onValueChange={setValue}
       variant={variant}
     >
-      <CompiledItem value="light" label="Light" hint="Always light" icon={<span>☀</span>} />
-      <CompiledItem value="dark" label="Dark" hint="Always dark" icon={<span>☾</span>} />
+      <CompiledItem value="light" label="Light" hint="Always light" iconSlot={<span>☀</span>} />
+      <CompiledItem value="dark" label="Dark" hint="Always dark" iconSlot={<span>☾</span>} />
       <CompiledItem value="system" label="System" description="Follows the device." />
     </CompiledRadioGroup>
   );

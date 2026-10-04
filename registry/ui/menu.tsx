@@ -146,7 +146,7 @@ function MenuContent({ className, "aria-label": ariaLabel, children }: MenuConte
 }
 
 function MenuItem({
-  icon,
+  iconSlot,
   label,
   trailing,
   destructive = false,
@@ -154,7 +154,7 @@ function MenuItem({
   onSelect,
   focusesElsewhere = false,
   className,
-  link,
+  linkSlot,
 }: MenuItemProps) {
   const { setOpen, skipReturnRef } = useContext(MenuContext);
   const ink = destructive ? "text-negative" : "text-foreground";
@@ -178,7 +178,7 @@ function MenuItem({
       {/* Colour does not inherit on native, so the row's ink reaches the icon through the
           context and the label through its own class. */}
       <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
-        {icon}
+        {iconSlot}
         <Text numberOfLines={1} className={cn(MENU_ITEM_TEXT_CLASS, ink)}>
           {label}
         </Text>
@@ -193,8 +193,8 @@ function MenuItem({
   // `href` alone is only the web's: there is no URL to open on device, and the app's router is
   // what navigates. Its link takes the row the way it takes a `Button` — `asChild`, which hands
   // the row its press handler beside the row's own `onSelect`. A disabled row is not handed over.
-  return link && !disabled
-    ? cloneElement(link as ReactElement<{ asChild?: boolean }>, { asChild: true }, row)
+  return linkSlot && !disabled
+    ? cloneElement(linkSlot as ReactElement<{ asChild?: boolean }>, { asChild: true }, row)
     : row;
 }
 
@@ -204,7 +204,7 @@ function MenuSeparator({ className }: MenuSeparatorProps) {
 
 type ToggleRowProps = Pick<
   MenuCheckboxItemProps,
-  "icon" | "label" | "trailing" | "disabled" | "className"
+  "iconSlot" | "label" | "trailing" | "disabled" | "className"
 > & {
   kind: "checkbox" | "radio";
   checked: boolean;
@@ -230,7 +230,7 @@ function ToggleRow({
   kind,
   checked,
   onPress,
-  icon,
+  iconSlot,
   label,
   trailing,
   disabled = false,
@@ -247,7 +247,7 @@ function ToggleRow({
       className={cn(MENU_ITEM_CLASS, "active:bg-hover", disabled && "opacity-50", className)}
     >
       <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
-        {icon}
+        {iconSlot}
         <Text numberOfLines={1} className={cn(MENU_ITEM_TEXT_CLASS, ink)}>
           {label}
         </Text>

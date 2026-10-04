@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { ChevronRight } from "./icons";
 
 type DisclosureProps = {
@@ -22,9 +22,9 @@ type DisclosureProps = {
    * The header's far end, **outside** the button: a copy button, a count, a clear-all. A control
    * nested in a button is invalid HTML and, in practice, a click that also toggles the section.
    */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** What opening shows. Not mounted while shut, so a long list behind it costs nothing. */
-  content?: ReactNode | undefined;
+  contentSlot?: SlotNode | undefined;
   /**
    * Whether it is open, when the caller holds that — a deep link, a "show the failure" button
    * elsewhere, a title that reads "Hide" once open. Leave it out and the disclosure holds its own.
@@ -39,15 +39,6 @@ type DisclosureProps = {
   titleClassName?: string | undefined;
   contentClassName?: string | undefined;
 };
-
-/** A string on its own is a crash on device, so a string body gets a `Text` around it. */
-function asText(node: ReactNode) {
-  return typeof node === "string" || typeof node === "number" ? (
-    <span className="cube-rn-text text-foreground text-sm">{node}</span>
-  ) : (
-    node
-  );
-}
 
 /**
  * A titled part of a screen whose body shows and hides — "Show completed (3)" under a list, "Raw
@@ -67,7 +58,7 @@ function asText(node: ReactNode) {
  * - `aria-expanded` on that button, so the state is announced rather than only drawn; and on the
  *   web `aria-controls` naming the body, while the body is there to name.
  * - The chevron turns off the same boolean, so there is one source of truth for open.
- * - **`action` sits outside the button.** A button in a button is invalid, and the nested one's
+ * - **`actionSlot` sits outside the button.** A button in a button is invalid, and the nested one's
  *   click toggles the section on its way up.
  *
  * The look is the compact one, since that is what most of the copies are: a muted `text-sm`
@@ -80,8 +71,8 @@ function asText(node: ReactNode) {
 export function Disclosure({
   title,
   description,
-  action,
-  content,
+  actionSlot,
+  contentSlot,
   open: openProp,
   onOpenChange,
   defaultOpen = false,
@@ -93,7 +84,7 @@ export function Disclosure({
   const [ownOpen, setOwnOpen] = React.useState(defaultOpen);
   const open = openProp ?? ownOpen;
   const contentId = React.useId();
-  const shown = open && content !== undefined && content !== null && content !== false;
+  const shown = open && contentSlot !== undefined && contentSlot !== null && contentSlot !== false;
 
   const toggle = () => {
     if (openProp === undefined) setOwnOpen(!open);
@@ -149,12 +140,12 @@ export function Disclosure({
             ) : null}
           </div>
         </button>
-        {action ? (
+        {actionSlot ? (
           <div
             data-slot="disclosure-action"
             className="cube-rn-view shrink-0 flex-row items-center gap-1"
           >
-            {asText(action)}
+            {actionSlot}
           </div>
         ) : null}
       </div>
@@ -165,7 +156,7 @@ export function Disclosure({
           id={contentId}
           className={cn("cube-rn-view", "min-w-0 gap-2", contentClassName)}
         >
-          {asText(content)}
+          {contentSlot}
         </div>
       ) : null}
     </div>

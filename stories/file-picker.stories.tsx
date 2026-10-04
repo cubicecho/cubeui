@@ -247,7 +247,7 @@ export const AsAButton: Story = {
       compiled={
         <PageHeader
           title="Notes"
-          action={
+          actionSlot={
             <>
               <CompiledButton
                 variant="outline"
@@ -259,7 +259,7 @@ export const AsAButton: Story = {
               />
               <CompiledButton
                 variant="outline"
-                icon={<Plus />}
+                iconSlot={<Plus />}
                 label="Import a board"
                 accept=".json"
                 onPick={onPick}

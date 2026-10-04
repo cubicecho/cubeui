@@ -109,14 +109,14 @@ function Bars({ width }: { width: number }) {
           sidebarWidth="auto"
           divider="none"
           sidebarHideBelow="md"
-          sidebar={<NativeSidebar label="Native rail" content={null} />}
-          brand={<Text className="font-semibold text-base text-foreground">Router</Text>}
-          nav={places.map((p) => (
+          sidebarSlot={<NativeSidebar label="Native rail" contentSlot={null} />}
+          brandSlot={<Text className="font-semibold text-base text-foreground">Router</Text>}
+          navSlot={places.map((p) => (
             <NativeBarNavItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
-              icon={nativeIcons[p.id]}
+              iconSlot={nativeIcons[p.id]}
               count={p.count}
               active={p.id === "search"}
               {...("status" in p ? { status: p.status } : {})}
@@ -124,23 +124,23 @@ function Bars({ width }: { width: number }) {
           ))}
           navLabel="Native main"
           status={STATUS}
-          action={
+          actionSlot={
             <>
               <NativeButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Native settings"
-                icon={<NativeSettings />}
+                iconSlot={<NativeSettings />}
               />
               <NativeButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Native theme"
-                icon={<NativeMoon />}
+                iconSlot={<NativeMoon />}
               />
             </>
           }
-          content={<Text className="p-4 text-foreground">Native page</Text>}
+          contentSlot={<Text className="p-4 text-foreground">Native page</Text>}
         />
       </Phone>
       <Phone width={width} name="compiled">
@@ -150,14 +150,14 @@ function Bars({ width }: { width: number }) {
           sidebarWidth="auto"
           divider="none"
           sidebarHideBelow="md"
-          sidebar={<CompiledSidebar label="Compiled rail" content={null} />}
-          brand={<span className="font-semibold text-base text-foreground">Router</span>}
-          nav={places.map((p) => (
+          sidebarSlot={<CompiledSidebar label="Compiled rail" contentSlot={null} />}
+          brandSlot={<span className="font-semibold text-base text-foreground">Router</span>}
+          navSlot={places.map((p) => (
             <CompiledBarNavItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
-              icon={compiledIcons[p.id]}
+              iconSlot={compiledIcons[p.id]}
               count={p.count}
               active={p.id === "search"}
               {...("status" in p ? { status: p.status } : {})}
@@ -165,23 +165,23 @@ function Bars({ width }: { width: number }) {
           ))}
           navLabel="Compiled main"
           status={STATUS}
-          action={
+          actionSlot={
             <>
               <CompiledButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Compiled settings"
-                icon={<CompiledSettings />}
+                iconSlot={<CompiledSettings />}
               />
               <CompiledButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Compiled theme"
-                icon={<CompiledMoon />}
+                iconSlot={<CompiledMoon />}
               />
             </>
           }
-          content={<p className="p-4 text-foreground">Compiled page</p>}
+          contentSlot={<p className="p-4 text-foreground">Compiled page</p>}
         />
       </Phone>
     </div>
@@ -317,7 +317,7 @@ export const Phone390: Story = {
 /**
  * A narrower bar still: the status is what is lost. The brand, the four places and both actions
  * keep their width and stay inside the bar, which is the whole reason the line has a slot of its
- * own rather than sitting in `action`.
+ * own rather than sitting in `actionSlot`.
  */
 export const Phone320: Story = {
   render: () => <Bars width={320} />,
@@ -360,34 +360,34 @@ function RouterBars() {
         <NativeLayout
           className="h-full"
           sidebarHideBelow="md"
-          nav={routes.map(({ to, label }) => (
+          navSlot={routes.map(({ to, label }) => (
             <NativeBarLink
               key={to}
               to={to}
               label={label}
-              icon={to === "/" ? <NativeMonitor /> : <NativeSettings />}
+              iconSlot={to === "/" ? <NativeMonitor /> : <NativeSettings />}
               active={active(to)}
             />
           ))}
           navLabel="Native main"
-          content={<Text className="p-4 text-foreground">Native page</Text>}
+          contentSlot={<Text className="p-4 text-foreground">Native page</Text>}
         />
       </Phone>
       <Phone width={390} name="compiled">
         <CompiledLayout
           className="h-full"
           sidebarHideBelow="md"
-          nav={routes.map(({ to, label }) => (
+          navSlot={routes.map(({ to, label }) => (
             <CompiledBarLink
               key={to}
               to={to}
               label={label}
-              icon={to === "/" ? <CompiledMonitor /> : <CompiledSettings />}
+              iconSlot={to === "/" ? <CompiledMonitor /> : <CompiledSettings />}
               active={active(to)}
             />
           ))}
           navLabel="Compiled main"
-          content={<p className="p-4 text-foreground">Compiled page</p>}
+          contentSlot={<p className="p-4 text-foreground">Compiled page</p>}
         />
       </Phone>
     </div>

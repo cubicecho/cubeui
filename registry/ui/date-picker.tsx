@@ -141,7 +141,7 @@ function PickerTrigger({
             {children}
           </Text>
         }
-        trailing={<CalendarIcon className="h-4 w-4 shrink-0 opacity-50" aria-hidden />}
+        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 opacity-50" aria-hidden />}
       />
     </PopoverTrigger>
   );
@@ -163,7 +163,7 @@ function ClearRow({ onClear }: { onClear: () => void }) {
         variant="outline"
         size="sm"
         onPress={onClear}
-        icon={<X className="h-4 w-4" aria-hidden />}
+        iconSlot={<X className="h-4 w-4" aria-hidden />}
         content="Clear"
       />
     </View>

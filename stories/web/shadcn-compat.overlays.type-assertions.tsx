@@ -5,8 +5,9 @@
  * shadcn's DOM API — which is the promise that lets a shadcn app switch registries without
  * touching its call sites. Nothing renders it; `tsc` is the test.
  *
- * `Button` is the exception, and `ButtonCompat` is where it is pinned: it takes `icon`, `content`
- * and `link` where shadcn's takes children and `asChild`. Everything else about it still ports.
+ * `Button` is the exception, and `ButtonCompat` is where it is pinned: it takes `iconSlot`,
+ * `content` and `linkSlot` where shadcn's takes children and `asChild`. Everything else about it
+ * still ports.
  *
  * The `@ts-expect-error` lines pin the other half: the contract is still checked, so a widening
  * did not quietly turn a prop into `any`.
@@ -84,13 +85,13 @@ export function ButtonCompat() {
         aria-label="Edit"
         data-testid="edit"
         form="settings"
-        icon={<span />}
+        iconSlot={<span />}
       />
       <Button size="xs" content="Tiny" />
       <Button size="icon-xs" variant="ghost" aria-label="x" />
       <Button size="icon-lg" variant="secondary" aria-label="y" />
-      {/* shadcn's `<Button asChild><a>` is `link` here: the element with nothing in it. */}
-      <Button variant="link" link={<a href="/docs" />} content="Docs" />
+      {/* shadcn's `<Button asChild><a>` is `linkSlot` here: the element with nothing in it. */}
+      <Button variant="link" linkSlot={<a href="/docs" />} content="Docs" />
       {/* @ts-expect-error — the one place this is not shadcn's: the label is `content`, not children. */}
       <Button>Save</Button>
       <a className={buttonVariants({ variant: "destructive", size: "sm" })} href="/delete">

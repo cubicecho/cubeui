@@ -40,7 +40,7 @@ import * as React from "react";
 import type { FormElementProps } from "@/components/ui/form-element-base";
 import type { InputProps } from "@/components/ui/input-base";
 import type { TextareaProps } from "@/components/ui/textarea-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
 import {
@@ -278,7 +278,7 @@ function splitProps<T>(props: BoundFieldProps & T): [BoundFieldProps, T] {
 }
 
 type FieldWrapperProps = BoundFieldProps & {
-  control: ReactNode;
+  controlSlot: SlotNode;
 };
 
 /**
@@ -287,7 +287,7 @@ type FieldWrapperProps = BoundFieldProps & {
  */
 function FieldWrapper({
   label,
-  control,
+  controlSlot,
   description,
   required = false,
   orientation = "vertical",
@@ -308,7 +308,7 @@ function FieldWrapper({
       ) : null}
     </FieldLabel>
   );
-  const wired = <FieldControl aria-required={required || undefined}>{control}</FieldControl>;
+  const wired = <FieldControl aria-required={required || undefined}>{controlSlot}</FieldControl>;
   const rest = (
     <>
       {description ? (
@@ -354,7 +354,7 @@ function InputField(props: InputFieldProps) {
   return (
     <FieldWrapper
       {...fieldProps}
-      control={
+      controlSlot={
         <Input
           {...input}
           value={String(field.state.value ?? "")}
@@ -384,7 +384,7 @@ function TextAreaField(props: TextAreaFieldProps) {
   return (
     <FieldWrapper
       {...fieldProps}
-      control={
+      controlSlot={
         <Textarea
           {...textarea}
           value={field.state.value ?? ""}
@@ -413,7 +413,7 @@ function SelectField(props: SelectFieldProps) {
   return (
     <FieldWrapper
       {...fieldProps}
-      control={
+      controlSlot={
         <Select value={field.state.value} onValueChange={(v) => field.handleChange(v)}>
           <SelectTrigger onBlur={field.handleBlur}>
             <SelectValue placeholder={placeholder} />
@@ -448,7 +448,7 @@ function CheckboxField(props: CheckboxFieldProps) {
     <FieldWrapper
       orientation="horizontal"
       {...fieldProps}
-      control={
+      controlSlot={
         <Checkbox
           {...checkbox}
           aria-label={props.label}
@@ -486,7 +486,7 @@ function SwitchField(props: SwitchFieldProps) {
     <FieldWrapper
       orientation="horizontal"
       {...fieldProps}
-      control={
+      controlSlot={
         <Switch
           {...control}
           aria-label={props.label}
@@ -508,7 +508,7 @@ type SubmitButtonProps = {
   editLabel?: string;
   savingLabel?: string;
   /** Leading glyph, e.g. `<Plus className="mr-1 h-4 w-4" />`. */
-  icon?: React.ReactNode;
+  iconSlot?: SlotNode;
   /**
    * A third reason not to submit, OR-ed with `!canSubmit` and `isSubmitting` — a mutation in
    * flight elsewhere, a form that is valid but unchanged. It only ever tightens the guard:
@@ -527,7 +527,7 @@ function SubmitButton({
   createLabel = "Create",
   editLabel = "Save changes",
   savingLabel = "Saving…",
-  icon,
+  iconSlot,
   disabled,
   ...props
 }: SubmitButtonProps) {
@@ -550,7 +550,7 @@ function SubmitButton({
       disabled={disabled === true || !canSubmit}
       loading={isSubmitting}
       loadingLabel={savingLabel}
-      icon={icon}
+      iconSlot={iconSlot}
       content={isEdit ? editLabel : createLabel}
     />
   );

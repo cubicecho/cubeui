@@ -57,7 +57,7 @@ export function DateTimeField(props: DateTimeFieldProps) {
       <DateTimeInput mode={mode} placeholder={placeholder} value={value} onChange={commit} />
     );
 
-  return <FieldWrapper asGroup {...fieldProps} control={control} />;
+  return <FieldWrapper asGroup {...fieldProps} controlSlot={control} />;
 }
 
 export type { DateTimeFieldProps };

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/search-input-base";
 import { cn } from "@/lib/utils";
 
-export type SearchInputProps = Omit<InputProps, "type" | "leading" | "trailing"> &
+export type SearchInputProps = Omit<InputProps, "type" | "leadingSlot" | "trailingSlot"> &
   SearchInputOwnProps;
 
 export function SearchInput({
@@ -107,8 +107,8 @@ export function SearchInput({
       aria-label={searchInputName({ label, ariaLabel, ariaLabelledBy, id })}
       aria-labelledby={ariaLabelledBy}
       className={cn(SEARCH_INPUT_CLASS, className)}
-      leading={<Search />}
-      trailing={
+      leadingSlot={<Search />}
+      trailingSlot={
         clearable && filled && !disabled ? (
           <button
             type="button"

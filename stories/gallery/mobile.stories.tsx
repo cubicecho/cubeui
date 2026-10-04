@@ -459,10 +459,10 @@ function Overlays() {
           <Button variant="outline" content="Open menu" />
         </MenuTrigger>
         <MenuContent aria-label="Project actions">
-          <MenuItem label="Rename" icon={<Pencil />} onSelect={noop} />
+          <MenuItem label="Rename" iconSlot={<Pencil />} onSelect={noop} />
           <MenuCheckboxItem label="Compact rows" checked={compact} onCheckedChange={setCompact} />
           <MenuSeparator />
-          <MenuItem label="Delete" icon={<Trash2 />} destructive onSelect={noop} />
+          <MenuItem label="Delete" iconSlot={<Trash2 />} destructive onSelect={noop} />
         </MenuContent>
       </Menu>
       <Tooltip>
@@ -620,22 +620,22 @@ function Rows() {
         title="Notifications"
         description="What reaches your inbox."
         surface="card"
-        content={
+        contentSlot={
           <>
             <SettingRow
               title="Mentions"
               description="When someone names you."
-              action={<Switch defaultChecked accessibilityLabel="Mentions" />}
+              actionSlot={<Switch defaultChecked accessibilityLabel="Mentions" />}
             />
             <SettingRow
               title="Weekly summary"
-              action={<Switch defaultChecked={false} accessibilityLabel="Weekly summary" />}
+              actionSlot={<Switch defaultChecked={false} accessibilityLabel="Weekly summary" />}
             />
           </>
         }
       />
       <DescriptionList
-        content={
+        contentSlot={
           <>
             <PropertyRow label="Owner" value="Dana Whitfield" />
             <PropertyRow label="Region" value="eu-west-1" hint="Set when created" />
@@ -646,15 +646,15 @@ function Rows() {
       <Disclosure
         title="Advanced"
         description="Rarely needed."
-        content={<Text className="text-foreground text-sm">Retention is ninety days.</Text>}
+        contentSlot={<Text className="text-foreground text-sm">Retention is ninety days.</Text>}
       />
       <DisclosureRow
         open={open}
         onOpenChange={setOpen}
         title="Deploy 482"
         meta="2 minutes ago"
-        badges={<Badge variant="positive" label="Passed" />}
-        content={<Text className="text-foreground text-sm">All 214 checks passed.</Text>}
+        badgesSlot={<Badge variant="positive" label="Passed" />}
+        contentSlot={<Text className="text-foreground text-sm">All 214 checks passed.</Text>}
       />
     </Stack>
   );
@@ -693,10 +693,15 @@ const sections: GallerySection[] = [
           <Button size="lg" content="Large" />
         </Row>
         <Row>
-          <Button size="icon-xs" variant="outline" aria-label="Add, extra small" icon={<Plus />} />
-          <Button size="icon-sm" variant="outline" aria-label="Add, small" icon={<Plus />} />
-          <Button size="icon" variant="outline" aria-label="Add" icon={<Plus />} />
-          <Button size="icon-lg" variant="outline" aria-label="Add, large" icon={<Plus />} />
+          <Button
+            size="icon-xs"
+            variant="outline"
+            aria-label="Add, extra small"
+            iconSlot={<Plus />}
+          />
+          <Button size="icon-sm" variant="outline" aria-label="Add, small" iconSlot={<Plus />} />
+          <Button size="icon" variant="outline" aria-label="Add" iconSlot={<Plus />} />
+          <Button size="icon-lg" variant="outline" aria-label="Add, large" iconSlot={<Plus />} />
         </Row>
         <Row>
           <ActionButton
@@ -704,7 +709,7 @@ const sections: GallerySection[] = [
             variant="outline"
             size="icon"
             onPress={noop}
-            icon={<Download />}
+            iconSlot={<Download />}
           />
           <ConfirmButton
             label="Delete project"
@@ -906,7 +911,7 @@ const sections: GallerySection[] = [
         <ListItem
           title="Dana Whitfield"
           description="Owner"
-          leading={<ColorDot color="#2563eb" label="Blue" />}
+          leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
           meta="2 projects"
         />
         <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
@@ -1015,7 +1020,7 @@ const sections: GallerySection[] = [
           level={3}
           title="Projects"
           description="Everything your team is working on."
-          action={<Button size="sm" content="New project" />}
+          actionSlot={<Button size="sm" content="New project" />}
         />
         <Separator />
         <DetailHeader
@@ -1025,8 +1030,8 @@ const sections: GallerySection[] = [
           colorLabel="Green"
           title="Quarterly review"
           subtitle="Due on Friday"
-          badge={<Badge variant="positive" label="On track" />}
-          actions={<EditButton onPress={noop} />}
+          badgeSlot={<Badge variant="positive" label="On track" />}
+          actionsSlot={<EditButton onPress={noop} />}
         />
       </Stack>
     ),
@@ -1047,7 +1052,7 @@ const sections: GallerySection[] = [
           query={idleQuery}
           what="projects"
           count={0}
-          empty={<Text className="text-muted-foreground text-sm">No projects match.</Text>}
+          emptySlot={<Text className="text-muted-foreground text-sm">No projects match.</Text>}
         />
         <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
         <RouteError error={new Error("Project not found.")} reset={noop} />
@@ -1060,27 +1065,35 @@ const sections: GallerySection[] = [
     description: "A scrolling screen: a header, a grid of cards, an empty state.",
     content: (
       <Screen>
-        <Page>
-          <PageHeader level={3} title="Projects" description="Two active." />
-          <CardGrid>
-            <Card>
-              <CardHeader>
-                <CardTitle>Quarterly review</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Launch plan</CardTitle>
-              </CardHeader>
-            </Card>
-          </CardGrid>
-          <EmptyState
-            level={3}
-            icon={Folder}
-            title="Nothing archived"
-            description="Archived projects show up here."
-          />
-        </Page>
+        <Page
+          contentSlot={
+            <>
+              <PageHeader level={3} title="Projects" description="Two active." />
+              <CardGrid
+                contentSlot={
+                  <>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Quarterly review</CardTitle>
+                      </CardHeader>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Launch plan</CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </>
+                }
+              />
+              <EmptyState
+                level={3}
+                icon={Folder}
+                title="Nothing archived"
+                description="Archived projects show up here."
+              />
+            </>
+          }
+        />
       </Screen>
     ),
   },
@@ -1092,9 +1105,9 @@ const sections: GallerySection[] = [
         <PageLayout
           title="Settings"
           description="For this workspace."
-          action={<Button size="sm" content="Save" />}
-          footer={<Caption>Last saved a minute ago</Caption>}
-          content={<Lines count={6} />}
+          actionSlot={<Button size="sm" content="Save" />}
+          footerSlot={<Caption>Last saved a minute ago</Caption>}
+          contentSlot={<Lines count={6} />}
         />
       </Screen>
     ),
@@ -1105,10 +1118,13 @@ const sections: GallerySection[] = [
     description: "The record when it has loaded, a line of text when it has not.",
     content: (
       <Screen>
-        <DetailPage<Project> entity={project} loading={false} notFoundLabel="Project not found.">
-          {(found) => (
+        <DetailPage<Project>
+          entity={project}
+          loading={false}
+          notFoundLabel="Project not found."
+          contentSlot={(found) => (
             <DescriptionList
-              content={
+              contentSlot={
                 <>
                   <PropertyRow label="Name" value={found.name} />
                   <PropertyRow label="Owner" value={found.owner} />
@@ -1116,10 +1132,13 @@ const sections: GallerySection[] = [
               }
             />
           )}
-        </DetailPage>
-        <DetailPage<Project> entity={null} loading={false} notFoundLabel="Project not found.">
-          {() => null}
-        </DetailPage>
+        />
+        <DetailPage<Project>
+          entity={null}
+          loading={false}
+          notFoundLabel="Project not found."
+          contentSlot={() => null}
+        />
       </Screen>
     ),
   },
@@ -1130,13 +1149,13 @@ const sections: GallerySection[] = [
     content: (
       <Screen>
         <HeaderContentFooter
-          header={<Text className="p-3 font-semibold text-foreground">Inbox</Text>}
-          footer={
+          headerSlot={<Text className="p-3 font-semibold text-foreground">Inbox</Text>}
+          footerSlot={
             <View className="p-3">
               <Button content="Compose" />
             </View>
           }
-          content={
+          contentSlot={
             <View className="p-3">
               <Lines count={30} />
             </View>
@@ -1155,17 +1174,17 @@ const sections: GallerySection[] = [
           level={3}
           title="Team"
           description="Three members."
-          action={<Button size="sm" content="Invite" />}
-          content={<Lines count={2} />}
-          footer={<Caption>Seats are billed monthly</Caption>}
+          actionSlot={<Button size="sm" content="Invite" />}
+          contentSlot={<Lines count={2} />}
+          footerSlot={<Caption>Seats are billed monthly</Caption>}
         />
         <Screen>
           <CenteredLayout
             level={3}
             title="Sign in"
             description="Use your work email."
-            content={<Input placeholder="you@example.com" aria-label="Email" />}
-            footerActions={<Button content="Continue" />}
+            contentSlot={<Input placeholder="you@example.com" aria-label="Email" />}
+            footerActionsSlot={<Button content="Continue" />}
           />
         </Screen>
       </Stack>
@@ -1178,9 +1197,9 @@ const sections: GallerySection[] = [
       <DialogLayout
         title="Invite a teammate"
         description="They get an email with a link."
-        trigger={<Button variant="outline" content="Open dialog layout" />}
-        content={<Input placeholder="name@example.com" aria-label="Teammate's email" />}
-        footerActions={(close) => <Button onPress={close} content="Send invite" />}
+        triggerSlot={<Button variant="outline" content="Open dialog layout" />}
+        contentSlot={<Input placeholder="name@example.com" aria-label="Teammate's email" />}
+        footerActionsSlot={(close) => <Button onPress={close} content="Send invite" />}
       />
     ),
   },
@@ -1191,18 +1210,24 @@ const sections: GallerySection[] = [
       <Screen>
         <Sidebar
           label="Workspace"
-          header={<Text className="font-semibold text-sidebar-foreground">Acme</Text>}
-          footer={<Text className="text-sidebar-foreground text-xs">Signed in as Dana</Text>}
-          content={
+          headerSlot={<Text className="font-semibold text-sidebar-foreground">Acme</Text>}
+          footerSlot={<Text className="text-sidebar-foreground text-xs">Signed in as Dana</Text>}
+          contentSlot={
             <SidebarSection
               as="nav"
               label="Workspace pages"
               title="Workspace"
-              content={
+              contentSlot={
                 <>
-                  <SidebarNavItem label="Projects" icon={<Folder />} count={12} active href="#" />
-                  <SidebarNavItem label="Documents" icon={<FileText />} href="#" />
-                  <SidebarNavItem label="Settings" icon={<Settings />} href="#" />
+                  <SidebarNavItem
+                    label="Projects"
+                    iconSlot={<Folder />}
+                    count={12}
+                    active
+                    href="#"
+                  />
+                  <SidebarNavItem label="Documents" iconSlot={<FileText />} href="#" />
+                  <SidebarNavItem label="Settings" iconSlot={<Settings />} href="#" />
                 </>
               }
             />
@@ -1222,12 +1247,12 @@ const sections: GallerySection[] = [
             className="h-full"
             stackBelow="xl"
             divider="line"
-            first={
+            firstSlot={
               <View className="p-3">
                 <Lines count={3} />
               </View>
             }
-            second={
+            secondSlot={
               <View className="p-3">
                 <Lines count={3} />
               </View>
@@ -1240,8 +1265,8 @@ const sections: GallerySection[] = [
             sidebarPosition="start"
             stackBelow="xl"
             divider="line"
-            sidebar={<Text className="p-3 font-semibold text-foreground">Filters</Text>}
-            content={
+            sidebarSlot={<Text className="p-3 font-semibold text-foreground">Filters</Text>}
+            contentSlot={
               <View className="p-3">
                 <Lines count={4} />
               </View>
@@ -1257,9 +1282,9 @@ const sections: GallerySection[] = [
     content: (
       <Screen>
         <TopBarLayout
-          brand={<Text className="font-semibold text-foreground">Acme</Text>}
+          brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
           navLabel="Site pages"
-          nav={
+          navSlot={
             <>
               <Text role="link" className={navLink}>
                 Projects
@@ -1269,8 +1294,8 @@ const sections: GallerySection[] = [
               </Text>
             </>
           }
-          action={<Button size="sm" variant="outline" content="Sign out" />}
-          content={
+          actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+          contentSlot={
             <View className="p-3">
               <Lines count={5} />
             </View>

@@ -38,7 +38,7 @@ export function FilePicker({ label }: FilePickerProps) {
 
 export function FilePickerButton({
   label,
-  icon = <Upload />,
+  iconSlot = <Upload />,
   variant,
   size,
   className,
@@ -52,7 +52,7 @@ export function FilePickerButton({
       disabled
       aria-label={label}
       accessibilityHint={UNAVAILABLE}
-      icon={icon}
+      iconSlot={iconSlot}
       content={iconOnly ? null : label}
     />
   );

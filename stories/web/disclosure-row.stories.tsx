@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Trash2 } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { expect, fn, userEvent } from "storybook/test";
 import { DisclosureRow } from "@/components/disclosure-row";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +37,7 @@ const Controlled = ({
   );
 };
 
-const detail: ReactNode = (
+const detail = (
   <p className="text-foreground/60 text-sm">
     Read 4 files, wrote 2, and ran the tests. 146 passed.
   </p>
@@ -47,9 +47,9 @@ const args = {
   open: false,
   onOpenChange: fn(),
   title: "Rename the settings page",
-  badges: <Badge variant="secondary">done</Badge>,
+  badgesSlot: <Badge variant="secondary">done</Badge>,
   meta: <span className="text-foreground/60 text-xs">local llama · 2 minutes ago</span>,
-  content: detail,
+  contentSlot: detail,
 };
 
 export const Default: Story = {
@@ -101,13 +101,13 @@ export const OpensWithTheKeyboard: Story = {
 export const WithAnAction: Story = {
   args: {
     ...args,
-    action: (
+    actionSlot: (
       <Button
         variant="outline"
         size="icon"
         onClick={fn()}
         aria-label="Delete this run"
-        icon={<Trash2 />}
+        iconSlot={<Trash2 />}
       />
     ),
   },
@@ -125,7 +125,7 @@ export const WithAnAction: Story = {
 export const WithADescription: Story = {
   args: {
     ...args,
-    badges: <Badge variant="destructive">error</Badge>,
+    badgesSlot: <Badge variant="destructive">error</Badge>,
     description: "The endpoint refused the request: context length exceeded.",
   },
   render: (props) => <Controlled {...props} />,
@@ -142,7 +142,7 @@ export const WithADescription: Story = {
 
 /** A row with nothing to open still draws, and does not claim it controls anything. */
 export const NothingToOpen: Story = {
-  args: { ...args, content: undefined },
+  args: { ...args, contentSlot: undefined },
   render: (props) => <Controlled {...props} />,
   play: async ({ canvas }) => {
     const header = canvas.getByRole("button", { name: /Rename the settings page/ });
@@ -158,7 +158,7 @@ export const NothingToOpen: Story = {
 export const LongContentStaysInTheRow: Story = {
   args: {
     ...args,
-    content: (
+    contentSlot: (
       <pre className="overflow-hidden text-ellipsis text-xs">
         {`$ run --verbose ${"a-very-long-unbroken-token-".repeat(20)}`}
       </pre>

@@ -11,7 +11,7 @@ const meta = {
     label: "Edit workspace",
     variant: "outline",
     size: "icon",
-    icon: <Pencil />,
+    iconSlot: <Pencil />,
     onClick: fn(),
   },
 } satisfies Meta<typeof ActionButton>;
@@ -86,7 +86,7 @@ export const HintReplacesTheLabelInTheTooltip: Story = {
  * assumption being absent.
  */
 export const WorksWithNoProviderAbove: Story = {
-  args: { label: "Delete workspace", variant: "outline", size: "icon", icon: <Trash2 /> },
+  args: { label: "Delete workspace", variant: "outline", size: "icon", iconSlot: <Trash2 /> },
   play: async ({ canvas }) => {
     const button = canvas.getByRole("button", { name: "Delete workspace" });
     await userEvent.hover(button);
@@ -96,7 +96,7 @@ export const WorksWithNoProviderAbove: Story = {
 
 /** Off, it is a named button and nothing else — for a row that already explains itself. */
 export const WithoutTooltip: Story = {
-  args: { tooltip: false, icon: <Pencil />, label: "Edit workspace" },
+  args: { tooltip: false, iconSlot: <Pencil />, label: "Edit workspace" },
   play: async ({ canvas }) => {
     expect(canvas.getByRole("button", { name: "Edit workspace" })).toBeVisible();
     expect(within(document.body).queryByRole("tooltip")).toBeNull();
@@ -201,7 +201,7 @@ export const WithoutTooltipTheHintSurvives: Story = {
  * workaround that silently did nothing.
  */
 export const TheDelayCanMatchTheApp: Story = {
-  args: { label: "Delete workspace", icon: <Trash2 />, delayDuration: 600 },
+  args: { label: "Delete workspace", iconSlot: <Trash2 />, delayDuration: 600 },
   play: async ({ canvas }) => {
     await userEvent.hover(canvas.getByRole("button", { name: "Delete workspace" }));
 
@@ -222,7 +222,7 @@ export const TheDelayCanMatchTheApp: Story = {
  * under the same root waits. Saying the number twice is the only remedy there is.
  */
 export const ARootProviderDoesNotReachIt: Story = {
-  args: { label: "Delete workspace", icon: <Trash2 /> },
+  args: { label: "Delete workspace", iconSlot: <Trash2 /> },
   render: (args) => (
     <TooltipProvider delayDuration={3000}>
       <ActionButton {...args} />
@@ -268,7 +268,7 @@ function InAForm({
  * at the call site says so.
  */
 export const ItDoesNotSubmitTheFormAroundIt: Story = {
-  args: { label: "Remove this schedule", icon: <Trash2 />, onSubmit: fn() },
+  args: { label: "Remove this schedule", iconSlot: <Trash2 />, onSubmit: fn() },
   render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
   play: async ({ canvas, args }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Remove this schedule" }));
@@ -285,7 +285,7 @@ export const ItDoesNotSubmitTheFormAroundIt: Story = {
  * the `disabled` handler that refuses the press did not stand in its way either.
  */
 export const AStrayEnterDoesNotPressIt: Story = {
-  args: { label: "Remove this schedule", icon: <Trash2 />, disabled: true, onSubmit: fn() },
+  args: { label: "Remove this schedule", iconSlot: <Trash2 />, disabled: true, onSubmit: fn() },
   render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
   play: async ({ canvas, args }) => {
     await userEvent.type(canvas.getByLabelText("Schedule"), "{Enter}");
@@ -300,7 +300,7 @@ export const AStrayEnterDoesNotPressIt: Story = {
 
 /** A caller who wants one of these to submit can still say so, and now has to. */
 export const ACallerCanStillMakeItSubmit: Story = {
-  args: { label: "Save the schedule", type: "submit", icon: <Pencil />, onSubmit: fn() },
+  args: { label: "Save the schedule", type: "submit", iconSlot: <Pencil />, onSubmit: fn() },
   render: ({ onSubmit, ...args }) => <InAForm {...args} onSubmit={onSubmit as () => void} />,
   play: async ({ canvas, args }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Save the schedule" }));

@@ -346,8 +346,8 @@ function Buttons() {
             <Button size="sm" content="Small" />
             <Button content="Default" />
             <Button size="lg" content="Large" />
-            <Button size="icon" aria-label="Add" icon={<Plus />} />
-            <Button icon={<Download />} content="With an icon" />
+            <Button size="icon" aria-label="Add" iconSlot={<Plus />} />
+            <Button iconSlot={<Download />} content="With an icon" />
           </>
         }
       />
@@ -450,7 +450,7 @@ function Alerts() {
             variant="warning"
             title="Storage is nearly full"
             description="Uploads stop at 100%."
-            action={<Button size="sm" variant="outline" content="Manage" />}
+            actionSlot={<Button size="sm" variant="outline" content="Manage" />}
           />
           <Alert
             variant="destructive"
@@ -517,7 +517,7 @@ function CodeSamples() {
             content={
               '{\n  "registries": {\n    "@cubeui": "https://cubicecho.github.io/cubeui/r/{name}.json"\n  }\n}'
             }
-            action={<CopyButton value="registries" label="Copy the snippet" />}
+            actionSlot={<CopyButton value="registries" label="Copy the snippet" />}
           />
         </>
       }
@@ -651,7 +651,7 @@ function Overlays() {
               <Button variant="outline" content="Open the menu" />
             </MenuTrigger>
             <MenuContent aria-label="Lane actions">
-              <MenuItem icon={<Pencil />} label="Rename" trailing="F2" onSelect={noop} />
+              <MenuItem iconSlot={<Pencil />} label="Rename" trailing="F2" onSelect={noop} />
               <MenuItem label="Move left" disabled onSelect={noop} />
               <MenuCheckboxItem label="Autosave" checked={autosave} onCheckedChange={setAutosave} />
               <MenuSeparator />
@@ -990,7 +990,7 @@ function Pickers() {
                 <FilePickerButton
                   label="Import"
                   variant="outline"
-                  icon={<Upload />}
+                  iconSlot={<Upload />}
                   onPick={(_text, name) => setPicked(name)}
                 />
                 <output aria-label="Picked file" className="text-muted-foreground text-sm">
@@ -1020,13 +1020,13 @@ function ActionButtons() {
           <>
             <CopyButton value="sk-live-1234" label="Copy the API key" />
             <DownloadButton source="# Notes" filename="notes.md" label="Download notes.md" />
-            <ActionButton label="Edit" variant="outline" size="icon" icon={<Pencil />} />
+            <ActionButton label="Edit" variant="outline" size="icon" iconSlot={<Pencil />} />
             <ActionButton
               label="Refresh"
               hint="Fetches the list again"
               variant="outline"
               size="icon"
-              icon={<RefreshCw />}
+              iconSlot={<RefreshCw />}
             />
             <ConfirmButton
               label="Delete the lane"
@@ -1079,19 +1079,19 @@ function FormFields() {
             label="Project name"
             description="Shown in the sidebar."
             required
-            control={(props) => <Input {...props} defaultValue="Apollo" />}
+            controlSlot={(props) => <Input {...props} defaultValue="Apollo" />}
           />
           <FormField
             label="Key"
             error="A key is three letters."
-            control={(props) => <Input {...props} defaultValue="APOLLO" />}
+            controlSlot={(props) => <Input {...props} defaultValue="APOLLO" />}
           />
-          <FormField label="Loading" loading control={(props) => <Input {...props} />} />
+          <FormField label="Loading" loading controlSlot={(props) => <Input {...props} />} />
           <FieldRow
-            content={
+            contentSlot={
               <>
-                <FormField label="First name" control={(props) => <Input {...props} />} />
-                <FormField label="Last name" control={(props) => <Input {...props} />} />
+                <FormField label="First name" controlSlot={(props) => <Input {...props} />} />
+                <FormField label="Last name" controlSlot={(props) => <Input {...props} />} />
               </>
             }
           />
@@ -1128,7 +1128,7 @@ function AppFormSample() {
       <InputField form={form} name="title" label="Title" required />
       <TextareaField form={form} name="notes" label="Notes" rows={3} />
       <FieldRow
-        content={
+        contentSlot={
           <>
             <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
             <NumberField form={form} name="estimate" label="Estimate, in days" />
@@ -1242,15 +1242,15 @@ function Sections() {
             level={3}
             title="Members"
             description="Who can open this workspace."
-            action={<Button size="sm" variant="outline" content="Invite" />}
-            content={<p className="text-foreground text-sm">Ada, Grace and Edsger.</p>}
+            actionSlot={<Button size="sm" variant="outline" content="Invite" />}
+            contentSlot={<p className="text-foreground text-sm">Ada, Grace and Edsger.</p>}
           />
           <Section
             level={3}
             surface="card"
             title="Billing"
             description="A section drawn on a card."
-            content={<p className="text-foreground text-sm">Team plan, ten seats.</p>}
+            contentSlot={<p className="text-foreground text-sm">Team plan, ten seats.</p>}
           />
         </>
       }
@@ -1262,17 +1262,17 @@ function ListItems() {
   return (
     <div className="flex max-w-xl flex-col">
       <ListItem
-        leading={<Folder className="size-4" />}
+        leadingSlot={<Folder className="size-4" />}
         title="Design system"
         description="14 notes"
         meta="2 days ago"
         onClick={noop}
       />
       <ListItem
-        leading={<FileText className="size-4" />}
+        leadingSlot={<FileText className="size-4" />}
         title="Release checklist"
         description="A row that is not pressable"
-        action={<Button size="sm" variant="outline" content="Open" />}
+        actionSlot={<Button size="sm" variant="outline" content="Open" />}
       />
     </div>
   );
@@ -1287,21 +1287,23 @@ function Disclosures() {
           <Disclosure
             title="Advanced"
             description="Timeouts and retries."
-            content={<p className="text-foreground text-sm">Retries: 3. Timeout: 30 seconds.</p>}
+            contentSlot={
+              <p className="text-foreground text-sm">Retries: 3. Timeout: 30 seconds.</p>
+            }
           />
           <Disclosure
             title="Open from the start"
             defaultOpen
-            content={<p className="text-foreground text-sm">This one begins open.</p>}
+            contentSlot={<p className="text-foreground text-sm">This one begins open.</p>}
           />
           <DisclosureRow
             open={open}
             onOpenChange={setOpen}
             title="atlas"
-            badges={<Badge variant="secondary">http</Badge>}
+            badgesSlot={<Badge variant="secondary">http</Badge>}
             meta="12 tools"
             description="An HTTP server."
-            content={<p className="text-foreground text-sm">search, fetch, summarise…</p>}
+            contentSlot={<p className="text-foreground text-sm">search, fetch, summarise…</p>}
           />
         </>
       }
@@ -1313,21 +1315,21 @@ function Descriptions() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <DescriptionList
-        content={
+        contentSlot={
           <>
             <PropertyRow label="Owner" value="Ada Lovelace" />
             <PropertyRow label="Created" value="15 September 2026" hint="By import" />
             <PropertyRow
               label="API key"
               value="sk-live-…1234"
-              action={<CopyButton value="sk-live-1234" label="Copy the key" />}
+              actionSlot={<CopyButton value="sk-live-1234" label="Copy the key" />}
             />
           </>
         }
       />
       <DescriptionList
         layout="stacked"
-        content={
+        contentSlot={
           <>
             <PropertyRow label="Region" value="eu-west-1" />
             <PropertyRow label="Plan" value="Team" />
@@ -1345,7 +1347,7 @@ function SettingRows() {
       <SettingRow
         title="Weekly digest"
         description="One email on Monday morning."
-        action={({ titleId, descriptionId }) => (
+        actionSlot={({ titleId, descriptionId }) => (
           <Switch
             checked={on}
             onCheckedChange={setOn}
@@ -1357,7 +1359,7 @@ function SettingRows() {
       <SettingRow
         title="Export"
         description="Everything in this workspace, as JSON."
-        action={<Button size="sm" variant="outline" content="Export" />}
+        actionSlot={<Button size="sm" variant="outline" content="Export" />}
       />
     </div>
   );
@@ -1367,7 +1369,7 @@ function StatTiles() {
   const [selected, setSelected] = useState("open");
   return (
     <div className="grid gap-4 md:grid-cols-4">
-      <StatTile label="Servers" value="12" hint="3 stopped" icon={<Settings />} />
+      <StatTile label="Servers" value="12" hint="3 stopped" iconSlot={<Settings />} />
       <StatTile label="Loading" value="0" loading />
       <StatTile
         label="Open"
@@ -1396,7 +1398,7 @@ function QueryStates() {
         query={idle}
         what="servers"
         count={0}
-        empty={<EmptyState compact title="No servers yet" />}
+        emptySlot={<EmptyState compact title="No servers yet" />}
       />
     </div>
   );
@@ -1409,10 +1411,10 @@ function PageHeaders() {
         <>
           <PageHeader
             level={3}
-            icon={<Settings />}
+            iconSlot={<Settings />}
             title="Settings"
             description="Everything about this workspace."
-            action={<Button size="sm" content="Save" />}
+            actionSlot={<Button size="sm" content="Save" />}
           />
           <PageHeader level={3} title="Loading" loading />
         </>
@@ -1428,14 +1430,16 @@ function CardLayouts() {
         level={3}
         title="Danger zone"
         description="These cannot be undone."
-        content={<p className="text-foreground text-sm">Delete the workspace and all its data.</p>}
-        footerActions={<Button variant="destructive" content="Delete" />}
+        contentSlot={
+          <p className="text-foreground text-sm">Delete the workspace and all its data.</p>
+        }
+        footerActionsSlot={<Button variant="destructive" content="Delete" />}
       />
       <CardLayout
         level={3}
         title="Webhooks"
-        action={<Button size="sm" variant="outline" content="Add" />}
-        empty={<EmptyState compact title="No webhooks yet" />}
+        actionSlot={<Button size="sm" variant="outline" content="Add" />}
+        emptySlot={<EmptyState compact title="No webhooks yet" />}
       />
     </div>
   );
@@ -1444,19 +1448,19 @@ function CardLayouts() {
 function DialogLayoutSample() {
   return (
     <DialogLayout
-      trigger={<Button variant="outline" content="Open the dialog layout" />}
+      triggerSlot={<Button variant="outline" content="Open the dialog layout" />}
       title="Edit the server"
       description="A long form scrolls between a title and a footer that stay put."
-      content={
+      contentSlot={
         <div className="flex flex-col gap-4">
           <FormField
             label="Server name"
-            control={(props) => <Input {...props} defaultValue="atlas" />}
+            controlSlot={(props) => <Input {...props} defaultValue="atlas" />}
           />
           {paragraphs(20)}
         </div>
       }
-      footerActions={(close) => (
+      footerActionsSlot={(close) => (
         <>
           <Button variant="outline" onClick={close} content="Cancel" />
           <Button onClick={close} content="Save the server" />
@@ -1472,14 +1476,14 @@ function SidebarSample({ label }: { label: string }) {
   return (
     <Sidebar
       label={label}
-      header={<span className="font-semibold text-sidebar-foreground">Router</span>}
-      content={
+      headerSlot={<span className="font-semibold text-sidebar-foreground">Router</span>}
+      contentSlot={
         <SidebarSection
           as="nav"
           label={`${label} places`}
           title="Workspace"
           level={3}
-          content={PLACES.map((place) => (
+          contentSlot={PLACES.map((place) => (
             <SidebarNavItem
               key={place}
               href={`#${place.toLowerCase()}`}
@@ -1490,7 +1494,7 @@ function SidebarSample({ label }: { label: string }) {
           ))}
         />
       }
-      footer={<span className="text-sidebar-foreground text-sm">ada@example.com</span>}
+      footerSlot={<span className="text-sidebar-foreground text-sm">ada@example.com</span>}
     />
   );
 }
@@ -1653,13 +1657,13 @@ const sections: GallerySection[] = [
             level={3}
             title="Sign in"
             description="Use your work email."
-            content={
+            contentSlot={
               <FormField
                 label="Work email"
-                control={(props) => <Input {...props} placeholder="ada@example.com" />}
+                controlSlot={(props) => <Input {...props} placeholder="ada@example.com" />}
               />
             }
-            footerActions={<Button content="Continue" />}
+            footerActionsSlot={<Button content="Continue" />}
           />
         }
       />
@@ -1676,9 +1680,11 @@ const sections: GallerySection[] = [
         content={
           <HeaderContentFooter
             className="h-full"
-            header={<p className="p-3 font-medium text-foreground text-sm">A header that stays</p>}
-            content={<div className="px-3">{paragraphs(20)}</div>}
-            footer={<p className="p-3 text-muted-foreground text-sm">A footer that stays</p>}
+            headerSlot={
+              <p className="p-3 font-medium text-foreground text-sm">A header that stays</p>
+            }
+            contentSlot={<div className="px-3">{paragraphs(20)}</div>}
+            footerSlot={<p className="p-3 text-muted-foreground text-sm">A footer that stays</p>}
           />
         }
       />
@@ -1695,9 +1701,9 @@ const sections: GallerySection[] = [
             level={3}
             title="Servers"
             description="Everything this workspace can reach."
-            action={<Button size="sm" content="New server" />}
-            content={<div className="px-1">{paragraphs(20)}</div>}
-            footer={<p className="text-muted-foreground text-sm">20 rows</p>}
+            actionSlot={<Button size="sm" content="New server" />}
+            contentSlot={<div className="px-1">{paragraphs(20)}</div>}
+            footerSlot={<p className="text-muted-foreground text-sm">20 rows</p>}
           />
         }
       />
@@ -1710,25 +1716,31 @@ const sections: GallerySection[] = [
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
           content={
-            <Page>
-              <PageHeader level={3} title="Projects" />
-              <CardGrid>
-                {SERVERS.map((server) => (
-                  <Card key={server.name}>
-                    <CardHeader>
-                      <CardTitle>{server.name}</CardTitle>
-                      <CardDescription>{server.status}</CardDescription>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </CardGrid>
-            </Page>
+            <Page
+              contentSlot={
+                <>
+                  <PageHeader level={3} title="Projects" />
+                  <CardGrid
+                    contentSlot={SERVERS.map((server) => (
+                      <Card key={server.name}>
+                        <CardHeader>
+                          <CardTitle>{server.name}</CardTitle>
+                          <CardDescription>{server.status}</CardDescription>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  />
+                </>
+              }
+            />
           }
         />
         <Frame
           content={
-            <DetailPage<Server> entity={SERVERS[0]} notFoundLabel="Server not found">
-              {(server) => (
+            <DetailPage<Server>
+              entity={SERVERS[0]}
+              notFoundLabel="Server not found"
+              contentSlot={(server) => (
                 <>
                   <DetailHeader
                     onBack={noop}
@@ -1737,13 +1749,13 @@ const sections: GallerySection[] = [
                     colorLabel="Blue"
                     title={server.name}
                     subtitle={`${server.tools} tools over ${server.transport}`}
-                    badge={<Badge variant="secondary">{server.status}</Badge>}
-                    actions={<EditButton onClick={noop} label="Edit the server" />}
+                    badgeSlot={<Badge variant="secondary">{server.status}</Badge>}
+                    actionsSlot={<EditButton onClick={noop} label="Edit the server" />}
                   />
                   <p className="text-foreground text-sm">The body of the detail page.</p>
                 </>
               )}
-            </DetailPage>
+            />
           }
         />
       </div>
@@ -1759,8 +1771,10 @@ const sections: GallerySection[] = [
           <SplitLayout
             className="h-full"
             firstWidth="sm"
-            first={<div className="p-3">{paragraphs(4)}</div>}
-            second={<p className="p-3 text-foreground text-sm">The second pane takes the rest.</p>}
+            firstSlot={<div className="p-3">{paragraphs(4)}</div>}
+            secondSlot={
+              <p className="p-3 text-foreground text-sm">The second pane takes the rest.</p>
+            }
           />
         }
       />
@@ -1775,8 +1789,8 @@ const sections: GallerySection[] = [
           <SidebarLayout
             className="h-full"
             sidebarWidth="auto"
-            sidebar={<SidebarSample label="Gallery sidebar" />}
-            content={<div className="p-4">{paragraphs(20)}</div>}
+            sidebarSlot={<SidebarSample label="Gallery sidebar" />}
+            contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }
       />
@@ -1791,9 +1805,9 @@ const sections: GallerySection[] = [
         content={
           <TopBarLayout
             className="h-full"
-            brand={<span className="font-semibold text-foreground">Router</span>}
+            brandSlot={<span className="font-semibold text-foreground">Router</span>}
             navLabel="Gallery top bar"
-            nav={PLACES.map((place) => (
+            navSlot={PLACES.map((place) => (
               <a
                 key={place}
                 href={`#${place.toLowerCase()}`}
@@ -1802,8 +1816,8 @@ const sections: GallerySection[] = [
                 {place}
               </a>
             ))}
-            action={<Button size="sm" variant="outline" content="Sign out" />}
-            content={<div className="p-4">{paragraphs(20)}</div>}
+            actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }
       />

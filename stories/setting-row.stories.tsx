@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
@@ -17,7 +17,7 @@ import { SideBySide } from "./side-by-side";
  * the frame's, not the window's — the row wraps rather than reading a breakpoint — so both cases
  * hold in the test runner's phone-width viewport and in a desktop Storybook alike.
  *
- * The switch is named by the row's title through the `action` function's `titleId`; the button
+ * The switch is named by the row's title through the `actionSlot` function's `titleId`; the button
  * in the description-only row keeps its own text as its name. The a11y addon runs as an error on
  * every story, so each one is also that audit.
  */
@@ -33,8 +33,8 @@ function Rows({
   button,
 }: {
   SettingRow: SettingRowComponent;
-  toggle: (ids: SettingRowIds, checked: boolean, onChange: (next: boolean) => void) => ReactNode;
-  button: (label: string, onPress: () => void) => ReactNode;
+  toggle: (ids: SettingRowIds, checked: boolean, onChange: (next: boolean) => void) => ReactElement;
+  button: (label: string, onPress: () => void) => ReactElement;
 }) {
   const [dark, setDark] = useState(false);
   const [cleared, setCleared] = useState(0);
@@ -43,11 +43,11 @@ function Rows({
       <SettingRow
         title="Dark mode"
         description="Switch between light and dark theme."
-        action={(ids) => toggle(ids, dark, setDark)}
+        actionSlot={(ids) => toggle(ids, dark, setDark)}
       />
       <SettingRow
         description={`Forget every turn and session. Cleared ${cleared} times.`}
-        action={button("Clear all memory", () => setCleared((n) => n + 1))}
+        actionSlot={button("Clear all memory", () => setCleared((n) => n + 1))}
       />
     </div>
   );

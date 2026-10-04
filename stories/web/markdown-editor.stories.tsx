@@ -50,7 +50,7 @@ function Held({
     <MarkdownEditor
       aria-label="Skill body"
       placeholder="# My skill"
-      empty={<p className="m-0 text-foreground/60">Nothing to preview yet.</p>}
+      emptySlot={<p className="m-0 text-foreground/60">Nothing to preview yet.</p>}
       value={value}
       onValueChange={(next) => {
         setValue(next);
@@ -228,7 +228,7 @@ export const Blank: Story = {
 };
 
 /**
- * As a field of a form. `FormField` hands its `control` an id and the description's id, and the
+ * As a field of a form. `FormField` hands its `controlSlot` an id and the description's id, and the
  * editor passes both to the textarea — so the label names the source, and a click on it lands there.
  */
 export const InAFormField: Story = {
@@ -239,7 +239,7 @@ export const InAFormField: Story = {
       <FormField
         label="Instructions"
         description="Markdown. What the skill does and when to use it."
-        control={<MarkdownEditor value={value} onValueChange={setValue} defaultView="edit" />}
+        controlSlot={<MarkdownEditor value={value} onValueChange={setValue} defaultView="edit" />}
       />
     );
   },

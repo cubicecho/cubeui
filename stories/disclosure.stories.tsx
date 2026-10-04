@@ -27,8 +27,8 @@ function Examples({
   body,
 }: {
   Disclosure: DisclosureComponent;
-  action: (onPress: () => void) => React.ReactNode;
-  body: (text: string) => React.ReactNode;
+  action: (onPress: () => void) => React.ReactElement;
+  body: (text: string) => React.ReactElement;
 }) {
   const [copied, setCopied] = useState(0);
   const [showCompleted, setShowCompleted] = useState(false);
@@ -37,14 +37,14 @@ function Examples({
       <Disclosure
         title="Raw output"
         description={`Copied ${copied} times`}
-        action={action(() => setCopied((n) => n + 1))}
-        content={body('{ "exitCode": 0 }')}
+        actionSlot={action(() => setCopied((n) => n + 1))}
+        contentSlot={body('{ "exitCode": 0 }')}
       />
       <Disclosure
         title={`${showCompleted ? "Hide" : "Show"} completed (3)`}
         open={showCompleted}
         onOpenChange={setShowCompleted}
-        content={body("Water the plants")}
+        contentSlot={body("Water the plants")}
       />
     </div>
   );

@@ -17,8 +17,8 @@ type Story = StoryObj<typeof meta>;
 
 const Actions = () => (
   <>
-    <Button size="sm" variant="outline" icon={<Download />} content="Export" />
-    <Button size="sm" variant="info" icon={<Plus />} content="New workspace" />
+    <Button size="sm" variant="outline" iconSlot={<Download />} content="Export" />
+    <Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />
   </>
 );
 
@@ -38,8 +38,8 @@ export const Default: Story = {
   args: {
     title: "Workspaces",
     description: "Each one exposes the servers you choose.",
-    action: <Actions />,
-    content: <Search />,
+    actionSlot: <Actions />,
+    contentSlot: <Search />,
   },
 };
 
@@ -60,7 +60,7 @@ export const TitleOnly: Story = {
  */
 export const WithIcon: Story = {
   args: {
-    icon: <Users />,
+    iconSlot: <Users />,
     title: "Workspaces",
     description: "The icon arrives unsized and leaves at the level's size.",
   },
@@ -94,7 +94,7 @@ export const Levels: StoryObj<typeof PageHeader> = {
 /** A back link is a one-step trail, so it goes where a trail goes and keeps the same inset. */
 export const WithBreadcrumbs: Story = {
   args: {
-    breadcrumbs: (
+    breadcrumbsSlot: (
       <nav aria-label="Breadcrumb" className="text-foreground/60 text-sm">
         <a className="underline underline-offset-4" href="#workspaces">
           Workspaces
@@ -105,7 +105,7 @@ export const WithBreadcrumbs: Story = {
     ),
     title: "Acme Staging",
     description: "Six servers, two members.",
-    action: <Actions />,
+    actionSlot: <Actions />,
   },
   play: async ({ canvasElement }) => {
     const trail = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-breadcrumbs]");
@@ -134,14 +134,14 @@ export const AlignsWithTheBodyOfAPageChassis: StoryObj<typeof PageHeader> = {
     <div className="w-[1800px]">
       <HeaderContentFooter
         width="page"
-        header={
+        headerSlot={
           <PageHeader
             title="Workspaces"
             description="Each one exposes the servers you choose."
-            action={<Actions />}
+            actionSlot={<Actions />}
           />
         }
-        content={<Rows />}
+        contentSlot={<Rows />}
       />
     </div>
   ),
@@ -180,7 +180,7 @@ export const TheRuleFollowsTheControlRow: StoryObj<typeof PageHeader> = {
       <PageHeader
         title="Workspaces"
         description="A search row already divides them."
-        content={<Search />}
+        contentSlot={<Search />}
       />
     </div>
   ),
@@ -208,14 +208,14 @@ export const Loading: StoryObj<typeof PageHeader> = {
         loading
         title="Acme Staging"
         description="Six servers, two members."
-        action={<Actions />}
-        content={<Search />}
+        actionSlot={<Actions />}
+        contentSlot={<Search />}
       />
       <PageHeader
         title="Acme Staging"
         description="Six servers, two members."
-        action={<Actions />}
-        content={<Search />}
+        actionSlot={<Actions />}
+        contentSlot={<Search />}
       />
     </div>
   ),
@@ -255,8 +255,8 @@ export const NarrowContainer: StoryObj<typeof PageHeader> = {
       <PageHeader
         title="Workspaces and every server each one exposes"
         description="Each one exposes the servers you choose."
-        action={<Actions />}
-        content={<Search />}
+        actionSlot={<Actions />}
+        contentSlot={<Search />}
       />
     </div>
   ),

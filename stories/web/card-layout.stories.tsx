@@ -28,9 +28,9 @@ export const Default: Story = {
   args: {
     title: "Categories",
     description: "Deleting a category keeps its activities — they go back to uncategorized.",
-    action: <Button size="sm" variant="info" icon={<Plus />} content="Add" />,
-    footerActions: <Button size="sm" variant="positive" content="Save" />,
-    content: <Rows />,
+    actionSlot: <Button size="sm" variant="info" iconSlot={<Plus />} content="Add" />,
+    footerActionsSlot: <Button size="sm" variant="positive" content="Save" />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvas }) => {
     const title = canvas.getByText("Categories");
@@ -46,7 +46,7 @@ export const Default: Story = {
 
 /** Title only. Every other slot absent, and none of them leaves a wrapper behind. */
 export const TitleOnly: Story = {
-  args: { title: "Categories", content: <Rows /> },
+  args: { title: "Categories", contentSlot: <Rows /> },
   play: async ({ canvasElement }) => {
     expect(canvasElement.querySelector("[data-slot=card-footer]")).toBeNull();
   },
@@ -55,10 +55,10 @@ export const TitleOnly: Story = {
 /** An icon is passed bare — `<Plus />`, not `<Plus className="size-4" />`. The shell sizes it. */
 export const WithIcon: Story = {
   args: {
-    icon: <Plus />,
+    iconSlot: <Plus />,
     title: "Categories",
     description: "The icon arrives unsized and leaves at 16px.",
-    content: <Rows />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvasElement }) => {
     const svg = canvasElement.querySelector("svg");
@@ -68,15 +68,15 @@ export const WithIcon: Story = {
 };
 
 /**
- * `empty` replaces the body when `content` is empty — and `[].map(…)` is an empty array, not
- * null, which is why the shell counts the nodes instead of testing them for truth. The call site
- * writes the map plainly; it never writes `items.length === 0 ? … : …`.
+ * `emptySlot` replaces the body when `contentSlot` is empty — and `[].map(…)` is an empty array,
+ * not null, which is why the shell counts the nodes instead of testing them for truth. The call
+ * site writes the map plainly; it never writes `items.length === 0 ? … : …`.
  */
 export const Empty: Story = {
   args: {
     title: "Categories",
-    empty: <p className="text-foreground/60 text-sm">No categories yet.</p>,
-    content: [].map(() => null),
+    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    contentSlot: [].map(() => null),
   },
   play: async ({ canvasElement }) => {
     expect(canvasElement.textContent).toContain("No categories yet.");
@@ -84,39 +84,41 @@ export const Empty: Story = {
 };
 
 /**
- * Both footer slots. `footer` takes the start, `footerActions` the end, and the shell splits
- * them — a destructive action held away from the one you meant to press.
+ * Both footer slots. `footerSlot` takes the start, `footerActionsSlot` the end, and the shell
+ * splits them — a destructive action held away from the one you meant to press.
  */
 export const SplitFooter: Story = {
   args: {
     title: "Danger zone",
-    footer: <Button size="sm" variant="destructive-outline" content="Delete" />,
-    footerActions: (
+    footerSlot: <Button size="sm" variant="destructive-outline" content="Delete" />,
+    footerActionsSlot: (
       <>
         <Button size="sm" variant="outline" content="Cancel" />
         <Button size="sm" variant="positive" content="Save" />
       </>
     ),
-    content: <Rows />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvas }) => {
     const remove = canvas.getByRole("button", { name: "Delete" }).getBoundingClientRect();
     const cancel = canvas.getByRole("button", { name: "Cancel" }).getBoundingClientRect();
     const save = canvas.getByRole("button", { name: "Save" }).getBoundingClientRect();
-    // `footer` and `footerActions` go to opposite ends: the space is between Delete and Cancel,
-    // not between Cancel and Save.
+    // `footerSlot` and `footerActionsSlot` go to opposite ends: the space is between Delete and
+    // Cancel, not between Cancel and Save.
     expect(remove.right).toBeLessThan(cancel.left);
     expect(cancel.right).toBeLessThanOrEqual(save.left);
     expect(cancel.left - remove.right).toBeGreaterThan(save.left - cancel.right);
   },
 };
 
-/** `footerActions` alone right-aligns. This is the common case, and it needs no `footer`. */
+/**
+ * `footerActionsSlot` alone right-aligns. This is the common case, and it needs no `footerSlot`.
+ */
 export const ActionsOnly: Story = {
   args: {
     title: "Categories",
-    footerActions: <Button size="sm" variant="positive" content="Save" />,
-    content: <Rows />,
+    footerActionsSlot: <Button size="sm" variant="positive" content="Save" />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvas }) => {
     const title = canvas.getByText("Categories").getBoundingClientRect();
@@ -145,7 +147,7 @@ export const LongTitleTruncates: Story = {
   args: {
     title: "Categories, subcategories, and everything filed under them",
     description: "The description wraps; the title does not.",
-    content: <Rows />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvas }) => {
     const title = canvas.getByRole("heading", { name: /^Categories/ });

@@ -10,22 +10,22 @@ import {
   ItemFooter,
   ItemTitle,
 } from "@/components/ui/item";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 type DisclosureRowProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: ReactNode;
   /** Whatever the row is wearing: a status, a kind, a state. Drawn before the title. */
-  badges?: ReactNode | undefined;
+  badgesSlot?: SlotNode | undefined;
   /** The grey line of facts beside the title — a name, a time, a count. */
   meta?: ReactNode | undefined;
   /** Two clipped lines of what the thing said, drawn under the title whether open or not. */
   description?: ReactNode | undefined;
   /** Buttons, outside the disclosure: a row is opened by its heading and acted on by these. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** What the row opens onto. */
-  content?: ReactNode | undefined;
+  contentSlot?: SlotNode | undefined;
   className?: string | undefined;
   contentClassName?: string | undefined;
 };
@@ -44,7 +44,7 @@ type DisclosureRowProps = {
  * - `aria-expanded` on that button, so the state is announced rather than only drawn as a
  *   rotated chevron; and on the web `aria-controls` naming the body, while the body is there.
  * - The chevron turns off the same boolean, so there is one source of truth for open.
- * - **`action` sits outside the button.** A control nested inside a button is invalid HTML and,
+ * - **`actionSlot` sits outside the button.** A control nested inside a button is invalid HTML and,
  *   in practice, a delete button that cannot be pressed. Three pages of one app were laid out
  *   this way after finding that out.
  *
@@ -57,23 +57,23 @@ type DisclosureRowProps = {
  * link to a run, a "show the failure" button further up the page. An uncontrolled default would
  * be a convenience worth adding, not the base case.
  *
- * On a device, a string `meta`, `action` or `content` is wrapped in a `Text` by the `Item` part it
- * sits in; an element is placed as it is.
+ * On a device, a string `meta` is wrapped in a `Text` by the `Item` part it sits in; an element is
+ * placed as it is. `actionSlot` and `contentSlot` take elements only.
  */
 export function DisclosureRow({
   open,
   onOpenChange,
   title,
-  badges,
+  badgesSlot,
   meta,
   description,
-  action,
-  content,
+  actionSlot,
+  contentSlot,
   className,
   contentClassName,
 }: DisclosureRowProps) {
   const contentId = React.useId();
-  const isOpen = open && Boolean(content);
+  const isOpen = open && Boolean(contentSlot);
 
   return (
     <Item testID="disclosure-row" variant="outline" className={cn("items-start", className)}>
@@ -105,7 +105,7 @@ export function DisclosureRow({
         />
         <ItemContent className="min-w-0">
           <ItemTitle className="flex-wrap">
-            {badges}
+            {badgesSlot}
             <Text
               testID="disclosure-row-title"
               className={cn(
@@ -123,7 +123,7 @@ export function DisclosureRow({
         </ItemContent>
       </Pressable>
 
-      {action ? <ItemActions className="gap-1">{action}</ItemActions> : null}
+      {actionSlot ? <ItemActions className="gap-1">{actionSlot}</ItemActions> : null}
 
       {isOpen ? (
         <ItemFooter
@@ -133,7 +133,7 @@ export function DisclosureRow({
             contentClassName,
           )}
         >
-          {content}
+          {contentSlot}
         </ItemFooter>
       ) : null}
     </Item>

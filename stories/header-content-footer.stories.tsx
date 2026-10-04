@@ -38,7 +38,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
           scroll
           className="h-full"
           onScroll={setPosition}
-          content={
+          contentSlot={
             half === "native" ? (
               // In a view of their own, so the rows are one child of the slot whatever it is.
               <View>
@@ -73,7 +73,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
  * numbers alone.
  */
 export const OnScroll: Story = {
-  args: { content: null },
+  args: { contentSlot: null },
   render: () => (
     <SideBySide native={<Following half="native" />} compiled={<Following half="compiled" />} />
   ),
@@ -107,7 +107,7 @@ function Filling({ half }: { half: "native" | "compiled" }) {
       <Chassis
         className="h-full"
         contentClassName="gap-4"
-        content={
+        contentSlot={
           half === "native" ? (
             <>
               <View testID="native-row" className="h-10 bg-muted" />
@@ -131,7 +131,7 @@ function Filling({ half }: { half: "native" | "compiled" }) {
  * `h-full` in place of the `flex-1`, which is what the web half used to need.
  */
 export const SlotIsAFlexColumn: Story = {
-  args: { content: null },
+  args: { contentSlot: null },
   render: () => (
     <SideBySide native={<Filling half="native" />} compiled={<Filling half="compiled" />} />
   ),

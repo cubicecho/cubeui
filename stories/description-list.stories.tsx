@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, ReactElement, ReactNode } from "react";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import {
@@ -32,7 +32,7 @@ type Row = ComponentType<{
   label: ReactNode;
   value: ReactNode;
   hint?: ReactNode;
-  action?: ReactNode;
+  actionSlot?: ReactElement;
   valueClassName?: string;
 }>;
 
@@ -40,7 +40,7 @@ const nativeCopy = <NativeButton size="sm" variant="outline" content="Copy path"
 const compiledCopy = <CompiledButton size="sm" variant="outline" content="Copy path" />;
 
 /** The ragdown settings page the issue was filed from, drawn with either half's parts. */
-function rows(PropertyRow: Row, copy: ReactNode) {
+function rows(PropertyRow: Row, copy: ReactElement) {
   return [
     <PropertyRow
       key="embedder"
@@ -48,7 +48,7 @@ function rows(PropertyRow: Row, copy: ReactNode) {
       value="bge-small"
       hint="Set with RAGDOWN_EMBEDDER"
     />,
-    <PropertyRow key="docs" label="Docs folder" value="/data/notes" action={copy} />,
+    <PropertyRow key="docs" label="Docs folder" value="/data/notes" actionSlot={copy} />,
     <PropertyRow key="index" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
   ];
 }
@@ -56,8 +56,10 @@ function rows(PropertyRow: Row, copy: ReactNode) {
 export const Inline: Story = {
   render: () => (
     <SideBySide
-      native={<Native className="native-root" content={rows(NativeRow, nativeCopy)} />}
-      compiled={<Compiled className="compiled-root" content={rows(CompiledRow, compiledCopy)} />}
+      native={<Native className="native-root" contentSlot={rows(NativeRow, nativeCopy)} />}
+      compiled={
+        <Compiled className="compiled-root" contentSlot={rows(CompiledRow, compiledCopy)} />
+      }
     />
   ),
   play: async ({ canvasElement }) => {
@@ -114,12 +116,12 @@ export const InlineWhenNarrow: Story = {
     <SideBySide
       native={
         <div style={{ width: 240 }}>
-          <Native className="native-root" content={rows(NativeRow, nativeCopy)} />
+          <Native className="native-root" contentSlot={rows(NativeRow, nativeCopy)} />
         </div>
       }
       compiled={
         <div style={{ width: 240 }}>
-          <Compiled className="compiled-root" content={rows(CompiledRow, compiledCopy)} />
+          <Compiled className="compiled-root" contentSlot={rows(CompiledRow, compiledCopy)} />
         </div>
       }
     />
@@ -140,13 +142,17 @@ export const Stacked: Story = {
   render: () => (
     <SideBySide
       native={
-        <Native layout="stacked" className="native-root" content={rows(NativeRow, nativeCopy)} />
+        <Native
+          layout="stacked"
+          className="native-root"
+          contentSlot={rows(NativeRow, nativeCopy)}
+        />
       }
       compiled={
         <Compiled
           layout="stacked"
           className="compiled-root"
-          content={rows(CompiledRow, compiledCopy)}
+          contentSlot={rows(CompiledRow, compiledCopy)}
         />
       }
     />
@@ -192,9 +198,11 @@ const isMonospace = (el: Element) => /mono/i.test(getComputedStyle(el).fontFamil
 export const MonospaceValue: Story = {
   render: () => (
     <SideBySide
-      native={<Native className="native-root" content={machineRows(NativeRow, "/data/notes")} />}
+      native={
+        <Native className="native-root" contentSlot={machineRows(NativeRow, "/data/notes")} />
+      }
       compiled={
-        <Compiled className="compiled-root" content={machineRows(CompiledRow, "/data/notes")} />
+        <Compiled className="compiled-root" contentSlot={machineRows(CompiledRow, "/data/notes")} />
       }
     />
   ),
@@ -230,12 +238,12 @@ export const MonospaceValueWhenNarrow: Story = {
     <SideBySide
       native={
         <div style={{ width: 240 }}>
-          <Native className="native-root" content={machineRows(NativeRow, LONG_PATH)} />
+          <Native className="native-root" contentSlot={machineRows(NativeRow, LONG_PATH)} />
         </div>
       }
       compiled={
         <div style={{ width: 240 }}>
-          <Compiled className="compiled-root" content={machineRows(CompiledRow, LONG_PATH)} />
+          <Compiled className="compiled-root" contentSlot={machineRows(CompiledRow, LONG_PATH)} />
         </div>
       }
     />

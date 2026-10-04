@@ -15,7 +15,7 @@ export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 
 /** Everything `FormField` draws, minus the two parts a bound field works out for itself. */
-export type FieldProps = Omit<ComponentProps<typeof FormField>, "control" | "error">;
+export type FieldProps = Omit<ComponentProps<typeof FormField>, "controlSlot" | "error">;
 
 /**
  * The keys above, as values, so a call site can spread control props and field props into one
@@ -105,7 +105,7 @@ function BoundInputField(props: InputFieldProps) {
     <FormField
       {...fieldProps}
       error={error}
-      control={
+      controlSlot={
         <Input
           {...input}
           value={field.state.value ?? ""}
@@ -171,7 +171,7 @@ function BoundNumberField(props: NumberFieldProps) {
     <FormField
       {...fieldProps}
       error={error}
-      control={
+      controlSlot={
         <Input
           // `inputMode` is what gets a phone keypad; `type` is what gets the spinners and the
           // browser's own numeric parsing. They are not the same knob and both are wanted.
@@ -228,7 +228,7 @@ function BoundTextareaField(props: TextareaFieldProps) {
       loadingClassName={TEXTAREA_BOX[textarea.rows ?? 0] ?? "h-16"}
       {...fieldProps}
       error={error}
-      control={
+      controlSlot={
         <Textarea
           {...textarea}
           value={field.state.value ?? ""}
@@ -279,7 +279,7 @@ function BoundSelectField({
     <FormField
       {...rest}
       error={error}
-      control={(wired) => (
+      controlSlot={(wired) => (
         <OptionSelect
           {...wired}
           options={options}
@@ -314,7 +314,7 @@ function BoundCheckboxField(props: CheckboxFieldProps) {
       orientation="horizontal"
       {...fieldProps}
       error={error}
-      control={
+      controlSlot={
         <Checkbox
           {...checkbox}
           checked={field.state.value ?? false}
@@ -343,7 +343,7 @@ function BoundSwitchField(props: SwitchFieldProps) {
       loadingClassName="h-5 w-8 rounded-full"
       {...fieldProps}
       error={error}
-      control={
+      controlSlot={
         <Switch
           {...control}
           checked={field.state.value ?? false}

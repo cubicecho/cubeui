@@ -58,8 +58,8 @@ export const Default: Story = {
     </div>
   ),
   args: {
-    first: <Surface label="First" />,
-    second: <Surface label="Second" />,
+    firstSlot: <Surface label="First" />,
+    secondSlot: <Surface label="Second" />,
     stackBelow: "never",
   },
   play: async ({ canvasElement }) => {
@@ -89,13 +89,13 @@ export const Default: Story = {
 export const EitherPaneCanCarryTheWidth: Story = {
   // Written out rather than spread, because the union is the point: `{...args}` carries both
   // width keys as optional, and the compiler cannot know which arm of the union that lands in.
-  render: ({ first, second, stackBelow }) => (
+  render: ({ firstSlot: first, secondSlot: second, stackBelow }) => (
     <div className="w-[600px] space-y-6 p-8">
       <div data-testid="sized-first">
         <p className="mb-1 font-mono text-foreground/60 text-xs">firstWidth="two-thirds"</p>
         <SplitLayout
-          first={first}
-          second={second}
+          firstSlot={first}
+          secondSlot={second}
           stackBelow={stackBelow}
           firstWidth="two-thirds"
         />
@@ -103,8 +103,8 @@ export const EitherPaneCanCarryTheWidth: Story = {
       <div data-testid="sized-second">
         <p className="mb-1 font-mono text-foreground/60 text-xs">secondWidth="two-thirds"</p>
         <SplitLayout
-          first={first}
-          second={second}
+          firstSlot={first}
+          secondSlot={second}
           stackBelow={stackBelow}
           secondWidth="two-thirds"
         />
@@ -112,8 +112,8 @@ export const EitherPaneCanCarryTheWidth: Story = {
     </div>
   ),
   args: {
-    first: <Surface label="First" />,
-    second: <Surface label="Second" />,
+    firstSlot: <Surface label="First" />,
+    secondSlot: <Surface label="Second" />,
     stackBelow: "never",
   },
   play: async ({ canvas }) => {
@@ -145,8 +145,8 @@ export const Sidebar: SidebarStory = {
     </div>
   ),
   args: {
-    content: <Surface label="Main" tall />,
-    sidebar: <Surface label="Sidebar" />,
+    contentSlot: <Surface label="Main" tall />,
+    sidebarSlot: <Surface label="Sidebar" />,
     stackBelow: "never",
   },
   play: async ({ canvas }) => {
@@ -176,8 +176,8 @@ export const WidthScale: SidebarStory = {
     </div>
   ),
   args: {
-    content: <Surface label="Main" />,
-    sidebar: <Surface label="Sidebar" />,
+    contentSlot: <Surface label="Main" />,
+    sidebarSlot: <Surface label="Sidebar" />,
     stackBelow: "never",
   },
   play: async ({ canvas }) => {
@@ -204,8 +204,8 @@ export const SidebarAtStart: SidebarStory = {
     </div>
   ),
   args: {
-    content: <Surface label="Main" tall />,
-    sidebar: <Surface label="Sidebar (start)" />,
+    contentSlot: <Surface label="Main" tall />,
+    sidebarSlot: <Surface label="Sidebar (start)" />,
     sidebarPosition: "start",
     sidebarWidth: "md",
     stackBelow: "never",
@@ -220,8 +220,8 @@ export const SidebarAtStart: SidebarStory = {
 
 /**
  * Collapse, and rule 5 with it. There is no `collapsed` prop: a closed sidebar is
- * `sidebar={undefined}`, and what that has to produce is one full-width column — not an empty cell,
- * not a gap still spent on the pane that is not there, and not a divider with one side.
+ * `sidebarSlot={undefined}`, and what that has to produce is one full-width column — not an empty
+ * cell, not a gap still spent on the pane that is not there, and not a divider with one side.
  */
 export const NoSidebarIsOneColumn: SidebarStory = {
   render: (args) => (
@@ -229,7 +229,7 @@ export const NoSidebarIsOneColumn: SidebarStory = {
       <SidebarLayout {...args} />
     </div>
   ),
-  args: { content: <Surface label="Main, full width" />, sidebarWidth: "md", divider: "line" },
+  args: { contentSlot: <Surface label="Main, full width" />, sidebarWidth: "md", divider: "line" },
   play: async ({ canvasElement }) => {
     const root = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout]");
     const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
@@ -261,8 +261,8 @@ export const DividedByALine: SidebarStory = {
     </div>
   ),
   args: {
-    content: <Surface label="Working surface" />,
-    sidebar: <Nav />,
+    contentSlot: <Surface label="Working surface" />,
+    sidebarSlot: <Nav />,
     sidebarPosition: "start",
     sidebarWidth: "sm",
     stackBelow: "never",
@@ -312,11 +312,11 @@ export const DividerIsNotAControl: SidebarStory = {
     sidebarWidth: "sm",
     stackBelow: "never",
     divider: "line",
-    sidebar: <Nav />,
-    content: (
+    sidebarSlot: <Nav />,
+    contentSlot: (
       <StickyHeaderContentFooter
-        header={<div className="border-b px-4 py-2 font-semibold text-sm">Servers</div>}
-        content={
+        headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">Servers</div>}
+        contentSlot={
           <ul className="divide-y">
             {Array.from({ length: 30 }, (_, i) => i + 1).map((n) => (
               <li key={n} className="px-4 py-3 text-sm">
@@ -376,8 +376,8 @@ export const WideContentKeepsItsFloor: SidebarStory = {
   args: {
     sidebarWidth: "sm",
     stackBelow: "never",
-    sidebar: <Surface label="Sidebar stays put" />,
-    content: (
+    sidebarSlot: <Surface label="Sidebar stays put" />,
+    contentSlot: (
       <div className="overflow-x-auto rounded border bg-secondary">
         <div className="w-[2000px] px-4 py-3 text-sm">A single very wide child.</div>
       </div>
@@ -419,8 +419,8 @@ export const StacksWhenNarrow: SidebarStory = {
     </div>
   ),
   args: {
-    content: <Surface label="Main" />,
-    sidebar: <Nav />,
+    contentSlot: <Surface label="Main" />,
+    sidebarSlot: <Nav />,
     sidebarPosition: "start",
     sidebarWidth: "md",
     stackBelow: "xl",

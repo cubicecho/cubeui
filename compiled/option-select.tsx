@@ -303,7 +303,7 @@ function SearchableMenu({
               </span>
             )
           }
-          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+          trailingSlot={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
         />
       </PopoverTrigger>
       <PopoverContent
@@ -386,7 +386,7 @@ function SearchableMenu({
  * ```tsx
  * <FormField
  *   label="Kind"
- *   control={(wired) => (
+ *   controlSlot={(wired) => (
  *     <OptionSelect {...wired} options={KINDS} value={kind} onValueChange={setKind} />
  *   )}
  * />

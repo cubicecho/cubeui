@@ -103,7 +103,7 @@ export function DownloadButton({
       disabled={disabled}
       className={className}
       {...(destination === "ask" ? {} : { onPress: () => save(destination) })}
-      icon={<Download aria-hidden />}
+      iconSlot={<Download aria-hidden />}
     />
   );
 
@@ -113,8 +113,8 @@ export function DownloadButton({
     <Menu>
       <MenuTrigger asChild>{button}</MenuTrigger>
       <MenuContent aria-label={label}>
-        <MenuItem icon={<Upload />} label="Share…" onSelect={() => save("share")} />
-        <MenuItem icon={<Folder />} label="Save to a folder" onSelect={() => save("files")} />
+        <MenuItem iconSlot={<Upload />} label="Share…" onSelect={() => save("share")} />
+        <MenuItem iconSlot={<Folder />} label="Save to a folder" onSelect={() => save("files")} />
       </MenuContent>
     </Menu>
   );

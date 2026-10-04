@@ -142,7 +142,7 @@ function Native(props: { defaultOpen?: boolean }) {
   );
 }
 
-/** Whether the row draws its ✓ — the glyph is the only `svg` in a row with no `icon`. */
+/** Whether the row draws its ✓ — the glyph is the only `svg` in a row with no `iconSlot`. */
 const hasCheck = (row: HTMLElement) => row.querySelector("svg") !== null;
 
 /**

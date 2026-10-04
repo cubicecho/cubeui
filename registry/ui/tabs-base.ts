@@ -8,6 +8,7 @@
  * shadcn's `tabs` does; those extras are web only.
  */
 import type { ReactNode } from "react";
+import type { SlotNode } from "@/lib/utils";
 
 export type TabsProps = {
   /** The active tab, when the caller owns it. */
@@ -52,7 +53,7 @@ export type TabsTriggerProps = {
    * label="Unsaved changes" />`, which is read as "Device, Unsaved changes", and not a bare
    * coloured view, which is read as nothing.
    */
-  trailingSlot?: ReactNode | undefined;
+  trailingSlot?: SlotNode | undefined;
 };
 
 export type TabsContentProps = {

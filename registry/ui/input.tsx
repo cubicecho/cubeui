@@ -11,7 +11,7 @@
  * `InputHandle` rather than an `HTMLInputElement` ref. (The web half takes both
  * of those as well, as shadcn's `Input` does; shared code should not.)
  *
- * `leading` and `trailing` put an icon, or an icon-sized button, inside the
+ * `leadingSlot` and `trailingSlot` put an icon, or an icon-sized button, inside the
  * field. Without either, the root is the `TextInput` and nothing else, so no
  * existing call site gains a view. With one, the field sits in a `relative`
  * box and each slot is positioned over it, drawn after the `TextInput` so it
@@ -62,8 +62,8 @@ function Input({
   "aria-labelledby": ariaLabelledBy,
   "aria-describedby": ariaDescribedBy,
   "aria-invalid": ariaInvalid,
-  leading,
-  trailing,
+  leadingSlot,
+  trailingSlot,
   wrapperClassName,
   ref,
 }: InputProps) {
@@ -108,22 +108,22 @@ function Input({
       role={type === "search" ? "searchbox" : undefined}
       className={cn(
         INPUT_CLASS,
-        leading != null && INPUT_LEADING_PAD_CLASS,
-        trailing != null && INPUT_TRAILING_PAD_CLASS,
+        leadingSlot != null && INPUT_LEADING_PAD_CLASS,
+        trailingSlot != null && INPUT_TRAILING_PAD_CLASS,
         disabled && "opacity-50",
         className,
       )}
     />
   );
 
-  if (leading == null && trailing == null) return field;
+  if (leadingSlot == null && trailingSlot == null) return field;
 
   return (
     <View className={cn(INPUT_WRAPPER_CLASS, wrapperClassName)}>
       {field}
       <IconClassContext.Provider value={INPUT_SLOT_ICON_CLASS}>
-        {leading != null ? <View className={INPUT_LEADING_CLASS}>{leading}</View> : null}
-        {trailing != null ? <View className={INPUT_TRAILING_CLASS}>{trailing}</View> : null}
+        {leadingSlot != null ? <View className={INPUT_LEADING_CLASS}>{leadingSlot}</View> : null}
+        {trailingSlot != null ? <View className={INPUT_TRAILING_CLASS}>{trailingSlot}</View> : null}
       </IconClassContext.Provider>
     </View>
   );

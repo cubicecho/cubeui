@@ -26,8 +26,8 @@ export const Default: Story = {
   args: { title: "Pomodoro", description: "How long a focus block runs.", divider: true },
   render: (args) => (
     <SideBySide
-      native={<Native {...args} content={body} />}
-      compiled={<Compiled {...args} content={body} />}
+      native={<Native {...args} contentSlot={body} />}
+      compiled={<Compiled {...args} contentSlot={body} />}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -58,8 +58,8 @@ export const Level: Story = {
   args: { title: "Breaks", level: 3 },
   render: (args) => (
     <SideBySide
-      native={<Native {...args} content={body} />}
-      compiled={<Compiled {...args} content={body} />}
+      native={<Native {...args} contentSlot={body} />}
+      compiled={<Compiled {...args} contentSlot={body} />}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -73,8 +73,8 @@ export const CardSurface: Story = {
   args: { title: "Danger zone", surface: "card" },
   render: (args) => (
     <SideBySide
-      native={<Native {...args} className="native-root" content={body} />}
-      compiled={<Compiled {...args} className="compiled-root" content={body} />}
+      native={<Native {...args} className="native-root" contentSlot={body} />}
+      compiled={<Compiled {...args} className="compiled-root" contentSlot={body} />}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -95,9 +95,9 @@ const toolbarLabels = ["New file", "New folder", "Add files", "Add folder", "Exp
 const toolbarDescription = "Files live under the skill's folder; you can also edit them on disk.";
 
 /**
- * One half's phone-width column: a section whose `action` is a five-button toolbar, twice — once
- * as a fragment, which the shell rows and wraps, and once as the caller's own wrapping row, which
- * is what an app that already wrote `flex flex-wrap` hands it.
+ * One half's phone-width column: a section whose `actionSlot` is a five-button toolbar, twice —
+ * once as a fragment, which the shell rows and wraps, and once as the caller's own wrapping row,
+ * which is what an app that already wrote `flex flex-wrap` hands it.
  */
 function WideActionSections({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
@@ -114,20 +114,30 @@ function WideActionSections({ half }: { half: "native" | "compiled" }) {
   return (
     <div style={{ width: 390 }} className="flex flex-col gap-8">
       <div data-testid={`${half}-fragment`}>
-        <Section title="Files" description={toolbarDescription} action={buttons} content={body} />
+        <Section
+          title="Files"
+          description={toolbarDescription}
+          actionSlot={buttons}
+          contentSlot={body}
+        />
       </div>
       {/* A second title, because two regions with one name are one landmark too many. */}
       <div data-testid={`${half}-row`}>
-        <Section title="Assets" description={toolbarDescription} action={row} content={body} />
+        <Section
+          title="Assets"
+          description={toolbarDescription}
+          actionSlot={row}
+          contentSlot={body}
+        />
       </div>
     </div>
   );
 }
 
 /**
- * A five-button `action` at 390px (#211). The heading row used not to wrap, and the action never
- * shrinks, so the text column was left with what remained — the description at one character a
- * line. Now the text keeps its floor and an action that does not fit beside it drops under it, at
+ * A five-button `actionSlot` at 390px (#211). The heading row used not to wrap, and the action
+ * never shrinks, so the text column was left with what remained — the description at one character
+ * a line. Now the text keeps its floor and an action that does not fit beside it drops under it, at
  * the start, where its own buttons wrap inside the section. Held on both halves, and for both
  * ways a caller hands over a toolbar.
  */
@@ -166,7 +176,7 @@ export const WideActionNarrow: Story = {
   },
 };
 
-/** One half's phone-width section with a single small button as its `action`. */
+/** One half's phone-width section with a single small button as its `actionSlot`. */
 function SmallActionSection({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
@@ -175,8 +185,8 @@ function SmallActionSection({ half }: { half: "native" | "compiled" }) {
       <Section
         title="Files"
         description={toolbarDescription}
-        action={<Button variant="outline" size="sm" content="Export" />}
-        content={body}
+        actionSlot={<Button variant="outline" size="sm" content="Export" />}
+        contentSlot={body}
       />
     </div>
   );

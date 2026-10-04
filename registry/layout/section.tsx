@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
-  content?: ReactNode | undefined;
+  contentSlot?: SlotNode | undefined;
   /** The overline. A short noun phrase — "Pomodoro", "Danger zone", "Notifications". */
   title?: ReactNode | undefined;
   /** One line under the title, in sentence case, on what the group is for. */
   description?: ReactNode | undefined;
   /** The heading row's far end: an add button, a count, a switch that disables the group. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** A hairline under the heading. Off by default; on, the group reads as one block. */
   divider?: boolean | undefined;
   /**
@@ -85,13 +85,13 @@ const ACTION_FIT = Platform.select({ web: "[&>*]:max-w-full", default: undefined
  * at the start, when they do not — by the width the section is given, not the window's. Plain
  * flex-wrap, so Yoga does the same on device.
  *
- * No state, no data, no `children` — the body is `content`, like every other shell here.
+ * No state, no data, no `children` — the body is `contentSlot`, like every other shell here.
  */
 export function Section({
-  content,
+  contentSlot,
   title,
   description,
-  action,
+  actionSlot,
   divider = false,
   level = 2,
   surface = "none",
@@ -101,7 +101,7 @@ export function Section({
 }: SectionProps) {
   const titleId = React.useId();
   const hasText = Boolean(title || description);
-  const hasHeading = Boolean(hasText || action);
+  const hasHeading = Boolean(hasText || actionSlot);
 
   return (
     <View
@@ -153,17 +153,17 @@ export function Section({
               ) : null}
             </View>
           ) : null}
-          {action ? (
+          {actionSlot ? (
             <View testID="section-action" className={cn(ACTION, ACTION_FIT)}>
-              {action}
+              {actionSlot}
             </View>
           ) : null}
         </View>
       ) : null}
 
-      {content ? (
+      {contentSlot ? (
         <View testID="section-content" className={cn("min-w-0 gap-4", contentClassName)}>
-          {content}
+          {contentSlot}
         </View>
       ) : null}
     </View>

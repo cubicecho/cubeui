@@ -106,7 +106,7 @@ export const TitleClassName: Story = {
 
 const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
 
-/** Three buttons in `footerActions`, in a card as narrow as a phone. */
+/** Three buttons in `footerActionsSlot`, in a card as narrow as a phone. */
 function NarrowCard({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
@@ -114,27 +114,23 @@ function NarrowCard({ half }: { half: "native" | "compiled" }) {
     <div data-testid={`${half}-frame`} style={{ width: 320 }}>
       <Card
         title="Journal"
-        content={
+        contentSlot={
           half === "native" ? (
             <Text className="text-sm text-foreground">Notes kept by the agent.</Text>
           ) : (
             <p className="text-sm">Notes kept by the agent.</p>
           )
         }
-        footerActions={
-          <>
-            {actionLabels.map((label) => (
-              <Button key={label} variant="outline" size="sm" content={label} />
-            ))}
-          </>
-        }
+        footerActionsSlot={actionLabels.map((label) => (
+          <Button key={label} variant="outline" size="sm" content={label} />
+        ))}
       />
     </div>
   );
 }
 
 /**
- * `footerActions` in a 320px card (#159). The row used to hold its buttons on one line and run
+ * `footerActionsSlot` in a 320px card (#159). The row used to hold its buttons on one line and run
  * the first one out past the card's left edge; now it shrinks to the footer and wraps, and the
  * line that wraps stays against the right edge. Held on both halves.
  */
@@ -171,7 +167,7 @@ export const NarrowFooterActions: Story = {
 const longTitle = "skills/ticket-workflow/references/checkpoint-template.md";
 const headerWidths = [280, 390, 640] as const;
 
-/** A file path as the title and two controls as the `action`, at one width. */
+/** A file path as the title and two controls as the `actionSlot`, at one width. */
 function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: number }) {
   const Card = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
@@ -179,7 +175,7 @@ function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: nu
     <div data-testid={`${half}-${width}`} style={{ width }}>
       <Card
         title={longTitle}
-        action={
+        actionSlot={
           <>
             <Button variant="outline" content="Preview" />
             <Button content="Save" />
@@ -201,7 +197,7 @@ function LongTitleCards({ half }: { half: "native" | "compiled" }) {
 }
 
 /**
- * A long `title` beside a two-control `action` (#211). The action used to be `CardAction`, an
+ * A long `title` beside a two-control `actionSlot` (#211). The action used to be `CardAction`, an
  * absolute box that reserved no width, so the title ran underneath it. Now it is in the header's
  * flow: beside the title where both fit, the title truncating short of it, and under the title
  * where they do not. At three widths, on both halves, the two never share a pixel.
@@ -244,7 +240,7 @@ export const LongTitleWithAction: Story = {
   },
 };
 
-/** One small button as the `action`, at a phone's width, with and without a description. */
+/** One small button as the `actionSlot`, at a phone's width, with and without a description. */
 function SmallActionCards({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
@@ -252,10 +248,14 @@ function SmallActionCards({ half }: { half: "native" | "compiled" }) {
   return (
     <div style={{ width: 390 }} className="flex flex-col gap-4">
       <div data-testid={`${half}-described`}>
-        <Card title="Categories" description="Deleting one keeps its activities." action={add} />
+        <Card
+          title="Categories"
+          description="Deleting one keeps its activities."
+          actionSlot={add}
+        />
       </div>
       <div data-testid={`${half}-titled`}>
-        <Card title="Categories" action={add} />
+        <Card title="Categories" actionSlot={add} />
       </div>
     </div>
   );

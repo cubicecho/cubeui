@@ -34,7 +34,7 @@ function BoundDateField(props: DateFieldProps) {
     <FormField
       {...fieldProps}
       error={error}
-      control={(wired) => (
+      controlSlot={(wired) => (
         <DatePicker
           {...control}
           {...wired}
@@ -60,7 +60,7 @@ function BoundDateRangeField(props: DateRangeFieldProps) {
     <FormField
       {...fieldProps}
       error={error}
-      control={(wired) => (
+      controlSlot={(wired) => (
         <DateRangePicker
           {...control}
           {...wired}

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ReactElement, useState } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, within } from "storybook/test";
 import { Badge as CompiledBadge } from "../compiled/badge";
@@ -29,9 +29,9 @@ function Example({
   body,
 }: {
   DisclosureRow: DisclosureRowComponent;
-  badge: ReactNode;
-  action: (onPress: () => void) => ReactNode;
-  body: (text: string) => ReactNode;
+  badge: ReactElement;
+  action: (onPress: () => void) => ReactElement;
+  body: (text: string) => ReactElement;
 }) {
   const [open, setOpen] = useState(false);
   const [deleted, setDeleted] = useState(0);
@@ -40,12 +40,12 @@ function Example({
       <DisclosureRow
         open={open}
         onOpenChange={setOpen}
-        badges={badge}
+        badgesSlot={badge}
         title="Rename the settings page"
         meta={`local llama · deleted ${deleted}`}
         description="Read 4 files and wrote 2."
-        action={action(() => setDeleted((n) => n + 1))}
-        content={body("146 passed.")}
+        actionSlot={action(() => setDeleted((n) => n + 1))}
+        contentSlot={body("146 passed.")}
       />
     </div>
   );

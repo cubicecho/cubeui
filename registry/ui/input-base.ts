@@ -6,7 +6,8 @@
  * importing itself.
  */
 
-import type { ReactNode, Ref } from "react";
+import type { Ref } from "react";
+import type { SlotNode } from "@/lib/utils";
 
 /**
  * Everything but `text`, `number`, `password` and the four keyboard types falls back to plain text
@@ -156,29 +157,34 @@ export type InputProps = {
    * press on it lands in the field. Thirteen search boxes wrote this by hand as an absolute icon
    * and a `pl-8`, each with its own offset.
    */
-  leading?: ReactNode | undefined;
+  leadingSlot?: SlotNode | undefined;
   /**
    * The far end of the field, inside it: one icon-sized control, such as a clear button. The text
-   * stops short of it. Unlike `leading` it is pressable, so give a button its own name.
+   * stops short of it. Unlike `leadingSlot` it is pressable, so give a button its own name.
    */
-  trailing?: ReactNode | undefined;
+  trailingSlot?: SlotNode | undefined;
   /**
-   * The class of the box that holds the field and its `leading` / `trailing`, which only exists
-   * when one of them is passed. `className` stays on the field itself, as it is on every input, so
-   * size the pair here: `wrapperClassName="w-64"`.
+   * The class of the box that holds the field and its `leadingSlot` / `trailingSlot`, which only
+   * exists when one of them is passed. `className` stays on the field itself, as it is on every
+   * input, so size the pair here: `wrapperClassName="w-64"`.
    */
   wrapperClassName?: string | undefined;
   ref?: Ref<InputHandle> | undefined;
 };
 
-/** The box a `leading` or `trailing` is positioned in. Full width, as the field is on its own. */
+/**
+ * The box a `leadingSlot` or `trailingSlot` is positioned in. Full width, as the field is on its
+ * own.
+ */
 export const INPUT_WRAPPER_CLASS = "relative w-full min-w-0";
 
-/** Where `leading` sits: an icon-wide cell at the field's start, muted, never the press target. */
+/**
+ * Where `leadingSlot` sits: an icon-wide cell at the field's start, muted, never the press target.
+ */
 export const INPUT_LEADING_CLASS =
   "pointer-events-none absolute inset-y-0 left-0 flex w-9 flex-row items-center justify-center";
 
-/** Where `trailing` sits: the same cell at the far end, which does take a press. */
+/** Where `trailingSlot` sits: the same cell at the far end, which does take a press. */
 export const INPUT_TRAILING_CLASS =
   "absolute inset-y-0 right-0 flex w-9 flex-row items-center justify-center";
 

@@ -117,7 +117,7 @@ function MenuContent({
 }
 
 function MenuItem({
-  icon,
+  iconSlot,
   label,
   trailing,
   destructive = false,
@@ -126,13 +126,13 @@ function MenuItem({
   focusesElsewhere = false,
   className,
   href,
-  link,
+  linkSlot,
   ...props
 }: Wide<MenuItemProps, Omit<React.ComponentProps<typeof MenuPrimitive.Item>, "children">>) {
   const { setOpen, skipReturnRef } = useContext(MenuContext);
   const row = (
     <>
-      {icon}
+      {iconSlot}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
@@ -148,8 +148,8 @@ function MenuItem({
   // which every router's click does — so a menu handed the router's click would never close.
   // Cloned the other way, the router link is handed radix's click and runs it first. A disabled
   // row is no link at all, so nothing can follow it.
-  const anchor = disabled ? undefined : link ? (
-    cloneElement(link, undefined, row)
+  const anchor = disabled ? undefined : linkSlot ? (
+    cloneElement(linkSlot, undefined, row)
   ) : href !== undefined ? (
     <a href={href}>{row}</a>
   ) : undefined;
@@ -206,13 +206,13 @@ function MenuSeparator({
  * edge. `ItemIndicator` renders only while its row is on; the slot around it stays.
  */
 function ToggleRowBody({
-  icon,
+  iconSlot,
   label,
   trailing,
-}: Pick<MenuCheckboxItemProps, "icon" | "label" | "trailing">) {
+}: Pick<MenuCheckboxItemProps, "iconSlot" | "label" | "trailing">) {
   return (
     <>
-      {icon}
+      {iconSlot}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
@@ -231,7 +231,7 @@ function ToggleRowBody({
 const TOGGLE_ROW_CLASS = cn(MENU_ITEM_CLASS, MENU_ITEM_WEB_CLASS, "text-foreground focus:bg-hover");
 
 function MenuCheckboxItem({
-  icon,
+  iconSlot,
   label,
   trailing,
   checked,
@@ -259,7 +259,7 @@ function MenuCheckboxItem({
       }}
       className={cn(TOGGLE_ROW_CLASS, className)}
     >
-      <ToggleRowBody icon={icon} label={label} trailing={trailing} />
+      <ToggleRowBody iconSlot={iconSlot} label={label} trailing={trailing} />
     </MenuPrimitive.CheckboxItem>
   );
 }
@@ -281,7 +281,7 @@ function MenuRadioGroup({
 
 /** Choosing one closes the menu — radix's default, kept: a one-of-N choice is done once made. */
 function MenuRadioItem({
-  icon,
+  iconSlot,
   label,
   trailing,
   disabled = false,
@@ -299,7 +299,7 @@ function MenuRadioItem({
       {...props}
       className={cn(TOGGLE_ROW_CLASS, className)}
     >
-      <ToggleRowBody icon={icon} label={label} trailing={trailing} />
+      <ToggleRowBody iconSlot={iconSlot} label={label} trailing={trailing} />
     </MenuPrimitive.RadioItem>
   );
 }

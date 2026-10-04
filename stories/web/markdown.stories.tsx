@@ -197,7 +197,10 @@ export const UntrustedContent: Story = {
   },
 };
 
-/** A blank document draws `empty`, and with no `empty` draws nothing at all — not an empty box. */
+/**
+ * A blank document draws `emptySlot`, and with no `emptySlot` draws nothing at all — not an empty
+ * box.
+ */
 export const Empty: Story = {
   args: { content: "" },
   render: () => (
@@ -205,7 +208,7 @@ export const Empty: Story = {
       <div data-testid="with">
         <Markdown
           content={"  \n"}
-          empty={<p className="text-foreground/60">This file is empty.</p>}
+          emptySlot={<p className="text-foreground/60">This file is empty.</p>}
         />
       </div>
       <div data-testid="without">

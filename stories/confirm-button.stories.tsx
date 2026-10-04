@@ -43,7 +43,7 @@ export const AsksBeforeItActs: Story = {
           label="Native delete lane"
           {...lane}
           onConfirm={nativeConfirm}
-          icon={<NativeTrash />}
+          iconSlot={<NativeTrash />}
         />
       }
       compiled={
@@ -51,7 +51,7 @@ export const AsksBeforeItActs: Story = {
           label="Compiled delete lane"
           {...lane}
           onConfirm={compiledConfirm}
-          icon={<CompiledTrash />}
+          iconSlot={<CompiledTrash />}
         />
       }
     />
@@ -92,7 +92,7 @@ export const DisabledDoesNotAsk: Story = {
           disabled
           {...lane}
           onConfirm={nativeConfirm}
-          icon={<NativeTrash />}
+          iconSlot={<NativeTrash />}
         />
       }
       compiled={
@@ -102,7 +102,7 @@ export const DisabledDoesNotAsk: Story = {
           disabled
           {...lane}
           onConfirm={compiledConfirm}
-          icon={<CompiledTrash />}
+          iconSlot={<CompiledTrash />}
         />
       }
     />
@@ -133,7 +133,7 @@ export const TypeTheName: Story = {
           label="Native delete folder"
           {...folder}
           onConfirm={nativeConfirm}
-          icon={<NativeTrash />}
+          iconSlot={<NativeTrash />}
         />
       }
       compiled={
@@ -141,7 +141,7 @@ export const TypeTheName: Story = {
           label="Compiled delete folder"
           {...folder}
           onConfirm={compiledConfirm}
-          icon={<CompiledTrash />}
+          iconSlot={<CompiledTrash />}
         />
       }
     />

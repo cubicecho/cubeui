@@ -11,7 +11,7 @@ const meta = {
     label: "Delete lane",
     variant: "outline",
     size: "icon",
-    icon: <Trash2 />,
+    iconSlot: <Trash2 />,
     title: "Delete this lane?",
     description: "The lane takes its cards with it.",
     onConfirm: fn(),

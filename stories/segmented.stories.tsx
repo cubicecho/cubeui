@@ -188,7 +188,7 @@ const COMPILED_ICONS = {
 type LabelHideBelow = "always" | "sm";
 
 /**
- * The call site issue #213 asks for: a group, and per pill an `icon` and a string — no
+ * The call site issue #213 asks for: a group, and per pill an `iconSlot` and a string — no
  * `className`, no `<span>` for the label, no size on the icon. `Raw` has no icon, which is the pill
  * a `labelHideBelow` has to leave alone.
  */
@@ -204,7 +204,7 @@ function NativeViews({ labelHideBelow }: { labelHideBelow?: LabelHideBelow }) {
       {VIEWS.map((label) => {
         const Icon = NATIVE_ICONS[label];
         return (
-          <Native key={label} value={label} icon={<Icon />}>
+          <Native key={label} value={label} iconSlot={<Icon />}>
             {label}
           </Native>
         );
@@ -226,7 +226,7 @@ function CompiledViews({ labelHideBelow }: { labelHideBelow?: LabelHideBelow }) 
       {VIEWS.map((label) => {
         const Icon = COMPILED_ICONS[label];
         return (
-          <Compiled key={label} value={label} icon={<Icon />}>
+          <Compiled key={label} value={label} iconSlot={<Icon />}>
             {label}
           </Compiled>
         );
@@ -473,10 +473,10 @@ export const IconColourOnDevice: Story = {
   render: () => (
     <div className="bg-background p-6">
       <NativeGroup aria-label="Probe view" value="edit" onValueChange={() => {}}>
-        <Native value="edit" icon={<ProbeIcon name="edit" />}>
+        <Native value="edit" iconSlot={<ProbeIcon name="edit" />}>
           Edit
         </Native>
-        <Native value="preview" icon={<ProbeIcon name="preview" />}>
+        <Native value="preview" iconSlot={<ProbeIcon name="preview" />}>
           Preview
         </Native>
       </NativeGroup>

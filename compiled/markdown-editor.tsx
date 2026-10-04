@@ -9,8 +9,8 @@
  * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
  */
 
-import { type ReactNode, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Markdown } from "./markdown";
 import { SegmentedButton, SegmentedGroup } from "./segmented";
 import { SplitLayout } from "./split-layout";
@@ -62,7 +62,7 @@ export type MarkdownEditorProps = Omit<
    * What the preview draws while the source is blank: "Nothing to preview yet." Left out, the
    * preview is an empty box.
    */
-  empty?: ReactNode;
+  emptySlot?: SlotNode;
   /** The editor's root: its width, its margin. */
   className?: string | undefined;
 };
@@ -81,7 +81,7 @@ export type MarkdownEditorProps = Omit<
  *   without them it starts at `defaultView` and is held here. It is the one piece of state this
  *   holds, and it is a display preference, not data.
  * - **The rest of the props are the textarea's** — `id`, `placeholder`, `disabled`, `aria-label`,
- *   `aria-invalid`, `name`, `onBlur` — so it is a `FormField`'s `control` like any other.
+ *   `aria-invalid`, `name`, `onBlur` — so it is a `FormField`'s `controlSlot` like any other.
  *
  * **On a narrow screen `split` is one pane, the source.** Below `lg` there is no room to read two
  * columns, and stacking them puts the preview a screen away from the line being typed; the toggle
@@ -100,7 +100,7 @@ export function MarkdownEditor({
   view: heldView,
   onViewChange,
   defaultView = "split",
-  empty,
+  emptySlot,
   className,
   ...textarea
 }: MarkdownEditorProps) {
@@ -112,7 +112,7 @@ export function MarkdownEditor({
       data-slot="markdown-editor-preview"
       className={cn("rounded-md border border-foreground/10 bg-secondary p-4", PANE_FLOOR)}
     >
-      <Markdown content={value} empty={empty} />
+      <Markdown content={value} emptySlot={emptySlot} />
     </div>
   );
 
@@ -135,7 +135,7 @@ export function MarkdownEditor({
         ))}
       </SegmentedGroup>
       <SplitLayout
-        first={
+        firstSlot={
           // One pane holds the textarea in every view, so React keeps the same element — and the
           // browser its undo history — whichever view is showing. In `preview` the pane's other
           // child is the document.
@@ -158,7 +158,7 @@ export function MarkdownEditor({
             {view === "preview" ? preview : null}
           </>
         }
-        second={view === "split" ? preview : undefined}
+        secondSlot={view === "split" ? preview : undefined}
         // Below `lg` the second pane is not stacked under the first but left out: see the
         // component note. `lg:block` is the pane's own display, put back where the panes sit
         // side by side.

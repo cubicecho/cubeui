@@ -7,7 +7,7 @@
  * It is the whole screen and says everything an error boundary needs said, so
  * the boundary renders it and nothing around it: the root is `role="alert"`,
  * the raw message for a bug report is `details`, and a second way out (a
- * reload, a restart) is `actions`.
+ * reload, a restart) is `actionsSlot`.
  *
  * ```tsx
  * <RouteError
@@ -15,7 +15,7 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actions={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
+ *   actionsSlot={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
  * />
  * ```
  */
@@ -23,6 +23,7 @@ import type { ReactNode } from "react";
 import { Platform, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { CircleAlert } from "@/components/ui/icons";
+import type { SlotNode } from "@/lib/utils";
 
 type RouteErrorProps = {
   error: unknown;
@@ -47,7 +48,7 @@ type RouteErrorProps = {
    */
   details?: ReactNode | boolean;
   /** More buttons beside "Try again" — a reload is the usual one. */
-  actions?: ReactNode;
+  actionsSlot?: SlotNode;
 };
 
 function friendlyMessage(error: unknown): string {
@@ -80,7 +81,7 @@ export function RouteError({
   describe = friendlyMessage,
   title = "Something went wrong",
   details,
-  actions,
+  actionsSlot,
 }: RouteErrorProps) {
   const summary = describe(error);
   const detail = details === true ? rawMessage(error) : details || undefined;
@@ -121,7 +122,7 @@ export function RouteError({
       ) : null}
       <View className="flex-row flex-wrap items-center justify-center gap-2">
         <Button variant="outline" size="sm" onPress={reset} content="Try again" />
-        {actions}
+        {actionsSlot}
       </View>
     </View>
   );

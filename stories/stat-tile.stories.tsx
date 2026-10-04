@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ReactElement, type ReactNode, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Clock as CompiledClock } from "../compiled/icons";
 import { StatTile as Compiled } from "../compiled/stat-tile";
@@ -23,7 +23,7 @@ type Tile = (props: {
   label: ReactNode;
   value: ReactNode;
   hint?: ReactNode;
-  icon?: ReactNode;
+  iconSlot?: ReactElement;
   loading?: boolean;
   press?: (() => void) | undefined;
   selected?: boolean;
@@ -33,12 +33,12 @@ type Tile = (props: {
 const NativeTile: Tile = ({ press, ...props }) => <Native {...props} onPress={press} />;
 const CompiledTile: Tile = ({ press, ...props }) => <Compiled {...props} onClick={press} />;
 
-function Overview({ Tile, icon }: { Tile: Tile; icon: ReactNode }) {
+function Overview({ Tile, icon }: { Tile: Tile; icon: ReactElement }) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <Tile label="Turns" value="1,204" />
       <Tile label="Entities" value="318" hint="2,041 co-occurrence edges" />
-      <Tile label="Uptime" value="3d 4h" hint="v0.9.2 · read-only" icon={icon} />
+      <Tile label="Uptime" value="3d 4h" hint="v0.9.2 · read-only" iconSlot={icon} />
       <Tile label="Embeddings" value="" loading />
     </div>
   );

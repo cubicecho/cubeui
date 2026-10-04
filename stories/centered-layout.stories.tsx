@@ -78,8 +78,8 @@ export const Default: Story = {
           <Native
             {...args}
             className="native-root"
-            content={body}
-            footerActions={<NativeButton content="Unlock" />}
+            contentSlot={body}
+            footerActionsSlot={<NativeButton content="Unlock" />}
           />
         </Frame>
       }
@@ -88,8 +88,8 @@ export const Default: Story = {
           <Compiled
             {...args}
             className="compiled-root"
-            content={body}
-            footerActions={<CompiledButton onClick={() => {}} content="Unlock" />}
+            contentSlot={body}
+            footerActionsSlot={<CompiledButton onClick={() => {}} content="Unlock" />}
           />
         </Frame>
       }
@@ -143,12 +143,12 @@ export const Wider: Story = {
     <SideBySide
       native={
         <Frame>
-          <Native {...args} className="native-root" content={body} />
+          <Native {...args} className="native-root" contentSlot={body} />
         </Frame>
       }
       compiled={
         <Frame>
-          <Compiled {...args} className="compiled-root" content={body} />
+          <Compiled {...args} className="compiled-root" contentSlot={body} />
         </Frame>
       }
     />

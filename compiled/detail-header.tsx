@@ -17,6 +17,7 @@
  * not.
  */
 import type { ReactNode } from "react";
+import type { SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { ColorDot } from "./color-dot";
 import { ArrowLeft, Pencil } from "./icons";
@@ -34,7 +35,7 @@ export function EditButton({
       variant="outline"
       size="sm"
       onClick={onPress}
-      icon={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
+      iconSlot={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
       content={label}
     />
   );
@@ -51,9 +52,9 @@ type DetailHeaderProps = {
   /** Small muted line under the title. */
   subtitle?: ReactNode;
   /** Rendered next to the title — typically a `Badge`. */
-  badge?: ReactNode;
+  badgeSlot?: SlotNode;
   /** Trailing actions. */
-  actions?: ReactNode;
+  actionsSlot?: SlotNode;
 };
 
 export function DetailHeader({
@@ -63,8 +64,8 @@ export function DetailHeader({
   colorLabel,
   title,
   subtitle,
-  badge,
-  actions,
+  badgeSlot,
+  actionsSlot,
 }: DetailHeaderProps) {
   return (
     <div className="cube-rn-view flex-row items-center gap-3">
@@ -73,7 +74,7 @@ export function DetailHeader({
         size="icon"
         onClick={onBack}
         aria-label={backLabel}
-        icon={<ArrowLeft className="h-4 w-4" />}
+        iconSlot={<ArrowLeft className="h-4 w-4" />}
       />
       <div className="cube-rn-view flex-1">
         <div className="cube-rn-view flex-row items-center gap-2">
@@ -81,13 +82,13 @@ export function DetailHeader({
           {/* `role`/`aria-level` because an `<h2>` has no native counterpart —
               and they are what a compiled web build reads to emit one. */}
           <h2 className="cube-rn-text text-2xl font-bold text-foreground">{title}</h2>
-          {badge}
+          {badgeSlot}
         </div>
         {subtitle ? (
           <span className="cube-rn-text mt-0.5 text-sm text-foreground/60">{subtitle}</span>
         ) : null}
       </div>
-      {actions}
+      {actionsSlot}
     </div>
   );
 }

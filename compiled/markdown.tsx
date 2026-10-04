@@ -18,7 +18,7 @@ import ReactMarkdown, {
   type Options,
 } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Checkbox } from "./checkbox";
 import { Code, CodeBlock } from "./code";
 import { Separator } from "./separator";
@@ -272,7 +272,7 @@ export type MarkdownProps = {
    * What is drawn when `content` is blank: "This file is empty.", "Nothing to preview yet." Left
    * out, a blank document draws nothing.
    */
-  empty?: ReactNode;
+  emptySlot?: SlotNode;
   /**
    * An id for each heading, worked out from its text, so a table of contents or a `#fragment` can
    * point at one. Return `undefined` to leave a heading without. Left out, no heading has an id:
@@ -326,7 +326,7 @@ export type MarkdownProps = {
  */
 export function Markdown({
   content,
-  empty,
+  emptySlot,
   headingId,
   components,
   remarkPlugins,
@@ -344,9 +344,9 @@ export function Markdown({
 
   if (content.trim() === "") {
     // Rule 5 — an absent slot draws nothing, and that includes the root.
-    return empty ? (
+    return emptySlot ? (
       <div data-slot="markdown" className={cn(DOCUMENT, className)}>
-        {empty}
+        {emptySlot}
       </div>
     ) : null;
   }

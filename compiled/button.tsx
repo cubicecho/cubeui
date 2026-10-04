@@ -21,12 +21,12 @@
  *   container classes and text classes. A string `content` is wrapped in a
  *   `<Text>` automatically; elements (icons) pass through untouched, and the
  *   container keeps its `text-*` class so web icons still inherit `currentColor`.
- * - There is no `asChild`. A button that navigates takes the link as `link` (see
+ * - There is no `asChild`. A button that navigates takes the link as `linkSlot` (see
  *   the prop below).
  *
  * **It takes no `children`.** What is inside a button is an icon, a label and
  * sometimes something at the far end, in that order, so those are the props:
- * `icon`, `content`, `trailing`. That is what lets `loading` put a spinner where
+ * `iconSlot`, `content`, `trailingSlot`. That is what lets `loading` put a spinner where
  * the icon was and swap the label without the caller rebuilding the inside, and
  * it is the one place this file is *not* shadcn's: `<Button>Save</Button>` is
  * `<Button content="Save" />` here.
@@ -43,7 +43,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Spinner } from "./spinner";
 
 const buttonVariants = cva(
@@ -152,9 +152,9 @@ export type ButtonProps = Omit<
      * Before the label, or alone in an `icon*` size — where the button needs an `aria-label`,
      * which `ActionButton` makes a required prop.
      */
-    icon?: React.ReactNode;
+    iconSlot?: SlotNode;
     /** The far end, after the label: a trigger's chevron, a count. */
-    trailing?: React.ReactNode;
+    trailingSlot?: SlotNode;
     /**
      * The link this button is, as an element with no children: `<a href="/docs" />`, a router's
      * `<Link to="/docs" />`. It gets the button's look and press, and the icon and label are put
@@ -164,7 +164,7 @@ export type ButtonProps = Omit<
      * the props merged in. On device a link is expo-router's, which takes the button the other
      * way round: it is given `asChild` and wraps the `Pressable`.
      */
-    link?: React.ReactElement | undefined;
+    linkSlot?: React.ReactElement | undefined;
     /**
      * Pressed, and the work is still running: disabled, `aria-busy`, and a spinner where the
      * icon is — or before the label when there is none.
@@ -212,10 +212,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       disabled: isDisabled,
       loading = false,
       loadingLabel,
-      icon,
+      iconSlot,
       content,
-      trailing,
-      link,
+      trailingSlot,
+      linkSlot,
       onClick: onPress,
       ...props
     },
@@ -243,7 +243,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <Spinner />
       </div>
     ) : (
-      icon
+      iconSlot
     );
     const labelled =
       typeof label === "string" || typeof label === "number" ? (
@@ -266,11 +266,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <IconClassContext.Provider value={labelClass}>
           {leading}
           {labelled}
-          {trailing}
+          {trailingSlot}
         </IconClassContext.Provider>
       </button>
     );
-    if (!link) return button;
+    if (!linkSlot) return button;
     return (
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
       // one child. Inside, the provider was the child: `Slot` merged the classes and
@@ -290,7 +290,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           } as unknown as React.HTMLAttributes<HTMLElement>)}
           ref={ref as unknown as React.Ref<HTMLElement>}
         >
-          {React.cloneElement(link, undefined, leading, labelled, trailing)}
+          {React.cloneElement(linkSlot, undefined, leading, labelled, trailingSlot)}
         </Slot.Root>
       </IconClassContext.Provider>
     );

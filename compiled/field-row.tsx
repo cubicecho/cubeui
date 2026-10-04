@@ -11,7 +11,7 @@
 
 import type { ReactNode } from "react";
 import { Children, Fragment, isValidElement } from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 /**
  * The floor a cell holds, which is the whole component: it is what decides when the row wraps
@@ -32,7 +32,7 @@ type FieldRowProps = {
    * The fields. Each one is given a cell of its own, so they share the row evenly however many
    * there are, and a `{cond && <FormField/>}` that renders nothing leaves no empty cell behind.
    */
-  content?: ReactNode | undefined;
+  contentSlot?: SlotNode | undefined;
   /**
    * How many fit on a line before the row wraps. `2` is nearly always right — it is the shape a
    * form reaches for when two values belong together, a priority beside a duration, a start date
@@ -59,8 +59,8 @@ type FieldRowProps = {
 /**
  * The fields, one entry each, keyed.
  *
- * `Children.toArray` counts a fragment as one child, and a fragment is exactly how `content`
- * arrives — `content={<><FormField …/><FormField …/></>}` is the natural way to write a slot
+ * `Children.toArray` counts a fragment as one child, and a fragment is exactly how `contentSlot`
+ * arrives — `contentSlot={<><FormField …/><FormField …/></>}` is the natural way to write a slot
  * that holds several things. Unwrapped, the whole fragment landed in a single cell and the row
  * had one column. So a fragment at the top is opened, once; anything else is a field.
  *
@@ -80,10 +80,10 @@ function fieldsOf(content: ReactNode): Array<{ key: string; node: ReactNode }> {
   }));
 }
 
-export function FieldRow({ content, perRow = 2, className, cellClassName }: FieldRowProps) {
+export function FieldRow({ contentSlot, perRow = 2, className, cellClassName }: FieldRowProps) {
   return (
     <div data-slot="field-row" className={cn("flex flex-wrap gap-4", className)}>
-      {fieldsOf(content).map(({ key, node }) => (
+      {fieldsOf(contentSlot).map(({ key, node }) => (
         <div
           key={key}
           data-slot="field-row-cell"
