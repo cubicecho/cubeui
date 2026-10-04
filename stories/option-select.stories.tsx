@@ -456,3 +456,80 @@ export const BothHalves: Story = {
     expect(live.filter((region) => region.textContent?.includes("Still loading…"))).toHaveLength(2);
   },
 };
+
+/** An Ollama box's tags: more than a menu can show, which is what the search box is for. */
+const TAGS: readonly SelectEntry[] = [
+  "gemma2:9b",
+  "llama3.1:8b",
+  "llama3.1:70b",
+  "mistral:7b",
+  "phi3:mini",
+  "qwen2.5:14b",
+].map((id) => ({ value: id, label: id, group: "Local", className: "font-mono" }));
+
+function Searchable({ half }: { half: "native" | "compiled" }) {
+  const [value, setValue] = useState("");
+  const Select = half === "native" ? Native : OptionSelect;
+  return (
+    <div className="flex w-[280px] flex-col gap-2">
+      <Select
+        searchable
+        aria-label={`${half} model`}
+        placeholder="Choose a model"
+        options={TAGS}
+        value={value}
+        onValueChange={setValue}
+      />
+      <Select
+        aria-label={`${half} plain`}
+        placeholder="Pick one"
+        options={LISTS}
+        onValueChange={() => {}}
+      />
+    </div>
+  );
+}
+
+/**
+ * `searchable` (#244): a box above the list, on both halves. Typing narrows the rows, in any word
+ * order; choosing one closes the menu and the trigger says it. Without the prop there is no box —
+ * the second select on each half is the plain listbox it always was.
+ */
+export const SearchableList: Story = {
+  args: {},
+  render: () => (
+    <SideBySide native={<Searchable half="native" />} compiled={<Searchable half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["native", "compiled"] as const) {
+      const trigger = canvas.getByRole("combobox", { name: `${half} model` });
+      await expect(trigger).toHaveTextContent("Choose a model");
+      // The same box as the plain select under it, so a form mixing the two stays one column.
+      const plain = canvas.getByRole("combobox", { name: `${half} plain` });
+      const [box, plainBox] = [trigger.getBoundingClientRect(), plain.getBoundingClientRect()];
+      await expect({ half, height: box.height, width: box.width }).toEqual({
+        half,
+        height: plainBox.height,
+        width: plainBox.width,
+      });
+      await userEvent.click(trigger);
+
+      const search = await screen.findByPlaceholderText("Search…");
+      await expect(search).toHaveAccessibleName("Search");
+      await userEvent.type(search, "8b llama");
+      await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+
+      await userEvent.click(screen.getByRole("option", { name: "llama3.1:8b" }));
+      await waitFor(() => expect(screen.queryByRole("option")).not.toBeInTheDocument());
+      await expect(trigger).toHaveTextContent("llama3.1:8b");
+
+      // Off, there is no search box in the menu.
+      await userEvent.click(canvas.getByRole("combobox", { name: `${half} plain` }));
+      await screen.findByRole("option", { name: "Inbox" });
+      await expect(screen.queryByPlaceholderText("Search…")).not.toBeInTheDocument();
+      await userEvent.keyboard("{Escape}");
+      await waitFor(() => expect(screen.queryByRole("option")).not.toBeInTheDocument());
+    }
+  },
+};

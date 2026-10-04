@@ -255,6 +255,9 @@ type SelectFieldProps = FieldProps & {
   options: readonly SelectEntry[];
   placeholder?: string | undefined;
   triggerClassName?: string | undefined;
+  /** A search box above the list, for the long one. `OptionSelect`'s own prop, passed through. */
+  searchable?: boolean | undefined;
+  searchPlaceholder?: string | undefined;
   /**
    * Told when the menu opens, so a field whose list is fetched can ask for it then. Named here
    * as well as on the control because a form is where most fetched lists are, and a field that
@@ -275,6 +278,8 @@ function BoundSelectField({
   options,
   placeholder,
   triggerClassName,
+  searchable,
+  searchPlaceholder,
   onOpenChange,
   ...rest
 }: SelectFieldProps) {
@@ -293,6 +298,8 @@ function BoundSelectField({
           onValueChange={field.handleChange}
           onBlur={field.handleBlur}
           placeholder={placeholder}
+          searchable={searchable}
+          searchPlaceholder={searchPlaceholder}
           onOpenChange={onOpenChange}
           className={triggerClassName}
         />

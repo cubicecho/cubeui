@@ -621,6 +621,30 @@ An option that is not a peer of the others says so in the array rather than in i
 Drawn in the order given, never sorted — a board's lanes are ordered and alphabetical would be
 wrong. A flat `{ value, label }[]` draws flat.
 
+### A list too long to scroll
+
+`searchable` puts a search box above the list. Without it there is no box, and the menu is the
+plain listbox.
+
+```tsx
+<OptionSelect
+  searchable
+  searchPlaceholder="Find a model…"
+  options={models.map((m) => ({ value: m.id, label: m.id, keywords: [m.provider] }))}
+  value={model}
+  onValueChange={setModel}
+/>
+```
+
+- It matches an option's label, its `group` heading and its `keywords`, every typed word in any
+  order. A `label` that is a node cannot be searched, so give that option `keywords`.
+- `searchPlaceholder`, `searchLabel` (the box's accessible name) and `emptyMessage` are read only
+  when `searchable` is on.
+- The searchable menu is a popover over a `Command`, the shape `MultiSelect` is, so it installs
+  `button`, `command` and `popover` beside `select`. Groups, separators, notes, `open` and
+  `onOpenChange` behave the same in both.
+- In a form: `<field.SelectField searchable options={…} />`.
+
 ### A menu that fills when it opens
 
 A list the server owns should not be fetched on mount: a form of twenty fields would ask for

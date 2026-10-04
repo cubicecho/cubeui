@@ -552,8 +552,15 @@
       "name": "option-select",
       "type": "registry:component",
       "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
-      "registryDependencies": ["@cubeui/select", "@cubeui/utils"],
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/command",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/select",
+        "@cubeui/utils"
+      ],
       "files": [
         {
           "path": "registry/layout/option-select.tsx",
