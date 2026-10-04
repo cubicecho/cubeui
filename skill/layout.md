@@ -95,6 +95,13 @@ dialog body.
   the viewport need to give it one, or nothing scrolls and the header does not stay.
 - `HeaderContentFooter` is the same three zones with the whole thing scrolling with the page.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
+- `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
+  pixels, the same on both halves. A list that follows its newest row is at the end when
+  `offset + viewportHeight >= contentHeight - 1`; keep that in state, scroll to the end when a row
+  arrives and it is true, and show "Jump to latest" when it is not. It is on `PageLayout` too, and
+  is never called while `scroll` is off. Moving the body is still `contentRef`, which is a
+  different thing on each half: `scrollToEnd()` on a device, `scrollTo({ top: scrollHeight })` on
+  the web.
 
 ## Page headers
 

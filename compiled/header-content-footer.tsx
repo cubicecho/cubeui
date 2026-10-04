@@ -58,6 +58,22 @@ const COLUMNS = {
 /** The column names `width` takes. Exported for shells that pass one through. */
 export type HeaderContentFooterWidth = keyof typeof COLUMNS;
 
+/**
+ * Where the scrolling body is, in pixels: how far down it has moved, how tall what it scrolls is,
+ * and how tall the window onto it is. The body is at its end when `offset + viewportHeight`
+ * reaches `contentHeight` — compare with a pixel or two to spare, since all three are fractional.
+ */
+export type ScrollPosition = {
+  offset: number;
+  contentHeight: number;
+  viewportHeight: number;
+};
+
+/** The part of a DOM scroll event {@link Body} reads. */
+type WebScrollEvent = {
+  currentTarget: { scrollTop: number; scrollHeight: number; clientHeight: number };
+};
+
 export type HeaderContentFooterProps = {
   /** The body. The only slot that grows. */
   content: ReactNode;
@@ -86,6 +102,12 @@ export type HeaderContentFooterProps = {
    * `<div>` on the web and, while `scroll` is on, the `ScrollView` on device.
    */
   contentRef?: Ref<HTMLDivElement> | undefined;
+  /**
+   * Called as the body scrolls, with where it now is — the same three numbers on the web and on
+   * device, so a list that follows its newest row can tell whether the reader is still at the
+   * end. Only a body that scrolls reports: with `scroll` off it is never called.
+   */
+  onScroll?: ((position: ScrollPosition) => void) | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
   /**
@@ -101,6 +123,7 @@ type BodyProps = {
   scroll: boolean;
   column: string | undefined;
   contentRef: HeaderContentFooterProps["contentRef"];
+  onScroll: HeaderContentFooterProps["onScroll"];
   className: string | undefined;
 };
 
@@ -131,7 +154,7 @@ const BODY = cn("relative min-h-0 min-w-0", "flex-1");
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`
  * and keeps the first arm, and the `ScrollView` below it is dropped as unreachable.
  */
-function Body({ content, scroll, column, contentRef, className }: BodyProps) {
+function Body({ content, scroll, column, contentRef, onScroll, className }: BodyProps) {
   return (
     <div
       data-slot="header-content-footer-content"
@@ -142,6 +165,18 @@ function Body({ content, scroll, column, contentRef, className }: BodyProps) {
       // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
       // nothing when the body already holds focusable children — the caret goes to them next.
       tabIndex={scroll ? 0 : undefined}
+      // A view's own props have no scroll event — on device a view does not scroll — so the
+      // listener goes on as a spread, untyped. The element under it is a `<div>` either way.
+      {...(scroll && onScroll
+        ? {
+            onScroll: ({ currentTarget }: WebScrollEvent) =>
+              onScroll({
+                offset: currentTarget.scrollTop,
+                contentHeight: currentTarget.scrollHeight,
+                viewportHeight: currentTarget.clientHeight,
+              }),
+          }
+        : {})}
       className={cn("cube-rn-view", SLOT, BODY, scroll && "overflow-y-auto", column, className)}
     >
       {content}
@@ -170,6 +205,7 @@ export function HeaderContentFooter({
   scroll = false,
   width = "full",
   contentRef,
+  onScroll,
   className,
   headerClassName,
   contentClassName,
@@ -200,6 +236,7 @@ export function HeaderContentFooter({
         scroll={scroll}
         column={bodyColumn}
         contentRef={contentRef}
+        onScroll={onScroll}
         className={contentClassName}
       />
 
