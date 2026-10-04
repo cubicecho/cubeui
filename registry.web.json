@@ -1192,7 +1192,11 @@
       "type": "registry:component",
       "title": "Page Layout",
       "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
-      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/header-content-footer",
+        "@cubeui/page-header",
+        "@cubeui/utils"
+      ],
       "files": [
         {
           "path": "compiled/page-layout.tsx",

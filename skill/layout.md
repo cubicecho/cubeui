@@ -50,6 +50,11 @@ directly — not a fourth name.
 `headerContent` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
 
+`scroll={false}` is for a page that fills the height and scrolls its own parts: a chat's message
+list over a pinned composer, a framed app, tab panels that each keep their place. The body is
+then the height left under the header, and `content` divides it (`h-full`, or `flex-1` on
+device). It is still a `PageLayout` — do not drop to `HeaderContentFooter` for this.
+
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
 body's own loading state is the caller's, or `CardLayout`'s.
 

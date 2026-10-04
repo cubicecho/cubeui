@@ -154,3 +154,50 @@ export const WithFooter: Story = {
     );
   },
 };
+
+/** A message list that scrolls over a composer that does not: a page that divides its own height. */
+const Chat = () => (
+  <div className="flex h-full flex-col">
+    {/* A scrolling region takes a tab stop and a name, or a keyboard cannot read it. */}
+    <section
+      aria-label="Messages"
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: the scroller has to be reachable.
+      tabIndex={0}
+      data-testid="messages"
+      className="min-h-0 flex-1 overflow-y-auto"
+    >
+      <Rows />
+    </section>
+    <div data-testid="composer" className="shrink-0 py-3">
+      <Input aria-label="Message" placeholder="Message" />
+    </div>
+  </div>
+);
+
+/**
+ * `scroll={false}` (#239): the body is the height left under the header and does not scroll, so
+ * a page that fills it keeps the title block, the column and the padding of the one shell. The
+ * composer stays at the foot of the page and the list above it is what moves.
+ */
+export const BodyThatDoesNotScroll: Story = {
+  args: { title: "Assistant", scroll: false, content: <Chat /> },
+  play: async ({ canvas, canvasElement }) => {
+    const body = canvasElement.querySelector(
+      "[data-slot=header-content-footer-content]",
+    ) as HTMLElement;
+    const shell = canvasElement.querySelector("[data-slot=header-content-footer]") as HTMLElement;
+    const messages = canvas.getByTestId("messages");
+    const composer = canvas.getByTestId("composer");
+
+    // The body is not a scroller: nothing spills, and it takes no tab stop of its own.
+    expect(getComputedStyle(body).overflowY).toBe("visible");
+    expect(body.scrollHeight).toBe(body.clientHeight);
+    expect(body).not.toHaveAttribute("tabindex");
+
+    // The page's own list scrolls, and the composer sits at the foot of the shell.
+    expect(messages.scrollHeight).toBeGreaterThan(messages.clientHeight);
+    expect(
+      Math.abs(composer.getBoundingClientRect().bottom - shell.getBoundingClientRect().bottom),
+    ).toBeLessThanOrEqual(1);
+  },
+};
