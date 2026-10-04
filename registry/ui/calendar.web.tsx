@@ -29,7 +29,7 @@ import "react-day-picker/style.css";
  * declares these on `.rdp-root` unlayered, and an unlayered rule beats everything in
  * `@layer utilities`, so a `[--rdp-accent-color:…]` class would lose in a DOM app. And this file
  * is what renders on both paths, a DOM app on `tokens.web.css` and an Expo web app on
- * `cubeui-tokens.css`, which define the same `--selection`, `--primary` and `--accent`.
+ * `cubeui-tokens.css`, which define the same `--active`, `--neutral` and `--hover`.
  */
 const THEME = {
   "--rdp-accent-color": "var(--active)",
