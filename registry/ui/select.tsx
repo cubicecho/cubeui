@@ -160,7 +160,7 @@ function SelectItem({ value, disabled = false, className, children }: SelectItem
       }}
       className={cn(
         SELECT_ITEM_CLASS,
-        selected && "bg-accent",
+        selected && "bg-selection/15",
         disabled && "opacity-50",
         className,
       )}

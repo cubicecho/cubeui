@@ -149,6 +149,13 @@ export const Sidebar: SidebarStory = {
     sidebar: <Surface label="Sidebar" />,
     stackBelow: "never",
   },
+  play: async ({ canvas }) => {
+    const main = canvas.getByText("Main").getBoundingClientRect();
+    const sidebar = canvas.getByText("Sidebar").getBoundingClientRect();
+    // Beside the body, not under it, and at the end by default.
+    expect(sidebar.top).toBeCloseTo(main.top, 0);
+    expect(sidebar.left).toBeGreaterThan(main.left);
+  },
 };
 
 /**
@@ -173,6 +180,20 @@ export const WidthScale: SidebarStory = {
     sidebar: <Surface label="Sidebar" />,
     stackBelow: "never",
   },
+  play: async ({ canvas }) => {
+    const mains = canvas.getAllByText("Main");
+    const sidebars = canvas.getAllByText("Sidebar");
+    expect(mains).toHaveLength(RAIL_WIDTHS.length);
+    // No rung stacks: on every one the sidebar is beside the body.
+    for (const [index, main] of mains.entries()) {
+      const sidebar = sidebars[index];
+      if (sidebar === undefined) throw new Error(`no sidebar for rung ${index}`);
+      expect(sidebar.getBoundingClientRect().top).toBeCloseTo(main.getBoundingClientRect().top, 0);
+      expect(sidebar.getBoundingClientRect().left).toBeGreaterThan(
+        main.getBoundingClientRect().left,
+      );
+    }
+  },
 };
 
 /** The sidebar can lead. Stacked, it keeps this reading order rather than jumping below. */
@@ -188,6 +209,12 @@ export const SidebarAtStart: SidebarStory = {
     sidebarPosition: "start",
     sidebarWidth: "md",
     stackBelow: "never",
+  },
+  play: async ({ canvas }) => {
+    const main = canvas.getByText("Main").getBoundingClientRect();
+    const sidebar = canvas.getByText("Sidebar (start)").getBoundingClientRect();
+    expect(sidebar.top).toBeCloseTo(main.top, 0);
+    expect(sidebar.left).toBeLessThan(main.left);
   },
 };
 

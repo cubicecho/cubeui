@@ -65,7 +65,15 @@ async function inTheList(
   });
 }
 
-export const Default: Story = { args: {} };
+/** Closed, the trigger shows the label of the form's value, not the value itself. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByLabelText(/^On success/)).toHaveTextContent("Stay here");
+    expect(canvas.getByText("Where the card goes when it passes.")).toBeVisible();
+    expect(screen.queryByRole("listbox")).toBeNull();
+  },
+};
 
 /**
  * The row that is not a lane is not drawn as one. Without a rule above it, "Archive it" sits
