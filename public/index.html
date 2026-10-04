@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 96 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 97 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 96 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 97 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  82 on both platforms · 14 web-only · 0 native-only.
+  83 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -635,6 +635,11 @@
           <th scope="row"><code>@cubeui/top-bar-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>An app shell with a bar across the top and no sidebar: brand at the start, navigation after it that scrolls sideways when narrow, actions at the end, and the page below — a banner and a main landmark, the bar sticky on the web.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/unsaved-changes-guard</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>useUnsavedChangesGuard() and UnsavedChangesDialog: one question for the three ways out of a page with unsaved edits. It takes the app's router blocker as it comes (TanStack Router's or React Router's, with no router imported), guards the page's own Close button through leave(), and holds a beforeunload listener on the web while there are changes.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/utils</code></th>

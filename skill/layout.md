@@ -646,6 +646,36 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   which asks on the way out rather than refusing to leave.
 - A form in a dialog is this component with a `<form>` as `content` — see [forms.md](forms.md).
 
+### A page with unsaved edits
+
+A dialog asks through `hasUnsavedChanges`. A page has three ways out and no shell that owns them
+— a router navigation, its own Close button, closing the tab — so it has a guard instead, from
+`@cubeui/unsaved-changes-guard`. Do not wire the router's blocker to a dialog by hand, with a
+second piece of state for the Close button:
+
+```tsx
+const blocker = useBlocker({ shouldBlockFn: () => dirty, withResolver: true });
+const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
+
+<Button variant="outline" onPress={() => guard.leave(onClose)}>Close</Button>
+<UnsavedChangesDialog guard={guard} />
+```
+
+- **It imports no router.** `blocker` is whatever the app's router returned: TanStack Router's
+  `useBlocker({ withResolver: true })` and React Router's `useBlocker(dirty)` both fit as they
+  come. *Discard* calls its `proceed`, *Keep editing* its `reset`. An app with no router leaves
+  it out.
+- `guard.leave(go)` is for the page's own Close and Cancel: it runs `go` at once when nothing
+  would be lost and after *Discard* when something would. On a device it is also what the
+  navigator's "before remove" event calls —
+  `usePreventRemove(dirty, ({ data }) => guard.leave(() => navigation.dispatch(data.action)))`.
+- Closing the tab is covered on the web by the guard's own `beforeunload` listener, held only
+  while there are changes, so the router's `enableBeforeUnload` is not needed. The browser words
+  that question itself.
+- `hasUnsavedChanges` is a boolean or a function, as on `DialogLayout`.
+- The wording is `DialogLayout`'s by default. `discardTitle`, `discardDescription`,
+  `discardLabel` and `stayLabel` on `UnsavedChangesDialog` change it.
+
 ## Sections
 
 A heading over a group of fields or rows, inside a page or a card.

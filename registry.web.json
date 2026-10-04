@@ -882,6 +882,19 @@
       ]
     },
     {
+      "name": "unsaved-changes-guard",
+      "type": "registry:component",
+      "title": "Unsaved changes guard",
+      "description": "useUnsavedChangesGuard() and UnsavedChangesDialog: one question for the three ways out of a page with unsaved edits. It takes the app's router blocker as it comes (TanStack Router's or React Router's, with no router imported), guards the page's own Close button through leave(), and holds a beforeunload listener on the web while there are changes.",
+      "registryDependencies": ["@cubeui/confirm-dialog"],
+      "files": [
+        {
+          "path": "compiled/unsaved-changes-guard.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "confirm-dialog",
       "type": "registry:ui",
       "title": "Confirm Dialog",

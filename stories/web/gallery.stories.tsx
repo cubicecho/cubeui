@@ -242,6 +242,8 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths, functions only.",
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
+  "unsaved-changes-guard":
+    "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   control: "A bundle: it installs the controls shown here one by one.",
   "form-set": "A bundle: it installs the form items shown here one by one.",
   layout: "A bundle: it installs the shells shown here one by one.",
