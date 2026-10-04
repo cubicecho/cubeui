@@ -57,6 +57,8 @@ export type PageLayoutProps = {
   scroll?: boolean | undefined;
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
   contentRef?: HeaderContentFooterProps["contentRef"];
+  /** A handle that moves the body: `scrollToEnd()`, the same on both halves. */
+  scrollRef?: HeaderContentFooterProps["scrollRef"];
   /** Called as the body scrolls, with where it now is. Never called while `scroll` is off. */
   onScroll?: HeaderContentFooterProps["onScroll"];
   className?: string | undefined;
@@ -99,6 +101,7 @@ export function PageLayout({
   width = "page",
   scroll = true,
   contentRef,
+  scrollRef,
   onScroll,
   className,
   headerClassName,
@@ -111,6 +114,7 @@ export function PageLayout({
       width={width}
       scroll={scroll}
       contentRef={contentRef}
+      scrollRef={scrollRef}
       onScroll={onScroll}
       className={cn("h-full", className)}
       contentClassName={contentClassName}

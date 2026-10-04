@@ -1,17 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Text, View } from "react-native";
-import { expect, waitFor, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { HeaderContentFooter as Compiled } from "../compiled/header-content-footer";
 import {
   HeaderContentFooter as Native,
+  type ScrollHandle,
   type ScrollPosition,
 } from "../registry/layout/header-content-footer";
 import { SideBySide } from "./side-by-side";
 
 /**
- * `HeaderContentFooter`'s `onScroll`. The body is a `<div>` on the web and a `ScrollView` on
- * device, and their scroll events share no field, so the chassis reports one shape of its own.
+ * `HeaderContentFooter`'s `onScroll` and `scrollRef`. The body is a `<div>` on the web and a
+ * `ScrollView` on device, and their scroll events and methods share no name, so the chassis
+ * reports one shape of its own and takes one call to move it.
  */
 const meta = {
   title: "RN Parity/HeaderContentFooter",
@@ -26,6 +28,7 @@ const rows = Array.from({ length: 30 }, (_, index) => `Message ${index + 1}`);
 /** A scrolling body 200px tall, and under it what `onScroll` last reported. */
 function Following({ half }: { half: "native" | "compiled" }) {
   const [position, setPosition] = useState<ScrollPosition>();
+  const scrollRef = useRef<ScrollHandle>(null);
   const Chassis = half === "native" ? Native : Compiled;
   const atEnd =
     position !== undefined &&
@@ -38,6 +41,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
           scroll
           className="h-full"
           onScroll={setPosition}
+          scrollRef={scrollRef}
           contentSlot={
             half === "native" ? (
               // In a view of their own, so the rows are one child of the slot whatever it is.
@@ -63,6 +67,13 @@ function Following({ half }: { half: "native" | "compiled" }) {
       <output className="text-sm">
         {position === undefined ? "Not scrolled" : atEnd ? "At the end" : "Scrolled up"}
       </output>
+      <button
+        type="button"
+        className="self-start rounded-md border px-3 py-1 text-sm"
+        onClick={() => scrollRef.current?.scrollToEnd({ animated: false })}
+      >
+        Jump to latest on {half}
+      </button>
     </div>
   );
 }
@@ -94,6 +105,14 @@ export const OnScroll: Story = {
       await waitFor(() => expect(status).toHaveTextContent("Scrolled up"));
 
       body.scrollTop = body.scrollHeight;
+      await waitFor(() => expect(status).toHaveTextContent("At the end"));
+
+      // And back to the end through the handle, which is the same call on both halves.
+      body.scrollTop = 0;
+      await waitFor(() => expect(status).toHaveTextContent("Scrolled up"));
+      await userEvent.click(
+        within(frame).getByRole("button", { name: `Jump to latest on ${half}` }),
+      );
       await waitFor(() => expect(status).toHaveTextContent("At the end"));
     }
   },

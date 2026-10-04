@@ -16,7 +16,7 @@
  * web), so a shell built on it — `PageLayout`, `DialogLayout`, an app's sidebar — styles a part by
  * its class prop rather than by reaching into the tree.
  */
-import type { ElementRef, Ref } from "react";
+import { type ElementRef, type Ref, useImperativeHandle, useRef } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -67,6 +67,25 @@ export type ScrollPosition = {
   viewportHeight: number;
 };
 
+/**
+ * What moves the scrolling body, the same call on the web and on device. `contentRef` is the
+ * element itself, and the two elements share no method.
+ */
+export type ScrollHandle = {
+  /**
+   * Scrolls to the last row. Animated unless told otherwise; a list following a row that is
+   * still streaming in passes `{ animated: false }`, or each new line starts a glide the next
+   * one interrupts.
+   */
+  scrollToEnd: (options?: { animated?: boolean }) => void;
+};
+
+/** The part of the web's scrolling `<div>` that `scrollToEnd` uses. */
+type WebScroller = {
+  scrollHeight: number;
+  scrollTo: (options: { top: number; behavior: "smooth" | "instant" }) => void;
+};
+
 /** The part of a DOM scroll event {@link Body} reads. */
 type WebScrollEvent = {
   currentTarget: { scrollTop: number; scrollHeight: number; clientHeight: number };
@@ -101,6 +120,11 @@ export type HeaderContentFooterProps = {
    */
   contentRef?: Ref<ElementRef<typeof ScrollView>> | undefined;
   /**
+   * A handle that moves the body: `scrollRef.current?.scrollToEnd()`, the same on both halves.
+   * It does nothing while `scroll` is off, when there is no scrolling body to move.
+   */
+  scrollRef?: Ref<ScrollHandle> | undefined;
+  /**
    * Called as the body scrolls, with where it now is — the same three numbers on the web and on
    * device, so a list that follows its newest row can tell whether the reader is still at the
    * end. Only a body that scrolls reports: with `scroll` off it is never called.
@@ -121,9 +145,29 @@ type BodyProps = {
   scroll: boolean;
   column: string | undefined;
   contentRef: HeaderContentFooterProps["contentRef"];
+  scrollRef: HeaderContentFooterProps["scrollRef"];
   onScroll: HeaderContentFooterProps["onScroll"];
   className: string | undefined;
 };
+
+/**
+ * Moves a scroller to its last row. Its own function, and statements, for the reason {@link Body}
+ * is: the compiler keeps the web arm and drops the `ScrollView` call under it.
+ */
+function toEnd(scroller: unknown, animated: boolean) {
+  if (Platform.OS === "web") {
+    const box = scroller as WebScroller;
+    box.scrollTo({ top: box.scrollHeight, behavior: animated ? "smooth" : "instant" });
+    return;
+  }
+  (scroller as ScrollView).scrollToEnd({ animated });
+}
+
+/** Hands a node to a caller's ref, whichever kind of ref it is. */
+function assign<T>(ref: Ref<T> | undefined, node: T | null) {
+  if (typeof ref === "function") ref(node);
+  else if (ref) ref.current = node;
+}
 
 /**
  * The floor every body needs, whichever element it is. See {@link HeaderContentFooter}.
@@ -145,13 +189,32 @@ const BODY = cn(
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`
  * and keeps the first arm, and the `ScrollView` below it is dropped as unreachable.
  */
-function Body({ contentSlot, scroll, column, contentRef, onScroll, className }: BodyProps) {
+function Body({
+  contentSlot,
+  scroll,
+  column,
+  contentRef,
+  scrollRef,
+  onScroll,
+  className,
+}: BodyProps) {
+  // The scroller is kept here as well as handed to `contentRef`, for `scrollToEnd` to move.
+  const scroller = useRef<unknown>(null);
+  useImperativeHandle<ScrollHandle, ScrollHandle>(scrollRef, () => ({
+    scrollToEnd: ({ animated = true } = {}) => {
+      if (scroll && scroller.current) toEnd(scroller.current, animated);
+    },
+  }));
+
   if (Platform.OS === "web") {
     return (
       <View
         testID="header-content-footer-content"
         // The chassis's own ref type is the device's scroller; on the web both are a `<div>`.
-        ref={contentRef as unknown as Ref<ElementRef<typeof View>>}
+        ref={(node) => {
+          scroller.current = node;
+          assign(contentRef as unknown as Ref<ElementRef<typeof View>>, node);
+        }}
         // A scrolling region a keyboard cannot reach is a region a keyboard user cannot read:
         // the mouse wheel moves it and nothing else does, which axe reports as
         // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
@@ -180,7 +243,10 @@ function Body({ contentSlot, scroll, column, contentRef, onScroll, className }: 
     return (
       <ScrollView
         testID="header-content-footer-content"
-        ref={contentRef}
+        ref={(node) => {
+          scroller.current = node;
+          assign(contentRef, node);
+        }}
         onScroll={
           onScroll &&
           (({ nativeEvent }) =>
@@ -228,6 +294,7 @@ export function HeaderContentFooter({
   scroll = false,
   width = "full",
   contentRef,
+  scrollRef,
   onScroll,
   className,
   headerClassName,
@@ -259,6 +326,7 @@ export function HeaderContentFooter({
         scroll={scroll}
         column={bodyColumn}
         contentRef={contentRef}
+        scrollRef={scrollRef}
         onScroll={onScroll}
         className={contentClassName}
       />

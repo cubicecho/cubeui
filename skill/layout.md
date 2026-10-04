@@ -101,9 +101,26 @@ dialog body.
   pixels, the same on both halves. A list that follows its newest row is at the end when
   `offset + viewportHeight >= contentHeight - 1`; keep that in state, scroll to the end when a row
   arrives and it is true, and show "Jump to latest" when it is not. It is on `PageLayout` too, and
-  is never called while `scroll` is off. Moving the body is still `contentRef`, which is a
-  different thing on each half: `scrollToEnd()` on a device, `scrollTo({ top: scrollHeight })` on
-  the web.
+  is never called while `scroll` is off.
+- `scrollRef` moves the body, with one call on both halves:
+  `scrollRef.current?.scrollToEnd()`. It glides unless told `{ animated: false }`, which is what a
+  list following a row that is still streaming in wants. It is on `PageLayout` too. Do not reach
+  through `contentRef` for this: that is the element itself, a `<div>` on the web and a
+  `ScrollView` on a device, and the two share no method.
+
+  ```tsx
+  const scrollRef = useRef<ScrollHandle>(null);
+  const [atEnd, setAtEnd] = useState(true);
+
+  <PageLayout
+    scrollRef={scrollRef}
+    onScroll={(p) => setAtEnd(p.offset + p.viewportHeight >= p.contentHeight - 1)}
+    …
+  />
+  {atEnd ? null : (
+    <Button variant="outline" content="Jump to latest" onPress={() => scrollRef.current?.scrollToEnd()} />
+  )}
+  ```
 
 ## Page headers
 
