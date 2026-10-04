@@ -38,9 +38,8 @@
  * carries the hue, and it is a graphic, so it needs 3:1 against the tint on both themes.
  * Only `default`, which sits on `bg-card`, keeps the muted line.
  *
- * `info` and `warning` are the palette's `sky-600` and `amber-700` rather than tokens, for the
- * reason `badge.tsx`'s header gives: the shadcn token set has one semantic colour, `destructive`,
- * and promoting the others is a later edit to `tokens/palette.mjs` that reaches no call site. One
+ * `info` and `warning` are tokens of cubeui's own, since the shadcn token set has one semantic
+ * colour, `destructive`. Their values are Tailwind's `sky-600` and `amber-700`. One
  * shade gives the tint, the border and the icon, so it is the one whose icon clears 3:1 on its own
  * tint in light *and* dark: the 500s the copies used are 2.2 and 2.8:1 on white, `amber-600` misses on
  * the light tint and `sky-700` on the dark one.
@@ -100,16 +99,16 @@ const AlertVariantContext = createContext<AlertVariant>("default");
 /** The box: the tint and the border that names its colour, per variant. */
 const ALERT_SURFACE = {
   default: "border border-border bg-card",
-  info: "border border-sky-600/40 bg-sky-600/10",
-  warning: "border border-amber-700/40 bg-amber-700/10",
+  info: "border border-info/40 bg-info/10",
+  warning: "border border-warning/40 bg-warning/10",
   destructive: "border border-destructive/40 bg-destructive/10",
 } satisfies Record<AlertVariant, string>;
 
 /** The icon's colour, and the only place the variant's hue reaches something drawn. */
 const ALERT_ICON_INK = {
   default: "text-foreground",
-  info: "text-sky-600",
-  warning: "text-amber-700",
+  info: "text-info",
+  warning: "text-warning",
   destructive: "text-destructive",
 } satisfies Record<AlertVariant, string>;
 

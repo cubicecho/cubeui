@@ -26,6 +26,8 @@ const PAIRS = [
   ["destructive-foreground", "destructive"],
   ["destructive", "background"],
   ["destructive", "card"],
+  ["success-foreground", "success"],
+  ["warning-foreground", "warning"],
   ["sidebar-foreground", "sidebar"],
   ["sidebar-primary-foreground", "sidebar-primary"],
   ["sidebar-accent-foreground", "sidebar-accent"],

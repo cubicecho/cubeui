@@ -680,8 +680,8 @@ for (const dir of dirs) {
   }
 }
 
-// Rule 9. Every colour a registry file names is a token both stylesheets define, or a colour
-// Tailwind ships. Recursive, unlike the walk above, because `registry/web/ui` is a source too.
+// Rule 9. Every colour a registry file names is a token both stylesheets define. A shade of
+// Tailwind's palette is not one: it is a colour no palette can change. Recursive, unlike the walk above, because `registry/web/ui` is a source too.
 const [nativeTokens, webTokens] = await Promise.all(
   ["dist/tokens.native.css", "dist/tokens.web.css"].map(async (f) =>
     tokensIn(await readFile(f, "utf8")),
@@ -1053,7 +1053,8 @@ if (uncoloured.length > 0) {
     "\nTailwind generates nothing for a colour its theme does not hold, and says nothing either:" +
       "\nthe class stays in the markup and the element inherits. `text-destructive-foreground`" +
       "\nshipped that way on `button` and `toast`. Add the token to `tokens/palette.mjs` and run" +
-      "\n`npm run tokens:build`, or use a colour that exists.",
+      "\n`npm run tokens:build`, or use a colour that exists. A shade of Tailwind's palette" +
+      "\n(`bg-green-700`) is reported too: give it a token named for what it means.",
   );
 }
 

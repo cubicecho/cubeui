@@ -153,7 +153,9 @@ to make in the PR, not a way round the rule.
 **Tokens are `tokens/palette.mjs`**, and nowhere else. `npm run tokens:build` emits the web
 stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `oklch()`) and
 `cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token
-(`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9.
+(`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9. A token's value may be one of
+Tailwind's shades; its name says what the colour means (`success`, `warning`, `info`), never which
+shade it is.
 
 **A checked, pressed or current control is `selection`, not `primary`.** Checkbox, switch, radio,
 segmented pill, active tab, current sidebar row, toggle chip, a calendar's picked day, a selected

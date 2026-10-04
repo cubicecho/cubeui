@@ -9,13 +9,10 @@
  * `variant="secondary"` still means what it meant there. It adds `success` and
  * `warning`, which the shadcn token set has no answer for at all: that set
  * carries exactly one semantic colour, `destructive`. The two additions are
- * palette colours chosen to sit beside it rather than tokens, because promoting
- * them to `--success` / `--warning` would put this repo's `:root` block out of
- * step with cubeui's while the two still have to agree. That promotion is a
- * later edit to `tokens/palette.mjs` and the class maps; it does not reach a
- * single call site, which is why it can wait.
+ * tokens of cubeui's own, `success` and `warning`, each with its `-foreground`,
+ * so a palette can recolour them the way it recolours `destructive`.
  *
- * The two shades are the 700s and not the friendlier 500s or 600s because white
+ * Their values are Tailwind's 700s and not the friendlier 500s or 600s because white
  * on `green-600` is 3.22:1 and white on `amber-500` is 2.13:1 — both short of
  * the 4.5:1 that 12px text needs, and both caught by the axe run behind
  * `stories/accessible-state.stories.tsx` rather than by eye. The 700s clear it

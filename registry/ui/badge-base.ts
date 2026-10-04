@@ -4,7 +4,7 @@
  *
  * The variant names are shadcn's six — `default`, `secondary`, `destructive`,
  * `outline`, `ghost`, `link` — with their meanings, plus `success` and `warning`,
- * which the shadcn token set has no answer for (see `badge.tsx`'s header).
+ * which shadcn's token set has no answer for and cubeui's has (see `badge.tsx`'s header).
  *
  * The web half also takes every `<span>` attribute (`style`, `title`, `onClick`,
  * `data-*`) and shadcn's `asChild`, so a DOM call site ports unchanged. Those
@@ -100,8 +100,8 @@ export const badgeContainerVariants = cva("shrink-0 rounded-full border border-t
       outline: "border-border bg-transparent",
       ghost: "bg-transparent",
       link: "bg-transparent",
-      success: "bg-green-700",
-      warning: "bg-amber-700",
+      success: "bg-success",
+      warning: "bg-warning",
     },
     shape: {
       pill: "flex-row items-center justify-center gap-1 px-2 py-0.5",
@@ -119,8 +119,8 @@ const BADGE_INK = {
   outline: "text-foreground",
   ghost: "text-foreground",
   link: "text-primary",
-  success: "text-white",
-  warning: "text-white",
+  success: "text-success-foreground",
+  warning: "text-warning-foreground",
 } satisfies Record<BadgeVariant, string>;
 
 /** The label's type and colour, per variant. */

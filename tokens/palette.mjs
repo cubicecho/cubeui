@@ -21,7 +21,9 @@
  * `sidebar-*` tokens were added here — shadcn's own set, which that stylesheet
  * never carried. `selection` and `selection-foreground` are cubeui's own, not
  * shadcn's: the fill of a checked, pressed or current control, kept apart from
- * `primary` so a chosen option does not look like a button to press.
+ * `primary` so a chosen option does not look like a button to press. `success`,
+ * `warning` and `info` are cubeui's too: a component names what a colour means,
+ * and which of Tailwind's shades that is gets decided here, once.
  *
  * `a` is alpha in [0,1] and is omitted when opaque.
  */
@@ -51,6 +53,15 @@ export const light = {
   "selection-foreground": { l: 1, c: 0, h: 0 },
   destructive: { l: 0.577, c: 0.245, h: 27.325 },
   "destructive-foreground": { l: 1, c: 0, h: 0 },
+  // The status colours, which shadcn's set has no answer for past `destructive`. Each is one of
+  // Tailwind's shades under the name of what it means, and the same in every palette until one
+  // has a reason to differ: white on the two fills is 5.0:1, and `info` is an icon and a tint,
+  // never a fill, so it has no foreground.
+  success: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
+  "success-foreground": { l: 1, c: 0, h: 0 },
+  warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
+  "warning-foreground": { l: 1, c: 0, h: 0 },
+  info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
   border: { l: 0.922, c: 0, h: 0 },
   input: { l: 0.922, c: 0, h: 0 },
   ring: { l: 0.708, c: 0, h: 0 },
@@ -86,6 +97,11 @@ export const dark = {
   // Dark text, not white: dark `destructive` is a light coral, and white on it is 2.89:1 — short
   // of the 4.5:1 a button label needs. Near-black is 6.85:1. Light mode's white is 4.77:1.
   "destructive-foreground": { l: 0.145, c: 0, h: 0 },
+  success: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
+  "success-foreground": { l: 1, c: 0, h: 0 },
+  warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
+  "warning-foreground": { l: 1, c: 0, h: 0 },
+  info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
   border: { l: 1, c: 0, h: 0, a: 0.1 },
   input: { l: 1, c: 0, h: 0, a: 0.15 },
   ring: { l: 0.556, c: 0, h: 0 },
@@ -136,6 +152,11 @@ export const palettes = {
       "selection-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
       destructive: { l: 0.7058, c: 0.1936, h: 8.454 }, // #FF6188
       "destructive-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
+      success: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
+      "success-foreground": { l: 1, c: 0, h: 0 },
+      warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
+      "warning-foreground": { l: 1, c: 0, h: 0 },
+      info: { l: 0.5876, c: 0.1389, h: 241.966 }, // #0284C7, sky-600 in sRGB
       border: { l: 0.3994, c: 0.0163, h: 102.424 },
       input: { l: 0.4503, c: 0.019, h: 103.225 }, // #57564A
       ring: { l: 0.8269, c: 0.108, h: 211.963 }, // #66D9EF, the blue
