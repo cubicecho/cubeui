@@ -338,11 +338,12 @@ function FieldWrapper({
   );
 }
 
-type InputFieldProps = {
-  label: string;
-} & Omit<InputProps, "value" | "onChangeText" | "onBlur">;
+type InputFieldProps = BoundFieldProps &
+  Omit<InputProps, "value" | "onChangeText" | "onBlur" | keyof BoundFieldProps>;
 
-function InputField({ label, ...props }: InputFieldProps) {
+/** A text box and the field around it. `className` is the field's, as on every bound field. */
+function InputField(props: InputFieldProps) {
+  const [fieldProps, input] = splitProps(props);
   // The stored value is whatever the schema says — string, number or null — and
   // this component is generic over all of them, so there is nothing narrower to
   // write here. Both edges are handled explicitly: `String(… ?? "")` going in,
@@ -352,14 +353,14 @@ function InputField({ label, ...props }: InputFieldProps) {
 
   return (
     <FieldWrapper
-      label={label}
+      {...fieldProps}
       control={
         <Input
-          {...props}
+          {...input}
           value={String(field.state.value ?? "")}
           onBlur={field.handleBlur}
           onChangeText={(text) => {
-            if (props.type === "number") {
+            if (input.type === "number") {
               // `valueAsNumber` is DOM-only; parse the text so native agrees.
               field.handleChange(text === "" ? null : Number(text));
             } else {
@@ -372,19 +373,20 @@ function InputField({ label, ...props }: InputFieldProps) {
   );
 }
 
-type TextAreaFieldProps = {
-  label: string;
-} & Omit<TextareaProps, "value" | "onChangeText" | "onBlur">;
+type TextAreaFieldProps = BoundFieldProps &
+  Omit<TextareaProps, "value" | "onChangeText" | "onBlur" | keyof BoundFieldProps>;
 
-function TextAreaField({ label, ...props }: TextAreaFieldProps) {
+/** A multi-line text box and the field around it. */
+function TextAreaField(props: TextAreaFieldProps) {
+  const [fieldProps, textarea] = splitProps(props);
   const field = useFieldContext<string>();
 
   return (
     <FieldWrapper
-      label={label}
+      {...fieldProps}
       control={
         <Textarea
-          {...props}
+          {...textarea}
           value={field.state.value ?? ""}
           onBlur={field.handleBlur}
           onChangeText={(text) => field.handleChange(text)}
@@ -399,18 +401,18 @@ type SelectOption = {
   value: string;
 };
 
-type SelectFieldProps = {
-  label: string;
+type SelectFieldProps = BoundFieldProps & {
   options: readonly SelectOption[];
   placeholder?: string;
 };
 
-function SelectField({ label, options, placeholder }: SelectFieldProps) {
+function SelectField(props: SelectFieldProps) {
+  const [fieldProps, { options, placeholder }] = splitProps(props);
   const field = useFieldContext<string>();
 
   return (
     <FieldWrapper
-      label={label}
+      {...fieldProps}
       control={
         <Select value={field.state.value} onValueChange={(v) => field.handleChange(v)}>
           <SelectTrigger onBlur={field.handleBlur}>

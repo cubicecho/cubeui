@@ -529,10 +529,9 @@ own items for the weight of the calendar and the picker, as on the web; add them
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
 
-`CheckboxField`, `SwitchField`, `DateTimeField` and `ColorField` take `label`, `description`,
-`required`, `orientation`, `asGroup` and the `*ClassName` props, plus the control's own.
-`DateTimeField` passes `mode`, `clearable` and `placeholder` through. `InputField`,
-`TextAreaField` and `SelectField` take `label` and the control's props.
+Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
+`*ClassName` props, plus the control's own. `className` is the field's, not the control's.
+`DateTimeField` passes `mode`, `clearable` and `placeholder` through.
 
 How each is named:
 
