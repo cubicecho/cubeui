@@ -135,7 +135,7 @@ function PickerTrigger({
           className={cn(
             "min-w-0 flex-1 text-left text-sm font-normal",
             ONE_LINE,
-            empty ? "text-muted-foreground" : "text-foreground",
+            empty ? "text-foreground/60" : "text-foreground",
           )}
         >
           {children}
@@ -157,7 +157,7 @@ function PickerTrigger({
  */
 function ClearRow({ onClear }: { onClear: () => void }) {
   return (
-    <View className="flex-row justify-end border-t border-border p-1">
+    <View className="flex-row justify-end border-t border-foreground/10 p-1">
       <Button variant="ghost" size="sm" onPress={onClear}>
         <X className="h-4 w-4" aria-hidden />
         Clear
@@ -242,7 +242,7 @@ export function DatePicker({
           }}
         />
         {showTime ? (
-          <View className="flex-row items-center gap-2 border-t border-border p-3">
+          <View className="flex-row items-center gap-2 border-t border-foreground/10 p-3">
             <Input
               type="time"
               // A time with no date is not a value this control can hold, so it waits.

@@ -205,7 +205,7 @@ export const Empty: Story = {
       <div data-testid="with">
         <Markdown
           content={"  \n"}
-          empty={<p className="text-muted-foreground">This file is empty.</p>}
+          empty={<p className="text-foreground/60">This file is empty.</p>}
         />
       </div>
       <div data-testid="without">

@@ -46,7 +46,7 @@ const FLOW = "flex flex-col gap-3";
 const DOCUMENT = cn(
   FLOW,
   "min-w-0 text-sm leading-relaxed text-foreground wrap-anywhere",
-  "[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4",
+  "[&_a]:font-medium [&_a]:text-neutral [&_a]:underline [&_a]:underline-offset-4",
   "[&_img]:inline-block [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-md",
 );
 
@@ -60,7 +60,7 @@ const HEADINGS = {
   3: "text-base",
   4: "text-sm",
   5: "text-sm",
-  6: "text-sm text-muted-foreground",
+  6: "text-sm text-foreground/60",
 } as const;
 
 type Level = keyof typeof HEADINGS;
@@ -223,7 +223,7 @@ const ELEMENTS: Components = {
   li: ({ className, children }) => <ListItem className={className}>{children}</ListItem>,
   input: ({ checked }) => <TaskBox checked={checked} />,
   blockquote: ({ children }) => (
-    <blockquote className={cn(FLOW, "m-0 border-border border-l-2 pl-4 text-muted-foreground")}>
+    <blockquote className={cn(FLOW, "m-0 border-foreground/10 border-l-2 pl-4 text-foreground/60")}>
       {children}
     </blockquote>
   ),

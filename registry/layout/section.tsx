@@ -111,7 +111,7 @@ export function Section({
       className={cn(
         "min-w-0 gap-3",
         surface === "card" &&
-          "rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm",
+          "rounded-lg border border-foreground/10 bg-secondary p-4 text-foreground shadow-sm",
         className,
       )}
     >
@@ -122,7 +122,7 @@ export function Section({
             "min-w-0 flex-row flex-wrap items-center gap-2",
             // With no text there is no column to push the action along, so the row does it.
             !hasText && "justify-end",
-            divider && "border-b border-border pb-1",
+            divider && "border-b border-foreground/10 pb-1",
           )}
         >
           {hasText ? (
@@ -135,7 +135,7 @@ export function Section({
                   role="heading"
                   aria-level={level}
                   className={cn(
-                    "truncate font-semibold text-muted-foreground text-xs uppercase tracking-wider",
+                    "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wider",
                     titleClassName,
                   )}
                 >
@@ -146,7 +146,7 @@ export function Section({
                 <Text
                   webAs="p"
                   testID="section-description"
-                  className="mt-1 text-muted-foreground text-sm"
+                  className="mt-1 text-foreground/60 text-sm"
                 >
                   {description}
                 </Text>

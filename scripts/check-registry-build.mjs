@@ -270,6 +270,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import ts from "typescript";
+import { tokenNames } from "../tokens/palette.mjs";
 import {
   tokensIn,
   uncolouredBorders,
@@ -680,14 +681,17 @@ for (const dir of dirs) {
   }
 }
 
-// Rule 9. Every colour a registry file names is a token both stylesheets define. `black`, `white` and a
-// shade of Tailwind's palette are not: each is a colour no palette can change. Recursive, unlike the walk above, because `registry/web/ui` is a source too.
+// Rule 9. Every colour a registry file names is a token both stylesheets define. `black`, `white`
+// and a shade of Tailwind's palette are not: each is a colour no palette can change. Nor is one of
+// shadcn's names (`bg-primary`, `border-border`): the stylesheets define those for a vendored
+// component, as aliases, and a component of ours names the token. Recursive, unlike the walk
+// above, because `registry/web/ui` is a source too.
 const [nativeTokens, webTokens] = await Promise.all(
   ["dist/tokens.native.css", "dist/tokens.web.css"].map(async (f) =>
     tokensIn(await readFile(f, "utf8")),
   ),
 );
-const tokens = new Set([...nativeTokens].filter((t) => webTokens.has(t)));
+const tokens = new Set(tokenNames.filter((t) => nativeTokens.has(t) && webTokens.has(t)));
 for (const file of await readdir(SOURCES, { recursive: true })) {
   if (!/\.(tsx|ts)$/.test(file)) continue;
   const where = path.join(SOURCES, file);
@@ -1055,7 +1059,9 @@ if (uncoloured.length > 0) {
       "\nshipped that way on `button` and `toast`. Add the token to `tokens/palette.mjs` and run" +
       "\n`npm run tokens:build`, or use a colour that exists. `black`, `white` and a shade of" +
       "\nTailwind's palette (`bg-green-700`) are reported too: give the colour a token named for" +
-      "\nwhat it means.",
+      "\nwhat it means. So is one of shadcn's names (`bg-primary`, `border-border`): those are" +
+      "\naliases for vendored components. The tokens and what each means are listed at the top" +
+      "\nof `tokens/palette.mjs`.",
   );
 }
 

@@ -70,7 +70,7 @@ function asText(node: ReactNode, className: string) {
  * On the web the middle is a real `<button>`, named by the text inside it.
  *
  * No surface: a row lives in a list, a card or a section, and that owns the border. Pass
- * `className="rounded-lg border border-border bg-card"` for the telos look.
+ * `className="rounded-lg border border-foreground/10 bg-secondary"` for the telos look.
  */
 export function ListItem({
   title,
@@ -101,7 +101,7 @@ export function ListItem({
         {description ? (
           <span
             data-slot="list-item-description"
-            className="cube-rn-text line-clamp-2 text-muted-foreground text-xs"
+            className="cube-rn-text line-clamp-2 text-foreground/60 text-xs"
           >
             {description}
           </span>
@@ -112,7 +112,7 @@ export function ListItem({
           data-slot="list-item-meta"
           className="cube-rn-view shrink-0 flex-row items-center gap-1"
         >
-          {asText(meta, "text-muted-foreground text-xs tabular-nums")}
+          {asText(meta, "text-foreground/60 text-xs tabular-nums")}
         </div>
       ) : null}
     </>
@@ -124,7 +124,7 @@ export function ListItem({
       className={cn(
         "cube-rn-view",
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2.5",
-        onPress && "transition-colors hover:bg-muted",
+        onPress && "transition-colors hover:bg-hover",
         className,
       )}
     >
@@ -142,7 +142,7 @@ export function ListItem({
           className={cn(
             "cube-rn-view cube-rn-pressable",
             "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
-            "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
           )}
         >
           {body}
@@ -161,7 +161,7 @@ export function ListItem({
           data-slot="list-item-action"
           className="cube-rn-view shrink-0 flex-row items-center gap-1"
         >
-          {asText(action, "text-muted-foreground text-xs")}
+          {asText(action, "text-foreground/60 text-xs")}
         </div>
       ) : null}
     </div>

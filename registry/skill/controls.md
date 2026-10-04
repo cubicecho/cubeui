@@ -229,7 +229,7 @@ an `absolute` corner over it.
 
 A block of preformatted text — a config file, a command to paste, a JSON payload, a log — is
 `CodeBlock`, from `@cubeui/code` beside the inline `Code`, on both halves. Do not write a `<pre>`
-with `rounded-md border bg-muted p-3 font-mono text-xs` on it: that class list was retyped on
+with `rounded-md border bg-foreground/10 p-3 font-mono text-xs` on it: that class list was retyped on
 eleven screens and came out with four fills, a border on about half and three paddings.
 
 ```tsx
@@ -288,7 +288,7 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 ```tsx
 <Markdown content={skill.instructions} />
 
-<Markdown content={file.text} empty={<p className="text-muted-foreground">This file is empty.</p>} />
+<Markdown content={file.text} empty={<p className="text-foreground/60">This file is empty.</p>} />
 ```
 
 - **`content` is the Markdown source, a string.** It is the only required prop.
@@ -478,7 +478,7 @@ on both platforms:
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
   `icon`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
   `onSelect`, and `link` or `href` for a row that navigates. The icon takes the row's colour —
-  `text-destructive` on a destructive row.
+  `text-negative` on a destructive row.
 - **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
   `Link` as an element with no children, `link`, and the row is drawn inside it — on the web the
   menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
@@ -634,7 +634,7 @@ const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, 
   options={[
     ...(models.data ?? []).map((m) => ({ value: m.id, label: m.id, className: "font-mono" })),
     ...(models.isFetching && !models.data ? [{ note: "Loading…" }] : []),
-    ...(models.error ? [{ note: models.error.message, className: "text-destructive" }] : []),
+    ...(models.error ? [{ note: models.error.message, className: "text-negative" }] : []),
   ]}
 />
 ```
@@ -854,7 +854,7 @@ with a filled `div` and a `style.width` inside it.
 - No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
   animate. A wait with no known end wants a [`Spinner`](#spinner), not an empty bar.
 - `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
-  (`bg-destructive` for a context window nearly full). Colours are tokens, as everywhere.
+  (`bg-negative` for a context window nearly full). Colours are tokens, as everywhere.
 - A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not
   this component.
 
@@ -1047,7 +1047,7 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   <Text>Save</Text>
 </Button>
 
-<Spinner label="Loading servers" className="size-6 text-muted-foreground" />
+<Spinner label="Loading servers" className="size-6 text-foreground/60" />
 ```
 
 - It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
@@ -1068,7 +1068,7 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 </View>
 ```
 
-`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-accent` block that pulses
+`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-hover` block that pulses
 while what it stands in for loads. `className` is its size.
 
 - It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
@@ -1087,7 +1087,7 @@ while what it stands in for loads. `className` is its size.
 <Separator decorative={false} />
 ```
 
-`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-border`, as long as its
+`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-foreground/10`, as long as its
 container. Use it rather than a `border-b` on the group above or a `h-px` view.
 
 - `orientation` is `horizontal` (the default) or `vertical`. A vertical one fills its row's height:
@@ -1196,10 +1196,10 @@ says.
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
 - **A checked, pressed or current control is drawn in `selection`**, not `primary`: blue in the
   default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
-  `bg-selection` and `text-selection-foreground` too, so it follows the palette; `primary` stays
+  `bg-active` and `text-active-foreground` too, so it follows the palette; `primary` stays
   the colour of a button to press. The active tab and the sidebar's current row are `selection`
-  too. Hover is grey and never `selection`: `hover:bg-accent` on a control, `hover:bg-muted` on a
-  row with muted text in it. A chosen card is ringed with `border-selection`, not filled.
+  too. Hover is grey and never `selection`: `hover:bg-hover` on a control, `hover:bg-hover` on a
+  row with muted text in it. A chosen card is ringed with `border-active`, not filled.
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 

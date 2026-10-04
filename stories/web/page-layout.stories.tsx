@@ -124,7 +124,7 @@ export const WithFooter: Story = {
     title: "Workspaces",
     content: <Rows />,
     footer: (
-      <div className="flex items-center justify-between py-3 text-muted-foreground text-sm">
+      <div className="flex items-center justify-between py-3 text-foreground/60 text-sm">
         <span>40 workspaces</span>
         <Button size="sm" variant="outline">
           Load more

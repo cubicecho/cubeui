@@ -38,6 +38,12 @@ const LISTS: readonly SelectEntry[] = [
 ];
 
 /** task-server's model list: identifiers, which is why they are `font-mono`. */
+/**
+ * Finds the separator by the last class it wears. An attribute selector and not `.class`,
+ * because that class carries an opacity (`bg-foreground/10`) and a `/` is not valid in one.
+ */
+const RULE = `[class~="${SELECT_SEPARATOR_CLASS.split(" ").pop()}"]`;
+
 const MODELS = ["gpt-4o-mini", "llama3.1:8b"];
 
 /**
@@ -209,7 +215,7 @@ export const AnOptionThatIsNotALaneIsNotDrawnAsOne: Story = {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
       // Found by the class both halves share rather than by a slot attribute: this select carries
       // no `data-slot`, and `select-base.ts` is where the two platforms agree on what a rule is.
-      const rule = list.querySelector(`.${SELECT_SEPARATOR_CLASS.split(" ").pop()}`);
+      const rule = list.querySelector(RULE);
       expect(rule).not.toBeNull();
 
       const archive = within(list).getByRole("option", { name: "Archive it" });
@@ -237,9 +243,7 @@ export const RowsAreRowsAndTheRuleIsAHairline: Story = {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
       // `:not([role="option"])` because the bug being measured for puts the separator's own class
       // on every row, and without it this finds a row and reports its height as the rule's.
-      const rule = list.querySelector<HTMLElement>(
-        `:not([role="option"]).${SELECT_SEPARATOR_CLASS.split(" ").pop()}`,
-      );
+      const rule = list.querySelector<HTMLElement>(`:not([role="option"])${RULE}`);
       expect(rule).not.toBeNull();
       // A hairline. Loose enough to survive a border-width change, tight enough that no padding
       // scale in this registry produces it.
@@ -277,7 +281,7 @@ export const AFlatListIsStillFlat: Story = {
   args: { options: LISTS },
   play: async ({ canvas }) => {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
-      expect(list.querySelectorAll(`.${SELECT_SEPARATOR_CLASS.split(" ").pop()}`)).toHaveLength(0);
+      expect(list.querySelectorAll(RULE)).toHaveLength(0);
       expect(within(list).queryAllByRole("group", { name: /./ })).toHaveLength(0);
       expect(within(list).getAllByRole("option")).toHaveLength(2);
     });

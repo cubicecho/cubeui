@@ -23,12 +23,12 @@ type Story = StoryObj<typeof meta>;
 const LONG = "Augusta Ada King, Countess of Lovelace, who wrote the first published program";
 
 const nativeAvatar = (
-  <View className="size-8 items-center justify-center rounded-full bg-muted">
+  <View className="size-8 items-center justify-center rounded-full bg-foreground/10">
     <Text className="font-medium text-foreground text-xs">AL</Text>
   </View>
 );
 const compiledAvatar = (
-  <div className="flex size-8 items-center justify-center rounded-full bg-muted">
+  <div className="flex size-8 items-center justify-center rounded-full bg-foreground/10">
     <span className="font-medium text-foreground text-xs">AL</span>
   </div>
 );

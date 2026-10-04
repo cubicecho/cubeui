@@ -370,7 +370,10 @@ async function assertControlled(canvasElement: HTMLElement) {
 function CompactHarness({ Picker, name }: { Picker: Picker; name: string }) {
   return (
     <div className="flex flex-col gap-3">
-      <div data-testid={`${name} sidebar`} className="w-56 rounded-md border border-border p-2">
+      <div
+        data-testid={`${name} sidebar`}
+        className="w-56 rounded-md border border-foreground/10 p-2"
+      >
         <Picker variant="compact" aria-label={`${name} sidebar`} />
       </div>
       <div data-testid={`${name} header`} className="w-24">

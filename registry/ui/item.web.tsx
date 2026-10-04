@@ -72,7 +72,7 @@ function ItemSeparator({
 
 /** What only a DOM row has: the hover on a link row, and the focus ring. */
 const ITEM_WEB =
-  "group/item flex text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-muted";
+  "group/item flex text-sm transition-colors duration-100 outline-none focus-visible:border-active focus-visible:ring-[3px] focus-visible:ring-active/50 [a]:transition-colors [a]:hover:bg-hover";
 
 function Item({
   className,
@@ -150,7 +150,7 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
       data-slot="item-description"
       className={cn(
         ITEM_DESCRIPTION_CLASS,
-        "text-balance [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+        "text-balance [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-neutral",
         className,
       )}
       {...props}

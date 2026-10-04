@@ -71,7 +71,7 @@ export const ChoosingASwatchSetsTheValue: Story = {
 };
 
 /**
- * The chosen swatch says so to assistive technology, not only with a ring — `ring-ring` is a
+ * The chosen swatch says so to assistive technology, not only with a ring — `ring-active` is a
  * theme colour, so on the swatch nearest it the selection is invisible.
  */
 export const TheChosenSwatchIsAnnounced: Story = {

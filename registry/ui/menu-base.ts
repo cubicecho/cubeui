@@ -41,7 +41,7 @@ export type MenuContentProps = {
 };
 
 export type MenuItemProps = {
-  /** An icon from `@cubeui/icons`. It takes the row's colour — `text-destructive` on a destructive row. */
+  /** An icon from `@cubeui/icons`. It takes the row's colour — `text-negative` on a destructive row. */
   icon?: ReactNode;
   /** The row's text, and what typeahead matches on the web. */
   label: string;
@@ -83,8 +83,8 @@ export type MenuSeparatorProps = {
 export const MENU_CONTENT_CLASS = "min-w-[8rem] p-1";
 export const MENU_ITEM_CLASS = "w-full flex-row items-center gap-2 rounded-sm px-2 py-1.5";
 export const MENU_ITEM_TEXT_CLASS = "flex-1 text-sm";
-export const MENU_TRAILING_CLASS = "ml-auto text-xs text-muted-foreground";
-export const MENU_SEPARATOR_CLASS = "-mx-1 my-1 h-px bg-border";
+export const MENU_TRAILING_CLASS = "ml-auto text-xs text-foreground/60";
+export const MENU_SEPARATOR_CLASS = "-mx-1 my-1 h-px bg-foreground/10";
 
 /**
  * The toggle rows take `MenuItem`'s row — `icon`, `label`, `trailing`, `disabled` — and not its

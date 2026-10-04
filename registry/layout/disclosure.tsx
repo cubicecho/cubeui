@@ -109,7 +109,7 @@ export function Disclosure({
           className={cn(
             "min-w-0 flex-1 flex-row items-start gap-1.5 rounded-sm",
             Platform.select({
-              web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
               default: undefined,
             }),
           )}
@@ -117,7 +117,7 @@ export function Disclosure({
           <ChevronRight
             aria-hidden
             className={cn(
-              "mt-0.5 size-4 shrink-0 text-muted-foreground",
+              "mt-0.5 size-4 shrink-0 text-foreground/60",
               Platform.select({ web: "transition-transform", default: undefined }),
               open && "rotate-90",
             )}
@@ -125,12 +125,12 @@ export function Disclosure({
           <View className="min-w-0 flex-1 gap-0.5">
             <Text
               testID="disclosure-title"
-              className={cn("font-medium text-muted-foreground text-sm", titleClassName)}
+              className={cn("font-medium text-foreground/60 text-sm", titleClassName)}
             >
               {title}
             </Text>
             {description ? (
-              <Text testID="disclosure-description" className="text-muted-foreground text-xs">
+              <Text testID="disclosure-description" className="text-foreground/60 text-xs">
                 {description}
               </Text>
             ) : null}

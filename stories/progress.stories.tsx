@@ -31,7 +31,7 @@ function Bars({ Progress }: { Progress: ProgressComponent }) {
         value={92}
         label="Context window"
         className="h-1.5"
-        indicatorClassName="bg-destructive"
+        indicatorClassName="bg-negative"
       />
       <Progress label="Waiting" />
     </div>

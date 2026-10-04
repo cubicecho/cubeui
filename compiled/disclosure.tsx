@@ -117,13 +117,13 @@ export function Disclosure({
           className={cn(
             "cube-rn-view cube-rn-pressable",
             "min-w-0 flex-1 flex-row items-start gap-1.5 rounded-sm",
-            "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
           )}
         >
           <ChevronRight
             aria-hidden
             className={cn(
-              "mt-0.5 size-4 shrink-0 text-muted-foreground",
+              "mt-0.5 size-4 shrink-0 text-foreground/60",
               "transition-transform",
               open && "rotate-90",
             )}
@@ -133,7 +133,7 @@ export function Disclosure({
               data-slot="disclosure-title"
               className={cn(
                 "cube-rn-text",
-                "font-medium text-muted-foreground text-sm",
+                "font-medium text-foreground/60 text-sm",
                 titleClassName,
               )}
             >
@@ -142,7 +142,7 @@ export function Disclosure({
             {description ? (
               <span
                 data-slot="disclosure-description"
-                className="cube-rn-text text-muted-foreground text-xs"
+                className="cube-rn-text text-foreground/60 text-xs"
               >
                 {description}
               </span>

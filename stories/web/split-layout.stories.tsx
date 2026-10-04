@@ -17,9 +17,9 @@ type Story = StoryObj<typeof meta>;
 type SidebarStory = StoryObj<typeof SidebarLayout>;
 
 const Surface = ({ label, tall = false }: { label: string; tall?: boolean }) => (
-  <div className={`rounded border bg-card p-4 text-sm ${tall ? "h-64" : ""}`}>
+  <div className={`rounded border bg-secondary p-4 text-sm ${tall ? "h-64" : ""}`}>
     <p className="font-medium">{label}</p>
-    <p className="mt-1 text-muted-foreground">Placeholder surface.</p>
+    <p className="mt-1 text-foreground/60">Placeholder surface.</p>
   </div>
 );
 
@@ -92,7 +92,7 @@ export const EitherPaneCanCarryTheWidth: Story = {
   render: ({ first, second, stackBelow }) => (
     <div className="w-[600px] space-y-6 p-8">
       <div data-testid="sized-first">
-        <p className="mb-1 font-mono text-muted-foreground text-xs">firstWidth="two-thirds"</p>
+        <p className="mb-1 font-mono text-foreground/60 text-xs">firstWidth="two-thirds"</p>
         <SplitLayout
           first={first}
           second={second}
@@ -101,7 +101,7 @@ export const EitherPaneCanCarryTheWidth: Story = {
         />
       </div>
       <div data-testid="sized-second">
-        <p className="mb-1 font-mono text-muted-foreground text-xs">secondWidth="two-thirds"</p>
+        <p className="mb-1 font-mono text-foreground/60 text-xs">secondWidth="two-thirds"</p>
         <SplitLayout
           first={first}
           second={second}
@@ -162,7 +162,7 @@ export const WidthScale: SidebarStory = {
     <div className="space-y-6 p-8">
       {RAIL_WIDTHS.map((sidebarWidth) => (
         <div key={sidebarWidth}>
-          <p className="mb-1 font-mono text-muted-foreground text-xs">{sidebarWidth}</p>
+          <p className="mb-1 font-mono text-foreground/60 text-xs">{sidebarWidth}</p>
           <SidebarLayout {...args} sidebarWidth={sidebarWidth} />
         </div>
       ))}
@@ -351,7 +351,7 @@ export const WideContentKeepsItsFloor: SidebarStory = {
     stackBelow: "never",
     sidebar: <Surface label="Sidebar stays put" />,
     content: (
-      <div className="overflow-x-auto rounded border bg-card">
+      <div className="overflow-x-auto rounded border bg-secondary">
         <div className="w-[2000px] px-4 py-3 text-sm">A single very wide child.</div>
       </div>
     ),

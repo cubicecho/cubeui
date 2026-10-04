@@ -62,7 +62,7 @@ const shell: Story = {
             sidebar={
               <NativeSidebar
                 label="Native rail"
-                header={<Text className="font-semibold text-sidebar-foreground">Router</Text>}
+                header={<Text className="font-semibold text-foreground">Router</Text>}
                 content={
                   <NativeSection
                     as="nav"
@@ -114,7 +114,7 @@ const shell: Story = {
             sidebar={
               <CompiledSidebar
                 label="Compiled rail"
-                header={<span className="font-semibold text-sidebar-foreground">Router</span>}
+                header={<span className="font-semibold text-foreground">Router</span>}
                 content={
                   <CompiledSection
                     as="nav"

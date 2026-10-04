@@ -13,7 +13,7 @@ export default meta;
 type Story = StoryObj;
 
 /**
- * The line a shadcn app sets its default border colour with, as `* { @apply border-border }`
+ * The line a shadcn app sets its default border colour with, as `* { @apply border-foreground/10 }`
  * compiles. Same layer as the reset and a lower specificity, which is the whole of the bug below:
  * the Storybook stylesheet has no such rule, so a story has to bring it to stand where a consumer
  * stands.

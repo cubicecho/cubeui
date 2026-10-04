@@ -24,8 +24,8 @@ export const itemVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent",
-        outline: "border-border",
-        muted: "bg-muted/50",
+        outline: "border-foreground/10",
+        muted: "bg-foreground/5",
       },
       size: {
         default: "gap-4 p-4",
@@ -44,7 +44,7 @@ export const itemMediaVariants = cva("shrink-0 flex-row items-center justify-cen
   variants: {
     variant: {
       default: "bg-transparent",
-      icon: "size-8 rounded-sm border border-border bg-muted",
+      icon: "size-8 rounded-sm border border-foreground/10 bg-foreground/10",
       image: "size-10 overflow-hidden rounded-sm",
     },
   },
@@ -62,7 +62,7 @@ export const ITEM_TITLE_TEXT = "text-sm leading-snug font-medium";
 
 /** The muted line under the title, two lines at most. */
 export const ITEM_DESCRIPTION_CLASS =
-  "line-clamp-2 text-sm leading-normal font-normal text-muted-foreground";
+  "line-clamp-2 text-sm leading-normal font-normal text-foreground/60";
 
 /** The far end: buttons, a menu. */
 export const ITEM_ACTIONS_CLASS = "flex-row items-center gap-2";
@@ -74,4 +74,4 @@ export const ITEM_HEADER_CLASS = "flex-row items-center justify-between gap-2";
 export const ITEM_FOOTER_CLASS = "flex-row items-center justify-between gap-2";
 
 /** The rule between rows in an `ItemGroup`. */
-export const ITEM_SEPARATOR_CLASS = "my-0 shrink-0 bg-border";
+export const ITEM_SEPARATOR_CLASS = "my-0 shrink-0 bg-foreground/10";

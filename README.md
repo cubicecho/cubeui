@@ -286,9 +286,10 @@ items. 23 of the web items are web-only, and every native item has a web half.
 
 ## Stage 1 — tokens
 
-`tokens/palette.mjs` is the single source of truth: 33 token names in light and dark, stored as
-OKLCH components — the 18 cubeui has always carried, `destructive-foreground`, shadcn's eight
-`sidebar-*` tokens, the five status tokens (`success`, `warning`, their `-foreground`s, and `info`), and `overlay`. `npm run tokens:build` emits three encodings of it into `dist/`:
+`tokens/palette.mjs` is the single source of truth: 17 tokens in light and dark, stored as
+OKLCH components, each named for what the colour means (the list is in `AGENTS.md`). shadcn's 26
+names are emitted beside them as aliases, so a vendored shadcn component keeps working.
+`npm run tokens:build` emits three encodings of it into `dist/`:
 
 | Output | Encoding | For |
 |---|---|---|
@@ -1268,6 +1269,12 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
    palette classes had, and `registry:check` rule 9 no longer lets `black`, `white` or a shade of
    Tailwind's palette through (a dialog's scrim is `overlay`): a component names what a colour
    means, and `tokens/palette.mjs` says which shade it is.
+
+   **And then the whole vocabulary followed.** The tokens are named for meaning (`neutral`,
+   `positive`, `warning`, `negative`, `info`, `hover`, `active`, `secondary`, `overlay`), a muted
+   colour is an opacity on the class (`text-foreground/60`, `border-foreground/10`) and no longer a
+   token, and shadcn's names (`primary`, `destructive`, `accent`, `border`, `card`, …) are aliases a
+   cubeui component may not name. `success` was renamed `positive` before it shipped.
 
    **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
    does not overlap `color-dot`: that one takes a literal colour for a category whose hue is

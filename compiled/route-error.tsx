@@ -52,7 +52,7 @@ type RouteErrorProps = {
    * into a bug report. `true` shows `error.message`; a node replaces the block's
    * contents. Left out when it would say exactly what `describe` already said.
    * Selectable on device too (`selectable`), where text is not by default. The
-   * block is bordered rather than filled: muted text on `bg-muted` fails contrast.
+   * block is bordered rather than filled: muted text on `bg-foreground/10` fails contrast.
    */
   details?: ReactNode | boolean;
   /** More buttons beside "Try again" — a reload is the usual one. */
@@ -102,24 +102,22 @@ export function RouteError({
       data-slot="route-error"
       className="cube-rn-view flex-1 items-center justify-center gap-4 px-8 py-20"
     >
-      <div className="cube-rn-view rounded-full bg-destructive/10 p-4">
-        <CircleAlert className="h-7 w-7 text-destructive" />
+      <div className="cube-rn-view rounded-full bg-negative/10 p-4">
+        <CircleAlert className="h-7 w-7 text-negative" />
       </div>
       <div className="cube-rn-view max-w-sm items-center">
         <span data-slot="route-error-title" className="cube-rn-text font-semibold text-foreground">
           {title}
         </span>
-        <span className="cube-rn-text mt-1 text-center text-sm text-muted-foreground">
-          {summary}
-        </span>
+        <span className="cube-rn-text mt-1 text-center text-sm text-foreground/60">{summary}</span>
       </div>
       {shown ? (
         <div
           data-slot="route-error-details"
-          className="cube-rn-view w-full max-w-md rounded-md border border-border px-3 py-2"
+          className="cube-rn-view w-full max-w-md rounded-md border border-foreground/10 px-3 py-2"
         >
           {typeof shown === "string" ? (
-            <span className="cube-rn-text font-mono text-xs text-muted-foreground">{shown}</span>
+            <span className="cube-rn-text font-mono text-xs text-foreground/60">{shown}</span>
           ) : (
             shown
           )}

@@ -56,9 +56,7 @@ function Frame({ children }: { children: ReactNode }) {
   return <div className="flex h-96">{children}</div>;
 }
 
-const brand = (text: string) => (
-  <Text className="font-semibold text-sidebar-foreground">{text}</Text>
-);
+const brand = (text: string) => <Text className="font-semibold text-foreground">{text}</Text>;
 
 export const Default: Story = {
   render: () => (
@@ -90,7 +88,7 @@ export const Default: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            header={<span className="font-semibold text-sidebar-foreground">Telos</span>}
+            header={<span className="font-semibold text-foreground">Telos</span>}
             content={
               <CompiledSection
                 title="Projects"

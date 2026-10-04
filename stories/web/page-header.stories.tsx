@@ -99,7 +99,7 @@ export const Levels: StoryObj<typeof PageHeader> = {
 export const WithBreadcrumbs: Story = {
   args: {
     breadcrumbs: (
-      <nav aria-label="Breadcrumb" className="text-muted-foreground text-sm">
+      <nav aria-label="Breadcrumb" className="text-foreground/60 text-sm">
         <a className="underline underline-offset-4" href="#workspaces">
           Workspaces
         </a>

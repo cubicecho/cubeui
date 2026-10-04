@@ -43,9 +43,9 @@ test("light and dark define the same token names", () => {
   assert.deepEqual(Object.keys(dark), names);
 });
 
-test("only destructive is outside sRGB", () => {
+test("only negative, and the shadcn name for it, is outside sRGB", () => {
   const out = names.filter((n) => isOutOfGamut(light[n]) || isOutOfGamut(dark[n]));
-  assert.deepEqual(out, ["destructive"]);
+  assert.deepEqual(out, ["negative", "destructive"]);
 });
 
 test("every emitted native colour is a form RN can parse", () => {

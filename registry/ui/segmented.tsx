@@ -32,8 +32,8 @@ export function segmentedItemClass(active: boolean, className?: string) {
   return cn(
     "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
     active
-      ? "bg-selection text-selection-foreground"
-      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      ? "bg-active text-active-foreground"
+      : "text-foreground/60 hover:bg-hover hover:text-hover-foreground",
     className,
   );
 }
@@ -47,7 +47,7 @@ export function segmentedItemClass(active: boolean, className?: string) {
 export function segmentedTextClass(active: boolean, className?: string) {
   return cn(
     "text-sm font-medium",
-    active ? "text-selection-foreground" : "text-muted-foreground",
+    active ? "text-active-foreground" : "text-foreground/60",
     className,
   );
 }
@@ -97,7 +97,7 @@ const SegmentedGroupContext = React.createContext<SegmentedGroupContextValue | n
  * page with nothing round them, for a toolbar or a nav bar.
  */
 const SEGMENTED_GROUP_VARIANTS = {
-  framed: "h-10 rounded-md border border-input bg-background p-1",
+  framed: "h-10 rounded-md border border-foreground/15 bg-background p-1",
   plain: "",
 } as const;
 
@@ -225,7 +225,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
   ({ active, value, icon, className, children, onPress, ...props }, ref) => {
     const group = React.useContext(SegmentedGroupContext);
     const current = active ?? (group !== null && value !== undefined && group.value === value);
-    const ink = current ? "text-selection-foreground" : "text-muted-foreground";
+    const ink = current ? "text-active-foreground" : "text-foreground/60";
     // Only a pill with an icon has something left to draw once its label is gone.
     const labelHideBelow = icon ? group?.labelHideBelow : undefined;
     return (
@@ -256,7 +256,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
           // Inside the frame a pill is 4px shorter, so it fits the input-height
           // box instead of spilling past its padding.
           group?.framed ? "rounded-md px-3 py-1" : "rounded-md px-3 py-1.5",
-          current ? "bg-selection" : "hover:bg-accent",
+          current ? "bg-active" : "hover:bg-hover",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
           // colour can only come from inheriting it here.

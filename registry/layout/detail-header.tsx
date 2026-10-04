@@ -63,7 +63,7 @@ export function DetailHeader({
           </Text>
           {badge}
         </View>
-        {subtitle ? <Text className="mt-0.5 text-sm text-muted-foreground">{subtitle}</Text> : null}
+        {subtitle ? <Text className="mt-0.5 text-sm text-foreground/60">{subtitle}</Text> : null}
       </View>
       {actions}
     </View>

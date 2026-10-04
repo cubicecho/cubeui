@@ -296,7 +296,7 @@ export function SplitLayout({
         <View
           testID="split-layout-divider"
           aria-hidden
-          className={cn("shrink-0 self-stretch bg-border", DIVIDER_AT[stackBelow])}
+          className={cn("shrink-0 self-stretch bg-foreground/10", DIVIDER_AT[stackBelow])}
         />
       ) : null}
       <View
@@ -490,7 +490,7 @@ export function SidebarLayout({
           role="banner"
           testID="sidebar-layout-header"
           className={cn(
-            "min-h-14 shrink-0 flex-row items-center gap-2 border-border border-b bg-background px-4 py-2",
+            "min-h-14 shrink-0 flex-row items-center gap-2 border-foreground/10 border-b bg-background px-4 py-2",
             HEADER_HIDE_FROM[sidebarHideBelow],
             headerClassName,
           )}
@@ -519,7 +519,7 @@ export function SidebarLayout({
             // else in the bar is `shrink-0` or a view, which does not shrink either.
             <View testID="sidebar-layout-status" className="min-w-0 flex-1 overflow-hidden">
               {typeof status === "string" || typeof status === "number" ? (
-                <Text className="truncate text-right text-muted-foreground text-sm">{status}</Text>
+                <Text className="truncate text-right text-foreground/60 text-sm">{status}</Text>
               ) : (
                 status
               )}

@@ -159,8 +159,8 @@ export function EmptyState({
           className,
         )}
       >
-        {Icon ? <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden /> : null}
-        <span className="cube-rn-text shrink text-sm text-muted-foreground">{title}</span>
+        {Icon ? <Icon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden /> : null}
+        <span className="cube-rn-text shrink text-sm text-foreground/60">{title}</span>
         {action}
       </div>
     );

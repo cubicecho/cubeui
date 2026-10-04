@@ -120,7 +120,7 @@ function Input({
       {...props}
       className={cn(
         INPUT_CLASS,
-        "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative",
         leading != null && INPUT_LEADING_PAD_CLASS,
         trailing != null && INPUT_TRAILING_PAD_CLASS,
         className,
@@ -152,7 +152,7 @@ function Input({
  * its size — pinned to the child rather than set on it, so a bare `<Search />` fits. A trailing
  * button's own `hover:text-*` still wins, being on the button.
  */
-const SLOT_ICON = "text-muted-foreground [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+const SLOT_ICON = "text-foreground/60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
 export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputType };
 export { Input };

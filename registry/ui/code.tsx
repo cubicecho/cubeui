@@ -26,7 +26,10 @@ export function Code({
 }) {
   return (
     <Text
-      className={cn("rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground", className)}
+      className={cn(
+        "rounded bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
+        className,
+      )}
     >
       {children}
     </Text>
@@ -155,7 +158,10 @@ export function CodeBlock({ content, action, wrap = false, maxHeight, className 
   return (
     <View
       testID="code-block"
-      className={cn("flex-row items-start rounded-md border border-border bg-muted/50", className)}
+      className={cn(
+        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/5",
+        className,
+      )}
     >
       <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} />
       {action ? (

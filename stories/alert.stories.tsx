@@ -109,7 +109,7 @@ export const Default: Story = {
 
     // The line under the title is muted only on the card; on a tint it is the foreground too.
     const [nativeSessions, compiledSessions] = pair("Sessions now last thirty days.");
-    await expect(colour(nativeSessions)).toBe("rgb(115, 115, 115)");
+    await expect(colour(nativeSessions)).toMatch(/\/ 0\.6\)$/);
     await expect(colour(compiledSessions)).toBe(colour(nativeSessions));
     for (const line of ["It will not be shown again.", "spawn npx ENOENT"]) {
       const [native, compiled] = pair(line);

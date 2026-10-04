@@ -101,7 +101,7 @@ export const Compact: Story = {
               </NativeButton>
             }
           />
-          <span data-testid="muted" className="text-muted-foreground">
+          <span data-testid="muted" className="text-foreground/60">
             muted
           </span>
         </>

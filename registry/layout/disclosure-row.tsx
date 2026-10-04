@@ -90,7 +90,7 @@ export function DisclosureRow({
         className={cn(
           "min-w-0 flex-1 flex-row items-start gap-2 rounded",
           Platform.select({
-            web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
             default: undefined,
           }),
         )}
@@ -98,7 +98,7 @@ export function DisclosureRow({
         <ChevronRight
           aria-hidden
           className={cn(
-            "mt-0.5 size-4 shrink-0 text-muted-foreground",
+            "mt-0.5 size-4 shrink-0 text-foreground/60",
             Platform.select({ web: "transition-transform", default: undefined }),
             open && "rotate-90",
           )}
@@ -129,7 +129,7 @@ export function DisclosureRow({
         <ItemFooter
           nativeID={contentId}
           className={cn(
-            "min-w-0 flex-col items-stretch gap-2 border-border border-t pt-3",
+            "min-w-0 flex-col items-stretch gap-2 border-foreground/10 border-t pt-3",
             contentClassName,
           )}
         >

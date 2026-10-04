@@ -396,7 +396,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    That happened for `onClick`/`selected`, on a narrower shell rather than on this one: the
    status pages of kanban_server and task_server both hand-wrote a pressable count tile with
-   `aria-pressed` and `border-primary bg-accent`, and `StatTile` takes `onPress` and `selected`
+   `aria-pressed` and `border-neutral bg-hover`, and `StatTile` takes `onPress` and `selected`
    for them. Its press is `Card`'s own, so the focus ring, the role and the keyboard target are
    the primitive's rather than the shell's. `CardLayout` still takes neither.
 4. **Where installed files land, and how items import each other.** *Settled — and verified by

@@ -248,7 +248,7 @@ function iconOf(pill: HTMLElement) {
 /**
  * The fill a pointer over the pill would give it. `userEvent.hover` dispatches events and cannot
  * put an element in `:hover`, so the hovered fill is read from the stylesheet: the declaration
- * Tailwind generated for `hover:bg-accent`, which applies under `:hover` and nowhere else.
+ * Tailwind generated for `hover:bg-hover`, which applies under `:hover` and nowhere else.
  */
 function hoverFill() {
   for (const sheet of Array.from(document.styleSheets)) {
@@ -260,7 +260,7 @@ function hoverFill() {
     }
     for (const rule of rules) {
       const text = rule.cssText;
-      const at = text.indexOf(".hover\\:bg-accent");
+      const at = text.indexOf(".hover\\:bg-hover");
       if (at === -1) continue;
       const own = text.slice(at, at + 400);
       const fill = own.match(/background-color:\s*([^;}]+)/)?.[1]?.trim();
@@ -324,9 +324,9 @@ export const IconAndLabel: Story = {
 
         // The hovered fill is the `accent` token, on a pill at rest only: the chosen pill has no
         // hover rule, so a pointer over it does not turn it grey.
-        await expect(hoverFill()).toBe("var(--accent)");
-        await expect(preview.matches(".hover\\:bg-accent")).toBe(true);
-        await expect(edit.matches(".hover\\:bg-accent")).toBe(false);
+        await expect(hoverFill()).toBe("var(--hover)");
+        await expect(preview.matches(".hover\\:bg-hover")).toBe(true);
+        await expect(edit.matches(".hover\\:bg-hover")).toBe(false);
         const tokens = getComputedStyle(preview);
         await expect(tokens.getPropertyValue("--accent")).not.toBe(
           tokens.getPropertyValue("--selection"),
@@ -489,13 +489,13 @@ export const IconColourOnDevice: Story = {
 
     // Sized by the pill, and coloured as its label is: chosen, and at rest.
     await expect(classes("edit")).toEqual(
-      expect.arrayContaining(["size-4", "shrink-0", "text-selection-foreground"]),
+      expect.arrayContaining(["size-4", "shrink-0", "text-active-foreground"]),
     );
-    await expect(classes("edit")).not.toContain("text-muted-foreground");
+    await expect(classes("edit")).not.toContain("text-foreground/60");
     await expect(classes("preview")).toEqual(
-      expect.arrayContaining(["size-4", "shrink-0", "text-muted-foreground"]),
+      expect.arrayContaining(["size-4", "shrink-0", "text-foreground/60"]),
     );
-    await expect(classes("preview")).not.toContain("text-selection-foreground");
+    await expect(classes("preview")).not.toContain("text-active-foreground");
 
     // In the pill's row, before the label, not inside the label's text element.
     const edit = canvas.getByRole("button", { name: "Edit" });

@@ -154,13 +154,13 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
         className={cn(
           "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
           dragging
-            ? "border-primary bg-primary/5"
-            : "border-muted-foreground/25 hover:border-muted-foreground/50",
+            ? "border-neutral bg-neutral/5"
+            : "border-foreground/15 hover:border-foreground/30",
         )}
       >
-        <Upload className="h-8 w-8 text-muted-foreground" />
+        <Upload className="h-8 w-8 text-foreground/60" />
         <Text className="font-medium text-sm">{label}</Text>
-        {hint ? <Text className="text-xs text-muted-foreground">{hint}</Text> : null}
+        {hint ? <Text className="text-xs text-foreground/60">{hint}</Text> : null}
       </button>
       {input}
     </>
@@ -197,7 +197,7 @@ export function FilePickerButton({
         aria-label={label}
         className={cn(
           buttonVariants({ variant, size }),
-          dragging && "ring-2 ring-primary ring-offset-2 ring-offset-background",
+          dragging && "ring-2 ring-neutral ring-offset-2 ring-offset-background",
           className,
         )}
       >

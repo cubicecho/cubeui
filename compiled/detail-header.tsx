@@ -77,7 +77,7 @@ export function DetailHeader({
           {badge}
         </div>
         {subtitle ? (
-          <span className="cube-rn-text mt-0.5 text-sm text-muted-foreground">{subtitle}</span>
+          <span className="cube-rn-text mt-0.5 text-sm text-foreground/60">{subtitle}</span>
         ) : null}
       </div>
       {actions}

@@ -90,7 +90,12 @@ function AlertDialogDescription({ className, children }: SectionProps) {
 /** The icon or picture above the title. Pass the glyph bare; it is sized by the caller. */
 function AlertDialogMedia({ className, children }: SectionProps) {
   return (
-    <View className={cn("mb-2 size-16 items-center justify-center rounded-md bg-muted", className)}>
+    <View
+      className={cn(
+        "mb-2 size-16 items-center justify-center rounded-md bg-foreground/10",
+        className,
+      )}
+    >
       {children}
     </View>
   );

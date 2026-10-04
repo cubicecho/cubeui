@@ -5,7 +5,7 @@ import { Skeleton as Native } from "../registry/ui/skeleton.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
- * The skeleton on both halves: a rounded `bg-accent` block the caller sizes, pulsing — the web
+ * The skeleton on both halves: a rounded `bg-hover` block the caller sizes, pulsing — the web
  * half by CSS animation, the native one by the opacity `Animated` drives. The play test measures
  * each block and checks both are wired to pulse.
  */
@@ -40,7 +40,7 @@ export const Default: Story = {
       await expect(line.height).toBe(16);
       await expect(block(`${half}-short`).getBoundingClientRect().width).toBe(200);
       await expect(block(`${half}-short`)).toHaveAttribute("aria-hidden", "true");
-      // The same token on both: `bg-accent`, rounded.
+      // The same token on both: `bg-hover`, rounded.
       await expect(getComputedStyle(block(`${half}-line`)).borderTopLeftRadius).not.toBe("0px");
     }
     await expect(getComputedStyle(block("native-line")).backgroundColor).toBe(

@@ -90,7 +90,7 @@ function label(children: ReactNode, className: string): ReactNode[] {
 function TabsTrigger({ value, disabled = false, className, children }: TabsTriggerProps) {
   const tabs = useContext(TabsContext);
   const active = tabs.value === value;
-  const color = active ? "text-selection-foreground" : "text-muted-foreground";
+  const color = active ? "text-active-foreground" : "text-foreground/60";
   return (
     <Pressable
       role="tab"
@@ -100,7 +100,7 @@ function TabsTrigger({ value, disabled = false, className, children }: TabsTrigg
       onPress={() => tabs.setValue(value)}
       className={cn(
         TABS_TRIGGER_CLASS,
-        active ? "bg-selection" : "hover:bg-accent",
+        active ? "bg-active" : "hover:bg-hover",
         disabled && "opacity-50",
         className,
       )}

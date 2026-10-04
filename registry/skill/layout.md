@@ -283,8 +283,8 @@ for the app's navigation rail, which has a bar to stand in for it.
 Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
 that replaces the rail on a phone — see below):
 
-- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-sidebar` at a
-  fixed `w-64` with a `border-sidebar-border` rule on the edge facing the page (`side="end"` moves
+- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-secondary` at a
+  fixed `w-64` with a `border-foreground/10` rule on the edge facing the page (`side="end"` moves
   it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
@@ -499,7 +499,7 @@ empty data, so write the `map` plainly and let the shell handle the nothing case
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
 
 What goes in `empty` inside a card is one muted line, `<EmptyState compact … />` — see
-[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-muted-foreground">`.
+[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
 `loading` replaces it with a skeleton and outranks `empty`, so a card that is still fetching does
 not first announce that it is empty. Pass the query's pending flag straight in; do not write
@@ -819,7 +819,7 @@ dashboard or a status page; pressable, they are the filter over the list below.
     value={counts[heap]}
     selected={shown === heap}
     onPress={() => setShown(shown === heap ? null : heap)}
-    valueClassName={heap === "attention" && counts[heap] > 0 ? "text-destructive" : undefined}
+    valueClassName={heap === "attention" && counts[heap] > 0 ? "text-negative" : undefined}
   />
 ))}
 ```
@@ -835,7 +835,7 @@ dashboard or a status page; pressable, they are the filter over the list below.
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.
-- `valueClassName` is for the figure's colour — a count worth noticing in `text-destructive`.
+- `valueClassName` is for the figure's colour — a count worth noticing in `text-negative`.
   There is no `tone` or `size` prop.
 - It lays out one tile, not the row: the grid is the caller's, since the column count is the
   page's decision. A label-over-number pair with no card around it is a `DescriptionList` with
@@ -854,7 +854,7 @@ Two shells for the shape every list route is: a ladder of states, then rows.
     onOpenChange={(next) => setOpen(next ? role.id : null)}
     badges={<Badge>{role.contract}</Badge>}
     title={role.name}
-    meta={<span className="text-muted-foreground text-xs">{role.lanes} lanes</span>}
+    meta={<span className="text-foreground/60 text-xs">{role.lanes} lanes</span>}
     description={role.prompt}
     action={<ActionButton label="Delete" … />}
     content={<RolePrompt role={role} />}
@@ -932,7 +932,7 @@ and which one is a question of **where the list is**, not how much there is to s
   whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
   Use it for `CardLayout`'s `empty`, a compact `QueryState`'s `empty`, and the empty body of a
   popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
-- Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
+- Do not hand-write either: not `<Text className="text-foreground/60 text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
   paddings and alignments; the shell is the one place it is decided.
 - **shadcn's compound form is `@cubeui/empty`, on both halves.** `Empty`, `EmptyHeader`,
@@ -994,7 +994,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
-  `className="rounded-lg border border-border bg-card"`.
+  `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
   (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's

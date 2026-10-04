@@ -32,15 +32,15 @@ import "react-day-picker/style.css";
  * `cubeui-tokens.css`, which define the same `--selection`, `--primary` and `--accent`.
  */
 const THEME = {
-  "--rdp-accent-color": "var(--selection)",
-  "--rdp-accent-background-color": "var(--accent)",
-  "--rdp-today-color": "var(--primary)",
-  "--rdp-range_middle-background-color": "var(--accent)",
-  "--rdp-range_middle-color": "var(--accent-foreground)",
-  "--rdp-range_start-color": "var(--selection-foreground)",
-  "--rdp-range_start-date-background-color": "var(--selection)",
-  "--rdp-range_end-color": "var(--selection-foreground)",
-  "--rdp-range_end-date-background-color": "var(--selection)",
+  "--rdp-accent-color": "var(--active)",
+  "--rdp-accent-background-color": "var(--hover)",
+  "--rdp-today-color": "var(--neutral)",
+  "--rdp-range_middle-background-color": "var(--hover)",
+  "--rdp-range_middle-color": "var(--hover-foreground)",
+  "--rdp-range_start-color": "var(--active-foreground)",
+  "--rdp-range_start-date-background-color": "var(--active)",
+  "--rdp-range_end-color": "var(--active-foreground)",
+  "--rdp-range_end-date-background-color": "var(--active)",
 } as CSSProperties;
 
 /** What `DayPicker` takes beyond the shared contract, passed through as it is. */

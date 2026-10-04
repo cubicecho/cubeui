@@ -74,7 +74,7 @@ export function FormDialogFooter({
   return (
     <>
       {error ? (
-        <Text role="alert" className="text-sm text-destructive">
+        <Text role="alert" className="text-sm text-negative">
           {error}
         </Text>
       ) : null}

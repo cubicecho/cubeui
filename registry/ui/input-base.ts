@@ -172,11 +172,11 @@ export const INPUT_TRAILING_CLASS =
   "absolute inset-y-0 right-0 flex w-9 flex-row items-center justify-center";
 
 /** The icon inside either slot, handed down through `IconClassContext`: on device nothing inherits. */
-export const INPUT_SLOT_ICON_CLASS = "size-4 shrink-0 text-muted-foreground";
+export const INPUT_SLOT_ICON_CLASS = "size-4 shrink-0 text-foreground/60";
 
 /** The text's padding past a slot, so it never runs under the icon. */
 export const INPUT_LEADING_PAD_CLASS = "pl-9";
 export const INPUT_TRAILING_PAD_CLASS = "pr-9";
 
 export const INPUT_CLASS =
-  "border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  "border-foreground/15 bg-background text-foreground ring-offset-background placeholder:text-foreground/60 focus-visible:ring-active flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";

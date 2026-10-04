@@ -76,7 +76,9 @@ function PopoverContent({ className, children }: PopoverContentProps) {
           role="button"
           aria-label="Close"
         />
-        <View className={cn("w-72 rounded-md border border-border bg-popover p-4", className)}>
+        <View
+          className={cn("w-72 rounded-md border border-foreground/10 bg-secondary p-4", className)}
+        >
           {children}
         </View>
       </View>
@@ -109,13 +111,11 @@ function PopoverHeader({ className, children }: PopoverSectionProps) {
 }
 
 function PopoverTitle({ className, children }: PopoverSectionProps) {
-  return (
-    <Text className={cn("text-sm font-medium text-popover-foreground", className)}>{children}</Text>
-  );
+  return <Text className={cn("text-sm font-medium text-foreground", className)}>{children}</Text>;
 }
 
 function PopoverDescription({ className, children }: PopoverSectionProps) {
-  return <Text className={cn("text-sm text-muted-foreground", className)}>{children}</Text>;
+  return <Text className={cn("text-sm text-foreground/60", className)}>{children}</Text>;
 }
 
 export {

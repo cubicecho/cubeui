@@ -160,7 +160,7 @@ export function TopBarLayout({
     <View
       role="banner"
       testID="top-bar-layout-header"
-      className={cn("border-border border-b bg-background", headerClassName)}
+      className={cn("border-foreground/10 border-b bg-background", headerClassName)}
     >
       <View className={cn("min-h-14 flex-row items-center gap-4 px-4 py-2", BAR_COLUMNS[width])}>
         {brand ? (

@@ -152,32 +152,48 @@ to make in the PR, not a way round the rule.
 
 **Tokens are `tokens/palette.mjs`**, and nowhere else. `npm run tokens:build` emits the web
 stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `oklch()`) and
-`cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token
-(`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9. A token's value may be one of
-Tailwind's shades; its name says what the colour means (`success`, `warning`, `info`), never which
-shade it is.
+`cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token, never Tailwind's
+palette and never `black` or `white` — `registry:check` rule 9.
 
-**A checked, pressed or current control is `selection`, not `primary`.** Checkbox, switch, radio,
-segmented pill, active tab, current sidebar row, toggle chip, a calendar's picked day, a selected
-stat tile: `bg-selection`, `text-selection-foreground`, `border-selection`. `primary` is for the
-thing to press — a button, a badge, a progress bar. Keeping the two apart is why a chosen option
-does not look like a button, and why a palette can colour its highlight without recolouring every
-button.
+**A token is named for what the colour means, and there are seventeen:**
 
-**Hover is grey, chosen is `selection`, rest is no fill.** Every interactive thing has these three
+| Token | What it is |
+|---|---|
+| `background`, `foreground` | The page, and the text on it |
+| `secondary` | The fill of a surface raised off the page: a card, a popover, the sidebar. Its text is `foreground` |
+| `neutral`, `neutral-foreground` | A button or a badge with nothing to say |
+| `positive`, `warning`, `negative` (each with `-foreground`), `info` | What a thing says. `info` is an icon and a tint, never a fill |
+| `hover`, `hover-foreground` | The transient grey under a pointer or a menu's keyboard highlight |
+| `active`, `active-foreground` | Chosen, current and focused: a checked control, the current row, the focus ring |
+| `overlay` | The scrim behind a dialog |
+
+**Muted is an opacity, not a token.** Secondary text is `text-foreground/60`, a border is
+`border-foreground/10` (an input's is `/15`), a quiet fill is `bg-foreground/10`, a status tint is
+`bg-warning/10`. A floating surface is the exception, and is why `secondary` exists: a popover has
+to be opaque.
+
+**shadcn's names are aliases, and not for us.** `primary`, `destructive`, `accent`, `muted`,
+`border`, `ring`, `card`, `popover` and the rest are still emitted, each as the token it now is
+(`ALIASES` in `tokens/palette.mjs`), so a vendored shadcn component keeps working. Rule 9 fails a
+registry file that names one.
+
+**A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
+current sidebar row, toggle chip, a calendar's picked day, a selected stat tile: `bg-active`,
+`text-active-foreground`, `border-active`. `neutral` is for the thing to press. Keeping the two
+apart is why a chosen option does not look like a button.
+
+**Hover is grey, chosen is `active`, rest is no fill.** Every interactive thing has these three
 states and no more, and none of them borrows another's colour:
 
 - *Rest* — no fill (or the framed control's `bg-background`).
-- *Hover, or a menu's keyboard highlight* — transient, and grey. A control whose text turns
-  `accent-foreground` on hover (a button, pill, tab, chip, menu row) takes `bg-accent`; a row
-  that keeps muted text on it (list item, `Item`, table row, stat tile) takes `bg-muted`, since
-  muted text on dark `accent` is under 4.5:1. The sidebar's rows take `sidebar-accent`.
-- *Chosen* — checked, pressed, current, selected: persistent, and `selection`. A control is
-  filled (`bg-selection text-selection-foreground`); a card is ringed (`border-selection`, its fill
-  unchanged so it does not read as hovered); a table row is tinted (`bg-selection/15`).
+- *Hover, or a menu's keyboard highlight* — transient, and `bg-hover`. Secondary text
+  (`text-foreground/60`) stays readable on it in every palette; `palette-contrast.test.mjs` holds
+  that.
+- *Chosen* — checked, pressed, current, selected: persistent, and `active`. A control is
+  filled (`bg-active text-active-foreground`); a card is ringed (`border-active`, its fill
+  unchanged so it does not read as hovered); a table row is tinted (`bg-active/15`).
 
-A chosen state drawn in `accent` or `muted` is the bug this rule exists for: it looks like a hover
-that stuck.
+A chosen state drawn in `hover` is the bug this rule exists for: it looks like a hover that stuck.
 
 ## Status
 
@@ -316,7 +332,8 @@ does the same thing itself now that it is native-first.
 - Tailwind variants are literal class maps (`const SIZES = { sm: "sm:max-w-sm" }`), never
   composed strings — the scanner reads source text, so a built class name is never generated.
   A class-map constant is applied by the file that owns it — `registry:check` rule 8
-- Colour classes name tokens, never Tailwind's palette — `registry:check` rule 9
+- Colour classes name one of the seventeen tokens, never Tailwind's palette or a shadcn alias —
+  `registry:check` rule 9
 
 The full authoring rules are [`docs/component-conventions.md`](docs/component-conventions.md).
 The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `footer`,

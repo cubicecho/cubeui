@@ -23,10 +23,10 @@
  *
  * **The tint is the only thing the variant colours besides the icon.** The title and the line
  * under it are `text-foreground` on every tinted variant, because coloured text on a 10% tint of
- * the same colour is under 4.5:1 — `text-destructive` on `bg-destructive/10` is about 4.1, and the
+ * the same colour is under 4.5:1 — `text-negative` on `bg-negative/10` is about 4.1, and the
  * muted grey the hand-written copies used under their titles is about 4.2 on the amber. The icon
  * carries the hue, and it is a graphic, so it needs 3:1 against the tint on both themes.
- * Only `default`, which sits on `bg-card`, keeps the muted line.
+ * Only `default`, which sits on `bg-secondary`, keeps the muted line.
  *
  * `info` and `warning` are tokens of cubeui's own, since the shadcn token set has one semantic
  * colour, `destructive`. Their values are Tailwind's `sky-600` and `amber-700`. One
@@ -89,10 +89,10 @@ const AlertVariantContext = createContext<AlertVariant>("default");
 
 /** The box: the tint and the border that names its colour, per variant. */
 const ALERT_SURFACE = {
-  default: "border border-border bg-card",
+  default: "border border-foreground/10 bg-secondary",
   info: "border border-info/40 bg-info/10",
   warning: "border border-warning/40 bg-warning/10",
-  destructive: "border border-destructive/40 bg-destructive/10",
+  destructive: "border border-negative/40 bg-negative/10",
 } satisfies Record<AlertVariant, string>;
 
 /** The icon's colour, and the only place the variant's hue reaches something drawn. */
@@ -100,12 +100,12 @@ const ALERT_ICON_INK = {
   default: "text-foreground",
   info: "text-info",
   warning: "text-warning",
-  destructive: "text-destructive",
+  destructive: "text-negative",
 } satisfies Record<AlertVariant, string>;
 
 /** The line under the title. Muted only on the card, where muted is still 4.5:1. */
 const ALERT_DESCRIPTION_INK = {
-  default: "text-muted-foreground",
+  default: "text-foreground/60",
   info: "text-foreground",
   warning: "text-foreground",
   destructive: "text-foreground",

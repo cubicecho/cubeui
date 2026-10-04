@@ -60,7 +60,7 @@ export function Badge({
       data-slot="badge"
       data-variant={variant}
       className={cn(
-        "inline-flex w-fit overflow-hidden whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3",
+        "inline-flex w-fit overflow-hidden whitespace-nowrap transition-[color,box-shadow] focus-visible:border-active focus-visible:ring-[3px] focus-visible:ring-active/50 [&>svg]:pointer-events-none [&>svg]:size-3",
         badgeContainerVariants({ variant, shape }),
         shape === "pill" && (backgroundColor ? badgeTextFallback : badgeTextVariants({ variant })),
         variant === "link" && "[a&]:hover:underline",

@@ -182,12 +182,12 @@ export function QueryError({
     return (
       <View role="alert" testID="query-error" className={cn("min-w-0 gap-1 px-2 py-1", className)}>
         <View className="min-w-0 flex-row items-center gap-1.5">
-          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-destructive" aria-hidden />
-          <Text className="min-w-0 flex-1 font-medium text-destructive text-xs">
+          <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-negative" aria-hidden />
+          <Text className="min-w-0 flex-1 font-medium text-negative text-xs">
             Could not load {what}
           </Text>
         </View>
-        <Text className="text-muted-foreground text-xs">{reason}</Text>
+        <Text className="text-foreground/60 text-xs">{reason}</Text>
         <View className="flex-row">
           <Button variant="ghost" size="xs" onPress={retry} disabled={retrying}>
             <RefreshCw className="h-3.5 w-3.5" aria-hidden />
@@ -202,18 +202,18 @@ export function QueryError({
       role="alert"
       testID="query-error"
       // No tinted ground behind it. The version this was lifted from washed the card with
-      // `bg-destructive/5`, which drops both the red heading and the grey message under 4.5:1
+      // `bg-negative/5`, which drops both the red heading and the grey message under 4.5:1
       // against their own background — 4.36 and 4.33, caught by the story's axe run. The border
       // and the icon say "this failed" without moving the ground the words sit on.
-      className={cn("gap-2 border-destructive/50 p-4", className)}
+      className={cn("gap-2 border-negative/50 p-4", className)}
     >
       {/* `flex-row` is explicit because a column is Yoga's default, and the icon carries its own
           colour because native inherits none — the two standing conversion rules. */}
       <View className="flex-row items-center gap-2">
-        <TriangleAlert className="h-4 w-4 text-destructive" aria-hidden />
-        <Text className="font-medium text-destructive text-sm">Could not load {what}</Text>
+        <TriangleAlert className="h-4 w-4 text-negative" aria-hidden />
+        <Text className="font-medium text-negative text-sm">Could not load {what}</Text>
       </View>
-      <Text className="text-muted-foreground text-sm">{reason}</Text>
+      <Text className="text-foreground/60 text-sm">{reason}</Text>
       <View className="flex-row">
         <Button variant="outline" size="sm" onPress={retry} disabled={retrying}>
           <RefreshCw className="h-3.5 w-3.5" aria-hidden />
@@ -261,7 +261,7 @@ export function RowSkeleton({
             key={index}
             testID="row-skeleton"
             aria-hidden
-            className="h-8 animate-pulse rounded-md bg-accent"
+            className="h-8 animate-pulse rounded-md bg-hover"
           />
         ))}
       </View>
@@ -280,8 +280,8 @@ export function RowSkeleton({
           {/* `animate-pulse` resolves to nothing on device and is kept for the same reason
               `page.tsx` keeps `container mx-auto`: the class is what the compiled web half needs,
               and dropping it here to tidy the native file would quietly regress the DOM. */}
-          <View className="h-4 w-1/3 animate-pulse rounded-md bg-accent" />
-          <View className="h-3 w-2/3 animate-pulse rounded-md bg-accent" />
+          <View className="h-4 w-1/3 animate-pulse rounded-md bg-hover" />
+          <View className="h-3 w-2/3 animate-pulse rounded-md bg-hover" />
         </Card>
       ))}
     </View>

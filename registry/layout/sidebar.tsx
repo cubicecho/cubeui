@@ -144,7 +144,7 @@ export function Sidebar({
       testID="sidebar"
       aria-label={label}
       className={cn(
-        "h-full w-64 min-h-0 shrink-0 border-sidebar-border bg-sidebar",
+        "h-full w-64 min-h-0 shrink-0 border-foreground/10 bg-secondary",
         side === "start" ? "border-r" : "border-l",
         hideBelow ? HIDE_BELOW[hideBelow] : undefined,
         className,
@@ -160,7 +160,7 @@ export function Sidebar({
         className="min-h-0 flex-1"
         headerClassName={cn(STACK, "gap-2 p-3", headerClassName)}
         contentClassName={cn(STACK, "gap-4 p-2", contentClassName)}
-        footerClassName={cn(STACK, "gap-0.5 border-sidebar-border border-t p-2", footerClassName)}
+        footerClassName={cn(STACK, "gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
       />
     </View>
   );
@@ -263,7 +263,7 @@ export function SidebarSection({
                 nativeID={titleId}
                 role="heading"
                 aria-level={level}
-                className="truncate font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+                className="truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide"
               >
                 {title}
               </Text>
@@ -410,12 +410,12 @@ export type SidebarNavItemProps = SidebarNavItemBaseProps &
 function rowClassName(active: boolean, className: string | undefined) {
   return cn(
     "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     active
-      ? "bg-selection text-selection-foreground"
-      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+      ? "bg-active text-active-foreground"
+      : "text-foreground hover:bg-hover hover:text-hover-foreground",
     className,
   );
 }
@@ -432,8 +432,8 @@ type SidebarNavItemBodyProps = {
 function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
-  const text = active ? "text-selection-foreground" : "text-sidebar-foreground";
-  const muted = active ? "text-selection-foreground" : "text-muted-foreground";
+  const text = active ? "text-active-foreground" : "text-foreground";
+  const muted = active ? "text-active-foreground" : "text-foreground/60";
 
   return (
     <>
@@ -641,7 +641,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavItemProps>(
   ({ href, label, icon, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active ? "text-selection-foreground" : "text-muted-foreground";
+    const text = active ? "text-active-foreground" : "text-foreground/60";
 
     return (
       <TooltipProvider>
@@ -663,11 +663,11 @@ const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavIt
                 : {})}
               className={cn(
                 "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
-                  ? "bg-selection text-selection-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-active text-active-foreground"
+                  : "text-foreground/60 hover:bg-hover hover:text-hover-foreground",
                 className,
               )}
               {...props}
@@ -685,7 +685,7 @@ const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavIt
                   variant="secondary"
                   className="-right-1.5 -top-1.5 absolute border-background px-1 py-0"
                 >
-                  <Text className="font-medium text-[10px] text-secondary-foreground leading-3 tabular-nums">
+                  <Text className="font-medium text-[10px] text-foreground leading-3 tabular-nums">
                     {count}
                   </Text>
                 </Badge>

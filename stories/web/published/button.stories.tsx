@@ -45,7 +45,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * The primary action. The background assertion is the token check that needs no palette: a
- * `bg-primary` that resolved to nothing — the app's stylesheet not defining `--primary`, or
+ * `bg-neutral` that resolved to nothing — the app's stylesheet not defining `--primary`, or
  * Tailwind not scanning `components/ui` — paints transparent, and a white label on a transparent
  * button is invisible without failing anything else.
  */

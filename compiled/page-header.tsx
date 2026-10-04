@@ -89,7 +89,7 @@ const INK = "text-foreground";
 const SLOT = "block";
 
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("max-w-full rounded-md bg-accent", "animate-pulse");
+const BAR = cn("max-w-full rounded-md bg-hover", "animate-pulse");
 
 export type PageHeaderProps = {
   /**
@@ -119,7 +119,7 @@ export type PageHeaderProps = {
   /**
    * One line on what the page is for. It wraps; it is not clipped.
    *
-   * `text-sm text-muted-foreground` is the one thing every hand-written header in these apps
+   * `text-sm text-foreground/60` is the one thing every hand-written header in these apps
    * already agrees on, so the only question left was truncation — and the headers that truncate
    * are the ones that lose the end of the sentence with no way to read it.
    */
@@ -283,7 +283,7 @@ export function PageHeader({
   //
   // Level 1 only. A section heading inside a card sits above a body the card has already fenced,
   // and not one of the section headings in these apps draws a second line.
-  const rule = level === 1 && !content ? "border-b border-border" : undefined;
+  const rule = level === 1 && !content ? "border-b border-foreground/10" : undefined;
 
   return (
     // `px-4` is the seam: the body of a `width="page"` chassis carries the same, and nothing else
@@ -319,7 +319,7 @@ export function PageHeader({
               // Sized here on the web rather than by the caller, so an icon passed as `<Users />`
               // and one passed as `<Users className="size-6" />` land at the same size — and so the
               // size follows the level instead of being guessed once per page.
-              <div className={cn("cube-rn-view", "shrink-0 text-muted-foreground", iconSize)}>
+              <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", iconSize)}>
                 {icon}
               </div>
             ) : null}
@@ -360,7 +360,7 @@ export function PageHeader({
             ) : (
               <p
                 data-slot="page-header-description"
-                className="cube-rn-text text-muted-foreground text-sm"
+                className="cube-rn-text text-foreground/60 text-sm"
               >
                 {description}
               </p>

@@ -66,8 +66,8 @@ export const IconInTrigger: Story = {
     // The run of strings and numbers stays one label.
     await expect(within(board).getByText("Board 3")).toBeInTheDocument();
 
-    await expect(listIcon.dataset.class).toContain("text-selection-foreground");
-    await expect(canvas.getByTestId("icon-board").dataset.class).toContain("text-muted-foreground");
+    await expect(listIcon.dataset.class).toContain("text-active-foreground");
+    await expect(canvas.getByTestId("icon-board").dataset.class).toContain("text-foreground/60");
   },
 };
 

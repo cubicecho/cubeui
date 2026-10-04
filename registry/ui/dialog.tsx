@@ -185,7 +185,7 @@ function DialogContent({
       <View
         {...(role === undefined ? {} : { role })}
         className={cn(
-          "w-full max-w-lg gap-4 rounded-lg border border-border bg-background p-6",
+          "w-full max-w-lg gap-4 rounded-lg border border-foreground/10 bg-background p-6",
           className,
         )}
       >
@@ -240,7 +240,7 @@ function DialogTitle({ className, children }: DialogSectionProps) {
 }
 
 function DialogDescription({ className, children }: DialogSectionProps) {
-  return <Text className={cn("text-sm text-muted-foreground", className)}>{children}</Text>;
+  return <Text className={cn("text-sm text-foreground/60", className)}>{children}</Text>;
 }
 
 export {

@@ -83,7 +83,7 @@ export function FormDialogFooter({
   return (
     <>
       {error ? (
-        <span role="alert" className="cube-rn-text text-sm text-destructive">
+        <span role="alert" className="cube-rn-text text-sm text-negative">
           {error}
         </span>
       ) : null}

@@ -135,7 +135,7 @@ function SelectContent({ className, children }: SelectContentProps) {
         />
         <View
           className={cn(
-            "max-h-96 w-full max-w-sm rounded-md border border-border bg-popover p-1",
+            "max-h-96 w-full max-w-sm rounded-md border border-foreground/10 bg-secondary p-1",
             className,
           )}
         >
@@ -158,12 +158,7 @@ function SelectItem({ value, disabled = false, className, children }: SelectItem
         select.onValueChange(value);
         select.setOpen(false);
       }}
-      className={cn(
-        SELECT_ITEM_CLASS,
-        selected && "bg-accent",
-        disabled && "opacity-50",
-        className,
-      )}
+      className={cn(SELECT_ITEM_CLASS, selected && "bg-hover", disabled && "opacity-50", className)}
     >
       {selected ? (
         <View className="absolute left-2 h-3.5 w-3.5 items-center justify-center">

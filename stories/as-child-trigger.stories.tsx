@@ -89,7 +89,7 @@ function Popovers({
         <Button variant="outline">{`${name} filters`}</Button>
       </Trigger>
       <Content>
-        <Text className="text-popover-foreground">{`${name} pane`}</Text>
+        <Text className="text-foreground">{`${name} pane`}</Text>
         <Close asChild>
           <Button variant="ghost">{`${name} done`}</Button>
         </Close>

@@ -27,7 +27,10 @@ const signOut = fn();
  */
 function Frame({ children, testId }: { children: ReactNode; testId: string }) {
   return (
-    <div data-testid={testId} className="h-72 overflow-y-auto rounded-md border border-border">
+    <div
+      data-testid={testId}
+      className="h-72 overflow-y-auto rounded-md border border-foreground/10"
+    >
       {children}
     </div>
   );
@@ -60,7 +63,7 @@ export const Default: Story = {
               <Text
                 key={label}
                 role="link"
-                className="rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+                className="rounded-md px-3 py-1.5 text-foreground/60 text-sm"
               >
                 {label}
               </Text>
@@ -87,7 +90,7 @@ export const Default: Story = {
               <a
                 key={label}
                 href={`#/${label.toLowerCase()}`}
-                className="shrink-0 rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+                className="shrink-0 rounded-md px-3 py-1.5 text-foreground/60 text-sm"
               >
                 {label}
               </a>
@@ -183,7 +186,7 @@ export const Narrow: Story = {
           <a
             key={label}
             href={`#/${label.toLowerCase()}`}
-            className="shrink-0 rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+            className="shrink-0 rounded-md px-3 py-1.5 text-foreground/60 text-sm"
           >
             {label}
           </a>

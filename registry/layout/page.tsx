@@ -152,8 +152,8 @@ export function EmptyState({
       <View
         className={cn("w-full flex-row flex-wrap items-center gap-x-2 gap-y-1 py-2", className)}
       >
-        {Icon ? <Icon className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden /> : null}
-        <Text className="shrink text-sm text-muted-foreground">{title}</Text>
+        {Icon ? <Icon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden /> : null}
+        <Text className="shrink text-sm text-foreground/60">{title}</Text>
         {action}
       </View>
     );

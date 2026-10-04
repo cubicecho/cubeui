@@ -63,7 +63,7 @@ export const Default: Story = {
               Delete
             </NativeButton>
           )}
-          body={(text) => <Text className="text-muted-foreground text-sm">{text}</Text>}
+          body={(text) => <Text className="text-foreground/60 text-sm">{text}</Text>}
         />
       }
       compiled={
@@ -76,7 +76,7 @@ export const Default: Story = {
               Delete
             </CompiledButton>
           )}
-          body={(text) => <p className="text-muted-foreground text-sm">{text}</p>}
+          body={(text) => <p className="text-foreground/60 text-sm">{text}</p>}
         />
       }
     />

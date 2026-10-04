@@ -166,7 +166,7 @@ export function PropertyRow({
       <Text
         webAs="dt"
         testID="property-row-label"
-        className={cn("break-words text-muted-foreground text-sm", LABELS[layout], labelClassName)}
+        className={cn("break-words text-foreground/60 text-sm", LABELS[layout], labelClassName)}
       >
         {label}
       </Text>
@@ -184,7 +184,7 @@ export function PropertyRow({
         <View className="min-w-0 flex-1 gap-0.5">
           {asText(value, cn("break-words text-foreground text-sm", valueClassName))}
           {hint ? (
-            <Text testID="property-row-hint" className="text-muted-foreground text-xs">
+            <Text testID="property-row-hint" className="text-foreground/60 text-xs">
               {hint}
             </Text>
           ) : null}

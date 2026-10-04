@@ -299,7 +299,7 @@ function FieldWrapper({
       {label}
       {required ? (
         // Decoration: the name stays "Email", not "Email star". `aria-required` says it instead.
-        <Text aria-hidden className="text-destructive">
+        <Text aria-hidden className="text-negative">
           {" *"}
         </Text>
       ) : null}

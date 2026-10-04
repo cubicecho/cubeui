@@ -46,7 +46,7 @@ export const Default: Story = {
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
-    await expect(nativeStyle.color).toBe("rgb(115, 115, 115)");
+    await expect(nativeStyle.color).toMatch(/\/ 0\.6\)$/);
     await expect(compiledStyle.color).toBe(nativeStyle.color);
     await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
     await expect(compiledStyle.textTransform).toBe("uppercase");

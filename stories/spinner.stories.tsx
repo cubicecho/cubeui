@@ -18,13 +18,13 @@ export const Default: Story = {
       native={
         <div className="flex flex-row items-center gap-4">
           <Native />
-          <Native label="Loading servers" className="size-6 text-muted-foreground" />
+          <Native label="Loading servers" className="size-6 text-foreground/60" />
         </div>
       }
       compiled={
         <div className="flex flex-row items-center gap-4">
           <Compiled />
-          <Compiled label="Loading servers" className="size-6 text-muted-foreground" />
+          <Compiled label="Loading servers" className="size-6 text-foreground/60" />
         </div>
       }
     />

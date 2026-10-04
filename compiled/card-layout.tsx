@@ -80,13 +80,13 @@ const ICON = "[&_svg]:size-4";
 const SLOT = "block";
 
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("h-4 rounded-md bg-accent", "animate-pulse");
+const BAR = cn("h-4 rounded-md bg-hover", "animate-pulse");
 
 /**
  * A string slot's colour, on every platform. The compiled half would inherit the card's, but
  * react-native-web is web too and gives every `Text` its own black `color`.
  */
-const INK = "text-card-foreground";
+const INK = "text-foreground";
 
 /**
  * The header, as a row that wraps: the title and description in one column, the action after it.
@@ -194,7 +194,7 @@ export function CardLayout({
                   {icon ? (
                     // Sized here rather than by the caller, so an icon passed as `<Plus />` and
                     // one passed as `<Plus className="size-4" />` land at the same size.
-                    <div className={cn("cube-rn-view", "shrink-0 text-muted-foreground", ICON)}>
+                    <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>
                       {icon}
                     </div>
                   ) : null}

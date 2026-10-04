@@ -36,9 +36,9 @@ export const CloseShutsIt: Story = {
           <Text className="text-foreground">Native filters</Text>
         </NativeTrigger>
         <NativeContent>
-          <Text className="text-popover-foreground">Native pane</Text>
+          <Text className="text-foreground">Native pane</Text>
           <NativeClose>
-            <Text className="text-popover-foreground">Native done</Text>
+            <Text className="text-foreground">Native done</Text>
           </NativeClose>
         </NativeContent>
       </NativePopover>

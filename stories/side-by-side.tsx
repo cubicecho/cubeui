@@ -12,15 +12,13 @@ export function SideBySide({ native, compiled }: { native: ReactNode; compiled: 
   return (
     <div className="flex gap-6 bg-background p-6 text-foreground">
       <section className="flex min-w-0 flex-1 flex-col gap-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-xs font-medium uppercase tracking-wide text-foreground/60">
           react native
         </p>
         {native}
       </section>
       <section className="flex min-w-0 flex-1 flex-col gap-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          compiled
-        </p>
+        <p className="text-xs font-medium uppercase tracking-wide text-foreground/60">compiled</p>
         {compiled}
       </section>
     </div>

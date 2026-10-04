@@ -11,7 +11,7 @@
   "files": [
     {
       "path": "registry/ui/switch-field-base.ts",
-      "content": "/**\n * The contract `switch-field.tsx` (native) and `switch-field.web.tsx` (DOM) both implement. Its own\n * module because Metro resolves `./switch-field` to `switch-field.web.tsx` on web — the web file\n * would otherwise import itself.\n */\nexport type SwitchFieldProps = {\n  /** The switch's id. On web it is also what the caption's `<label htmlFor>` points at. */\n  id: string;\n  label: string;\n  checked: boolean;\n  onCheckedChange: (checked: boolean) => void;\n  className?: string | undefined;\n  labelClassName?: string | undefined;\n};\n\n/** The caption's type, shared so the two halves cannot drift on it. */\nexport const SWITCH_FIELD_LABEL_CLASS = \"text-sm text-muted-foreground\";\n",
+      "content": "/**\n * The contract `switch-field.tsx` (native) and `switch-field.web.tsx` (DOM) both implement. Its own\n * module because Metro resolves `./switch-field` to `switch-field.web.tsx` on web — the web file\n * would otherwise import itself.\n */\nexport type SwitchFieldProps = {\n  /** The switch's id. On web it is also what the caption's `<label htmlFor>` points at. */\n  id: string;\n  label: string;\n  checked: boolean;\n  onCheckedChange: (checked: boolean) => void;\n  className?: string | undefined;\n  labelClassName?: string | undefined;\n};\n\n/** The caption's type, shared so the two halves cannot drift on it. */\nexport const SWITCH_FIELD_LABEL_CLASS = \"text-sm text-foreground/60\";\n",
       "type": "registry:ui"
     },
     {

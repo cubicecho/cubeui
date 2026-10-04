@@ -40,20 +40,20 @@ import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        default: "bg-neutral text-neutral-foreground hover:bg-neutral/90",
+        destructive: "bg-negative text-negative-foreground hover:bg-negative/90",
         /** A destructive action that is not the emphasis of its row. */
         "destructive-outline":
-          "border border-destructive/40 bg-transparent text-destructive hover:bg-destructive/10",
+          "border border-negative/40 bg-transparent text-negative hover:bg-negative/10",
         outline:
-          "border border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "text-muted-foreground hover:bg-accent hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border border-foreground/15 bg-background text-foreground hover:bg-hover hover:text-hover-foreground",
+        secondary: "bg-foreground/10 text-foreground hover:bg-foreground/10",
+        ghost: "text-foreground/60 hover:bg-hover hover:text-foreground",
+        link: "text-neutral underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -97,13 +97,13 @@ const buttonTextVariants = cva("font-medium", {
       "icon-lg": "text-sm",
     },
     variant: {
-      default: "text-primary-foreground",
-      destructive: "text-destructive-foreground",
-      "destructive-outline": "text-destructive",
+      default: "text-neutral-foreground",
+      destructive: "text-negative-foreground",
+      "destructive-outline": "text-negative",
       outline: "text-foreground",
-      secondary: "text-secondary-foreground",
-      ghost: "text-muted-foreground",
-      link: "text-primary underline",
+      secondary: "text-foreground",
+      ghost: "text-foreground/60",
+      link: "text-neutral underline",
     },
   },
   defaultVariants: { variant: "default", size: "default" },

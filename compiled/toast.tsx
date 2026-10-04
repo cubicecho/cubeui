@@ -24,7 +24,7 @@ import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export type ToastTone = "error" | "success";
+export type ToastTone = "error" | "warning" | "success";
 
 type Toast = { id: number; message: string; tone: ToastTone };
 
@@ -33,20 +33,23 @@ type ShowToast = (message: string, tone?: ToastTone) => void;
 
 const ToastContext = createContext<ShowToast | null>(null);
 
-/** Errors linger — the user has to read a reason; confirmations do not. */
+/** Errors and warnings linger — the user has to read a reason; confirmations do not. */
 const DURATION_MS: Record<ToastTone, number> = {
   error: 6000,
+  warning: 6000,
   success: 3000,
 };
 
 const TONE_CLASS: Record<ToastTone, string> = {
-  error: "bg-destructive",
-  success: "bg-primary",
+  error: "bg-negative",
+  warning: "bg-warning",
+  success: "bg-positive",
 };
 
 const TONE_TEXT_CLASS: Record<ToastTone, string> = {
-  error: "text-destructive-foreground",
-  success: "text-primary-foreground",
+  error: "text-negative-foreground",
+  warning: "text-warning-foreground",
+  success: "text-positive-foreground",
 };
 
 /**

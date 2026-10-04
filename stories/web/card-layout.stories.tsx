@@ -69,7 +69,7 @@ export const WithIcon: Story = {
 export const Empty: Story = {
   args: {
     title: "Categories",
-    empty: <p className="text-muted-foreground text-sm">No categories yet.</p>,
+    empty: <p className="text-foreground/60 text-sm">No categories yet.</p>,
     content: [].map(() => null),
   },
   play: async ({ canvasElement }) => {
@@ -85,7 +85,7 @@ export const SplitFooter: Story = {
   args: {
     title: "Danger zone",
     footer: (
-      <Button size="sm" variant="ghost" className="text-destructive">
+      <Button size="sm" variant="ghost" className="text-negative">
         Delete
       </Button>
     ),

@@ -153,7 +153,7 @@ export function TopBarLayout({
   const bar = (
     <header
       data-slot="top-bar-layout-header"
-      className={cn("cube-rn-view", "border-border border-b bg-background", headerClassName)}
+      className={cn("cube-rn-view", "border-foreground/10 border-b bg-background", headerClassName)}
     >
       <div
         className={cn(

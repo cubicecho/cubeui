@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Muted, and muted means *different from body text* — the palette-free version of asserting
- * `text-muted-foreground` resolved.
+ * `text-foreground/60` resolved.
  */
 export const Default: Story = {
   play: async ({ canvasElement }) => {

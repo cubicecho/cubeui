@@ -269,7 +269,7 @@ export function OptionSelect({
                 className={cn(
                   "cube-rn-text",
                   NOTE_ROW,
-                  "px-2 py-1.5 text-muted-foreground text-sm",
+                  "px-2 py-1.5 text-foreground/60 text-sm",
                   block.className,
                 )}
               >

@@ -260,11 +260,7 @@ export function OptionSelect({
                 // Hidden here and announced from the live region above. A listbox may own only
                 // options and groups, which is why radix hides its own separator the same way.
                 aria-hidden
-                className={cn(
-                  NOTE_ROW,
-                  "px-2 py-1.5 text-muted-foreground text-sm",
-                  block.className,
-                )}
+                className={cn(NOTE_ROW, "px-2 py-1.5 text-foreground/60 text-sm", block.className)}
               >
                 {block.note}
               </Text>
