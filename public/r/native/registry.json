@@ -1363,34 +1363,6 @@
           "type": "registry:component"
         }
       ]
-    },
-    {
-      "name": "skill",
-      "type": "registry:item",
-      "title": "cubeui Agent Skill",
-      "description": "How to use these components, for agents working in a consuming project. Installs into .claude/skills/ as a router plus layout, form and control references, and says which half of the registry — DOM or React Native — the project is on.",
-      "files": [
-        {
-          "path": "registry/skill/SKILL.md",
-          "type": "registry:file",
-          "target": "~/.claude/skills/cubeui/SKILL.md"
-        },
-        {
-          "path": "registry/skill/layout.md",
-          "type": "registry:file",
-          "target": "~/.claude/skills/cubeui/layout.md"
-        },
-        {
-          "path": "registry/skill/forms.md",
-          "type": "registry:file",
-          "target": "~/.claude/skills/cubeui/forms.md"
-        },
-        {
-          "path": "registry/skill/controls.md",
-          "type": "registry:file",
-          "target": "~/.claude/skills/cubeui/controls.md"
-        }
-      ]
     }
   ]
 }

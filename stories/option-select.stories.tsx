@@ -137,7 +137,16 @@ async function inTheList(
   });
 }
 
-export const Default: Story = { args: {} };
+/** Before anything is picked: the placeholder on a closed trigger, and no value committed. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "On success" });
+    expect(trigger).toHaveTextContent("Pick one");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(canvas.getByTestId("value")).toHaveTextContent("—");
+  },
+};
 
 /**
  * The reason the file exists: a select outside a form.

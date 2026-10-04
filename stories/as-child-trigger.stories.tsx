@@ -91,7 +91,7 @@ function Popovers({
       <Content>
         <Text className="text-foreground">{`${name} pane`}</Text>
         <Close asChild>
-          <Button variant="ghost">{`${name} done`}</Button>
+          <Button variant="outline">{`${name} done`}</Button>
         </Close>
       </Content>
     </Popover>

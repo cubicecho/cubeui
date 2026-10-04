@@ -40,6 +40,16 @@ export const Default: Story = {
     ),
     content: <Rows />,
   },
+  play: async ({ canvas }) => {
+    const title = canvas.getByText("Categories");
+    const add = canvas.getByRole("button", { name: "Add" });
+    expect(title).toBeVisible();
+    expect(canvas.getByText(/Deleting a category keeps its activities/)).toBeVisible();
+    expect(canvas.getByText("Fabrication")).toBeVisible();
+    expect(canvas.getByRole("button", { name: "Save" })).toBeVisible();
+    // The action is the header's far end, so it starts after the title does.
+    expect(add.getBoundingClientRect().left).toBeGreaterThan(title.getBoundingClientRect().left);
+  },
 };
 
 /** Title only. Every other slot absent, and none of them leaves a wrapper behind. */
@@ -105,6 +115,16 @@ export const SplitFooter: Story = {
     ),
     content: <Rows />,
   },
+  play: async ({ canvas }) => {
+    const remove = canvas.getByRole("button", { name: "Delete" }).getBoundingClientRect();
+    const cancel = canvas.getByRole("button", { name: "Cancel" }).getBoundingClientRect();
+    const save = canvas.getByRole("button", { name: "Save" }).getBoundingClientRect();
+    // `footer` and `footerActions` go to opposite ends: the space is between Delete and Cancel,
+    // not between Cancel and Save.
+    expect(remove.right).toBeLessThan(cancel.left);
+    expect(cancel.right).toBeLessThanOrEqual(save.left);
+    expect(cancel.left - remove.right).toBeGreaterThan(save.left - cancel.right);
+  },
 };
 
 /** `footerActions` alone right-aligns. This is the common case, and it needs no `footer`. */
@@ -117,6 +137,13 @@ export const ActionsOnly: Story = {
       </Button>
     ),
     content: <Rows />,
+  },
+  play: async ({ canvas }) => {
+    const title = canvas.getByText("Categories").getBoundingClientRect();
+    const save = canvas.getByRole("button", { name: "Save" }).getBoundingClientRect();
+    // Given alone, the buttons sit at the footer's end: past the middle of the 420px card, whose
+    // start edge the title marks.
+    expect(save.left).toBeGreaterThan(title.left + 210);
   },
 };
 

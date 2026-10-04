@@ -21,7 +21,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+/** At rest it is a named button, with no question on screen and nothing confirmed. */
+export const Default: Story = {
+  play: async ({ canvas, args }) => {
+    expect(canvas.getByRole("button", { name: "Delete lane" })).toBeVisible();
+    expect(within(document.body).queryByRole("alertdialog")).toBeNull();
+    expect(args.onConfirm).not.toHaveBeenCalled();
+  },
+};
 
 /** Nothing happens until they say so — and `onConfirm` fires once, from the confirm button. */
 export const AsksBeforeItActs: Story = {

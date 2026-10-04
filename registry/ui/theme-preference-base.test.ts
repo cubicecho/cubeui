@@ -17,7 +17,7 @@ describe("THEME_PRE_PAINT_SCRIPT", () => {
   // The skill's copy is what a static `index.html` pastes. A change to the rule that misses it
   // paints one theme before React mounts and the hook repaints the other.
   it("is what the skill tells an index.html to paste", () => {
-    const pasted = read("registry/skill/controls.md").match(/<script>(.*)<\/script>/);
+    const pasted = read("skill/controls.md").match(/<script>(.*)<\/script>/);
     expect(pasted?.[1]).toBe(THEME_PRE_PAINT_SCRIPT);
   });
 

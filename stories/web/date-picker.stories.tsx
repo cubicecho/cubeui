@@ -33,9 +33,23 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** Empty and closed: a named trigger, and no calendar until it is pressed. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("button", { name: /Due date/ })).toBeVisible();
+    expect(screen.queryAllByRole("grid")).toHaveLength(0);
+  },
+};
 
-export const WithAValue: Story = { args: { initial: JUNE_10 } };
+/** The trigger reads the date back in words. */
+export const WithAValue: Story = {
+  args: { initial: JUNE_10 },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("button", { name: /Due date/ })).toHaveTextContent("June 10th, 2026");
+    expect(screen.queryAllByRole("grid")).toHaveLength(0);
+  },
+};
 
 /** Choosing a day is the end of the interaction, so the calendar goes away. */
 export const ChoosingADayCloses: Story = {

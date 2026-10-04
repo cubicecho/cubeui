@@ -19,7 +19,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+/** It is still a button: one press, one `onClick`. */
+export const Default: Story = {
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Edit workspace" }));
+    expect(args.onClick).toHaveBeenCalledOnce();
+  },
+};
 
 /**
  * The reason the component exists: an icon button whose only child is an SVG announces as

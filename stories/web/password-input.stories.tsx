@@ -46,7 +46,16 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** Masked from the start, with the button that reveals it already named. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    const box = canvas.getByLabelText("Token");
+    expect(box).toHaveAttribute("type", "password");
+    expect(box).toHaveValue("");
+    expect(canvas.getByRole("button", { name: "Show password" })).toBeVisible();
+  },
+};
 
 /** The masking is the `type`, so the reveal is a real change of input, not a CSS trick. */
 export const RevealingShowsTheValue: Story = {
@@ -93,4 +102,13 @@ export const WithoutTheReveal: Story = {
   },
 };
 
-export const Disabled: Story = { args: { disabled: true, initial: "hunter2" } };
+/** Disabled, it keeps its value and stays masked. */
+export const Disabled: Story = {
+  args: { disabled: true, initial: "hunter2" },
+  play: async ({ canvas }) => {
+    const box = canvas.getByLabelText("Token");
+    expect(box).toBeDisabled();
+    expect(box).toHaveValue("hunter2");
+    expect(box).toHaveAttribute("type", "password");
+  },
+};

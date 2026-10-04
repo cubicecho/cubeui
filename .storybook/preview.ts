@@ -10,6 +10,9 @@ const preview: Preview = {
     // whether a compiled DOM tree keeps the semantics the React Native source expressed, and an
     // honest answer needs the run to fail when it does not.
     a11y: { test: "error" },
+    // The two galleries are the "show me everything" pages the landing page links to, so they
+    // open the sidebar rather than sitting wherever `G` falls among the per-item stories.
+    options: { storySort: { order: ["Gallery", ["Web", "Mobile"], "*"] } },
   },
   decorators: [
     withThemeByClassName<ReactRenderer>({

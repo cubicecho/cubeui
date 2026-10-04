@@ -55,6 +55,14 @@ const args = {
 export const Default: Story = {
   args,
   render: (props) => <Controlled {...props} />,
+  play: async ({ canvas, args: { onOpenChange } }) => {
+    // Closed, the row still shows what it is about: the title, its badge and the meta line.
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    expect(header).toHaveAttribute("aria-expanded", "false");
+    expect(canvas.getByText("done")).toBeVisible();
+    expect(canvas.getByText(/2 minutes ago/)).toBeVisible();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  },
 };
 
 /**
@@ -117,6 +125,15 @@ export const WithADescription: Story = {
     description: "The endpoint refused the request: context length exceeded.",
   },
   render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    // The description is read without opening the row.
+    expect(canvas.getByRole("button", { name: /Rename the settings page/ })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(canvas.getByText(/context length exceeded/)).toBeVisible();
+    expect(canvas.getByText("error")).toBeVisible();
+  },
 };
 
 /** A row with nothing to open still draws, and does not claim it controls anything. */

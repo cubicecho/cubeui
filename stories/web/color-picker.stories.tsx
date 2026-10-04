@@ -49,9 +49,27 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = { args: {} };
+/** No colour yet: nothing is checked and the hex box is empty. */
+export const Default: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    expect(canvas.getByTestId("value")).toHaveTextContent("No colour");
+    for (const swatch of canvas.getAllByRole("radio")) {
+      expect(swatch).toHaveAttribute("aria-checked", "false");
+    }
+    expect(canvas.getByRole("textbox", { name: "Hex" })).toHaveValue("");
+  },
+};
 
-export const WithAValue: Story = { args: { initial: "#10b981" } };
+/** A value it is handed shows in both places: its swatch is checked and the hex box holds it. */
+export const WithAValue: Story = {
+  args: { initial: "#10b981" },
+  play: async ({ canvas }) => {
+    expect(canvas.getByTestId("value")).toHaveTextContent("#10b981");
+    expect(canvas.getByRole("radio", { name: "#10b981" })).toHaveAttribute("aria-checked", "true");
+    expect(canvas.getByRole("textbox", { name: "Hex" })).toHaveValue("#10b981");
+  },
+};
 
 export const WithItsOwnPalette: Story = {
   args: { initial: "#ec4899", swatches: ACTIVITY_COLORS },

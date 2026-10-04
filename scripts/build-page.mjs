@@ -19,7 +19,7 @@
  * org without this repo taking a dependency on that one.
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const root = new URL("..", import.meta.url);
@@ -27,6 +27,27 @@ const read = (path) => JSON.parse(readFileSync(new URL(path, root), "utf8"));
 
 const OUT = new URL("public/index.html", root);
 const HOST = "https://cubicecho.github.io/cubeui";
+
+/**
+ * The two gallery stories, opened on their own rather than inside Storybook's sidebar and
+ * toolbar: `iframe.html` is the canvas Storybook itself embeds, and it is a page.
+ *
+ * The ids are the story titles in `stories/web/gallery.stories.tsx` and
+ * `stories/gallery/mobile.stories.tsx`, kebab-cased by Storybook. Both workflows check the built
+ * `index.json` holds them, so a rename there fails the build rather than leaving these links dead.
+ */
+const canvas = (id) => `storybook/iframe.html?id=${id}&amp;viewMode=story`;
+const GALLERY_WEB = `${HOST}/${canvas("gallery-web--everything")}`;
+
+/**
+ * The mobile gallery gets a page of its own, `public/mobile/index.html`, holding the canvas in a
+ * frame the size of a phone. Linking to the canvas directly would open it at the width of the
+ * reader's window, and a breakpoint class reads the window: every shell would draw its desktop
+ * arrangement, which is the one thing a page called "mobile" must not show. Inside Storybook the
+ * story sets the same viewport itself.
+ */
+const MOBILE_OUT = new URL("public/mobile/index.html", root);
+const GALLERY_MOBILE = `${HOST}/mobile/`;
 
 const web = read("registry.web.json");
 const native = read("registry.json");
@@ -164,6 +185,13 @@ function page() {
     border: 1px solid var(--line); border-radius: 999px; padding: 0.05rem 0.5rem; color: var(--muted);
   }
   .tag-both { border-color: var(--accent); color: var(--accent); }
+  .galleries {
+    list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+  .galleries li { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
+  .galleries a { display: block; font-weight: 600; }
+  .galleries span { color: var(--muted); font-size: 0.9rem; }
   .counts { color: var(--muted); font-size: 0.9rem; }
   footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
   @media (max-width: 40rem) {
@@ -189,6 +217,28 @@ function page() {
   A shadcn registry of ${counts.all} items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
+</p>
+
+<h2>See it</h2>
+
+<p>
+  Every item, drawn on one page per platform: scroll it instead of opening a story at a time.
+</p>
+
+<ul class="galleries">
+  <li>
+    <a href="${GALLERY_WEB}">Everything on the web</a>
+    <span>the compiled DOM components and the web-only tier, at page width</span>
+  </li>
+  <li>
+    <a href="${GALLERY_MOBILE}">Everything on mobile</a>
+    <span>the React Native sources, in a frame the width of a phone, drawn by react-native-web</span>
+  </li>
+</ul>
+
+<p>
+  Both are stories in <a href="${HOST}/storybook/">the Storybook</a>, under <code>Gallery</code>,
+  where each item also has stories of its own with its props and its tests.
 </p>
 
 <h2>Install</h2>
@@ -282,6 +332,8 @@ refs: { cubeui: { title: "cubeui", url: "${HOST}/storybook" } }</code></pre>
 <footer>
   <a href="https://github.com/cubicecho/cubeui">github.com/cubicecho/cubeui</a> ·
   <a href="${HOST}/storybook/">the Storybook</a> ·
+  <a href="${GALLERY_WEB}">everything on the web</a> ·
+  <a href="${GALLERY_MOBILE}">everything on mobile</a> ·
   <a href="${HOST}/r/registry.json">the DOM registry index</a> ·
   <a href="${HOST}/r/native/registry.json">the Expo one</a> ·
   part of <a href="https://cubicecho.com">cubicecho</a>
@@ -293,21 +345,84 @@ refs: { cubeui: { title: "cubeui", url: "${HOST}/storybook" } }</code></pre>
 `;
 }
 
-const output = page();
+/** `public/mobile/index.html`: the mobile gallery's canvas, in a frame the size of a phone. */
+function mobilePage() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cubeui — everything on mobile</title>
+<meta name="description" content="Every React Native item in the cubeui registry, on one page at the width of a phone.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  /* The same palette as the landing page, for the same reason: values, not an import. */
+  :root {
+    --bg: #fafaf9; --fg: #1a1a1a; --muted: #6b6b6b; --line: #e5e5e3; --accent: #2563eb;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111113; --fg: #ececec; --muted: #9a9a9a; --line: #26262a; --accent: #7aa6ff; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans);
+    line-height: 1.5; display: flex; flex-direction: column; align-items: center;
+  }
+  header { width: 100%; max-width: 414px; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--muted); }
+  h1 { font-size: 1rem; margin: 0; color: var(--fg); }
+  p { margin: 0.25rem 0 0; }
+  a { color: var(--accent); }
+  /* 414 wide is the phone viewport the story sets for itself inside Storybook. On a real phone
+     the frame is simply the screen. */
+  iframe {
+    flex: 1; width: 100%; max-width: 414px; min-height: 0; background: #fff;
+    border: 1px solid var(--line); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0;
+  }
+  @media (max-width: 414px) { iframe { border: 0; border-top: 1px solid var(--line); border-radius: 0; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>cubeui — everything on mobile</h1>
+  <p>
+    The React Native sources, drawn by react-native-web at a phone's width.
+    <a href="../">Back to cubeui</a> ·
+    <a href="../${canvas("gallery-web--everything")}">everything on the web</a> ·
+    <a href="../storybook/?path=/story/gallery-mobile--everything">in the Storybook</a>
+  </p>
+</header>
+<iframe title="The mobile gallery" src="../${canvas("gallery-mobile--everything")}"></iframe>
+</body>
+</html>
+`;
+}
+
+const outputs = [
+  { url: OUT, name: "public/index.html", content: page() },
+  { url: MOBILE_OUT, name: "public/mobile/index.html", content: mobilePage() },
+];
 const checking = process.argv.includes("--check");
 
 if (checking) {
-  const committed = readFileSync(OUT, "utf8");
-  if (committed !== output) {
-    console.error(
-      `${fileURLToPath(OUT)} is not what the registries generate.\n` +
-        "An item was added, renamed or re-described without rebuilding the page.\n" +
-        "Run `npm run page:build`.",
-    );
-    process.exit(1);
+  for (const { url, name, content } of outputs) {
+    const committed = existsSync(url) ? readFileSync(url, "utf8") : "";
+    if (committed !== content) {
+      console.error(
+        `${fileURLToPath(url)} is not what the registries generate.\n` +
+          "An item was added, renamed or re-described without rebuilding the page.\n" +
+          "Run `npm run page:build`.",
+      );
+      process.exit(1);
+    }
+    console.log(`${name} matches what this script generates.`);
   }
-  console.log("public/index.html matches the two registry indexes.");
 } else {
-  writeFileSync(OUT, output);
-  console.log(`public/index.html: ${classify().length} items listed.`);
+  for (const { url, content } of outputs) {
+    mkdirSync(new URL(".", url), { recursive: true });
+    writeFileSync(url, content);
+  }
+  console.log(`public/index.html: ${classify().length} items listed. public/mobile/index.html.`);
 }
