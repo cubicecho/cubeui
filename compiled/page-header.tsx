@@ -301,9 +301,11 @@ export function PageHeader({
 
       <div
         data-slot="page-header-title-row"
+        // `content-center`: a wrapping row packs its lines at the start on device and under
+        // react-native-web, so the floor was left as an empty band under a lone title (#248).
         className={cn(
           "cube-rn-view",
-          "flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2",
+          "flex-row flex-wrap content-center items-center justify-between gap-x-4 gap-y-2",
           rowFloor,
         )}
       >

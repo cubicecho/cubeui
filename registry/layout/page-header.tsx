@@ -295,7 +295,12 @@ export function PageHeader({
 
       <View
         testID="page-header-title-row"
-        className={cn("flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2", rowFloor)}
+        // `content-center`: a wrapping row packs its lines at the start on device and under
+        // react-native-web, so the floor was left as an empty band under a lone title (#248).
+        className={cn(
+          "flex-row flex-wrap content-center items-center justify-between gap-x-4 gap-y-2",
+          rowFloor,
+        )}
       >
         {/* `basis-64` is the threshold, and the only number here that is a judgement rather than
             a measurement: the title keeps at least 16rem or the action wraps under it. `min-w-0`
