@@ -201,7 +201,10 @@ function foldPlatform(sourceFile) {
     const exits =
       last !== undefined && (Node.isReturnStatement(last) || Node.isThrowStatement(last));
 
-    const statements = container.getStatements();
+    // With the comments: a comment on a line of its own is a statement to ts-morph, and it is
+    // that list `insertStatements` counts in. Counted without them, the arm lands one statement
+    // early for every comment above the `if` — a `return` ahead of the hook that came before it.
+    const statements = container.getStatementsWithComments();
     const index = statements.findIndex((s) => s.compilerNode === stmt.compilerNode);
     if (exits) {
       for (const dead of statements.slice(index + 1).reverse()) dead.remove();

@@ -131,6 +131,24 @@ test("an if on Platform.OS keeps the web arm and drops what it made unreachable"
   assert.equal(code.includes("if ("), false, code);
 });
 
+test("the kept arm stays where the if was, under a comment on a line of its own", () => {
+  const code = ok(
+    "export const A = () => {\n" +
+      "  // Kept for the handle.\n" +
+      "  const box = useRef(null);\n" +
+      "  useEffect(() => go(box));\n" +
+      '  if (Platform.OS === "web") {\n' +
+      '    return <View className="web" />;\n' +
+      "  }\n" +
+      "  // The device's own scroller.\n" +
+      '  return <ScrollView className="native" />;\n' +
+      "};",
+    "Platform, ScrollView, View",
+  );
+  assert.match(code, /useEffect\(\(\) => go\(box\)\);\s+return <div/);
+  assert.equal(code.includes("device"), false, code);
+});
+
 test("an if on the other platform is dropped, else arm and all", () => {
   const code = ok(
     "export const A = () => {\n" +
