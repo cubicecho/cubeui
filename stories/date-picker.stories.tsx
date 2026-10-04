@@ -18,7 +18,7 @@ import { SideBySide } from "./side-by-side";
  * hold the DOM half to what it was before it had a native source; these hold the two halves to
  * each other.
  */
-const meta = { title: "Stage 0/DatePicker" } satisfies Meta;
+const meta = { title: "RN Parity/DatePicker" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

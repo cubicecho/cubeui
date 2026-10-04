@@ -202,7 +202,7 @@ function OptionLine({
       <span
         id={id}
         data-slot={slot}
-        className={cn("cube-rn-text", "text-xs text-muted-foreground", className)}
+        className={cn("cube-rn-text", "text-xs text-foreground/60", className)}
       >
         {children}
       </span>
@@ -216,11 +216,11 @@ function OptionLine({
 }
 
 /**
- * The muted lines answering the highlight. cmdk paints the highlighted row `bg-accent`, and muted
+ * The muted lines answering the highlight. cmdk paints the highlighted row `bg-hover`, and muted
  * text on it is 4.34:1 — under the 4.5 a body-size string needs, so whichever row the arrow keys
  * are on is the one that cannot be read. There is no highlight on device.
  */
-const ON_HIGHLIGHT = "group-data-[selected=true]:text-accent-foreground/80";
+const ON_HIGHLIGHT = "group-data-[selected=true]:text-foreground";
 
 /**
  * One option, which is up to four things: the tick, the colour dot, what it is called, and what
@@ -285,9 +285,7 @@ function OptionRow({
         <ColorDot color={option.color} size="sm" className={cn(stacked && "mt-1.5")} />
       ) : null}
       <div className="cube-rn-view min-w-0 flex-1">
-        <span className="cube-rn-text truncate text-sm text-popover-foreground">
-          {option.label}
-        </span>
+        <span className="cube-rn-text truncate text-sm text-foreground">{option.label}</span>
         {option.hint ? (
           // Wrapped rather than truncated: a reason cut off at the edge of the
           // popover is the same as no reason.
@@ -393,37 +391,38 @@ export function MultiSelect({
           disabled={disabled}
           className={cn(
             "h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal",
-            "whitespace-normal shadow-xs aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:cursor-not-allowed",
+            "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
             className,
           )}
           {...props}
-        >
-          <div className="cube-rn-view min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
-            {selected.length === 0 ? (
-              <span className="cube-rn-text text-sm text-muted-foreground">{placeholder}</span>
-            ) : (
-              <>
-                {shown.map((option) => (
-                  <Badge
-                    key={option.value}
-                    variant="secondary"
-                    {...chipColors(option.color)}
-                    className={"max-w-40 truncate"}
-                    // Device only: on the web this would be a button inside the trigger's button.
-                  >
-                    {option.label}
-                  </Badge>
-                ))}
-                {overflow > 0 ? (
-                  <span className="cube-rn-text text-xs text-muted-foreground">
-                    {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
-                  </span>
-                ) : null}
-              </>
-            )}
-          </div>
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            <div className="cube-rn-view min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
+              {selected.length === 0 ? (
+                <span className="cube-rn-text text-sm text-foreground/60">{placeholder}</span>
+              ) : (
+                <>
+                  {shown.map((option) => (
+                    <Badge
+                      key={option.value}
+                      variant="secondary"
+                      {...chipColors(option.color)}
+                      className={"max-w-40 truncate"}
+                      // Device only: on the web this would be a button inside the trigger's button.
+                    >
+                      {option.label}
+                    </Badge>
+                  ))}
+                  {overflow > 0 ? (
+                    <span className="cube-rn-text text-xs text-foreground/60">
+                      {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
+                    </span>
+                  ) : null}
+                </>
+              )}
+            </div>
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
 
       <PopoverContent
@@ -433,7 +432,7 @@ export function MultiSelect({
         aria-labelledby={titleId}
         className={cn("w-[var(--radix-popover-trigger-width)] p-0", contentClassName)}
       >
-        <span id={titleId} className={cn("cube-rn-text", SR_ONLY, "text-popover-foreground")}>
+        <span id={titleId} className={cn("cube-rn-text", SR_ONLY, "text-foreground")}>
           {popoverLabel}
         </span>
         <Command label={searchLabel} filter={matchesEveryWord} shouldFilter={searchable}>
@@ -469,7 +468,7 @@ export function MultiSelect({
               // sometimes. A row is a thing you can see, arrow to, and press.
               <CommandGroup
                 forceMount
-                className={cn("border-t border-border bg-popover", "sticky bottom-0")}
+                className={cn("border-t border-foreground/10 bg-secondary", "sticky bottom-0")}
               >
                 <CommandItem
                   forceMount
@@ -480,7 +479,7 @@ export function MultiSelect({
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  <span className="cube-rn-text min-w-0 flex-1 truncate text-sm text-popover-foreground">
+                  <span className="cube-rn-text min-w-0 flex-1 truncate text-sm text-foreground">
                     {createLabel} “{search.trim()}”
                   </span>
                 </CommandItem>
@@ -490,16 +489,15 @@ export function MultiSelect({
         </Command>
 
         {clearable && selected.length > 0 ? (
-          <div className="cube-rn-view flex-row justify-end border-t border-border p-1">
+          <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 p-1">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-muted-foreground"
+              className="text-foreground/60"
               onClick={() => onValueChange([])}
-            >
-              <X className="size-4" aria-hidden />
-              Clear
-            </Button>
+              icon={<X className="size-4" aria-hidden />}
+              content="Clear"
+            />
           </div>
         ) : null}
       </PopoverContent>

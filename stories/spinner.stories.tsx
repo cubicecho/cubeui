@@ -8,7 +8,7 @@ import { SideBySide } from "./side-by-side";
  * The spinner on both halves: one `status` each, named `Loading` or the caller's `label`, the same
  * glyph at the same size, turning.
  */
-const meta = { title: "Stage 0/Spinner" } satisfies Meta;
+const meta = { title: "RN Parity/Spinner" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -18,13 +18,13 @@ export const Default: Story = {
       native={
         <div className="flex flex-row items-center gap-4">
           <Native />
-          <Native label="Loading servers" className="size-6 text-muted-foreground" />
+          <Native label="Loading servers" className="size-6 text-foreground/60" />
         </div>
       }
       compiled={
         <div className="flex flex-row items-center gap-4">
           <Compiled />
-          <Compiled label="Loading servers" className="size-6 text-muted-foreground" />
+          <Compiled label="Loading servers" className="size-6 text-foreground/60" />
         </div>
       }
     />

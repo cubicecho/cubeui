@@ -29,6 +29,11 @@ type ListItemProps = {
    * `meta` become one button between `leading` and `action`, so neither of those is nested in it.
    */
   onPress?: (() => void) | undefined;
+  /**
+   * The chosen row: the one open beside the list. Tinted in `active`, it stays that under the
+   * pointer, and a pressable row says so with `aria-current`.
+   */
+  selected?: boolean | undefined;
   className?: string | undefined;
   titleClassName?: string | undefined;
 };
@@ -61,7 +66,7 @@ function asText(node: ReactNode, className: string) {
  * On the web the middle is a real `<button>`, named by the text inside it.
  *
  * No surface: a row lives in a list, a card or a section, and that owns the border. Pass
- * `className="rounded-lg border border-border bg-card"` for the telos look.
+ * `className="rounded-lg border border-foreground/10 bg-secondary"` for the telos look.
  */
 export function ListItem({
   title,
@@ -70,6 +75,7 @@ export function ListItem({
   meta,
   action,
   onPress,
+  selected = false,
   className,
   titleClassName,
 }: ListItemProps) {
@@ -89,17 +95,14 @@ export function ListItem({
           {title}
         </Text>
         {description ? (
-          <Text
-            testID="list-item-description"
-            className="line-clamp-2 text-muted-foreground text-xs"
-          >
+          <Text testID="list-item-description" className="line-clamp-2 text-foreground/60 text-xs">
             {description}
           </Text>
         ) : null}
       </View>
       {meta ? (
         <View testID="list-item-meta" className="shrink-0 flex-row items-center gap-1">
-          {asText(meta, "text-muted-foreground text-xs tabular-nums")}
+          {asText(meta, "text-foreground/60 text-xs tabular-nums")}
         </View>
       ) : null}
     </>
@@ -110,7 +113,13 @@ export function ListItem({
       testID="list-item"
       className={cn(
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2.5",
-        onPress && Platform.select({ web: "transition-colors hover:bg-muted", default: undefined }),
+        selected
+          ? "bg-active/40"
+          : onPress &&
+              Platform.select({
+                web: "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
+                default: undefined,
+              }),
         className,
       )}
     >
@@ -124,11 +133,12 @@ export function ListItem({
         <Pressable
           testID="list-item-body"
           role="button"
+          aria-current={selected ? true : undefined}
           onPress={onPress}
           className={cn(
             "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
             Platform.select({
-              web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              web: "text-left focus-visible:outline-none",
               default: "active:opacity-70",
             }),
           )}
@@ -143,7 +153,7 @@ export function ListItem({
 
       {action ? (
         <View testID="list-item-action" className="shrink-0 flex-row items-center gap-1">
-          {asText(action, "text-muted-foreground text-xs")}
+          {asText(action, "text-foreground/60 text-xs")}
         </View>
       ) : null}
     </View>

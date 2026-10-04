@@ -17,12 +17,8 @@ type Story = StoryObj<typeof meta>;
 
 const Actions = () => (
   <>
-    <Button size="sm" variant="outline">
-      <Download /> Export
-    </Button>
-    <Button size="sm">
-      <Plus /> New workspace
-    </Button>
+    <Button size="sm" variant="outline" icon={<Download />} content="Export" />
+    <Button size="sm" variant="info" icon={<Plus />} content="New workspace" />
   </>
 );
 
@@ -99,7 +95,7 @@ export const Levels: StoryObj<typeof PageHeader> = {
 export const WithBreadcrumbs: Story = {
   args: {
     breadcrumbs: (
-      <nav aria-label="Breadcrumb" className="text-muted-foreground text-sm">
+      <nav aria-label="Breadcrumb" className="text-foreground/60 text-sm">
         <a className="underline underline-offset-4" href="#workspaces">
           Workspaces
         </a>

@@ -64,9 +64,28 @@ The trigger lays its children out in a row, puts only the text in a `<Text>`, an
 the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
 segmented control to get one.
 
+A dot or a count on a tab goes in `trailingSlot`, the far end of the tab, on both halves:
+
+```tsx
+<TabsTrigger
+  value="device"
+  trailingSlot={<Badge variant="destructive" label="Server error" />}
+>
+  Device
+</TabsTrigger>
+```
+
+A `Badge` with no children is a dot, and its `label` becomes part of the tab's name: "Device,
+Server error". Do not pass a bare coloured `View` or `<span>`, which a screen reader skips.
+
 Name the tablist when no visible heading does: `<TabsList aria-label="Project view">`, or
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.
+
+A `TabsList` with more tabs than fit scrolls sideways inside its own box and brings the selected
+tab into view, at mount and whenever it changes, on both halves. Do not wrap `Tabs` in a
+horizontal `ScrollView` to fit a phone: the scroller would be outside the tablist, and a tab
+chosen by a link would stay off screen. Tabs that fit are centred in the list as before.
 
 ## Segmented control
 
@@ -117,14 +136,56 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
   `segmentedItemClass(active)` and put it in a `SegmentedGroup variant="plain"` for the name.
 
+## Button
+
+`Button` takes no children. What is inside a button is an icon, a label and sometimes something at
+the far end, so those are the props:
+
+```tsx
+<Button content="Save" onPress={save} />
+<Button variant="info" icon={<Plus />} content="New workspace" onPress={create} />
+<Button variant="outline" content={chosen.label} trailing={<ChevronDown />} />
+<Button variant="outline" link={<Link to="/docs" />} content="Docs" />
+<Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
+```
+
+- **`variant`** says what the press does, and each one is a token:
+
+  | Variant | For |
+  |---|---|
+  | `default` | The emphasis of its row, when none of the meanings below fits |
+  | `info`, `info-outline` | Adds something: Add, New, Create |
+  | `positive`, `positive-outline` | Keeps the work: Save, Confirm |
+  | `destructive`, `destructive-outline` | Destroys; the outline when it is not the emphasis of its row |
+  | `outline` | A quiet action: Cancel, Close, a trigger |
+  | `secondary` | An icon inside a field's own border |
+  | `ghost`, `link` | Kept for porting shadcn code. Do not use them in new code: a button looks like a button |
+
+- **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
+  it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
+- **`icon`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
+  is why an icon-only button is an `ActionButton` (below).
+- **`trailing`** is the far end: a trigger's chevron, a count.
+- **`link`** is the link the button is, as an element with no children: `<a href="…" />` or a
+  router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
+  button; on a device it is expo-router's `Link`, which wraps the button with its own `asChild`.
+  Handing a `Button` to a radix trigger is unchanged: `<PopoverTrigger asChild><Button … />`.
+- **`loading`** is "pressed, and the work is still running": the button is disabled, `aria-busy`,
+  and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
+  swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
+  `ActionButton` and `ConfirmButton` take the same props; a form's submit is `form.SubmitButton`,
+  which sets `loading` from the form.
+- A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
+  `<Button><Plus /> New</Button>` → `<Button icon={<Plus />} content="New" />`. Everything else
+  about the web half is still shadcn's: the `<button>` props, the sizes, `buttonVariants`.
+- `AlertDialogAction` and `AlertDialogCancel` keep their label as children, as shadcn's do.
+
 ## Icon buttons
 
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
 
 ```tsx
-<ActionButton label="Delete workspace" variant="ghost" size="icon" onClick={remove}>
-  <Trash2 />
-</ActionButton>
+<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} icon={<Trash2 />} />
 ```
 
 `label` is required and is the accessible name. `title` is not a name — it is a hint, it is not
@@ -137,9 +198,7 @@ deliberate: `disabled:pointer-events-none` is why every `title="Empty the lane f
 apps was unreadable on exactly the control it was explaining. Pass `hint` with the reason:
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0}>
-  <Trash2 />
-</ActionButton>
+<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} icon={<Trash2 />} />
 ```
 
 `hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
@@ -166,9 +225,13 @@ A form's real submit is `SubmitButton`. If you want one of these to submit, say 
 pressable has: `onPress` on a device, `onClick` on the web.
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} onPress={remove}>
-  <Trash2 />
-</ActionButton>
+<ActionButton
+  label="Delete lane"
+  hint="Empty the lane first"
+  disabled={cards.length > 0}
+  onPress={remove}
+  icon={<Trash2 />}
+/>
 ```
 
 - On device the tooltip opens on a **long press**, and a `disabled` one still hears it — that is
@@ -213,7 +276,7 @@ an `absolute` corner over it.
 - It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
   one) and `Copied` while the tick shows.
-- `variant` and `size` go to the `Button` underneath; the defaults are `ghost` and `icon-sm`.
+- `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
   `className` is the button's, for placing it.
 - The tick appears only if the write happened. A refused write — an insecure origin, a denied
   permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.
@@ -225,11 +288,42 @@ an `absolute` corner over it.
 - Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
   always set, which are the two things `ActionButton` exists to guarantee.
 
+## Download button
+
+A button that saves a file is `DownloadButton`, on both halves. Do not write the busy state, the
+`<a download>` and the `URL.revokeObjectURL` again:
+
+```tsx
+<DownloadButton
+  label="Download note.md"
+  filename="note.md"
+  mimeType="text/markdown"
+  source={() => getFile(path)}
+  onError={(error) => toast.error(String(error))}
+/>
+```
+
+- `source` is the content — a `Blob` or a string — or a function returning either, or a promise
+  of either. A function is called on the press, so a list of rows fetches nothing until asked.
+- While `source` is pending the button is disabled and `aria-busy`, with a spinner where the
+  glyph was. A `source` that throws calls `onError` and leaves the button as it was;
+  `onDownloaded` runs after a good one.
+- `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
+- On the web the file goes to the browser's downloads. **On a device there is no downloads
+  folder**, so `destination` says where: `"share"` opens the share sheet, `"files"` asks for a
+  folder and writes into it, and `"ask"`, the default, puts both in a menu on the button so the
+  person pressing decides. The web half ignores it.
+- `downloadBlob(content, filename, { mimeType, destination })` is the function the button calls,
+  exported from the same module for the download that is not a button — a menu row, the end of
+  an export job. On a device it takes `"share"` (the default) or `"files"`.
+- The native item installs `expo-file-system` and `expo-sharing`; a DOM app installs nothing
+  extra.
+
 ## Code block
 
 A block of preformatted text — a config file, a command to paste, a JSON payload, a log — is
 `CodeBlock`, from `@cubeui/code` beside the inline `Code`, on both halves. Do not write a `<pre>`
-with `rounded-md border bg-muted p-3 font-mono text-xs` on it: that class list was retyped on
+with `rounded-md border bg-foreground/10 p-3 font-mono text-xs` on it: that class list was retyped on
 eleven screens and came out with four fills, a border on about half and three paddings.
 
 ```tsx
@@ -288,7 +382,7 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 ```tsx
 <Markdown content={skill.instructions} />
 
-<Markdown content={file.text} empty={<p className="text-muted-foreground">This file is empty.</p>} />
+<Markdown content={file.text} empty={<p className="text-foreground/60">This file is empty.</p>} />
 ```
 
 - **`content` is the Markdown source, a string.** It is the only required prop.
@@ -386,14 +480,13 @@ const [body, setBody] = useState(skill.instructions);
 ```tsx
 <ConfirmButton
   label="Delete lane"
-  variant="ghost"
+  variant="outline"
   size="icon"
   title="Delete this lane?"
   description="The lane takes its cards with it."
   onConfirm={() => deleteLane(id)}
->
-  <Trash2 />
-</ConfirmButton>
+  icon={<Trash2 />}
+/>
 ```
 
 Do not build the `AlertDialog` by hand. There are 22 hand-written ones across these projects and
@@ -431,9 +524,8 @@ repository — pass `requireText`, and the dialog asks for the name before it ac
   requireText={folder.name}
   requireTextLabel={<>Type <strong>{folder.name}</strong> to delete it</>}
   onConfirm={() => deleteFolder(folder.id)}
->
-  <Trash2 />
-</ConfirmButton>
+  icon={<Trash2 />}
+/>
 ```
 
 It is the same prop on all three, so a call site moves between them unchanged:
@@ -460,7 +552,7 @@ on both platforms:
 ```tsx
 <Menu>
   <MenuTrigger asChild>
-    <Button variant="outline">Lane</Button>
+    <Button variant="outline" content="Lane" />
   </MenuTrigger>
   <MenuContent align="end">
     <MenuItem icon={<Pencil />} label="Rename" onSelect={startRename} />
@@ -478,7 +570,7 @@ on both platforms:
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
   `icon`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
   `onSelect`, and `link` or `href` for a row that navigates. The icon takes the row's colour —
-  `text-destructive` on a destructive row.
+  `text-negative` on a destructive row.
 - **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
   `Link` as an element with no children, `link`, and the row is drawn inside it — on the web the
   menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
@@ -616,6 +708,30 @@ An option that is not a peer of the others says so in the array rather than in i
 Drawn in the order given, never sorted — a board's lanes are ordered and alphabetical would be
 wrong. A flat `{ value, label }[]` draws flat.
 
+### A list too long to scroll
+
+`searchable` puts a search box above the list. Without it there is no box, and the menu is the
+plain listbox.
+
+```tsx
+<OptionSelect
+  searchable
+  searchPlaceholder="Find a model…"
+  options={models.map((m) => ({ value: m.id, label: m.id, keywords: [m.provider] }))}
+  value={model}
+  onValueChange={setModel}
+/>
+```
+
+- It matches an option's label, its `group` heading and its `keywords`, every typed word in any
+  order. A `label` that is a node cannot be searched, so give that option `keywords`.
+- `searchPlaceholder`, `searchLabel` (the box's accessible name) and `emptyMessage` are read only
+  when `searchable` is on.
+- The searchable menu is a popover over a `Command`, the shape `MultiSelect` is, so it installs
+  `button`, `command` and `popover` beside `select`. Groups, separators, notes, `open` and
+  `onOpenChange` behave the same in both.
+- In a form: `<field.SelectField searchable options={…} />`.
+
 ### A menu that fills when it opens
 
 A list the server owns should not be fetched on mount: a form of twenty fields would ask for
@@ -634,7 +750,7 @@ const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, 
   options={[
     ...(models.data ?? []).map((m) => ({ value: m.id, label: m.id, className: "font-mono" })),
     ...(models.isFetching && !models.data ? [{ note: "Loading…" }] : []),
-    ...(models.error ? [{ note: models.error.message, className: "text-destructive" }] : []),
+    ...(models.error ? [{ note: models.error.message, className: "text-negative" }] : []),
   ]}
 />
 ```
@@ -854,7 +970,7 @@ with a filled `div` and a `style.width` inside it.
 - No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
   animate. A wait with no known end wants a [`Spinner`](#spinner), not an empty bar.
 - `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
-  (`bg-destructive` for a context window nearly full). Colours are tokens, as everywhere.
+  (`bg-negative` for a context window nearly full). Colours are tokens, as everywhere.
 - A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not
   this component.
 
@@ -900,6 +1016,24 @@ Showing a colour the user picked is three small items, all on both halves:
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
   inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
 
+## Numbers, sizes and dates as text
+
+`@cubeui/format` installs `@/lib/format`: plain functions, the same on both halves. Use them
+where an app would otherwise write its own `lib/format.ts`.
+
+| Call | Gives |
+|---|---|
+| `formatCount(1204)` | `1,204` |
+| `formatCount(3, "file")`, `formatCount(2, "entry", "entries")` | `3 files`, `2 entries` |
+| `formatBytes(1536)` | `1.5 KB` — B to GB, a step is 1024 |
+| `formatDuration(11520)` | `3h 12m` — also `42s`, `5m`, `2d 4h`; it takes seconds |
+| `formatDate(note.updatedAt)` | `Oct 3, 2026`, in the reader's locale |
+| `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `just now` under a minute |
+
+`formatDate` and `formatAgo` take an ISO string, epoch milliseconds or a `Date`, and return an
+empty string for one that does not parse, so a missing timestamp draws nothing. `formatAgo` takes
+a second argument, the moment to count from, for a screen that ticks its own clock.
+
 ## An icon in an input
 
 An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the input in a
@@ -914,9 +1048,13 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
   onChangeText={setName}
   leading={<Pencil />}
   trailing={
-    <Button variant="ghost" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
-      <Undo2 />
-    </Button>
+    <Button
+      variant="outline"
+      size="icon-xs"
+      aria-label="Undo rename"
+      onPress={() => setName(saved)}
+      icon={<Undo2 />}
+    />
   }
   wrapperClassName="w-64"
 />
@@ -930,6 +1068,18 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
   `w-full`; size that box with `wrapperClassName`. Without a slot there is no box, and the root is
   the field, as before.
 - A search box is not this: it is `SearchInput`, below, which is this plus the name and the ✕.
+
+## An identifier in an input
+
+```tsx
+<Input value={model} onChangeText={setModel} autoCapitalize="none" autoCorrect={false} />
+```
+
+A URL, a model id, a server id or a shell command is typed as written, and a phone's keyboard
+capitalises the first letter and "corrects" the rest unless told not to. `inputMode="url"` raises
+the right keyboard and switches neither off. `autoCapitalize` is `none`, `sentences`, `words` or
+`characters`; `autoCorrect` is a boolean, and on the web it takes the spelling underline with it.
+`InputField` passes both through.
 
 ## Search
 
@@ -954,6 +1104,14 @@ leading={<Search />}`, and never from a `relative` div, an absolute glyph and a 
   both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
   the user had cleared the box. Controlled or not, it clears.
 - `className` is on the field; size the box with `wrapperClassName`.
+- **A search that asks a server takes `onSettledText`,** not a `useDebounced` beside the box. It
+  is called once typing has paused for `debounce` milliseconds (250 by default), and at once on
+  Enter or when the box is emptied. `onChangeText` still hears every key, so hold the box's text
+  with that and the query with this:
+
+  ```tsx
+  <SearchInput value={text} onChangeText={setText} onSettledText={setQuery} />
+  ```
 
 ### Filter bar
 
@@ -964,7 +1122,7 @@ in one wrapping row. There is no component for it — it is one `div`:
 <div className="flex flex-wrap items-center gap-2">
   <SearchInput placeholder="Search runs" value={query} onChangeText={setQuery} wrapperClassName="w-64" />
   <OptionSelect options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
-  <Button variant="outline" onClick={reset}>Reset</Button>
+  <Button variant="outline" onClick={reset} content="Reset" />
 </div>
 ```
 
@@ -989,6 +1147,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 </Badge>
 ```
 
+- `variant` is shadcn's six (`default`, `secondary`, `destructive`, `outline`, `ghost`, `link`)
+  and three meanings of cubeui's own: `positive`, `warning` and `info`. There is no `success`: the
+  word is `positive`, as on `Button` and in the tokens. A toast's tone is the same word:
+  `toast("Saved", "positive")`, beside `error`, `warning` and `info`.
 - It draws a trailing ✕ in the label's colour — the variant's, or `textColor` — at the badge's
   icon size. Do not wrap the badge in a second pill with a `Pressable` beside it.
 - The ✕ is a button named `removeLabel`, default `Remove <text>`. On the web it is
@@ -1013,7 +1175,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   variant="destructive"
   title="Last error"
   description={server.lastError}
-  action={<Button size="sm" variant="outline" onPress={restart}>Restart</Button>}
+  action={<Button size="sm" variant="outline" onPress={restart} content="Restart" />}
 />
 ```
 
@@ -1024,7 +1186,8 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 - **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
   `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
   once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
-- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`). Pass a bare
+- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`), except on
+  `info`, which is the blue and draws no icon it was not given. Pass a bare
   `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
   draws none.
 - `title` and `description` are nodes, so a link can sit inside the description. `action` is the
@@ -1042,13 +1205,11 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 `animate-spin`, and do not reach for `ActivityIndicator`:
 
 ```tsx
-<Button disabled={saving} onPress={save}>
-  {saving ? <Spinner label="Saving" /> : null}
-  <Text>Save</Text>
-</Button>
-
-<Spinner label="Loading servers" className="size-6 text-muted-foreground" />
+<Spinner label="Loading servers" className="size-6 text-foreground/60" />
 ```
+
+- A button that is working is `<Button loading>`, not a `Spinner` drawn inside one — see
+  [Button](#button).
 
 - It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
   one thing on the screen could be.
@@ -1068,7 +1229,7 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 </View>
 ```
 
-`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-accent` block that pulses
+`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-hover` block that pulses
 while what it stands in for loads. `className` is its size.
 
 - It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
@@ -1087,7 +1248,7 @@ while what it stands in for loads. `className` is its size.
 <Separator decorative={false} />
 ```
 
-`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-border`, as long as its
+`@cubeui/separator`, on both halves: shadcn's one-pixel rule, `bg-foreground/10`, as long as its
 container. Use it rather than a `border-b` on the group above or a `h-px` view.
 
 - `orientation` is `horizontal` (the default) or `vertical`. A vertical one fills its row's height:
@@ -1194,12 +1355,12 @@ says.
   nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
-- **A checked, pressed or current control is drawn in `selection`**, not `primary`: blue in the
+- **A checked, pressed or current control is drawn in `selection`**, not `primary`: a quiet cyan in the
   default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
-  `bg-selection` and `text-selection-foreground` too, so it follows the palette; `primary` stays
+  `bg-active` and `text-active-foreground` too, so it follows the palette; `primary` stays
   the colour of a button to press. The active tab and the sidebar's current row are `selection`
-  too. Hover is grey and never `selection`: `hover:bg-accent` on a control, `hover:bg-muted` on a
-  row with muted text in it. A chosen card is ringed with `border-selection`, not filled.
+  too. Hover is grey and never `selection`: `hover:bg-hover` on a control, `hover:bg-hover` on a
+  row with muted text in it. A chosen card is ringed with `border-active`, not filled.
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 
@@ -1300,7 +1461,7 @@ directly, so you do not need a dialog around a zone.
   title="Notes"
   action={
     <FilePickerButton
-      variant="ghost"
+      variant="outline"
       size="icon-sm"
       label="Upload notes"
       accept=".md"

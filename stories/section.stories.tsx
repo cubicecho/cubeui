@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * the right rank, and a region named by it.
  */
 const meta = {
-  title: "Stage 0/Section",
+  title: "RN Parity/Section",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -46,7 +46,7 @@ export const Default: Story = {
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
-    await expect(nativeStyle.color).toBe("rgb(115, 115, 115)");
+    await expect(nativeStyle.color).toMatch(/\/ 0\.6\)$/);
     await expect(compiledStyle.color).toBe(nativeStyle.color);
     await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
     await expect(compiledStyle.textTransform).toBe("uppercase");
@@ -103,9 +103,7 @@ function WideActionSections({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
   const buttons = toolbarLabels.map((label) => (
-    <Button key={label} variant="outline" size="sm">
-      {label}
-    </Button>
+    <Button key={label} variant="outline" size="sm" content={label} />
   ));
   const row =
     half === "native" ? (
@@ -177,11 +175,7 @@ function SmallActionSection({ half }: { half: "native" | "compiled" }) {
       <Section
         title="Files"
         description={toolbarDescription}
-        action={
-          <Button variant="outline" size="sm">
-            Export
-          </Button>
-        }
+        action={<Button variant="outline" size="sm" content="Export" />}
         content={body}
       />
     </div>

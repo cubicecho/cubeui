@@ -53,7 +53,7 @@ export type ProgressProps = ViewProps & {
    * screen reader says the percentage, which is right when the number means nothing else.
    */
   valueLabel?: string | undefined;
-  /** The filled part: `bg-destructive` for a context window nearly full. */
+  /** The filled part: `bg-negative` for a context window nearly full. */
   indicatorClassName?: string | undefined;
 };
 
@@ -84,7 +84,7 @@ export function Progress({
       {...(label ? { "aria-label": label } : {})}
       className={cn(
         "cube-rn-view",
-        "h-2 w-full overflow-hidden rounded-full bg-primary/20",
+        "h-2 w-full overflow-hidden rounded-full bg-foreground/10",
         className,
       )}
     >
@@ -92,7 +92,7 @@ export function Progress({
         data-slot="progress-indicator"
         className={cn(
           "cube-rn-view",
-          "h-full bg-primary",
+          "h-full bg-neutral",
           "transition-[width]",
           indicatorClassName,
         )}

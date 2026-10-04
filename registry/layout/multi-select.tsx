@@ -193,7 +193,7 @@ function OptionLine({
 }) {
   if (typeof children === "string" || typeof children === "number") {
     return (
-      <Text nativeID={id} testID={slot} className={cn("text-xs text-muted-foreground", className)}>
+      <Text nativeID={id} testID={slot} className={cn("text-xs text-foreground/60", className)}>
         {children}
       </Text>
     );
@@ -206,12 +206,12 @@ function OptionLine({
 }
 
 /**
- * The muted lines answering the highlight. cmdk paints the highlighted row `bg-accent`, and muted
+ * The muted lines answering the highlight. cmdk paints the highlighted row `bg-hover`, and muted
  * text on it is 4.34:1 — under the 4.5 a body-size string needs, so whichever row the arrow keys
  * are on is the one that cannot be read. There is no highlight on device.
  */
 const ON_HIGHLIGHT = Platform.select({
-  web: "group-data-[selected=true]:text-accent-foreground/80",
+  web: "group-data-[selected=true]:text-foreground",
   default: "",
 });
 
@@ -278,7 +278,7 @@ function OptionRow({
         <ColorDot color={option.color} size="sm" className={cn(stacked && "mt-1.5")} />
       ) : null}
       <View className="min-w-0 flex-1">
-        <Text className="truncate text-sm text-popover-foreground">{option.label}</Text>
+        <Text className="truncate text-sm text-foreground">{option.label}</Text>
         {option.hint ? (
           // Wrapped rather than truncated: a reason cut off at the edge of the
           // popover is the same as no reason.
@@ -385,45 +385,46 @@ export function MultiSelect({
           className={cn(
             "h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal",
             Platform.select({
-              web: "whitespace-normal shadow-xs aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 disabled:cursor-not-allowed",
+              web: "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
               default: "",
             }),
             className,
           )}
           {...props}
-        >
-          <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
-            {selected.length === 0 ? (
-              <Text className="text-sm text-muted-foreground">{placeholder}</Text>
-            ) : (
-              <>
-                {shown.map((option) => (
-                  <Badge
-                    key={option.value}
-                    variant="secondary"
-                    {...chipColors(option.color)}
-                    className={Platform.select({
-                      web: "max-w-40 truncate",
-                      default: "max-w-40",
-                    })}
-                    // Device only: on the web this would be a button inside the trigger's button.
-                    {...(Platform.OS !== "web" && !disabled
-                      ? { onRemove: () => toggle(option.value) }
-                      : {})}
-                  >
-                    {option.label}
-                  </Badge>
-                ))}
-                {overflow > 0 ? (
-                  <Text className="text-xs text-muted-foreground">
-                    {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
-                  </Text>
-                ) : null}
-              </>
-            )}
-          </View>
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
+              {selected.length === 0 ? (
+                <Text className="text-sm text-foreground/60">{placeholder}</Text>
+              ) : (
+                <>
+                  {shown.map((option) => (
+                    <Badge
+                      key={option.value}
+                      variant="secondary"
+                      {...chipColors(option.color)}
+                      className={Platform.select({
+                        web: "max-w-40 truncate",
+                        default: "max-w-40",
+                      })}
+                      // Device only: on the web this would be a button inside the trigger's button.
+                      {...(Platform.OS !== "web" && !disabled
+                        ? { onRemove: () => toggle(option.value) }
+                        : {})}
+                    >
+                      {option.label}
+                    </Badge>
+                  ))}
+                  {overflow > 0 ? (
+                    <Text className="text-xs text-foreground/60">
+                      {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
+                    </Text>
+                  ) : null}
+                </>
+              )}
+            </View>
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
 
       <PopoverContent
@@ -440,7 +441,7 @@ export function MultiSelect({
           contentClassName,
         )}
       >
-        <Text nativeID={titleId} className={cn(SR_ONLY, "text-popover-foreground")}>
+        <Text nativeID={titleId} className={cn(SR_ONLY, "text-foreground")}>
           {popoverLabel}
         </Text>
         <Command label={searchLabel} filter={matchesEveryWord} shouldFilter={searchable}>
@@ -477,7 +478,7 @@ export function MultiSelect({
               <CommandGroup
                 forceMount
                 className={cn(
-                  "border-t border-border bg-popover",
+                  "border-t border-foreground/10 bg-secondary",
                   Platform.select({ web: "sticky bottom-0", default: "" }),
                 )}
               >
@@ -490,7 +491,7 @@ export function MultiSelect({
                   }}
                 >
                   <Plus className="size-4" aria-hidden />
-                  <Text className="min-w-0 flex-1 truncate text-sm text-popover-foreground">
+                  <Text className="min-w-0 flex-1 truncate text-sm text-foreground">
                     {createLabel} “{search.trim()}”
                   </Text>
                 </CommandItem>
@@ -500,16 +501,15 @@ export function MultiSelect({
         </Command>
 
         {clearable && selected.length > 0 ? (
-          <View className="flex-row justify-end border-t border-border p-1">
+          <View className="flex-row justify-end border-t border-foreground/10 p-1">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-muted-foreground"
+              className="text-foreground/60"
               onPress={() => onValueChange([])}
-            >
-              <X className="size-4" aria-hidden />
-              Clear
-            </Button>
+              icon={<X className="size-4" aria-hidden />}
+              content="Clear"
+            />
           </View>
         ) : null}
       </PopoverContent>

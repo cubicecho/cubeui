@@ -139,7 +139,7 @@ function Command({
   const store = useMemo(createItemStore, []);
   return (
     <CommandContext.Provider value={{ label, search, setSearch, filter, shouldFilter, store }}>
-      <View className={cn("w-full flex-col overflow-hidden rounded-md bg-popover", className)}>
+      <View className={cn("w-full flex-col overflow-hidden rounded-md bg-secondary", className)}>
         {children}
       </View>
     </CommandContext.Provider>
@@ -190,7 +190,7 @@ function CommandInput({
   }, [value, setSearch]);
 
   return (
-    <View className="border-b border-border px-1">
+    <View className="border-b border-foreground/10 px-1">
       <Input
         type="search"
         value={value ?? search}
@@ -233,7 +233,7 @@ function CommandEmpty({ className, children }: CommandEmptyProps) {
   return (
     <View className={cn("py-6", className)}>
       {typeof children === "string" ? (
-        <Text className="text-center text-sm text-popover-foreground">{children}</Text>
+        <Text className="text-center text-sm text-foreground">{children}</Text>
       ) : (
         children
       )}
@@ -257,7 +257,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
         className={cn("p-1", hidden && "hidden", className)}
       >
         {heading == null ? null : typeof heading === "string" ? (
-          <Text className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{heading}</Text>
+          <Text className="px-2 py-1.5 text-xs font-medium text-foreground/60">{heading}</Text>
         ) : (
           heading
         )}
@@ -270,7 +270,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
 function CommandSeparator({ alwaysRender = false, className }: CommandSeparatorProps) {
   const { search } = useContext(CommandContext);
   if (search !== "" && !alwaysRender) return null;
-  return <View aria-hidden className={cn("-mx-1 h-px bg-border", className)} />;
+  return <View aria-hidden className={cn("-mx-1 h-px bg-foreground/10", className)} />;
 }
 
 function CommandItem({
@@ -313,16 +313,16 @@ function CommandItem({
         : {})}
       onPress={() => onSelect?.(itemValue)}
       className={cn(
-        "flex-row items-center gap-2 rounded-sm px-2 py-1.5 active:bg-accent",
+        "flex-row items-center gap-2 rounded-sm px-2 py-1.5 active:bg-hover",
         disabled && "opacity-50",
         className,
       )}
     >
       {/* Colour does not inherit on native: the row's icons take theirs through the context and
           a bare string its own `Text`. */}
-      <IconClassContext.Provider value="size-4 shrink-0 text-muted-foreground">
+      <IconClassContext.Provider value="size-4 shrink-0 text-foreground/60">
         {typeof children === "string" || typeof children === "number" ? (
-          <Text numberOfLines={1} className="flex-1 text-sm text-popover-foreground">
+          <Text numberOfLines={1} className="flex-1 text-sm text-foreground">
             {children}
           </Text>
         ) : (
@@ -335,7 +335,7 @@ function CommandItem({
 
 function CommandShortcut({ className, children }: CommandShortcutProps) {
   return (
-    <Text className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)}>
+    <Text className={cn("ml-auto text-xs tracking-widest text-foreground/60", className)}>
       {children}
     </Text>
   );

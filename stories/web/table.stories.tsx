@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 
 const meta = {
-  title: "Primitive/Table",
+  title: "Layout/Table",
   component: Table,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Table>;

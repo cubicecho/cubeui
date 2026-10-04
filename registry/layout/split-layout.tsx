@@ -8,7 +8,7 @@
  * width scale and the `data-slot`s are unchanged.
  */
 import type { ReactNode } from "react";
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { cn } from "@/lib/utils";
 
 /**
@@ -118,12 +118,7 @@ const REST: Record<keyof typeof STACK_BELOW, Record<"fifth" | "two-fifths" | "ot
  * table in one pane would otherwise widen it and shove the other off the screen. `grow` is what
  * lets the panes share a height the layout was given, stacked or alone, the way grid rows did.
  */
-const PANE = cn(
-  "min-h-0 min-w-0 grow",
-  // A pane wraps a caller's node rather than laying one out, so on the web it stays the block box a
-  // grid cell was; a compiled view would otherwise make it a flex column. Device has no other box.
-  Platform.select({ web: "block", default: undefined }),
-);
+const PANE = "min-h-0 min-w-0 grow";
 
 /**
  * The rule turns where the panes do: a hairline column between two panes side by side, a hairline
@@ -296,7 +291,7 @@ export function SplitLayout({
         <View
           testID="split-layout-divider"
           aria-hidden
-          className={cn("shrink-0 self-stretch bg-border", DIVIDER_AT[stackBelow])}
+          className={cn("shrink-0 self-stretch bg-foreground/10", DIVIDER_AT[stackBelow])}
         />
       ) : null}
       <View
@@ -314,14 +309,13 @@ export function SplitLayout({
  * breakpoint, drawn from it up. The same breakpoints, and the same media query in the stylesheet,
  * as `Sidebar`'s `hideBelow`, so the first paint is already right on both halves.
  *
- * A pane is a block box on the web (see {@link PANE}), so the web half comes back as `block`
- * rather than `flex`; on device every view is a flex column already. Literal classes per rule 3.
+ * A pane is a flex column, so it comes back as `flex`. Literal classes per rule 3.
  */
 const SIDEBAR_HIDE_BELOW = {
-  sm: Platform.select({ web: "hidden sm:block", default: "hidden sm:flex" }),
-  md: Platform.select({ web: "hidden md:block", default: "hidden md:flex" }),
-  lg: Platform.select({ web: "hidden lg:block", default: "hidden lg:flex" }),
-  xl: Platform.select({ web: "hidden xl:block", default: "hidden xl:flex" }),
+  sm: "hidden sm:flex",
+  md: "hidden md:flex",
+  lg: "hidden lg:flex",
+  xl: "hidden xl:flex",
 } as const;
 
 /**
@@ -336,14 +330,11 @@ const HEADER_HIDE_FROM = {
   xl: "xl:hidden",
 } as const;
 
-/** The column the content pane becomes once a bar sits over it. On the web the pane is a block. */
-const COLUMN = cn("min-h-0 min-w-0", Platform.select({ web: "h-full", default: "flex-1" }));
+/** The column the content pane becomes once a bar sits over it. */
+const COLUMN = "min-h-0 min-w-0 flex-1";
 
-/** Under the bar: the caller's node, in the block box a pane would have given it (see PANE). */
-const BELOW_HEADER = cn(
-  "min-h-0 min-w-0 flex-1",
-  Platform.select({ web: "block", default: undefined }),
-);
+/** Under the bar: the caller's node, in the box a pane would have given it (see PANE). */
+const BELOW_HEADER = "min-h-0 min-w-0 flex-1";
 
 /** The bar's navigation is a landmark, and a landmark with no name is one of several `nav`s. */
 type SidebarLayoutNav =
@@ -490,7 +481,7 @@ export function SidebarLayout({
           role="banner"
           testID="sidebar-layout-header"
           className={cn(
-            "min-h-14 shrink-0 flex-row items-center gap-2 border-border border-b bg-background px-4 py-2",
+            "min-h-14 shrink-0 flex-row items-center gap-2 border-foreground/10 border-b bg-background px-4 py-2",
             HEADER_HIDE_FROM[sidebarHideBelow],
             headerClassName,
           )}
@@ -519,7 +510,7 @@ export function SidebarLayout({
             // else in the bar is `shrink-0` or a view, which does not shrink either.
             <View testID="sidebar-layout-status" className="min-w-0 flex-1 overflow-hidden">
               {typeof status === "string" || typeof status === "number" ? (
-                <Text className="truncate text-right text-muted-foreground text-sm">{status}</Text>
+                <Text className="truncate text-right text-foreground/60 text-sm">{status}</Text>
               ) : (
                 status
               )}

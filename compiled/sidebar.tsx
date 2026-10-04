@@ -41,16 +41,6 @@ import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./head
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 /**
- * A chassis slot laid out as a column with gaps between what it holds.
- *
- * The chassis keeps its slots the block boxes a web caller expects (`SLOT` there), which is right
- * for a page header and wrong here: a sidebar's header is a brand and a button stacked, and its
- * footer a column of rows, so both want the gap a flex column gives. On device every view is
- * already one.
- */
-const STACK = "flex flex-col";
-
-/**
  * Hidden under the breakpoint, shown from it up. `flex` is what the root is on both platforms: a
  * compiled view is a flex column by its reset, and every view on device is one already.
  *
@@ -150,7 +140,7 @@ export function Sidebar({
       aria-label={label}
       className={cn(
         "cube-rn-view",
-        "h-full w-64 min-h-0 shrink-0 border-sidebar-border bg-sidebar",
+        "h-full w-64 min-h-0 shrink-0 border-foreground/10 bg-secondary",
         side === "start" ? "border-r" : "border-l",
         hideBelow ? HIDE_BELOW[hideBelow] : undefined,
         className,
@@ -164,9 +154,9 @@ export function Sidebar({
         // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
         // height, and a percentage height would overflow it by the border's width.
         className="min-h-0 flex-1"
-        headerClassName={cn(STACK, "gap-2 p-3", headerClassName)}
-        contentClassName={cn(STACK, "gap-4 p-2", contentClassName)}
-        footerClassName={cn(STACK, "gap-0.5 border-sidebar-border border-t p-2", footerClassName)}
+        headerClassName={cn("gap-2 p-3", headerClassName)}
+        contentClassName={cn("gap-4 p-2", contentClassName)}
+        footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
       />
     </aside>
   );
@@ -269,7 +259,7 @@ export function SidebarSection({
                 id={titleId}
                 role="heading"
                 aria-level={level}
-                className="cube-rn-text truncate font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+                className="cube-rn-text truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide"
               >
                 {title}
               </span>
@@ -410,12 +400,12 @@ export type SidebarNavItemProps = SidebarNavItemBaseProps &
 function rowClassName(active: boolean, className: string | undefined) {
   return cn(
     "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+    "focus-visible:outline-none",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     active
-      ? "bg-selection text-selection-foreground"
-      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+      ? "bg-active text-active-foreground focus-visible:bg-active/90"
+      : "text-foreground hover:bg-hover focus-visible:bg-hover",
     className,
   );
 }
@@ -432,8 +422,8 @@ type SidebarNavItemBodyProps = {
 function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
-  const text = active ? "text-selection-foreground" : "text-sidebar-foreground";
-  const muted = active ? "text-selection-foreground" : "text-muted-foreground";
+  const text = active ? "text-active-foreground" : "text-foreground";
+  const muted = active ? "text-active-foreground" : "text-foreground/60";
 
   return (
     <>
@@ -632,7 +622,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
   ({ href, label, icon, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active ? "text-selection-foreground" : "text-muted-foreground";
+    const text = active ? "text-active-foreground" : "text-foreground/60";
 
     return (
       <TooltipProvider>
@@ -652,11 +642,11 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
               className={cn(
                 "cube-rn-view cube-rn-pressable",
                 "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "focus-visible:outline-none",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
-                  ? "bg-selection text-selection-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-active text-active-foreground focus-visible:bg-active/90"
+                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
                 className,
               )}
               {...(props as React.ComponentPropsWithoutRef<"a">)}
@@ -674,7 +664,7 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
                   variant="secondary"
                   className="-right-1.5 -top-1.5 absolute border-background px-1 py-0"
                 >
-                  <span className="cube-rn-text font-medium text-[10px] text-secondary-foreground leading-3 tabular-nums">
+                  <span className="cube-rn-text font-medium text-[10px] text-foreground leading-3 tabular-nums">
                     {count}
                   </span>
                 </Badge>

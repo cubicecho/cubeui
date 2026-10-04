@@ -18,6 +18,20 @@ four things differ, and none of them changes a call site:
 - A string or number passed to a slot is wrapped in a `Text` for you, so a bare `"Save"` does not
   crash a `View`. A node you build yourself still needs its own `Text`.
 
+**A slot is a flex column, on the web and on a device.** The body slots of `CardLayout`,
+`HeaderContentFooter` (and so `PageLayout`), `SplitLayout`, `SidebarLayout` and `TopBarLayout`
+lay their children out the same way on both halves, so one class list is right for both:
+
+- **`gap-*` on a slot spaces its children**: `contentClassName="gap-4"`, with no `flex flex-col`
+  beside it.
+- **A child with `flex-1` fills its slot.** Give it `min-h-0 min-w-0` so it can also shrink. No
+  `Platform.select` is needed for it.
+- **A child is as wide as the slot.** A button handed straight to a slot stretches; wrap it in a
+  row, or give it `self-start`, to keep it at its own width.
+- **Text and a link beside it go in one paragraph.** Two inline nodes handed to a slot as
+  siblings stack, as they do on a device; a `<p>` (a `Text` on a device) around them keeps them
+  on a line.
+
 ## Pages
 
 `PageLayout` is a page: a title block pinned above a body that scrolls under it. It is
@@ -28,7 +42,7 @@ route should reach for first.
 <PageLayout
   title="Workspaces"
   description="Each one exposes the servers you choose."
-  action={<Button size="sm"><Plus /> New workspace</Button>}
+  action={<Button size="sm" icon={<Plus />} content="New workspace" />}
   headerContent={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
   width="page"
   content={<WorkspaceList />}
@@ -49,6 +63,11 @@ directly — not a fourth name.
 
 `headerContent` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
+
+`scroll={false}` is for a page that fills the height and scrolls its own parts: a chat's message
+list over a pinned composer, a framed app, tab panels that each keep their place. The body is
+then the height left under the header, and `content` divides it (`h-full`, or `flex-1` on
+device). It is still a `PageLayout` — do not drop to `HeaderContentFooter` for this.
 
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
 body's own loading state is the caller's, or `CardLayout`'s.
@@ -77,6 +96,13 @@ dialog body.
   the viewport need to give it one, or nothing scrolls and the header does not stay.
 - `HeaderContentFooter` is the same three zones with the whole thing scrolling with the page.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
+- `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
+  pixels, the same on both halves. A list that follows its newest row is at the end when
+  `offset + viewportHeight >= contentHeight - 1`; keep that in state, scroll to the end when a row
+  arrives and it is true, and show "Jump to latest" when it is not. It is on `PageLayout` too, and
+  is never called while `scroll` is off. Moving the body is still `contentRef`, which is a
+  different thing on each half: `scrollToEnd()` on a device, `scrollTo({ top: scrollHeight })` on
+  the web.
 
 ## Page headers
 
@@ -89,8 +115,8 @@ It is not a page.
   description="Each one exposes the servers you choose."
   action={
     <>
-      <Button size="sm" variant="outline"><Download /> Export</Button>
-      <Button size="sm"><Plus /> New workspace</Button>
+      <Button size="sm" variant="outline" icon={<Download />} content="Export" />
+      <Button size="sm" icon={<Plus />} content="New workspace" />
     </>
   }
   content={<SearchInput value={query} onChange={setQuery} />}
@@ -244,7 +270,7 @@ for the app's navigation rail, which has a bar to stand in for it.
         <SidebarSection
           as="nav"
           title="Projects"
-          action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
+          action={<Button variant="outline" size="xs" aria-label="New project" icon={<Plus />} />}
           status={
             <QueryState
               compact
@@ -283,8 +309,8 @@ for the app's navigation rail, which has a bar to stand in for it.
 Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
 that replaces the rail on a phone — see below):
 
-- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-sidebar` at a
-  fixed `w-64` with a `border-sidebar-border` rule on the edge facing the page (`side="end"` moves
+- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-secondary` at a
+  fixed `w-64` with a `border-foreground/10` rule on the edge facing the page (`side="end"` moves
   it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
@@ -431,7 +457,7 @@ while the root's own display class happens to merge first.
       {v.label}
     </Link>
   ))}
-  action={<Button variant="ghost" size="sm" onPress={signOut}>Sign out</Button>}
+  action={<Button variant="outline" size="sm" onPress={signOut} content="Sign out" />}
   content={<Outlet />}
 />
 ```
@@ -484,13 +510,13 @@ second wrapper around a sidebar.
 <CardLayout
   title="Categories"
   description="Deleting a category keeps its activities — they go back to uncategorized."
-  action={<Button size="sm">Add</Button>}
+  action={<Button size="sm" content="Add" />}
   loading={isPending}
   content={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
   empty={<EmptyState compact title="No categories yet." />}
-  footerActions={<Button onClick={save}>Save</Button>}
+  footerActions={<Button onClick={save} content="Save" />}
 />
 ```
 
@@ -499,7 +525,7 @@ empty data, so write the `map` plainly and let the shell handle the nothing case
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
 
 What goes in `empty` inside a card is one muted line, `<EmptyState compact … />` — see
-[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-muted-foreground">`.
+[Empty states](#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
 `loading` replaces it with a skeleton and outranks `empty`, so a card that is still fetching does
 not first announce that it is empty. Pass the query's pending flag straight in; do not write
@@ -512,10 +538,13 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
+The title is `text-base` on both halves, never larger than the page's own title.
+`titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
+
 The header `action` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under
-the title. One control or a fragment of them — `action={<><ViewToggle /><Button>Save</Button></>}`
+the title. One control or a fragment of them — `action={<><ViewToggle /><Button content="Save" /></>}`
 is laid out as a row. So a long title with two controls is still a `CardLayout`: do not switch to
 `Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
 `CardAction`, which is absolute and reserves no room.
@@ -543,9 +572,7 @@ around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under 
     </form>
   }
   footerActions={
-    <Button type="submit" form="token" disabled={!token.trim()}>
-      Unlock
-    </Button>
+    <Button type="submit" form="token" disabled={!token.trim()} content="Unlock" />
   }
 />
 ```
@@ -565,15 +592,15 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 
 ```tsx
 <DialogLayout
-  trigger={<Button>New workspace</Button>}
+  trigger={<Button content="New workspace" />}
   title="New workspace"
   description="A workspace exposes the servers you choose at its own URL."
   size="lg"
   content={<WorkspaceFields value={draft} onChange={setDraft} />}
   footerActions={(close) => (
     <>
-      <Button variant="ghost" onClick={close}>Cancel</Button>
-      <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
+      <Button variant="outline" onClick={close} content="Cancel" />
+      <Button onClick={save} loading={saving} loadingLabel="Saving…" content="Save" />
     </>
   )}
 />
@@ -605,8 +632,8 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   ```tsx
   footerActions={(close) => (
     <>
-      <Button variant="ghost" onClick={close}>Cancel</Button>
-      <Button onClick={save}>Save</Button>
+      <Button variant="outline" onClick={close} content="Cancel" />
+      <Button onClick={save} content="Save" />
     </>
   )}
   ```
@@ -616,6 +643,36 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
 - A form in a dialog is this component with a `<form>` as `content` — see [forms.md](forms.md).
+
+### A page with unsaved edits
+
+A dialog asks through `hasUnsavedChanges`. A page has three ways out and no shell that owns them
+— a router navigation, its own Close button, closing the tab — so it has a guard instead, from
+`@cubeui/unsaved-changes-guard`. Do not wire the router's blocker to a dialog by hand, with a
+second piece of state for the Close button:
+
+```tsx
+const blocker = useBlocker({ shouldBlockFn: () => dirty, withResolver: true });
+const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
+
+<Button variant="outline" onPress={() => guard.leave(onClose)} content="Close" />
+<UnsavedChangesDialog guard={guard} />
+```
+
+- **It imports no router.** `blocker` is whatever the app's router returned: TanStack Router's
+  `useBlocker({ withResolver: true })` and React Router's `useBlocker(dirty)` both fit as they
+  come. *Discard* calls its `proceed`, *Keep editing* its `reset`. An app with no router leaves
+  it out.
+- `guard.leave(go)` is for the page's own Close and Cancel: it runs `go` at once when nothing
+  would be lost and after *Discard* when something would. On a device it is also what the
+  navigator's "before remove" event calls —
+  `usePreventRemove(dirty, ({ data }) => guard.leave(() => navigation.dispatch(data.action)))`.
+- Closing the tab is covered on the web by the guard's own `beforeunload` listener, held only
+  while there are changes, so the router's `enableBeforeUnload` is not needed. The browser words
+  that question itself.
+- `hasUnsavedChanges` is a boolean or a function, as on `DialogLayout`.
+- The wording is `DialogLayout`'s by default. `discardTitle`, `discardDescription`,
+  `discardLabel` and `stayLabel` on `UnsavedChangesDialog` change it.
 
 ## Sections
 
@@ -656,12 +713,12 @@ A heading over a group of fields or rows, inside a page or a card.
 
 A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
 over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
-counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `useState` beside it.
+counterpart, and instead of a chevron `<button>` or a `Button` with a `useState` beside it.
 
 ```tsx
 <Disclosure
   title="Raw output"
-  action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
+  action={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
   content={<CodeBlock content={json} />}
 />
 
@@ -804,10 +861,12 @@ One figure on a card — a label, the number, a line under it. A row of them is 
 dashboard or a status page; pressable, they are the filter over the list below.
 
 ```tsx
+import { formatCount, formatDuration } from "@/lib/format";
+
 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <StatTile label="Turns" value={formatCount(engine.turns)} />
-  <StatTile label="Entities" value={formatCount(engine.entities)} hint={`${edges} edges`} />
-  <StatTile label="Uptime" value={formatUptime(uptime)} hint={`v${version}`} icon={<Clock />} />
+  <StatTile label="Entities" value={formatCount(engine.entities)} hint={formatCount(edges, "edge")} />
+  <StatTile label="Uptime" value={formatDuration(uptime)} hint={`v${version}`} icon={<Clock />} />
   <StatTile label="Embeddings" value={count} loading={isPending} />
 </div>
 
@@ -819,7 +878,7 @@ dashboard or a status page; pressable, they are the filter over the list below.
     value={counts[heap]}
     selected={shown === heap}
     onPress={() => setShown(shown === heap ? null : heap)}
-    valueClassName={heap === "attention" && counts[heap] > 0 ? "text-destructive" : undefined}
+    valueClassName={heap === "attention" && counts[heap] > 0 ? "text-negative" : undefined}
   />
 ))}
 ```
@@ -835,7 +894,7 @@ dashboard or a status page; pressable, they are the filter over the list below.
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.
-- `valueClassName` is for the figure's colour — a count worth noticing in `text-destructive`.
+- `valueClassName` is for the figure's colour — a count worth noticing in `text-negative`.
   There is no `tone` or `size` prop.
 - It lays out one tile, not the row: the grid is the caller's, since the column count is the
   page's decision. A label-over-number pair with no card around it is a `DescriptionList` with
@@ -854,7 +913,7 @@ Two shells for the shape every list route is: a ladder of states, then rows.
     onOpenChange={(next) => setOpen(next ? role.id : null)}
     badges={<Badge>{role.contract}</Badge>}
     title={role.name}
-    meta={<span className="text-muted-foreground text-xs">{role.lanes} lanes</span>}
+    meta={<span className="text-foreground/60 text-xs">{role.lanes} lanes</span>}
     description={role.prompt}
     action={<ActionButton label="Delete" … />}
     content={<RolePrompt role={role} />}
@@ -908,14 +967,14 @@ and which one is a question of **where the list is**, not how much there is to s
   icon={Inbox}
   title="No agents yet"
   description="An agent runs the lanes you give it."
-  action={<Button onPress={create}>New agent</Button>}
+  action={<Button onPress={create} content="New agent" />}
 />
 
 // The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
 <EmptyState
   compact
   title="No labels yet."
-  action={<Button variant="link" size="xs" onPress={create}>Add one</Button>}
+  action={<Button variant="link" size="xs" onPress={create} content="Add one" />}
 />
 ```
 
@@ -932,7 +991,7 @@ and which one is a question of **where the list is**, not how much there is to s
   whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
   Use it for `CardLayout`'s `empty`, a compact `QueryState`'s `empty`, and the empty body of a
   popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
-- Do not hand-write either: not `<Text className="text-muted-foreground text-sm">No labels
+- Do not hand-write either: not `<Text className="text-foreground/60 text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
   paddings and alignments; the shell is the one place it is decided.
 - **shadcn's compound form is `@cubeui/empty`, on both halves.** `Empty`, `EmptyHeader`,
@@ -974,7 +1033,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
     description={p.email}
     meta={relativeTime(p.lastContactedAt)}
     onPress={() => router.push(`/persons/${p.id}`)}
-    action={<Button size="sm" variant="ghost" onPress={() => remove(p.id)}>Delete</Button>}
+    action={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
   />
 ))}
 ```
@@ -987,14 +1046,18 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  ghost `Button`s (or `ActionButton`s); the row adds the gap.
+  outline `Button`s (or `ActionButton`s); the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
   `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
+- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, stays
+  that under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
+  there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
+  grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
-  `className="rounded-lg border border-border bg-card"`.
+  `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
   (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's

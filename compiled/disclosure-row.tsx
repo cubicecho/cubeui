@@ -91,13 +91,13 @@ export function DisclosureRow({
         className={cn(
           "cube-rn-view cube-rn-pressable",
           "min-w-0 flex-1 flex-row items-start gap-2 rounded",
-          "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "text-left focus-visible:bg-hover focus-visible:outline-none",
         )}
       >
         <ChevronRight
           aria-hidden
           className={cn(
-            "mt-0.5 size-4 shrink-0 text-muted-foreground",
+            "mt-0.5 size-4 shrink-0 text-foreground/60",
             "transition-transform",
             open && "rotate-90",
           )}
@@ -129,7 +129,7 @@ export function DisclosureRow({
         <ItemFooter
           id={contentId}
           className={cn(
-            "min-w-0 flex-col items-stretch gap-2 border-border border-t pt-3",
+            "min-w-0 flex-col items-stretch gap-2 border-foreground/10 border-t pt-3",
             contentClassName,
           )}
         >

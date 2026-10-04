@@ -12,7 +12,7 @@ import { SideBySide } from "./side-by-side";
  * The keys an inline edit answers, on both halves: Enter commits through `onSubmitEditing`, Escape
  * puts it back through `onEscape`, and `onKeyPress` hears every key as `nativeEvent.key` first.
  */
-const meta = { title: "Stage 0/Input" } satisfies Meta;
+const meta = { title: "RN Parity/Input" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -71,6 +71,31 @@ export const Keys: Story = {
   },
 };
 
+/**
+ * `autoCapitalize` and `autoCorrect` (#244), on both halves: what a phone's keyboard is told about
+ * a field holding an identifier. The DOM spells correction as a word and has the spelling
+ * underline beside it, so both follow the one prop.
+ */
+export const TypedAsWritten: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native aria-label="Native model id" autoCapitalize="none" autoCorrect={false} />}
+      compiled={
+        <Compiled aria-label="Compiled model id" autoCapitalize="none" autoCorrect={false} />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native model id", "Compiled model id"]) {
+      const input = canvas.getByRole("textbox", { name });
+      await expect(input).toHaveAttribute("autocapitalize", "none");
+      await expect(input).toHaveAttribute("autocorrect", "off");
+      await expect(input).toHaveAttribute("spellcheck", "false");
+    }
+  },
+};
+
 const onClear = fn();
 
 /**
@@ -94,13 +119,12 @@ export const Slots: Story = {
             leading={<NativeSearch />}
             trailing={
               <NativeButton
-                variant="ghost"
+                variant="outline"
                 size="icon-xs"
                 aria-label="Native clear"
                 onPress={onClear}
-              >
-                <NativeX />
-              </NativeButton>
+                icon={<NativeX />}
+              />
             }
             wrapperClassName="w-64"
           />
@@ -120,13 +144,12 @@ export const Slots: Story = {
             leading={<CompiledSearch />}
             trailing={
               <CompiledButton
-                variant="ghost"
+                variant="outline"
                 size="icon-xs"
                 aria-label="Compiled clear"
                 onClick={onClear}
-              >
-                <CompiledX />
-              </CompiledButton>
+                icon={<CompiledX />}
+              />
             }
             wrapperClassName="w-64"
           />

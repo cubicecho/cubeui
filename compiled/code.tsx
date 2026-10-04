@@ -37,7 +37,7 @@ export function Code({
     <span
       className={cn(
         "cube-rn-text",
-        "rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground",
+        "rounded bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
         className,
       )}
     >
@@ -143,7 +143,7 @@ export function CodeBlock({ content, action, wrap = false, maxHeight, className 
       data-slot="code-block"
       className={cn(
         "cube-rn-view",
-        "flex-row items-start rounded-md border border-border bg-muted/50",
+        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
         className,
       )}
     >

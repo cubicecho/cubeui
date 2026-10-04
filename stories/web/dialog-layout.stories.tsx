@@ -53,15 +53,11 @@ function Harness({
           <div>
             <p>Body</p>
             {/* A render the story can force, to prove the thunk is not consulted by one. */}
-            <Button onClick={() => setRenders((n) => n + 1)}>Re-render</Button>
+            <Button onClick={() => setRenders((n) => n + 1)} content="Re-render" />
             <p data-testid="renders">{renders}</p>
           </div>
         }
-        footerActions={(close) => (
-          <Button variant="ghost" onClick={close}>
-            Cancel
-          </Button>
-        )}
+        footerActions={(close) => <Button variant="outline" onClick={close} content="Cancel" />}
         hasUnsavedChanges={asFunction ? answer : unsaved}
       />
       <p data-testid="open">{open ? "open" : "closed"}</p>
@@ -211,9 +207,7 @@ export const NarrowFooterActionsWrap: Story = {
       footerActions={
         <>
           {actionLabels.map((label) => (
-            <Button key={label} variant="outline" size="sm">
-              {label}
-            </Button>
+            <Button key={label} variant="outline" size="sm" content={label} />
           ))}
         </>
       }

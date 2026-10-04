@@ -28,10 +28,10 @@ const UNAVAILABLE = "Picking a file is only available on the web app.";
 
 export function FilePicker({ label }: FilePickerProps) {
   return (
-    <View className="w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-muted-foreground/25 px-6 py-12">
-      <Upload className="h-8 w-8 text-muted-foreground" />
+    <View className="w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-foreground/15 px-6 py-12">
+      <Upload className="h-8 w-8 text-foreground/60" />
       <Text className="text-center text-sm font-medium text-foreground">{label}</Text>
-      <Text className="text-center text-xs text-muted-foreground">{UNAVAILABLE}</Text>
+      <Text className="text-center text-xs text-foreground/60">{UNAVAILABLE}</Text>
     </View>
   );
 }
@@ -52,9 +52,8 @@ export function FilePickerButton({
       disabled
       aria-label={label}
       accessibilityHint={UNAVAILABLE}
-    >
-      {icon}
-      {iconOnly ? null : label}
-    </Button>
+      icon={icon}
+      content={iconOnly ? null : label}
+    />
   );
 }

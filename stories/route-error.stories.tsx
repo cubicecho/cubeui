@@ -11,7 +11,7 @@ import { SideBySide } from "./side-by-side";
  * bug report and the second way out are all props. Both halves are asserted, because a consumer on
  * either registry should be able to delete its wrapper.
  */
-const meta = { title: "Stage 0/RouteError" } satisfies Meta;
+const meta = { title: "RN Parity/RouteError" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -27,11 +27,7 @@ export const Details: Story = {
           reset={() => {}}
           describe={describe}
           details
-          actions={
-            <Button variant="ghost" size="sm" onPress={() => {}}>
-              Reload
-            </Button>
-          }
+          actions={<Button variant="outline" size="sm" onPress={() => {}} content="Reload" />}
         />
       }
       compiled={
@@ -41,9 +37,7 @@ export const Details: Story = {
           describe={describe}
           details
           actions={
-            <CompiledButton variant="ghost" size="sm" onClick={() => {}}>
-              Reload
-            </CompiledButton>
+            <CompiledButton variant="outline" size="sm" onClick={() => {}} content="Reload" />
           }
         />
       }

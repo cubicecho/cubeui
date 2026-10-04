@@ -56,7 +56,7 @@ function reset() {
 }
 
 const meta = {
-  title: "Stage 0/ThemePicker",
+  title: "RN Parity/ThemePicker",
   // Every story starts from nothing stored and no class, and leaves the page as it found it — the
   // class is on `<html>`, which outlives the story, and so does `localStorage`.
   beforeEach: () => {
@@ -370,7 +370,10 @@ async function assertControlled(canvasElement: HTMLElement) {
 function CompactHarness({ Picker, name }: { Picker: Picker; name: string }) {
   return (
     <div className="flex flex-col gap-3">
-      <div data-testid={`${name} sidebar`} className="w-56 rounded-md border border-border p-2">
+      <div
+        data-testid={`${name} sidebar`}
+        className="w-56 rounded-md border border-foreground/10 p-2"
+      >
         <Picker variant="compact" aria-label={`${name} sidebar`} />
       </div>
       <div data-testid={`${name} header`} className="w-24">

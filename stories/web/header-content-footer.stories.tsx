@@ -15,12 +15,12 @@ type Story = StoryObj<typeof meta>;
 const Header = () => (
   <div className="border-b px-4 py-3">
     <h1 className="font-semibold text-lg">Workspaces</h1>
-    <p className="text-muted-foreground text-sm">Each one exposes the servers you choose.</p>
+    <p className="text-foreground/60 text-sm">Each one exposes the servers you choose.</p>
   </div>
 );
 
 const Footer = () => (
-  <div className="border-t px-4 py-3 text-muted-foreground text-sm">Page 1 of 12</div>
+  <div className="border-t px-4 py-3 text-foreground/60 text-sm">Page 1 of 12</div>
 );
 
 const Rows = ({ count = 40 }: { count?: number }) => (

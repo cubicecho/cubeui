@@ -212,7 +212,7 @@ const form = useAppForm({
   />
   <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
 
-  <form.AppForm><form.SubmitButton>Create Todo</form.SubmitButton></form.AppForm>
+  <form.AppForm><form.SubmitButton content="Create Todo" /></form.AppForm>
 </form>
 ```
 
@@ -271,9 +271,10 @@ items. 23 of the web items are web-only, and every native item has a web half.
 
 ## Stage 1 — tokens
 
-`tokens/palette.mjs` is the single source of truth: 27 shadcn token names in light and dark, stored as
-OKLCH components — the 18 cubeui has always carried, plus `destructive-foreground` and shadcn's eight
-`sidebar-*` tokens. `npm run tokens:build` emits three encodings of it into `dist/`:
+`tokens/palette.mjs` is the single source of truth: the tokens in light and dark, stored as
+OKLCH components, each named for what the colour means (the list is in `AGENTS.md`). shadcn's 26
+names are emitted beside them as aliases, so a vendored shadcn component keeps working.
+`npm run tokens:build` emits three encodings of it into `dist/`:
 
 | Output | Encoding | For |
 |---|---|---|
@@ -358,7 +359,9 @@ and `color` / `font: inherit`, and `:where(html)` takes react-native-web's font 
 either — the browser drew them in Arial and monospace — so
 `:where(input, select, textarea)` takes `color` / `font: inherit` and nothing else, since their
 border and fill are the components' own classes. `color: inherit` reaches the element, not its
-`::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. All of them are
+`::placeholder`, so `placeholder:text-muted-foreground` still colours the hint. Headings and
+paragraphs lose their margins (#250): radix's dialog title and description are a raw `<h2>` and
+`<p>`, and the browser's margins opened a 35px hole in every dialog header. All of them are
 unlayered and specificity zero. That is only safe because this file imports the utilities
 unlayered as well: an unlayered rule beats every layered one, so beside an `@layer utilities` it
 would override `border` and `bg-*`. In one unlayered cascade a utility is a class and wins on
@@ -396,7 +399,7 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color` |
+| lib | `utils`, `color`, `readable-text-color`, `format` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
@@ -932,7 +935,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
 | `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
-| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
+| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` — **but not its children or `asChild`**: the inside is `icon`, `content` and `trailing`, and a link is `link` (#243), so `<Button>Save</Button>` ports as `<Button content="Save" />` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
 | `tooltip` | radix's props on every part — `open`/`onOpenChange` on `Tooltip`, `sideOffset`/`align` on the content, `className` on the trigger |
@@ -1029,10 +1032,11 @@ copy of it is wrong the first time an item is added — silently, since nothing 
 `npm run page:check` fails if the committed page has drifted, the same guard `dist/` and `compiled/`
 are held to, and it runs in CI beside `git diff --exit-code -- public/r`.
 
-One file, no build step of its own, no framework and no CDN font. The palette is cubesite's
-`brand/tokens.css` values inlined rather than imported — this is served from a different host and
-should not fetch a stylesheet to render — and the mark and `favicon.svg` are cubesite's, both
-`currentColor`-driven and so correct in either theme from one file.
+One file, no build step of its own, no framework and no CDN font. The palette is this registry's
+own default one, read from `tokens/palette.mjs` by the script and inlined under the names the
+registry ships (`--background`, `--foreground`, `--secondary`, `--info`), so the page cannot
+drift from the palette and fetches no stylesheet to render. The mark and `favicon.svg` are
+cubesite's, both `currentColor`-driven and so correct in either theme from one file.
 
 ### The Storybook, deployed beside the registry
 
@@ -1116,7 +1120,7 @@ npx shadcn add @cubeui/button-stories   # lands components/ui/button.stories.tsx
 
 Rule 10 in `check-registry-build.mjs` holds the import rules against the built JSON, which is what
 a consumer actually receives. The stories in `stories/web/published/` are button, badge, card,
-segmented, toggle-chip, section-heading, sidebar and theme-picker; the Stage 0 stories stay unpublished, because they
+segmented, toggle-chip, section-heading, sidebar and theme-picker; the RN Parity stories stay unpublished, because they
 compare against the native half and a consumer has no native half to compare.
 
 **`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's
@@ -1136,7 +1140,7 @@ web half in one and the React Native one in the other.
 
 Leaving `compiled/` in both is how `compiled/multi-select-field.tsx` came to be typechecked against a
 React Native `Badge` — silently, for the whole of stage 3. `npx tsc --explainFiles` is what found it:
-`exclude` does not stop a file being pulled in by an import. The Stage 0 stories need the same split
+`exclude` does not stop a file being pulled in by an import. The RN Parity stories need the same split
 at runtime, so `.storybook/main.ts` adds a second `vite-tsconfig-paths` naming `tsconfig.web.json` —
 the framework's own only ever loads a file called `tsconfig.json`.
 
@@ -1274,6 +1278,21 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
    the pre-native cubeui's while the two were held to parity. They ship as palette colours instead,
    exactly as `status-chip` already shipped them. The promotion stays available and reaches no call
    site when it happens — it is an edit to `tokens/palette.mjs` and one class map.
+
+   **It has happened.** `success`, `warning` and `info` are tokens, with the same values the
+   palette classes had, and `registry:check` rule 9 no longer lets `black`, `white` or a shade of
+   Tailwind's palette through (a dialog's scrim is `overlay`): a component names what a colour
+   means, and `tokens/palette.mjs` says which shade it is.
+
+   **And then the whole vocabulary followed.** The tokens are named for meaning (`neutral`,
+   `positive`, `warning`, `negative`, `info`, `hover`, `active`, `secondary`, `overlay`), a muted
+   colour is an opacity on the class (`text-foreground/60`, `border-foreground/10`) and no longer a
+   token, and shadcn's names (`primary`, `destructive`, `accent`, `border`, `card`, …) are aliases a
+   cubeui component may not name. `success` was renamed `positive` before it shipped.
+
+   **The components took the word last.** `Badge`'s variant and a toast's tone were still
+   `success` over a `positive` fill, beside a `Button` whose variant is `positive`. Both are
+   `positive` now, so one word names the meaning in the token, the class and the prop.
 
    **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
    does not overlap `color-dot`: that one takes a literal colour for a category whose hue is

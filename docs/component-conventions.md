@@ -61,7 +61,8 @@ everything that has the part, and each layer below adds only what its shape actu
 
 `loading` keeps its meaning while changing its target, and the target is always *the part that
 came from the request*: on `CardLayout` the body, on `PageHeader` and `PageLayout` the title, on
-`FormField` the control. It outranks whatever it competes with — `empty` on a card, `error` on a
+`FormField` the control. On `Button` the request is the press's own, and what is substituted is
+a spinner for the icon. It outranks whatever it competes with — `empty` on a card, `error` on a
 field — because data that has not arrived is not data that came back empty or wrong.
 
 **Page, split and dialog shells add:**
@@ -105,8 +106,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
 | `leading` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `icon` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
-| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. On `Input` it is the same place in a field — the far end, inside it — and holds one icon-sized control, a clear button. |
-| `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. |
+| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. On `Input` it is the same place in a field — the far end, inside it — and holds one icon-sized control, a clear button. | On `Button` it is the far end of the button, after its `content`: a trigger's chevron. On `TabsTrigger` it is `trailingSlot`: a prop that takes a node is named with the `Slot` suffix from here on, and the older names keep theirs until they are renamed together.
+| `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. | On `Button` it is the same element, which the button is drawn *as* on the web and inside on a device — what shadcn's `asChild` was for.
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
 | `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
@@ -396,7 +397,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    That happened for `onClick`/`selected`, on a narrower shell rather than on this one: the
    status pages of kanban_server and task_server both hand-wrote a pressable count tile with
-   `aria-pressed` and `border-primary bg-accent`, and `StatTile` takes `onPress` and `selected`
+   `aria-pressed` and `border-neutral bg-hover`, and `StatTile` takes `onPress` and `selected`
    for them. Its press is `Card`'s own, so the focus ring, the role and the keyboard target are
    the primitive's rather than the shell's. `CardLayout` still takes neither.
 4. **Where installed files land, and how items import each other.** *Settled — and verified by

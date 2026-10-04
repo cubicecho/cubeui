@@ -10,7 +10,7 @@ import { SideBySide } from "./side-by-side";
  * and reads its role, and checks that the compiled half still answers a shadcn call site's
  * `data-[orientation=vertical]:h-4`.
  */
-const meta = { title: "Stage 0/Separator" } satisfies Meta;
+const meta = { title: "RN Parity/Separator" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

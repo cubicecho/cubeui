@@ -11,7 +11,7 @@ import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
  * link, and the row for the page on screen `aria-current="page"`.
  */
 const meta = {
-  title: "cubeui/Sidebar",
+  title: "Layout/Sidebar",
   component: Sidebar,
   decorators: [
     (Story) => (

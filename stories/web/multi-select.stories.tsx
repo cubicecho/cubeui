@@ -51,7 +51,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Control/MultiSelect",
+  title: "Controls/MultiSelect",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;

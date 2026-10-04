@@ -29,7 +29,7 @@ export const InputBesideButton: Story = {
   render: () => (
     <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <Input placeholder="Email" />
-      <Button>Sign in</Button>
+      <Button content="Sign in" />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -47,7 +47,7 @@ export const InputBesideButton: Story = {
  * The radix halves render raw `<button>`s — here `tabs.web.tsx` and `dialog.web.tsx`, which is what
  * Vite resolves these imports to — and with nothing resetting them the user-agent sheet drew each
  * one with a `2px outset` border and a grey fill, and gave it a colour and font of its own, so an
- * inactive tab ignored its list's `text-muted-foreground` (#97), and the browser's padding too
+ * inactive tab ignored its list's `text-foreground/60` (#97), and the browser's padding too
  * (#175). The reset is specificity zero, so the last button is the other half of the claim: a
  * `border`, a `px-*` and a `bg-*` utility still win.
  */
@@ -70,7 +70,7 @@ export const RawButtonsTakeNoBrowserLook: Story = {
       </Tabs>
       <button
         type="button"
-        className="border-2 border-border bg-primary px-2 text-primary-foreground"
+        className="border-2 border-foreground/10 bg-neutral px-2 text-neutral-foreground"
       >
         Styled
       </button>
@@ -107,8 +107,41 @@ export const RawButtonsTakeNoBrowserLook: Story = {
     const styled = getComputedStyle(canvas.getByRole("button", { name: "Styled", hidden: true }));
     await expect(styled.borderTopWidth).toBe("2px");
     await expect(styled.paddingLeft).toBe("8px");
-    await expect(styled.borderTopColor).toBe(resolved("border", canvasElement));
-    await expect(styled.backgroundColor).toBe(resolved("primary", canvasElement));
+    await expect(styled.borderTopColor).toBe(resolved("foreground", canvasElement, 10));
+    await expect(styled.backgroundColor).toBe(resolved("neutral", canvasElement));
+  },
+};
+
+/**
+ * radix's `Dialog.Title` and `Dialog.Description` are a raw `<h2>` and `<p>`, and the user-agent
+ * margins put 35px between a dialog's title and its description, where the header's gap asks for
+ * 6px (#250). The reset is specificity zero, so a margin utility on a paragraph still wins.
+ */
+export const HeadingsTakeNoBrowserMargin: Story = {
+  render: () => (
+    <div className="bg-background p-6">
+      <p className="my-4 text-foreground">Spaced</p>
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Rename</DialogTitle>
+          <DialogDescription>Give the board a new name.</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(document.body);
+    const title = page.getByRole("heading", { name: "Rename" });
+    const description = page.getByText("Give the board a new name.");
+
+    for (const element of [title, description]) {
+      const style = getComputedStyle(element);
+      await expect(style.marginTop).toBe("0px");
+      await expect(style.marginBottom).toBe("0px");
+    }
+
+    const spaced = getComputedStyle(within(canvasElement).getByText("Spaced"));
+    await expect(spaced.marginTop).toBe("16px");
   },
 };
 
@@ -158,7 +191,7 @@ export const SwitchThumbSitsInItsTrack: Story = {
  * not inherit the page font: the user-agent sheet drew the input in Arial and the textarea in
  * monospace, beside a `<label>` in the page font (#103). The reset hands them `color` and `font`
  * from their parent at specificity zero, so the components' own `text-foreground` and
- * `placeholder:text-muted-foreground` still colour them, and a `font-*` or `text-*` class still
+ * `placeholder:text-foreground/60` still colour them, and a `font-*` or `text-*` class still
  * wins.
  */
 export const FormFieldsTakeThePageFont: Story = {
@@ -169,7 +202,7 @@ export const FormFieldsTakeThePageFont: Story = {
     >
       <Input placeholder="Title" />
       <Textarea placeholder="Notes" />
-      <div className="text-destructive" style={{ display: "flex", gap: 8 }}>
+      <div className="text-negative" style={{ display: "flex", gap: 8 }}>
         <input aria-label="Raw input" />
         <textarea aria-label="Raw textarea" />
         {/* The reset leaves the fill alone, and the browser's grey one fails contrast. */}
@@ -177,7 +210,7 @@ export const FormFieldsTakeThePageFont: Story = {
           <option>One</option>
         </select>
       </div>
-      <input aria-label="Styled input" className="font-mono text-lg text-primary" />
+      <input aria-label="Styled input" className="font-mono text-lg text-neutral" />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -194,7 +227,7 @@ export const FormFieldsTakeThePageFont: Story = {
       await expect(style.fontFamily).toBe(page);
       await expect(style.color).toBe(resolved("foreground", canvasElement));
       await expect(getComputedStyle(field, "::placeholder").color).toBe(
-        resolved("muted-foreground", canvasElement),
+        resolved("foreground", canvasElement, 60),
       );
     }
 
@@ -212,7 +245,7 @@ export const FormFieldsTakeThePageFont: Story = {
     await expect(styled.fontFamily).not.toBe(page);
     await expect(styled.fontFamily).toContain("monospace");
     await expect(styled.fontSize).toBe("18px");
-    await expect(styled.color).toBe(resolved("primary", canvasElement));
+    await expect(styled.color).toBe(resolved("neutral", canvasElement));
   },
 };
 
@@ -222,7 +255,7 @@ export const FormFieldsTakeThePageFont: Story = {
  * turn the page dark.
  */
 export const ManualDark: Story = {
-  render: () => <Button variant="outline">Outline</Button>,
+  render: () => <Button variant="outline" content="Outline" />,
   play: async () => {
     // Read off the variable rather than a component's colour: every colour utility here is
     // `transition-colors`, so a computed colour read straight after the class flips is the start
@@ -242,11 +275,11 @@ export const ManualDark: Story = {
 };
 
 /**
- * `text-destructive-foreground` was on this button, and on `toast`'s error tone, before the
+ * `text-negative-foreground` was on this button, and on `toast`'s error tone, before the
  * palette had the token — so the class matched nothing and the label took whatever it inherited.
  */
 export const DestructiveLabel: Story = {
-  render: () => <Button variant="destructive">Delete</Button>,
+  render: () => <Button variant="destructive" content="Delete" />,
   play: async ({ canvasElement }) => {
     const label = within(canvasElement).getByText("Delete");
     // `--destructive-foreground` in the light palette, as the literal the token emits.
@@ -258,9 +291,13 @@ export const DestructiveLabel: Story = {
  * A token as the browser resolves it, in the `rgb()` spelling `getComputedStyle` reports a colour
  * in — so an assertion compares like with like whichever notation the stylesheet emitted.
  */
-function resolved(token: string, inside: Element) {
+function resolved(token: string, inside: Element, opacity?: number) {
   const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
+  // The opacity form is the one Tailwind writes for `text-foreground/60`.
+  probe.style.color =
+    opacity === undefined
+      ? `var(--${token})`
+      : `color-mix(in oklab, var(--${token}) ${opacity}%, transparent)`;
   inside.appendChild(probe);
   try {
     return getComputedStyle(probe).color;
@@ -285,17 +322,17 @@ async function inDark(check: () => Promise<void>) {
  * react-native-web's base `View` class is `border: 0 solid black`, and a class beats the
  * `* { border-color: var(--border) }` a web stylesheet relies on. So a bare `border` drew black on
  * Expo web — `card`, the card surface and divider of `section`, and `route-error`'s details box
- * (#78). Each now names `border-border`, which is what `registry:check` rule 14 holds.
+ * (#78). Each now names `border-foreground/10`, which is what `registry:check` rule 14 holds.
  */
 export const BordersNameTheirColour: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card testID="card">
         <CardContent>
-          <Button variant="ghost">Inside a card</Button>
+          <Button variant="outline" content="Inside a card" />
         </CardContent>
       </Card>
-      <Section title="Profile" surface="card" divider content={<Button>Save</Button>} />
+      <Section title="Profile" surface="card" divider content={<Button content="Save" />} />
       <RouteError
         error={new Error("It broke")}
         reset={() => {}}
@@ -306,7 +343,7 @@ export const BordersNameTheirColour: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const border = resolved("border", canvasElement);
+    const border = resolved("foreground", canvasElement, 10);
     await expect(border).not.toBe("rgb(0, 0, 0)");
 
     const colour = (testId: string, side: "Top" | "Bottom" = "Top") =>
@@ -329,7 +366,7 @@ export const TitlesTakeTheTheme: Story = {
   render: () => (
     <div className="bg-background" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <PageHeader title="Settings" />
-      <PageHeader title="Danger zone" level={2} titleClassName="text-destructive" />
+      <PageHeader title="Danger zone" level={2} titleClassName="text-negative" />
       <CardLayout title="Members" content={null} empty="Nobody yet" footer="Updated today" />
     </div>
   ),
@@ -342,9 +379,9 @@ export const TitlesTakeTheTheme: Story = {
       // The dark palette's foreground is near-white; the bug was black.
       await expect(foreground).not.toBe("rgb(0, 0, 0)");
       await expect(getComputedStyle(title).color).toBe(foreground);
-      await expect(getComputedStyle(overridden).color).toBe(resolved("destructive", canvasElement));
+      await expect(getComputedStyle(overridden).color).toBe(resolved("negative", canvasElement));
 
-      const cardInk = resolved("card-foreground", canvasElement);
+      const cardInk = resolved("foreground", canvasElement);
       await expect(getComputedStyle(canvas.getByText("Updated today")).color).toBe(cardInk);
       await expect(getComputedStyle(canvas.getByText("Nobody yet")).color).toBe(cardInk);
     });

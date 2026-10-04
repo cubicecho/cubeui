@@ -18,7 +18,7 @@ import { SideBySide } from "./side-by-side";
  * other side of the same change: a caller that never asked for `clearable` gets the field it had,
  * with no Clear and no way to receive a `null`.
  */
-const meta = { title: "Stage 0/DateTimeInput" } satisfies Meta;
+const meta = { title: "RN Parity/DateTimeInput" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

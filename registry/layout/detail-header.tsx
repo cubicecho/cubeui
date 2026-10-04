@@ -15,10 +15,13 @@ import { ArrowLeft, Pencil } from "@/components/ui/icons";
 /** The outline "Edit" action a detail header usually carries. */
 export function EditButton({ onPress, label = "Edit" }: { onPress: () => void; label?: string }) {
   return (
-    <Button variant="outline" size="sm" onPress={onPress}>
-      <Pencil className="mr-1.5 h-3.5 w-3.5" />
-      {label}
-    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      onPress={onPress}
+      icon={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
+      content={label}
+    />
   );
 }
 
@@ -50,9 +53,13 @@ export function DetailHeader({
 }: DetailHeaderProps) {
   return (
     <View className="flex-row items-center gap-3">
-      <Button variant="ghost" size="icon" onPress={onBack} aria-label={backLabel}>
-        <ArrowLeft className="h-4 w-4" />
-      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onPress={onBack}
+        aria-label={backLabel}
+        icon={<ArrowLeft className="h-4 w-4" />}
+      />
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
           {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}
@@ -63,7 +70,7 @@ export function DetailHeader({
           </Text>
           {badge}
         </View>
-        {subtitle ? <Text className="mt-0.5 text-sm text-muted-foreground">{subtitle}</Text> : null}
+        {subtitle ? <Text className="mt-0.5 text-sm text-foreground/60">{subtitle}</Text> : null}
       </View>
       {actions}
     </View>

@@ -8,6 +8,10 @@
  * `ScrollView`. The two are written out as a `Platform.OS` branch in {@link Body}, which the
  * compiler folds — the `ScrollView` never reaches the compiled file.
  *
+ * Every slot is a flex column on both platforms, because on device there is no other box: a
+ * caller's `gap-4` on a slot, and a child's `flex-1`, mean the same thing in a browser as on a
+ * phone. A slot that was a block box on the web let both fail there without a word.
+ *
  * Built to be composed: every slot is a node and every part carries a `testID` (`data-slot` on the
  * web), so a shell built on it — `PageLayout`, `DialogLayout`, an app's sidebar — styles a part by
  * its class prop rather than by reaching into the tree.
@@ -52,6 +56,22 @@ const COLUMNS = {
 /** The column names `width` takes. Exported for shells that pass one through. */
 export type HeaderContentFooterWidth = keyof typeof COLUMNS;
 
+/**
+ * Where the scrolling body is, in pixels: how far down it has moved, how tall what it scrolls is,
+ * and how tall the window onto it is. The body is at its end when `offset + viewportHeight`
+ * reaches `contentHeight` — compare with a pixel or two to spare, since all three are fractional.
+ */
+export type ScrollPosition = {
+  offset: number;
+  contentHeight: number;
+  viewportHeight: number;
+};
+
+/** The part of a DOM scroll event {@link Body} reads. */
+type WebScrollEvent = {
+  currentTarget: { scrollTop: number; scrollHeight: number; clientHeight: number };
+};
+
 export type HeaderContentFooterProps = {
   /** The body. The only slot that grows. */
   content: ReactNode;
@@ -80,6 +100,12 @@ export type HeaderContentFooterProps = {
    * `<div>` on the web and, while `scroll` is on, the `ScrollView` on device.
    */
   contentRef?: Ref<ElementRef<typeof ScrollView>> | undefined;
+  /**
+   * Called as the body scrolls, with where it now is — the same three numbers on the web and on
+   * device, so a list that follows its newest row can tell whether the reader is still at the
+   * end. Only a body that scrolls reports: with `scroll` off it is never called.
+   */
+  onScroll?: ((position: ScrollPosition) => void) | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
   /**
@@ -95,18 +121,9 @@ type BodyProps = {
   scroll: boolean;
   column: string | undefined;
   contentRef: HeaderContentFooterProps["contentRef"];
+  onScroll: HeaderContentFooterProps["onScroll"];
   className: string | undefined;
 };
-
-/**
- * How a slot lays out what it was handed.
- *
- * A compiled view is a flex column (`cube-rn-reset.css`), which is what React Native does and what
- * a web caller who passed a sentence and a link does not expect: each would become its own row.
- * The slots are wrappers around a caller's nodes, not layout of their own, so on the web they stay
- * the block boxes they always were. On device there is no other kind of box.
- */
-const SLOT = Platform.select({ web: "block", default: undefined });
 
 /**
  * The floor every body needs, whichever element it is. See {@link HeaderContentFooter}.
@@ -128,7 +145,7 @@ const BODY = cn(
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`
  * and keeps the first arm, and the `ScrollView` below it is dropped as unreachable.
  */
-function Body({ content, scroll, column, contentRef, className }: BodyProps) {
+function Body({ content, scroll, column, contentRef, onScroll, className }: BodyProps) {
   if (Platform.OS === "web") {
     return (
       <View
@@ -140,7 +157,19 @@ function Body({ content, scroll, column, contentRef, className }: BodyProps) {
         // `scrollable-region-focusable`. A tab stop is the fix the rule asks for, and it costs
         // nothing when the body already holds focusable children — the caret goes to them next.
         tabIndex={scroll ? 0 : undefined}
-        className={cn(SLOT, BODY, scroll && "overflow-y-auto", column, className)}
+        // A view's own props have no scroll event — on device a view does not scroll — so the
+        // listener goes on as a spread, untyped. The element under it is a `<div>` either way.
+        {...(scroll && onScroll
+          ? {
+              onScroll: ({ currentTarget }: WebScrollEvent) =>
+                onScroll({
+                  offset: currentTarget.scrollTop,
+                  contentHeight: currentTarget.scrollHeight,
+                  viewportHeight: currentTarget.clientHeight,
+                }),
+            }
+          : {})}
+        className={cn(BODY, scroll && "overflow-y-auto", column, className)}
       >
         {content}
       </View>
@@ -152,6 +181,17 @@ function Body({ content, scroll, column, contentRef, className }: BodyProps) {
       <ScrollView
         testID="header-content-footer-content"
         ref={contentRef}
+        onScroll={
+          onScroll &&
+          (({ nativeEvent }) =>
+            onScroll({
+              offset: nativeEvent.contentOffset.y,
+              contentHeight: nativeEvent.contentSize.height,
+              viewportHeight: nativeEvent.layoutMeasurement.height,
+            }))
+        }
+        // One report a frame. Left at its default, iOS reports once per gesture.
+        scrollEventThrottle={16}
         className={BODY}
         contentContainerClassName={cn(column, className)}
       >
@@ -188,6 +228,7 @@ export function HeaderContentFooter({
   scroll = false,
   width = "full",
   contentRef,
+  onScroll,
   className,
   headerClassName,
   contentClassName,
@@ -207,7 +248,7 @@ export function HeaderContentFooter({
       {header ? (
         <View
           testID="header-content-footer-header"
-          className={cn(SLOT, "min-w-0 shrink-0", column, headerClassName)}
+          className={cn("min-w-0 shrink-0", column, headerClassName)}
         >
           {header}
         </View>
@@ -218,13 +259,14 @@ export function HeaderContentFooter({
         scroll={scroll}
         column={bodyColumn}
         contentRef={contentRef}
+        onScroll={onScroll}
         className={contentClassName}
       />
 
       {footer ? (
         <View
           testID="header-content-footer-footer"
-          className={cn(SLOT, "min-w-0 shrink-0", bodyColumn, footerClassName)}
+          className={cn("min-w-0 shrink-0", bodyColumn, footerClassName)}
         >
           {footer}
         </View>

@@ -42,7 +42,7 @@ export function DetailPage<T>({
       {entity ? (
         children(entity)
       ) : (
-        <span className="cube-rn-text text-muted-foreground">
+        <span className="cube-rn-text text-foreground/60">
           {loading ? "Loading…" : notFoundLabel}
         </span>
       )}

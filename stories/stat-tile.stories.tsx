@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * filter tile is one with `aria-pressed` following the caller's state, and the label, the figure
  * and the hint stack in that order at the same size on both halves.
  */
-const meta = { title: "Stage 0/Stat Tile" } satisfies Meta;
+const meta = { title: "RN Parity/Stat Tile" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -66,7 +66,7 @@ function Filters({ Tile }: { Tile: Tile }) {
             value={heap.count}
             selected={shown === heap.key}
             press={() => setShown(shown === heap.key ? null : heap.key)}
-            valueClassName={heap.key === "attention" ? "text-destructive" : undefined}
+            valueClassName={heap.key === "attention" ? "text-negative" : undefined}
           />
         ))}
       </div>
@@ -76,7 +76,7 @@ function Filters({ Tile }: { Tile: Tile }) {
         hint="Open the archive"
         press={() => setOpened(opened + 1)}
       />
-      <p className="text-muted-foreground text-xs">
+      <p className="text-foreground/60 text-xs">
         Showing {shown ?? "everything"}, opened {opened}
       </p>
     </div>

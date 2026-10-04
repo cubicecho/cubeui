@@ -48,7 +48,7 @@ import {
  * beside each other under the breakpoint that draws them.
  */
 const meta = {
-  title: "Stage 0/SidebarLayout bar",
+  title: "RN Parity/SidebarLayout bar",
   parameters: { layout: "fullscreen" },
   globals: { viewport: { value: "mobile2", isRotated: false } },
 } satisfies Meta;
@@ -85,12 +85,12 @@ const STATUS = "3 of 5 servers running";
 function Phone({ width, name, children }: { width: number; name: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <p className="px-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+      <p className="px-2 font-medium text-foreground/60 text-xs uppercase tracking-wide">
         {name} · {width}px
       </p>
       <div
         data-phone={name}
-        className="flex h-40 flex-col border border-border"
+        className="flex h-40 flex-col border border-foreground/10"
         style={{ width, boxSizing: "content-box" }}
       >
         {children}
@@ -126,12 +126,18 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <NativeButton variant="ghost" size="icon-sm" aria-label="Native settings">
-                <NativeSettings />
-              </NativeButton>
-              <NativeButton variant="ghost" size="icon-sm" aria-label="Native theme">
-                <NativeMoon />
-              </NativeButton>
+              <NativeButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Native settings"
+                icon={<NativeSettings />}
+              />
+              <NativeButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Native theme"
+                icon={<NativeMoon />}
+              />
             </>
           }
           content={<Text className="p-4 text-foreground">Native page</Text>}
@@ -161,12 +167,18 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <CompiledButton variant="ghost" size="icon-sm" aria-label="Compiled settings">
-                <CompiledSettings />
-              </CompiledButton>
-              <CompiledButton variant="ghost" size="icon-sm" aria-label="Compiled theme">
-                <CompiledMoon />
-              </CompiledButton>
+              <CompiledButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Compiled settings"
+                icon={<CompiledSettings />}
+              />
+              <CompiledButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Compiled theme"
+                icon={<CompiledMoon />}
+              />
             </>
           }
           content={<p className="p-4 text-foreground">Compiled page</p>}

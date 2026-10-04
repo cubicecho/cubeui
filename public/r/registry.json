@@ -61,6 +61,18 @@
       ]
     },
     {
+      "name": "format",
+      "type": "registry:lib",
+      "title": "Format",
+      "description": "How a count, a size in bytes, a duration and a date are written for a reader: formatCount, formatBytes, formatDuration, formatDate and formatAgo, on Intl with no dependency.",
+      "files": [
+        {
+          "path": "registry/lib/format.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -88,7 +100,12 @@
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
       ],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/spinner",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/button.tsx",
@@ -386,7 +403,7 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour.",
+      "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour, and a dot or a count at its far end as `trailingSlot`. A list with more tabs than fit scrolls sideways and keeps the selected tab in view.",
       "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
@@ -477,8 +494,16 @@
       "name": "option-select",
       "type": "registry:component",
       "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device.",
-      "registryDependencies": ["@cubeui/select", "@cubeui/utils", "@cubeui/tokens"],
+      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/command",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/select",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/option-select.tsx",
@@ -756,6 +781,28 @@
       ]
     },
     {
+      "name": "download-button",
+      "type": "registry:ui",
+      "title": "Download button",
+      "description": "An icon button that saves `source` as a file named `filename`, disabled with a spinner while a fetched `source` is pending, and `downloadBlob()`, the function it calls. The browser's own download on the web; on device the share sheet or a folder the person picks, chosen by `destination` or, by default, from a menu on the button.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/menu",
+        "@cubeui/spinner"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/download-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/download-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
@@ -836,6 +883,19 @@
         {
           "path": "compiled/alert-dialog.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "unsaved-changes-guard",
+      "type": "registry:component",
+      "title": "Unsaved changes guard",
+      "description": "useUnsavedChangesGuard() and UnsavedChangesDialog: one question for the three ways out of a page with unsaved edits. It takes the app's router blocker as it comes (TanStack Router's or React Router's, with no router imported), guards the page's own Close button through leave(), and holds a beforeunload listener on the web while there are changes.",
+      "registryDependencies": ["@cubeui/confirm-dialog"],
+      "files": [
+        {
+          "path": "compiled/unsaved-changes-guard.tsx",
+          "type": "registry:component"
         }
       ]
     },
@@ -1192,7 +1252,11 @@
       "type": "registry:component",
       "title": "Page Layout",
       "description": "A whole page: a PageHeader pinned above a body that scrolls under it, in a named column.",
-      "registryDependencies": ["@cubeui/header-content-footer", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/header-content-footer",
+        "@cubeui/page-header",
+        "@cubeui/utils"
+      ],
       "files": [
         {
           "path": "compiled/page-layout.tsx",

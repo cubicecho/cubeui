@@ -44,7 +44,7 @@ export type ProgressProps = ViewProps & {
    * screen reader says the percentage, which is right when the number means nothing else.
    */
   valueLabel?: string | undefined;
-  /** The filled part: `bg-destructive` for a context window nearly full. */
+  /** The filled part: `bg-negative` for a context window nearly full. */
   indicatorClassName?: string | undefined;
 };
 
@@ -73,12 +73,12 @@ export function Progress({
       {...(valueLabel ? { "aria-valuetext": valueLabel } : {})}
       {...props}
       {...(label ? { "aria-label": label } : {})}
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-primary/20", className)}
+      className={cn("h-2 w-full overflow-hidden rounded-full bg-foreground/10", className)}
     >
       <View
         testID="progress-indicator"
         className={cn(
-          "h-full bg-primary",
+          "h-full bg-neutral",
           Platform.select({ web: "transition-[width]", default: undefined }),
           indicatorClassName,
         )}

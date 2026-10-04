@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * size. The rank is semantics only, as on `EmptyState` and `Section`.
  */
 const meta = {
-  title: "Stage 0/CardLayout",
+  title: "RN Parity/CardLayout",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -35,7 +35,7 @@ function render(props: { level?: 1 | 2 | 3 }) {
 }
 
 /**
- * The two titles, native first — after checking both are drawn at `CardTitle`'s own `text-2xl`,
+ * The two titles, native first — after checking both are drawn at `CardTitle`'s own `text-base`,
  * whatever the rank. The rank says where the card sits, not how big its title looks.
  */
 async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
@@ -46,7 +46,7 @@ async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
   }
   for (const title of [native, compiled]) {
     const style = getComputedStyle(title);
-    await expect(style.fontSize).toBe("24px");
+    await expect(style.fontSize).toBe("16px");
     await expect(style.fontWeight).toBe("600");
   }
   return { native, compiled };
@@ -86,6 +86,24 @@ export const Level: Story = {
   },
 };
 
+/** `titleClassName` reaches the title on both halves, and wins over the card's own size (#249). */
+export const TitleClassName: Story = {
+  args: { ...args, titleClassName: "text-lg" },
+  render: () => (
+    <SideBySide
+      native={<Native {...args} titleClassName="text-lg" />}
+      compiled={<Compiled {...args} titleClassName="text-lg" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const headings = within(canvasElement).getAllByRole("heading", { level: 3, name: "Sign in" });
+    await expect(headings).toHaveLength(2);
+    for (const title of headings) {
+      await expect(getComputedStyle(title).fontSize).toBe("18px");
+    }
+  },
+};
+
 const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
 
 /** Three buttons in `footerActions`, in a card as narrow as a phone. */
@@ -106,9 +124,7 @@ function NarrowCard({ half }: { half: "native" | "compiled" }) {
         footerActions={
           <>
             {actionLabels.map((label) => (
-              <Button key={label} variant="outline" size="sm">
-                {label}
-              </Button>
+              <Button key={label} variant="outline" size="sm" content={label} />
             ))}
           </>
         }
@@ -165,8 +181,8 @@ function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: nu
         title={longTitle}
         action={
           <>
-            <Button variant="outline">Preview</Button>
-            <Button>Save</Button>
+            <Button variant="outline" content="Preview" />
+            <Button content="Save" />
           </>
         }
       />
@@ -232,11 +248,7 @@ export const LongTitleWithAction: Story = {
 function SmallActionCards({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
-  const add = (
-    <Button variant="outline" size="sm">
-      Add
-    </Button>
-  );
+  const add = <Button variant="outline" size="sm" content="Add" />;
   return (
     <div style={{ width: 390 }} className="flex flex-col gap-4">
       <div data-testid={`${half}-described`}>
@@ -279,7 +291,7 @@ export const SmallActionStaysInCorner: Story = {
         }).toEqual({ half, form, fromTop: 25, fromEnd: 25 });
         // Beside a title and a description the button is the shorter of the two, so being in
         // the flow costs the header nothing: the card is as tall as it was.
-        if (form === "described") await expect(Math.round(box.height)).toBe(100);
+        if (form === "described") await expect(Math.round(box.height)).toBe(92);
       }
     }
   },

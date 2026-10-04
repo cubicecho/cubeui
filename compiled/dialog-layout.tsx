@@ -123,8 +123,8 @@ export type DialogLayoutProps = {
    * ```tsx
    * footerActions={(close) => (
    *   <>
-   *     <Button variant="ghost" onClick={close}>Cancel</Button>
-   *     <Button onClick={save}>Save</Button>
+   *     <Button variant="outline" onClick={close} content="Cancel" />
+   *     <Button onClick={save} content="Save" />
    *   </>
    * )}
    * ```
@@ -284,12 +284,8 @@ export function DialogLayout({
         </DialogHeader>
         <DialogFooter>
           {/* First, so it is where focus lands: the safe answer is the one a stray Enter gives. */}
-          <Button variant="outline" onClick={() => setAskingToDiscard(false)}>
-            {keepLabel}
-          </Button>
-          <Button variant="destructive" onClick={discard}>
-            {discardLabel}
-          </Button>
+          <Button variant="outline" onClick={() => setAskingToDiscard(false)} content={keepLabel} />
+          <Button variant="destructive" onClick={discard} content={discardLabel} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

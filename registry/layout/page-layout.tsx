@@ -6,13 +6,14 @@
 import type { ReactNode } from "react";
 
 import {
+  HeaderContentFooter,
   type HeaderContentFooterProps,
-  StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
 import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
+import { cn } from "@/lib/utils";
 
 export type PageLayoutProps = {
-  /** The page. The only slot that scrolls. */
+  /** The page. The only slot that scrolls, unless `scroll` is off. */
   content: ReactNode;
   /** What the page is called. Required for the same reason it is on {@link PageHeader}. */
   title: ReactNode;
@@ -42,8 +43,16 @@ export type PageLayoutProps = {
    * detail page or a form, `full` for a pane that is already inside someone else's column.
    */
   width?: HeaderContentFooterProps["width"];
+  /**
+   * Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a
+   * chat's message list over a pinned composer, a framed app, tab panels that each keep their
+   * place. Off, the body is the height left under the header and `content` divides it.
+   */
+  scroll?: boolean | undefined;
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
   contentRef?: HeaderContentFooterProps["contentRef"];
+  /** Called as the body scrolls, with where it now is. Never called while `scroll` is off. */
+  onScroll?: HeaderContentFooterProps["onScroll"];
   className?: string | undefined;
   headerClassName?: string | undefined;
   contentClassName?: string | undefined;
@@ -53,9 +62,9 @@ export type PageLayoutProps = {
 /**
  * A whole page: its title block pinned above a body that scrolls under it.
  *
- * This is `StickyHeaderContentFooter` with a `PageHeader` in its header slot, and it exists
- * because that is the sentence two apps here wrote out for themselves rather than the component
- * they reached for. `kanban_server/web/components/app-shell.tsx:282` and
+ * This is `HeaderContentFooter`, filling its parent, with a `PageHeader` in its header slot, and
+ * it exists because that is the sentence two apps here wrote out for themselves rather than the
+ * component they reached for. `kanban_server/web/components/app-shell.tsx:282` and
  * `task_server/web/components/app-shell.tsx:46` are the same forty lines twice — the same
  * `title`, `description`, `actions`, the same `min-h-0 flex-1 overflow-y-auto`, the same
  * centred column — and having written it twice they disagree on the only prop that varies:
@@ -82,17 +91,22 @@ export function PageLayout({
   level = 1,
   footer,
   width = "page",
+  scroll = true,
   contentRef,
+  onScroll,
   className,
   headerClassName,
   contentClassName,
   footerClassName,
 }: PageLayoutProps) {
   return (
-    <StickyHeaderContentFooter
+    // `h-full` because the chassis needs a height to divide, whichever part ends up scrolling.
+    <HeaderContentFooter
       width={width}
+      scroll={scroll}
       contentRef={contentRef}
-      className={className}
+      onScroll={onScroll}
+      className={cn("h-full", className)}
       contentClassName={contentClassName}
       footerClassName={footerClassName}
       header={

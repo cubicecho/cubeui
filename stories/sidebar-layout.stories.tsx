@@ -26,7 +26,7 @@ import { SideBySide } from "./side-by-side";
  * the brand, a named `nav` and the action — and the rail is not. One breakpoint, said once, read by
  * both halves, on both platforms.
  */
-const meta = { title: "Stage 0/SidebarLayout" } satisfies Meta;
+const meta = { title: "RN Parity/SidebarLayout" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -62,7 +62,7 @@ const shell: Story = {
             sidebar={
               <NativeSidebar
                 label="Native rail"
-                header={<Text className="font-semibold text-sidebar-foreground">Router</Text>}
+                header={<Text className="font-semibold text-foreground">Router</Text>}
                 content={
                   <NativeSection
                     as="nav"
@@ -91,13 +91,12 @@ const shell: Story = {
             navLabel="Native main"
             action={
               <NativeButton
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 aria-label="Native theme"
                 onPress={onTheme}
-              >
-                <NativeMoon />
-              </NativeButton>
+                icon={<NativeMoon />}
+              />
             }
             content={<Text className="p-4 text-foreground">Native page</Text>}
           />
@@ -114,7 +113,7 @@ const shell: Story = {
             sidebar={
               <CompiledSidebar
                 label="Compiled rail"
-                header={<span className="font-semibold text-sidebar-foreground">Router</span>}
+                header={<span className="font-semibold text-foreground">Router</span>}
                 content={
                   <CompiledSection
                     as="nav"
@@ -143,13 +142,12 @@ const shell: Story = {
             navLabel="Compiled main"
             action={
               <CompiledButton
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 aria-label="Compiled theme"
                 onClick={onTheme}
-              >
-                <CompiledMoon />
-              </CompiledButton>
+                icon={<CompiledMoon />}
+              />
             }
             content={<p className="p-4 text-foreground">Compiled page</p>}
           />

@@ -5,7 +5,7 @@ import { FormField } from "@/components/form-field";
 import { MarkdownEditor, type MarkdownEditorView } from "@/components/markdown-editor";
 
 const meta = {
-  title: "Control/MarkdownEditor",
+  title: "Controls/MarkdownEditor",
   component: MarkdownEditor,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof MarkdownEditor>;
@@ -50,7 +50,7 @@ function Held({
     <MarkdownEditor
       aria-label="Skill body"
       placeholder="# My skill"
-      empty={<p className="m-0 text-muted-foreground">Nothing to preview yet.</p>}
+      empty={<p className="m-0 text-foreground/60">Nothing to preview yet.</p>}
       value={value}
       onValueChange={(next) => {
         setValue(next);
@@ -134,7 +134,7 @@ export const HeldView: Story = {
     const [view, setView] = useState<MarkdownEditorView>("edit");
     return (
       <div className="flex flex-col gap-2">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-foreground/60 text-sm">
           The screen holds: <span data-testid="held">{view}</span>
         </p>
         <MarkdownEditor

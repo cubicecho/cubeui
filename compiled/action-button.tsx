@@ -154,7 +154,6 @@ export function ActionButton({
   disabled,
   className,
   onClick: onPress,
-  children,
   "aria-describedby": ariaDescribedBy,
   ...props
 }: ActionButtonProps) {
@@ -181,9 +180,7 @@ export function ActionButton({
         onPress?.(event);
       }}
       {...props}
-    >
-      {children}
-    </Button>
+    />
   );
 
   // Outside the trigger, not inside the button: `TooltipTrigger asChild` takes exactly one

@@ -22,7 +22,7 @@ import { SideBySide } from "./side-by-side";
  * The component the spike is really about: nested `View`/`Text`, a `forwardRef`, a container that
  * changes element on a prop, and semantics the source already states in `role`/`aria-level`.
  */
-const meta = { title: "Stage 0/Card" } satisfies Meta;
+const meta = { title: "RN Parity/Card" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

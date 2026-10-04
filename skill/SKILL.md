@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -92,8 +92,10 @@ at the end.
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
+| A button, with a label, an icon, a link or a `loading` state | `Button` | [controls.md](controls.md#button) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
+| A button that saves a file — an export, a note, a report — and waits while it is fetched | `DownloadButton` | [controls.md](controls.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
 | A Markdown string drawn as a document — a note, a README, a skill, a model's answer — instead of `react-markdown` and an element map of your own (web only) | `Markdown` | [controls.md](controls.md#markdown) |
 | A Markdown source to write, with its rendering beside it and an Edit / Split / Preview toggle (web only) | `MarkdownEditor` | [controls.md](controls.md#markdown-editor) |
@@ -141,7 +143,7 @@ The same words mean the same thing in every component, and this is the point of 
   the request was going to fill, and `empty` is not consulted.
 - **`className`** — the root. Each slot has its own `<slot>ClassName` when it needs one. In a DOM
   app a bare `border` or `border-t` here draws in the app's border colour, as it does on a
-  `<div>`; in an Expo app nothing sets that default, so name the colour too (`border border-border`).
+  `<div>`; in an Expo app nothing sets that default, so name the colour too (`border border-foreground/10`).
 
 **Page, split and dialog shells add:**
 
@@ -333,6 +335,7 @@ views and there is no shell wrapping to hide.
 | A date, a date and time, or a date range, behind one trigger — see [controls.md](controls.md#date-and-date-range) | `DatePicker`, `DateRangePicker` | `@cubeui/date-picker` |
 | How much of something is done — an upload, a context window — see [controls.md](controls.md#progress) | `Progress` | `@cubeui/progress` |
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
+| A count, a file size, a duration, a date or "3 days ago" as text — see [controls.md](controls.md#numbers-sizes-and-dates-as-text) | `formatCount`, `formatBytes`, `formatDuration`, `formatDate`, `formatAgo` | `@cubeui/format` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leading`, `Input trailing` | `@cubeui/input` |
 | A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#multi-select) | `MultiSelect` | `@cubeui/multi-select` |
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
@@ -341,6 +344,7 @@ views and there is no shell wrapping to hide.
 | An icon-only button, with a tooltip on a long press and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `ActionButton` | `@cubeui/action-button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls.md](controls.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
+| A button that saves a file, and `downloadBlob()` — see [controls.md](controls.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button — see [controls.md](controls.md#code-block) | `CodeBlock` | `@cubeui/code` |
 | A callout — a warning, a note, the last error — see [controls.md](controls.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |
@@ -348,6 +352,7 @@ views and there is no shell wrapping to hide.
 | A one-pixel rule between groups — see [controls.md](controls.md#separator) | `Separator` | `@cubeui/separator` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
+| A page that asks before it is left with unsaved edits — see [layout.md](layout.md#a-page-with-unsaved-edits) | `useUnsavedChangesGuard`, `UnsavedChangesDialog` | `@cubeui/unsaved-changes-guard` |
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
@@ -386,16 +391,20 @@ take the props the web ones take, with four conversions that are the same everyw
   needs: `onEscape={() => { setDraft(""); setAdding(false); }}`.
   For any other key, `onKeyPress` is React Native's, reading `e.nativeEvent.key`; the web half
   fires it from `keydown`, so it hears Escape and the arrows too. Do not drop to a raw
-  `TextInput` for a key. (`Textarea` has none of these yet.)
-- **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
-  that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
+  `TextInput` for a key. `Textarea` takes the same three, with one difference: its
+  `onSubmitEditing` is Enter **without Shift**, since Shift+Enter is a new line, and only on the
+  web. On a device the return key adds a line and a send button is the way out. A `ref` on either
+  gives `focus()`, for putting the caret back after a send.
+- **No children and no `asChild` on `Button`.** The label is `content`, the icon is `icon`, and a
+  button that navigates takes the link as `link={<Link href="/docs" />}` — see
+  [controls.md](controls.md#button). `loading` is the state for "pressed, still working".
 
 The web halves go the other way too: `Button`, `Dialog`, `Popover`, `Tooltip`, `Tabs`, `Label`
 and `Badge` are a **superset of shadcn's own** there. Every part also takes the props of the radix
 part or DOM element it renders, and shadcn's extra parts and sizes exist — `DialogClose`,
 `DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, controlled `Tabs`,
 `TooltipContent sideOffset`, `Badge asChild`, `size="icon-sm"`. So a shadcn call site compiles
-unchanged. The new parts and sizes exist on native too; the radix and DOM passthrough props are
+unchanged — except a `Button`'s inside, which is `icon` and `content` rather than children. The new parts and sizes exist on native too; the radix and DOM passthrough props are
 web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says

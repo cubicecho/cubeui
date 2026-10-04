@@ -18,7 +18,7 @@ import { SideBySide } from "./side-by-side";
  * On device the popover is the native sheet and the command list the native one, which a story in
  * a browser cannot reach; `command.stories.tsx` holds that list to the same filter.
  */
-const meta = { title: "Control/MultiSelect (both halves)" } satisfies Meta;
+const meta = { title: "RN Parity/MultiSelect" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

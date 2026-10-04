@@ -58,7 +58,7 @@ import {
  * problem; it is here so the fix is seen not to double it.
  */
 const meta = {
-  title: "Button/asChild trigger",
+  title: "RN Parity/Button/asChild trigger",
   parameters: { layout: "centered" },
 } satisfies Meta;
 export default meta;
@@ -66,7 +66,7 @@ type Story = StoryObj;
 
 const body = () => within(document.body);
 
-type ButtonLike = ComponentType<{ children?: ReactNode; variant?: "outline" | "ghost" }>;
+type ButtonLike = ComponentType<{ content?: ReactNode; variant?: "outline" | "ghost" }>;
 
 function Popovers({
   Button,
@@ -86,12 +86,12 @@ function Popovers({
   return (
     <Popover>
       <Trigger asChild>
-        <Button variant="outline">{`${name} filters`}</Button>
+        <Button variant="outline" content={`${name} filters`} />
       </Trigger>
       <Content>
-        <Text className="text-popover-foreground">{`${name} pane`}</Text>
+        <Text className="text-foreground">{`${name} pane`}</Text>
         <Close asChild>
-          <Button variant="ghost">{`${name} done`}</Button>
+          <Button variant="outline" content={`${name} done`} />
         </Close>
       </Content>
     </Popover>
@@ -118,12 +118,12 @@ function Dialogs({
   return (
     <Dialog>
       <Trigger asChild>
-        <Button variant="outline">{`${name} rename`}</Button>
+        <Button variant="outline" content={`${name} rename`} />
       </Trigger>
       <Content aria-describedby={undefined}>
         <Title>{`${name} rename dialog`}</Title>
         <Close asChild>
-          <Button variant="outline">{`${name} cancel`}</Button>
+          <Button variant="outline" content={`${name} cancel`} />
         </Close>
       </Content>
     </Dialog>
@@ -148,7 +148,7 @@ function Menus({
   return (
     <Menu>
       <Trigger asChild>
-        <Button variant="outline">{`${name} actions`}</Button>
+        <Button variant="outline" content={`${name} actions`} />
       </Trigger>
       <Content aria-label={`${name} actions`}>
         <Item label="Rename" />

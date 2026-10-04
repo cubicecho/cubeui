@@ -35,7 +35,7 @@ const form = useAppForm({
   <SelectField form={form} name="list" label="List" options={LISTS} />
 
   <form.AppForm>
-    <form.SubmitButton>Create Todo</form.SubmitButton>
+    <form.SubmitButton content="Create Todo" />
   </form.AppForm>
 </form>
 ```
@@ -416,7 +416,7 @@ across the container's width, like `SegmentedGroup` but still radios, with one t
 keys. A segment shows its `icon`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
 radio's name and, when no `hint` is given, its web tooltip. On device, give the icon its colour
-yourself (`text-selection-foreground` when checked, `text-muted-foreground` otherwise), because a
+yourself (`text-active-foreground` when checked, `text-foreground/60` otherwise), because a
 native icon has no `currentColor` to inherit.
 
 Outside a form, the same thing is `RadioGroup` and `RadioGroupItem` from `@cubeui/radio-group`,
@@ -459,7 +459,7 @@ and the submit in `footerActions`:
   content={<form id="todo" onSubmit={…}>…</form>}
   footerActions={
     <form.AppForm>
-      <form.SubmitButton form="todo">{isEdit ? "Save changes" : "Create"}</form.SubmitButton>
+      <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
     </form.AppForm>
   }
 />
@@ -529,10 +529,9 @@ own items for the weight of the calendar and the picker, as on the web; add them
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
 
-`CheckboxField`, `SwitchField`, `DateTimeField` and `ColorField` take `label`, `description`,
-`required`, `orientation`, `asGroup` and the `*ClassName` props, plus the control's own.
-`DateTimeField` passes `mode`, `clearable` and `placeholder` through. `InputField`,
-`TextAreaField` and `SelectField` take `label` and the control's props.
+Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
+`*ClassName` props, plus the control's own. `className` is the field's, not the control's.
+`DateTimeField` passes `mode`, `clearable` and `placeholder` through.
 
 How each is named:
 

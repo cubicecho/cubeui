@@ -156,7 +156,7 @@ function RadioGroupFieldBody({
     <FieldTitle id={labelId} className={labelClassName}>
       {label}
       {required ? (
-        <Text aria-hidden className="text-destructive">
+        <Text aria-hidden className="text-negative">
           {" *"}
         </Text>
       ) : null}
@@ -178,7 +178,7 @@ function RadioGroupFieldBody({
         <View
           aria-hidden
           testID="radio-group-field-skeleton"
-          className={cn("h-16 w-full rounded-md bg-muted", loadingClassName)}
+          className={cn("h-16 w-full rounded-md bg-foreground/10", loadingClassName)}
         />
       ) : (
         <RadioGroup

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { SearchInput as Compiled } from "../compiled/search-input";
 import { SearchInput as Native } from "../registry/ui/search-input";
 import { SideBySide } from "./side-by-side";
@@ -10,7 +10,7 @@ import { SideBySide } from "./side-by-side";
  * icon inside it, and a "Clear search" button that is there only while the box holds text, empties
  * it through the same handlers typing does, and hands focus back.
  */
-const meta = { title: "Stage 0/SearchInput" } satisfies Meta;
+const meta = { title: "RN Parity/SearchInput" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -135,5 +135,59 @@ export const Default: Story = {
       );
       await expect(rule).toBeDefined();
     });
+  },
+};
+
+const onNativeSettled = fn();
+const onCompiledSettled = fn();
+/** Longer than a test's keystrokes are apart, so a word typed in one go is one wait. */
+const settleMs = 150;
+
+/**
+ * `onSettledText` (#230), on both halves: the text once typing pauses, which is what a search
+ * that asks a server sends. One call for a word typed in one go, and none to wait for when Enter
+ * is pressed or the box is emptied.
+ */
+export const SettledText: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native label="Native notes" onSettledText={onNativeSettled} debounce={settleMs} />}
+      compiled={
+        <Compiled label="Compiled notes" onSettledText={onCompiledSettled} debounce={settleMs} />
+      }
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    for (const [half, onSettled] of [
+      ["Native", onNativeSettled],
+      ["Compiled", onCompiledSettled],
+    ] as const) {
+      await step(`${half}: a typed word settles once, after the pause`, async () => {
+        onSettled.mockClear();
+        const box = canvas.getByRole("searchbox", { name: `${half} notes` });
+
+        await userEvent.type(box, "plan");
+        await expect(onSettled).not.toHaveBeenCalled();
+        await waitFor(() => expect(onSettled).toHaveBeenCalledTimes(1));
+        await expect(onSettled).toHaveBeenLastCalledWith("plan");
+      });
+
+      await step(`${half}: Enter and the ✕ do not wait`, async () => {
+        onSettled.mockClear();
+        const box = canvas.getByRole("searchbox", { name: `${half} notes` });
+
+        await userEvent.type(box, "s{Enter}");
+        await expect(onSettled).toHaveBeenLastCalledWith("plans");
+
+        const clear = box.parentElement?.querySelector("button");
+        if (!clear) throw new Error("a filled box should show its ✕");
+        await userEvent.click(clear);
+        await expect(onSettled).toHaveBeenLastCalledWith("");
+        // Enter and the ✕ each ended a wait rather than adding to one.
+        await expect(onSettled).toHaveBeenCalledTimes(2);
+      });
+    }
   },
 };

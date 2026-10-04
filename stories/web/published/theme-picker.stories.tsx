@@ -28,7 +28,7 @@ function Remountable() {
 }
 
 const meta = {
-  title: "cubeui/ThemePicker",
+  title: "Controls/ThemePicker",
   component: Remountable,
   beforeEach: () => {
     const dark = html().classList.contains("dark");

@@ -10,7 +10,7 @@ import { SideBySide } from "./side-by-side";
  * measuring.
  */
 const meta = {
-  title: "Stage 0/SectionHeading",
+  title: "RN Parity/SectionHeading",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -38,9 +38,9 @@ export const Default: Story = {
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
 
-    // `text-muted-foreground` in the light palette. Spelled as the literal the token emits so a
+    // `text-foreground/60` in the light palette. Spelled as the literal the token emits so a
     // half that silently lost its classes cannot pass by matching the other unstyled half.
-    await expect(nativeStyle.color).toBe("rgb(115, 115, 115)");
+    await expect(nativeStyle.color).toMatch(/\/ 0\.6\)$/);
     await expect(compiledStyle.color).toBe(nativeStyle.color);
     await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
     await expect(compiledStyle.fontWeight).toBe(nativeStyle.fontWeight);

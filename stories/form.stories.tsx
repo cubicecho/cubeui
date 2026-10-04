@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * the right. What is asserted is what a screen reader hears — the date in the trigger's name, a
  * name on the swatch row — and that `SubmitButton`'s `disabled` only ever tightens the guard.
  */
-const meta = { title: "Stage 0/Form" } satisfies Meta;
+const meta = { title: "RN Parity/Form" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -50,7 +50,9 @@ function TodoForm({ kit, blocked }: { kit: Kit; blocked?: boolean | undefined })
           name="title"
           validators={{ onChange: ({ value }) => (value.trim() ? undefined : "Title is required") }}
         >
-          {(field) => <field.InputField label="Title" />}
+          {(field) => (
+            <field.InputField label="Title" description="What needs to be done." required />
+          )}
         </form.AppField>
         <form.AppField name="done">{(field) => <field.CheckboxField label="Done" />}</form.AppField>
         <form.AppField name="notify">
@@ -86,7 +88,10 @@ export const Fields: Story = {
   ),
   play: async ({ canvasElement }) => {
     for (const half of halves(canvasElement)) {
-      await expect(half.getByRole("textbox", { name: "Title" })).toBeInTheDocument();
+      // The hint line and `required` reach a text field too (#238).
+      const title = half.getByRole("textbox", { name: "Title" });
+      await expect(title).toHaveAccessibleDescription("What needs to be done.");
+      await expect(title).toHaveAttribute("aria-required", "true");
       await expect(half.getByRole("checkbox", { name: "Done" })).toBeInTheDocument();
       await expect(half.getByRole("switch", { name: "Notify" })).toBeInTheDocument();
       // `asGroup`: the label and then the date, not the label alone.

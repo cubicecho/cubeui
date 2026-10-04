@@ -5,6 +5,9 @@
  * shadcn's DOM API — which is the promise that lets a shadcn app switch registries without
  * touching its call sites. Nothing renders it; `tsc` is the test.
  *
+ * `Button` is the exception, and `ButtonCompat` is where it is pinned: it takes `icon`, `content`
+ * and `link` where shadcn's takes children and `asChild`. Everything else about it still ports.
+ *
  * The `@ts-expect-error` lines pin the other half: the contract is still checked, so a widening
  * did not quietly turn a prop into `any`.
  */
@@ -81,20 +84,20 @@ export function ButtonCompat() {
         aria-label="Edit"
         data-testid="edit"
         form="settings"
-      >
-        <span />
-      </Button>
-      <Button size="xs">Tiny</Button>
+        icon={<span />}
+      />
+      <Button size="xs" content="Tiny" />
       <Button size="icon-xs" variant="ghost" aria-label="x" />
       <Button size="icon-lg" variant="secondary" aria-label="y" />
-      <Button asChild variant="link">
-        <a href="/docs">Docs</a>
-      </Button>
+      {/* shadcn's `<Button asChild><a>` is `link` here: the element with nothing in it. */}
+      <Button variant="link" link={<a href="/docs" />} content="Docs" />
+      {/* @ts-expect-error — the one place this is not shadcn's: the label is `content`, not children. */}
+      <Button>Save</Button>
       <a className={buttonVariants({ variant: "destructive", size: "sm" })} href="/delete">
         Delete
       </a>
       {/* @ts-expect-error — not a size shadcn or cubeui has. */}
-      <Button size="huge">No</Button>
+      <Button size="huge" content="No" />
     </>
   );
 }
@@ -111,19 +114,17 @@ export function DialogCompat() {
           </DialogHeader>
           <DialogFooter showCloseButton className="sm:justify-start">
             <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                Cancel
-              </Button>
+              <Button type="button" variant="secondary" content="Cancel" />
             </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog defaultOpen>
         <DialogTrigger asChild>
-          <Button variant="outline">Open</Button>
+          <Button variant="outline" content="Open" />
         </DialogTrigger>
         <DialogPortal>
-          <DialogOverlay className="bg-black/50" />
+          <DialogOverlay className="bg-overlay/60" />
         </DialogPortal>
         <DialogClose className="absolute" id="close" />
       </Dialog>
@@ -139,7 +140,7 @@ export function PopoverCompat() {
         <div />
       </PopoverAnchor>
       <PopoverTrigger asChild>
-        <Button variant="outline">Open popover</Button>
+        <Button variant="outline" content="Open popover" />
       </PopoverTrigger>
       <PopoverContent align="start" side="bottom" sideOffset={8} className="w-80">
         <PopoverHeader>
@@ -244,7 +245,7 @@ export function AlertDialogCompat() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">Show</Button>
+        <Button variant="outline" content="Show" />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -30,10 +30,13 @@ export function EditButton({
   label?: string;
 }) {
   return (
-    <Button variant="outline" size="sm" onClick={onPress}>
-      <Pencil className="mr-1.5 h-3.5 w-3.5" />
-      {label}
-    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onPress}
+      icon={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
+      content={label}
+    />
   );
 }
 
@@ -65,9 +68,13 @@ export function DetailHeader({
 }: DetailHeaderProps) {
   return (
     <div className="cube-rn-view flex-row items-center gap-3">
-      <Button variant="ghost" size="icon" onClick={onBack} aria-label={backLabel}>
-        <ArrowLeft className="h-4 w-4" />
-      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={onBack}
+        aria-label={backLabel}
+        icon={<ArrowLeft className="h-4 w-4" />}
+      />
       <div className="cube-rn-view flex-1">
         <div className="cube-rn-view flex-row items-center gap-2">
           {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}
@@ -77,7 +84,7 @@ export function DetailHeader({
           {badge}
         </div>
         {subtitle ? (
-          <span className="cube-rn-text mt-0.5 text-sm text-muted-foreground">{subtitle}</span>
+          <span className="cube-rn-text mt-0.5 text-sm text-foreground/60">{subtitle}</span>
         ) : null}
       </div>
       {actions}

@@ -73,14 +73,14 @@ const ICON_BOX = cn(
 );
 
 /** A bar standing in for the figure — `Skeleton`'s look, on both platforms, at one line of it. */
-const BAR = cn("h-8 w-20 rounded-md bg-accent", Platform.OS === "web" && "animate-pulse");
+const BAR = cn("h-8 w-20 rounded-md bg-hover", Platform.OS === "web" && "animate-pulse");
 
 /**
  * What a pressable tile adds on the web: a compiled `Pressable` is a `<button>`, which centres its
  * text and draws no focus ring of its own. None of it is a class the device can read.
  */
 const PRESSABLE = Platform.select({
-  web: "text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
   default: undefined,
 });
 
@@ -112,11 +112,11 @@ export function StatTile({
 
   // The label, hint and icon. A selected tile keeps its card fill and is marked by its border
   // alone, so this ink is the same whether or not it is chosen.
-  const ink = "text-muted-foreground";
+  const ink = "text-foreground/60";
   const classes = cn(
     "min-w-0 gap-1 p-4",
     onPress !== undefined && PRESSABLE,
-    toggle && selected && "border-selection",
+    toggle && selected && "border-active",
     className,
   );
 
@@ -142,7 +142,7 @@ export function StatTile({
       ) : typeof value === "string" || typeof value === "number" ? (
         <Text
           testID="stat-tile-value"
-          className={cn("font-semibold text-2xl text-card-foreground tabular-nums", valueClassName)}
+          className={cn("font-semibold text-2xl text-foreground tabular-nums", valueClassName)}
         >
           {value}
         </Text>

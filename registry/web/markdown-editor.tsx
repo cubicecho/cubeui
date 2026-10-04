@@ -99,7 +99,7 @@ export function MarkdownEditor({
   const preview = (
     <div
       data-slot="markdown-editor-preview"
-      className={cn("rounded-md border border-border bg-card p-4", PANE_FLOOR)}
+      className={cn("rounded-md border border-foreground/10 bg-secondary p-4", PANE_FLOOR)}
     >
       <Markdown content={value} empty={empty} />
     </div>

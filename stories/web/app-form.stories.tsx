@@ -137,11 +137,9 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
       />
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">
-          Cancel
-        </Button>
+        <Button type="button" variant="outline" content="Cancel" />
         <form.AppForm>
-          <form.SubmitButton disabled={submitDisabled}>Create Todo</form.SubmitButton>
+          <form.SubmitButton disabled={submitDisabled} content="Create Todo" />
         </form.AppForm>
       </div>
     </form>
@@ -164,7 +162,7 @@ async function choose(trigger: HTMLElement, option: string | RegExp) {
 }
 
 const meta = {
-  title: "Form/AppForm",
+  title: "Forms/AppForm",
   component: TodoForm,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof TodoForm>;

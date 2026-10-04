@@ -21,7 +21,7 @@ import { SideBySide } from "./side-by-side";
  * in the description-only row keeps its own text as its name. The a11y addon runs as an error on
  * every story, so each one is also that audit.
  */
-const meta = { title: "Stage 0/SettingRow" } satisfies Meta;
+const meta = { title: "RN Parity/SettingRow" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -68,9 +68,7 @@ function halves(width: number) {
               />
             )}
             button={(label, onPress) => (
-              <NativeButton size="sm" variant="outline" onPress={onPress}>
-                {label}
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={onPress} content={label} />
             )}
           />
         </div>
@@ -89,9 +87,7 @@ function halves(width: number) {
             )}
             button={(label, onPress) => (
               // `onClick` on this half; see the note in `card.stories.tsx`.
-              <CompiledButton size="sm" variant="outline" onClick={onPress}>
-                {label}
-              </CompiledButton>
+              <CompiledButton size="sm" variant="outline" onClick={onPress} content={label} />
             )}
           />
         </div>

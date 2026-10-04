@@ -1,42 +1,46 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, ReactElement, ReactNode } from "react";
 import { expect, within } from "storybook/test";
 import { Button as Compiled } from "../compiled/button";
 import { Button as Native } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
 /**
- * `<Button asChild>` over a link, on both halves — issue #156. The anchor has to come out looking
- * like the plain `Button` beside it: same padding, border, radius and background.
+ * A `Button` with a `link`, on both halves — issue #156, from when this was `asChild`. The anchor
+ * has to come out looking like the plain `Button` beside it: same padding, border, radius and
+ * background.
  *
  * It did not. The `Slot` was handed the icon-colour provider as its one child rather than the
  * caller's element, so the classes and the press were merged onto a context provider and dropped,
- * and the anchor rendered as bare text. shadcn's `AlertDialogAction` and `AlertDialogCancel` are
- * `Button asChild`, so every alert dialog — `ConfirmButton`'s included — lost its buttons' look.
+ * and the anchor rendered as bare text.
  */
-const meta = { title: "Stage 0/Button asChild" } satisfies Meta;
+const meta = { title: "RN Parity/Button/link" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
 type ButtonLike = ComponentType<{
-  children?: ReactNode;
-  asChild?: boolean;
+  content?: ReactNode;
+  link?: ReactElement;
   variant?: "default" | "outline" | "destructive";
 }>;
 
 function Pair({ Button, name }: { Button: ButtonLike; name: string }) {
   return (
     <div className="flex flex-row flex-wrap items-center gap-2">
-      <Button variant="outline">{`${name} plain`}</Button>
-      <Button variant="outline" asChild>
-        {/* biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route */}
-        <a href="#">{`${name} link`}</a>
-      </Button>
-      <Button variant="destructive">{`${name} plain destructive`}</Button>
-      <Button variant="destructive" asChild>
-        {/* biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route */}
-        <a href="#">{`${name} destructive link`}</a>
-      </Button>
+      <Button variant="outline" content={`${name} plain`} />
+      <Button
+        variant="outline"
+        // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
+        link={<a href="#" />}
+        content={`${name} link`}
+      />
+      <Button variant="destructive" content={`${name} plain destructive`} />
+      <Button
+        variant="destructive"
+        // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
+        link={<a href="#" />}
+        content={`${name} destructive link`}
+      />
     </div>
   );
 }

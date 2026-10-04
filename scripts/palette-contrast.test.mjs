@@ -11,43 +11,48 @@ import test from "node:test";
 import { dark, light, palettes } from "../tokens/palette.mjs";
 import { toRgb } from "./oklch.mjs";
 
-/** Text on the surface it sits on — the pairs the components draw. */
+/**
+ * Text on the surface it sits on — the pairs the components draw. A third entry is the opacity
+ * the text is drawn at: secondary text is `text-foreground/60`, not a colour of its own.
+ */
 const PAIRS = [
   ["foreground", "background"],
-  ["card-foreground", "card"],
-  ["popover-foreground", "popover"],
-  ["primary-foreground", "primary"],
-  ["secondary-foreground", "secondary"],
-  ["muted-foreground", "muted"],
-  ["muted-foreground", "background"],
-  ["muted-foreground", "card"],
-  ["accent-foreground", "accent"],
-  ["selection-foreground", "selection"],
-  ["destructive-foreground", "destructive"],
-  ["destructive", "background"],
-  ["destructive", "card"],
-  ["sidebar-foreground", "sidebar"],
-  ["sidebar-primary-foreground", "sidebar-primary"],
-  ["sidebar-accent-foreground", "sidebar-accent"],
+  ["foreground", "secondary"],
+  ["foreground", "background", 0.6],
+  ["foreground", "secondary", 0.6],
+  ["foreground", "hover", 0.6],
+  ["neutral-foreground", "neutral"],
+  ["foreground", "hover"],
+  ["active-foreground", "active"],
+  ["positive-foreground", "positive"],
+  ["warning-foreground", "warning"],
+  ["info-foreground", "info"],
+  ["negative-foreground", "negative"],
+  ["negative", "background"],
+  ["negative", "secondary"],
+  ["info", "background"],
+  ["info", "secondary"],
 ];
 
 /**
- * Pairs below 4.5:1 that are shadcn's own and kept, each at the ratio it has now, so this can
- * hold them where they are without letting them slip further. Light `muted-foreground` on `muted`
- * is the tab list's inactive label; lifting it changes shadcn's light look everywhere.
+ * Pairs below 4.5:1 that are kept, each at the ratio it has now, so this can hold them where they
+ * are without letting them slip further.
  */
-const KNOWN = { "default light muted-foreground/muted": 4.35 };
+const KNOWN = {};
 
 const channel = (c) => {
   const v = c / 255;
   return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 };
-const luminance = (t) => {
-  const [r, g, b] = toRgb(t).map(channel);
+const luminance = (rgb) => {
+  const [r, g, b] = rgb.map(channel);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
-const ratio = (a, b) => {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+/** The contrast of `text` at `alpha` over `surface`, blended in sRGB as a compositor does. */
+const ratio = (text, surface, alpha = 1) => {
+  const under = toRgb(surface);
+  const over = toRgb(text).map((c, i) => c * alpha + under[i] * (1 - alpha));
+  const [hi, lo] = [luminance(over), luminance(under)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 };
 
@@ -61,9 +66,9 @@ const sets = [
 
 for (const [set, map] of sets) {
   test(`${set}: every text pair is 4.5:1 or better`, () => {
-    const short = PAIRS.flatMap(([text, surface]) => {
-      const key = `${set} ${text}/${surface}`;
-      const r = Math.round(ratio(map[text], map[surface]) * 100) / 100;
+    const short = PAIRS.flatMap(([text, surface, alpha]) => {
+      const key = `${set} ${text}${alpha ? `@${alpha}` : ""}/${surface}`;
+      const r = Math.round(ratio(map[text], map[surface], alpha) * 100) / 100;
       const floor = KNOWN[key] ?? 4.5;
       return r < floor ? [`${text} on ${surface}: ${r.toFixed(2)}:1, needs ${floor}`] : [];
     });

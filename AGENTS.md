@@ -152,30 +152,75 @@ to make in the PR, not a way round the rule.
 
 **Tokens are `tokens/palette.mjs`**, and nowhere else. `npm run tokens:build` emits the web
 stylesheet (`oklch()`), the native one (hex, because React Native cannot parse `oklch()`) and
-`cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token
-(`bg-primary`, never `bg-blue-500`) — `registry:check` rule 9.
+`cubeui-theme.ts` into `dist/`, which is committed. A colour class names a token, never Tailwind's
+palette and never `black` or `white` — `registry:check` rule 9.
 
-**A checked, pressed or current control is `selection`, not `primary`.** Checkbox, switch, radio,
-segmented pill, active tab, current sidebar row, toggle chip, a calendar's picked day, a selected
-stat tile: `bg-selection`, `text-selection-foreground`, `border-selection`. `primary` is for the
-thing to press — a button, a badge, a progress bar. Keeping the two apart is why a chosen option
-does not look like a button, and why a palette can colour its highlight without recolouring every
-button.
+**A token is named for what the colour means, :**
 
-**Hover is grey, chosen is `selection`, rest is no fill.** Every interactive thing has these three
+| Token | What it is |
+|---|---|
+| `background`, `foreground` | The page, and the text on it |
+| `secondary` | The fill of a surface raised off the page: a card, a popover, the sidebar. Its text is `foreground` |
+| `neutral`, `neutral-foreground` | A button or a badge with nothing to say |
+| `positive`, `warning`, `negative`, `info` (each with `-foreground`) | What a thing says. `info` is the blue for a thing worth pointing out: a highlight with a name, and no icon or role of its own |
+| `hover` | The transient fill under a pointer, a menu's keyboard highlight or keyboard focus: `active`'s hue, all but grey. Its text is `foreground` |
+| `active`, `active-foreground` | Chosen, current and focused: a checked control, the current row, a focused field's border |
+| `overlay` | The scrim behind a dialog |
+
+**Muted is an opacity, not a token, and there are six steps.** A palette is only predictable if a
+component cannot invent a seventh:
+
+| Step | Is | Example |
+|---|---|---|
+| `/10` | A quiet fill, a tint, a border | `bg-foreground/10`, `bg-warning/10`, `border-foreground/10` |
+| `/15` | An input's border | `border-foreground/15` |
+| `/40` | The edge of a tint, an invalid ring, the tint of a chosen row | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
+| `/60` | Secondary text, the scrim, a border under the pointer | `text-foreground/60`, `bg-overlay/60` |
+| `/90` | A fill under the pointer | `hover:bg-neutral/90` |
+| none | Everything else | `bg-neutral`, `border-active` |
+
+A floating surface is the exception, and is why `secondary` exists: a popover has to be opaque.
+
+**A button looks like a button.** `ghost` and `link` stay as Button variants, for an app porting
+shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
+and an icon inside a field's own border is `secondary`. An action that adds something (Add, New,
+Create) is `info`, one that keeps the work (Save) is `positive`, and one that destroys is
+`destructive` or `destructive-outline`.
+
+**A link is `info`.** `text-info`, in Markdown, in `Empty` and `Item`'s description, and in the
+`link` variant of Button and Badge. `neutral` is a fill; as text it is green in Monokai.
+
+**shadcn's names are aliases, and not for us.** `primary`, `destructive`, `accent`, `muted`,
+`border`, `ring`, `card`, `popover` and the rest are still emitted, each as the token it now is
+(`ALIASES` in `tokens/palette.mjs`), so a vendored shadcn component keeps working. Rule 9 fails a
+registry file that names one.
+
+**A focused field turns its border `active`, and draws no ring.** Input, textarea and the select
+trigger are `focus:border-active`, and `aria-invalid:focus:border-active` on the web so an invalid
+field still shows where focus is.
+
+**Nothing draws a focus ring: a focused thing looks hovered.** Whatever a control does under the
+pointer it does under `focus-visible:` too: `hover:bg-hover focus-visible:bg-hover` on a row,
+`hover:bg-neutral/90 focus-visible:bg-neutral/90` on a filled button. A chosen control, which has no
+hover, takes `focus-visible:bg-active/90`.
+
+**A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
+current sidebar row, toggle chip, a calendar's picked day, a selected stat tile: `bg-active`,
+`text-active-foreground`, `border-active`. `neutral` is for the thing to press. Keeping the two
+apart is why a chosen option does not look like a button.
+
+**Hover is grey, chosen is `active`, rest is no fill.** Every interactive thing has these three
 states and no more, and none of them borrows another's colour:
 
 - *Rest* — no fill (or the framed control's `bg-background`).
-- *Hover, or a menu's keyboard highlight* — transient, and grey. A control whose text turns
-  `accent-foreground` on hover (a button, pill, tab, chip, menu row) takes `bg-accent`; a row
-  that keeps muted text on it (list item, `Item`, table row, stat tile) takes `bg-muted`, since
-  muted text on dark `accent` is under 4.5:1. The sidebar's rows take `sidebar-accent`.
-- *Chosen* — checked, pressed, current, selected: persistent, and `selection`. A control is
-  filled (`bg-selection text-selection-foreground`); a card is ringed (`border-selection`, its fill
-  unchanged so it does not read as hovered); a table row is tinted (`bg-selection/15`).
+- *Hover, or a menu's keyboard highlight* — transient, and `bg-hover`. Secondary text
+  (`text-foreground/60`) stays readable on it in every palette; `palette-contrast.test.mjs` holds
+  that.
+- *Chosen* — checked, pressed, current, selected: persistent, and `active`. A control is
+  filled (`bg-active text-active-foreground`); a card is ringed (`border-active`, its fill
+  unchanged so it does not read as hovered); a table row is tinted (`bg-active/40`).
 
-A chosen state drawn in `accent` or `muted` is the bug this rule exists for: it looks like a hover
-that stuck.
+A chosen state drawn in `hover` is the bug this rule exists for: it looks like a hover that stuck.
 
 ## Status
 
@@ -318,7 +363,8 @@ does the same thing itself now that it is native-first.
 - Tailwind variants are literal class maps (`const SIZES = { sm: "sm:max-w-sm" }`), never
   composed strings — the scanner reads source text, so a built class name is never generated.
   A class-map constant is applied by the file that owns it — `registry:check` rule 8
-- Colour classes name tokens, never Tailwind's palette — `registry:check` rule 9
+- Colour classes name a token, never Tailwind's palette or a shadcn alias —
+  `registry:check` rule 9
 
 The full authoring rules are [`docs/component-conventions.md`](docs/component-conventions.md).
 The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `footer`,
@@ -327,8 +373,10 @@ The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `foote
 **No shell takes `children`.** The body is `content`, a prop like every other slot, because in a
 layout every part is dynamic and none of them earns the privileged position. A component that
 accepts children is a component that has to answer "and what if both were passed?" — see rule 1
-of the conventions doc. Primitives are the exception, as they are in shadcn: a `Button` takes
-its label as children.
+of the conventions doc. `Button` keeps the rule too — `icon`, `content`, `trailing`, `link` — which
+is what lets `loading` swap the icon for a spinner; it is the one primitive whose web half is not a
+superset of shadcn's. The compound primitives (`Card`, `Dialog`, `Tabs`) take children, as
+shadcn's do.
 
 ## Before you commit
 

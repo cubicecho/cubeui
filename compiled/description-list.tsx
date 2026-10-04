@@ -169,7 +169,7 @@ export function PropertyRow({
         data-slot="property-row-label"
         className={cn(
           "cube-rn-text",
-          "break-words text-muted-foreground text-sm",
+          "break-words text-foreground/60 text-sm",
           LABELS[layout],
           labelClassName,
         )}
@@ -190,10 +190,7 @@ export function PropertyRow({
         <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
           {asText(value, cn("break-words text-foreground text-sm", valueClassName))}
           {hint ? (
-            <span
-              data-slot="property-row-hint"
-              className="cube-rn-text text-muted-foreground text-xs"
-            >
+            <span data-slot="property-row-hint" className="cube-rn-text text-foreground/60 text-xs">
               {hint}
             </span>
           ) : null}

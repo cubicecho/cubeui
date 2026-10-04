@@ -63,13 +63,13 @@ function TagForm({
         autoComplete="off"
         loading={loading}
       />
-      <Button type="submit">Save</Button>
+      <Button type="submit" content="Save" />
     </form>
   );
 }
 
 const meta = {
-  title: "Form/BoundFields",
+  title: "Forms/BoundFields",
   component: TagForm,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof TagForm>;

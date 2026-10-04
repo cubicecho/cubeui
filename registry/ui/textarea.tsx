@@ -10,8 +10,16 @@
  * rather than shipping as a `<div>` nobody could type into.
  */
 
-import { TextInput } from "react-native";
-import { TEXTAREA_CLASS, type TextareaProps } from "@/components/ui/textarea-base";
+import { useImperativeHandle, useRef } from "react";
+import { Platform, TextInput } from "react-native";
+import {
+  isSubmitKey,
+  TEXTAREA_CLASS,
+  type TextareaHandle,
+  type TextareaKeyPressEvent,
+  type TextareaKeyPressHandler,
+  type TextareaProps,
+} from "@/components/ui/textarea-base";
 import { cn } from "@/lib/utils";
 
 function Textarea({
@@ -19,15 +27,25 @@ function Textarea({
   defaultValue,
   onChangeText,
   onBlur,
+  onSubmitEditing,
+  onKeyPress,
+  onEscape,
   placeholder,
   rows,
   maxLength,
   disabled,
   className,
   id,
+  ref,
 }: TextareaProps) {
+  const inner = useRef<TextInput>(null);
+  useImperativeHandle<TextareaHandle, TextareaHandle>(ref, () => ({
+    focus: () => inner.current?.focus(),
+  }));
+
   return (
     <TextInput
+      ref={inner}
       multiline
       textAlignVertical="top"
       // Held at `""` unless the caller asked for uncontrolled by passing a `defaultValue`: a bound
@@ -35,6 +53,17 @@ function Textarea({
       {...(defaultValue === undefined ? { value: value ?? "" } : { value, defaultValue })}
       onChangeText={onChangeText}
       onBlur={onBlur}
+      onKeyPress={(event) => {
+        onKeyPress?.(event);
+        if (event.nativeEvent.key === "Escape") onEscape?.();
+        // Only where the key reports its Shift. A device's return key does not, and taking it
+        // would leave a message with no way to hold a second line.
+        if (Platform.OS === "web" && onSubmitEditing && isSubmitKey(event.nativeEvent)) {
+          // Held back, or the Enter that sent the message would also add a line to the next.
+          event.preventDefault();
+          onSubmitEditing();
+        }
+      }}
       placeholder={placeholder}
       {...(rows !== undefined ? { numberOfLines: rows } : {})}
       {...(maxLength !== undefined ? { maxLength } : {})}
@@ -45,5 +74,5 @@ function Textarea({
   );
 }
 
-export type { TextareaProps };
+export type { TextareaHandle, TextareaKeyPressEvent, TextareaKeyPressHandler, TextareaProps };
 export { Textarea };

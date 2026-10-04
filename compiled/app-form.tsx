@@ -255,6 +255,9 @@ type SelectFieldProps = FieldProps & {
   options: readonly SelectEntry[];
   placeholder?: string | undefined;
   triggerClassName?: string | undefined;
+  /** A search box above the list, for the long one. `OptionSelect`'s own prop, passed through. */
+  searchable?: boolean | undefined;
+  searchPlaceholder?: string | undefined;
   /**
    * Told when the menu opens, so a field whose list is fetched can ask for it then. Named here
    * as well as on the control because a form is where most fetched lists are, and a field that
@@ -275,6 +278,8 @@ function BoundSelectField({
   options,
   placeholder,
   triggerClassName,
+  searchable,
+  searchPlaceholder,
   onOpenChange,
   ...rest
 }: SelectFieldProps) {
@@ -293,6 +298,8 @@ function BoundSelectField({
           onValueChange={field.handleChange}
           onBlur={field.handleBlur}
           placeholder={placeholder}
+          searchable={searchable}
+          searchPlaceholder={searchPlaceholder}
           onOpenChange={onOpenChange}
           className={triggerClassName}
         />
@@ -359,10 +366,12 @@ function BoundSwitchField(props: SwitchFieldProps) {
   );
 }
 
-type SubmitButtonProps = Omit<ComponentProps<typeof Button>, "type" | "children"> & {
-  children?: ReactNode | undefined;
+type SubmitButtonProps = Omit<
+  ComponentProps<typeof Button>,
+  "type" | "loading" | "loadingLabel"
+> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
-  pendingLabel?: ReactNode | undefined;
+  pendingLabel?: string | undefined;
 };
 
 /**
@@ -380,7 +389,7 @@ type SubmitButtonProps = Omit<ComponentProps<typeof Button>, "type" | "children"
  * duplication this exists to remove.
  */
 export function SubmitButton({
-  children = "Save",
+  content = "Save",
   pendingLabel = "Saving…",
   disabled,
   ...props
@@ -392,9 +401,14 @@ export function SubmitButton({
   // Ahead of the spread as well as OR-ed, so that neither a caller nor a future prop can put a
   // `disabled={false}` back over the store's answer.
   return (
-    <Button type="submit" {...props} disabled={disabled || !canSubmit || isSubmitting}>
-      {isSubmitting ? pendingLabel : children}
-    </Button>
+    <Button
+      type="submit"
+      {...props}
+      disabled={disabled || !canSubmit}
+      loading={isSubmitting}
+      loadingLabel={pendingLabel}
+      content={content}
+    />
   );
 }
 

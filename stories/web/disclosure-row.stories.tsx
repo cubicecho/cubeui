@@ -38,7 +38,7 @@ const Controlled = ({
 };
 
 const detail: ReactNode = (
-  <p className="text-muted-foreground text-sm">
+  <p className="text-foreground/60 text-sm">
     Read 4 files, wrote 2, and ran the tests. 146 passed.
   </p>
 );
@@ -48,7 +48,7 @@ const args = {
   onOpenChange: fn(),
   title: "Rename the settings page",
   badges: <Badge variant="secondary">done</Badge>,
-  meta: <span className="text-muted-foreground text-xs">local llama · 2 minutes ago</span>,
+  meta: <span className="text-foreground/60 text-xs">local llama · 2 minutes ago</span>,
   content: detail,
 };
 
@@ -102,9 +102,13 @@ export const WithAnAction: Story = {
   args: {
     ...args,
     action: (
-      <Button variant="ghost" size="icon" onClick={fn()} aria-label="Delete this run">
-        <Trash2 />
-      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={fn()}
+        aria-label="Delete this run"
+        icon={<Trash2 />}
+      />
     ),
   },
   render: (props) => <Controlled {...props} />,

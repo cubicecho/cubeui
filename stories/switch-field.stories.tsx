@@ -11,7 +11,7 @@ import { SwitchField } from "../compiled/switch-field";
  * the caption a `<button>` around a `<label htmlFor>`: a click on it toggled the switch and then
  * toggled it back, and Tab from the switch landed on that button.
  */
-const meta = { title: "Stage 0/SwitchField" } satisfies Meta;
+const meta = { title: "RN Parity/SwitchField" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

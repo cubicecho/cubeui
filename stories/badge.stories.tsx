@@ -9,7 +9,7 @@ import { SideBySide } from "./side-by-side";
  * the label's colour and inside the pill's height. The published story covers the web half's
  * extras — the form it must not submit, the `onClick` it must not fire.
  */
-const meta = { title: "Stage 0/Badge" } satisfies Meta;
+const meta = { title: "RN Parity/Badge" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

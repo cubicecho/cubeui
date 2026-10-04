@@ -11,7 +11,7 @@ import { SideBySide } from "./side-by-side";
  * react-native-web renders as the same `type="password"`. Each half sits in a `<form>`, so a reveal
  * that submitted would show up as a call.
  */
-const meta = { title: "Stage 0/PasswordInput" } satisfies Meta;
+const meta = { title: "RN Parity/PasswordInput" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

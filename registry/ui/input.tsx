@@ -51,6 +51,8 @@ function Input({
   onKeyPress,
   onEscape,
   placeholder,
+  autoCapitalize,
+  autoCorrect,
   maxLength,
   disabled,
   readOnly,
@@ -83,6 +85,8 @@ function Input({
         if (event.nativeEvent.key === "Escape") onEscape?.();
       }}
       placeholder={placeholder}
+      autoCapitalize={autoCapitalize}
+      autoCorrect={autoCorrect}
       maxLength={maxLength}
       editable={!disabled && !readOnly}
       autoFocus={autoFocus}

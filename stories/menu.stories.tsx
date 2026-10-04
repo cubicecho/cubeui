@@ -37,7 +37,7 @@ import type {
  * the web half, which ignores `IconClassContext` by design, so the probe reads the context and
  * reports it.
  */
-const meta = { title: "Menu", parameters: { layout: "centered" } } satisfies Meta;
+const meta = { title: "RN Parity/Menu/Menu", parameters: { layout: "centered" } } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -214,10 +214,8 @@ export const NativeSelect: Story = {
     await expect(body().getByRole("menu")).toBeInTheDocument();
 
     // The row's ink reaches the icon through the context, and the label through its own class.
-    await expect(body().getByTestId("icon-delete").dataset.class).toContain("text-destructive");
-    await expect(body().getByTestId("icon-rename").dataset.class).toContain(
-      "text-popover-foreground",
-    );
+    await expect(body().getByTestId("icon-delete").dataset.class).toContain("text-negative");
+    await expect(body().getByTestId("icon-rename").dataset.class).toContain("text-foreground");
     const ink = (label: string) => getComputedStyle(within(menu).getByText(label)).color;
     await expect(ink("Delete")).not.toBe(ink("Rename"));
 
@@ -289,7 +287,7 @@ function AddCard({
           aria-label="New card"
           // biome-ignore lint/a11y/noAutofocus: the box is what the row opened, as in telos.
           autoFocus
-          className="rounded-md border border-border px-2 text-foreground"
+          className="rounded-md border border-foreground/10 px-2 text-foreground"
           onBlur={() => setAdding(false)}
         />
       ) : null}

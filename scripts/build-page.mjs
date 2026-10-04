@@ -14,13 +14,15 @@
  * guard `dist/` and `compiled/` are held to.
  *
  * Deliberately one file with no build step of its own: no Tailwind, no framework, no fonts off a
- * CDN. It is a page about a component registry, not a demonstration of one, and the palette is
- * cubesite's `brand/tokens.css` values inlined so a tab open on this looks like the rest of the
- * org without this repo taking a dependency on that one.
+ * CDN. It is a page about a component registry, not a demonstration of one. Its colours are this
+ * registry's own default palette, read from `tokens/palette.mjs` and inlined under the names the
+ * registry ships, so the page that fronts the palette cannot drift from it.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { dark, light, radius } from "../tokens/palette.mjs";
+import { formatOklch } from "./oklch.mjs";
 
 const root = new URL("..", import.meta.url);
 const read = (path) => JSON.parse(readFileSync(new URL(path, root), "utf8"));
@@ -48,6 +50,23 @@ const GALLERY_WEB = `${HOST}/${canvas("gallery-web--everything")}`;
  */
 const MOBILE_OUT = new URL("public/mobile/index.html", root);
 const GALLERY_MOBILE = `${HOST}/mobile/`;
+
+/** The tokens these two pages draw with: the page, its text, a raised surface and a link. */
+const PAGE_TOKENS = ["background", "foreground", "secondary", "info"];
+
+/** Those tokens as custom properties, from one mode of the default palette. */
+const tokenVars = (mode) =>
+  PAGE_TOKENS.map((name) => `--${name}: ${formatOklch(mode[name])};`).join(" ");
+
+/**
+ * Quiet text and a hairline are the text colour at an opacity, as `text-foreground/60` and
+ * `border-foreground/10` are in a component. Written once, and they follow `--foreground` into
+ * the dark block by themselves.
+ */
+const DERIVED_VARS = [
+  "--foreground-60: color-mix(in oklab, var(--foreground) 60%, transparent);",
+  "--foreground-10: color-mix(in oklab, var(--foreground) 10%, transparent);",
+].join(" ");
 
 const web = read("registry.web.json");
 const native = read("registry.json");
@@ -134,66 +153,64 @@ function page() {
 <meta name="description" content="A shadcn registry of ${counts.all} items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
-  /* cubesite's brand/tokens.css, inlined. Values, not an import: this page is served from a
-     different host than cubicecho.com and should not fetch a stylesheet to render. */
+  /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
+     should not fetch a stylesheet to render. */
   :root {
-    --bg: #fafaf9; --fg: #1a1a1a; --muted: #6b6b6b; --line: #e5e5e3;
-    --card: #ffffff; --accent: #2563eb; --accent-fg: #ffffff; --radius: 10px;
+    ${tokenVars(light)}
+    ${DERIVED_VARS}
+    --radius: ${radius};
     --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #111113; --fg: #ececec; --muted: #9a9a9a; --line: #26262a;
-      --card: #1a1a1d; --accent: #7aa6ff; --accent-fg: #0c0c0e;
-    }
+    :root { ${tokenVars(dark)} }
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--fg);
+    margin: 0; background: var(--background); color: var(--foreground);
     font-family: var(--font-sans); line-height: 1.6;
   }
   .page { max-width: 62rem; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
   header { display: flex; align-items: center; gap: 0.75rem; }
   header svg { width: 2.5rem; height: 2.5rem; flex: none; }
   h1 { font-family: var(--font-mono); font-size: 2rem; margin: 0; letter-spacing: -0.01em; }
-  .tagline { color: var(--muted); margin: 0.5rem 0 0; font-size: 1.05rem; }
+  .tagline { color: var(--foreground-60); margin: 0.5rem 0 0; font-size: 1.05rem; }
   h2 { font-size: 1.25rem; margin: 3rem 0 0.75rem; }
   p { margin: 0.75rem 0; }
-  a { color: var(--accent); }
+  a { color: var(--info); }
   code {
     font-family: var(--font-mono); font-size: 0.9em;
-    background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0.1em 0.35em;
+    background: var(--secondary); border: 1px solid var(--foreground-10); border-radius: 4px; padding: 0.1em 0.35em;
   }
   pre {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--secondary); border: 1px solid var(--foreground-10); border-radius: var(--radius);
     padding: 1rem; overflow-x: auto; font-size: 0.875rem;
   }
   pre code { background: none; border: 0; padding: 0; font-size: inherit; }
   .note {
-    border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 1rem;
-    margin: 1.25rem 0; color: var(--muted);
+    border-left: 3px solid var(--info); padding: 0.1rem 0 0.1rem 1rem;
+    margin: 1.25rem 0; color: var(--foreground-60);
   }
-  .note strong { color: var(--fg); }
+  .note strong { color: var(--foreground); }
   table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin-top: 0.5rem; }
-  th, td { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-  thead th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  th, td { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--foreground-10); vertical-align: top; }
+  thead th { color: var(--foreground-60); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
   tbody th { font-weight: 400; white-space: nowrap; }
   .tag {
     display: inline-block; font-family: var(--font-mono); font-size: 0.75rem;
-    border: 1px solid var(--line); border-radius: 999px; padding: 0.05rem 0.5rem; color: var(--muted);
+    border: 1px solid var(--foreground-10); border-radius: 999px; padding: 0.05rem 0.5rem; color: var(--foreground-60);
   }
-  .tag-both { border-color: var(--accent); color: var(--accent); }
+  .tag-both { border-color: var(--info); color: var(--info); }
   .galleries {
     list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.75rem;
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   }
-  .galleries li { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
+  .galleries li { background: var(--secondary); border: 1px solid var(--foreground-10); border-radius: var(--radius); padding: 1rem; }
   .galleries a { display: block; font-weight: 600; }
-  .galleries span { color: var(--muted); font-size: 0.9rem; }
-  .counts { color: var(--muted); font-size: 0.9rem; }
-  footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+  .galleries span { color: var(--foreground-60); font-size: 0.9rem; }
+  .counts { color: var(--foreground-60); font-size: 0.9rem; }
+  footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--foreground-10); color: var(--foreground-60); font-size: 0.9rem; }
   @media (max-width: 40rem) {
     td:last-child, th:last-child { display: none; }
   }
@@ -203,7 +220,7 @@ function page() {
 <div class="page">
 
 <header>
-  <!-- cubesite's mark: strokes only, currentColor, so it follows the text in either theme. -->
+  <!-- cubicecho's mark: strokes only, currentColor, so it follows the text in either theme. -->
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
     <path d="M40 12 L50 17 L40 22 L30 17 Z M30 17 L30 27 L40 32 L50 27 L50 17 M40 22 L40 32" />
     <ellipse cx="40" cy="50" rx="5" ry="1.4" />
@@ -358,30 +375,31 @@ function mobilePage() {
 <style>
   /* The same palette as the landing page, for the same reason: values, not an import. */
   :root {
-    --bg: #fafaf9; --fg: #1a1a1a; --muted: #6b6b6b; --line: #e5e5e3; --accent: #2563eb;
+    ${tokenVars(light)}
+    ${DERIVED_VARS}
     --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #111113; --fg: #ececec; --muted: #9a9a9a; --line: #26262a; --accent: #7aa6ff; }
+    :root { ${tokenVars(dark)} }
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
-    margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans);
+    margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans);
     line-height: 1.5; display: flex; flex-direction: column; align-items: center;
   }
-  header { width: 100%; max-width: 414px; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--muted); }
-  h1 { font-size: 1rem; margin: 0; color: var(--fg); }
+  header { width: 100%; max-width: 414px; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--foreground-60); }
+  h1 { font-size: 1rem; margin: 0; color: var(--foreground); }
   p { margin: 0.25rem 0 0; }
-  a { color: var(--accent); }
+  a { color: var(--info); }
   /* 414 wide is the phone viewport the story sets for itself inside Storybook. On a real phone
      the frame is simply the screen. */
   iframe {
     flex: 1; width: 100%; max-width: 414px; min-height: 0; background: #fff;
-    border: 1px solid var(--line); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0;
+    border: 1px solid var(--foreground-10); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0;
   }
-  @media (max-width: 414px) { iframe { border: 0; border-top: 1px solid var(--line); border-radius: 0; } }
+  @media (max-width: 414px) { iframe { border: 0; border-top: 1px solid var(--foreground-10); border-radius: 0; } }
 </style>
 </head>
 <body>

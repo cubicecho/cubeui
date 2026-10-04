@@ -21,7 +21,7 @@ import { SideBySide } from "./side-by-side";
  * The compiled half is the hand-written web one: a drop zone over a hidden file input. A drop is
  * simulated with a real `DataTransfer`, which is what a browser hands `onDrop`.
  */
-const meta = { title: "Stage 0/FilePicker" } satisfies Meta;
+const meta = { title: "RN Parity/FilePicker" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -240,7 +240,7 @@ export const AsAButton: Story = {
     <SideBySide
       native={
         <div className="flex flex-row items-center gap-2">
-          <NativeButton variant="ghost" size="icon-sm" label="Upload notes" onPick={onPick} />
+          <NativeButton variant="outline" size="icon-sm" label="Upload notes" onPick={onPick} />
           <NativeButton variant="outline" label="Import a board" onPick={onPick} />
         </div>
       }
@@ -250,7 +250,7 @@ export const AsAButton: Story = {
           action={
             <>
               <CompiledButton
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 label="Upload notes"
                 accept=".md,text/markdown"

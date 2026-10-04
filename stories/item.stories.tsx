@@ -33,7 +33,7 @@ import { SideBySide } from "./side-by-side";
  * native file is imported as `item.tsx` by name because the harness resolves `.web.tsx` first, and
  * a bare `item` would put the web half on both sides.
  */
-const meta = { title: "Stage 0/Item" } satisfies Meta;
+const meta = { title: "RN Parity/Item" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -67,9 +67,7 @@ export const Outline: Story = {
               <ItemDescription>Wrote the first published program.</ItemDescription>
             </ItemContent>
             <ItemActions>
-              <NativeButton size="sm" variant="outline" onPress={archiveNative}>
-                Archive
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={archiveNative} content="Archive" />
             </ItemActions>
           </Item>
         </div>
@@ -85,9 +83,12 @@ export const Outline: Story = {
               <CompiledItemDescription>Wrote the first published program.</CompiledItemDescription>
             </CompiledItemContent>
             <CompiledItemActions>
-              <CompiledButton size="sm" variant="outline" onClick={archiveCompiled}>
-                Archive
-              </CompiledButton>
+              <CompiledButton
+                size="sm"
+                variant="outline"
+                onClick={archiveCompiled}
+                content="Archive"
+              />
             </CompiledItemActions>
           </CompiledItem>
         </div>
@@ -156,8 +157,8 @@ export const AsChild: Story = {
     <SideBySide
       native={
         <div className="native-root" style={{ width: 360 }}>
-          <Item asChild variant="muted" size="sm">
-            <Pressable role="button" onPress={openNative}>
+          <Item asChild selected size="sm">
+            <Pressable role="button" aria-current onPress={openNative}>
               <ItemContent>
                 <ItemTitle>Open the run</ItemTitle>
               </ItemContent>
@@ -167,8 +168,8 @@ export const AsChild: Story = {
       }
       compiled={
         <div className="compiled-root" style={{ width: 360 }}>
-          <CompiledItem asChild variant="muted" size="sm">
-            <a href="#run">
+          <CompiledItem asChild selected size="sm">
+            <a href="#run" aria-current="page">
               <CompiledItemContent>
                 <CompiledItemTitle>Open the run</CompiledItemTitle>
               </CompiledItemContent>
@@ -181,7 +182,7 @@ export const AsChild: Story = {
   play: async ({ canvasElement }) => {
     const native = within(rootOf(canvasElement, ".native-root"));
     const target = native.getByRole("button", { name: "Open the run" });
-    // The row's classes reached the child: it is the padded, filled surface.
+    // The row's classes reached the child: it is the padded, tinted surface.
     await expect(getComputedStyle(target).paddingLeft).toBe("16px");
     await userEvent.click(target);
     await expect(openNative).toHaveBeenCalledTimes(1);
@@ -191,6 +192,12 @@ export const AsChild: Story = {
     });
     await expect(link).toHaveAttribute("data-slot", "item");
     await expect(getComputedStyle(link).paddingLeft).toBe("16px");
+
+    // `selected` is the `active` tint on both halves, and not the hover grey.
+    await expect(link).toHaveAttribute("data-selected");
+    const tint = getComputedStyle(link).backgroundColor;
+    await expect(tint).toMatch(/\/ 0\.4\)$/);
+    await expect(getComputedStyle(target).backgroundColor).toBe(tint);
   },
 };
 

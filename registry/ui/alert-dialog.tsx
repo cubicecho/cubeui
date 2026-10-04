@@ -90,7 +90,12 @@ function AlertDialogDescription({ className, children }: SectionProps) {
 /** The icon or picture above the title. Pass the glyph bare; it is sized by the caller. */
 function AlertDialogMedia({ className, children }: SectionProps) {
   return (
-    <View className={cn("mb-2 size-16 items-center justify-center rounded-md bg-muted", className)}>
+    <View
+      className={cn(
+        "mb-2 size-16 items-center justify-center rounded-md bg-foreground/10",
+        className,
+      )}
+    >
       {children}
     </View>
   );
@@ -117,15 +122,22 @@ function ClosingButton({
   );
 }
 
+/**
+ * `Button`'s props, and the label as `children` — shadcn's shape for these two, which the web half
+ * keeps, so a call site reads the same on both.
+ */
+type ActionProps = Omit<ButtonProps, "content"> & { children?: ReactNode };
+
 function AlertDialogAction({
   variant = "default",
   size = "default",
   onPress,
+  children,
   ...props
-}: ButtonProps) {
+}: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} />
+      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }
@@ -134,11 +146,12 @@ function AlertDialogCancel({
   variant = "outline",
   size = "default",
   onPress,
+  children,
   ...props
-}: ButtonProps) {
+}: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} />
+      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }

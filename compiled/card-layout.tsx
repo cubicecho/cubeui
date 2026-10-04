@@ -66,6 +66,8 @@ export type CardLayoutProps = {
   footerActions?: ReactNode | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
+  /** On the title itself: its size, a `line-through`. */
+  titleClassName?: string | undefined;
   contentClassName?: string | undefined;
   footerClassName?: string | undefined;
 };
@@ -73,20 +75,14 @@ export type CardLayoutProps = {
 /** Sized from outside on the web; see the file comment for the device. */
 const ICON = "[&_svg]:size-4";
 
-/**
- * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
- * view would otherwise be a flex column and lay a sentence and its link out as two rows.
- */
-const SLOT = "block";
-
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("h-4 rounded-md bg-accent", "animate-pulse");
+const BAR = cn("h-4 rounded-md bg-hover", "animate-pulse");
 
 /**
  * A string slot's colour, on every platform. The compiled half would inherit the card's, but
  * react-native-web is web too and gives every `Text` its own black `color`.
  */
-const INK = "text-card-foreground";
+const INK = "text-foreground";
 
 /**
  * The header, as a row that wraps: the title and description in one column, the action after it.
@@ -169,6 +165,7 @@ export function CardLayout({
   footerActions,
   className,
   headerClassName,
+  titleClassName,
   contentClassName,
   footerClassName,
 }: CardLayoutProps) {
@@ -194,7 +191,7 @@ export function CardLayout({
                   {icon ? (
                     // Sized here rather than by the caller, so an icon passed as `<Plus />` and
                     // one passed as `<Plus className="size-4" />` land at the same size.
-                    <div className={cn("cube-rn-view", "shrink-0 text-muted-foreground", ICON)}>
+                    <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>
                       {icon}
                     </div>
                   ) : null}
@@ -202,7 +199,10 @@ export function CardLayout({
                       `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts
                       the ascenders and descenders off it. The negative margin gives the space
                       back, so the header keeps the height shadcn drew it at. */}
-                  <CardTitle level={level} className="-my-1 min-w-0 shrink truncate py-1">
+                  <CardTitle
+                    level={level}
+                    className={cn("-my-1 min-w-0 shrink truncate py-1", titleClassName)}
+                  >
                     {title}
                   </CardTitle>
                 </div>
@@ -215,9 +215,7 @@ export function CardLayout({
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? (
-        <CardContent className={cn(SLOT, "min-w-0", contentClassName)}>{body}</CardContent>
-      ) : null}
+      {body ? <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent> : null}
 
       {hasFooter ? (
         <CardFooter

@@ -9,30 +9,31 @@
 <style>
   /* The same palette as the landing page, for the same reason: values, not an import. */
   :root {
-    --bg: #fafaf9; --fg: #1a1a1a; --muted: #6b6b6b; --line: #e5e5e3; --accent: #2563eb;
+    --background: oklch(1 0 0); --foreground: oklch(0.145 0 0); --secondary: oklch(0.985 0 0); --info: oklch(0.5 0.1193 242.749);
+    --foreground-60: color-mix(in oklab, var(--foreground) 60%, transparent); --foreground-10: color-mix(in oklab, var(--foreground) 10%, transparent);
     --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #111113; --fg: #ececec; --muted: #9a9a9a; --line: #26262a; --accent: #7aa6ff; }
+    :root { --background: oklch(0.145 0 0); --foreground: oklch(0.985 0 0); --secondary: oklch(0.269 0 0); --info: oklch(0.6847 0.1479 237.323); }
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
-    margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-sans);
+    margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans);
     line-height: 1.5; display: flex; flex-direction: column; align-items: center;
   }
-  header { width: 100%; max-width: 414px; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--muted); }
-  h1 { font-size: 1rem; margin: 0; color: var(--fg); }
+  header { width: 100%; max-width: 414px; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--foreground-60); }
+  h1 { font-size: 1rem; margin: 0; color: var(--foreground); }
   p { margin: 0.25rem 0 0; }
-  a { color: var(--accent); }
+  a { color: var(--info); }
   /* 414 wide is the phone viewport the story sets for itself inside Storybook. On a real phone
      the frame is simply the screen. */
   iframe {
     flex: 1; width: 100%; max-width: 414px; min-height: 0; background: #fff;
-    border: 1px solid var(--line); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0;
+    border: 1px solid var(--foreground-10); border-bottom: 0; border-radius: 1.25rem 1.25rem 0 0;
   }
-  @media (max-width: 414px) { iframe { border: 0; border-top: 1px solid var(--line); border-radius: 0; } }
+  @media (max-width: 414px) { iframe { border: 0; border-top: 1px solid var(--foreground-10); border-radius: 0; } }
 </style>
 </head>
 <body>

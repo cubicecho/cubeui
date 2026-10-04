@@ -33,7 +33,7 @@ export function DetailPage<T>({
       {entity ? (
         children(entity)
       ) : (
-        <Text className="text-muted-foreground">{loading ? "Loading…" : notFoundLabel}</Text>
+        <Text className="text-foreground/60">{loading ? "Loading…" : notFoundLabel}</Text>
       )}
     </Page>
   );

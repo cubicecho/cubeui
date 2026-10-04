@@ -18,7 +18,7 @@ import { SideBySide } from "./side-by-side";
  * The device's long press and accessibility hint have no browser to run in, and are
  * typechecked, not played.
  */
-const meta = { title: "Stage 0/ActionButton" } satisfies Meta;
+const meta = { title: "RN Parity/ActionButton" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -27,37 +27,43 @@ type Row = (props: { press: () => void; disabled?: boolean }) => ReactNode;
 
 const NativeRow: Row = ({ press, disabled = false }) => (
   <div className="flex flex-row gap-2">
-    <Native label="Edit workspace" variant="ghost" size="icon" onPress={press}>
-      <NativePencil />
-    </Native>
+    <Native
+      label="Edit workspace"
+      variant="outline"
+      size="icon"
+      onPress={press}
+      icon={<NativePencil />}
+    />
     <Native
       label="Delete lane"
       hint="Empty the lane first"
-      variant="ghost"
+      variant="outline"
       size="icon"
       disabled={disabled}
       onPress={press}
-    >
-      <NativeTrash />
-    </Native>
+      icon={<NativeTrash />}
+    />
   </div>
 );
 
 const CompiledRow: Row = ({ press, disabled = false }) => (
   <div className="flex flex-row gap-2">
-    <Compiled label="Edit workspace" variant="ghost" size="icon" onClick={press}>
-      <CompiledPencil />
-    </Compiled>
+    <Compiled
+      label="Edit workspace"
+      variant="outline"
+      size="icon"
+      onClick={press}
+      icon={<CompiledPencil />}
+    />
     <Compiled
       label="Delete lane"
       hint="Empty the lane first"
-      variant="ghost"
+      variant="outline"
       size="icon"
       disabled={disabled}
       onClick={press}
-    >
-      <CompiledTrash />
-    </Compiled>
+      icon={<CompiledTrash />}
+    />
   </div>
 );
 

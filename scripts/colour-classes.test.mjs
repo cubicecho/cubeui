@@ -59,18 +59,26 @@ test("utilities that are not colours are not read as one", () => {
   }
 });
 
-test("only a colour that is neither a token nor Tailwind's own is reported", () => {
+test("only a colour that is neither a token nor a colourless keyword is reported", () => {
   const source = `
     // text-in-text inherits, and bg-input-background is what a call site used to copy.
     /** \`text-destructive-foreground\` in TSDoc is prose too. */
     const a = "bg-primary text-white bg-black/80 bg-green-700 border-transparent fill-current";
     const b = cn("text-destructive-foreground", \`hover:bg-sidebar-accent \${x} bg-\${tone}\`);
-    const c = <div className="border-border ring-ring/50 text-destructive-foreground" />;
+    const c = <div className="border-border ring-ring/60 text-destructive-foreground" />;
   `;
   assert.deepEqual(unresolvedColours(source, tokens), [
+    "text-white",
+    "bg-black",
+    "bg-green-700",
     "text-destructive-foreground",
     "bg-sidebar-accent",
   ]);
+});
+
+test("an opacity that is not one of the steps is reported", () => {
+  const source = `const c = "bg-primary/10 hover:bg-primary/90 bg-primary/5 focus:ring-ring/50 text-sm/6";`;
+  assert.deepEqual(unresolvedColours(source, tokens), ["bg-primary/5", "ring-ring/50"]);
 });
 
 test("tokens are what the stylesheet's @theme block names", () => {

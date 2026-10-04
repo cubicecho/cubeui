@@ -341,7 +341,7 @@ export function FormField({
   const labelText = required ? (
     <span className="min-w-0">
       {label}
-      <span data-slot="form-field-required" aria-hidden="true" className="ml-0.5 text-destructive">
+      <span data-slot="form-field-required" aria-hidden="true" className="ml-0.5 text-negative">
         *
       </span>
     </span>
@@ -386,7 +386,7 @@ export function FormField({
             data-slot="form-field-description-trigger"
             type="button"
             aria-label={helpName}
-            className="shrink-0 rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-3.5"
+            className="shrink-0 rounded-full text-foreground/60 outline-none transition-colors hover:text-foreground focus-visible:text-foreground [&_svg]:size-3.5"
           >
             {descriptionIcon ?? <CircleQuestionMark aria-hidden />}
           </button>
@@ -508,8 +508,8 @@ export function ticks(text: string): ReactNode {
     if (index % 2 === 0) return part;
     if (index === parts.length - 1) return `\`${part}`;
 
-    // No background. `code` in shadcn's docs is `bg-muted`, and this lands inside a
-    // `text-muted-foreground` description — muted on muted is 4.34:1, under the 4.5 a body-size
+    // No background. `code` in shadcn's docs is `bg-foreground/10`, and this lands inside a
+    // `text-foreground/60` description — muted on muted is 4.34:1, under the 4.5 a body-size
     // string needs. Monospace at a hair under the surrounding size says the same thing and stays
     // readable. The size is there because a monospace face at `1em` reads larger than the sans
     // beside it.

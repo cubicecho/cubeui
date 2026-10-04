@@ -105,6 +105,17 @@ export type InputProps = {
    * is what gets a phone keypad, and a number field wants both.
    */
   inputMode?: "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url" | undefined;
+  /**
+   * What the keyboard capitalises by itself. `none` for what is typed as written: a URL, a model
+   * id, a shell command. Left out, the platform decides, which on a phone is `sentences`.
+   */
+  autoCapitalize?: "none" | "sentences" | "words" | "characters" | undefined;
+  /**
+   * Whether the keyboard rewrites what was typed. Off for an identifier, which it would "correct"
+   * into a word. On the web it also switches the spelling underline, unless `spellCheck` says
+   * otherwise there.
+   */
+  autoCorrect?: boolean | undefined;
   maxLength?: number | undefined;
   /** Web only; the native keyboard has no equivalent constraint. */
   min?: number | undefined;
@@ -172,11 +183,11 @@ export const INPUT_TRAILING_CLASS =
   "absolute inset-y-0 right-0 flex w-9 flex-row items-center justify-center";
 
 /** The icon inside either slot, handed down through `IconClassContext`: on device nothing inherits. */
-export const INPUT_SLOT_ICON_CLASS = "size-4 shrink-0 text-muted-foreground";
+export const INPUT_SLOT_ICON_CLASS = "size-4 shrink-0 text-foreground/60";
 
 /** The text's padding past a slot, so it never runs under the icon. */
 export const INPUT_LEADING_PAD_CLASS = "pl-9";
 export const INPUT_TRAILING_PAD_CLASS = "pr-9";
 
 export const INPUT_CLASS =
-  "border-input bg-background text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  "border-foreground/15 bg-background text-foreground placeholder:text-foreground/60 focus:border-active flex h-10 w-full rounded-md border px-3 py-2 text-sm focus:outline-none";

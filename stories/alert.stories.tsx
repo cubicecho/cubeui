@@ -23,7 +23,7 @@ import { SideBySide } from "./side-by-side";
  * the variant's hue, and that the default glyph is the variant's, sized and coloured without the
  * caller's help. The contrast itself is the axe run every story gets.
  */
-const meta = { title: "Stage 0/Alert" } satisfies Meta;
+const meta = { title: "RN Parity/Alert" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -60,21 +60,13 @@ export const Default: Story = {
       native={
         <Variants
           Alert={Native}
-          action={
-            <NativeButton size="sm" variant="outline" onPress={() => {}}>
-              Retry
-            </NativeButton>
-          }
+          action={<NativeButton size="sm" variant="outline" onPress={() => {}} content="Retry" />}
         />
       }
       compiled={
         <Variants
           Alert={Compiled as AlertComponent}
-          action={
-            <CompiledButton size="sm" variant="outline" onClick={() => {}}>
-              Retry
-            </CompiledButton>
-          }
+          action={<CompiledButton size="sm" variant="outline" onClick={() => {}} content="Retry" />}
         />
       }
     />
@@ -109,7 +101,7 @@ export const Default: Story = {
 
     // The line under the title is muted only on the card; on a tint it is the foreground too.
     const [nativeSessions, compiledSessions] = pair("Sessions now last thirty days.");
-    await expect(colour(nativeSessions)).toBe("rgb(115, 115, 115)");
+    await expect(colour(nativeSessions)).toMatch(/\/ 0\.6\)$/);
     await expect(colour(compiledSessions)).toBe(colour(nativeSessions));
     for (const line of ["It will not be shown again.", "spawn npx ENOENT"]) {
       const [native, compiled] = pair(line);
@@ -131,6 +123,8 @@ export const Default: Story = {
     );
     await expect(getComputedStyle(nativeWarning).stroke).not.toBe(foreground);
     for (const svg of glyph("No icon, just the line.")) await expect(svg).toBeNull();
+    // `info` is a colour and not a kind of message, so it draws no glyph of its own.
+    for (const svg of glyph("Re-embedding")) await expect(svg).toBeNull();
   },
 };
 

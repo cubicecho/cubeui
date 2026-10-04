@@ -38,7 +38,10 @@ import type {
  *
  * A file of its own rather than more stories in `menu.stories.tsx`, which is `MenuItem`'s.
  */
-const meta = { title: "Menu toggle rows", parameters: { layout: "centered" } } satisfies Meta;
+const meta = {
+  title: "RN Parity/Menu/Toggle rows",
+  parameters: { layout: "centered" },
+} satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

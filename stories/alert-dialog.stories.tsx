@@ -15,7 +15,7 @@ import { SideBySide } from "./side-by-side";
  * runs once and then closes. The React Native half (the native `Dialog` underneath) runs on device
  * only, like every twinned item's.
  */
-const meta = { title: "Stage 0/AlertDialog" } satisfies Meta;
+const meta = { title: "RN Parity/AlertDialog" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -31,7 +31,7 @@ export const Default: Story = {
       native={
         <N.AlertDialog>
           <N.AlertDialogTrigger asChild>
-            <NativeButton variant="outline">Native revoke</NativeButton>
+            <NativeButton variant="outline" content="Native revoke" />
           </N.AlertDialogTrigger>
           <N.AlertDialogContent>
             <N.AlertDialogHeader>
@@ -50,7 +50,7 @@ export const Default: Story = {
       compiled={
         <C.AlertDialog>
           <C.AlertDialogTrigger asChild>
-            <CompiledButton variant="outline">Compiled revoke</CompiledButton>
+            <CompiledButton variant="outline" content="Compiled revoke" />
           </C.AlertDialogTrigger>
           <C.AlertDialogContent>
             <C.AlertDialogHeader>

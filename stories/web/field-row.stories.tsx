@@ -5,7 +5,7 @@ import { FormField } from "@/components/form-field";
 import { Input } from "@/components/ui/input";
 
 const meta = {
-  title: "Form/FieldRow",
+  title: "Forms/FieldRow",
   component: FieldRow,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof FieldRow>;

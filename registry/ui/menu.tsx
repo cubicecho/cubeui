@@ -157,7 +157,7 @@ function MenuItem({
   link,
 }: MenuItemProps) {
   const { setOpen, skipReturnRef } = useContext(MenuContext);
-  const ink = destructive ? "text-destructive" : "text-popover-foreground";
+  const ink = destructive ? "text-negative" : "text-foreground";
   const row = (
     <Pressable
       role="menuitem"
@@ -170,7 +170,7 @@ function MenuItem({
       }}
       className={cn(
         MENU_ITEM_CLASS,
-        destructive ? "active:bg-destructive/10" : "active:bg-accent",
+        destructive ? "active:bg-negative/10" : "active:bg-hover",
         disabled && "opacity-50",
         className,
       )}
@@ -236,7 +236,7 @@ function ToggleRow({
   disabled = false,
   className,
 }: ToggleRowProps) {
-  const ink = "text-popover-foreground";
+  const ink = "text-foreground";
   return (
     <Pressable
       role={toggleRole(kind)}
@@ -244,7 +244,7 @@ function ToggleRow({
       disabled={disabled}
       aria-disabled={disabled}
       onPress={onPress}
-      className={cn(MENU_ITEM_CLASS, "active:bg-accent", disabled && "opacity-50", className)}
+      className={cn(MENU_ITEM_CLASS, "active:bg-hover", disabled && "opacity-50", className)}
     >
       <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
         {icon}

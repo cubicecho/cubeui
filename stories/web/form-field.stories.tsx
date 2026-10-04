@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 const meta = {
-  title: "Form/FormField",
+  title: "Forms/FormField",
   component: FormField,
   parameters: { layout: "centered" },
   args: { className: "w-[360px]" },
@@ -279,11 +279,7 @@ export const LabelAction: Story = {
   args: {
     label: "Password",
     required: true,
-    action: (
-      <Button variant="link" size="sm" className="h-auto p-0 text-xs">
-        Forgot?
-      </Button>
-    ),
+    action: <Button variant="outline" size="xs" content="Forgot?" />,
     control: <Input type="password" />,
   },
   play: async ({ canvasElement }) => {
@@ -527,10 +523,8 @@ export const AForm: Story = {
         control={<Switch defaultChecked />}
       />
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">
-          Cancel
-        </Button>
-        <Button type="button">Create Todo</Button>
+        <Button type="button" variant="outline" content="Cancel" />
+        <Button type="button" content="Create Todo" />
       </div>
     </form>
   ),

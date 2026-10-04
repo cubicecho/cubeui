@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * halves the same bar — brand at the start, the links after it, the actions at the end — and the
  * two landmarks, and that on the web the bar stays where it is while the page under it scrolls.
  */
-const meta = { title: "Stage 0/Top Bar Layout" } satisfies Meta;
+const meta = { title: "RN Parity/Top Bar Layout" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -27,7 +27,10 @@ const signOut = fn();
  */
 function Frame({ children, testId }: { children: ReactNode; testId: string }) {
   return (
-    <div data-testid={testId} className="h-72 overflow-y-auto rounded-md border border-border">
+    <div
+      data-testid={testId}
+      className="h-72 overflow-y-auto rounded-md border border-foreground/10"
+    >
       {children}
     </div>
   );
@@ -60,16 +63,14 @@ export const Default: Story = {
               <Text
                 key={label}
                 role="link"
-                className="rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+                className="rounded-md px-3 py-1.5 text-foreground/60 text-sm"
               >
                 {label}
               </Text>
             ))}
             navLabel="Native main"
             action={
-              <NativeButton size="sm" variant="ghost" onPress={signOut}>
-                Sign out
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={signOut} content="Sign out" />
             }
             content={rows("Native").map((row) => (
               <Text key={row} className="px-4 py-2 text-foreground">
@@ -87,16 +88,14 @@ export const Default: Story = {
               <a
                 key={label}
                 href={`#/${label.toLowerCase()}`}
-                className="shrink-0 rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+                className="shrink-0 rounded-md px-3 py-1.5 text-foreground/60 text-sm"
               >
                 {label}
               </a>
             ))}
             navLabel="Compiled main"
             action={
-              <CompiledButton size="sm" variant="ghost" onClick={signOut}>
-                Sign out
-              </CompiledButton>
+              <CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />
             }
             content={rows("Compiled").map((row) => (
               <p key={row} className="px-4 py-2 text-foreground">
@@ -183,16 +182,12 @@ export const Narrow: Story = {
           <a
             key={label}
             href={`#/${label.toLowerCase()}`}
-            className="shrink-0 rounded-md px-3 py-1.5 text-muted-foreground text-sm"
+            className="shrink-0 rounded-md px-3 py-1.5 text-foreground/60 text-sm"
           >
             {label}
           </a>
         ))}
-        action={
-          <CompiledButton size="sm" variant="ghost" onClick={signOut}>
-            Sign out
-          </CompiledButton>
-        }
+        action={<CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />}
         content={<p className="px-4 py-2 text-foreground">The page.</p>}
       />
     </div>

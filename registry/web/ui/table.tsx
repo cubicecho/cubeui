@@ -54,7 +54,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   );
 }
 
-// Every border below names `border-border` beside its width. Upstream leans on the app's base
+// Every border below names `border-foreground/10` beside its width. Upstream leans on the app's base
 // layer to colour a bare `border-b`, and the cubeui stylesheet sets no such rule, so without it
 // the rules between rows are `currentColor` — black lines in a light theme.
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
@@ -62,7 +62,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
     <InTableHeader.Provider value={true}>
       <thead
         data-slot="table-header"
-        className={cn("[&_tr]:border-border [&_tr]:border-b", className)}
+        className={cn("[&_tr]:border-foreground/10 [&_tr]:border-b", className)}
         {...props}
       />
     </InTableHeader.Provider>
@@ -84,7 +84,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "border-border border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
+        "border-foreground/10 border-t bg-foreground/10 font-medium [&>tr]:last:border-b-0",
         className,
       )}
       {...props}
@@ -97,7 +97,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-border border-b transition-colors hover:bg-muted has-aria-expanded:bg-muted data-[state=selected]:bg-selection/15",
+        "border-foreground/10 border-b transition-colors hover:bg-hover has-aria-expanded:bg-foreground/10 data-[state=selected]:bg-active/40",
         className,
       )}
       {...props}
@@ -137,7 +137,7 @@ function TableCaption({ className, ...props }: React.ComponentProps<"caption">) 
   return (
     <caption
       data-slot="table-caption"
-      className={cn("mt-4 text-muted-foreground text-sm", className)}
+      className={cn("mt-4 text-foreground/60 text-sm", className)}
       {...props}
     />
   );

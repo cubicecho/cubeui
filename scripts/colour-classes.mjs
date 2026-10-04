@@ -22,7 +22,7 @@ const FAMILIES = ["ring-offset", "border", "ring", "text", "bg", "fill", "stroke
 
 /**
  * Suffixes a family takes that are not a colour. Anything a family is given that is neither in
- * here, nor a token, nor a Tailwind palette colour is reported — so a utility this list has not
+ * here, nor a token, nor a colourless keyword is reported — so a utility this list has not
  * heard of fails loudly and gets added, rather than passing unexamined.
  */
 const NOT_COLOUR = {
@@ -36,9 +36,25 @@ const NOT_COLOUR = {
   outline: /^(\d+|none|hidden|solid|dashed|dotted|double|offset-.*)?$/,
 };
 
-/** The colours Tailwind 4 ships in its default theme, which need no token of ours. */
-const PALETTE =
-  /^((slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|[1-9]00|950)|black|white|transparent|current|inherit)$/;
+/**
+ * The keywords that need no token, because none of them is a colour: no fill, and the text's own.
+ * `black`, `white` and a shade of Tailwind's palette (`green-700`) are not among them. Each does
+ * generate a class, but it is a colour no palette can change, so it goes in `tokens/palette.mjs`
+ * under the name of what it means and the component names that.
+ */
+const THEMELESS = /^(transparent|current|inherit)$/;
+
+/**
+ * The opacities a colour may be drawn at. Muted is an opacity on the class and not a token, so
+ * these are the palette's other half: a seventh step is a colour no palette was checked against.
+ * `AGENTS.md` says what each is for.
+ */
+const OPACITY_STEPS = new Set(["10", "15", "40", "60", "90"]);
+
+/** `hover:bg-neutral/90` -> `90`; null with no modifier. */
+function opacityOf(cls) {
+  return /\/([\w.[\]%-]+)$/.exec(cls.replace(/^!|!$/g, ""))?.[1] ?? null;
+}
 
 /** Every string a file spells, from both plain and template literals — the places a class can be. */
 function stringsIn(source, fileName = "source.tsx") {
@@ -91,16 +107,22 @@ export function colourOf(cls) {
 }
 
 /**
- * The colour utilities in `source` that resolve to neither a token in `tokens` nor a colour
- * Tailwind ships, each once, in the order they first appear.
+ * The colour utilities in `source` that name neither a token in `tokens` nor a colourless keyword,
+ * or that draw a token at an opacity that is not one of the steps, each once, in the order they
+ * first appear.
  */
 export function unresolvedColours(source, tokens, fileName) {
   const bad = new Set();
   for (const text of stringsIn(source, fileName)) {
     for (const cls of text.split(/\s+/)) {
       const found = colourOf(cls);
-      if (found && !tokens.has(found.colour) && !PALETTE.test(found.colour))
+      if (!found) continue;
+      if (!tokens.has(found.colour) && !THEMELESS.test(found.colour)) {
         bad.add(utilityOf(cls));
+        continue;
+      }
+      const opacity = opacityOf(cls);
+      if (opacity !== null && !OPACITY_STEPS.has(opacity)) bad.add(`${utilityOf(cls)}/${opacity}`);
     }
   }
   return [...bad];

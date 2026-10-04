@@ -36,7 +36,7 @@ export function SectionHeading({
   children,
 }: SectionHeadingProps) {
   const classes = cn(
-    "font-semibold text-muted-foreground",
+    "font-semibold text-foreground/60",
     variant === "overline" ? "text-xs uppercase tracking-wide" : "text-sm",
     className,
   );

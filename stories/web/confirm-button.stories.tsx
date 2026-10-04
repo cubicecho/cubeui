@@ -5,13 +5,13 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { Button } from "@/components/ui/button";
 
 const meta = {
-  title: "Control/ConfirmButton",
+  title: "Controls/ConfirmButton",
   component: ConfirmButton,
   args: {
     label: "Delete lane",
-    variant: "ghost",
+    variant: "outline",
     size: "icon",
-    children: <Trash2 />,
+    icon: <Trash2 />,
     title: "Delete this lane?",
     description: "The lane takes its cards with it.",
     onConfirm: fn(),
@@ -57,8 +57,8 @@ export const TheDialogButtonsLookLikeButtons: Story = {
   render: (args) => (
     <div className="flex items-center gap-2">
       <ConfirmButton {...args} />
-      <Button variant="destructive">Plain destructive</Button>
-      <Button variant="outline">Plain outline</Button>
+      <Button variant="destructive" content="Plain destructive" />
+      <Button variant="outline" content="Plain outline" />
     </div>
   ),
   play: async ({ canvas }) => {
@@ -80,6 +80,9 @@ export const TheDialogButtonsLookLikeButtons: Story = {
         color: style.color,
       };
     };
+    // The dialog focuses one of its buttons, and a focused button wears its hover fill when the
+    // last input was a key — which, in a full run, depends on the story before this one.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     // Waited for, because the content zooms and fades in, and a colour read mid-animation is not
     // the one it settles on.
     await waitFor(() => expect(look(confirm)).toEqual(look(plain("Plain destructive"))));
