@@ -64,6 +64,20 @@ The trigger lays its children out in a row, puts only the text in a `<Text>`, an
 the tab's active or inactive colour on both halves — do not colour it yourself, and do not build a
 segmented control to get one.
 
+A dot or a count on a tab goes in `trailingSlot`, the far end of the tab, on both halves:
+
+```tsx
+<TabsTrigger
+  value="device"
+  trailingSlot={<Badge variant="destructive" label="Server error" />}
+>
+  Device
+</TabsTrigger>
+```
+
+A `Badge` with no children is a dot, and its `label` becomes part of the tab's name: "Device,
+Server error". Do not pass a bare coloured `View` or `<span>`, which a screen reader skips.
+
 Name the tablist when no visible heading does: `<TabsList aria-label="Project view">`, or
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.

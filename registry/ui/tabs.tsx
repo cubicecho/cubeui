@@ -145,7 +145,13 @@ function label(children: ReactNode, className: string): ReactNode[] {
   return parts;
 }
 
-function TabsTrigger({ value, disabled = false, className, children }: TabsTriggerProps) {
+function TabsTrigger({
+  value,
+  disabled = false,
+  className,
+  children,
+  trailingSlot,
+}: TabsTriggerProps) {
   const tabs = useContext(TabsContext);
   const reveal = useContext(TabsListContext);
   const span = useRef<Span | undefined>(undefined);
@@ -183,6 +189,7 @@ function TabsTrigger({ value, disabled = false, className, children }: TabsTrigg
           container's colour reaches neither. */}
       <IconClassContext.Provider value={cn("size-4 shrink-0", color)}>
         {label(children, cn(TABS_TRIGGER_TEXT_CLASS, color))}
+        {trailingSlot}
       </IconClassContext.Provider>
     </Pressable>
   );

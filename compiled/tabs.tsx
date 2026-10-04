@@ -112,6 +112,8 @@ function TabsList({
 function TabsTrigger({
   className,
   disabled,
+  children,
+  trailingSlot,
   ...props
 }: Wide<TabsTriggerProps, React.ComponentProps<typeof TabsPrimitive.Trigger>>) {
   return (
@@ -128,7 +130,10 @@ function TabsTrigger({
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      {trailingSlot}
+    </TabsPrimitive.Trigger>
   );
 }
 

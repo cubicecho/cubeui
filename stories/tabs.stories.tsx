@@ -3,12 +3,14 @@ import { useContext } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { IconClassContext } from "@/components/ui/icons-base";
+import { Badge as CompiledBadge } from "../compiled/badge";
 import {
   Tabs as CompiledTabs,
   TabsContent as CompiledTabsContent,
   TabsList as CompiledTabsList,
   TabsTrigger as CompiledTabsTrigger,
 } from "../compiled/tabs";
+import { Badge } from "../registry/ui/badge.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
 
@@ -239,6 +241,63 @@ export const FewTabsStayCentred: Story = {
         name,
         centred: true,
       });
+    }
+  },
+};
+
+/**
+ * `trailingSlot` is the far end of a tab (#242): a dot for a server in error. The dot is a `Badge`
+ * with a `label`, so it is in the tab's name on both halves, after the label and inside the tab.
+ */
+export const TrailingMark: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Tabs defaultValue="general">
+          <TabsList aria-label="Native settings">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger
+              value="device"
+              trailingSlot={<Badge variant="destructive" label="Server error" />}
+            >
+              Device
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <Text className="text-foreground">General.</Text>
+          </TabsContent>
+        </Tabs>
+      }
+      compiled={
+        <CompiledTabs defaultValue="general">
+          <CompiledTabsList aria-label="Compiled settings">
+            <CompiledTabsTrigger value="general">General</CompiledTabsTrigger>
+            <CompiledTabsTrigger
+              value="device"
+              trailingSlot={<CompiledBadge variant="destructive" label="Server error" />}
+            >
+              Device
+            </CompiledTabsTrigger>
+          </CompiledTabsList>
+          <CompiledTabsContent value="general">General.</CompiledTabsContent>
+        </CompiledTabs>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const name of ["Native settings", "Compiled settings"]) {
+      const list = within(canvasElement).getByRole("tablist", { name });
+      const tab = within(list).getByRole("tab", { name: /^Device,? Server error$/ });
+      const mark = within(tab).getByRole("img", { name: "Server error" });
+      const box = tab.getBoundingClientRect();
+      const dot = mark.getBoundingClientRect();
+      // `name` rides along so a failure names which half broke.
+      await expect({
+        name,
+        // The label is a bare text node on the web half, so the dot is placed against the tab.
+        afterLabel: dot.left > box.left + box.width / 2,
+        inside: dot.right <= box.right && dot.top >= box.top && dot.bottom <= box.bottom,
+      }).toEqual({ name, afterLabel: true, inside: true });
     }
   },
 };

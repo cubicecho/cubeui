@@ -46,6 +46,13 @@ export type TabsTriggerProps = {
    * takes the tab's active or inactive colour on both halves.
    */
   children: ReactNode;
+  /**
+   * The far end of the tab, after its label: a dot for unsaved changes or a server in error, a
+   * count. What it says is part of the tab's name, so a dot is `<Badge variant="warning"
+   * label="Unsaved changes" />`, which is read as "Device, Unsaved changes", and not a bare
+   * coloured view, which is read as nothing.
+   */
+  trailingSlot?: ReactNode | undefined;
 };
 
 export type TabsContentProps = {
