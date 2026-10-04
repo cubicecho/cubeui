@@ -98,6 +98,7 @@ at the end.
 | A button that saves a file — an export, a note, a report — and waits while it is fetched | `DownloadButton` | [controls.md](controls.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
 | A Markdown string drawn as a document — a note, a README, a skill, a model's answer — instead of `react-markdown` and an element map of your own (web only) | `Markdown` | [controls.md](controls.md#markdown) |
+| Links between an app's Markdown documents — `[[wikilinks]]`, relative links, the router's link, a link or image that is pending or broken (web only) | `Markdown` with `wikilinks`, `resolveLink`, `basePath` | [controls.md](controls.md#markdown) |
 | A Markdown source to write, with its rendering beside it and an Edit / Split / Preview toggle (web only) | `MarkdownEditor` | [controls.md](controls.md#markdown-editor) |
 | A button that deletes, discards, revokes or resets — with `requireText`, only once its name is typed | `ConfirmButton` | [controls.md](controls.md#type-the-name-to-confirm) |
 | A popover of actions or links — a ⋯ menu, Rename / Move / Delete on a row, Open in a router `linkSlot` | `Menu`, `MenuItem` | [controls.md](controls.md#menu) |
