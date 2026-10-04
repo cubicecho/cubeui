@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * The frame the Stage 0 stories render in: the React Native component on the left, the compiled
+ * The frame the RN Parity stories render in: the React Native component on the left, the compiled
  * DOM one on the right, in one story so a difference is visible rather than remembered.
  *
  * Plain DOM on purpose. A React Native wrapper would put react-native-web's stylesheet around the

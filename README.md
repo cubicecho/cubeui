@@ -1120,7 +1120,7 @@ npx shadcn add @cubeui/button-stories   # lands components/ui/button.stories.tsx
 
 Rule 10 in `check-registry-build.mjs` holds the import rules against the built JSON, which is what
 a consumer actually receives. The stories in `stories/web/published/` are button, badge, card,
-segmented, toggle-chip, section-heading, sidebar and theme-picker; the Stage 0 stories stay unpublished, because they
+segmented, toggle-chip, section-heading, sidebar and theme-picker; the RN Parity stories stay unpublished, because they
 compare against the native half and a consumer has no native half to compare.
 
 **`staticDirs` is not the way to serve `public/`, and the default nearly broke this.** Vite's
@@ -1140,7 +1140,7 @@ web half in one and the React Native one in the other.
 
 Leaving `compiled/` in both is how `compiled/multi-select-field.tsx` came to be typechecked against a
 React Native `Badge` — silently, for the whole of stage 3. `npx tsc --explainFiles` is what found it:
-`exclude` does not stop a file being pulled in by an import. The Stage 0 stories need the same split
+`exclude` does not stop a file being pulled in by an import. The RN Parity stories need the same split
 at runtime, so `.storybook/main.ts` adds a second `vite-tsconfig-paths` naming `tsconfig.web.json` —
 the framework's own only ever loads a file called `tsconfig.json`.
 
@@ -1289,6 +1289,10 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
    colour is an opacity on the class (`text-foreground/60`, `border-foreground/10`) and no longer a
    token, and shadcn's names (`primary`, `destructive`, `accent`, `border`, `card`, …) are aliases a
    cubeui component may not name. `success` was renamed `positive` before it shipped.
+
+   **The components took the word last.** `Badge`'s variant and a toast's tone were still
+   `success` over a `positive` fill, beside a `Button` whose variant is `positive`. Both are
+   `positive` now, so one word names the meaning in the token, the class and the prop.
 
    **A badge with no label collapses to a dot** — same variant, same meaning, no width needed. It
    does not overlap `color-dot`: that one takes a literal colour for a category whose hue is

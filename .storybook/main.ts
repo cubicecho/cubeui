@@ -51,7 +51,7 @@ const config: StorybookConfig = {
     config.plugins = [
       reactNativeClassName(),
       tailwind(),
-      // The web project's path aliases, for the Stage 0 stories that render a compiled
+      // The web project's path aliases, for the RN Parity stories that render a compiled
       // component beside the React Native one it came from.
       //
       // `@/lib/utils` means two different files depending on which half is asking — the

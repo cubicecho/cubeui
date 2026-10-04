@@ -135,6 +135,18 @@ the far end, so those are the props:
 <Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
 ```
 
+- **`variant`** says what the press does, and each one is a token:
+
+  | Variant | For |
+  |---|---|
+  | `default` | The emphasis of its row, when none of the meanings below fits |
+  | `info`, `info-outline` | Adds something: Add, New, Create |
+  | `positive`, `positive-outline` | Keeps the work: Save, Confirm |
+  | `destructive`, `destructive-outline` | Destroys; the outline when it is not the emphasis of its row |
+  | `outline` | A quiet action: Cancel, Close, a trigger |
+  | `secondary` | An icon inside a field's own border |
+  | `ghost`, `link` | Kept for porting shadcn code. Do not use them in new code: a button looks like a button |
+
 - **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
 - **`icon`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
@@ -1121,6 +1133,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 </Badge>
 ```
 
+- `variant` is shadcn's six (`default`, `secondary`, `destructive`, `outline`, `ghost`, `link`)
+  and three meanings of cubeui's own: `positive`, `warning` and `info`. There is no `success`: the
+  word is `positive`, as on `Button` and in the tokens. A toast's tone is the same word:
+  `toast("Saved", "positive")`, beside `error`, `warning` and `info`.
 - It draws a trailing ✕ in the label's colour — the variant's, or `textColor` — at the badge's
   icon size. Do not wrap the badge in a second pill with a `Pressable` beside it.
 - The ✕ is a button named `removeLabel`, default `Remove <text>`. On the web it is
