@@ -408,8 +408,49 @@ are filtered** too — relative addresses and the `http`, `https`, `mailto`, `ir
 `xmpp` schemes are kept, and anything else, `javascript:` and `data:` included, is blanked. Neither is something to remember per call
 site.
 
-Three props are `react-markdown`'s own, for the app whose documents are more than plain Markdown.
-They are named as it names them so its documentation applies:
+**Documents that link to each other** — notes, a skill's files, a wiki — take three more props.
+Do not write a remark plugin, an `a` component and a broken-link style for this: what a name
+points at is the app's, and everything else is here.
+
+```tsx
+const resolveLink = useCallback<NonNullable<MarkdownProps["resolveLink"]>>(
+  (target, { kind }) => {
+    const [name] = target.split("#");
+    const doc = byName.get(name);
+    if (!doc) return { broken: true, reason: `No document named “${name}”.` };
+    if (kind === "image" || kind === "embed") return { href: fileUrl(doc) };
+    return { render: (label) => <Link to="/docs/$id" params={{ id: doc.id }}>{label}</Link> };
+  },
+  [byName],
+);
+
+<Markdown content={doc.text} wikilinks basePath={doc.path} resolveLink={resolveLink} />
+```
+
+- **`wikilinks`** reads `[[Note]]`, `[[Note|label]]`, `[[Note#Heading]]` and `![[image.png]]`.
+  Off by default. `[[Note#Heading]]` is shown as "Note › Heading".
+- **`resolveLink(target, { kind })`** is asked about every wikilink and every *relative* URL —
+  never a web address, a `mailto:` or a `#fragment`. `kind` is `"wikilink"` or `"embed"` for the
+  bracket forms and `"link"` or `"image"` for Markdown's own. `target` is the name or path as
+  written, its `#heading` still on it. It answers one of:
+  - `{ href }` — an address, used as given. For an image it is the `src`, so a blob URL works.
+  - `{ render: (label) => … }` — the element only the app can draw: its router's `<Link>`, an
+    image it fetches itself. It needs no class; links and images are styled from the root.
+  - `{ pending: true }` — still being looked up: the text without a link, a chip for an image.
+  - `{ broken: true, reason }` — points at nothing: a dashed underline in `negative`, `reason` as
+    its tooltip, "(broken link)" for a screen reader; a "Missing image" chip for an image.
+  - nothing — a Markdown link or image is left as written; a wikilink is drawn broken.
+- **It may be async.** Return a promise and the link is pending until it settles, and broken if
+  it rejects. Keep an async resolver the same function between renders (`useCallback`): each new
+  one is asked again. A resolver that reads a query's cache returns `{ pending: true }` instead
+  and needs no promise.
+- **`basePath`** is the path of the document shown — `guide/intro.md`, or `guide/` for a
+  directory. With it `../api.md` reaches `resolveLink` as `api.md`, and a link that climbs out
+  of the root is drawn broken without asking. Wikilinks are names and are not resolved against it.
+- The pending and broken looks are not props. They are the same in every app on purpose.
+
+Three props are `react-markdown`'s own, for what the above does not cover. They are named as it
+names them so its documentation applies:
 
 ```tsx
 import { defaultUrlTransform } from "react-markdown";
@@ -417,17 +458,17 @@ import { defaultUrlTransform } from "react-markdown";
 <Markdown
   content={doc.text}
   headingId={slug}
-  components={{ a: DocLink, img: DocImage }}
-  remarkPlugins={[remarkWikilinks]}
-  urlTransform={(url) => (url.startsWith("wikilink:") ? url : defaultUrlTransform(url))}
+  components={{ img: SignedImage }}
+  remarkPlugins={[remarkFootnoteStyle]}
+  urlTransform={(url) => (url.startsWith("data:image/") ? url : defaultUrlTransform(url))}
 />
 ```
 
-- **`components`** replaces elements by tag, laid over the built-in map — the router's `<Link>`
-  for `a`, an image the app resolves for `img`. A replaced `a` or `img` needs no class: links and
-  images are styled from the document's root, so yours look like the ones they replaced. Declare
-  the components outside the render, or pass a memoised object; a new one each render remounts
-  the document.
+- **`components`** replaces elements by tag, laid over the built-in map. A replaced `a` or `img`
+  needs no class: links and images are styled from the document's root, so yours look like the
+  ones they replaced. Replacing `a` or `img` also replaces what `resolveLink` drives for that
+  tag — use one or the other. Declare the components outside the render, or pass a memoised
+  object; a new one each render remounts the document.
 - **`remarkPlugins`** run after remark-gfm. There is no `rehypePlugins`, which is where raw HTML
   would come back in.
 - **`urlTransform`** replaces the URL policy. Let your own scheme through and hand everything else

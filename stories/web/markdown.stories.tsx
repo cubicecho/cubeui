@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { defaultUrlTransform } from "react-markdown";
 import { expect, within } from "storybook/test";
-import { Markdown } from "@/components/markdown";
+import { Markdown, type MarkdownProps } from "@/components/markdown";
 
 const meta = {
   title: "Controls/Markdown",
@@ -289,6 +289,145 @@ export const CallerOverrides: Story = {
     await expect(image).toHaveAttribute("src", DOT);
     // Everything the transform did not name still goes through the default.
     await expect(canvas.getByText("Not an image")).toHaveAttribute("href", "");
+  },
+};
+
+/** The documents the stories below link between, by path. */
+const DOCUMENTS = ["guide/intro.md", "guide/install.md", "api.md"];
+
+/** A stand-in for the app's router link, which only the app can draw. */
+const routerLink = (path: string) => (label: ReactNode) => (
+  <a href={`/docs/${path}`} data-router-link>
+    {label}
+  </a>
+);
+
+/** A stand-in for the app's resolver: a name is a file's name without its extension. */
+const resolveDocument: NonNullable<MarkdownProps["resolveLink"]> = (target, { kind }) => {
+  if (kind === "image" || kind === "embed") {
+    return target.endsWith("dot.gif") ? { href: DOT } : { broken: true, reason: "No such file." };
+  }
+  const [name = ""] = target.split("#");
+  const path = DOCUMENTS.find((doc) => doc === name || doc.endsWith(`/${name}.md`));
+  return path
+    ? { render: routerLink(path) }
+    : { broken: true, reason: `No document named “${name}”.` };
+};
+
+const LINKED = `Start with [[intro]], then [[install|install it]] and read [[intro#Setup]].
+The [API reference](../api.md) is one directory up, and [the site](https://example.com) is not ours.
+
+![A grey square](dot.gif) and ![[dot.gif]]
+`;
+
+/**
+ * Links between an app's documents, resolved. `wikilinks` reads the bracket forms, `basePath`
+ * turns `../api.md` into the path it names, and `resolveLink` — the app's — answers each with its
+ * router link. A web address never reaches the resolver.
+ */
+export const ResolvedLinks: Story = {
+  args: {
+    content: LINKED,
+    wikilinks: true,
+    basePath: "guide/intro.md",
+    resolveLink: resolveDocument,
+  },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas }) => {
+    const named = canvas.getByRole("link", { name: "intro" });
+    await expect(named).toHaveAttribute("href", "/docs/guide/intro.md");
+    await expect(named).toHaveAttribute("data-router-link");
+    // The router's link carries no class and still looks like the document's.
+    await expect(getComputedStyle(named).textDecorationLine).toBe("underline");
+    await expect(canvas.getByRole("link", { name: "install it" })).toHaveAttribute(
+      "href",
+      "/docs/guide/install.md",
+    );
+    await expect(canvas.getByRole("link", { name: "intro › Setup" })).toBeVisible();
+    await expect(canvas.getByRole("link", { name: "API reference" })).toHaveAttribute(
+      "href",
+      "/docs/api.md",
+    );
+    await expect(canvas.getByRole("link", { name: "the site" })).toHaveAttribute(
+      "href",
+      "https://example.com",
+    );
+    for (const image of canvas.getAllByRole("img")) await expect(image).toHaveAttribute("src", DOT);
+    await expect(canvas.getAllByRole("img")).toHaveLength(2);
+  },
+};
+
+/**
+ * Still being looked up: the link's text without its link, and a chip where the image will be.
+ * Here the resolver answers `{ pending: true }`, as one reading a query that has not loaded does.
+ */
+export const PendingLinks: Story = {
+  args: {
+    content: LINKED,
+    wikilinks: true,
+    basePath: "guide/intro.md",
+    resolveLink: () => ({ pending: true }),
+  },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas, canvasElement }) => {
+    // Only the web address is a link yet.
+    await expect(canvas.getAllByRole("link")).toHaveLength(1);
+    await expect(canvas.getByText("install it")).toHaveAttribute("aria-busy", "true");
+    await expect(canvasElement.querySelectorAll("[data-slot=markdown-pending-image]")).toHaveLength(
+      2,
+    );
+  },
+};
+
+/** An async resolver: every link is pending until its promise settles, then drawn as answered. */
+const resolveLater: NonNullable<MarkdownProps["resolveLink"]> = async (target, context) => {
+  await new Promise((done) => setTimeout(done, 50));
+  return resolveDocument(target, context);
+};
+
+export const ResolvesLater: Story = {
+  args: {
+    content: "Read [[intro]] and [[nowhere]].\n",
+    wikilinks: true,
+    resolveLink: resolveLater,
+  },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("intro")).toHaveAttribute("aria-busy", "true");
+    await expect(await canvas.findByRole("link", { name: "intro" })).toHaveAttribute(
+      "href",
+      "/docs/guide/intro.md",
+    );
+    await expect(await canvas.findByTitle("No document named “nowhere”.")).toBeVisible();
+  },
+};
+
+/**
+ * Pointing at nothing. A broken link keeps a dashed underline and says why on hover; a screen
+ * reader hears "(broken link)". A relative link that climbs out of the root is broken before the
+ * resolver is asked, and a wikilink with no resolver at all is broken too.
+ */
+export const BrokenLinks: Story = {
+  args: {
+    content:
+      "See [[missing]] and [the plan](../../plan.md), or [a typo](instal.md).\n\n![The diagram](diagram.png) and ![[chart.png]]\n",
+    wikilinks: true,
+    basePath: "guide/intro.md",
+    resolveLink: resolveDocument,
+  },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.queryAllByRole("link")).toHaveLength(0);
+    const missing = canvas.getByTitle("No document named “missing”.");
+    await expect(missing).toHaveTextContent("missing (broken link)");
+    await expect(getComputedStyle(missing).textDecorationStyle).toBe("dashed");
+    await expect(canvas.getByTitle("This points outside the documents.")).toHaveTextContent(
+      "the plan",
+    );
+    await expect(canvas.getByText("Missing image: The diagram")).toBeVisible();
+    await expect(canvasElement.querySelectorAll("[data-slot=markdown-missing-image]")).toHaveLength(
+      2,
+    );
   },
 };
 
