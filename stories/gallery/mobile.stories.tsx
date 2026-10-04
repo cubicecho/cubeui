@@ -210,6 +210,7 @@ const NOT_SHOWN: Record<string, string> = {
   utils: "The `cn` class-name helper. A function, not a component.",
   color: "Colour maths helpers. Functions, not components.",
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
+  format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "copy-button":
     "The native source imports expo-clipboard, which this repo only declares in types/, so it cannot run in a browser.",
 };
