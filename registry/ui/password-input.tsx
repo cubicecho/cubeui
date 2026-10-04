@@ -1,7 +1,8 @@
 /**
  * A password box with an eye on it: `Input` with `type="password"` and a named show/hide button in
- * its `trailing` slot. Written once, in React Native, and compiled for the web — the web half is a
- * real `<input>` whose `type` flips, the native one a `TextInput` whose `secureTextEntry` does.
+ * its `trailingSlot` slot. Written once, in React Native, and compiled for the web — the web half
+ * is a real `<input>` whose `type` flips, the native one a `TextInput` whose `secureTextEntry`
+ * does.
  *
  * Nine call sites across six projects write `<Input type="password">`, and not one of them can be
  * un-masked. Five of those are token gates — a pasted bearer token, a server's start-up secret —
@@ -42,7 +43,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "@/components/ui/icons";
 import { Input, type InputProps } from "@/components/ui/input";
 
-export type PasswordInputProps = Omit<InputProps, "type" | "trailing"> & {
+export type PasswordInputProps = Omit<InputProps, "type" | "trailingSlot"> & {
   /** The reveal button's name while the value is hidden. */
   showLabel?: string | undefined;
   /** And while it is showing. Both are announced; the icon alone says nothing. */
@@ -66,7 +67,7 @@ export function PasswordInput({
       {...props}
       type={visible ? "text" : "password"}
       disabled={disabled}
-      trailing={
+      trailingSlot={
         revealable ? (
           <Button
             variant="secondary"

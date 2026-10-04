@@ -11,6 +11,9 @@ import { createLink } from "@tanstack/react-router";
 import { SidebarNavItem as Compiled, BarNavItem as CompiledBar } from "../compiled/sidebar";
 import { SidebarNavItem as Native, BarNavItem as NativeBar } from "../registry/layout/sidebar";
 
+/** A slot takes an element, never a bare string: any one will do here. */
+const node = <i />;
+
 const go = () => undefined;
 
 /** TanStack Router's own link, rendering the row — the case #129 is about. */
@@ -22,7 +25,7 @@ const CompiledBarLink = createLink(CompiledBar);
 const NativeBarLink = createLink(NativeBar);
 
 /** One place, written once, spread into the row and into the bar's item. */
-const place = { label: "Skills", icon: "icon", count: 12, status: { label: "MCP on" } };
+const place = { label: "Skills", iconSlot: node, count: 12, status: { label: "MCP on" } };
 
 export function SidebarNavItemTypeAssertions() {
   return (
@@ -56,19 +59,19 @@ export function SidebarNavItemTypeAssertions() {
       <Compiled href="/skills" active {...place} />
       <CompiledBar href="/skills" active {...place} />
       {/* A router's link hands it the `href`, as it does the row. */}
-      <NativeBar label="Skills" icon="icon" />
-      <NativeBarLink to="/" label="Skills" icon="icon" active={false} />
-      <CompiledBarLink to="/" label="Skills" icon="icon" count="99+" />
+      <NativeBar label="Skills" iconSlot={node} />
+      <NativeBarLink to="/" label="Skills" iconSlot={node} active={false} />
+      <CompiledBarLink to="/" label="Skills" iconSlot={node} count="99+" />
       {/* @ts-expect-error an icon-only link has no name unless it is given one */}
-      <NativeBar href="/skills" icon="icon" />
+      <NativeBar href="/skills" iconSlot={node} />
       {/* @ts-expect-error an icon-only link has no name unless it is given one */}
-      <CompiledBar href="/skills" icon="icon" />
+      <CompiledBar href="/skills" iconSlot={node} />
       {/* @ts-expect-error the icon is all that is drawn, so there is always one */}
       <NativeBar href="/skills" label="Skills" />
       {/* @ts-expect-error the icon is all that is drawn, so there is always one */}
       <CompiledBar href="/skills" label="Skills" />
       {/* @ts-expect-error a status is words to read, not a node */}
-      <NativeBar href="/skills" label="Skills" icon="icon" status="MCP on" />
+      <NativeBar href="/skills" label="Skills" iconSlot={node} status="MCP on" />
       {/* @ts-expect-error the item's own props are still checked through the router's link */}
       <CompiledBarLink to="/" label="Skills" />
     </>

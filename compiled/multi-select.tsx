@@ -421,7 +421,7 @@ export function MultiSelect({
               )}
             </div>
           }
-          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+          trailingSlot={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
         />
       </PopoverTrigger>
 
@@ -495,7 +495,7 @@ export function MultiSelect({
               size="sm"
               className="text-foreground/60"
               onClick={() => onValueChange([])}
-              icon={<X className="size-4" aria-hidden />}
+              iconSlot={<X className="size-4" aria-hidden />}
               content="Clear"
             />
           </div>

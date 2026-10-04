@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 import { expect, within } from "storybook/test";
 import {
   Alert as Compiled,
@@ -29,7 +29,7 @@ type Story = StoryObj;
 
 type AlertComponent = typeof Native;
 
-function Variants({ Alert, action }: { Alert: AlertComponent; action: ReactNode }) {
+function Variants({ Alert, action }: { Alert: AlertComponent; action: ReactElement }) {
   return (
     <div className="flex flex-col gap-3">
       <Alert title="Heads up" description="Sessions now last thirty days." />
@@ -47,9 +47,9 @@ function Variants({ Alert, action }: { Alert: AlertComponent; action: ReactNode 
         variant="destructive"
         title="Last error"
         description="spawn npx ENOENT"
-        action={action}
+        actionSlot={action}
       />
-      <Alert icon={null} description="No icon, just the line." />
+      <Alert iconSlot={null} description="No icon, just the line." />
     </div>
   );
 }
@@ -109,7 +109,8 @@ export const Default: Story = {
       await expect(colour(compiled)).toBe(foreground);
     }
 
-    // The default glyph: 16px, in the variant's ink, the same on both halves; `icon={null}` is none.
+    // The default glyph: 16px, in the variant's ink, the same on both halves; `iconSlot={null}` is
+    // none.
     const glyph = (text: string) => {
       const box = canvas.getAllByRole("status").filter((el) => el.textContent?.includes(text));
       return box.map((el) => el.querySelector("svg"));

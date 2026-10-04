@@ -66,7 +66,7 @@ export function DownloadButton({
       disabled={disabled}
       className={className}
       onPress={() => void download((content) => downloadBlob(content, filename, { mimeType }))}
-      icon={<Download aria-hidden />}
+      iconSlot={<Download aria-hidden />}
     />
   );
 }

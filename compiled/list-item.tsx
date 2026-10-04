@@ -9,7 +9,7 @@
  */
 
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 type ListItemProps = {
   /** What the row is: a person's name, a todo's text. One line, truncated when it runs long. */
@@ -18,12 +18,12 @@ type ListItemProps = {
   description?: ReactNode | undefined;
   /**
    * The start of the row, before the title: an avatar, a checkbox, an icon. Placed as given — not
-   * sized or recoloured the way `icon` is, because a checkbox or an avatar is not a glyph. It sits
-   * **outside** the pressed area, so a checkbox here stays its own control.
+   * sized or recoloured the way `iconSlot` is, because a checkbox or an avatar is not a glyph. It
+   * sits **outside** the pressed area, so a checkbox here stays its own control.
    */
-  leading?: ReactNode | undefined;
+  leadingSlot?: SlotNode | undefined;
   /**
-   * The small grey facts at the row's far end, before `action`: "2 days ago", "12", a badge. A
+   * The small grey facts at the row's far end, before `actionSlot`: "2 days ago", "12", a badge. A
    * string is drawn muted and extra small; an element is placed as it is. Inside the pressed area.
    */
   meta?: ReactNode | undefined;
@@ -32,10 +32,11 @@ type ListItemProps = {
    * or a fragment of them. A control nested in a button is invalid HTML and, in practice, a click
    * that also opens the row.
    */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /**
    * Makes the row something you press — open the person, edit the todo. The title, description and
-   * `meta` become one button between `leading` and `action`, so neither of those is nested in it.
+   * `meta` become one button between `leadingSlot` and `actionSlot`, so neither of those is nested
+   * in it.
    */
   onClick?: (() => void) | undefined;
   /**
@@ -47,7 +48,7 @@ type ListItemProps = {
   titleClassName?: string | undefined;
 };
 
-/** A string on its own is a crash on device, so a string slot gets a `Text` around it. */
+/** A string on its own is a crash on device, so a string `meta` gets a `Text` around it. */
 function asText(node: ReactNode, className: string) {
   return typeof node === "string" || typeof node === "number" ? (
     <span className={cn("cube-rn-text", className)}>{node}</span>
@@ -70,9 +71,9 @@ function asText(node: ReactNode, className: string) {
  * **The pressed area is the middle, and only the middle.** A row that opens *and* has buttons is
  * the common case, and the hand-written answer was either a button wrapping buttons (invalid
  * HTML, and every inner click also opens the row) or a stretched overlay whose inner controls
- * need `pointer-events` juggling on two platforms. So the row is three siblings — `leading`, the
- * pressable middle, `action` — and each control is reached, pressed and announced on its own.
- * On the web the middle is a real `<button>`, named by the text inside it.
+ * need `pointer-events` juggling on two platforms. So the row is three siblings — `leadingSlot`,
+ * the pressable middle, `actionSlot` — and each control is reached, pressed and announced on its
+ * own. On the web the middle is a real `<button>`, named by the text inside it.
  *
  * No surface: a row lives in a list, a card or a section, and that owns the border. Pass
  * `className="rounded-lg border border-foreground/10 bg-secondary"` for the telos look.
@@ -80,9 +81,9 @@ function asText(node: ReactNode, className: string) {
 export function ListItem({
   title,
   description,
-  leading,
+  leadingSlot,
   meta,
-  action,
+  actionSlot,
   onClick: onPress,
   selected = false,
   className,
@@ -136,9 +137,9 @@ export function ListItem({
         className,
       )}
     >
-      {leading ? (
+      {leadingSlot ? (
         <div data-slot="list-item-leading" className="cube-rn-view shrink-0 flex-row items-center">
-          {leading}
+          {leadingSlot}
         </div>
       ) : null}
 
@@ -165,12 +166,12 @@ export function ListItem({
         </div>
       )}
 
-      {action ? (
+      {actionSlot ? (
         <div
           data-slot="list-item-action"
           className="cube-rn-view shrink-0 flex-row items-center gap-1"
         >
-          {asText(action, "text-foreground/60 text-xs")}
+          {actionSlot}
         </div>
       ) : null}
     </div>

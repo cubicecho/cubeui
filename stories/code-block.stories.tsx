@@ -139,7 +139,7 @@ export const WithAction: Story = {
     both((CodeBlock, CopyButton) => (
       <CodeBlock
         content={`${TREE}\n\n${COMMAND}`}
-        action={<CopyButton value={COMMAND} label="Copy snippet" onCopied={onCopied} />}
+        actionSlot={<CopyButton value={COMMAND} label="Copy snippet" onCopied={onCopied} />}
       />
     )),
   play: async ({ canvasElement }) => {
@@ -201,7 +201,7 @@ export const CopyableValue: Story = {
         <CodeBlock
           content={ENDPOINT}
           wrap
-          action={<CopyButton value={ENDPOINT} label="Copy endpoint URL" />}
+          actionSlot={<CopyButton value={ENDPOINT} label="Copy endpoint URL" />}
         />
         <CodeBlock content={TREE} />
       </div>

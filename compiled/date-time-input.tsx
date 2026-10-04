@@ -175,7 +175,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
               ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
             }}
             className="flex-1 justify-start text-left font-normal"
-            icon={<CalendarIcon className="mr-2 h-4 w-4" />}
+            iconSlot={<CalendarIcon className="mr-2 h-4 w-4" />}
             content={
               // Its own `Text` in both states, for the id a reference points at; and because
               // native has no colour inheritance, the placeholder's muted class has to be on
@@ -207,7 +207,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleClear}
-                icon={<X className="h-4 w-4" />}
+                iconSlot={<X className="h-4 w-4" />}
                 content="Clear"
               />
             </div>

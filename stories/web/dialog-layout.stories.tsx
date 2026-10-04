@@ -49,7 +49,7 @@ function Harness({
         open={open}
         onOpenChange={setOpen}
         title="Edit card"
-        content={
+        contentSlot={
           <div>
             <p>Body</p>
             {/* A render the story can force, to prove the thunk is not consulted by one. */}
@@ -57,7 +57,7 @@ function Harness({
             <p data-testid="renders">{renders}</p>
           </div>
         }
-        footerActions={(close) => <Button variant="outline" onClick={close} content="Cancel" />}
+        footerActionsSlot={(close) => <Button variant="outline" onClick={close} content="Cancel" />}
         hasUnsavedChanges={asFunction ? answer : unsaved}
       />
       <p data-testid="open">{open ? "open" : "closed"}</p>
@@ -93,8 +93,8 @@ const keepEditing = async () => {
 /**
  * All four doors ask, and the answer comes from a function.
  *
- * The four are Escape, a click on the overlay, the close button, and the `footerActions` Cancel —
- * the fourth being the one people actually click, and the one a Cancel wired to the caller's own
+ * The four are Escape, a click on the overlay, the close button, and the `footerActionsSlot` Cancel
+ * — the fourth being the one people actually click, and the one a Cancel wired to the caller's own
  * `setOpen(false)` goes around entirely.
  */
 export const AThunkHoldsAllFourDoors: Story = {
@@ -192,7 +192,7 @@ export const TheBooleanFormStillAsks: Story = {
 const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
 
 /**
- * Three `footerActions` in a 320px dialog (#159). The row wraps rather than running its first
+ * Three `footerActionsSlot` in a 320px dialog (#159). The row wraps rather than running its first
  * button out past the dialog's left edge, and the wrapped line stays against the right edge. The
  * same row as `CardLayout`'s, whose story holds the native half; this one holds the dialog's.
  */
@@ -203,14 +203,10 @@ export const NarrowFooterActionsWrap: Story = {
       open
       title="Journal"
       className="sm:max-w-[320px]"
-      content={<p>Notes kept by the agent.</p>}
-      footerActions={
-        <>
-          {actionLabels.map((label) => (
-            <Button key={label} variant="outline" size="sm" content={label} />
-          ))}
-        </>
-      }
+      contentSlot={<p>Notes kept by the agent.</p>}
+      footerActionsSlot={actionLabels.map((label) => (
+        <Button key={label} variant="outline" size="sm" content={label} />
+      ))}
     />
   ),
   play: async () => {

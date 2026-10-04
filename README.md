@@ -83,10 +83,10 @@ DOM app keeps its `components.json` line. What changes under it:
   `getByRole("heading", { level: 2 })` still finds it. A selector on `h2` does not; use
   `[data-slot=section-title]`.
 - **`RadioGroupField` is one source for both platforms, and is not built on `FormField`.** It
-  still takes `form`, `name`, `label`, `description`, `required`, `action`, `loading`, `options`
+  still takes `form`, `name`, `label`, `description`, `required`, `action` (now `actionSlot`), `loading`, `options`
   and the `*ClassName` props. It no longer takes `descriptionPlacement`, `descriptionIcon`,
   `htmlFor` or `asGroup`, or radix's `name`, `dir` and `asChild`. `orientation` now arranges the
-  options rather than the field. `variant="card"` and per-option `icon` and `hint` are new.
+  options rather than the field. `variant="card"` and per-option `iconSlot` and `hint` are new.
 - **`SplitLayout` is flexbox, not grid tracks.** The props are unchanged. The
   `--cube-split-cols` custom property is gone, so a stylesheet that set it does nothing now.
 - **`DialogLayout`'s discard question is a `Dialog` with `role="alertdialog"`.** It is no longer
@@ -165,14 +165,15 @@ there is one copy of each file rather than two that drift.
 
 ## Every slot is a prop, including the body
 
-The shells take no children. The body is `content`, exactly like `header` and `footer` are props:
+The shells take no children. The body is `contentSlot`, exactly like `headerSlot` and `footerSlot`
+are props:
 
 ```tsx
 <StickyHeaderContentFooter
   width="page"
-  header={<PageHeader title="Workspaces" />}
-  content={<DataTable columns={columns} data={rows} />}
-  footer={<Pagination page={page} onPageChange={setPage} />}
+  headerSlot={<PageHeader title="Workspaces" />}
+  contentSlot={<DataTable columns={columns} data={rows} />}
+  footerSlot={<Pagination page={page} onPageChange={setPage} />}
 />
 ```
 
@@ -181,8 +182,17 @@ In a layout **all** the parts are dynamic. Giving one of them the privileged pos
 component whose whole job is placing all of them. Passing them the same way keeps them equal. It
 keeps a call site to a single self-closing element whose props read as a list of positions, and it
 makes an absent body as visible as an absent header: a prop that is not there, rather than a
-missing nesting level. It also removes the "does this one take `content` or children?" question
+missing nesting level. It also removes the "does this one take `contentSlot` or children?" question
 that a mixed convention forces on every call site.
+
+**The props that take elements took a suffix.** They were bare nouns — `content`, `icon`,
+`action`, `footer` — and typed `ReactNode`, so a string passed to one compiled, drew on the web
+and crashed on a device, where text is drawn only inside a `<Text>`. Each is now named with
+`Slot` on the end (`contentSlot`, `iconSlot`, `actionSlot`, `footerSlot`) and typed `SlotNode`:
+an element, several, or nothing. A line of prose in a slot is a `<Text>` the caller writes. A
+prop that takes words (`title`, `description`, `label`) has no suffix and the component wraps
+them itself, and a prop that takes either kept its name: `MenuItem`'s `trailing`, `Button`'s
+`content`. The class props did not move, so `contentClassName` is still `contentClassName`.
 
 The primitives are shadcn-shaped and take children as shadcn's do, and so do the few React Native
 screen shapes (`Page`, `DetailPage`), because a React Native tree is a tree of views. Rule 1 of
@@ -935,7 +945,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
 | `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
-| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` — **but not its children or `asChild`**: the inside is `icon`, `content` and `trailing`, and a link is `link` (#243), so `<Button>Save</Button>` ports as `<Button content="Save" />` |
+| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` — **but not its children or `asChild`**: the inside is `iconSlot`, `content` and `trailingSlot`, and a link is `linkSlot` (#243), so `<Button>Save</Button>` ports as `<Button content="Save" />` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
 | `tooltip` | radix's props on every part — `open`/`onOpenChange` on `Tooltip`, `sideOffset`/`align` on the content, `className` on the trigger |

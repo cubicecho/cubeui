@@ -5,7 +5,7 @@ import * as React from "react";
 import { Text, View } from "react-native";
 import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 /** One choice. `description` is the line under it — what picking this one means. */
 export type RadioOption = {
@@ -13,7 +13,7 @@ export type RadioOption = {
   label: ReactNode;
   description?: ReactNode | undefined;
   /** The picture over the label, in the `card` variant. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /** A hover hint on the web and the accessibility hint on device. */
   hint?: string | undefined;
   disabled?: boolean | undefined;
@@ -85,7 +85,7 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
   /** Marks the group required: an asterisk on the title and `aria-required` on the group. */
   required?: boolean | undefined;
   /** The title row's far end. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** Draws a placeholder where the options go, for a form whose values are still loading. */
   loading?: boolean | undefined;
   /** `row` (the default), `card` or `segmented` — see `RadioGroup`. */
@@ -122,7 +122,7 @@ function RadioGroupFieldBody({
   label,
   description,
   required = false,
-  action,
+  actionSlot,
   loading = false,
   variant,
   orientation,
@@ -166,10 +166,10 @@ function RadioGroupFieldBody({
   return (
     // biome-ignore lint/a11y/useSemanticElements: React Native has no fieldset; role="group" is the cross-platform form
     <View role="group" testID="radio-group-field" className={cn("w-full min-w-0 gap-2", className)}>
-      {action ? (
+      {actionSlot ? (
         <View className="min-w-0 flex-row items-center gap-2">
           {title}
-          <View className="ml-auto shrink-0">{action}</View>
+          <View className="ml-auto shrink-0">{actionSlot}</View>
         </View>
       ) : (
         title
@@ -205,7 +205,7 @@ function RadioGroupFieldBody({
               value={option.value}
               label={option.label}
               description={option.description}
-              icon={option.icon}
+              iconSlot={option.iconSlot}
               hint={option.hint}
               disabled={option.disabled}
             />

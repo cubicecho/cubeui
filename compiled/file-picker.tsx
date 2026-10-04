@@ -179,7 +179,7 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
 
 export function FilePickerButton({
   label,
-  icon = <Upload />,
+  iconSlot = <Upload />,
   variant,
   size,
   className,
@@ -188,11 +188,11 @@ export function FilePickerButton({
   const { trigger, input, dragging } = useFilePick(options);
   // At an icon size the square has no room for words, so `label` is the name alone.
   const iconOnly = typeof size === "string" && size.startsWith("icon");
-  let content: ReactNode = icon;
+  let content: ReactNode = iconSlot;
   if (!iconOnly) {
     content = (
       <>
-        {icon}
+        {iconSlot}
         <span className={cn("cube-rn-text", buttonTextVariants({ variant, size }))}>{label}</span>
       </>
     );

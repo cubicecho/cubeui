@@ -19,10 +19,10 @@ const cells = (canvasElement: HTMLElement) =>
 /** Two values that belong together, on one line. The shape this exists for. */
 export const TwoUp: Story = {
   args: {
-    content: (
+    contentSlot: (
       <>
-        <FormField label="Priority" control={<Input defaultValue="Normal" />} />
-        <FormField label="Duration" control={<Input defaultValue="30 minutes" />} />
+        <FormField label="Priority" controlSlot={<Input defaultValue="Normal" />} />
+        <FormField label="Duration" controlSlot={<Input defaultValue="30 minutes" />} />
       </>
     ),
   },
@@ -53,11 +53,11 @@ export const TwoUp: Story = {
  */
 export const WrapsRatherThanSqueezing: Story = {
   args: {
-    content: (
+    contentSlot: (
       <>
-        <FormField label="Priority" control={<Input />} />
-        <FormField label="Duration" control={<Input />} />
-        <FormField label="Repeats" control={<Input />} />
+        <FormField label="Priority" controlSlot={<Input />} />
+        <FormField label="Duration" controlSlot={<Input />} />
+        <FormField label="Repeats" controlSlot={<Input />} />
       </>
     ),
   },
@@ -80,11 +80,11 @@ export const WrapsRatherThanSqueezing: Story = {
 export const ThreeUp: Story = {
   args: {
     perRow: 3,
-    content: (
+    contentSlot: (
       <>
-        <FormField label="Day" control={<Input />} />
-        <FormField label="Month" control={<Input />} />
-        <FormField label="Year" control={<Input />} />
+        <FormField label="Day" controlSlot={<Input />} />
+        <FormField label="Month" controlSlot={<Input />} />
+        <FormField label="Year" controlSlot={<Input />} />
       </>
     ),
   },
@@ -103,12 +103,12 @@ export const ThreeUp: Story = {
  */
 export const AbsentFieldsTakeNoSpace: Story = {
   args: {
-    content: (
+    contentSlot: (
       <>
-        <FormField label="Priority" control={<Input />} />
-        {false && <FormField label="Never" control={<Input />} />}
+        <FormField label="Priority" controlSlot={<Input />} />
+        {false && <FormField label="Never" controlSlot={<Input />} />}
         {null}
-        <FormField label="Duration" control={<Input />} />
+        <FormField label="Duration" controlSlot={<Input />} />
       </>
     ),
   },

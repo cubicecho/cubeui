@@ -42,7 +42,7 @@ export const Loading: Story = {
     query: { ...settled, isPending: true },
     what: "your roles",
     count: 0,
-    empty: NoRoles,
+    emptySlot: NoRoles,
   },
   play: async ({ canvas }) => {
     // Named rather than worded: the native-first `RowSkeleton` hangs "Loading" off the status as an
@@ -62,7 +62,7 @@ export const Failed: Story = {
     query: { ...settled, isError: true, error: new Error("Failed to fetch") },
     what: "your roles",
     count: 0,
-    empty: NoRoles,
+    emptySlot: NoRoles,
   },
   play: async ({ canvas, args }) => {
     // The failure replaces what the reader was waiting for, so it is announced as an alert — the
@@ -169,7 +169,7 @@ export const RetryRejected: Story = {
 
 /** It landed, and there is nothing in it. The node is the caller's — usually an `Empty`. */
 export const NothingThere: Story = {
-  args: { query: settled, what: "your roles", count: 0, empty: NoRoles },
+  args: { query: settled, what: "your roles", count: 0, emptySlot: NoRoles },
   play: async ({ canvas }) => {
     expect(canvas.getByText("No roles yet")).toBeVisible();
   },
@@ -180,7 +180,7 @@ export const NothingThere: Story = {
  * then the list rather than a nest of ternaries.
  */
 export const OutOfTheWay: Story = {
-  args: { query: settled, what: "your roles", count: 3, empty: NoRoles },
+  args: { query: settled, what: "your roles", count: 3, emptySlot: NoRoles },
   render: (args) => (
     <>
       <QueryState {...args} />
@@ -203,7 +203,7 @@ export const AnEmptyViewIsNotAnEmptyResult: Story = {
     query: settled,
     what: "your roles",
     count: 0,
-    empty: (
+    emptySlot: (
       <Empty>
         <EmptyHeader>
           <EmptyTitle>No roles match “verdict”</EmptyTitle>

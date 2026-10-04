@@ -99,9 +99,9 @@ export const TypedAsWritten: Story = {
 const onClear = fn();
 
 /**
- * `leading` and `trailing`, on both halves: the icon sits inside the field at its start and takes
- * no press, the text starts past it, and a trailing button is pressable and stops the text short
- * of itself. Without either slot the root is the field, as it always was.
+ * `leadingSlot` and `trailingSlot`, on both halves: the icon sits inside the field at its start and
+ * takes no press, the text starts past it, and a trailing button is pressable and stops the text
+ * short of itself. Without either slot the root is the field, as it always was.
  */
 export const Slots: Story = {
   render: () => (
@@ -111,19 +111,19 @@ export const Slots: Story = {
           <Native
             aria-label="Native search"
             placeholder="Search servers"
-            leading={<NativeSearch />}
+            leadingSlot={<NativeSearch />}
           />
           <Native
             aria-label="Native filter"
             defaultValue="mcp"
-            leading={<NativeSearch />}
-            trailing={
+            leadingSlot={<NativeSearch />}
+            trailingSlot={
               <NativeButton
                 variant="outline"
                 size="icon-xs"
                 aria-label="Native clear"
                 onPress={onClear}
-                icon={<NativeX />}
+                iconSlot={<NativeX />}
               />
             }
             wrapperClassName="w-64"
@@ -136,19 +136,19 @@ export const Slots: Story = {
           <Compiled
             aria-label="Compiled search"
             placeholder="Search servers"
-            leading={<CompiledSearch />}
+            leadingSlot={<CompiledSearch />}
           />
           <Compiled
             aria-label="Compiled filter"
             defaultValue="mcp"
-            leading={<CompiledSearch />}
-            trailing={
+            leadingSlot={<CompiledSearch />}
+            trailingSlot={
               <CompiledButton
                 variant="outline"
                 size="icon-xs"
                 aria-label="Compiled clear"
                 onClick={onClear}
-                icon={<CompiledX />}
+                iconSlot={<CompiledX />}
               />
             }
             wrapperClassName="w-64"

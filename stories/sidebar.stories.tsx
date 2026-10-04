@@ -65,11 +65,11 @@ export const Default: Story = {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            header={brand("Telos")}
-            content={
+            headerSlot={brand("Telos")}
+            contentSlot={
               <NativeSection
                 title="Projects"
-                content={projects.map((p) => (
+                contentSlot={projects.map((p) => (
                   <NativeNavItem
                     key={p.id}
                     href={`#/projects/${p.id}`}
@@ -80,7 +80,7 @@ export const Default: Story = {
                 ))}
               />
             }
-            footer={<NativeNavItem href="#/settings" label="Settings" />}
+            footerSlot={<NativeNavItem href="#/settings" label="Settings" />}
           />
         </Frame>
       }
@@ -88,11 +88,11 @@ export const Default: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            header={<span className="font-semibold text-foreground">Telos</span>}
-            content={
+            headerSlot={<span className="font-semibold text-foreground">Telos</span>}
+            contentSlot={
               <CompiledSection
                 title="Projects"
-                content={projects.map((p) => (
+                contentSlot={projects.map((p) => (
                   <CompiledNavItem
                     key={p.id}
                     href={`#/projects/${p.id}`}
@@ -103,7 +103,7 @@ export const Default: Story = {
                 ))}
               />
             }
-            footer={<CompiledNavItem href="#/settings" label="Settings" />}
+            footerSlot={<CompiledNavItem href="#/settings" label="Settings" />}
           />
         </Frame>
       }
@@ -173,11 +173,11 @@ export const HiddenBelow: Story = {
           <NativeSidebar
             label="Native rail"
             hideBelow="md"
-            content={<NativeNavItem href="#/inbox" label="Inbox" active />}
+            contentSlot={<NativeNavItem href="#/inbox" label="Inbox" active />}
           />
           <NativeSidebar
             label="Native always"
-            content={<NativeNavItem href="#/inbox" label="Inbox" />}
+            contentSlot={<NativeNavItem href="#/inbox" label="Inbox" />}
           />
         </Frame>
       }
@@ -186,11 +186,11 @@ export const HiddenBelow: Story = {
           <CompiledSidebar
             label="Compiled rail"
             hideBelow="md"
-            content={<CompiledNavItem href="#/inbox" label="Inbox" active />}
+            contentSlot={<CompiledNavItem href="#/inbox" label="Inbox" active />}
           />
           <CompiledSidebar
             label="Compiled always"
-            content={<CompiledNavItem href="#/inbox" label="Inbox" />}
+            contentSlot={<CompiledNavItem href="#/inbox" label="Inbox" />}
           />
         </Frame>
       }
@@ -243,12 +243,12 @@ export const NavigationLandmark: Story = {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            content={
+            contentSlot={
               <>
                 <NativeSection
                   as="nav"
                   label="Native main"
-                  content={[
+                  contentSlot={[
                     <NativeNavItem key="home" href="#/" label="Home" active />,
                     <NativeNavItem key="inbox" href="#/inbox" label="Inbox" />,
                   ]}
@@ -256,13 +256,13 @@ export const NavigationLandmark: Story = {
                 <NativeSection
                   as="nav"
                   title="Native projects"
-                  content={projects.map((p) => (
+                  contentSlot={projects.map((p) => (
                     <NativeNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
                   ))}
                 />
                 <NativeSection
                   title="Native recent"
-                  content={recent.map((name) => (
+                  contentSlot={recent.map((name) => (
                     <NativeNavItem key={name} href={`#/recent/${name}`} label={name} />
                   ))}
                 />
@@ -275,12 +275,12 @@ export const NavigationLandmark: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            content={
+            contentSlot={
               <>
                 <CompiledSection
                   as="nav"
                   label="Compiled main"
-                  content={[
+                  contentSlot={[
                     <CompiledNavItem key="home" href="#/" label="Home" active />,
                     <CompiledNavItem key="inbox" href="#/inbox" label="Inbox" />,
                   ]}
@@ -288,13 +288,13 @@ export const NavigationLandmark: Story = {
                 <CompiledSection
                   as="nav"
                   title="Compiled projects"
-                  content={projects.map((p) => (
+                  contentSlot={projects.map((p) => (
                     <CompiledNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
                   ))}
                 />
                 <CompiledSection
                   title="Compiled recent"
-                  content={recent.map((name) => (
+                  contentSlot={recent.map((name) => (
                     <CompiledNavItem key={name} href={`#/recent/${name}`} label={name} />
                   ))}
                 />
@@ -359,11 +359,15 @@ export const ActionRow: Story = {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            content={null}
-            footer={
+            contentSlot={null}
+            footerSlot={
               <>
-                <NativeNavItem href="#/settings" label="Settings" icon={<NativeSettings />} />
-                <NativeNavItem label="Sign out" icon={<NativeArrowRight />} onPress={onSignOut} />
+                <NativeNavItem href="#/settings" label="Settings" iconSlot={<NativeSettings />} />
+                <NativeNavItem
+                  label="Sign out"
+                  iconSlot={<NativeArrowRight />}
+                  onPress={onSignOut}
+                />
               </>
             }
           />
@@ -373,13 +377,17 @@ export const ActionRow: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            content={null}
-            footer={
+            contentSlot={null}
+            footerSlot={
               <>
-                <CompiledNavItem href="#/settings" label="Settings" icon={<CompiledSettings />} />
+                <CompiledNavItem
+                  href="#/settings"
+                  label="Settings"
+                  iconSlot={<CompiledSettings />}
+                />
                 <CompiledNavItem
                   label="Sign out"
-                  icon={<CompiledArrowRight />}
+                  iconSlot={<CompiledArrowRight />}
                   onClick={onSignOut}
                 />
               </>
@@ -457,10 +465,10 @@ function RouterRows() {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            content={
+            contentSlot={
               <NativeSection
                 title="Pages"
-                content={routes.map(({ to, label }) => (
+                contentSlot={routes.map(({ to, label }) => (
                   <NativeRouterLink key={to} to={to} label={label} active={active(to)} />
                 ))}
               />
@@ -472,10 +480,10 @@ function RouterRows() {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            content={
+            contentSlot={
               <CompiledSection
                 title="Pages"
-                content={routes.map(({ to, label }) => (
+                contentSlot={routes.map(({ to, label }) => (
                   <CompiledRouterLink key={to} to={to} label={label} active={active(to)} />
                 ))}
               />
@@ -561,7 +569,7 @@ export const States: Story = {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            content={
+            contentSlot={
               <>
                 <NativeSection
                   title="Projects"
@@ -584,7 +592,7 @@ export const States: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            content={
+            contentSlot={
               <>
                 <CompiledSection
                   title="Projects"
@@ -649,10 +657,10 @@ export const Status: Story = {
         <Frame>
           <NativeSidebar
             label="Native sidebar"
-            content={
+            contentSlot={
               <NativeSection
                 title="Folders"
-                content={folders.map((f) => (
+                contentSlot={folders.map((f) => (
                   <NativeNavItem
                     key={f.id}
                     href={`#/folders/${f.id}`}
@@ -660,7 +668,7 @@ export const Status: Story = {
                     count={f.count}
                     status={
                       f.icon
-                        ? { label: f.status, icon: <NativeCircleCheck /> }
+                        ? { label: f.status, iconSlot: <NativeCircleCheck /> }
                         : { label: f.status }
                     }
                   />
@@ -674,10 +682,10 @@ export const Status: Story = {
         <Frame>
           <CompiledSidebar
             label="Compiled sidebar"
-            content={
+            contentSlot={
               <CompiledSection
                 title="Folders"
-                content={folders.map((f) => (
+                contentSlot={folders.map((f) => (
                   <CompiledNavItem
                     key={f.id}
                     href={`#/folders/${f.id}`}
@@ -685,7 +693,7 @@ export const Status: Story = {
                     count={f.count}
                     status={
                       f.icon
-                        ? { label: f.status, icon: <CompiledCircleCheck /> }
+                        ? { label: f.status, iconSlot: <CompiledCircleCheck /> }
                         : { label: f.status }
                     }
                   />

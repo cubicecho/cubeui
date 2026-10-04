@@ -59,15 +59,15 @@ const shell: Story = {
             sidebarWidth="auto"
             divider="none"
             sidebarHideBelow="md"
-            sidebar={
+            sidebarSlot={
               <NativeSidebar
                 label="Native rail"
-                header={<Text className="font-semibold text-foreground">Router</Text>}
-                content={
+                headerSlot={<Text className="font-semibold text-foreground">Router</Text>}
+                contentSlot={
                   <NativeSection
                     as="nav"
                     label="Native rail places"
-                    content={places.map((p) => (
+                    contentSlot={places.map((p) => (
                       <NativeNavItem
                         key={p.id}
                         href={`#/${p.id}`}
@@ -79,8 +79,8 @@ const shell: Story = {
                 }
               />
             }
-            brand={<Text className="font-semibold text-foreground">Router</Text>}
-            nav={places.map((p) => (
+            brandSlot={<Text className="font-semibold text-foreground">Router</Text>}
+            navSlot={places.map((p) => (
               <NativeNavItem
                 key={p.id}
                 href={`#/${p.id}`}
@@ -89,16 +89,16 @@ const shell: Story = {
               />
             ))}
             navLabel="Native main"
-            action={
+            actionSlot={
               <NativeButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Native theme"
                 onPress={onTheme}
-                icon={<NativeMoon />}
+                iconSlot={<NativeMoon />}
               />
             }
-            content={<Text className="p-4 text-foreground">Native page</Text>}
+            contentSlot={<Text className="p-4 text-foreground">Native page</Text>}
           />
         </Frame>
       }
@@ -110,15 +110,15 @@ const shell: Story = {
             sidebarWidth="auto"
             divider="none"
             sidebarHideBelow="md"
-            sidebar={
+            sidebarSlot={
               <CompiledSidebar
                 label="Compiled rail"
-                header={<span className="font-semibold text-foreground">Router</span>}
-                content={
+                headerSlot={<span className="font-semibold text-foreground">Router</span>}
+                contentSlot={
                   <CompiledSection
                     as="nav"
                     label="Compiled rail places"
-                    content={places.map((p) => (
+                    contentSlot={places.map((p) => (
                       <CompiledNavItem
                         key={p.id}
                         href={`#/${p.id}`}
@@ -130,8 +130,8 @@ const shell: Story = {
                 }
               />
             }
-            brand={<span className="font-semibold text-foreground">Router</span>}
-            nav={places.map((p) => (
+            brandSlot={<span className="font-semibold text-foreground">Router</span>}
+            navSlot={places.map((p) => (
               <CompiledNavItem
                 key={p.id}
                 href={`#/${p.id}`}
@@ -140,16 +140,16 @@ const shell: Story = {
               />
             ))}
             navLabel="Compiled main"
-            action={
+            actionSlot={
               <CompiledButton
                 variant="outline"
                 size="icon-sm"
                 aria-label="Compiled theme"
                 onClick={onTheme}
-                icon={<CompiledMoon />}
+                iconSlot={<CompiledMoon />}
               />
             }
-            content={<p className="p-4 text-foreground">Compiled page</p>}
+            contentSlot={<p className="p-4 text-foreground">Compiled page</p>}
           />
         </Frame>
       }

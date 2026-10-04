@@ -35,7 +35,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Badge } from "./badge";
 import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./header-content-footer";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
@@ -58,11 +58,11 @@ const HIDE_BELOW = {
 
 export type SidebarProps = {
   /** The body: sections, rows, whatever the rail lists. The only part that scrolls. */
-  content: ReactNode;
+  contentSlot: SlotNode;
   /** The brand, a primary action. Stays put while the body scrolls. Absent, no row is drawn. */
-  header?: ReactNode | undefined;
+  headerSlot?: SlotNode | undefined;
   /** Quiet rows — settings, sign out, the account. Drawn over a hairline. */
-  footer?: ReactNode | undefined;
+  footerSlot?: SlotNode | undefined;
   /**
    * What the sidebar is called — "Main", "Projects". It names the `<aside>` on the web, which is
    * what tells a screen reader's landmark list one complementary region from another.
@@ -119,9 +119,9 @@ export type SidebarProps = {
  * bar that stands in for the rail under the same breakpoint.
  */
 export function Sidebar({
-  content,
-  header,
-  footer,
+  contentSlot,
+  headerSlot,
+  footerSlot,
   label,
   side = "start",
   hideBelow,
@@ -147,9 +147,9 @@ export function Sidebar({
       )}
     >
       <StickyHeaderContentFooter
-        header={header}
-        content={content}
-        footer={footer}
+        headerSlot={headerSlot}
+        contentSlot={contentSlot}
+        footerSlot={footerSlot}
         contentRef={contentRef}
         // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
         // height, and a percentage height would overflow it by the border's width.
@@ -190,7 +190,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * the list, so pass the rows themselves rather than a fragment or a wrapper around them: a
    * wrapper would be one item holding every row.
    */
-  content?: ReactNode | undefined;
+  contentSlot?: SlotNode | undefined;
   /**
    * What the section says instead of rows, or before them: failed, loading, empty. Drawn between
    * the title and the list, so it is the place for a `<QueryState compact … />`, which renders
@@ -198,7 +198,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    */
   status?: ReactNode | undefined;
   /** The title row's far end: an add button, a filter. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /**
    * The title's heading rank. `2` by default — the sidebar sits beside the page, not under its
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
@@ -233,20 +233,20 @@ export function SidebarSection({
   as,
   label,
   title,
-  content,
+  contentSlot,
   status,
-  action,
+  actionSlot,
   level = 2,
   className,
   contentClassName,
 }: SidebarSectionProps) {
   const titleId = React.useId();
-  const rows = React.Children.toArray(content);
+  const rows = React.Children.toArray(contentSlot);
   const sectionClassName = cn("min-w-0 gap-1", className);
 
   const body = (
     <>
-      {title || action ? (
+      {title || actionSlot ? (
         <div
           data-slot="sidebar-section-heading"
           className="cube-rn-view min-h-8 min-w-0 flex-row items-center gap-2 px-2"
@@ -265,9 +265,9 @@ export function SidebarSection({
               </span>
             ) : null}
           </div>
-          {action ? (
+          {actionSlot ? (
             <div data-slot="sidebar-section-action" className="cube-rn-view shrink-0">
-              {action}
+              {actionSlot}
             </div>
           ) : null}
         </div>
@@ -325,10 +325,10 @@ type PressableProps = React.ComponentPropsWithoutRef<"button">;
  * back out into an `accessibilityLabel`.
  */
 export type SidebarNavItemStatus = {
-  /** What is read, and what is drawn when there is no `icon`. */
+  /** What is read, and what is drawn when there is no `iconSlot`. */
   label: string;
   /** What is drawn instead of the label. Decorative: the label is what a screen reader hears. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
 };
 
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
@@ -339,14 +339,15 @@ type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "
   /** What the row is called. Truncated to one line, never wrapped. */
   label: string;
   /** Before the label. Pass a bare `<Folder />`; the row sizes and colours it. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /** At the far end: how many things are behind the row. */
   count?: number | string | undefined;
   /**
    * What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`.
    * `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With
-   * an `icon` the icon is what is seen and the label is read only; without one the label is drawn,
-   * small and muted. `SidebarSection`'s `status` is the same word for the section's own state.
+   * an `iconSlot` the icon is what is seen and the label is read only; without one the label is
+   * drawn, small and muted. `SidebarSection`'s `status` is the same word for the section's own
+   * state.
    */
   status?: SidebarNavItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
@@ -412,14 +413,14 @@ function rowClassName(active: boolean, className: string | undefined) {
 
 type SidebarNavItemBodyProps = {
   label: string;
-  icon: ReactNode | undefined;
+  iconSlot: SlotNode | undefined;
   count: number | string | undefined;
   status: SidebarNavItemStatus | undefined;
   active: boolean;
 };
 
 /** What is inside the row, the same for both forms: icon, label, status, count. */
-function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavItemBodyProps) {
+function SidebarNavItemBody({ label, iconSlot, count, status, active }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
   const text = active ? "text-active-foreground" : "text-foreground";
@@ -427,9 +428,9 @@ function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavIt
 
   return (
     <>
-      {icon ? (
+      {iconSlot ? (
         <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
-          {icon}
+          {iconSlot}
         </IconClassContext.Provider>
       ) : null}
       <span
@@ -443,10 +444,10 @@ function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavIt
       >
         {label}
       </span>
-      {status?.icon ? (
+      {status?.iconSlot ? (
         <div data-slot="sidebar-nav-item-status-icon" aria-hidden className="cube-rn-view shrink-0">
           <IconClassContext.Provider value={cn("size-4 shrink-0", muted)}>
-            {status.icon}
+            {status.iconSlot}
           </IconClassContext.Provider>
         </div>
       ) : null}
@@ -454,7 +455,7 @@ function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavIt
       {status ? (
         <span
           data-slot="sidebar-nav-item-status"
-          className={cn("cube-rn-text", "shrink-0 text-xs", status.icon ? SR_ONLY : muted)}
+          className={cn("cube-rn-text", "shrink-0 text-xs", status.iconSlot ? SR_ONLY : muted)}
         >
           {status.label}
         </span>
@@ -506,11 +507,11 @@ function SidebarNavItemBody({ label, icon, count, status, active }: SidebarNavIt
  * and no router around it has nowhere to go and nothing to do, and is drawn as an inert button.
  *
  * ```tsx
- * <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />
+ * <SidebarNavItem label="Sign out" iconSlot={<LogOut />} onPress={signOut} />
  * ```
  */
 const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
-  ({ href, label, icon, count, status, active = false, className, ...props }, ref) => {
+  ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Two elements written out rather than one with a chosen role: the compiler picks the tag from
     // the role, and a button and a link do not share a prop list anyway.
     if (href === undefined) {
@@ -523,7 +524,7 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
         >
           <SidebarNavItemBody
             label={label}
-            icon={icon}
+            iconSlot={iconSlot}
             count={count}
             status={status}
             active={false}
@@ -545,7 +546,7 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
       >
         <SidebarNavItemBody
           label={label}
-          icon={icon}
+          iconSlot={iconSlot}
           count={count}
           status={status}
           active={active}
@@ -563,7 +564,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
    */
   label: string;
   /** The whole of what is drawn. Pass a bare `<Folder />`; the item sizes and colours it. */
-  icon: ReactNode;
+  iconSlot: SlotNode;
   /**
    * Where it goes — the `<a href>` on the web. Left out when a router's link names it: TanStack's
    * `createLink`, or expo-router's `<Link href asChild>`, both of which hand it the `href`.
@@ -579,8 +580,8 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
   /**
    * What state the place's thing is in, as a dot on the icon's other corner and in the name:
    * "Servers, 2 failing". The same object `SidebarNavItem` takes, so one array feeds both; the bar
-   * has room for neither its words nor its `icon`, so the dot is all that is drawn and the `label`
-   * is what is read.
+   * has room for neither its words nor its `iconSlot`, so the dot is all that is drawn and the
+   * `label` is what is read.
    */
   status?: SidebarNavItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
@@ -588,16 +589,16 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 };
 
 /**
- * A place in the bar: `SidebarNavItem` with only its icon drawn, for `SidebarLayout`'s `nav` (and
- * `TopBarLayout`'s), where a row's label has no room.
+ * A place in the bar: `SidebarNavItem` with only its icon drawn, for `SidebarLayout`'s `navSlot`
+ * (and `TopBarLayout`'s), where a row's label has no room.
  *
- * It takes the row's props — `label`, `icon`, `active`, `count`, `status`, `href` — so an app's
+ * It takes the row's props — `label`, `iconSlot`, `active`, `count`, `status`, `href` — so an app's
  * list of places is one array rendered twice, once into the rail and once into the bar:
  *
  * ```tsx
  * const BarLink = createLink(BarNavItem); // beside createLink(SidebarNavItem)
- * nav={places.map((p) => (
- *   <BarLink key={p.to} to={p.to} label={p.label} icon={p.icon} count={p.count} active={…} />
+ * navSlot={places.map((p) => (
+ *   <BarLink key={p.to} to={p.to} label={p.label} iconSlot={p.icon} count={p.count} active={…} />
  * ))}
  * ```
  *
@@ -614,13 +615,13 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
  * press handling, and react-router's `useLinkClickHandler` goes in as `onClick` beside an `href`.
  *
  * It is always a link. The bar's buttons — the theme switch, sign out — are `ActionButton`s in the
- * bar's `action`, not places in its `nav`.
+ * bar's `actionSlot`, not places in its `navSlot`.
  *
  * **The provider.** It renders its own `TooltipProvider`, as `ActionButton` does and for the same
  * reason: an installed component cannot assume the app has one at its root.
  */
 const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
-  ({ href, label, icon, count, status, active = false, className, ...props }, ref) => {
+  ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
     const text = active ? "text-active-foreground" : "text-foreground/60";
 
@@ -652,7 +653,7 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
               {...(props as React.ComponentPropsWithoutRef<"a">)}
             >
               <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
-                {icon}
+                {iconSlot}
               </IconClassContext.Provider>
               {count === undefined ? null : (
                 // Hung off the item's top corner, in the 8px the icon leaves above it, so the count

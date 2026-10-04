@@ -28,7 +28,7 @@
  * It returns `null` once there are rows, so a screen reads as the ladder and then the list:
  *
  * ```tsx
- * <QueryState query={roles} what="your roles" count={shown.length} empty={<Empty … />} />
+ * <QueryState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
  * {shown.map(…)}
  * ```
  *
@@ -36,8 +36,8 @@
  * `Form` holds against form libraries. A shell that names one data library is a shell the next
  * app cannot install.
  */
-import { type ReactNode, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { Card } from "./card";
 import { RefreshCw, TriangleAlert } from "./icons";
@@ -77,7 +77,7 @@ export function QueryState({
   query,
   what,
   count,
-  empty,
+  emptySlot,
   rows = 3,
   compact = false,
   describe,
@@ -95,7 +95,7 @@ export function QueryState({
    */
   count: number;
   /** What to say when there are none — whatever invites the first one. */
-  empty?: ReactNode | undefined;
+  emptySlot?: SlotNode | undefined;
   /** How many placeholder rows stand in for the list while it loads. */
   rows?: number | undefined;
   /**
@@ -127,7 +127,7 @@ export function QueryState({
         {...(className === undefined ? {} : { className })}
       />
     );
-  if (count === 0) return <>{empty}</>;
+  if (count === 0) return <>{emptySlot}</>;
   return null;
 }
 
@@ -207,7 +207,7 @@ export function QueryError({
             size="xs"
             onClick={retry}
             disabled={retrying}
-            icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+            iconSlot={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
             content={label}
           />
         </div>
@@ -239,7 +239,7 @@ export function QueryError({
           size="sm"
           onClick={retry}
           disabled={retrying}
-          icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+          iconSlot={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
           content={label}
         />
       </div>

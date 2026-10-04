@@ -329,12 +329,12 @@
         <tr>
           <th scope="row"><code>@cubeui/disclosure</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A titled part of a screen whose body shows and hides: "Show completed (3)", "Raw output". The header is one button with a turning chevron and `aria-expanded`, an optional `action` sits beside it rather than inside it, and `content` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.</td>
+          <td>A titled part of a screen whose body shows and hides: "Show completed (3)", "Raw output". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/disclosure-row</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.</td>
+          <td>A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `contentSlot` mounted only while open. Controlled with `open`/`onOpenChange`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/download-button</code></th>
@@ -404,7 +404,7 @@
         <tr>
           <th scope="row"><code>@cubeui/input</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Single-line text entry, with an optional icon at its start (`leading`) or an icon-sized control at its end (`trailing`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.</td>
+          <td>Single-line text entry, with an optional icon at its start (`leadingSlot`) or an icon-sized control at its end (`trailingSlot`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/item</code></th>
@@ -424,7 +424,7 @@
         <tr>
           <th scope="row"><code>@cubeui/list-item</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>One row of a list: `leading` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `action` at the far end. With `onPress` the middle is one button and `leading` and `action` stay separate controls beside it, never nested in it.</td>
+          <td>One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/markdown</code></th>
@@ -519,7 +519,7 @@
         <tr>
           <th scope="row"><code>@cubeui/route-error</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).</td>
+          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionsSlot`).</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/search-input</code></th>
@@ -554,7 +554,7 @@
         <tr>
           <th scope="row"><code>@cubeui/setting-row</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>One row of a settings page: a `title` and `description` at the start, the control that changes it in `action` at the end, dropping under the text when the row is too narrow for both. `action` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.</td>
+          <td>One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/sidebar</code></th>
@@ -579,7 +579,7 @@
         <tr>
           <th scope="row"><code>@cubeui/stat-tile</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `icon` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.</td>
+          <td>One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `iconSlot` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/switch</code></th>

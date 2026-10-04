@@ -75,15 +75,15 @@ function ProjectMenu({ defaultOpen }: { defaultOpen?: boolean }) {
         <Menu defaultOpen={defaultOpen}>
           <MenuTrigger>Project actions</MenuTrigger>
           <MenuContent>
-            <MenuItem icon={<Pencil />} label="Rename" onSelect={() => log("select rename")} />
+            <MenuItem iconSlot={<Pencil />} label="Rename" onSelect={() => log("select rename")} />
             <MenuItem
-              icon={<ArrowRight />}
+              iconSlot={<ArrowRight />}
               label="Open project"
               trailing="⌘O"
-              link={<FakeLink to="/projects/7" />}
+              linkSlot={<FakeLink to="/projects/7" />}
               onSelect={() => log("select open")}
             />
-            <MenuItem label="Archived" disabled link={<FakeLink to="/projects/7/archived" />} />
+            <MenuItem label="Archived" disabled linkSlot={<FakeLink to="/projects/7/archived" />} />
             <MenuSeparator />
             <MenuItem label="Help" href="#menu-links-help" />
           </MenuContent>
@@ -254,10 +254,10 @@ function NativeProjectMenu() {
           <NativeContent aria-label="Native project actions">
             <NativeItem
               label="Open project"
-              link={<FakeNativeLink href="/projects/7" />}
+              linkSlot={<FakeNativeLink href="/projects/7" />}
               onSelect={() => log("select open")}
             />
-            <NativeItem label="Archived" disabled link={<FakeNativeLink href="/archived" />} />
+            <NativeItem label="Archived" disabled linkSlot={<FakeNativeLink href="/archived" />} />
             <NativeItem label="Help" href="/help" onSelect={() => log("select help")} />
           </NativeContent>
         </NativeMenu>
@@ -270,8 +270,8 @@ function NativeProjectMenu() {
 }
 
 /**
- * On the native half a `link` takes the row `asChild`, so pressing it runs `onSelect`, closes the
- * sheet and navigates; a disabled row is never handed to the link; `href` alone only selects.
+ * On the native half a `linkSlot` takes the row `asChild`, so pressing it runs `onSelect`, closes
+ * the sheet and navigates; a disabled row is never handed to the link; `href` alone only selects.
  */
 export const NativeLink: Story = {
   parameters: {

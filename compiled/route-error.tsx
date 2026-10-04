@@ -17,7 +17,7 @@
  * It is the whole screen and says everything an error boundary needs said, so
  * the boundary renders it and nothing around it: the root is `role="alert"`,
  * the raw message for a bug report is `details`, and a second way out (a
- * reload, a restart) is `actions`.
+ * reload, a restart) is `actionsSlot`.
  *
  * ```tsx
  * <RouteError
@@ -25,11 +25,12 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actions={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
+ *   actionsSlot={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
  * />
  * ```
  */
 import type { ReactNode } from "react";
+import type { SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { CircleAlert } from "./icons";
 
@@ -56,7 +57,7 @@ type RouteErrorProps = {
    */
   details?: ReactNode | boolean;
   /** More buttons beside "Try again" — a reload is the usual one. */
-  actions?: ReactNode;
+  actionsSlot?: SlotNode;
 };
 
 function friendlyMessage(error: unknown): string {
@@ -89,7 +90,7 @@ export function RouteError({
   describe = friendlyMessage,
   title = "Something went wrong",
   details,
-  actions,
+  actionsSlot,
 }: RouteErrorProps) {
   const summary = describe(error);
   const detail = details === true ? rawMessage(error) : details || undefined;
@@ -125,7 +126,7 @@ export function RouteError({
       ) : null}
       <div className="cube-rn-view flex-row flex-wrap items-center justify-center gap-2">
         <Button variant="outline" size="sm" onClick={reset} content="Try again" />
-        {actions}
+        {actionsSlot}
       </div>
     </div>
   );

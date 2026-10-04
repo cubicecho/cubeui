@@ -65,7 +65,7 @@ export function CopyButton({
       aria-label={copied ? "Copied" : label}
       className={className}
       onClick={() => void copy()}
-      icon={copied ? <Check aria-hidden /> : <Copy aria-hidden />}
+      iconSlot={copied ? <Check aria-hidden /> : <Copy aria-hidden />}
     />
   );
 }

@@ -29,7 +29,7 @@ import {
   useSettledText,
 } from "@/components/ui/search-input-base";
 
-export type SearchInputProps = Omit<InputProps, "type" | "leading" | "trailing"> &
+export type SearchInputProps = Omit<InputProps, "type" | "leadingSlot" | "trailingSlot"> &
   SearchInputOwnProps;
 
 export function SearchInput({
@@ -87,8 +87,8 @@ export function SearchInput({
       id={id}
       aria-label={searchInputName({ label, ariaLabel, ariaLabelledBy, id })}
       aria-labelledby={ariaLabelledBy}
-      leading={<Search />}
-      trailing={
+      leadingSlot={<Search />}
+      trailingSlot={
         clearable && text !== "" && !disabled ? (
           <Button
             variant="secondary"
@@ -98,7 +98,7 @@ export function SearchInput({
               change("");
               inner.current?.focus();
             }}
-            icon={<X />}
+            iconSlot={<X />}
           />
         ) : undefined
       }

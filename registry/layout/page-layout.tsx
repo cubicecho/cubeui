@@ -10,34 +10,34 @@ import {
   type HeaderContentFooterProps,
 } from "@/components/header-content-footer";
 import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 export type PageLayoutProps = {
   /** The page. The only slot that scrolls, unless `scroll` is off. */
-  content: ReactNode;
+  contentSlot: SlotNode;
   /** What the page is called. Required for the same reason it is on {@link PageHeader}. */
   title: ReactNode;
   /** One line on what the page is for. */
   description?: ReactNode | undefined;
   /** Sits before the title, sized from `level`. Pass a bare `<Users />`. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /** The header's far end: the page's buttons, a status pill, a menu. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** The line above the title: a breadcrumb trail, or a back link. */
-  breadcrumbs?: ReactNode | undefined;
+  breadcrumbsSlot?: SlotNode | undefined;
   /**
-   * The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `content`
-   * slot, named for the part it belongs to because this component's own `content` is the page.
+   * The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot`
+   * slot, named for the part it belongs to because this component's own `contentSlot` is the page.
    *
    * Passing it also removes the rule under the header — see `PageHeader`, which derives that.
    */
-  headerContent?: ReactNode | undefined;
+  headerContentSlot?: SlotNode | undefined;
   /** Whether the *title* is still being fetched. The body is the caller's to place. */
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
   level?: PageHeaderLevel | undefined;
   /** Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. */
-  footer?: ReactNode | undefined;
+  footerSlot?: SlotNode | undefined;
   /**
    * The column the header and body share. `page` for a list or a board, `prose` for settings, a
    * detail page or a form, `full` for a pane that is already inside someone else's column.
@@ -46,7 +46,7 @@ export type PageLayoutProps = {
   /**
    * Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a
    * chat's message list over a pinned composer, a framed app, tab panels that each keep their
-   * place. Off, the body is the height left under the header and `content` divides it.
+   * place. Off, the body is the height left under the header and `contentSlot` divides it.
    */
   scroll?: boolean | undefined;
   /** The scrolling body, for a caller that has to reach it — restoring a scroll position. */
@@ -77,19 +77,19 @@ export type PageLayoutProps = {
  * **What it does not do.** It does not own the sidebar, the theme toggle or the route: those
  * belong to an app shell, and shadcn ships `sidebar` for the drawing. It does not scroll the
  * header away with the rows — that is the whole point of the chassis under it. And it takes no
- * `children`; the page is `content`, like every other slot in this set.
+ * `children`; the page is `contentSlot`, like every other slot in this set.
  */
 export function PageLayout({
-  content,
+  contentSlot,
   title,
   description,
-  icon,
-  action,
-  breadcrumbs,
-  headerContent,
+  iconSlot,
+  actionSlot,
+  breadcrumbsSlot,
+  headerContentSlot,
   loading = false,
   level = 1,
-  footer,
+  footerSlot,
   width = "page",
   scroll = true,
   contentRef,
@@ -109,21 +109,21 @@ export function PageLayout({
       className={cn("h-full", className)}
       contentClassName={contentClassName}
       footerClassName={footerClassName}
-      header={
+      headerSlot={
         <PageHeader
           title={title}
           description={description}
-          icon={icon}
-          action={action}
-          breadcrumbs={breadcrumbs}
-          content={headerContent}
+          iconSlot={iconSlot}
+          actionSlot={actionSlot}
+          breadcrumbsSlot={breadcrumbsSlot}
+          contentSlot={headerContentSlot}
           loading={loading}
           level={level}
           className={headerClassName}
         />
       }
-      content={content}
-      footer={footer}
+      contentSlot={contentSlot}
+      footerSlot={footerSlot}
     />
   );
 }

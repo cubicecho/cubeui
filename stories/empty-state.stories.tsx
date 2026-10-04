@@ -95,7 +95,9 @@ export const Compact: Story = {
             compact
             icon={NativeSearch}
             title="No labels yet."
-            action={<NativeButton variant="info" size="xs" onPress={onAdd} content="Add a label" />}
+            actionSlot={
+              <NativeButton variant="info" size="xs" onPress={onAdd} content="Add a label" />
+            }
           />
           <span data-testid="muted" className="text-foreground/60">
             muted
@@ -107,7 +109,9 @@ export const Compact: Story = {
           compact
           icon={CompiledSearch}
           title="No labels yet."
-          action={<CompiledButton variant="info" size="xs" onClick={onAdd} content="Add a label" />}
+          actionSlot={
+            <CompiledButton variant="info" size="xs" onClick={onAdd} content="Add a label" />
+          }
         />
       }
     />

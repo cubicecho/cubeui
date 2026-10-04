@@ -19,15 +19,15 @@
  * every colour because they tinted with the palette's 50s and 950s. None of them was shadcn's
  * `Alert`, so taking the name costs no call site anything.
  *
- * The parts are props, as everywhere in this registry: `icon`, `title`, `description`, `action`.
- * A callout is one self-closing element whose props read as its parts.
+ * The parts are props, as everywhere in this registry: `iconSlot`, `title`, `description`,
+ * `actionSlot`. A callout is one self-closing element whose props read as its parts.
  *
  * **shadcn's compound form works too**, so a DOM call site ports unchanged:
  * `<Alert><Terminal /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
  * Native has no `has-[>svg]` to find the icon among the children, so `Alert` sorts them itself:
  * an `AlertTitle` or `AlertDescription` goes into the text column, and anything else — the bare
- * icon shadcn puts first — into the icon's box, where it is sized and inked like `icon`. Given
- * children, the variant's own glyph is not drawn; pass `icon` beside them to have one anyway.
+ * icon shadcn puts first — into the icon's box, where it is sized and inked like `iconSlot`. Given
+ * children, the variant's own glyph is not drawn; pass `iconSlot` beside them to have one anyway.
  * The variant reaches the two parts through a context, so `AlertDescription` takes its ink the way
  * `description` does.
  *
@@ -59,7 +59,7 @@
  */
 import { Children, createContext, isValidElement, type ReactNode, useContext } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { CircleAlert, Info, TriangleAlert } from "./icons";
 
 export type AlertVariant = "default" | "info" | "warning" | "destructive";
@@ -76,13 +76,13 @@ export type AlertProps = {
    * on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all,
    * and the text moves to the edge.
    */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /** What happened, in a few words: "API key generated", "Last error". */
   title?: ReactNode | undefined;
   /** The line under the title: what it means, or what to do about it. A link may sit inside it. */
   description?: ReactNode | undefined;
   /** The far end: one button that deals with it — "Change the embedder", "Retry". */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   className?: string | undefined;
   /**
    * shadcn's compound form: `AlertTitle`, `AlertDescription`, and an icon. See the header for how
@@ -122,8 +122,8 @@ const ALERT_DESCRIPTION_INK = {
 } satisfies Record<AlertVariant, string>;
 
 /**
- * The variant's own glyph, for when the caller passes no `icon`. `info` has none: it is the blue
- * and nothing else, so the same alert can say "new" or "tip" without an ⓘ arguing with it.
+ * The variant's own glyph, for when the caller passes no `iconSlot`. `info` has none: it is the
+ * blue and nothing else, so the same alert can say "new" or "tip" without an ⓘ arguing with it.
  */
 function defaultIcon(variant: AlertVariant): ReactNode {
   if (variant === "info") return null;
@@ -164,10 +164,10 @@ function isTextPart(child: ReactNode): boolean {
 
 export function Alert({
   variant = "default",
-  icon,
+  iconSlot,
   title,
   description,
-  action,
+  actionSlot,
   className,
   children,
 }: AlertProps) {
@@ -181,7 +181,7 @@ export function Alert({
   );
   const textParts = parts.filter(isTextPart);
   const iconParts = parts.filter((child) => !isTextPart(child));
-  const glyph = icon !== undefined ? icon : parts.length > 0 ? null : defaultIcon(variant);
+  const glyph = iconSlot !== undefined ? iconSlot : parts.length > 0 ? null : defaultIcon(variant);
   const ink = ALERT_ICON_INK[variant];
 
   return (
@@ -218,9 +218,9 @@ export function Alert({
           {textParts}
         </AlertVariantContext.Provider>
       </div>
-      {action ? (
+      {actionSlot ? (
         <div data-slot="alert-action" className="cube-rn-view shrink-0 self-center">
-          {action}
+          {actionSlot}
         </div>
       ) : null}
     </div>

@@ -1,12 +1,5 @@
-/**
- * The contract `file-picker.tsx` (native) and `file-picker.web.tsx` implement.
- *
- * Its own module for the usual reason — Metro resolves `./file-picker` to the
- * `.web.tsx` file on web, so that file cannot import the shared pieces from
- * `./file-picker` without importing itself.
- */
-import type { ReactNode } from "react";
 import type { ButtonProps } from "@/components/ui/button";
+import type { SlotNode } from "@/lib/utils";
 
 /**
  * One picked file. Plain data rather than the DOM's `File`, which native does
@@ -108,7 +101,7 @@ export type FilePickerButtonProps = FilePickerCommonProps &
      * the accessible name. Pass a bare `<Upload />`; the button sizes and
      * colours it. Defaults to the upload icon.
      */
-    icon?: ReactNode | undefined;
+    iconSlot?: SlotNode | undefined;
     className?: string | undefined;
   };
 

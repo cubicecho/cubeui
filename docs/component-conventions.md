@@ -12,17 +12,39 @@ the skill's vocabulary section to the same list of words.
 
 ## 1. Every slot is a named prop, including the body
 
-Every part a component places is a `ReactNode` prop with a name that says where it goes, and the
-body is not an exception: it is `content`, never `children`. No cubeui shell takes children.
+Every part a component places is a prop with a name that says where it goes, and the body is not
+an exception: it is `contentSlot`, never `children`. No cubeui shell takes children.
 
 ```tsx
 <CardLayout
   title="Workspaces"
-  action={<AddButton />}
-  content={rows}
-  footerActions={<SaveButton />}
+  actionSlot={<AddButton />}
+  contentSlot={rows}
+  footerActionsSlot={<SaveButton />}
 />
 ```
+
+**The name says what the prop takes.** A prop that takes elements ends in `Slot` and is typed
+`SlotNode` (`registry/lib/utils.ts`): an element, an array of them, `null`, `undefined` or
+`false`. Not a string and not a number, because React Native draws text only inside a `<Text>`,
+and a bare string handed to a slot is a crash on device that the web never shows. A prop that
+takes words — `title`, `description`, `label` — has no suffix, and the component wraps them in
+`<Text>` itself. A prop that accepts either keeps the bare name: `MenuItem`'s `trailing`, which
+may be a shortcut's string, and `Button`'s `content`, its label. So a line of prose in a slot is
+the caller's `<Text>`:
+
+```tsx
+<CardLayout
+  title="Workspaces"
+  contentSlot={rows}
+  footerSlot={<Text className="text-foreground/60 text-sm">Updated 2 minutes ago</Text>}
+/>
+```
+
+Three slots also take a function that returns elements, where the shell has something the
+caller's node needs: `DialogLayout`'s `footerActionsSlot` (the guarded close), `SettingRow`'s
+`actionSlot` (the ids to point a control at) and the web `FormField`'s `controlSlot` (the wired
+props).
 
 **Why the body is not `children`.** In a layout, *all* the parts are dynamic — the header is as
 much a slot as the body is, and the footer as much as the header. Handing one of them the
@@ -33,7 +55,7 @@ a list of positions, and makes an absent body as visible as an absent header: it
 is not there, not the absence of a nesting level.
 
 It also removes the two-way question. With `children`, every shell has to decide whether it also
-accepts `content`, and every call site has to be read to find out which was used.
+accepts `contentSlot`, and every call site has to be read to find out which was used.
 
 Not compound components (`<Card><CardHeader>…`) either, because that is the shadcn primitive
 underneath and re-exporting it adds nothing. The shell exists to answer "where does this go" once.
@@ -48,41 +70,41 @@ everything that has the part, and each layer below adds only what its shape actu
 
 | Word | Means |
 | --- | --- |
-| `content` | The body. The one slot that grows, and the one that scrolls. |
+| `contentSlot` | The body. The one slot that grows, and the one that scrolls. |
 | `title` | What the thing is called. |
 | `description` | One line, sentence case, on what it is for. |
-| `icon` | Before the title. A bare `<Plus />`; the shell sizes and colours it. |
-| `action` | The **header's** far end. One control, or a fragment of them. |
-| `footer` | The footer's start. Prose, a timestamp, a destructive action held apart. |
-| `footerActions` | The footer's end. The buttons, reading order, primary last. |
-| `empty` | What the body says when `content` is empty. Not a slot the caller places. |
+| `iconSlot` | Before the title. A bare `<Plus />`; the shell sizes and colours it. |
+| `actionSlot` | The **header's** far end. One control, or a fragment of them. |
+| `footerSlot` | The footer's start. A `<Text>` of prose, a timestamp, a destructive action held apart. |
+| `footerActionsSlot` | The footer's end. The buttons, reading order, primary last. |
+| `emptySlot` | What the body says when `contentSlot` is empty. Not a slot the caller places. |
 | `loading` | A boolean. The shell substitutes a skeleton for the part the request fills. |
-| `className` | The root. Every other slot is `<slot>ClassName`. |
+| `className` | The root. Every other slot is `<slot>ClassName`, without the suffix: `contentClassName`. |
 
 `loading` keeps its meaning while changing its target, and the target is always *the part that
 came from the request*: on `CardLayout` the body, on `PageHeader` and `PageLayout` the title, on
 `FormField` the control. On `Button` the request is the press's own, and what is substituted is
-a spinner for the icon. It outranks whatever it competes with — `empty` on a card, `error` on a
+a spinner for the icon. It outranks whatever it competes with — `emptySlot` on a card, `error` on a
 field — because data that has not arrived is not data that came back empty or wrong.
 
 **Page, split and dialog shells add:**
 
 | Word | Means |
 | --- | --- |
-| `breadcrumbs` | The line above the title. A trail, or a back link. Nodes, never a route. |
-| `headerContent` | The row under the title: search, filters, tabs. `PageHeader` calls it `content`, because it has no body of its own. |
-| `first`, `second` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
+| `breadcrumbsSlot` | The line above the title. A trail, or a back link. Nodes, never a route. |
+| `headerContentSlot` | The row under the title: search, filters, tabs. `PageHeader` calls it `contentSlot`, because it has no body of its own. |
+| `firstSlot`, `secondSlot` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
-| `sidebar` | The second surface in a `SidebarLayout`. `content` stays the main one. |
+| `sidebarSlot` | The second surface in a `SidebarLayout`. `contentSlot` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
-| `brand` | The start of an app's bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and on `SidebarLayout`'s bar, drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
-| `nav` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
+| `brandSlot` | The start of an app's bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and on `SidebarLayout`'s bar, drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
+| `navSlot` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `cardClassName` | On `CenteredLayout`, the card, where `className` is the page around it. The card is not a slot the caller fills, so it takes its prefix from the shell it is: the one page shell whose root is not the thing it draws. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
-| `trigger` | What opens a dialog, when the dialog owns its own open state. |
+| `triggerSlot` | What opens a dialog, when the dialog owns its own open state. |
 | `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
 | `defaultOpen` | Where a thing that opens starts, when it holds its own open state. The primitives' word already (`Dialog`, `Popover`, `Menu`), taken by a shell once `Disclosure` held its own: an uncontrolled shell with no starting state is a `useState` the caller writes anyway. |
 | `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
@@ -92,7 +114,7 @@ field — because data that has not arrived is not data that came back empty or 
 
 | Word | Means |
 | --- | --- |
-| `control` | The field's body — the one body in the set that is not `content`. |
+| `controlSlot` | The field's body — the one body in the set that is not `contentSlot`. |
 | `label` | What the control is called. A real `<label htmlFor>`. |
 | `error` | What is wrong with the value. Falsy draws nothing. |
 | `required` | The asterisk, and `aria-required`. |
@@ -105,23 +127,24 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
-| `leading` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `icon` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
-| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `action` would read as a second button in the row. On `Input` it is the same place in a field — the far end, inside it — and holds one icon-sized control, a clear button. | On `Button` it is the far end of the button, after its `content`: a trigger's chevron. On `TabsTrigger` it is `trailingSlot`: a prop that takes a node is named with the `Slot` suffix from here on, and the older names keep theirs until they are renamed together.
-| `link` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. | On `Button` it is the same element, which the button is drawn *as* on the web and inside on a device — what shadcn's `asChild` was for.
+| `leadingSlot` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `iconSlot` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
+| `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `actionSlot` would read as a second button in the row. It takes a string as well as an element — a shortcut is words, and the row draws them — so it keeps the bare name. |
+| `trailingSlot` | The same place where it takes elements only. On `Input` it is the far end of the field, inside it, and holds one icon-sized control, a clear button. On `Button` it is the far end of the button, after its `content`: a trigger's chevron. On `TabsTrigger` it is the far end of the tab: a dot, a count in a `Badge`. |
+| `linkSlot` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. On `Button` it is the same element, which the button is drawn *as* on the web and inside on a device — what shadcn's `asChild` was for. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
 | `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
 | `defaultView` | The view a control starts in when it holds its own, as `defaultOpen` is for a thing that opens. |
-| `labelHideBelow` | Under this width, or `always`, a control with an `icon` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
+| `labelHideBelow` | Under this width, or `always`, a control with an `iconSlot` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
 
 **List rows and query states add:**
 
 | Word | Means |
 | --- | --- |
-| `badges` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, icon? }` before the count, whose `label` is part of the row's name and whose `icon` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `SidebarLayout`'s bar a node: one line of the app's own state, between `nav` and `action`, and the first part of the bar to give way. |
-| `leading` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `icon` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badges` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
-| `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `action` — still facts about the title, placed where a list scans them. |
+| `badgesSlot` | What a row is wearing: a status, a kind, a state. Before the title. |
+| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `SidebarLayout`'s bar a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
+| `leadingSlot` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `iconSlot` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badgesSlot` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
+| `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `actionSlot` — still facts about the title, placed where a list scans them. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
@@ -130,14 +153,14 @@ field — because data that has not arrived is not data that came back empty or 
 
 Notes on why the layering is where it is:
 
-- **`control` is the one exception to "the body is `content`",** and it earns it: it is the only
+- **`controlSlot` is the one exception to "the body is `contentSlot`",** and it earns it: it is the only
   body in the set the shell *wires* rather than places. Everything else that renders a body
   renders it untouched.
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.
 - **`Markdown` takes `content` as a string, and three props that are not this vocabulary's.**
-  `content` is the body, as it is everywhere; it is a string for `CodeBlock`'s reason — the
+  `content` is the body, and has no `Slot` on it because it is a string, for `CodeBlock`'s reason — the
   component draws the text, it does not place a node. `components`, `remarkPlugins` and
   `urlTransform` are react-markdown's names, kept because they are that library's contracts
   handed straight through and its documentation is what explains them; renaming them would be a
@@ -148,13 +171,13 @@ Notes on why the layering is where it is:
   held. It also draws three words of its own — Edit, Split, Preview — as `ThemePicker` draws
   Light, Dark and System: a toggle every call site labels identically is three props nobody
   needed.
-- **`DisclosureRow` and `ListItem` take `action`, not `actions`,** though each usually holds three buttons. The
+- **`DisclosureRow` and `ListItem` take `actionSlot`, not `actionsSlot`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.
-- **`PropertyRow` reuses `label`, `hint`, `action` and `value` rather than growing words of its
-  own.** `label` is what the fact is called, `hint` the line read after it, `action` the far end —
+- **`PropertyRow` reuses `label`, `hint`, `actionSlot` and `value` rather than growing words of its
+  own.** `label` is what the fact is called, `hint` the line read after it, `actionSlot` the far end —
   each what it already means. `value` is the stretch: on a control it is the held value, on a row
-  it is the value on display, a node. Both answer "what is it set to", and a read-only row that
+  it is the value on display, words or a node. Both answer "what is it set to", and a read-only row that
   called it anything else would be a second word for the same question.
 - **A monospace value on `PropertyRow` is `valueClassName="font-mono"`, not a `mono` prop.** A
   path or an id wants a different font, which is a look, and a boolean for a look is what
@@ -162,8 +185,8 @@ Notes on why the layering is where it is:
   class prop; what it lacked was reach, because it stopped at the value's wrapper and on device a
   `Text` inherits nothing from one. So for a string value it is the class of the text itself, as
   `StatTile`'s already was, and no word was added.
-- **`SettingRow`'s `action` may be a function,** handed `{ titleId, descriptionId }`, and that is
-  not a new word. It is `footerActions`' move on `DialogLayout`: the shell has something the
+- **`SettingRow`'s `actionSlot` may be a function,** handed `{ titleId, descriptionId }`, and that is
+  not a new word. It is `footerActionsSlot`'s move on `DialogLayout`: the shell has something the
   caller's node needs — there a guarded close, here the id the control's `aria-labelledby` points
   at — and a function is the one way to hand it into a node the shell did not write. A plain node
   still works, and is right for a button whose own text is its name.
@@ -174,9 +197,9 @@ Notes on why the layering is where it is:
 - **`layout`, not `orientation`,** on `DescriptionList`. `orientation="horizontal"` on a field is
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
-  split panes are `first` and `second` rather than `left` and `right`.
-- **`SidebarLayout`'s bar reuses `action` and takes `brand` and `nav`, not a `mobileNav`.** The bar
-  is a header, so its far end is the core `action`; `brand` and `nav` are the words the top bar
+  split panes are `firstSlot` and `secondSlot` rather than a left and a right.
+- **`SidebarLayout`'s bar reuses `actionSlot` and takes `brandSlot` and `navSlot`, not a `mobileNav`.** The bar
+  is a header, so its far end is the core `actionSlot`; `brandSlot` and `navSlot` are the words the top bar
   of an app without a sidebar takes too, so the same three parts are called the same thing
   whether a sidebar is beside them or not. `mobile` was the obvious prefix and a wrong one: the
   bar is drawn under a breakpoint, which is a narrow desktop window as often as it is a phone.
@@ -185,20 +208,20 @@ Notes on why the layering is where it is:
   has on `SidebarSection` and `SidebarNavItem` — so the bar's slot is that word rather than a new
   one. It is not `meta` (the smaller line under a title) and not `description` (prose under a
   heading): the bar has neither. `BarNavItem` is a second component rather than a `compact` prop
-  on `SidebarNavItem`, because it is a different element with a different contract — `icon` and
+  on `SidebarNavItem`, because it is a different element with a different contract — `iconSlot` and
   the tooltip are required parts of it, and it is never a button — but its props are the row's
-  own (`label`, `icon`, `active`, `count`, `status`, `href`), so one array of places renders both.
+  own (`label`, `iconSlot`, `active`, `count`, `status`, `href`), so one array of places renders both.
 - **`StatTile` reuses `PropertyRow`'s `label`, `value` and `hint`,** because a tile is the same
   three parts on a card: what the figure is called, the figure, the line read after it. Its one
   word of its own is `selected`, which `ToggleChip` already took and the vocabulary had not yet
   written down — `pressed` is the ARIA spelling of one platform, and a prop is read on both.
-- **`SidebarNavItem` takes `status`, not `badges` and not a node.** `SidebarSection` already said
+- **`SidebarNavItem` takes `status`, not `badgesSlot` and not a node.** `SidebarSection` already said
   `status` for the section's own state, so the row's state is the same word one level down.
-  `badges` is drawn before the title and is a node, and a row's marker sits after its label,
+  `badgesSlot` is drawn before the title and is a node, and a row's marker sits after its label,
   before the count. It is an object rather than a node because its words have to reach the row's
   name: on the web the row is named by the text inside it, which a clipped label joins, but on
   device a pressable is one element named by an `accessibilityLabel` string, and a node's text
-  cannot be read back out into one. Its fields are `label` and `icon` with their usual meanings —
+  cannot be read back out into one. Its fields are `label` and `iconSlot` with their usual meanings —
   the label is what is read, as on `ActionButton`, and the icon is sized and coloured by the row.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
@@ -273,7 +296,7 @@ caller cannot see is the guard the caller cannot skip.
 The shell guards only what it owns — and where it cannot own a path, it hands the caller the
 guard rather than a second copy of it. `DialogLayout` reaches Escape (and Android back), the overlay and the
 close button, because all three arrive through the `Dialog` primitive's `onOpenChange`. A Cancel button in
-`footerActions` does not: it is the caller's node calling the caller's setter. So `footerActions`
+`footerActionsSlot` does not: it is the caller's node calling the caller's setter. So `footerActionsSlot`
 takes a **function** and hands it the shell's own guarded close, which is the same close the
 other three go through.
 
@@ -343,7 +366,7 @@ The test: would someone who has never seen this registry guess what it holds? `s
 `rail` does not. Internal metaphors stay internal — *chassis*, *floors* and *rungs* earn their
 keep in the README and in source comments, and appear in no prop name.
 
-A bare noun is a slot (rule 1), so a boolean never gets one: `hasUnsavedChanges`, not
+A bare noun is a part of the component — its words, or with `Slot` on the end its elements (rule 1) — so a boolean never gets one: `hasUnsavedChanges`, not
 `unsavedChanges`.
 
 **No item may share a file name with a shadcn primitive**, and this is a hard rule rather than a
@@ -372,8 +395,8 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
 ## Open questions
 
-1. ~~`children` vs `content` for the body.~~ **Settled: `content`, everywhere, and no shell takes
-   children.** Every part of a layout is dynamic, not just the body, so no part gets the
+1. ~~`children` vs `content` for the body.~~ **Settled: a named prop, everywhere — `contentSlot`
+   since slots took their suffix — and no shell takes children.** Every part of a layout is dynamic, not just the body, so no part gets the
    privileged position — see rule 1, which carries the reasoning.
 2. ~~`HeaderContentFooter` and `StickyHeaderContentFooter` are one component.~~ **Settled:** one
    file, two exports. `StickyHeaderContentFooter` is a preset that adds `h-full`, which is a
@@ -382,12 +405,12 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 3. ~~Deferred `CardLayout` props.~~ **Settled: `loading` in, `media` and `onClick`/`selected`
    out.**
 
-   `loading` is in because it is the same move `empty` already makes — the shell substituting the
+   `loading` is in because it is the same move `emptySlot` already makes — the shell substituting the
    body for a state the caller would otherwise hand-roll — and because the two interact: `loading`
-   outranks `empty`, since data that has not arrived is not data that came back empty. Without
+   outranks `emptySlot`, since data that has not arrived is not data that came back empty. Without
    that ordering in one place, every card re-derives it and some of them flash "nothing here"
    before the rows land. It is `loading?: boolean` with a skeleton the shell owns; a caller
-   wanting its own placeholder passes it as `content`.
+   wanting its own placeholder passes it as `contentSlot`.
 
    `media` and `onClick`/`selected` are out for now. `media` is a slot with no ordering question
    to settle, so it buys a prop and saves nothing. `onClick`/`selected` makes the shell
@@ -463,10 +486,10 @@ anything either — it is a widget, and rule 8's note is where that line is draw
      return (
        <PageLayout
          title="Some title"
-         content={
+         contentSlot={
            <SidebarLayout
-             content={<MyComponent {...dataFromQuery} />}
-             sidebar={<MyOtherComponent {...dataFromQuery2} />}
+             contentSlot={<MyComponent {...dataFromQuery} />}
+             sidebarSlot={<MyOtherComponent {...dataFromQuery2} />}
            />
          }
        />
@@ -494,7 +517,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    replaced were `60%`, `2fr`, `3fr/2fr` and `1fr/4fr` — comparable columns, not sidebars. It had
    been doing two jobs since it shipped; only its name was single-purpose.
 
-   The two neutral slots are **`first` and `second`**. Numbered rather than named, because neither
+   The two neutral slots are **`firstSlot` and `secondSlot`**. Numbered rather than named, because neither
    alternative survives what the component already does: a role pair (`content`/`sidebar`) is a
    lie about a genuinely even split, and a side pair (`left`/`right`) is a lie below `stackBelow`,
    where the panes are one above the other, and again under RTL. `first` and `second` are true in

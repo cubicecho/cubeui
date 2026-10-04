@@ -88,8 +88,8 @@ export function InputAssertions() {
         id="q"
         aria-invalid
         onChange={(event) => event.target.value}
-        leading={<span />}
-        trailing={<button type="button" aria-label="Clear" />}
+        leadingSlot={<span />}
+        trailingSlot={<button type="button" aria-label="Clear" />}
         wrapperClassName="w-64"
       />
       {/* A DOM `onKeyPress` still gets the React keyboard event. */}

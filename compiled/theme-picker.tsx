@@ -92,7 +92,7 @@ function ThemeOptions({
             key={option}
             value={option}
             aria-label={label}
-            icon={
+            iconSlot={
               <Icon
                 aria-hidden
                 className={cn(
@@ -109,7 +109,7 @@ function ThemeOptions({
             value={option}
             label={label}
             hint={hint}
-            icon={<Icon className="h-5 w-5" />}
+            iconSlot={<Icon className="h-5 w-5" />}
           />
         ),
       )}

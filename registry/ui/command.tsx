@@ -202,7 +202,7 @@ function CommandInput({
         disabled={disabled}
         autoFocus={autoFocus}
         aria-label={label}
-        leading={<Search />}
+        leadingSlot={<Search />}
         className={cn("h-11 border-0 bg-transparent", className)}
       />
     </View>

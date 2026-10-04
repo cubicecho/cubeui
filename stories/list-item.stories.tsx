@@ -51,12 +51,12 @@ export const Pressable: Story = {
       native={
         <div className="native-root">
           <Native
-            leading={nativeAvatar}
+            leadingSlot={nativeAvatar}
             title="Ada Lovelace"
             description="Last contact: 3 days ago"
             meta="12"
             onPress={openNative}
-            action={
+            actionSlot={
               <NativeButton size="sm" variant="outline" onPress={deleteNative} content="Delete" />
             }
           />
@@ -65,12 +65,12 @@ export const Pressable: Story = {
       compiled={
         <div className="compiled-root">
           <Compiled
-            leading={compiledAvatar}
+            leadingSlot={compiledAvatar}
             title="Ada Lovelace"
             description="Last contact: 3 days ago"
             meta="12"
             onClick={openCompiled}
-            action={
+            actionSlot={
               <CompiledButton
                 size="sm"
                 variant="outline"

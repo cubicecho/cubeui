@@ -32,7 +32,7 @@ const NativeRow: Row = ({ press, disabled = false }) => (
       variant="outline"
       size="icon"
       onPress={press}
-      icon={<NativePencil />}
+      iconSlot={<NativePencil />}
     />
     <Native
       label="Delete lane"
@@ -41,7 +41,7 @@ const NativeRow: Row = ({ press, disabled = false }) => (
       size="icon"
       disabled={disabled}
       onPress={press}
-      icon={<NativeTrash />}
+      iconSlot={<NativeTrash />}
     />
   </div>
 );
@@ -53,7 +53,7 @@ const CompiledRow: Row = ({ press, disabled = false }) => (
       variant="outline"
       size="icon"
       onClick={press}
-      icon={<CompiledPencil />}
+      iconSlot={<CompiledPencil />}
     />
     <Compiled
       label="Delete lane"
@@ -62,7 +62,7 @@ const CompiledRow: Row = ({ press, disabled = false }) => (
       size="icon"
       disabled={disabled}
       onClick={press}
-      icon={<CompiledTrash />}
+      iconSlot={<CompiledTrash />}
     />
   </div>
 );

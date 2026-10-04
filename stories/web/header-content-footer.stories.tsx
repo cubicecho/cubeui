@@ -35,7 +35,7 @@ const Rows = ({ count = 40 }: { count?: number }) => (
 
 /** The plain chassis: no scroll, so the whole thing is as tall as what is in it. */
 export const Default: Story = {
-  args: { header: <Header />, footer: <Footer />, content: <Rows count={8} /> },
+  args: { headerSlot: <Header />, footerSlot: <Footer />, contentSlot: <Rows count={8} /> },
 };
 
 /**
@@ -43,7 +43,7 @@ export const Default: Story = {
  * grid row the body then auto-places into. Nothing.
  */
 export const NoChrome: Story = {
-  args: { content: <Rows count={5} /> },
+  args: { contentSlot: <Rows count={5} /> },
   play: async ({ canvasElement }) => {
     expect(canvasElement.querySelector("[data-slot=header-content-footer-header]")).toBeNull();
     expect(canvasElement.querySelector("[data-slot=header-content-footer-footer]")).toBeNull();
@@ -60,7 +60,7 @@ export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
       <StickyHeaderContentFooter {...args} />
     </div>
   ),
-  args: { header: <Header />, footer: <Footer />, content: <Rows count={40} /> },
+  args: { headerSlot: <Header />, footerSlot: <Footer />, contentSlot: <Rows count={40} /> },
   play: async ({ canvasElement }) => {
     const body = canvasElement.querySelector<HTMLElement>(
       "[data-slot=header-content-footer-content]",
@@ -94,8 +94,8 @@ export const WideContentKeepsItsFloor: StoryObj<typeof StickyHeaderContentFooter
     </div>
   ),
   args: {
-    header: <Header />,
-    content: (
+    headerSlot: <Header />,
+    contentSlot: (
       <div className="overflow-x-auto">
         <div className="w-[2000px] px-4 py-3 text-sm">A single very wide child.</div>
       </div>
@@ -122,8 +122,8 @@ export const WideContentKeepsItsFloor: StoryObj<typeof StickyHeaderContentFooter
 export const PageWidth: Story = {
   args: {
     width: "page",
-    header: <Header />,
-    footer: <Footer />,
-    content: <Rows count={10} />,
+    headerSlot: <Header />,
+    footerSlot: <Footer />,
+    contentSlot: <Rows count={10} />,
   },
 };

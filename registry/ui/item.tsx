@@ -6,9 +6,9 @@
  * Expo app is the row a DOM app draws from the same call site.
  *
  * The parts are the regions `ListItem` places, named the other way round: `ItemMedia` is its
- * `leading`, `ItemContent` its middle, `ItemTitle` and `ItemDescription` its title and the line
- * under it, `ItemActions` its `action`. `ListItem` is the row with those decisions made — one line
- * of title, the pressed area in the middle only. These are for a row it does not fit: a header
+ * `leadingSlot`, `ItemContent` its middle, `ItemTitle` and `ItemDescription` its title and the line
+ * under it, `ItemActions` its `actionSlot`. `ListItem` is the row with those decisions made — one
+ * line of title, the pressed area in the middle only. These are for a row it does not fit: a header
  * line, a footer that opens, a title with a badge beside it. It is what `DisclosureRow` is made of.
  *
  * What differs on a device, none of it a call-site change:

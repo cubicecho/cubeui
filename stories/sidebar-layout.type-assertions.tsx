@@ -10,48 +10,51 @@
 import { SidebarLayout as Compiled } from "../compiled/split-layout";
 import { SidebarLayout as Native } from "../registry/layout/split-layout";
 
+/** A slot takes an element, never a bare string: any one will do here. */
+const node = <i />;
+
 export function SidebarLayoutTypeAssertions() {
   return (
     <>
-      <Native content="page" sidebar="rail" stackBelow="md" divider="line" />
-      <Native content="page" sidebar="rail" sidebarHideBelow="md" />
+      <Native contentSlot={node} sidebarSlot={node} stackBelow="md" divider="line" />
+      <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" />
       <Native
-        content="page"
-        sidebar="rail"
+        contentSlot={node}
+        sidebarSlot={node}
         sidebarHideBelow="md"
         divider="none"
-        brand="App"
-        nav="links"
+        brandSlot={node}
+        navSlot={node}
         navLabel="Main"
         status="3/5 servers running"
-        action="theme"
+        actionSlot={node}
       />
       {/* @ts-expect-error the bar's slots need a breakpoint to be drawn under */}
-      <Native content="page" sidebar="rail" brand="App" />
+      <Native contentSlot={node} sidebarSlot={node} brandSlot={node} />
       {/* @ts-expect-error the bar's status needs a bar, and so a breakpoint */}
-      <Native content="page" sidebar="rail" status="3/5 servers running" />
+      <Native contentSlot={node} sidebarSlot={node} status="3/5 servers running" />
       {/* @ts-expect-error the bar's navigation landmark is always named */}
-      <Native content="page" sidebar="rail" sidebarHideBelow="md" nav="links" />
+      <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" navSlot={node} />
       {/* @ts-expect-error a rail that hides does not stack */}
-      <Native content="page" sidebar="rail" sidebarHideBelow="md" stackBelow="lg" />
+      <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" stackBelow="lg" />
       {/* @ts-expect-error with the rail gone, a rule would be a line down the edge of the screen */}
-      <Native content="page" sidebar="rail" sidebarHideBelow="md" divider="line" />
+      <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" divider="line" />
 
       <Compiled
-        content="page"
-        sidebar="rail"
+        contentSlot={node}
+        sidebarSlot={node}
         sidebarHideBelow="lg"
-        brand="App"
-        nav="links"
+        brandSlot={node}
+        navSlot={node}
         navLabel="Main"
         status="3/5 servers running"
       />
       {/* @ts-expect-error the bar's status needs a bar, and so a breakpoint */}
-      <Compiled content="page" sidebar="rail" status="3/5 servers running" />
+      <Compiled contentSlot={node} sidebarSlot={node} status="3/5 servers running" />
       {/* @ts-expect-error the bar's navigation landmark is always named */}
-      <Compiled content="page" sidebar="rail" sidebarHideBelow="md" nav="links" />
+      <Compiled contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" navSlot={node} />
       {/* @ts-expect-error a label with no navigation to name */}
-      <Compiled content="page" sidebar="rail" sidebarHideBelow="md" navLabel="Main" />
+      <Compiled contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" navLabel="Main" />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ComponentType, type ReactNode, useContext, useState } from "react";
+import { type ComponentType, type ReactElement, type ReactNode, useContext, useState } from "react";
 import { Text } from "react-native";
 import { expect, fireEvent, userEvent, waitFor, within } from "storybook/test";
 import { Pencil, Trash2 } from "../compiled/icons";
@@ -80,7 +80,7 @@ function LaneMenu({
   parts: Parts;
   name: string;
   trigger: ReactNode;
-  icons: { rename: ReactNode; remove: ReactNode };
+  icons: { rename: ReactElement; remove: ReactElement };
   defaultOpen?: boolean;
 }) {
   const [chosen, setChosen] = useState<string[]>([]);
@@ -90,11 +90,11 @@ function LaneMenu({
       <Menu defaultOpen={defaultOpen}>
         <Trigger>{trigger}</Trigger>
         <Content aria-label={name}>
-          <Item icon={icons.rename} label="Rename" trailing="F2" onSelect={choose("rename")} />
+          <Item iconSlot={icons.rename} label="Rename" trailing="F2" onSelect={choose("rename")} />
           <Item label="Move left" disabled onSelect={choose("left")} />
           <Item label="Move right" onSelect={choose("right")} />
           <Separator />
-          <Item icon={icons.remove} label="Delete" destructive onSelect={choose("delete")} />
+          <Item iconSlot={icons.remove} label="Delete" destructive onSelect={choose("delete")} />
         </Content>
       </Menu>
       <output aria-label={`${name} chosen`}>{chosen.join(",") || "nothing"}</output>

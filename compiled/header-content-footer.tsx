@@ -26,8 +26,8 @@
  * web), so a shell built on it — `PageLayout`, `DialogLayout`, an app's sidebar — styles a part by
  * its class prop rather than by reaching into the tree.
  */
-import type { ReactNode, Ref } from "react";
-import { cn } from "@/lib/utils";
+import type { Ref } from "react";
+import { cn, type SlotNode } from "@/lib/utils";
 
 /**
  * The column a page's chrome and its content share.
@@ -80,11 +80,11 @@ type WebScrollEvent = {
 
 export type HeaderContentFooterProps = {
   /** The body. The only slot that grows. */
-  content: ReactNode;
+  contentSlot: SlotNode;
   /** Page title, toolbar, filters — whatever stays above the body. Absent, no row is drawn. */
-  header?: ReactNode | undefined;
+  headerSlot?: SlotNode | undefined;
   /** Paging, totals, a save bar. Absent, no row is drawn. */
-  footer?: ReactNode | undefined;
+  footerSlot?: SlotNode | undefined;
   /**
    * Whether the body scrolls inside the chassis rather than growing it.
    *
@@ -123,7 +123,7 @@ export type HeaderContentFooterProps = {
 };
 
 type BodyProps = {
-  content: ReactNode;
+  contentSlot: SlotNode;
   scroll: boolean;
   column: string | undefined;
   contentRef: HeaderContentFooterProps["contentRef"];
@@ -148,7 +148,7 @@ const BODY = cn("relative min-h-0 min-w-0", "flex-1");
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`
  * and keeps the first arm, and the `ScrollView` below it is dropped as unreachable.
  */
-function Body({ content, scroll, column, contentRef, onScroll, className }: BodyProps) {
+function Body({ contentSlot, scroll, column, contentRef, onScroll, className }: BodyProps) {
   return (
     <div
       data-slot="header-content-footer-content"
@@ -173,7 +173,7 @@ function Body({ content, scroll, column, contentRef, onScroll, className }: Body
         : {})}
       className={cn("cube-rn-view", BODY, scroll && "overflow-y-auto", column, className)}
     >
-      {content}
+      {contentSlot}
     </div>
   );
 }
@@ -193,9 +193,9 @@ function Body({ content, scroll, column, contentRef, onScroll, className }: Body
  * the screen instead of scrolling inside it, and `scroll` does nothing at all without the floor.
  */
 export function HeaderContentFooter({
-  content,
-  header,
-  footer,
+  contentSlot,
+  headerSlot,
+  footerSlot,
   scroll = false,
   width = "full",
   contentRef,
@@ -216,17 +216,17 @@ export function HeaderContentFooter({
       data-slot="header-content-footer"
       className={cn("cube-rn-view", "min-h-0 min-w-0 shrink flex-col", className)}
     >
-      {header ? (
+      {headerSlot ? (
         <div
           data-slot="header-content-footer-header"
           className={cn("cube-rn-view", "min-w-0 shrink-0", column, headerClassName)}
         >
-          {header}
+          {headerSlot}
         </div>
       ) : null}
 
       <Body
-        content={content}
+        contentSlot={contentSlot}
         scroll={scroll}
         column={bodyColumn}
         contentRef={contentRef}
@@ -234,12 +234,12 @@ export function HeaderContentFooter({
         className={contentClassName}
       />
 
-      {footer ? (
+      {footerSlot ? (
         <div
           data-slot="header-content-footer-footer"
           className={cn("cube-rn-view", "min-w-0 shrink-0", bodyColumn, footerClassName)}
         >
-          {footer}
+          {footerSlot}
         </div>
       ) : null}
     </div>

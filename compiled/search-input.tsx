@@ -40,7 +40,7 @@ import { buttonVariants } from "./button";
 import { Search, X } from "./icons";
 import { Input, type InputHandle, type InputProps } from "./input";
 
-export type SearchInputProps = Omit<InputProps, "type" | "leading" | "trailing"> &
+export type SearchInputProps = Omit<InputProps, "type" | "leadingSlot" | "trailingSlot"> &
   SearchInputOwnProps;
 
 export function SearchInput({
@@ -118,8 +118,8 @@ export function SearchInput({
       aria-label={searchInputName({ label, ariaLabel, ariaLabelledBy, id })}
       aria-labelledby={ariaLabelledBy}
       className={cn(SEARCH_INPUT_CLASS, className)}
-      leading={<Search />}
-      trailing={
+      leadingSlot={<Search />}
+      trailingSlot={
         clearable && filled && !disabled ? (
           <button
             type="button"

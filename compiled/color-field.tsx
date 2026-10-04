@@ -45,7 +45,7 @@ function BoundColorField(props: ColorFieldProps) {
       error={error}
       // The function form, so the wiring lands on the picker itself: it puts `id` on its hex box,
       // which the label then names, and the description and error on the swatch group.
-      control={(wired, { labelId }) => (
+      controlSlot={(wired, { labelId }) => (
         <ColorPicker
           {...control}
           {...wired}

@@ -17,7 +17,7 @@
  * has to re-declare them at each layer — more trouble than the wrapper saves.
  */
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import {
   Dialog,
@@ -62,7 +62,7 @@ type FormDialogFooterProps = {
   onCancel: () => void;
   cancelLabel?: string;
   /** Left-aligned action — a Delete or a Mark complete. Drawn only when set. */
-  secondary?: ReactNode;
+  secondarySlot?: SlotNode;
   /**
    * A rejected mutation's message, shown above the buttons. Field validation
    * stays inline beneath its field — this is for what only the server knows,
@@ -76,7 +76,7 @@ type FormDialogFooterProps = {
 export function FormDialogFooter({
   onCancel,
   cancelLabel = "Cancel",
-  secondary,
+  secondarySlot,
   error,
   children,
 }: FormDialogFooterProps) {
@@ -87,8 +87,8 @@ export function FormDialogFooter({
           {error}
         </span>
       ) : null}
-      <DialogFooter className={cn("items-center", secondary && "sm:justify-between")}>
-        {secondary ? <div className="cube-rn-view">{secondary}</div> : null}
+      <DialogFooter className={cn("items-center", secondarySlot && "sm:justify-between")}>
+        {secondarySlot ? <div className="cube-rn-view">{secondarySlot}</div> : null}
         <div className="cube-rn-view flex-row gap-2">
           <Button variant="outline" onClick={onCancel} content={cancelLabel} />
           {children}

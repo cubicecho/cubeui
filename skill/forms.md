@@ -56,16 +56,16 @@ The bound fields:
 | `ColorField` | `string` | `@cubeui/color-field` |
 | `PasswordField` | `string` | `@cubeui/password-field` |
 
-Each one takes everything `FormField` takes — `label`, `description`, `required`, `action`,
+Each one takes everything `FormField` takes — `label`, `description`, `required`, `actionSlot`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
 `validators`, `listeners` and `asyncDebounceMs`, in one flat list.
 
 `RadioGroupField` is the exception to "everything `FormField` takes": it is not built on
 `FormField`, because it has a React Native half and `FormField` does not. It takes `label`,
-`description`, `required`, `action`, `loading` and the `*ClassName` props (`labelClassName`,
+`description`, `required`, `actionSlot`, `loading` and the `*ClassName` props (`labelClassName`,
 `descriptionClassName`, `errorClassName`, `loadingClassName`, `groupClassName`), plus the group's
 own `variant`, `orientation`, `disabled` and `loop`. There is no `descriptionPlacement`,
-`descriptionIcon`, `htmlFor` or `asGroup`: the description is always inline under the options, and
+`descriptionIconSlot`, `htmlFor` or `asGroup`: the description is always inline under the options, and
 the group is always named by its title.
 
 The four in their own files are there for the weight of what they import: a form of plain inputs
@@ -241,7 +241,7 @@ is what a filter, a search box, or a field in a `useState` form uses.
   required
   description="We only use it to send the sign-in link."
   error={errors.email?.message}
-  control={<Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}
+  controlSlot={<Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}
 />
 ```
 
@@ -299,7 +299,7 @@ stays the character it is. Anything more is a markdown renderer and belongs behi
   orientation="horizontal"
   label="Email me about releases"
   description="About one a month."
-  control={<Checkbox checked={subscribed} onCheckedChange={setSubscribed} />}
+  controlSlot={<Checkbox checked={subscribed} onCheckedChange={setSubscribed} />}
 />
 ```
 
@@ -323,7 +323,7 @@ and put the props where they go:
 <FormField
   label="Plan"
   error={errors.plan?.message}
-  control={(props) => (
+  controlSlot={(props) => (
     <Select value={plan} onValueChange={setPlan}>
       <SelectTrigger {...props} className="w-full">
         <SelectValue placeholder="Choose one" />
@@ -335,13 +335,13 @@ and put the props where they go:
 ```
 
 Everything whose root *is* the control — `Input`, `Textarea`, `Checkbox`, `Switch` — passes the
-element itself and needs none of this. An `Input` with a `leading` icon or a `trailing` button is
+element itself and needs none of this. An `Input` with a `leadingSlot` icon or a `trailingSlot` button is
 still one of them: its root becomes a box around the field, but `id` and every `aria-*` land on the
 field itself, where the label points.
 
 Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect` and
 `DatePicker` take the rest of a `<button>`'s props and put them there, so the function form
-spreads onto the control and stops — `control={(props) => <OptionSelect {...props} options={LISTS} … />}`.
+spreads onto the control and stops — `controlSlot={(props) => <OptionSelect {...props} options={LISTS} … />}`.
 `ColorPicker` has no trigger — it is the swatch row and the hex field, drawn inline — so it splits
 the same props: `id` goes to the hex field, and `aria-label`, `aria-labelledby`,
 `aria-describedby`, `aria-invalid` and `aria-required` go to the swatch row's `radiogroup`.
@@ -367,7 +367,7 @@ new grouped control by hand. A segmented control's group is `SegmentedGroup`, wh
 <FormField
   label="Scale view"
   asGroup
-  control={(props) => (
+  controlSlot={(props) => (
     <SegmentedGroup {...props} value={view} onValueChange={setView}>
       <SegmentedButton value="relative">Relative</SegmentedButton>
       <SegmentedButton value="parallel">Parallel</SegmentedButton>
@@ -394,7 +394,7 @@ Each option is one control — the circle, the label and the description are all
 option only. The keyboard is done: one tab stop (the checked option, or the first), arrow keys
 that move and select. Do not add an `onKeyDown`.
 
-`variant="card"` draws the options as tiles across a row, each with an `icon` over its label and a
+`variant="card"` draws the options as tiles across a row, each with an `iconSlot` over its label and a
 `hint` for the hover title — a theme picker, a layout choice:
 
 ```tsx
@@ -404,16 +404,16 @@ that move and select. Do not add an `onKeyDown`.
   label="Theme"
   variant="card"
   options={[
-    { value: "light", label: "Light", icon: <Sun />, hint: "Always light" },
-    { value: "dark", label: "Dark", icon: <Moon />, hint: "Always dark" },
-    { value: "system", label: "System", icon: <Monitor />, hint: "Follow the device" },
+    { value: "light", label: "Light", iconSlot: <Sun />, hint: "Always light" },
+    { value: "dark", label: "Dark", iconSlot: <Moon />, hint: "Always dark" },
+    { value: "system", label: "System", iconSlot: <Monitor />, hint: "Follow the device" },
   ]}
 />
 ```
 
 `variant="segmented"` draws the options as one framed, input-height row of equal segments
 across the container's width, like `SegmentedGroup` but still radios, with one tab stop and arrow
-keys. A segment shows its `icon`, its `label` or both, and draws no `description`. For an
+keys. A segment shows its `iconSlot`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
 radio's name and, when no `hint` is given, its web tooltip. On device, give the icon its colour
 yourself (`text-active-foreground` when checked, `text-foreground/60` otherwise), because a
@@ -426,7 +426,7 @@ controlled with `value` / `onValueChange`.
 
 ```tsx
 <FieldRow
-  content={
+  contentSlot={
     <>
       <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
       <SelectField form={form} name="minutes" label="Duration" options={DURATIONS} />
@@ -440,7 +440,7 @@ row that reads well on a settings page becomes two 140px fields inside a dialog 
 them are clipped. `FieldRow` gives each cell a minimum width, so the row **wraps** instead — the third
 field drops to its own line at full width rather than three of them sharing one at a third each.
 
-- `content` takes a fragment. A field that renders nothing leaves no cell behind, so
+- `contentSlot` takes a fragment. A field that renders nothing leaves no cell behind, so
   `{isEdit && <InputField … />}` is safe to put in the middle of one.
 - `perRow` is `2` (the default) or `3`, and it only moves that minimum.
 - The cells are equal width. A field that should be wider is not this component — put it on its
@@ -448,16 +448,16 @@ field drops to its own line at full width rather than three of them sharing one 
 
 ## Forms in dialogs
 
-There is no `FormDialog`. A form in a dialog is `DialogLayout` with a `<form>` as its `content`
-and the submit in `footerActions`:
+There is no `FormDialog`. A form in a dialog is `DialogLayout` with a `<form>` as its `contentSlot`
+and the submit in `footerActionsSlot`:
 
 ```tsx
 <DialogLayout
   open={open}
   onOpenChange={onOpenChange}
   title={isEdit ? "Edit todo" : "New todo"}
-  content={<form id="todo" onSubmit={…}>…</form>}
-  footerActions={
+  contentSlot={<form id="todo" onSubmit={…}>…</form>}
+  footerActionsSlot={
     <form.AppForm>
       <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
     </form.AppForm>
@@ -478,7 +478,7 @@ opinion about the form library:
 function BoundCurrencyField(props: CurrencyFieldProps) {
   const [fieldProps, control] = splitProps(props);
   const field = useFieldContext<number | null>();
-  return <FormField {...fieldProps} error={useFieldError()} control={<CurrencyInput {...control} …/>} />;
+  return <FormField {...fieldProps} error={useFieldError()} controlSlot={<CurrencyInput {...control} …/>} />;
 }
 
 export const CurrencyField = bindToForm<CurrencyFieldProps, number>(BoundCurrencyField, "CurrencyField");

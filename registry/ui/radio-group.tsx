@@ -38,7 +38,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 type Focusable = React.ElementRef<typeof Pressable>;
 
@@ -86,7 +86,7 @@ type RadioGroupProps = {
    * `row` (the default): a circle, a label and an optional description per option, stacked.
    * `card`: a bordered tile per option, icon over label, sharing a row.
    * `segmented`: one framed, input-height row of equal segments, full width. Each segment shows
-   * its `icon`, its `label`, or both; an icon-only segment is named by its `aria-label`.
+   * its `iconSlot`, its `label`, or both; an icon-only segment is named by its `aria-label`.
    */
   variant?: RadioGroupVariant | undefined;
   /**
@@ -259,7 +259,7 @@ type RadioGroupItemProps = {
    * `row`. On device an icon has no `currentColor` to inherit, so in `segmented` give it the
    * checked segment's `text-active-foreground` and the others' `text-foreground/60` yourself.
    */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /**
    * A hover hint — the web's `title` — and the accessibility hint on device. For the one extra
    * sentence a tile has no room for; say anything a user needs to choose in `description`.
@@ -283,7 +283,7 @@ function RadioGroupItem({
   value,
   label,
   description,
-  icon,
+  iconSlot,
   hint: hintProp,
   title,
   disabled: itemDisabled = false,
@@ -378,7 +378,7 @@ function RadioGroupItem({
         circle
       ) : segmented ? (
         <>
-          {icon ? <View className="items-center justify-center">{icon}</View> : null}
+          {iconSlot ? <View className="items-center justify-center">{iconSlot}</View> : null}
           {label !== undefined ? (
             <Text
               id={labelId}
@@ -393,7 +393,7 @@ function RadioGroupItem({
         </>
       ) : card ? (
         <>
-          {icon ? <View className="items-center justify-center">{icon}</View> : null}
+          {iconSlot ? <View className="items-center justify-center">{iconSlot}</View> : null}
           <Text id={labelId} className="text-center text-foreground text-sm font-medium">
             {label}
           </Text>

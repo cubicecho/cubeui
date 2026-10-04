@@ -48,14 +48,14 @@ const TYPES = [
     key: "text",
     label: "Name",
     description: "What the workspace is called in the switcher.",
-    control: <Input placeholder="Acme Staging" />,
+    controlSlot: <Input placeholder="Acme Staging" />,
   },
   {
     key: "number",
     label: "Seats",
     description: "Billed monthly, prorated when you change it.",
     // A string: the shared contract types `defaultValue` as one, where the DOM also takes a number.
-    control: <Input type="number" defaultValue="3" min={1} />,
+    controlSlot: <Input type="number" defaultValue="3" min={1} />,
   },
   {
     key: "select",
@@ -63,7 +63,7 @@ const TYPES = [
     description: "Change it whenever; the difference is prorated.",
     // The one type the shell cannot clone into: `Select`'s root renders no DOM, so the props go
     // on the trigger and the caller is the only one who knows that. Hence the function form.
-    control: (props) => (
+    controlSlot: (props) => (
       <Select>
         <SelectTrigger {...props} className="w-full">
           <SelectValue placeholder="Choose one" />
@@ -79,7 +79,7 @@ const TYPES = [
     key: "textarea",
     label: "Notes",
     description: "Only your team sees these.",
-    control: <Textarea rows={3} />,
+    controlSlot: <Textarea rows={3} />,
     // next's `Textarea` floor; three rows sit under it.
     loadingClassName: "h-20",
   },
@@ -88,13 +88,13 @@ const TYPES = [
     label: "Email me about releases",
     description: "About one a month. Nothing else.",
     orientation: "horizontal",
-    control: <Checkbox />,
+    controlSlot: <Checkbox />,
   },
   {
     key: "switch",
     label: "Public workspace",
     orientation: "horizontal",
-    control: <Switch />,
+    controlSlot: <Switch />,
     loadingClassName: "h-5 w-8 rounded-full",
   },
 ] satisfies Array<FieldProps & { key: string }>;
@@ -103,7 +103,7 @@ const TYPES = [
  * One story's state, applied to every control type. The per-type props win over the story's, so
  * a story says `error="…"` once and the textarea and the checkbox both get it.
  */
-const AllTypes = ({ control: _control, ...args }: FieldProps) => (
+const AllTypes = ({ controlSlot: _control, ...args }: FieldProps) => (
   <div className="grid w-[420px] gap-5">
     {TYPES.map(({ key, ...type }) => (
       <FormField key={key} {...args} {...type} />
@@ -112,7 +112,7 @@ const AllTypes = ({ control: _control, ...args }: FieldProps) => (
 );
 
 export const Default: Story = {
-  args: { label: "Name", control: <Input /> },
+  args: { label: "Name", controlSlot: <Input /> },
   render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
     const fields = canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]");
@@ -149,7 +149,7 @@ export const CallerOwnsTheId: Story = {
   args: {
     label: "Email",
     htmlFor: "account-email",
-    control: <Input type="email" />,
+    controlSlot: <Input type="email" />,
   },
   play: async ({ canvasElement }) => {
     expect(controlFor(canvasElement, "Email").id).toBe("account-email");
@@ -157,7 +157,7 @@ export const CallerOwnsTheId: Story = {
 };
 
 /**
- * The function form of `control`, and why it exists.
+ * The function form of `controlSlot`, and why it exists.
  *
  * `Select`'s root renders nothing — it is context, not an element — so a cloned `id`,
  * `aria-describedby` and `aria-invalid` land on a component that drops all three. The field
@@ -174,7 +174,7 @@ export const ControlTheShellCannotReach: Story = {
     description: "Change it whenever; the difference is prorated.",
     error: "Your card was declined.",
     required: true,
-    control: (props) => (
+    controlSlot: (props) => (
       <Select>
         <SelectTrigger {...props} className="w-full">
           <SelectValue placeholder="Choose one" />
@@ -208,7 +208,7 @@ export const WithError: Story = {
   args: {
     label: "Name",
     error: "That name is already taken in this organisation.",
-    control: <Input />,
+    controlSlot: <Input />,
   },
   render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
@@ -239,7 +239,7 @@ export const NoErrorLeavesNothingBehind: Story = {
   args: {
     label: "Email",
     error: undefined,
-    control: <Input type="email" />,
+    controlSlot: <Input type="email" />,
   },
   play: async ({ canvasElement }) => {
     expect(canvasElement.querySelector("[data-slot=field-error]")).toBeNull();
@@ -255,7 +255,7 @@ export const NoErrorLeavesNothingBehind: Story = {
  * from the accessibility tree, so the field is still named "Password" and not "Password star".
  */
 export const Required: Story = {
-  args: { label: "Name", required: true, control: <Input /> },
+  args: { label: "Name", required: true, controlSlot: <Input /> },
   render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
     for (const type of TYPES) {
@@ -272,15 +272,16 @@ export const Required: Story = {
 };
 
 /**
- * `action` is the label row's far end — "Forgot?", a character count, a reveal toggle. One field
- * here, because the assertion is about where it lands rather than about the control beside it.
+ * `actionSlot` is the label row's far end — "Forgot?", a character count, a reveal toggle. One
+ * field here, because the assertion is about where it lands rather than about the control beside
+ * it.
  */
 export const LabelAction: Story = {
   args: {
     label: "Password",
     required: true,
-    action: <Button variant="outline" size="xs" content="Forgot?" />,
-    control: <Input type="password" />,
+    actionSlot: <Button variant="outline" size="xs" content="Forgot?" />,
+    controlSlot: <Input type="password" />,
   },
   play: async ({ canvasElement }) => {
     const label = canvasElement.querySelector<HTMLElement>("[data-slot=field-label]");
@@ -303,7 +304,7 @@ export const Horizontal: Story = {
     orientation: "horizontal",
     label: "Email me about releases",
     description: "About one a month. Nothing else.",
-    control: <Checkbox />,
+    controlSlot: <Checkbox />,
     className: "w-[360px]",
   },
   play: async ({ canvasElement }) => {
@@ -339,7 +340,7 @@ export const Loading: Story = {
     label: "Name",
     loading: true,
     error: "This is not consulted while loading.",
-    control: <Input />,
+    controlSlot: <Input />,
   },
   render: (args) => <AllTypes {...args} />,
   play: async ({ canvasElement }) => {
@@ -380,20 +381,20 @@ export const Loading: Story = {
  * `items-start` matters — stretched to a common height the assertion would prove nothing.
  */
 export const LoadingIsTheHeightOfWhatItReplaces: Story = {
-  args: { label: "Bio", control: <Input /> },
+  args: { label: "Bio", controlSlot: <Input /> },
   render: (args) => (
     // next's `Textarea` rests at an 80px floor, so the hint is `h-20`. (cubeui's was
     // `field-sizing-content` over `min-h-16`, and the hint there was `h-16`.)
     <div className="flex w-[720px] items-start gap-6">
-      <FormField {...args} className="flex-1" control={<Textarea />} loading />
+      <FormField {...args} className="flex-1" controlSlot={<Textarea />} loading />
       <FormField
         {...args}
         className="flex-1"
-        control={<Textarea />}
+        controlSlot={<Textarea />}
         loading
         loadingClassName="h-20"
       />
-      <FormField {...args} className="flex-1" control={<Textarea />} />
+      <FormField {...args} className="flex-1" controlSlot={<Textarea />} />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -427,13 +428,13 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
  * wide control must not grow the field and push its neighbour off the row.
  */
 export const WideControlKeepsItsFloor: Story = {
-  args: { label: "Token", control: <Input /> },
+  args: { label: "Token", controlSlot: <Input /> },
   render: (args) => (
     <div className="w-[400px] border">
       <FormField
         {...args}
         className="w-auto"
-        control={
+        controlSlot={
           <Input defaultValue="a-single-very-long-unbroken-token-that-has-nowhere-to-wrap" />
         }
       />
@@ -458,20 +459,24 @@ export const WideControlKeepsItsFloor: Story = {
  * is what the `field.InputField` / `field.SelectField` layer above narrows to one line.
  */
 export const AForm: Story = {
-  args: { label: "Title", control: <Input /> },
+  args: { label: "Title", controlSlot: <Input /> },
   render: () => (
     <form className="grid w-[480px] gap-4">
-      <FormField label="Title" required control={<Input placeholder="What needs to be done?" />} />
+      <FormField
+        label="Title"
+        required
+        controlSlot={<Input placeholder="What needs to be done?" />}
+      />
       <FormField
         label="Description"
         description="Optional. Notes, links, anything you want beside it later."
-        control={<Textarea rows={3} placeholder="Add any notes or details…" />}
+        controlSlot={<Textarea rows={3} placeholder="Add any notes or details…" />}
       />
       <FormField
         label="List"
         required
         error="Pick a list — a todo with nowhere to go is never seen again."
-        control={(props) => (
+        controlSlot={(props) => (
           <Select>
             <SelectTrigger {...props} className="w-full">
               <SelectValue placeholder="Choose a list" />
@@ -486,7 +491,7 @@ export const AForm: Story = {
       <div className="grid grid-cols-2 gap-4">
         <FormField
           label="Priority"
-          control={(props) => (
+          controlSlot={(props) => (
             <Select defaultValue="2">
               <SelectTrigger {...props} className="w-full">
                 <SelectValue />
@@ -501,7 +506,7 @@ export const AForm: Story = {
         />
         <FormField
           label="Duration"
-          control={(props) => (
+          controlSlot={(props) => (
             <Select defaultValue="30">
               <SelectTrigger {...props} className="w-full">
                 <SelectValue />
@@ -515,12 +520,12 @@ export const AForm: Story = {
           )}
         />
       </div>
-      <FormField label="Due date" control={<Input type="datetime-local" />} />
+      <FormField label="Due date" controlSlot={<Input type="datetime-local" />} />
       <FormField
         orientation="horizontal"
         label="Schedule it automatically"
         description="Finds the next free block that fits the duration."
-        control={<Switch defaultChecked />}
+        controlSlot={<Switch defaultChecked />}
       />
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" content="Cancel" />
@@ -561,7 +566,7 @@ export const DescriptionInAPopover: Story = {
     label: "Display name",
     description: SCHEMA_DESCRIPTION,
     descriptionPlacement: "popover",
-    control: <Input placeholder="Acme" />,
+    controlSlot: <Input placeholder="Acme" />,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -588,7 +593,7 @@ export const APopoverDescriptionIsStillAnnounced: Story = {
     label: "Display name",
     description: SCHEMA_DESCRIPTION,
     descriptionPlacement: "popover",
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     // Exact, not a regex: the help trigger is named "About Display name", and a loose match
@@ -610,7 +615,7 @@ export const TheHelpTriggerDoesNotSubmit: Story = {
     label: "Display name",
     description: SCHEMA_DESCRIPTION,
     descriptionPlacement: "popover",
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole("button", { name: "About Display name" });
@@ -623,7 +628,7 @@ export const InlineAndPopoverDescribeTheControlAlike: Story = {
   args: {
     label: "Display name",
     description: SCHEMA_DESCRIPTION,
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const control = controlFor(canvasElement, "Display name");
@@ -658,7 +663,7 @@ export const BackticksArriveInTheDescription: Story = {
   args: {
     label: "Tool discovery",
     description: TICKED_DESCRIPTION,
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const description = canvasElement.querySelector("[data-slot=field-description]");
@@ -677,7 +682,7 @@ export const TicksSpendsTheMarkers: Story = {
   args: {
     label: "Tool discovery",
     description: ticks(TICKED_DESCRIPTION),
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const description = canvasElement.querySelector("[data-slot=field-description]");
@@ -702,7 +707,7 @@ export const APlainSentenceIsUnchanged: Story = {
   args: {
     label: "Display name",
     description: ticks(SCHEMA_DESCRIPTION),
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const description = canvasElement.querySelector("[data-slot=field-description]");
@@ -722,7 +727,7 @@ export const AnUnpairedBacktickIsLeftAlone: Story = {
   args: {
     label: "Command",
     description: ticks("Runs `pnpm build` in the workspace root. Escape a ` the shell would eat."),
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     const description = canvasElement.querySelector("[data-slot=field-description]");
@@ -746,7 +751,7 @@ export const TicksWorksBehindAPopover: Story = {
     label: "Tool discovery",
     description: ticks(TICKED_DESCRIPTION),
     descriptionPlacement: "popover",
-    control: <Input />,
+    controlSlot: <Input />,
   },
   play: async ({ canvasElement }) => {
     expect(controlFor(canvasElement, "Tool discovery")).toHaveAccessibleDescription(TICKED_AS_READ);

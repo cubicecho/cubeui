@@ -108,7 +108,7 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
       />
 
       <FieldRow
-        content={
+        contentSlot={
           <>
             <SelectField
               form={form}

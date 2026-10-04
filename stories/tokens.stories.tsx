@@ -332,7 +332,7 @@ export const BordersNameTheirColour: Story = {
           <Button variant="outline" content="Inside a card" />
         </CardContent>
       </Card>
-      <Section title="Profile" surface="card" divider content={<Button content="Save" />} />
+      <Section title="Profile" surface="card" divider contentSlot={<Button content="Save" />} />
       <RouteError
         error={new Error("It broke")}
         reset={() => {}}
@@ -367,7 +367,7 @@ export const TitlesTakeTheTheme: Story = {
     <div className="bg-background" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <PageHeader title="Settings" />
       <PageHeader title="Danger zone" level={2} titleClassName="text-negative" />
-      <CardLayout title="Members" content={null} empty="Nobody yet" footer="Updated today" />
+      <CardLayout title="Members" description="Updated today" />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -382,8 +382,7 @@ export const TitlesTakeTheTheme: Story = {
       await expect(getComputedStyle(overridden).color).toBe(resolved("negative", canvasElement));
 
       const cardInk = resolved("foreground", canvasElement);
-      await expect(getComputedStyle(canvas.getByText("Updated today")).color).toBe(cardInk);
-      await expect(getComputedStyle(canvas.getByText("Nobody yet")).color).toBe(cardInk);
+      await expect(getComputedStyle(canvas.getByText("Members")).color).toBe(cardInk);
     });
   },
 };

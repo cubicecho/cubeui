@@ -7,9 +7,9 @@ import { ChevronDown as NativeChevron, Plus as NativePlus } from "../registry/ui
 import { SideBySide } from "./side-by-side";
 
 /**
- * `Button`'s inside is three props — `icon`, `content`, `trailing` — and no children (#243). That
- * is what lets `loading` put a spinner where the icon was and swap the label, on both halves, with
- * nothing rebuilt at the call site.
+ * `Button`'s inside is three props — `iconSlot`, `content`, `trailingSlot` — and no children
+ * (#243). That is what lets `loading` put a spinner where the icon was and swap the label, on both
+ * halves, with nothing rebuilt at the call site.
  */
 const meta = { title: "RN Parity/Button" } satisfies Meta;
 
@@ -26,9 +26,9 @@ export const Parts: Story = {
         <div data-testid="native">
           <Native
             variant="outline"
-            trailing={<NativeChevron />}
+            trailingSlot={<NativeChevron />}
             content="New workspace"
-            icon={<NativePlus />}
+            iconSlot={<NativePlus />}
           />
         </div>
       }
@@ -36,9 +36,9 @@ export const Parts: Story = {
         <div data-testid="compiled">
           <Compiled
             variant="outline"
-            trailing={<CompiledChevron />}
+            trailingSlot={<CompiledChevron />}
             content="New workspace"
-            icon={<CompiledPlus />}
+            iconSlot={<CompiledPlus />}
           />
         </div>
       }
@@ -77,7 +77,7 @@ export const Loading: Story = {
             loading
             loadingLabel="Saving…"
             content="Save"
-            icon={<NativePlus />}
+            iconSlot={<NativePlus />}
             onPress={pressed.native}
           />
           <Native loading variant="outline" content="Reload models" />
@@ -89,7 +89,7 @@ export const Loading: Story = {
             loading
             loadingLabel="Saving…"
             content="Save"
-            icon={<CompiledPlus />}
+            iconSlot={<CompiledPlus />}
             onClick={pressed.compiled}
           />
           <Compiled loading variant="outline" content="Reload models" />

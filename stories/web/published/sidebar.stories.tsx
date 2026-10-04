@@ -28,18 +28,18 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     label: "Workspace",
-    header: <span className="font-semibold">Acme</span>,
-    content: (
+    headerSlot: <span className="font-semibold">Acme</span>,
+    contentSlot: (
       <SidebarSection
         title="Projects"
-        content={[
+        contentSlot={[
           <SidebarNavItem key="inbox" href="#/inbox" label="Inbox" count={12} />,
           <SidebarNavItem key="launch" href="#/launch" label="Launch plan" count={3} active />,
           <SidebarNavItem key="garden" href="#/garden" label="Garden" />,
         ]}
       />
     ),
-    footer: <SidebarNavItem href="#/settings" label="Settings" />,
+    footerSlot: <SidebarNavItem href="#/settings" label="Settings" />,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

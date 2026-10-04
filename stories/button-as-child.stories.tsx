@@ -6,9 +6,9 @@ import { Button as Native } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
 /**
- * A `Button` with a `link`, on both halves — issue #156, from when this was `asChild`. The anchor
- * has to come out looking like the plain `Button` beside it: same padding, border, radius and
- * background.
+ * A `Button` with a `linkSlot`, on both halves — issue #156, from when this was `asChild`. The
+ * anchor has to come out looking like the plain `Button` beside it: same padding, border, radius
+ * and background.
  *
  * It did not. The `Slot` was handed the icon-colour provider as its one child rather than the
  * caller's element, so the classes and the press were merged onto a context provider and dropped,
@@ -20,7 +20,7 @@ type Story = StoryObj;
 
 type ButtonLike = ComponentType<{
   content?: ReactNode;
-  link?: ReactElement;
+  linkSlot?: ReactElement;
   variant?: "default" | "outline" | "destructive";
 }>;
 
@@ -31,14 +31,14 @@ function Pair({ Button, name }: { Button: ButtonLike; name: string }) {
       <Button
         variant="outline"
         // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
-        link={<a href="#" />}
+        linkSlot={<a href="#" />}
         content={`${name} link`}
       />
       <Button variant="destructive" content={`${name} plain destructive`} />
       <Button
         variant="destructive"
         // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
-        link={<a href="#" />}
+        linkSlot={<a href="#" />}
         content={`${name} destructive link`}
       />
     </div>

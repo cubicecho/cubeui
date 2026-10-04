@@ -1,13 +1,3 @@
-/**
- * The app shell with a bar across the top and no sidebar — written once here and compiled for the
- * web by `scripts/rn2web`.
- *
- * It is `HeaderContentFooter` with the bar in its header slot and the page in its body, not a third
- * implementation of "chrome that stays, a middle that moves". What it adds is the bar's own
- * arrangement — brand, navigation, actions — and the two landmarks every hand-written copy of it
- * spelled differently or forgot.
- */
-import type { ReactNode } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import {
   HeaderContentFooter,
@@ -15,7 +5,7 @@ import {
   PAGE_COLUMN,
   PROSE_COLUMN,
 } from "@/components/header-content-footer";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 /**
  * The bar's inner row, capped to the same column as the page below it, so the brand sits over the
@@ -46,7 +36,7 @@ const NAV = "min-w-0 flex-1";
 const NAV_ROW = "flex-row items-center gap-1";
 
 type NavProps = {
-  nav: ReactNode;
+  navSlot: SlotNode;
   label: string | undefined;
   className: string | undefined;
 };
@@ -57,13 +47,13 @@ type NavProps = {
  * Every other part of the bar keeps its width — the brand and the actions are `shrink-0` — so the
  * links are what gives when the window runs out, and they give by moving rather than by wrapping
  * the bar to a second line or leaving the screen. A bar that wants the links gone below a width
- * says so with `navClassName="hidden md:flex"` and puts a menu in `action`, which is the other
+ * says so with `navClassName="hidden md:flex"` and puts a menu in `actionSlot`, which is the other
  * pattern the survey found; that is one class, not a prop.
  *
  * Written as statements, like `HeaderContentFooter`'s body, because the two arms are different
  * elements: `overflow` scrolls nothing on device.
  */
-function Nav({ nav, label, className }: NavProps) {
+function Nav({ navSlot, label, className }: NavProps) {
   if (Platform.OS === "web") {
     return (
       <View
@@ -72,7 +62,7 @@ function Nav({ nav, label, className }: NavProps) {
         aria-label={label}
         className={cn(NAV, NAV_ROW, "overflow-x-auto", className)}
       >
-        {nav}
+        {navSlot}
       </View>
     );
   }
@@ -84,7 +74,7 @@ function Nav({ nav, label, className }: NavProps) {
         showsHorizontalScrollIndicator={false}
         contentContainerClassName={cn(NAV_ROW, className)}
       >
-        {nav}
+        {navSlot}
       </ScrollView>
     </View>
   );
@@ -92,21 +82,21 @@ function Nav({ nav, label, className }: NavProps) {
 
 export type TopBarLayoutProps = {
   /** The page below the bar. The one part that scrolls. */
-  content: ReactNode;
+  contentSlot: SlotNode;
   /** The bar's start: the logo and the app's name, usually a link home. */
-  brand?: ReactNode | undefined;
+  brandSlot?: SlotNode | undefined;
   /**
    * The primary links, after the brand. Pass the links themselves; the shell draws the `<nav>`
    * around them, which is the part the hand-written bars left out.
    */
-  nav?: ReactNode | undefined;
+  navSlot?: SlotNode | undefined;
   /**
    * What the navigation landmark is called — "Main". Only needed when the page has a second
    * navigation landmark to tell it from.
    */
   navLabel?: string | undefined;
   /** The bar's far end: account, theme, sign out, a menu of the links on a narrow screen. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /**
    * The column the bar's row is held to — `page` by default, `full` for a board that runs to the
    * window's edge. The page below owns its own column (a `PageLayout` has `width` too), so this
@@ -119,7 +109,7 @@ export type TopBarLayoutProps = {
   brandClassName?: string | undefined;
   navClassName?: string | undefined;
   actionClassName?: string | undefined;
-  /** On the `<main>` around `content`. */
+  /** On the `<main>` around `contentSlot`. */
   contentClassName?: string | undefined;
 };
 
@@ -128,11 +118,11 @@ export type TopBarLayoutProps = {
  *
  * The sibling of `SidebarLayout` + `Sidebar`: the same app shell with the navigation laid across
  * the top rather than down the side, for an app with a handful of top-level pages. A shell with
- * both is a `Sidebar` in a `SidebarLayout`, and this one's `content` can be that.
+ * both is a `Sidebar` in a `SidebarLayout`, and this one's `contentSlot` can be that.
  *
  * **Two landmarks, on both halves.** The bar is `role="banner"` (`<header>` on the web) and the
  * page is `role="main"` (`<main>`), so a screen reader's landmark jump lands on the page and skips
- * the chrome. `nav` becomes the navigation landmark between them.
+ * the chrome. `navSlot` becomes the navigation landmark between them.
  *
  * **The safe area is the app's.** On device the bar is the top of the screen, and the status bar
  * sits over it unless something insets it. Nothing in this registry measures insets and a shell is
@@ -140,11 +130,11 @@ export type TopBarLayoutProps = {
  * `SafeAreaView edges={["top"]}` (Expo ships it) and this sits inside it.
  */
 export function TopBarLayout({
-  content,
-  brand,
-  nav,
+  contentSlot,
+  brandSlot,
+  navSlot,
   navLabel,
-  action,
+  actionSlot,
   width = "page",
   className,
   headerClassName,
@@ -160,22 +150,22 @@ export function TopBarLayout({
       className={cn("border-foreground/10 border-b bg-background", headerClassName)}
     >
       <View className={cn("min-h-14 flex-row items-center gap-4 px-4 py-2", BAR_COLUMNS[width])}>
-        {brand ? (
+        {brandSlot ? (
           <View
             testID="top-bar-layout-brand"
             className={cn("shrink-0 flex-row items-center gap-2", brandClassName)}
           >
-            {brand}
+            {brandSlot}
           </View>
         ) : null}
-        {nav ? <Nav nav={nav} label={navLabel} className={navClassName} /> : null}
-        {action ? (
+        {navSlot ? <Nav navSlot={navSlot} label={navLabel} className={navClassName} /> : null}
+        {actionSlot ? (
           // `ml-auto` holds the actions at the end when there is no nav to push them there.
           <View
             testID="top-bar-layout-action"
             className={cn("ml-auto shrink-0 flex-row items-center gap-2", actionClassName)}
           >
-            {action}
+            {actionSlot}
           </View>
         ) : null}
       </View>
@@ -184,14 +174,14 @@ export function TopBarLayout({
 
   return (
     <HeaderContentFooter
-      header={bar}
-      content={
+      headerSlot={bar}
+      contentSlot={
         <View
           role="main"
           testID="top-bar-layout-content"
           className={cn("min-w-0", contentClassName)}
         >
-          {content}
+          {contentSlot}
         </View>
       }
       scroll={SCROLL}

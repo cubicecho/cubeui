@@ -24,8 +24,8 @@ type Story = StoryObj<typeof meta>;
 
 const Actions = () => (
   <>
-    <Button size="sm" variant="outline" icon={<Download />} content="Export" />
-    <Button size="sm" variant="info" icon={<Plus />} content="New workspace" />
+    <Button size="sm" variant="outline" iconSlot={<Download />} content="Export" />
+    <Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />
   </>
 );
 
@@ -45,10 +45,10 @@ export const Default: Story = {
   args: {
     title: "Workspaces",
     description: "Each one exposes the servers you choose.",
-    icon: <Users />,
-    action: <Actions />,
-    headerContent: <Input aria-label="Search workspaces" placeholder="Search workspaces" />,
-    content: <Rows />,
+    iconSlot: <Users />,
+    actionSlot: <Actions />,
+    headerContentSlot: <Input aria-label="Search workspaces" placeholder="Search workspaces" />,
+    contentSlot: <Rows />,
   },
   play: async ({ canvas, canvasElement }) => {
     // Every slot that was passed is drawn.
@@ -67,7 +67,7 @@ export const Default: Story = {
  * components existed for, and the thing a plain `mx-auto max-w-3xl` div does not do.
  */
 export const HeaderStaysWhileTheBodyScrolls: Story = {
-  args: { title: "Workspaces", action: <Actions />, content: <Rows /> },
+  args: { title: "Workspaces", actionSlot: <Actions />, contentSlot: <Rows /> },
   play: async ({ canvasElement }) => {
     const body = canvasElement.querySelector("[data-slot=header-content-footer-content]");
     const header = canvasElement.querySelector("[data-slot=page-header]");
@@ -88,7 +88,7 @@ export const HeaderStaysWhileTheBodyScrolls: Story = {
  * then answered differently. Three names, and the header and body always share one of them.
  */
 export const WidthIsAWordNotANumber: Story = {
-  args: { title: "Settings", width: "prose", content: <Rows count={12} /> },
+  args: { title: "Settings", width: "prose", contentSlot: <Rows count={12} /> },
   play: async ({ canvasElement }) => {
     const header = canvasElement.querySelector(
       "[data-slot=header-content-footer-header]",
@@ -112,10 +112,10 @@ export const Loading: Story = {
   args: {
     title: "Workspaces",
     description: "Each one exposes the servers you choose.",
-    action: <Actions />,
-    headerContent: <Input aria-label="Search workspaces" placeholder="Search workspaces" />,
+    actionSlot: <Actions />,
+    headerContentSlot: <Input aria-label="Search workspaces" placeholder="Search workspaces" />,
     loading: true,
-    content: <Rows count={4} />,
+    contentSlot: <Rows count={4} />,
   },
   play: async ({ canvasElement }) => {
     expect(canvasElement.querySelector("[data-slot=page-header]")).toHaveAttribute("aria-busy");
@@ -128,8 +128,8 @@ export const Loading: Story = {
 export const WithFooter: Story = {
   args: {
     title: "Workspaces",
-    content: <Rows />,
-    footer: (
+    contentSlot: <Rows />,
+    footerSlot: (
       <div className="flex items-center justify-between py-3 text-foreground/60 text-sm">
         <span>40 workspaces</span>
         <Button size="sm" variant="outline" content="Load more" />
@@ -174,7 +174,7 @@ const Chat = () => (
  * composer stays at the foot of the page and the list above it is what moves.
  */
 export const BodyThatDoesNotScroll: Story = {
-  args: { title: "Assistant", scroll: false, content: <Chat /> },
+  args: { title: "Assistant", scroll: false, contentSlot: <Chat /> },
   play: async ({ canvas, canvasElement }) => {
     const body = canvasElement.querySelector(
       "[data-slot=header-content-footer-content]",

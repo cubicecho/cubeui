@@ -12,7 +12,7 @@
 import { CircleQuestionMark } from "lucide-react";
 import type { ReactNode } from "react";
 import { cloneElement, isValidElement, useId } from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldTitle } from "./field";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Skeleton } from "./skeleton";
@@ -31,7 +31,7 @@ const LOADING_BOX = {
 } as const;
 
 /**
- * What the shell wires onto the control, handed straight to the caller when `control` is a
+ * What the shell wires onto the control, handed straight to the caller when `controlSlot` is a
  * function. The names are the DOM's, so the whole object spreads onto an element.
  */
 type ControlProps = {
@@ -44,7 +44,7 @@ type ControlProps = {
 };
 
 /**
- * The ids of the field's own parts, handed to the function form of `control` beside the props.
+ * The ids of the field's own parts, handed to the function form of `controlSlot` beside the props.
  *
  * Not spread with them, because they are not attributes of the control: they are for a control
  * with a second element to name. A `ColorPicker` is one — the `<label htmlFor>` names its hex box,
@@ -60,13 +60,13 @@ type FormFieldProps = {
   /**
    * The control itself — one `<Input>`, `<Textarea>`, `<Checkbox>`, `<Switch>`.
    *
-   * The one body in this set not called `content`, because it is the one body that is not merely
-   * placed. The shell clones it to hand it the `id` the label points at, the `aria-describedby`
-   * that reaches the description and the error, and the `aria-invalid` the shadcn primitives
-   * already draw their red ring from. That contract — a single element that forwards its props
-   * to a form control — is what the name carries. `content` would promise that any nodes fit,
-   * and a `<div>` holding two inputs would take the `id` and leave the label pointing at a
-   * wrapper, which is a label that does nothing and an axe failure that says so.
+   * The one body in this set not called `contentSlot`, because it is the one body that is not
+   * merely placed. The shell clones it to hand it the `id` the label points at, the
+   * `aria-describedby` that reaches the description and the error, and the `aria-invalid` the
+   * shadcn primitives already draw their red ring from. That contract — a single element that
+   * forwards its props to a form control — is what the name carries. `contentSlot` would promise
+   * that any nodes fit, and a `<div>` holding two inputs would take the `id` and leave the label
+   * pointing at a wrapper, which is a label that does nothing and an axe failure that says so.
    *
    * **Pass a function when the element the props belong on is not the outermost one.** A
    * `<Select>` is the case that forces this: its root renders no DOM at all, so a clone of it
@@ -77,7 +77,7 @@ type FormFieldProps = {
    * shell calls it with the props instead of guessing, and the caller spreads them where they go:
    *
    * ```tsx
-   * control={(props) => (
+   * controlSlot={(props) => (
    *   <Select>
    *     <SelectTrigger {...props}>…</SelectTrigger>
    *     …
@@ -85,7 +85,7 @@ type FormFieldProps = {
    * )}
    * ```
    */
-  control: ReactNode | ((props: ControlProps, parts: FieldParts) => ReactNode);
+  controlSlot: SlotNode | ((props: ControlProps, parts: FieldParts) => SlotNode);
   /**
    * What the control is called, as a real `<FieldLabel htmlFor>`. Most of why this component
    * exists: a placeholder is not a label — it leaves at the first keystroke, and a field wearing
@@ -116,7 +116,7 @@ type FormFieldProps = {
    */
   descriptionPlacement?: "inline" | "popover" | undefined;
   /** The `popover` trigger's glyph. Defaults to a question mark; an `Info` reads as less of a plea. */
-  descriptionIcon?: ReactNode | undefined;
+  descriptionIconSlot?: SlotNode | undefined;
   /**
    * What is wrong with the value, as a node or a string. Falsy — `undefined`, `""`, whatever a
    * validator holds for a field that passed — draws nothing and leaves the control unmarked, so
@@ -134,11 +134,11 @@ type FormFieldProps = {
    */
   required?: boolean | undefined;
   /** The label row's far end. "Forgot password?", a character count, a reveal toggle. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /**
    * Whether the value is still being fetched. On, a skeleton stands in for the control and
    * `error` is not consulted — a value that has not arrived is not a value that came back wrong.
-   * The same ordering `CardLayout` makes between `loading` and `empty`, one level down.
+   * The same ordering `CardLayout` makes between `loading` and `emptySlot`, one level down.
    *
    * The label and the description are still drawn, and drawn for real: they are literals the
    * form already knows, not data being waited on, so a field that hides them while loading is a
@@ -155,7 +155,7 @@ type FormFieldProps = {
    * The control's `id`, for a caller that already owns one — something else on the page points
    * at this control, or a form library minted it. Left off, the shell generates one, which is
    * what makes the same field safe to render twice on a page. A control the shell cannot reach
-   * wants the function form of `control`, not this: an `htmlFor` alone points the label at the
+   * wants the function form of `controlSlot`, not this: an `htmlFor` alone points the label at the
    * right element and leaves the description and the error pointing at nothing.
    */
   htmlFor?: string | undefined;
@@ -173,14 +173,14 @@ type FormFieldProps = {
    * back. Everything else is unchanged: the description and the error still reach the group
    * through `aria-describedby`, which is valid on any element, and `required` still marks it.
    *
-   * It needs the function form of `control`, because the name has to land on the element that
+   * It needs the function form of `controlSlot`, because the name has to land on the element that
    * carries the `role`:
    *
    * ```tsx
    * <FormField
    *   asGroup
    *   label="Priority"
-   *   control={(props) => (
+   *   controlSlot={(props) => (
    *     <RadioGroup {...props} value={value} onValueChange={onValueChange}>…</RadioGroup>
    *   )}
    * />
@@ -255,14 +255,14 @@ type FormFieldProps = {
  * what the layer above already has.)
  */
 export function FormField({
-  control,
+  controlSlot,
   label,
   description,
   descriptionPlacement = "inline",
-  descriptionIcon,
+  descriptionIconSlot,
   error,
   required = false,
-  action,
+  actionSlot,
   loading = false,
   htmlFor,
   asGroup = false,
@@ -277,9 +277,9 @@ export function FormField({
 
   // A control keeps an `id` it arrived with: a caller that set one is a caller referencing it
   // from somewhere this shell cannot see.
-  const renderControl = typeof control === "function" ? control : null;
+  const renderControl = typeof controlSlot === "function" ? controlSlot : null;
   const element =
-    !renderControl && isValidElement<Record<string, unknown>>(control) ? control : null;
+    !renderControl && isValidElement<Record<string, unknown>>(controlSlot) ? controlSlot : null;
   const givenId = typeof element?.props.id === "string" ? element.props.id : undefined;
   const controlId = htmlFor ?? givenId ?? reactId;
 
@@ -294,7 +294,7 @@ export function FormField({
   const errorId = shownError ? `${controlId}-error` : undefined;
   // Minted whenever there is a label, but only *wired* in group mode: outside it the
   // `<label htmlFor>` is the association, and a second one pointing the other way is two names for
-  // one control. The function form of `control` is handed it regardless, for a control with a
+  // one control. The function form of `controlSlot` is handed it regardless, for a control with a
   // second part to name (see `FieldParts`).
   const labelId = label ? `${controlId}-label` : undefined;
   const groupLabelId = asGroup ? labelId : undefined;
@@ -324,7 +324,7 @@ export function FormField({
           },
           { labelId },
         )
-      : control;
+      : controlSlot;
 
   const body = loading ? (
     <Skeleton
@@ -388,7 +388,7 @@ export function FormField({
             aria-label={helpName}
             className="shrink-0 rounded-full text-foreground/60 outline-none transition-colors hover:text-foreground focus-visible:text-foreground [&_svg]:size-3.5"
           >
-            {descriptionIcon ?? <CircleQuestionMark aria-hidden />}
+            {descriptionIconSlot ?? <CircleQuestionMark aria-hidden />}
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -403,13 +403,13 @@ export function FormField({
 
   // Only drawn when there is a second thing on the row. A label on its own is the row.
   const header =
-    help || action ? (
+    help || actionSlot ? (
       <div data-slot="form-field-label-row" className="flex min-w-0 items-center gap-2">
         {labelNode}
         {help}
-        {action ? (
+        {actionSlot ? (
           <div data-slot="form-field-action" className="ml-auto shrink-0">
-            {action}
+            {actionSlot}
           </div>
         ) : null}
       </div>

@@ -367,13 +367,21 @@ does the same thing itself now that it is native-first.
   `registry:check` rule 9
 
 The full authoring rules are [`docs/component-conventions.md`](docs/component-conventions.md).
-The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `footer`,
-`footerActions`, `empty`, `loading`, `<slot>ClassName`) is the part to know before writing a prop.
+The slot vocabulary (`contentSlot`, `title`, `description`, `iconSlot`, `actionSlot`, `footerSlot`,
+`footerActionsSlot`, `emptySlot`, `loading`, `<slot>ClassName`) is the part to know before writing
+a prop.
 
-**No shell takes `children`.** The body is `content`, a prop like every other slot, because in a
+**A prop that takes elements ends in `Slot`.** It is typed `SlotNode` (`registry/lib/utils.ts`):
+an element, several, or nothing — never a bare string or number, because React Native draws text
+only inside a `<Text>`. A prop that takes words (`title`, `description`, `label`) has no suffix,
+and the component puts the `<Text>` around them itself. A prop that accepts either keeps the bare
+name: `MenuItem`'s `trailing`, `Button`'s `content`. A slot's class prop is named without the
+suffix — `contentClassName`, not `contentSlotClassName`.
+
+**No shell takes `children`.** The body is `contentSlot`, a prop like every other slot, because in a
 layout every part is dynamic and none of them earns the privileged position. A component that
 accepts children is a component that has to answer "and what if both were passed?" — see rule 1
-of the conventions doc. `Button` keeps the rule too — `icon`, `content`, `trailing`, `link` — which
+of the conventions doc. `Button` keeps the rule too — `iconSlot`, `content`, `trailingSlot`, `linkSlot` — which
 is what lets `loading` swap the icon for a spinner; it is the one primitive whose web half is not a
 superset of shadcn's. The compound primitives (`Card`, `Dialog`, `Tabs`) take children, as
 shadcn's do.
@@ -457,8 +465,8 @@ Recorded so the next pass does not re-derive them:
   `token-gate.tsx` differs by 4 lines out of 67). Not built as a shell: the layout half is
   `@cubeui/sidebar`, and the genuinely shared part between the mcp apps is auth, which is rule 5.
   The one layout piece still hand-written in six of them — the `md:hidden` bar with the brand and
-  icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brand`,
-  `nav`, `status` and `action`, a widening rather than a new `app-shell` item, which would also
+  icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brandSlot`,
+  `navSlot`, `status` and `actionSlot`, a widening rather than a new `app-shell` item, which would also
   have collided with mcp-ragdown's own `components/app-shell.tsx` on install. The links in that
   bar are `@cubeui/sidebar`'s `BarNavItem` — the rail's row with only the icon drawn — so the
   apps' own link classes, and the counts they dropped on the bar, go with it.
@@ -468,8 +476,8 @@ Recorded so the next pass does not re-derive them:
   upstreamed — `dim` is one `className` on `ItemContent`, which is not a component. What `Item`
   had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
   `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
-  so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leading`,
-  `title`, `description`, `meta`, `action`, and an optional pressable middle. `Item` itself now
+  so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
+  `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
   so the row that opens is on both halves too.

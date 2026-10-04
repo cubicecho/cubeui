@@ -103,8 +103,8 @@ With an icon on each pill, and the labels dropped on a narrow screen:
 
 ```tsx
 <SegmentedGroup aria-label="Editor view" labelHideBelow="sm" value={view} onValueChange={setView}>
-  <SegmentedButton value="edit" icon={<Pencil />}>Edit</SegmentedButton>
-  <SegmentedButton value="preview" icon={<Eye />}>Preview</SegmentedButton>
+  <SegmentedButton value="edit" iconSlot={<Pencil />}>Edit</SegmentedButton>
+  <SegmentedButton value="preview" iconSlot={<Eye />}>Preview</SegmentedButton>
 </SegmentedGroup>
 ```
 
@@ -123,14 +123,14 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 - **`variant`**: `framed`, the default, is an input-height box (`h-10`, a border,
   `bg-background`), so the control lines up beside a `Select` or an `Input`. `plain` is the pills
   alone, for a toolbar or a nav bar.
-- **`icon` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two
+- **`iconSlot` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two
   out in a row, sizes the icon and gives it the label's colour, chosen or not, on both platforms.
   Do not write the row, the icon's size or a `<span>` for the label yourself, and do not put the
   icon in `children`, where on device it takes no colour.
 - **`labelHideBelow` on the group** makes the pills icons alone: `always`, or under a width
   (`sm` / `md` / `lg` / `xl`) with the label back above it. It is on the group because the pills
   in a row should agree. The string child is still required and is still the pill's name, so
-  write no `aria-label`. A pill with no `icon` keeps its label.
+  write no `aria-label`. A pill with no `iconSlot` keeps its label.
 - The pills are toggle buttons with `aria-pressed`, not radios. For a choice that belongs in a
   form and reads as a list of options, use `RadioGroup`.
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
@@ -143,9 +143,9 @@ the far end, so those are the props:
 
 ```tsx
 <Button content="Save" onPress={save} />
-<Button variant="info" icon={<Plus />} content="New workspace" onPress={create} />
-<Button variant="outline" content={chosen.label} trailing={<ChevronDown />} />
-<Button variant="outline" link={<Link to="/docs" />} content="Docs" />
+<Button variant="info" iconSlot={<Plus />} content="New workspace" onPress={create} />
+<Button variant="outline" content={chosen.label} trailingSlot={<ChevronDown />} />
+<Button variant="outline" linkSlot={<Link to="/docs" />} content="Docs" />
 <Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
 ```
 
@@ -163,10 +163,10 @@ the far end, so those are the props:
 
 - **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
-- **`icon`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
+- **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
   is why an icon-only button is an `ActionButton` (below).
-- **`trailing`** is the far end: a trigger's chevron, a count.
-- **`link`** is the link the button is, as an element with no children: `<a href="…" />` or a
+- **`trailingSlot`** is the far end: a trigger's chevron, a count.
+- **`linkSlot`** is the link the button is, as an element with no children: `<a href="…" />` or a
   router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
   button; on a device it is expo-router's `Link`, which wraps the button with its own `asChild`.
   Handing a `Button` to a radix trigger is unchanged: `<PopoverTrigger asChild><Button … />`.
@@ -176,7 +176,7 @@ the far end, so those are the props:
   `ActionButton` and `ConfirmButton` take the same props; a form's submit is `form.SubmitButton`,
   which sets `loading` from the form.
 - A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
-  `<Button><Plus /> New</Button>` → `<Button icon={<Plus />} content="New" />`. Everything else
+  `<Button><Plus /> New</Button>` → `<Button iconSlot={<Plus />} content="New" />`. Everything else
   about the web half is still shadcn's: the `<button>` props, the sizes, `buttonVariants`.
 - `AlertDialogAction` and `AlertDialogCancel` keep their label as children, as shadcn's do.
 
@@ -185,7 +185,7 @@ the far end, so those are the props:
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
 
 ```tsx
-<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} icon={<Trash2 />} />
+<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} iconSlot={<Trash2 />} />
 ```
 
 `label` is required and is the accessible name. `title` is not a name — it is a hint, it is not
@@ -198,7 +198,7 @@ deliberate: `disabled:pointer-events-none` is why every `title="Empty the lane f
 apps was unreadable on exactly the control it was explaining. Pass `hint` with the reason:
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} icon={<Trash2 />} />
+<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} iconSlot={<Trash2 />} />
 ```
 
 `hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
@@ -230,7 +230,7 @@ pressable has: `onPress` on a device, `onClick` on the web.
   hint="Empty the lane first"
   disabled={cards.length > 0}
   onPress={remove}
-  icon={<Trash2 />}
+  iconSlot={<Trash2 />}
 />
 ```
 
@@ -255,12 +255,12 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
   label="Endpoint"
   value={url}
   valueClassName="font-mono"
-  action={<CopyButton value={url} label="Copy endpoint URL" />}
+  actionSlot={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 
 <CodeBlock
   content={snippet}
-  action={
+  actionSlot={
     <CopyButton
       value={snippet}
       label="Copy snippet"
@@ -270,7 +270,7 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 />
 ```
 
-Beside a block of text it goes in the block's `action` — see [Code block](#code-block) — not in
+Beside a block of text it goes in the block's `actionSlot` — see [Code block](#code-block) — not in
 an `absolute` corner over it.
 
 - It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
@@ -331,7 +331,7 @@ eleven screens and came out with four fills, a border on about half and three pa
 
 <CodeBlock
   content={command}
-  action={<CopyButton value={command} label="Copy command" />}
+  actionSlot={<CopyButton value={command} label="Copy command" />}
 />
 
 <CodeBlock content={log} wrap maxHeight="md" />
@@ -340,7 +340,7 @@ eleven screens and came out with four fills, a border on about half and three pa
 - **`content` is a string**, drawn as written: its newlines and its indentation are kept. It is not
   a node, and there is no syntax highlighting. Build the string first (`JSON.stringify(value, null,
   2)`), then pass it.
-- **`action`** is the block's far end, at the top: a `CopyButton`. It has a column of its own, so
+- **`actionSlot`** is the block's far end, at the top: a `CopyButton`. It has a column of its own, so
   the text never runs under it — there is no `pr-12` to remember and nothing to position. What is
   copied is the button's `value`, which need not be `content`: a snippet shown with a placeholder
   can copy the real token.
@@ -363,13 +363,13 @@ reads as a field somebody could type in:
 <CodeBlock
   content={url}
   wrap
-  action={<CopyButton value={url} label="Copy endpoint URL" />}
+  actionSlot={<CopyButton value={url} label="Copy endpoint URL" />}
 />
 ```
 
 One line of text makes a block one line tall, button included. A value that already has a label
 beside it on a settings page is a `PropertyRow` with the string as its `value`,
-`valueClassName="font-mono"` and the `CopyButton` as its `action` instead (see
+`valueClassName="font-mono"` and the `CopyButton` as its `actionSlot` instead (see
 [Copy button](#copy-button)); the block is for the value that stands alone.
 
 ## Markdown
@@ -382,7 +382,7 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 ```tsx
 <Markdown content={skill.instructions} />
 
-<Markdown content={file.text} empty={<p className="text-foreground/60">This file is empty.</p>} />
+<Markdown content={file.text} emptySlot={<p className="text-foreground/60">This file is empty.</p>} />
 ```
 
 - **`content` is the Markdown source, a string.** It is the only required prop.
@@ -393,7 +393,7 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
   element and no `prose` plugin to install.
 - **GitHub-flavoured Markdown is on**: tables, task lists, strikethrough, bare URLs as links.
   There is no syntax highlighting, as `CodeBlock` has none.
-- **`empty`** is what a blank `content` draws. Left out, a blank document draws nothing at all.
+- **`emptySlot`** is what a blank `content` draws. Left out, a blank document draws nothing at all.
 - **`headingId`** — `(text) => id` — gives each heading an id from its text, so a table of
   contents or a `#fragment` can point at one. Left out, no heading has an id.
 - `className` is the root's: its width, its margin. The document is as wide as what it is put in
@@ -449,12 +449,12 @@ const [body, setBody] = useState(skill.instructions);
 
 <FormField
   label="Instructions"
-  control={<MarkdownEditor value={body} onValueChange={setBody} placeholder="# My skill" />}
+  controlSlot={<MarkdownEditor value={body} onValueChange={setBody} placeholder="# My skill" />}
 />
 ```
 
 - **`value`, `onValueChange`** — the source is yours. The editor keeps no copy, and saving, a
-  dirty flag and autosave are the screen's: put the Save button in the `action` of the `Section`
+  dirty flag and autosave are the screen's: put the Save button in the `actionSlot` of the `Section`
   or card the editor sits in.
 - **The toggle is drawn for you** — Edit, Split, Preview, a `SegmentedGroup` at the editor's far
   end, above the panes. `edit` is the source alone, `preview` the document alone, `split` both.
@@ -463,10 +463,10 @@ const [body, setBody] = useState(skill.instructions);
   `defaultView`, never both.
 - **Under `lg`, `split` shows the source alone.** Two columns do not fit, and stacked the
   preview would be a screen below the line being typed. Preview is one press away.
-- **`empty`** is what the preview draws while the source is blank. Left out, an empty box.
+- **`emptySlot`** is what the preview draws while the source is blank. Left out, an empty box.
 - **Every other prop is the textarea's** — `id`, `placeholder`, `disabled`, `name`, `onBlur`,
   `aria-label`, `aria-invalid`, `spellCheck` (off unless given) — so it is a `FormField`'s
-  `control` like any other, and outside one it needs an `aria-label`.
+  `controlSlot` like any other, and outside one it needs an `aria-label`.
 - The textarea stays mounted in all three views, so undo history and the cursor survive a look at
   the preview. Beside the preview it is as tall as the preview; alone it is sixteen rem and
   resizes by its corner.
@@ -485,7 +485,7 @@ const [body, setBody] = useState(skill.instructions);
   title="Delete this lane?"
   description="The lane takes its cards with it."
   onConfirm={() => deleteLane(id)}
-  icon={<Trash2 />}
+  iconSlot={<Trash2 />}
 />
 ```
 
@@ -524,7 +524,7 @@ repository — pass `requireText`, and the dialog asks for the name before it ac
   requireText={folder.name}
   requireTextLabel={<>Type <strong>{folder.name}</strong> to delete it</>}
   onConfirm={() => deleteFolder(folder.id)}
-  icon={<Trash2 />}
+  iconSlot={<Trash2 />}
 />
 ```
 
@@ -555,10 +555,10 @@ on both platforms:
     <Button variant="outline" content="Lane" />
   </MenuTrigger>
   <MenuContent align="end">
-    <MenuItem icon={<Pencil />} label="Rename" onSelect={startRename} />
-    <MenuItem icon={<ArrowLeft />} label="Move left" disabled={first} onSelect={moveLeft} />
+    <MenuItem iconSlot={<Pencil />} label="Rename" onSelect={startRename} />
+    <MenuItem iconSlot={<ArrowLeft />} label="Move left" disabled={first} onSelect={moveLeft} />
     <MenuSeparator />
-    <MenuItem icon={<Trash2 />} label="Delete" destructive onSelect={remove} />
+    <MenuItem iconSlot={<Trash2 />} label="Delete" destructive onSelect={remove} />
   </MenuContent>
 </Menu>
 ```
@@ -568,11 +568,11 @@ on both platforms:
 - **The menu closes itself when a row is chosen.** Do not hold `open` to close it from
   `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
-  `icon`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
-  `onSelect`, and `link` or `href` for a row that navigates. The icon takes the row's colour —
+  `iconSlot`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
+  `onSelect`, and `linkSlot` or `href` for a row that navigates. The icon takes the row's colour —
   `text-negative` on a destructive row.
 - **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
-  `Link` as an element with no children, `link`, and the row is drawn inside it — on the web the
+  `Link` as an element with no children, `linkSlot`, and the row is drawn inside it — on the web the
   menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
   handlers and a router that preloads on intent does, and Enter or a click follows it and closes
   the menu:
@@ -581,9 +581,9 @@ on both platforms:
   import { Link } from "@tanstack/react-router";
 
   <MenuItem
-    icon={<ArrowRight />}
+    iconSlot={<ArrowRight />}
     label="Open"
-    link={<Link to="/projects/$id" params={{ id }} preload="intent" />}
+    linkSlot={<Link to="/projects/$id" params={{ id }} preload="intent" />}
   />
   <MenuItem label="Help" href="https://example.com/help" />
   ```
@@ -591,10 +591,10 @@ on both platforms:
   Any router's link that renders an `<a>` and forwards its ref fits: React Router's
   `<Link to prefetch="intent" />`, Next's `<Link href />`. `href` alone is a plain `<a href>`, for
   a URL no router owns. The row looks exactly like the others, `onSelect` still runs first, and a
-  `disabled` row renders no link at all, so nothing follows it. It is `link={…}` and not
+  `disabled` row renders no link at all, so nothing follows it. It is `linkSlot={…}` and not
   `<Link asChild><MenuItem /></Link>` as for `SidebarNavItem`: a menu handed the router's click
   would see it cancel the browser's navigation and take that as "keep the menu open". On device,
-  `link` takes the row `asChild` — expo-router's `<Link href="/x" />` — and navigates beside
+  `linkSlot` takes the row `asChild` — expo-router's `<Link href="/x" />` — and navigates beside
   `onSelect`; `href` alone there only runs `onSelect`, because there is no URL to open.
 - **A row that deletes is `destructive`, and still goes through a confirm** if the loss is real:
   open a `ConfirmDialog` from its `onSelect`.
@@ -618,7 +618,7 @@ on both platforms:
     {labels.map((l) => (
       <MenuCheckboxItem
         key={l.id}
-        icon={<ColorDot color={l.color} />}
+        iconSlot={<ColorDot color={l.color} />}
         label={l.name}
         checked={attached.has(l.id)}
         onCheckedChange={(on) => setAttached(l.id, on)}
@@ -627,7 +627,7 @@ on both platforms:
   </MenuContent>
   ```
 
-  It takes `MenuItem`'s row — `icon`, `label`, `trailing`, `disabled` — plus `checked` and
+  It takes `MenuItem`'s row — `iconSlot`, `label`, `trailing`, `disabled` — plus `checked` and
   `onCheckedChange`, and draws the ✓ itself at the far edge. **The menu stays open** when one is
   toggled, so a list is set in one go; Escape or a press outside closes it. It has no `onSelect`
   and no `destructive`: a setting is not an action.
@@ -681,7 +681,7 @@ primitive and broke the install.
   `aria-invalid` put on it goes nowhere — this takes the rest of the trigger's props (every
   `<button>` prop on the web; `id`, the `aria-*` props and `onBlur` on device) and spreads them on
   the trigger, which is why it drops straight into `FormField`'s **function form**:
-  `control={(wired) => <OptionSelect {...wired} options={…} … />}`.
+  `controlSlot={(wired) => <OptionSelect {...wired} options={…} … />}`.
 - Full width by default, because a column of selects that each shrink to their longest option is
   ragged. Pass `className="w-40"` for a toolbar; the later width wins.
 - `contentClassName` is the dropdown's class. `className` is the trigger's, which is the control.
@@ -845,7 +845,7 @@ goes in one of those three rather than into the label. `"Fix billing (archived)"
 its status by having it typed into its name, and it says it on the chip too.
 
 Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
-inside a `FormField` — but pass them through the **function form** of `control`, since its root
+inside a `FormField` — but pass them through the **function form** of `controlSlot`, since its root
 is a `Popover`. `MultiSelectField` already does.
 
 - **On the web** the list is radix's popover over cmdk: portalled, the width of the trigger,
@@ -877,7 +877,7 @@ device the popover is a centred sheet and the months stack.
 - The range picker closes on the second press after it opens, so the first press starts a range
   rather than ending one. Its value is a `DateRange` (`{ from, to? }`), exported beside it.
 - The trigger is a button, which is labelable, so `htmlFor` works on the web — but the `aria-*`
-  props still need the function form of `control`. `aria-describedby`, `aria-invalid` and
+  props still need the function form of `controlSlot`. `aria-describedby`, `aria-invalid` and
   `aria-required` are web only.
 - `combineDateAndTime(day, clock)` and `setTime(day, "14:30")` are exported for the same
   arithmetic at a call site.
@@ -995,7 +995,7 @@ with a filled `div` and a `style.width` inside it.
 - `popoverLabel` and `customLabel` are accepted from the popover picker's API and ignored —
   there is no popover to name and no colour well to label.
 - `id` goes to the hex field and the `aria-*` props to the swatch row, so a field's function-form
-  `control` can spread onto it.
+  `controlSlot` can spread onto it.
 
 Showing a colour the user picked is three small items, all on both halves:
 
@@ -1036,24 +1036,24 @@ a second argument, the moment to count from, for a screen that ticks its own clo
 
 ## An icon in an input
 
-An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the input in a
+An icon inside a field is `Input`'s `leadingSlot`, on both halves. Do not wrap the input in a
 `relative` div with an absolute icon and a `pl-8` on the input:
 
 ```tsx
-<Input aria-label="Filter servers" placeholder="Filter servers" leading={<Search />} />
+<Input aria-label="Filter servers" placeholder="Filter servers" leadingSlot={<Search />} />
 
 <Input
   aria-label="Lane name"
   value={name}
   onChangeText={setName}
-  leading={<Pencil />}
-  trailing={
+  leadingSlot={<Pencil />}
+  trailingSlot={
     <Button
       variant="outline"
       size="icon-xs"
       aria-label="Undo rename"
       onPress={() => setName(saved)}
-      icon={<Undo2 />}
+      iconSlot={<Undo2 />}
     />
   }
   wrapperClassName="w-64"
@@ -1062,7 +1062,7 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
 
 - Pass a bare icon. The input sizes it (`size-4`), mutes it, and pads the text past it. It takes no
   press, so a tap on it lands in the field.
-- `trailing` is the far end, inside the field: one icon-sized control. It is pressable, so it
+- `trailingSlot` is the far end, inside the field: one icon-sized control. It is pressable, so it
   needs its own name. The text stops short of it.
 - `className` stays on the field, as on any input. With a slot, the field sits in a box that is
   `w-full`; size that box with `wrapperClassName`. Without a slot there is no box, and the root is
@@ -1084,7 +1084,7 @@ the right keyboard and switches neither off. `autoCapitalize` is `none`, `senten
 ## Search
 
 A box that filters or searches is `SearchInput`, on both halves. Do not build it from `Input
-leading={<Search />}`, and never from a `relative` div, an absolute glyph and a `pl-8`:
+leadingSlot={<Search />}`, and never from a `relative` div, an absolute glyph and a `pl-8`:
 
 ```tsx
 <SearchInput placeholder="Search servers" value={query} onChangeText={setQuery} />
@@ -1100,7 +1100,7 @@ leading={<Search />}`, and never from a `relative` div, an absolute glyph and a 
 - The ✕ shows only while there is text, is a button named `clearLabel` (default "Clear search"),
   empties the box, and puts focus back in it. `clearable={false}` drops it. The browser's own
   ✕ is hidden, so there is one.
-- It takes the rest of `Input`'s props except `type`, `leading` and `trailing`: `onChangeText` on
+- It takes the rest of `Input`'s props except `type`, `leadingSlot` and `trailingSlot`: `onChangeText` on
   both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
   the user had cleared the box. Controlled or not, it clears.
 - `className` is on the field; size the box with `wrapperClassName`.
@@ -1130,7 +1130,7 @@ in one wrapping row. There is no component for it — it is one `div`:
   and `gap-2` so a select and a button sit on the search box's line.
 - Give the search box and each select a width: both are full width by default, and in a row
   that means one control takes the line.
-- Put it above the list, inside the page's content, not in `PageHeader`'s `actions` — those are
+- Put it above the list, inside the page's content, not in `PageHeader`'s `actionSlot` — those are
   the page's actions, not the list's.
 
 ## Removable badge
@@ -1175,7 +1175,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   variant="destructive"
   title="Last error"
   description={server.lastError}
-  action={<Button size="sm" variant="outline" onPress={restart} content="Restart" />}
+  actionSlot={<Button size="sm" variant="outline" onPress={restart} content="Restart" />}
 />
 ```
 
@@ -1186,11 +1186,11 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 - **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
   `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
   once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
-- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`), except on
+- `iconSlot` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`), except on
   `info`, which is the blue and draws no icon it was not given. Pass a bare
-  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
+  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `iconSlot={null}`
   draws none.
-- `title` and `description` are nodes, so a link can sit inside the description. `action` is the
+- `title` and `description` are nodes, so a link can sit inside the description. `actionSlot` is the
   far end — one button that deals with it.
 - shadcn's compound form also works, so a port can leave its call sites alone:
   `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
@@ -1273,7 +1273,7 @@ A password or a pasted secret is `PasswordInput`, on both halves. Do not write
 ```
 
 `@cubeui/password-input` installs to `components/password-input`. It is `Input` with
-`type="password"` and a show/hide button in its `trailing` slot, so it takes `Input`'s props on
+`type="password"` and a show/hide button in its `trailingSlot`, so it takes `Input`'s props on
 each half — `onChangeText` everywhere, and on the web `onChange`, `name`, `autoComplete` and a ref
 to the `<input>` as well. The reveal toggle is behaviour, not a variant, which is why this is a
 component and not a `type="password"` prop. Three things a hand-written eye gets wrong, and this
@@ -1289,7 +1289,7 @@ gets right:
   autofill still see a password field. On device that `type` is `secureTextEntry`.
 
 `revealable={false}` drops the toggle for a field that should never be shown. `className` is the
-field's and `wrapperClassName` the box around the field and its eye. `leading` still takes an icon.
+field's and `wrapperClassName` the box around the field and its eye. `leadingSlot` still takes an icon.
 
 ## Theme
 
@@ -1459,7 +1459,7 @@ directly, so you do not need a dialog around a zone.
 ```tsx
 <PageHeader
   title="Notes"
-  action={
+  actionSlot={
     <FilePickerButton
       variant="outline"
       size="icon-sm"
@@ -1475,7 +1475,7 @@ directly, so you do not need a dialog around a zone.
 - `variant` and `size` are the `Button`'s and are forwarded to it. At an `icon*` size only the
   icon is drawn. At any other size the label is drawn after the icon.
 - `label` is required and is always the accessible name.
-- `icon` defaults to the upload glyph. Pass a bare `<Plus />` to change it. The button sizes and
+- `iconSlot` defaults to the upload glyph. Pass a bare `<Plus />` to change it. The button sizes and
   colours it.
 - It still takes a file dropped onto it, and shows a ring while something is dragged over it.
 - It is a separate component rather than `variant="button"` on `FilePicker`. `variant` already

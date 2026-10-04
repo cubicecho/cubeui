@@ -58,8 +58,8 @@ export const Default: Story = {
       native={
         <Frame testId="native-frame">
           <NativeTopBarLayout
-            brand={<Text className="font-semibold text-foreground">eunomia</Text>}
-            nav={LINKS.map((label) => (
+            brandSlot={<Text className="font-semibold text-foreground">eunomia</Text>}
+            navSlot={LINKS.map((label) => (
               <Text
                 key={label}
                 role="link"
@@ -69,10 +69,10 @@ export const Default: Story = {
               </Text>
             ))}
             navLabel="Native main"
-            action={
+            actionSlot={
               <NativeButton size="sm" variant="outline" onPress={signOut} content="Sign out" />
             }
-            content={rows("Native").map((row) => (
+            contentSlot={rows("Native").map((row) => (
               <Text key={row} className="px-4 py-2 text-foreground">
                 {row}
               </Text>
@@ -83,8 +83,8 @@ export const Default: Story = {
       compiled={
         <Frame testId="compiled-frame">
           <CompiledTopBarLayout
-            brand={<span className="font-semibold text-foreground">eunomia</span>}
-            nav={LINKS.map((label) => (
+            brandSlot={<span className="font-semibold text-foreground">eunomia</span>}
+            navSlot={LINKS.map((label) => (
               <a
                 key={label}
                 href={`#/${label.toLowerCase()}`}
@@ -94,10 +94,10 @@ export const Default: Story = {
               </a>
             ))}
             navLabel="Compiled main"
-            action={
+            actionSlot={
               <CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />
             }
-            content={rows("Compiled").map((row) => (
+            contentSlot={rows("Compiled").map((row) => (
               <p key={row} className="px-4 py-2 text-foreground">
                 {row}
               </p>
@@ -177,8 +177,8 @@ export const Narrow: Story = {
   render: () => (
     <div className="w-80 bg-background">
       <CompiledTopBarLayout
-        brand={<span className="font-semibold text-foreground">eunomia</span>}
-        nav={LINKS.map((label) => (
+        brandSlot={<span className="font-semibold text-foreground">eunomia</span>}
+        navSlot={LINKS.map((label) => (
           <a
             key={label}
             href={`#/${label.toLowerCase()}`}
@@ -187,8 +187,10 @@ export const Narrow: Story = {
             {label}
           </a>
         ))}
-        action={<CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />}
-        content={<p className="px-4 py-2 text-foreground">The page.</p>}
+        actionSlot={
+          <CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />
+        }
+        contentSlot={<p className="px-4 py-2 text-foreground">The page.</p>}
       />
     </div>
   ),

@@ -11,6 +11,7 @@ import { Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { ColorDot } from "@/components/ui/color-dot";
 import { ArrowLeft, Pencil } from "@/components/ui/icons";
+import type { SlotNode } from "@/lib/utils";
 
 /** The outline "Edit" action a detail header usually carries. */
 export function EditButton({ onPress, label = "Edit" }: { onPress: () => void; label?: string }) {
@@ -19,7 +20,7 @@ export function EditButton({ onPress, label = "Edit" }: { onPress: () => void; l
       variant="outline"
       size="sm"
       onPress={onPress}
-      icon={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
+      iconSlot={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
       content={label}
     />
   );
@@ -36,9 +37,9 @@ type DetailHeaderProps = {
   /** Small muted line under the title. */
   subtitle?: ReactNode;
   /** Rendered next to the title — typically a `Badge`. */
-  badge?: ReactNode;
+  badgeSlot?: SlotNode;
   /** Trailing actions. */
-  actions?: ReactNode;
+  actionsSlot?: SlotNode;
 };
 
 export function DetailHeader({
@@ -48,8 +49,8 @@ export function DetailHeader({
   colorLabel,
   title,
   subtitle,
-  badge,
-  actions,
+  badgeSlot,
+  actionsSlot,
 }: DetailHeaderProps) {
   return (
     <View className="flex-row items-center gap-3">
@@ -58,7 +59,7 @@ export function DetailHeader({
         size="icon"
         onPress={onBack}
         aria-label={backLabel}
-        icon={<ArrowLeft className="h-4 w-4" />}
+        iconSlot={<ArrowLeft className="h-4 w-4" />}
       />
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
@@ -68,11 +69,11 @@ export function DetailHeader({
           <Text role="heading" aria-level={2} className="text-2xl font-bold text-foreground">
             {title}
           </Text>
-          {badge}
+          {badgeSlot}
         </View>
         {subtitle ? <Text className="mt-0.5 text-sm text-foreground/60">{subtitle}</Text> : null}
       </View>
-      {actions}
+      {actionsSlot}
     </View>
   );
 }

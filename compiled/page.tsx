@@ -23,7 +23,7 @@
  */
 import { Children, type ReactNode } from "react";
 import type { IconComponent } from "@/components/ui/icons-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
 import { PageHeader, type PageHeaderProps } from "./page-header";
 
@@ -60,7 +60,7 @@ export function Page({ className, children, fill = false, scroll = true, width }
  * The title row at the top of a page. There is one `PageHeader` in this set, and it lives in
  * `page-header`; it is re-exported here so a screen importing it from its page shell keeps
  * working. It took over from the small one this file used to carry, whose props were renamed on
- * the way: `subtitle` is `description`, `actions` is `action`, the heading is an `h1` unless
+ * the way: `subtitle` is `description`, `actions` is `actionSlot`, the heading is an `h1` unless
  * `level` says otherwise, and the `mb-4` under it is gone — space it with the page's own gap.
  */
 export { PageHeader, type PageHeaderProps };
@@ -91,7 +91,7 @@ export function CardGrid({ className, children }: { className?: string; children
 
 type EmptyStateProps = {
   title: string;
-  action?: ReactNode;
+  actionSlot?: SlotNode;
   /** The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. */
   className?: string | undefined;
 } & (
@@ -102,7 +102,8 @@ type EmptyStateProps = {
        * for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon
        * bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line
        * inside a region that already has its heading is never what a screen reader lands on. The
-       * same word, for the same place, as `QueryState`'s `compact` — whose `empty` it usually is.
+       * same word, for the same place, as `QueryState`'s `compact` — whose `emptySlot` it usually
+       * is.
        */
       compact?: false | undefined;
       icon: IconComponent;
@@ -145,7 +146,7 @@ export function EmptyState({
   icon: Icon,
   title,
   description,
-  action,
+  actionSlot,
   level,
   compact,
   className,
@@ -161,7 +162,7 @@ export function EmptyState({
       >
         {Icon ? <Icon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden /> : null}
         <span className="cube-rn-text shrink text-sm text-foreground/60">{title}</span>
-        {action}
+        {actionSlot}
       </div>
     );
   }
@@ -180,7 +181,7 @@ export function EmptyState({
         )}
         {description ? <EmptyDescription>{description}</EmptyDescription> : null}
       </EmptyHeader>
-      {action}
+      {actionSlot}
     </Empty>
   );
 }

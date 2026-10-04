@@ -11,12 +11,12 @@
  *   container classes and text classes. A string `content` is wrapped in a
  *   `<Text>` automatically; elements (icons) pass through untouched, and the
  *   container keeps its `text-*` class so web icons still inherit `currentColor`.
- * - There is no `asChild`. A button that navigates takes the link as `link` (see
+ * - There is no `asChild`. A button that navigates takes the link as `linkSlot` (see
  *   the prop below).
  *
  * **It takes no `children`.** What is inside a button is an icon, a label and
  * sometimes something at the far end, in that order, so those are the props:
- * `icon`, `content`, `trailing`. That is what lets `loading` put a spinner where
+ * `iconSlot`, `content`, `trailingSlot`. That is what lets `loading` put a spinner where
  * the icon was and swap the label without the caller rebuilding the inside, and
  * it is the one place this file is *not* shadcn's: `<Button>Save</Button>` is
  * `<Button content="Save" />` here.
@@ -35,7 +35,7 @@ import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 const buttonVariants = cva(
   "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
@@ -143,9 +143,9 @@ export type ButtonProps = Omit<
      * Before the label, or alone in an `icon*` size — where the button needs an `aria-label`,
      * which `ActionButton` makes a required prop.
      */
-    icon?: React.ReactNode;
+    iconSlot?: SlotNode;
     /** The far end, after the label: a trigger's chevron, a count. */
-    trailing?: React.ReactNode;
+    trailingSlot?: SlotNode;
     /**
      * The link this button is, as an element with no children: `<a href="/docs" />`, a router's
      * `<Link to="/docs" />`. It gets the button's look and press, and the icon and label are put
@@ -155,7 +155,7 @@ export type ButtonProps = Omit<
      * the props merged in. On device a link is expo-router's, which takes the button the other
      * way round: it is given `asChild` and wraps the `Pressable`.
      */
-    link?: React.ReactElement | undefined;
+    linkSlot?: React.ReactElement | undefined;
     /**
      * Pressed, and the work is still running: disabled, `aria-busy`, and a spinner where the
      * icon is — or before the label when there is none.
@@ -203,10 +203,10 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
       disabled: isDisabled,
       loading = false,
       loadingLabel,
-      icon,
+      iconSlot,
       content,
-      trailing,
-      link,
+      trailingSlot,
+      linkSlot,
       onPress,
       ...props
     },
@@ -234,7 +234,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         <Spinner />
       </View>
     ) : (
-      icon
+      iconSlot
     );
     const labelled =
       typeof label === "string" || typeof label === "number" ? (
@@ -262,16 +262,16 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         <IconClassContext.Provider value={labelClass}>
           {leading}
           {labelled}
-          {trailing}
+          {trailingSlot}
         </IconClassContext.Provider>
       </Pressable>
     );
-    if (!link) return button;
+    if (!linkSlot) return button;
 
     if (Platform.OS !== "web") {
       // On device the link wraps the button: expo-router's takes its child with `asChild`.
       return React.cloneElement(
-        link as React.ReactElement<{ asChild?: boolean }>,
+        linkSlot as React.ReactElement<{ asChild?: boolean }>,
         { asChild: true },
         button,
       );
@@ -296,7 +296,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           } as unknown as React.HTMLAttributes<HTMLElement>)}
           ref={ref as unknown as React.Ref<HTMLElement>}
         >
-          {React.cloneElement(link, undefined, leading, labelled, trailing)}
+          {React.cloneElement(linkSlot, undefined, leading, labelled, trailingSlot)}
         </Slot.Root>
       </IconClassContext.Provider>
     );

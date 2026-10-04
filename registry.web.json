@@ -213,7 +213,7 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "Single-line text entry, with an optional icon at its start (`leading`) or an icon-sized control at its end (`trailing`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.",
+      "description": "Single-line text entry, with an optional icon at its start (`leadingSlot`) or an icon-sized control at its end (`trailingSlot`). Keeps a real DOM input on web so time, number and min/max survive; a TextInput on device.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -554,7 +554,7 @@
       "name": "list-item",
       "type": "registry:component",
       "title": "List Item",
-      "description": "One row of a list: `leading` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `action` at the far end. With `onPress` the middle is one button and `leading` and `action` stay separate controls beside it, never nested in it.",
+      "description": "One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
@@ -567,7 +567,7 @@
       "name": "disclosure",
       "type": "registry:component",
       "title": "Disclosure",
-      "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `action` sits beside it rather than inside it, and `content` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
+      "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
       "files": [
         {
@@ -580,7 +580,7 @@
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.",
+      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `contentSlot` mounted only while open. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": ["@cubeui/item", "@cubeui/icons", "@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
@@ -606,7 +606,7 @@
       "name": "setting-row",
       "type": "registry:component",
       "title": "Setting Row",
-      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `action` at the end, dropping under the text when the row is too narrow for both. `action` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/tokens"],
       "files": [
         {
@@ -619,7 +619,7 @@
       "name": "stat-tile",
       "type": "registry:component",
       "title": "Stat Tile",
-      "description": "One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `icon` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.",
+      "description": "One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `iconSlot` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.",
       "registryDependencies": ["@cubeui/card", "@cubeui/icons", "@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
@@ -1199,6 +1199,7 @@
         "@cubeui/button",
         "@cubeui/color-dot",
         "@cubeui/icons",
+        "@cubeui/utils",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1212,8 +1213,13 @@
       "name": "route-error",
       "type": "registry:component",
       "title": "Route Error",
-      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actions`).",
-      "registryDependencies": ["@cubeui/button", "@cubeui/icons", "@cubeui/tokens"],
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionsSlot`).",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/route-error.tsx",

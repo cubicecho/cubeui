@@ -12,7 +12,7 @@ import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 import { FieldDescription, FieldError, FieldTitle } from "./field";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 
@@ -22,7 +22,7 @@ export type RadioOption = {
   label: ReactNode;
   description?: ReactNode | undefined;
   /** The picture over the label, in the `card` variant. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /** A hover hint on the web and the accessibility hint on device. */
   hint?: string | undefined;
   disabled?: boolean | undefined;
@@ -94,7 +94,7 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
   /** Marks the group required: an asterisk on the title and `aria-required` on the group. */
   required?: boolean | undefined;
   /** The title row's far end. */
-  action?: ReactNode | undefined;
+  actionSlot?: SlotNode | undefined;
   /** Draws a placeholder where the options go, for a form whose values are still loading. */
   loading?: boolean | undefined;
   /** `row` (the default), `card` or `segmented` — see `RadioGroup`. */
@@ -131,7 +131,7 @@ function RadioGroupFieldBody({
   label,
   description,
   required = false,
-  action,
+  actionSlot,
   loading = false,
   variant,
   orientation,
@@ -179,10 +179,10 @@ function RadioGroupFieldBody({
       data-slot="radio-group-field"
       className={cn("cube-rn-view", "w-full min-w-0 gap-2", className)}
     >
-      {action ? (
+      {actionSlot ? (
         <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
           {title}
-          <div className="cube-rn-view ml-auto shrink-0">{action}</div>
+          <div className="cube-rn-view ml-auto shrink-0">{actionSlot}</div>
         </div>
       ) : (
         title
@@ -222,7 +222,7 @@ function RadioGroupFieldBody({
               value={option.value}
               label={option.label}
               description={option.description}
-              icon={option.icon}
+              iconSlot={option.iconSlot}
               hint={option.hint}
               disabled={option.disabled}
             />

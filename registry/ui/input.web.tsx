@@ -16,7 +16,7 @@
  * element (which already satisfies `InputHandle`, so shared call sites holding
  * one are served by the same object).
  *
- * `leading` and `trailing` are the one place the root changes. Without them the
+ * `leadingSlot` and `trailingSlot` are the one place the root changes. Without them the
  * root is the `<input>`, exactly shadcn's; with one, the input sits in a
  * `relative` box beside an absolutely placed slot, which is where `PasswordInput` puts its
  * eye. `className` and every DOM prop still land on the `<input>`, so `id`,
@@ -91,8 +91,8 @@ function Input({
   onEscape,
   autoCorrect,
   spellCheck,
-  leading,
-  trailing,
+  leadingSlot,
+  trailingSlot,
   wrapperClassName,
   ref,
   ...props
@@ -134,26 +134,26 @@ function Input({
       className={cn(
         INPUT_CLASS,
         "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative aria-invalid:focus:border-active",
-        leading != null && INPUT_LEADING_PAD_CLASS,
-        trailing != null && INPUT_TRAILING_PAD_CLASS,
+        leadingSlot != null && INPUT_LEADING_PAD_CLASS,
+        trailingSlot != null && INPUT_TRAILING_PAD_CLASS,
         className,
       )}
     />
   );
 
-  if (leading == null && trailing == null) return field;
+  if (leadingSlot == null && trailingSlot == null) return field;
 
   return (
     <div data-slot="input-wrapper" className={cn(INPUT_WRAPPER_CLASS, wrapperClassName)}>
-      {leading != null ? (
+      {leadingSlot != null ? (
         <span data-slot="input-leading" className={cn(INPUT_LEADING_CLASS, SLOT_ICON)}>
-          {leading}
+          {leadingSlot}
         </span>
       ) : null}
       {field}
-      {trailing != null ? (
+      {trailingSlot != null ? (
         <span data-slot="input-trailing" className={cn(INPUT_TRAILING_CLASS, SLOT_ICON)}>
-          {trailing}
+          {trailingSlot}
         </span>
       ) : null}
     </div>

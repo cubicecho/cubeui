@@ -12,11 +12,12 @@ four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
   `ScrollView` there (a `<div>` on the web), and `contentClassName` styles its content container.
-- An `icon` is not sized for you on a device — there is no `[&_svg]` selector — so pass it at
+- An `iconSlot` is not sized for you on a device — there is no `[&_svg]` selector — so pass it at
   `size-4` yourself (`size-5` in a level 1 or 2 `PageHeader`).
 - A split's two panes are a flex row, not grid tracks. The widths and `stackBelow` read the same.
-- A string or number passed to a slot is wrapped in a `Text` for you, so a bare `"Save"` does not
-  crash a `View`. A node you build yourself still needs its own `Text`.
+- A slot takes elements, not a string or a number: words handed to one come in a `Text` of your
+  own, since a bare `"Save"` in a `View` crashes. Only the props that take words (`title`,
+  `description`, `label`) are wrapped in a `Text` for you.
 
 **A slot is a flex column, on the web and on a device.** The body slots of `CardLayout`,
 `HeaderContentFooter` (and so `PageLayout`), `SplitLayout`, `SidebarLayout` and `TopBarLayout`
@@ -42,10 +43,10 @@ route should reach for first.
 <PageLayout
   title="Workspaces"
   description="Each one exposes the servers you choose."
-  action={<Button size="sm" icon={<Plus />} content="New workspace" />}
-  headerContent={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
+  actionSlot={<Button size="sm" iconSlot={<Plus />} content="New workspace" />}
+  headerContentSlot={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
   width="page"
-  content={<WorkspaceList />}
+  contentSlot={<WorkspaceList />}
 />
 ```
 
@@ -61,12 +62,12 @@ widths, and two apps that had each extracted a `Page` component still disagreed 
 `wide` boolean meant. If none of the three is right, the page wants `HeaderContentFooter`
 directly — not a fourth name.
 
-`headerContent` is the row under the title: search, filters, tabs. Passing it removes the rule
+`headerContentSlot` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
 
 `scroll={false}` is for a page that fills the height and scrolls its own parts: a chat's message
 list over a pinned composer, a framed app, tab panels that each keep their place. The body is
-then the height left under the header, and `content` divides it (`h-full`, or `flex-1` on
+then the height left under the header, and `contentSlot` divides it (`h-full`, or `flex-1` on
 device). It is still a `PageLayout` — do not drop to `HeaderContentFooter` for this.
 
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
@@ -83,9 +84,9 @@ dialog body.
 ```tsx
 <StickyHeaderContentFooter
   width="page"
-  header={<PageHeader title="Vendors" description="Suppliers inventory is purchased from." />}
-  content={<DataTable columns={columns} data={rows} />}
-  footer={<Pagination page={page} onPageChange={setPage} />}
+  headerSlot={<PageHeader title="Vendors" description="Suppliers inventory is purchased from." />}
+  contentSlot={<DataTable columns={columns} data={rows} />}
+  footerSlot={<Pagination page={page} onPageChange={setPage} />}
 />
 ```
 
@@ -106,25 +107,25 @@ dialog body.
 
 ## Page headers
 
-`PageHeader` is the title block on its own, for when it goes in another shell's `header` slot.
+`PageHeader` is the title block on its own, for when it goes in another shell's `headerSlot`.
 It is not a page.
 
 ```tsx
 <PageHeader
   title="Workspaces"
   description="Each one exposes the servers you choose."
-  action={
+  actionSlot={
     <>
-      <Button size="sm" variant="outline" icon={<Download />} content="Export" />
-      <Button size="sm" icon={<Plus />} content="New workspace" />
+      <Button size="sm" variant="outline" iconSlot={<Download />} content="Export" />
+      <Button size="sm" iconSlot={<Plus />} content="New workspace" />
     </>
   }
-  content={<SearchInput value={query} onChange={setQuery} />}
+  contentSlot={<SearchInput value={query} onChange={setQuery} />}
 />
 ```
 
 - **The header brings its own inset, and the shell around it knows.** `HeaderContentFooter` leaves its
-  `header` slot unpadded on purpose and gives the body `px-4` to match, so the title lands above
+  `headerSlot` unpadded on purpose and gives the body `px-4` to match, so the title lands above
   the body's first column. Do not pad the header slot, and do not wrap a `PageHeader` in a `div`
   to inset it — that seam is already joined, in one file.
 
@@ -132,16 +133,16 @@ It is not a page.
   `className="px-0"` so exactly one of the two owns the inset. That is the only case that needs a
   word from you.
 
-- **`content` here is the row under the title** — a search field, a filter row, tabs; stacked, in
-  the order you pass them. (`PageLayout` calls the same slot `headerContent`, because its own
-  `content` is the page body.) There is no `search` prop, no `filters` prop and no `tabs` prop.
+- **`contentSlot` here is the row under the title** — a search field, a filter row, tabs; stacked, in
+  the order you pass them. (`PageLayout` calls the same slot `headerContentSlot`, because its own
+  `contentSlot` is the page body.) There is no `search` prop, no `filters` prop and no `tabs` prop.
 
-- **`action` is the far end, and it is one slot for all of them.** Pass a fragment of buttons; a
+- **`actionSlot` is the far end, and it is one slot for all of them.** Pass a fragment of buttons; a
   status pill goes here too. The shell rows and gaps them, so two pages never disagree about the
   space between Export and New.
 
-- **`breadcrumbs` is the line above the title.** Put a back link here rather than beside the
-  title: beside it, it competes with `icon` for the same spot and takes width from the page's name.
+- **`breadcrumbsSlot` is the line above the title.** Put a back link here rather than beside the
+  title: beside it, it competes with `iconSlot` for the same spot and takes width from the page's name.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
   anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
@@ -152,11 +153,11 @@ It is not a page.
   buttons, the search field — stays put and stays usable.
 
   ```tsx
-  <PageHeader breadcrumbs={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
-    title={workspace?.name} action={<EditButton />} />
+  <PageHeader breadcrumbsSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
+    title={workspace?.name} actionSlot={<EditButton />} />
   ```
 
-- **The rule under the header is not a prop.** It is drawn when there is no `content` and not
+- **The rule under the header is not a prop.** It is drawn when there is no `contentSlot` and not
   drawn when there is, because a search row already separates the header from the body and a
   second divider under it is one too many. A screen that disagrees says so in one class:
   `className="border-b-0"`.
@@ -167,9 +168,9 @@ It is not a page.
 
 ### What it does not have
 
-`search`, `filters`, `tabs` — pass them as `content`. A count or status badge — put it in
-`action`, or compose it into the `title` node. A back button *beside* the title — it goes in
-`breadcrumbs`. A description that expands behind a popover — that is state, and state is the
+`search`, `filters`, `tabs` — pass them as `contentSlot`. A count or status badge — put it in
+`actionSlot`, or compose it into the `title` node. A back button *beside* the title — it goes in
+`breadcrumbsSlot`. A description that expands behind a popover — that is state, and state is the
 caller's.
 
 ## Splits
@@ -180,29 +181,29 @@ caller's.
   sidebarWidth="sm"
   stackBelow="md"
   divider="line"
-  sidebar={<Nav />}
-  content={<StickyHeaderContentFooter header={<PageHeader title="Servers" />} content={rows} />}
+  sidebarSlot={<Nav />}
+  contentSlot={<StickyHeaderContentFooter headerSlot={<PageHeader title="Servers" />} contentSlot={rows} />}
 />
 ```
 
-`content` is the main surface and `sidebar` is the second one. Everything else is where the sidebar
+`contentSlot` is the main surface and `sidebarSlot` is the second one. Everything else is where the sidebar
 sits, how wide it is, when it stops sitting there, and what is between them.
 
 **`SidebarLayout` is a preset of `SplitLayout`**, which is the same shape with the roles taken out:
 
 ```tsx
 <SplitLayout
-  first={<Original />}
-  second={<Translation />}
+  firstSlot={<Original />}
+  secondSlot={<Translation />}
   stackBelow="md"
   firstWidth="two-thirds"
 />
 ```
 
 Reach for the base when the two panes are genuinely comparable — a diff, two lists abreast, a form
-beside its preview. Its slots are numbered because neither alternative stays true: `content` /
-`sidebar` claims a ranking an even split does not have, and `left` / `right` is wrong below
-`stackBelow`, where the panes are one above the other, and wrong again right-to-left. `first` is
+beside its preview. Its slots are numbered because neither alternative stays true: `contentSlot` /
+`sidebarSlot` claims a ranking an even split does not have, and `left` / `right` is wrong below
+`stackBelow`, where the panes are one above the other, and wrong again right-to-left. `firstSlot` is
 first in reading order, wherever reading is going.
 
 Either pane can carry the width — `firstWidth` **or** `secondWidth`, the same scale, never both.
@@ -234,7 +235,7 @@ the slots is spelled the same on each.
   role, no tab stop. A screen that genuinely needs a drag wants shadcn's `resizable`
   (`react-resizable-panels`) — a different component, not a prop on this one.
 - **It does not collapse, because it does not have to.** A closed sidebar is
-  `sidebar={open ? <Nav /> : undefined}`. With no sidebar it is one full-width column, no cell
+  `sidebarSlot={open ? <Nav /> : undefined}`. With no sidebar it is one full-width column, no cell
   and no rule drawn and no gap spent — which is the same thing an inspector with nothing selected
   needs. The caller already holds the toggle; there is no `collapsed` prop to keep in step with it.
 - **It has no `loading`.** A split has two panes that arrive at different times, and one boolean
@@ -243,7 +244,7 @@ the slots is spelled the same on each.
 - **It is horizontal only.** Two zones stacked in a column, each able to scroll, is
   `HeaderContentFooter`, which already exists. Below `stackBelow` this *is* that arrangement.
 - **It does not scroll.** A pane that needs to scroll is a `StickyHeaderContentFooter` passed as
-  `content` or `sidebar` — which is also where the tab stop that a scrolling region owes a keyboard
+  `contentSlot` or `sidebarSlot` — which is also where the tab stop that a scrolling region owes a keyboard
   user comes from. Do not put `overflow-y-auto` on a pane by hand; without a height above it to
   divide, it will not scroll, and it gives a keyboard user no way in.
 
@@ -262,46 +263,46 @@ for the app's navigation rail, which has a bar to stand in for it.
   sidebarWidth="auto"
   stackBelow="never"
   divider="none"
-  sidebar={
+  sidebarSlot={
     <Sidebar
       label="Main"
-      header={<Brand />}
-      content={
+      headerSlot={<Brand />}
+      contentSlot={
         <SidebarSection
           as="nav"
           title="Projects"
-          action={<Button variant="outline" size="xs" aria-label="New project" icon={<Plus />} />}
+          actionSlot={<Button variant="outline" size="xs" aria-label="New project" iconSlot={<Plus />} />}
           status={
             <QueryState
               compact
               query={projects}
               what="projects"
               count={rows.length}
-              empty={<EmptyState compact title="No projects yet." className="px-2" />}
+              emptySlot={<EmptyState compact title="No projects yet." className="px-2" />}
             />
           }
-          content={rows.map((p) => (
+          contentSlot={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
               <SidebarNavItem
                 label={p.name}
-                icon={<Folder />}
+                iconSlot={<Folder />}
                 count={p.open}
-                status={p.shared ? { label: "Shared", icon: <Users /> } : undefined}
+                status={p.shared ? { label: "Shared", iconSlot: <Users /> } : undefined}
                 active={p.id === current}
               />
             </Link>
           ))}
         />
       }
-      footer={
+      footerSlot={
         <>
-          <SidebarNavItem href="/settings" label="Settings" icon={<Settings />} />
-          <SidebarNavItem label="Sign out" icon={<LogOut />} onPress={signOut} />
+          <SidebarNavItem href="/settings" label="Settings" iconSlot={<Settings />} />
+          <SidebarNavItem label="Sign out" iconSlot={<LogOut />} onPress={signOut} />
         </>
       }
     />
   }
-  content={page}
+  contentSlot={page}
 />
 ```
 
@@ -309,7 +310,7 @@ for the app's navigation rail, which has a bar to stand in for it.
 Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
 that replaces the rail on a phone — see below):
 
-- **`Sidebar`** — the frame: `header`, a `content` that scrolls, `footer`, on `bg-secondary` at a
+- **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on `bg-secondary` at a
   fixed `w-64` with a `border-foreground/10` rule on the edge facing the page (`side="end"` moves
   it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
@@ -329,13 +330,13 @@ that replaces the rail on a phone — see below):
   searches — so the landmark holds only the app's own places. `label` without `as="nav"` is a
   type error.
 - **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
-  line, truncated), `icon?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
+  line, truncated), `iconSlot?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
   the web — and `active` fills it with `selection` and sets `aria-current="page"`. Hover fills it
-  from `sidebar-accent`, so the current page never looks like the row under the pointer. **`status={{ label, icon? }}` marks the row's state** — "MCP on", "offline",
+  from `sidebar-accent`, so the current page never looks like the row under the pointer. **`status={{ label, iconSlot? }}` marks the row's state** — "MCP on", "offline",
   "draft" — before the count, and the row is named "Work, MCP on, 2": clipped text inside the row
-  on the web, part of its `accessibilityLabel` on device. With an `icon` the icon is what is seen
+  on the web, part of its `accessibilityLabel` on device. With an `iconSlot` the icon is what is seen
   and is decorative; without one the label is drawn, small and muted. Do not put a status in the
-  leading `icon` or hand-write the row's `aria-label` to say it — a caller's `aria-label` replaces
+  leading `iconSlot` or hand-write the row's `aria-label` to say it — a caller's `aria-label` replaces
   the whole name the row builds. **With `onPress` and no `href` it is a button** — `onClick` on the web, and no
   `active`: `role="button"`, a `<button type="button">` on the web, never `aria-current`, drawn
   exactly like the links beside it. That is the footer's Sign out; do not hand-draw it with a
@@ -376,15 +377,15 @@ That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is four slots:
   sidebarWidth="auto"
   divider="none"
   sidebarHideBelow="md"
-  sidebar={<Sidebar label="Main" header={<Brand />} content={nav} footer={<Settings />} />}
-  brand={<Brand />}
-  nav={NAV_ITEMS.map(({ to, label, icon: Icon, count }) => (
-    <BarLink key={to} to={to} label={label} icon={<Icon />} count={count} active={isActive(to)} />
+  sidebarSlot={<Sidebar label="Main" headerSlot={<Brand />} contentSlot={nav} footerSlot={<Settings />} />}
+  brandSlot={<Brand />}
+  navSlot={NAV_ITEMS.map(({ to, label, icon: Icon, count }) => (
+    <BarLink key={to} to={to} label={label} iconSlot={<Icon />} count={count} active={isActive(to)} />
   ))}
   navLabel="Main"
   status={`${running}/${servers} servers running`}
-  action={<><LockButton /><ThemeToggle /></>}
-  content={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
+  actionSlot={<><LockButton /><ThemeToggle /></>}
+  contentSlot={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
 />
 
 const BarLink = createLink(BarNavItem);         // beside createLink(SidebarNavItem)
@@ -394,41 +395,41 @@ const BarLink = createLink(BarNavItem);         // beside createLink(SidebarNavI
 `@cubeui/sidebar`. Do not hand-write the bar's links as router `<Link>`s with a class string: that
 is the copy this replaces.
 
-- **The same props as the row** — `label`, `icon`, `active`, `count?`, `status?`, `href?` — so the
+- **The same props as the row** — `label`, `iconSlot`, `active`, `count?`, `status?`, `href?` — so the
   app's list of places is one array, mapped once into `SidebarSection` with `SidebarNavItem` and
-  once into `nav` with `BarNavItem`. A count on a sidebar row is then on the bar too.
+  once into `navSlot` with `BarNavItem`. A count on a sidebar row is then on the bar too.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
-  (hover or focus on the web, a long press on device). **`icon` is required** too — it is all that
+  (hover or focus on the web, a long press on device). **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
 - **`active`** fills it with `selection` and sets `aria-current="page"`; hover is grey. Compute it
   from the route, as for the row.
 - **`count`** is a small badge on the icon's corner and **`status={{ label }}`** a dot on the other;
   both are in the name the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
-  fit in, so pass a long count already capped (`"99+"`). The status's `icon` is not drawn here.
+  fit in, so pass a long count already capped (`"99+"`). The status's `iconSlot` is not drawn here.
 - **It binds to a router as the row does**: `createLink(BarNavItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
-- **It is always a link.** A button in the bar is an `ActionButton` in `action`.
-- **Size the list to the bar.** Each item is 32px and the `nav` neither scrolls nor wraps; a phone
+- **It is always a link.** A button in the bar is an `ActionButton` in `actionSlot`.
+- **Size the list to the bar.** Each item is 32px and the `navSlot` neither scrolls nor wraps; a phone
   fits about five beside a brand mark and two actions. An app with more places than that picks the
   ones the bar shows.
 
 **`status` is one line saying what state the app is in** — "3/5 servers running", "128 turns in 9
-sessions" — drawn between the `nav` and the `action`, against the action. It takes the width the
+sessions" — drawn between the `navSlot` and the `actionSlot`, against the action. It takes the width the
 rest of the bar leaves and nothing more, so it is the first thing to give way: a string is cut
 short with an ellipsis, then gone, before the brand, a place or an action moves. Pass a string
 where you can; a node (a `Skeleton` while it loads, a figure in bold) is clipped to the same box
-and lays itself out. Do not put the line in `action` — that slot never shrinks, and a long status
+and lays itself out. Do not put the line in `actionSlot` — that slot never shrinks, and a long status
 there pushes the buttons off the screen.
 
 - **Under `md`** the sidebar pane is `display: none` — off the screen and out of the accessibility
-  tree — and the bar is drawn over `content`: a `<header>` (the banner) with `brand` at the start,
-  `nav` inside a `<nav>` named by `navLabel`, `status` after it, and `action` at the far end. **From `md` up** it is
+  tree — and the bar is drawn over `contentSlot`: a `<header>` (the banner) with `brandSlot` at the start,
+  `navSlot` inside a `<nav>` named by `navLabel`, `status` after it, and `actionSlot` at the far end. **From `md` up** it is
   the other way round. `sm`, `lg` and `xl` move the switch.
 - **One breakpoint, said once.** Leave `Sidebar`'s own `hideBelow` off; the layout hides the rail
   and shows the bar from the same value, so the two cannot disagree. Do not hand-write the
-  `md:hidden` header in `content` — that is the copy this replaces, and its `<nav>` was the one
+  `md:hidden` header in `contentSlot` — that is the copy this replaces, and its `<nav>` was the one
   that went unnamed.
-- **`nav` requires `navLabel`**, and the bar's slots require `sidebarHideBelow` — both type errors
+- **`navSlot` requires `navLabel`**, and the bar's slots require `sidebarHideBelow` — both type errors
   otherwise. `stackBelow` is not taken with it (a rail that hides does not stack) and neither is
   `divider="line"` (with the rail gone the rule would be a line down the edge of the screen);
   `divider="none"` is right for a `Sidebar`, which draws its own border.
@@ -440,7 +441,7 @@ there pushes the buttons off the screen.
   component; this is not it.
 - **On device** NativeWind reads the same breakpoint off the window: a phone draws the bar and a
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
-- `headerClassName` is on the bar. With no `brand`, `nav`, `status` or `action`,
+- `headerClassName` is on the bar. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
   `sidebarHideBelow` still hides the rail and draws nothing in its place.
 
 `Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
@@ -451,30 +452,30 @@ while the root's own display class happens to merge first.
 
 ```tsx
 <TopBarLayout
-  brand={<Link href="/"><ClockMark /><Text>eunomia</Text></Link>}
-  nav={views.map((v) => (
+  brandSlot={<Link href="/"><ClockMark /><Text>eunomia</Text></Link>}
+  navSlot={views.map((v) => (
     <Link key={v.href} href={v.href} aria-current={v.href === path ? "page" : undefined}>
       {v.label}
     </Link>
   ))}
-  action={<Button variant="outline" size="sm" onPress={signOut} content="Sign out" />}
-  content={<Outlet />}
+  actionSlot={<Button variant="outline" size="sm" onPress={signOut} content="Sign out" />}
+  contentSlot={<Outlet />}
 />
 ```
 
 `@cubeui/top-bar-layout` is the app shell for an app with a handful of top-level pages and **no
 sidebar**: a bar across the top, the page below it. Three slots in the bar, one under it:
 
-- **`brand`** — the bar's start: the logo and the app's name, usually a link home. It keeps its
+- **`brandSlot`** — the bar's start: the logo and the app's name, usually a link home. It keeps its
   width.
-- **`nav`** — the primary links, after the brand. Pass the links themselves; the shell draws the
+- **`navSlot`** — the primary links, after the brand. Pass the links themselves; the shell draws the
   navigation landmark around them (`<nav>` on the web, `role="navigation"` on device), so do not
   hand-write a `<nav>` inside it. `navLabel` names the landmark — "Main" — when the page has a
   second one to tell it from. Marking the current page (`aria-current`, an active fill) is the
   link's, since only the router knows the route.
-- **`action`** — the bar's far end: account, theme, sign out. The same word as every header's far
-  end. It keeps its width and sits at the end whether or not there is a `nav`.
-- **`content`** — the page. It is wrapped in the `main` landmark (`<main>` on the web), and the bar
+- **`actionSlot`** — the bar's far end: account, theme, sign out. The same word as every header's far
+  end. It keeps its width and sits at the end whether or not there is a `navSlot`.
+- **`contentSlot`** — the page. It is wrapped in the `main` landmark (`<main>` on the web), and the bar
   is the `banner` landmark (`<header>`), so a screen reader's landmark jump reaches the page past
   the chrome. Pass a `PageLayout` here — it carries its own title and column.
 
@@ -486,8 +487,8 @@ divides the height it is given: the bar stays and the page is a `ScrollView`, as
 
 **On a narrow screen the links scroll sideways** inside their landmark while the brand and the
 actions keep their place, so six links on a phone move rather than wrap the bar to two lines. To
-hide them instead below a width and offer a menu, it is one class and a `Menu` in `action`:
-`navClassName="hidden md:flex"` beside `action={<><Menu …className="md:hidden" /><Account /></>}`.
+hide them instead below a width and offer a menu, it is one class and a `Menu` in `actionSlot`:
+`navClassName="hidden md:flex"` beside `actionSlot={<><Menu …className="md:hidden" /><Account /></>}`.
 
 `width` holds the bar's row to a column — `page` (default), `prose` or `full` for a board that
 runs to the window's edge — so the brand lines up with the page under it. The border and fill are
@@ -501,7 +502,7 @@ covers it unless something insets it; wrap the app in `react-native-safe-area-co
 **Beside `SidebarLayout`.** They are the two app shells: navigation across the top here, down the
 side with `Sidebar` in a `SidebarLayout`. Pick by how many places the app has — a handful fit a
 bar, a list of projects needs a column. An app with both is a `SidebarLayout`, and the phone-width
-bar in its `content` (the `md:hidden` header above) is still hand-written; `TopBarLayout` is not a
+bar in its `contentSlot` (the `md:hidden` header above) is still hand-written; `TopBarLayout` is not a
 second wrapper around a sidebar.
 
 ## Cards
@@ -510,27 +511,27 @@ second wrapper around a sidebar.
 <CardLayout
   title="Categories"
   description="Deleting a category keeps its activities — they go back to uncategorized."
-  action={<Button size="sm" content="Add" />}
+  actionSlot={<Button size="sm" content="Add" />}
   loading={isPending}
-  content={categories.map((category) => (
+  contentSlot={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
-  empty={<EmptyState compact title="No categories yet." />}
-  footerActions={<Button onClick={save} content="Save" />}
+  emptySlot={<EmptyState compact title="No categories yet." />}
+  footerActionsSlot={<Button onClick={save} content="Save" />}
 />
 ```
 
-`empty` replaces the body when `content` is empty — which is what `items.map(…)` returns for
+`emptySlot` replaces the body when `contentSlot` is empty — which is what `items.map(…)` returns for
 empty data, so write the `map` plainly and let the shell handle the nothing case. Do not write
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
 
-What goes in `empty` inside a card is one muted line, `<EmptyState compact … />` — see
+What goes in `emptySlot` inside a card is one muted line, `<EmptyState compact … />` — see
 [Empty states](#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
-`loading` replaces it with a skeleton and outranks `empty`, so a card that is still fetching does
+`loading` replaces it with a skeleton and outranks `emptySlot`, so a card that is still fetching does
 not first announce that it is empty. Pass the query's pending flag straight in; do not write
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
-`content` and leaves `loading` off.
+`contentSlot` and leaves `loading` off.
 
 `level` is which heading the title is, `1 | 2 | 3`, and it defaults to 3 — right for a card on a
 page that already has a title. When the card **is** the page — a sign-in, a token gate, a lone
@@ -541,15 +542,15 @@ The title is the same size at every level; the rank says where the card sits, no
 The title is `text-base` on both halves, never larger than the page's own title.
 `titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
 
-The header `action` **is in the header's flow, and wraps**. It sits at the far end, level with the
+The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under
-the title. One control or a fragment of them — `action={<><ViewToggle /><Button content="Save" /></>}`
+the title. One control or a fragment of them — `actionSlot={<><ViewToggle /><Button content="Save" /></>}`
 is laid out as a row. So a long title with two controls is still a `CardLayout`: do not switch to
 `Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
 `CardAction`, which is absolute and reserves no room.
 
-The `footerActions` row **wraps when the card is narrow**: three buttons in a phone-width card
+The `footerActionsSlot` row **wraps when the card is narrow**: three buttons in a phone-width card
 put the last one on a second line, still against the right edge, rather than running the first
 out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
@@ -563,15 +564,15 @@ around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under 
 
 ```tsx
 <CenteredLayout
-  icon={<KeyRound />}
+  iconSlot={<KeyRound />}
   title="Authentication required"
   description="Enter the router token from settings.json."
-  content={
+  contentSlot={
     <form id="token" onSubmit={submit}>
-      <FormField label="Token" control={<Input type="password" value={token} onChangeText={setToken} />} />
+      <FormField label="Token" controlSlot={<Input type="password" value={token} onChangeText={setToken} />} />
     </form>
   }
-  footerActions={
+  footerActionsSlot={
     <Button type="submit" form="token" disabled={!token.trim()} content="Unlock" />
   }
 />
@@ -592,12 +593,12 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 
 ```tsx
 <DialogLayout
-  trigger={<Button content="New workspace" />}
+  triggerSlot={<Button content="New workspace" />}
   title="New workspace"
   description="A workspace exposes the servers you choose at its own URL."
   size="lg"
-  content={<WorkspaceFields value={draft} onChange={setDraft} />}
-  footerActions={(close) => (
+  contentSlot={<WorkspaceFields value={draft} onChange={setDraft} />}
+  footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
       <Button onClick={save} loading={saving} loadingLabel="Saving…" content="Save" />
@@ -608,7 +609,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 
 - `title` is **required** — it is what assistive technology announces. A design with no room for
   a heading passes `hideTitle`, which keeps the title and takes it off the screen. Never drop it.
-- Give a `trigger` and no `open`, and the dialog owns its state. Pass `open`/`onOpenChange` when
+- Give a `triggerSlot` and no `open`, and the dialog owns its state. Pass `open`/`onOpenChange` when
   something outside the trigger opens it (a row menu, a route, a keyboard shortcut).
 - The body scrolls; the header and footer do not. Do not add `max-h-*` or `overflow-y-auto` — a
   cap on the whole dialog is what takes the title off the screen on a long form.
@@ -624,13 +625,13 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   picker.hasEdits()}` runs at the click and subscribes to nothing. `isDefaultValue` and not
   `isDirty`: `isDirty` stays true for a field typed into and then back out of, so the dialog asks
   about a form identical to how it opened.
-- **Take `close` from `footerActions` rather than closing the dialog yourself.** Pass a function
+- **Take `close` from `footerActionsSlot` rather than closing the dialog yourself.** Pass a function
   and it is handed the dialog's own close — the same one Escape, the overlay and the close button
   go through, so `hasUnsavedChanges` asks on the way through Cancel too. A Cancel wired to your
   own `setOpen(false)` goes around the shell, and that is the door people actually click:
 
   ```tsx
-  footerActions={(close) => (
+  footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
       <Button onClick={save} content="Save" />
@@ -638,11 +639,11 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   )}
   ```
 
-  The node form still works and is right for a footer that closes nothing. Only `footerActions`
-  takes the function; `footer` is the other end of the row.
+  The node form still works and is right for a footer that closes nothing. Only `footerActionsSlot`
+  takes the function; `footerSlot` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
-- A form in a dialog is this component with a `<form>` as `content` — see [forms.md](forms.md).
+- A form in a dialog is this component with a `<form>` as `contentSlot` — see [forms.md](forms.md).
 
 ### A page with unsaved edits
 
@@ -682,7 +683,7 @@ A heading over a group of fields or rows, inside a page or a card.
 <Section
   title="Danger zone"
   description="These cannot be undone."
-  content={<ConfirmButton label="Delete project" … />}
+  contentSlot={<ConfirmButton label="Delete project" … />}
 />
 ```
 
@@ -699,10 +700,10 @@ A heading over a group of fields or rows, inside a page or a card.
   background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
   the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
-- The heading row **wraps**. An `action` sits at the far end while the title and description have
+- The heading row **wraps**. An `actionSlot` sits at the far end while the title and description have
   room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
-  So a toolbar is an `action` even on a phone: pass the buttons as a fragment and they are rowed
-  and wrap inside the section. Do not move a wide toolbar into the top of `content` to keep the
+  So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
+  and wrap inside the section. Do not move a wide toolbar into the top of `contentSlot` to keep the
   description readable, and do not wrap it in a `flex flex-wrap` `<div>` of your own.
 - It is the smallest thing in the registry and it exists because three projects wrote
   `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
@@ -718,15 +719,15 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 ```tsx
 <Disclosure
   title="Raw output"
-  action={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
-  content={<CodeBlock content={json} />}
+  actionSlot={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
+  contentSlot={<CodeBlock content={json} />}
 />
 
 <Disclosure
   title={`${showCompleted ? "Hide" : "Show"} completed (${completed.length})`}
   open={showCompleted}
   onOpenChange={setShowCompleted}
-  content={completed.map((todo) => <TodoRow key={todo.id} todo={todo} />)}
+  contentSlot={completed.map((todo) => <TodoRow key={todo.id} todo={todo} />)}
 />
 ```
 
@@ -734,9 +735,9 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 - The **whole header is one button** with a chevron that turns, so it is reached by Tab and
   toggled by Enter and Space. `aria-expanded` is on it, and on the web `aria-controls` names the
   body while the body is there.
-- **`action` sits beside the button, not inside it**, so pressing it does not toggle the section.
+- **`actionSlot` sits beside the button, not inside it**, so pressing it does not toggle the section.
   Do not put a control in `title`.
-- `content` is **not mounted while shut** — a long list behind it costs nothing, and anything that
+- `contentSlot` is **not mounted while shut** — a long list behind it costs nothing, and anything that
   must survive closing (a draft, a scroll position) belongs to the caller.
 - Uncontrolled by default, shut: pass `defaultOpen` to start open. Pass `open` and `onOpenChange`
   when the caller needs the state — a title that says Hide once open, a deep link, a "show the
@@ -744,7 +745,7 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 - The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
   disclosure is the heading of its part of the page; `contentClassName` to indent the body.
-- A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badges`,
+- A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
   `meta` and surface.
 
 ## Description lists
@@ -755,16 +756,16 @@ Read-only facts — a label, a value, a line under the value — which is most o
 ```tsx
 <Section
   title="Index"
-  content={
+  contentSlot={
     <DescriptionList
-      content={[
+      contentSlot={[
         <PropertyRow key="e" label="Embedder" value="bge-small" hint="Set with RAGDOWN_EMBEDDER" />,
         <PropertyRow
           key="d"
           label="Docs folder"
           value="/data/notes"
           valueClassName="font-mono"
-          action={<CopyButton value="/data/notes" label="Copy docs folder" />}
+          actionSlot={<CopyButton value="/data/notes" label="Copy docs folder" />}
         />,
         <PropertyRow key="i" label="Index" value="1,204 chunks" hint="Synced 2 minutes ago" />,
       ]}
@@ -775,12 +776,12 @@ Read-only facts — a label, a value, a line under the value — which is most o
 
 - One source for both platforms: `@cubeui/description-list` in `/r/web` and `/r/native`, exporting
   `DescriptionList` and `PropertyRow`.
-- `DescriptionList` takes the rows as `content` — `PropertyRow`s and nothing else, as an array
+- `DescriptionList` takes the rows as `contentSlot` — `PropertyRow`s and nothing else, as an array
   with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
   hold only its term-and-description groups.
 - `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
   as a `Badge`), optional `hint` (one muted line under the value, on where it comes
-  from) and optional `action` (the far end: a copy button, an edit link). `labelClassName` and
+  from) and optional `actionSlot` (the far end: a copy button, an edit link). `labelClassName` and
   `valueClassName` reach the two halves of the row.
 - **A path, a version, a port or an id is a string with `valueClassName="font-mono"`.**
   When the value is a string or a number, `valueClassName` is the class of its text — a font, a
@@ -801,7 +802,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
   is a field in a form (`FormField`, or a `FormDialog` opened from the row), never a value that
   turns into an input where it sits.
 - It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
-  `content` for those.
+  `contentSlot` for those.
 
 ## Setting rows
 
@@ -812,22 +813,22 @@ that changes it at the end.
 <Section
   title="Appearance"
   surface="card"
-  content={
+  contentSlot={
     <>
       <SettingRow
         title="Dark mode"
         description="Switch between light and dark theme."
-        action={({ titleId }) => (
+        actionSlot={({ titleId }) => (
           <Switch aria-labelledby={titleId} checked={dark} onCheckedChange={setDark} />
         )}
       />
       <SettingRow
         title="Theme"
-        action={({ titleId }) => <Select aria-labelledby={titleId} value={theme} … />}
+        actionSlot={({ titleId }) => <Select aria-labelledby={titleId} value={theme} … />}
       />
       <SettingRow
         description="Forget every turn and session. This cannot be undone."
-        action={<ConfirmButton label="Clear all memory" … />}
+        actionSlot={<ConfirmButton label="Clear all memory" … />}
       />
     </>
   }
@@ -835,9 +836,9 @@ that changes it at the end.
 ```
 
 - One source for both platforms: `@cubeui/setting-row` in `/r/web` and `/r/native`.
-- `title` (what the setting is called), `description` (one line on what it does), `action` (the
+- `title` (what the setting is called), `description` (one line on what it does), `actionSlot` (the
   control). `title` is optional for a row whose button already says what it does.
-- **`action` as a function is how the title names the control.** It is handed `{ titleId,
+- **`actionSlot` as a function is how the title names the control.** It is handed `{ titleId,
   descriptionId }`; put `aria-labelledby={titleId}` on a switch, select or input so its name is
   the visible title rather than a second string. On the web a control that takes it can also have
   `aria-describedby={descriptionId}`. iOS does not read `aria-labelledby`, so a native call site
@@ -848,7 +849,7 @@ that changes it at the end.
   the window. A switch stays beside its title on a phone; a select or a wide button goes under.
   There is no breakpoint prop.
 - It draws no surface, no border and no heading. Put the rows in a `Section` (`surface="card"`) or
-  `CardLayout` `content`; the gap between them is the parent's.
+  `CardLayout` `contentSlot`; the gap between them is the parent's.
 - **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
   the switch with its caption beside it, the whole row one hit target. Take `SettingRow` for any
   other control — a select, a button, an input — and for a switch that needs a description or
@@ -866,7 +867,7 @@ import { formatCount, formatDuration } from "@/lib/format";
 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <StatTile label="Turns" value={formatCount(engine.turns)} />
   <StatTile label="Entities" value={formatCount(engine.entities)} hint={formatCount(edges, "edge")} />
-  <StatTile label="Uptime" value={formatDuration(uptime)} hint={`v${version}`} icon={<Clock />} />
+  <StatTile label="Uptime" value={formatDuration(uptime)} hint={`v${version}`} iconSlot={<Clock />} />
   <StatTile label="Embeddings" value={count} loading={isPending} />
 </div>
 
@@ -887,7 +888,7 @@ import { formatCount, formatDuration } from "@/lib/format";
   prop is `onClick`, as it is on the compiled `Card`.
 - `label` is what the figure is called, `value` the figure — a string or number drawn large in
   tabular numerals, or a node (a `ColorDot` beside a name) placed as is — and `hint` one muted line
-  under it. `icon` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
+  under it. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
   toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
   a `selection` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
@@ -905,18 +906,18 @@ import { formatCount, formatDuration } from "@/lib/format";
 Two shells for the shape every list route is: a ladder of states, then rows.
 
 ```tsx
-<QueryState query={roles} what="your roles" count={shown.length} empty={<Empty … />} />
+<QueryState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
 {shown.map((role) => (
   <DisclosureRow
     key={role.id}
     open={open === role.id}
     onOpenChange={(next) => setOpen(next ? role.id : null)}
-    badges={<Badge>{role.contract}</Badge>}
+    badgesSlot={<Badge>{role.contract}</Badge>}
     title={role.name}
     meta={<span className="text-foreground/60 text-xs">{role.lanes} lanes</span>}
     description={role.prompt}
-    action={<ActionButton label="Delete" … />}
-    content={<RolePrompt role={role} />}
+    actionSlot={<ActionButton label="Delete" … />}
+    contentSlot={<RolePrompt role={role} />}
   />
 ))}
 ```
@@ -928,7 +929,7 @@ Two shells for the shape every list route is: a ladder of states, then rows.
   ladder and then the list rather than a nest of ternaries.
 - `count` is what the page is **about to draw**, not what came back. A search matching nothing is
   an empty *view* over a full result, and only the page knows which of the two it is showing — so
-  pass the length of the rows you are mapping, and let `empty` say which emptiness it is.
+  pass the length of the rows you are mapping, and let `emptySlot` say which emptiness it is.
 - `query` is structural: anything with `isPending`, `isError`, `error` and `refetch` fits, so the
   shell names no data library. The same line `FormField` holds against form libraries.
   `error` is `unknown` — an Apollo error, a TanStack `Error | null` and a thrown string all fit.
@@ -967,29 +968,29 @@ and which one is a question of **where the list is**, not how much there is to s
   icon={Inbox}
   title="No agents yet"
   description="An agent runs the lanes you give it."
-  action={<Button onPress={create} content="New agent" />}
+  actionSlot={<Button onPress={create} content="New agent" />}
 />
 
 // The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
 <EmptyState
   compact
   title="No labels yet."
-  action={<Button variant="link" size="xs" onPress={create} content="Add one" />}
+  actionSlot={<Button variant="link" size="xs" onPress={create} content="Add one" />}
 />
 ```
 
-- **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `action`
+- **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `actionSlot`
   under them, centred, with `py-10` around it. `icon` is required: it is a component
   (`icon={Inbox}`), not an element, and the shell sizes it.
 - **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
   empty state *is* the screen — a first run, a record not found, a dead link — so a screen reader
   has a heading to land on. Otherwise leave it off; the page already has its heading.
 - **`compact`** is one muted `text-sm` line: an optional small `icon` inline before the words, the
-  `title`, then the `action` on the same line (it wraps under on a narrow column). No bubble, no
+  `title`, then the `actionSlot` on the same line (it wraps under on a narrow column). No bubble, no
   centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
   never a heading, so `level` is a **type error** with `compact`, and so is `description`: the
   whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
-  Use it for `CardLayout`'s `empty`, a compact `QueryState`'s `empty`, and the empty body of a
+  Use it for `CardLayout`'s `emptySlot`, a compact `QueryState`'s `emptySlot`, and the empty body of a
   popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
 - Do not hand-write either: not `<Text className="text-foreground/60 text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
@@ -1008,15 +1009,15 @@ and which one is a question of **where the list is**, not how much there is to s
 
 - The **whole heading is the button**, so a row is never opened by hitting a 16-pixel chevron and
   is operable with Space. `aria-expanded` is on it, and `aria-controls` while the body is there.
-- **`action` sits outside that button.** A control nested inside a button is invalid HTML and, in
+- **`actionSlot` sits outside that button.** A control nested inside a button is invalid HTML and, in
   practice, a delete that cannot be clicked.
-- `description` shows whether the row is open or shut; `content` is what it opens onto.
+- `description` shows whether the row is open or shut; `contentSlot` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
 - It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
   A row that does **not** open onto a body is `ListItem`, below.
 - One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
-  string `meta`, `action` or `content` is wrapped in a `Text` for you; pass the badges, the action
+  string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
 ### ListItem
@@ -1028,27 +1029,27 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 {people.map((p) => (
   <ListItem
     key={p.id}
-    leading={<Avatar person={p} />}
+    leadingSlot={<Avatar person={p} />}
     title={`${p.firstName} ${p.lastName}`}
     description={p.email}
     meta={relativeTime(p.lastContactedAt)}
     onPress={() => router.push(`/persons/${p.id}`)}
-    action={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
+    actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
   />
 ))}
 ```
 
-- `leading` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
-  sized the way `icon` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
+- `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
+  sized the way `iconSlot` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
   area — a `Checkbox` there is its own control (telos' todo row).
 - `title` is one line and truncates; `description` is the muted line under it, two lines at most.
   `titleClassName` reaches the title (a done todo's `line-through`).
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
-- `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
+- `actionSlot` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
   outline `Button`s (or `ActionButton`s); the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
-  (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
+  (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
   `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
 - `selected` is the chosen row — the one open beside the list. It is tinted in `active`, stays
@@ -1056,13 +1057,13 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
   grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
-  `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
+  `Section`, a `CardLayout` `contentSlot` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
   (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
-  names, props and metrics: `ItemMedia` is `leading`, `ItemContent` the middle, `ItemTitle` and
-  `ItemDescription` the two lines, `ItemActions` the `action`. On a device a string in a part is
+  names, props and metrics: `ItemMedia` is `leadingSlot`, `ItemContent` the middle, `ItemTitle` and
+  `ItemDescription` the two lines, `ItemActions` the `actionSlot`. On a device a string in a part is
   wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
   hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
 

@@ -19,7 +19,7 @@
  * rejects, and a highlight nothing can change is decoration the caller can put in `className`.
  *
  * The parts reuse `PropertyRow`'s words, because they are the same parts: `label` is what the
- * figure is called, `value` the figure, `hint` the line read after it. `icon` sits before the
+ * figure is called, `value` the figure, `hint` the line read after it. `iconSlot` sits before the
  * label, as it sits before a title everywhere else.
  *
  * Native inherits nothing, so every `Text` names its colour, and the icon takes its size and ink
@@ -29,7 +29,7 @@ import type { ReactNode } from "react";
 import { Platform, Text, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 type StatTileProps = {
   /** What the figure is called: "Turns", "Daily average". Drawn above it, muted. */
@@ -45,7 +45,7 @@ type StatTileProps = {
    */
   hint?: ReactNode | undefined;
   /** Before the label. A bare `<Clock />`; the tile sizes it and mutes it. */
-  icon?: ReactNode | undefined;
+  iconSlot?: SlotNode | undefined;
   /**
    * Whether the figure is still being fetched. On, a bar stands in for the value and the label
    * stays — the tile is as tall as it will be, so a row of them does not jump when the data lands.
@@ -94,7 +94,7 @@ export function StatTile({
   label,
   value,
   hint,
-  icon,
+  iconSlot,
   loading = false,
   onPress,
   selected,
@@ -123,10 +123,10 @@ export function StatTile({
   const body = (
     <>
       <View testID="stat-tile-label-row" className="min-w-0 flex-row items-center gap-2">
-        {icon ? (
+        {iconSlot ? (
           <View testID="stat-tile-icon" aria-hidden className={cn(ICON_BOX, ink)}>
             <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
-              {icon}
+              {iconSlot}
             </IconClassContext.Provider>
           </View>
         ) : null}
