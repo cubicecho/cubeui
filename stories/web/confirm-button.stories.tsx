@@ -11,7 +11,7 @@ const meta = {
     label: "Delete lane",
     variant: "outline",
     size: "icon",
-    children: <Trash2 />,
+    icon: <Trash2 />,
     title: "Delete this lane?",
     description: "The lane takes its cards with it.",
     onConfirm: fn(),
@@ -57,8 +57,8 @@ export const TheDialogButtonsLookLikeButtons: Story = {
   render: (args) => (
     <div className="flex items-center gap-2">
       <ConfirmButton {...args} />
-      <Button variant="destructive">Plain destructive</Button>
-      <Button variant="outline">Plain outline</Button>
+      <Button variant="destructive" content="Plain destructive" />
+      <Button variant="outline" content="Plain outline" />
     </div>
   ),
   play: async ({ canvas }) => {

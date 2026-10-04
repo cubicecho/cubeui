@@ -28,16 +28,8 @@ export const Default: Story = {
   args: {
     title: "Categories",
     description: "Deleting a category keeps its activities — they go back to uncategorized.",
-    action: (
-      <Button size="sm" variant="info">
-        <Plus /> Add
-      </Button>
-    ),
-    footerActions: (
-      <Button size="sm" variant="positive">
-        Save
-      </Button>
-    ),
+    action: <Button size="sm" variant="info" icon={<Plus />} content="Add" />,
+    footerActions: <Button size="sm" variant="positive" content="Save" />,
     content: <Rows />,
   },
   play: async ({ canvas }) => {
@@ -98,19 +90,11 @@ export const Empty: Story = {
 export const SplitFooter: Story = {
   args: {
     title: "Danger zone",
-    footer: (
-      <Button size="sm" variant="destructive-outline">
-        Delete
-      </Button>
-    ),
+    footer: <Button size="sm" variant="destructive-outline" content="Delete" />,
     footerActions: (
       <>
-        <Button size="sm" variant="outline">
-          Cancel
-        </Button>
-        <Button size="sm" variant="positive">
-          Save
-        </Button>
+        <Button size="sm" variant="outline" content="Cancel" />
+        <Button size="sm" variant="positive" content="Save" />
       </>
     ),
     content: <Rows />,
@@ -131,11 +115,7 @@ export const SplitFooter: Story = {
 export const ActionsOnly: Story = {
   args: {
     title: "Categories",
-    footerActions: (
-      <Button size="sm" variant="positive">
-        Save
-      </Button>
-    ),
+    footerActions: <Button size="sm" variant="positive" content="Save" />,
     content: <Rows />,
   },
   play: async ({ canvas }) => {

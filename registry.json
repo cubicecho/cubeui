@@ -117,7 +117,7 @@
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
       ],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/spinner"],
       "files": [
         {
           "path": "registry/ui/button.tsx",

@@ -373,8 +373,10 @@ The slot vocabulary (`content`, `title`, `description`, `icon`, `action`, `foote
 **No shell takes `children`.** The body is `content`, a prop like every other slot, because in a
 layout every part is dynamic and none of them earns the privileged position. A component that
 accepts children is a component that has to answer "and what if both were passed?" — see rule 1
-of the conventions doc. Primitives are the exception, as they are in shadcn: a `Button` takes
-its label as children.
+of the conventions doc. `Button` keeps the rule too — `icon`, `content`, `trailing`, `link` — which
+is what lets `loading` swap the icon for a spinner; it is the one primitive whose web half is not a
+superset of shadcn's. The compound primitives (`Card`, `Dialog`, `Tabs`) take children, as
+shadcn's do.
 
 ## Before you commit
 

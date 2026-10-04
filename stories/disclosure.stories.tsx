@@ -57,9 +57,7 @@ export const Default: Story = {
         <Examples
           Disclosure={Native}
           action={(onPress) => (
-            <NativeButton size="sm" variant="outline" onPress={onPress}>
-              Copy
-            </NativeButton>
+            <NativeButton size="sm" variant="outline" onPress={onPress} content="Copy" />
           )}
           body={(text) => <Text className="font-mono text-foreground text-xs">{text}</Text>}
         />
@@ -69,9 +67,7 @@ export const Default: Story = {
           Disclosure={Compiled as DisclosureComponent}
           action={(onPress) => (
             // `onClick` on this half; see the note in `card.stories.tsx`.
-            <CompiledButton size="sm" variant="outline" onClick={onPress}>
-              Copy
-            </CompiledButton>
+            <CompiledButton size="sm" variant="outline" onClick={onPress} content="Copy" />
           )}
           body={(text) => <span className="font-mono text-foreground text-xs">{text}</span>}
         />

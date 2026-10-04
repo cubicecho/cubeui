@@ -36,16 +36,8 @@ type Row = ComponentType<{
   valueClassName?: string;
 }>;
 
-const nativeCopy = (
-  <NativeButton size="sm" variant="outline">
-    Copy path
-  </NativeButton>
-);
-const compiledCopy = (
-  <CompiledButton size="sm" variant="outline">
-    Copy path
-  </CompiledButton>
-);
+const nativeCopy = <NativeButton size="sm" variant="outline" content="Copy path" />;
+const compiledCopy = <CompiledButton size="sm" variant="outline" content="Copy path" />;
 
 /** The ragdown settings page the issue was filed from, drawn with either half's parts. */
 function rows(PropertyRow: Row, copy: ReactNode) {

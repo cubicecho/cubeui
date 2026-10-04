@@ -31,7 +31,7 @@ export const Default: Story = {
       native={
         <N.AlertDialog>
           <N.AlertDialogTrigger asChild>
-            <NativeButton variant="outline">Native revoke</NativeButton>
+            <NativeButton variant="outline" content="Native revoke" />
           </N.AlertDialogTrigger>
           <N.AlertDialogContent>
             <N.AlertDialogHeader>
@@ -50,7 +50,7 @@ export const Default: Story = {
       compiled={
         <C.AlertDialog>
           <C.AlertDialogTrigger asChild>
-            <CompiledButton variant="outline">Compiled revoke</CompiledButton>
+            <CompiledButton variant="outline" content="Compiled revoke" />
           </C.AlertDialogTrigger>
           <C.AlertDialogContent>
             <C.AlertDialogHeader>

@@ -27,9 +27,13 @@ type Row = (props: { press: () => void; disabled?: boolean }) => ReactNode;
 
 const NativeRow: Row = ({ press, disabled = false }) => (
   <div className="flex flex-row gap-2">
-    <Native label="Edit workspace" variant="outline" size="icon" onPress={press}>
-      <NativePencil />
-    </Native>
+    <Native
+      label="Edit workspace"
+      variant="outline"
+      size="icon"
+      onPress={press}
+      icon={<NativePencil />}
+    />
     <Native
       label="Delete lane"
       hint="Empty the lane first"
@@ -37,17 +41,20 @@ const NativeRow: Row = ({ press, disabled = false }) => (
       size="icon"
       disabled={disabled}
       onPress={press}
-    >
-      <NativeTrash />
-    </Native>
+      icon={<NativeTrash />}
+    />
   </div>
 );
 
 const CompiledRow: Row = ({ press, disabled = false }) => (
   <div className="flex flex-row gap-2">
-    <Compiled label="Edit workspace" variant="outline" size="icon" onClick={press}>
-      <CompiledPencil />
-    </Compiled>
+    <Compiled
+      label="Edit workspace"
+      variant="outline"
+      size="icon"
+      onClick={press}
+      icon={<CompiledPencil />}
+    />
     <Compiled
       label="Delete lane"
       hint="Empty the lane first"
@@ -55,9 +62,8 @@ const CompiledRow: Row = ({ press, disabled = false }) => (
       size="icon"
       disabled={disabled}
       onClick={press}
-    >
-      <CompiledTrash />
-    </Compiled>
+      icon={<CompiledTrash />}
+    />
   </div>
 );
 

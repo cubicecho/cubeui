@@ -35,7 +35,7 @@ const form = useAppForm({
   <SelectField form={form} name="list" label="List" options={LISTS} />
 
   <form.AppForm>
-    <form.SubmitButton>Create Todo</form.SubmitButton>
+    <form.SubmitButton content="Create Todo" />
   </form.AppForm>
 </form>
 ```
@@ -459,7 +459,7 @@ and the submit in `footerActions`:
   content={<form id="todo" onSubmit={…}>…</form>}
   footerActions={
     <form.AppForm>
-      <form.SubmitButton form="todo">{isEdit ? "Save changes" : "Create"}</form.SubmitButton>
+      <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
     </form.AppForm>
   }
 />

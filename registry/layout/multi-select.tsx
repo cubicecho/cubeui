@@ -391,39 +391,40 @@ export function MultiSelect({
             className,
           )}
           {...props}
-        >
-          <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
-            {selected.length === 0 ? (
-              <Text className="text-sm text-foreground/60">{placeholder}</Text>
-            ) : (
-              <>
-                {shown.map((option) => (
-                  <Badge
-                    key={option.value}
-                    variant="secondary"
-                    {...chipColors(option.color)}
-                    className={Platform.select({
-                      web: "max-w-40 truncate",
-                      default: "max-w-40",
-                    })}
-                    // Device only: on the web this would be a button inside the trigger's button.
-                    {...(Platform.OS !== "web" && !disabled
-                      ? { onRemove: () => toggle(option.value) }
-                      : {})}
-                  >
-                    {option.label}
-                  </Badge>
-                ))}
-                {overflow > 0 ? (
-                  <Text className="text-xs text-foreground/60">
-                    {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
-                  </Text>
-                ) : null}
-              </>
-            )}
-          </View>
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
+              {selected.length === 0 ? (
+                <Text className="text-sm text-foreground/60">{placeholder}</Text>
+              ) : (
+                <>
+                  {shown.map((option) => (
+                    <Badge
+                      key={option.value}
+                      variant="secondary"
+                      {...chipColors(option.color)}
+                      className={Platform.select({
+                        web: "max-w-40 truncate",
+                        default: "max-w-40",
+                      })}
+                      // Device only: on the web this would be a button inside the trigger's button.
+                      {...(Platform.OS !== "web" && !disabled
+                        ? { onRemove: () => toggle(option.value) }
+                        : {})}
+                    >
+                      {option.label}
+                    </Badge>
+                  ))}
+                  {overflow > 0 ? (
+                    <Text className="text-xs text-foreground/60">
+                      {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
+                    </Text>
+                  ) : null}
+                </>
+              )}
+            </View>
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
 
       <PopoverContent
@@ -506,10 +507,9 @@ export function MultiSelect({
               size="sm"
               className="text-foreground/60"
               onPress={() => onValueChange([])}
-            >
-              <X className="size-4" aria-hidden />
-              Clear
-            </Button>
+              icon={<X className="size-4" aria-hidden />}
+              content="Clear"
+            />
           </View>
         ) : null}
       </PopoverContent>

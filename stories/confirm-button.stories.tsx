@@ -39,14 +39,20 @@ export const AsksBeforeItActs: Story = {
   render: () => (
     <SideBySide
       native={
-        <Native label="Native delete lane" {...lane} onConfirm={nativeConfirm}>
-          <NativeTrash />
-        </Native>
+        <Native
+          label="Native delete lane"
+          {...lane}
+          onConfirm={nativeConfirm}
+          icon={<NativeTrash />}
+        />
       }
       compiled={
-        <Compiled label="Compiled delete lane" {...lane} onConfirm={compiledConfirm}>
-          <CompiledTrash />
-        </Compiled>
+        <Compiled
+          label="Compiled delete lane"
+          {...lane}
+          onConfirm={compiledConfirm}
+          icon={<CompiledTrash />}
+        />
       }
     />
   ),
@@ -86,9 +92,8 @@ export const DisabledDoesNotAsk: Story = {
           disabled
           {...lane}
           onConfirm={nativeConfirm}
-        >
-          <NativeTrash />
-        </Native>
+          icon={<NativeTrash />}
+        />
       }
       compiled={
         <Compiled
@@ -97,9 +102,8 @@ export const DisabledDoesNotAsk: Story = {
           disabled
           {...lane}
           onConfirm={compiledConfirm}
-        >
-          <CompiledTrash />
-        </Compiled>
+          icon={<CompiledTrash />}
+        />
       }
     />
   ),
@@ -125,14 +129,20 @@ export const TypeTheName: Story = {
   render: () => (
     <SideBySide
       native={
-        <Native label="Native delete folder" {...folder} onConfirm={nativeConfirm}>
-          <NativeTrash />
-        </Native>
+        <Native
+          label="Native delete folder"
+          {...folder}
+          onConfirm={nativeConfirm}
+          icon={<NativeTrash />}
+        />
       }
       compiled={
-        <Compiled label="Compiled delete folder" {...folder} onConfirm={compiledConfirm}>
-          <CompiledTrash />
-        </Compiled>
+        <Compiled
+          label="Compiled delete folder"
+          {...folder}
+          onConfirm={compiledConfirm}
+          icon={<CompiledTrash />}
+        />
       }
     />
   ),

@@ -366,10 +366,12 @@ function BoundSwitchField(props: SwitchFieldProps) {
   );
 }
 
-type SubmitButtonProps = Omit<ComponentProps<typeof Button>, "type" | "children"> & {
-  children?: ReactNode | undefined;
+type SubmitButtonProps = Omit<
+  ComponentProps<typeof Button>,
+  "type" | "loading" | "loadingLabel"
+> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
-  pendingLabel?: ReactNode | undefined;
+  pendingLabel?: string | undefined;
 };
 
 /**
@@ -387,7 +389,7 @@ type SubmitButtonProps = Omit<ComponentProps<typeof Button>, "type" | "children"
  * duplication this exists to remove.
  */
 export function SubmitButton({
-  children = "Save",
+  content = "Save",
   pendingLabel = "Saving…",
   disabled,
   ...props
@@ -399,9 +401,14 @@ export function SubmitButton({
   // Ahead of the spread as well as OR-ed, so that neither a caller nor a future prop can put a
   // `disabled={false}` back over the store's answer.
   return (
-    <Button type="submit" {...props} disabled={disabled || !canSubmit || isSubmitting}>
-      {isSubmitting ? pendingLabel : children}
-    </Button>
+    <Button
+      type="submit"
+      {...props}
+      disabled={disabled || !canSubmit}
+      loading={isSubmitting}
+      loadingLabel={pendingLabel}
+      content={content}
+    />
   );
 }
 

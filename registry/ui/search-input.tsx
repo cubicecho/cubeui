@@ -98,9 +98,8 @@ export function SearchInput({
               change("");
               inner.current?.focus();
             }}
-          >
-            <X />
-          </Button>
+            icon={<X />}
+          />
         ) : undefined
       }
     />

@@ -512,7 +512,7 @@ type SubmitButtonProps = {
    * `disabled={false}` never enables an invalid form.
    */
   disabled?: boolean | undefined;
-} & Omit<React.ComponentProps<typeof Button>, "disabled" | "children">;
+} & Omit<React.ComponentProps<typeof Button>, "disabled" | "content" | "loading" | "loadingLabel">;
 
 /**
  * The submit control: reads `canSubmit` / `isSubmitting` from form context, so
@@ -544,11 +544,12 @@ function SubmitButton({
         form.handleSubmit();
       }}
       {...props}
-      disabled={disabled === true || !canSubmit || isSubmitting}
-    >
-      {icon}
-      {isSubmitting ? savingLabel : isEdit ? editLabel : createLabel}
-    </Button>
+      disabled={disabled === true || !canSubmit}
+      loading={isSubmitting}
+      loadingLabel={savingLabel}
+      icon={icon}
+      content={isEdit ? editLabel : createLabel}
+    />
   );
 }
 

@@ -29,7 +29,7 @@ export const InputBesideButton: Story = {
   render: () => (
     <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <Input placeholder="Email" />
-      <Button>Sign in</Button>
+      <Button content="Sign in" />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -255,7 +255,7 @@ export const FormFieldsTakeThePageFont: Story = {
  * turn the page dark.
  */
 export const ManualDark: Story = {
-  render: () => <Button variant="outline">Outline</Button>,
+  render: () => <Button variant="outline" content="Outline" />,
   play: async () => {
     // Read off the variable rather than a component's colour: every colour utility here is
     // `transition-colors`, so a computed colour read straight after the class flips is the start
@@ -279,7 +279,7 @@ export const ManualDark: Story = {
  * palette had the token — so the class matched nothing and the label took whatever it inherited.
  */
 export const DestructiveLabel: Story = {
-  render: () => <Button variant="destructive">Delete</Button>,
+  render: () => <Button variant="destructive" content="Delete" />,
   play: async ({ canvasElement }) => {
     const label = within(canvasElement).getByText("Delete");
     // `--destructive-foreground` in the light palette, as the literal the token emits.
@@ -329,10 +329,10 @@ export const BordersNameTheirColour: Story = {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card testID="card">
         <CardContent>
-          <Button variant="outline">Inside a card</Button>
+          <Button variant="outline" content="Inside a card" />
         </CardContent>
       </Card>
-      <Section title="Profile" surface="card" divider content={<Button>Save</Button>} />
+      <Section title="Profile" surface="card" divider content={<Button content="Save" />} />
       <RouteError
         error={new Error("It broke")}
         reset={() => {}}

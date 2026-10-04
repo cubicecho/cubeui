@@ -68,9 +68,7 @@ function halves(width: number) {
               />
             )}
             button={(label, onPress) => (
-              <NativeButton size="sm" variant="outline" onPress={onPress}>
-                {label}
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={onPress} content={label} />
             )}
           />
         </div>
@@ -89,9 +87,7 @@ function halves(width: number) {
             )}
             button={(label, onPress) => (
               // `onClick` on this half; see the note in `card.stories.tsx`.
-              <CompiledButton size="sm" variant="outline" onClick={onPress}>
-                {label}
-              </CompiledButton>
+              <CompiledButton size="sm" variant="outline" onClick={onPress} content={label} />
             )}
           />
         </div>

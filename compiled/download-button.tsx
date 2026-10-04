@@ -26,7 +26,6 @@ import {
  */
 import { Button } from "./button";
 import { Download } from "./icons";
-import { Spinner } from "./spinner";
 
 export type { DownloadButtonProps, DownloadContent, DownloadDestination };
 
@@ -74,12 +73,11 @@ export function DownloadButton({
       variant={variant}
       size={size}
       aria-label={label}
-      aria-busy={pending}
-      disabled={disabled || pending}
+      loading={pending}
+      disabled={disabled}
       className={className}
       onClick={() => void download((content) => downloadBlob(content, filename, { mimeType }))}
-    >
-      {pending ? <Spinner label="Downloading" /> : <Download aria-hidden />}
-    </Button>
+      icon={<Download aria-hidden />}
+    />
   );
 }

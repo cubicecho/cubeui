@@ -63,7 +63,7 @@ function TagForm({
         autoComplete="off"
         loading={loading}
       />
-      <Button type="submit">Save</Button>
+      <Button type="submit" content="Save" />
     </form>
   );
 }

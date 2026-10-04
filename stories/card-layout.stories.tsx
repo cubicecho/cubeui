@@ -124,9 +124,7 @@ function NarrowCard({ half }: { half: "native" | "compiled" }) {
         footerActions={
           <>
             {actionLabels.map((label) => (
-              <Button key={label} variant="outline" size="sm">
-                {label}
-              </Button>
+              <Button key={label} variant="outline" size="sm" content={label} />
             ))}
           </>
         }
@@ -183,8 +181,8 @@ function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: nu
         title={longTitle}
         action={
           <>
-            <Button variant="outline">Preview</Button>
-            <Button>Save</Button>
+            <Button variant="outline" content="Preview" />
+            <Button content="Save" />
           </>
         }
       />
@@ -250,11 +248,7 @@ export const LongTitleWithAction: Story = {
 function SmallActionCards({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
-  const add = (
-    <Button variant="outline" size="sm">
-      Add
-    </Button>
-  );
+  const add = <Button variant="outline" size="sm" content="Add" />;
   return (
     <div style={{ width: 390 }} className="flex flex-col gap-4">
       <div data-testid={`${half}-described`}>

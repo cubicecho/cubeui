@@ -202,10 +202,14 @@ export function QueryError({
         </div>
         <span className="cube-rn-text text-foreground/60 text-xs">{reason}</span>
         <div className="cube-rn-view flex-row">
-          <Button variant="outline" size="xs" onClick={retry} disabled={retrying}>
-            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-            {label}
-          </Button>
+          <Button
+            variant="outline"
+            size="xs"
+            onClick={retry}
+            disabled={retrying}
+            icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+            content={label}
+          />
         </div>
       </div>
     );
@@ -230,10 +234,14 @@ export function QueryError({
       </div>
       <span className="cube-rn-text text-foreground/60 text-sm">{reason}</span>
       <div className="cube-rn-view flex-row">
-        <Button variant="outline" size="sm" onClick={retry} disabled={retrying}>
-          <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-          {label}
-        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={retry}
+          disabled={retrying}
+          icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+          content={label}
+        />
       </div>
     </Card>
   );

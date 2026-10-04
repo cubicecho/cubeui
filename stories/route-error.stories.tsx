@@ -27,11 +27,7 @@ export const Details: Story = {
           reset={() => {}}
           describe={describe}
           details
-          actions={
-            <Button variant="outline" size="sm" onPress={() => {}}>
-              Reload
-            </Button>
-          }
+          actions={<Button variant="outline" size="sm" onPress={() => {}} content="Reload" />}
         />
       }
       compiled={
@@ -41,9 +37,7 @@ export const Details: Story = {
           describe={describe}
           details
           actions={
-            <CompiledButton variant="outline" size="sm" onClick={() => {}}>
-              Reload
-            </CompiledButton>
+            <CompiledButton variant="outline" size="sm" onClick={() => {}} content="Reload" />
           }
         />
       }

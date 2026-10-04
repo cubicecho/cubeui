@@ -212,7 +212,7 @@ const form = useAppForm({
   />
   <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
 
-  <form.AppForm><form.SubmitButton>Create Todo</form.SubmitButton></form.AppForm>
+  <form.AppForm><form.SubmitButton content="Create Todo" /></form.AppForm>
 </form>
 ```
 
@@ -935,7 +935,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
 | `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
-| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` |
+| `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` — **but not its children or `asChild`**: the inside is `icon`, `content` and `trailing`, and a link is `link` (#243), so `<Button>Save</Button>` ports as `<Button content="Save" />` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
 | `tooltip` | radix's props on every part — `open`/`onOpenChange` on `Tooltip`, `sideOffset`/`align` on the content, `className` on the trigger |

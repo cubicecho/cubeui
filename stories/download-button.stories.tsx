@@ -72,14 +72,16 @@ export const Default: Story = {
         await userEvent.click(button);
         await waitFor(() => expect(button).toBeDisabled());
         await expect(button).toHaveAttribute("aria-busy", "true");
-        await expect(within(button).getByRole("status", { name: "Downloading" })).toBeVisible();
+        // `Button`'s own `loading`: the glyph gives way to a spinner the name does not read.
+        await expect(button.querySelector(".lucide-download")).toBeNull();
+        await expect(button.querySelector("svg")).not.toBeNull();
         await expect(saved).toHaveLength(0);
 
         // Done: the file is saved under its own name, and the button offers again.
         finish?.resolve("# A note");
         await waitFor(() => expect(button).toBeEnabled());
         await expect(saved).toEqual(["note.md"]);
-        await expect(within(button).queryByRole("status")).not.toBeInTheDocument();
+        await expect(button.querySelector(".lucide-download")).not.toBeNull();
         saved.length = 0;
 
         // Failed: nothing is saved, the caller hears why, and the button offers again.

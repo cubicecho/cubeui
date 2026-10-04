@@ -279,11 +279,7 @@ export const LabelAction: Story = {
   args: {
     label: "Password",
     required: true,
-    action: (
-      <Button variant="outline" size="xs">
-        Forgot?
-      </Button>
-    ),
+    action: <Button variant="outline" size="xs" content="Forgot?" />,
     control: <Input type="password" />,
   },
   play: async ({ canvasElement }) => {
@@ -527,10 +523,8 @@ export const AForm: Story = {
         control={<Switch defaultChecked />}
       />
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">
-          Cancel
-        </Button>
-        <Button type="button">Create Todo</Button>
+        <Button type="button" variant="outline" content="Cancel" />
+        <Button type="button" content="Create Todo" />
       </div>
     </form>
   ),

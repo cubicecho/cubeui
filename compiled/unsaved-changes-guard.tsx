@@ -145,7 +145,7 @@ type UnsavedChangesDialogProps = {
  * const blocker = useBlocker({ shouldBlockFn: () => dirty, withResolver: true });
  * const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
  *
- * <Button variant="outline" onPress={() => guard.leave(onClose)}>Close</Button>
+ * <Button variant="outline" onPress={() => guard.leave(onClose)} content="Close" />
  * <UnsavedChangesDialog guard={guard} />
  * ```
  */

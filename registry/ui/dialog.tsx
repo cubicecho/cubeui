@@ -219,7 +219,7 @@ function DialogFooter({ className, showCloseButton = false, children }: DialogFo
       {children}
       {showCloseButton ? (
         <DialogClose asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline" content="Close" />
         </DialogClose>
       ) : null}
     </View>

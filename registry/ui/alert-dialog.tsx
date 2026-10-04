@@ -122,15 +122,22 @@ function ClosingButton({
   );
 }
 
+/**
+ * `Button`'s props, and the label as `children` — shadcn's shape for these two, which the web half
+ * keeps, so a call site reads the same on both.
+ */
+type ActionProps = Omit<ButtonProps, "content"> & { children?: ReactNode };
+
 function AlertDialogAction({
   variant = "default",
   size = "default",
   onPress,
+  children,
   ...props
-}: ButtonProps) {
+}: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} />
+      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }
@@ -139,11 +146,12 @@ function AlertDialogCancel({
   variant = "outline",
   size = "default",
   onPress,
+  children,
   ...props
-}: ButtonProps) {
+}: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} />
+      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }

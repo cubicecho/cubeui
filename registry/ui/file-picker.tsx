@@ -52,9 +52,8 @@ export function FilePickerButton({
       disabled
       aria-label={label}
       accessibilityHint={UNAVAILABLE}
-    >
-      {icon}
-      {iconOnly ? null : label}
-    </Button>
+      icon={icon}
+      content={iconOnly ? null : label}
+    />
   );
 }

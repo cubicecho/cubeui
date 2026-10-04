@@ -292,18 +292,19 @@ function SearchableMenu({
             "aria-invalid:border-negative disabled:cursor-not-allowed",
             className,
           )}
-        >
-          {chosen === undefined ? (
-            <span className="cube-rn-text min-w-0 flex-1 truncate text-left text-foreground/60 text-sm">
-              {placeholder}
-            </span>
-          ) : (
-            <span className="cube-rn-text min-w-0 flex-1 truncate text-left text-foreground text-sm">
-              {chosen.label}
-            </span>
-          )}
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            chosen === undefined ? (
+              <span className="cube-rn-text min-w-0 flex-1 truncate text-left text-foreground/60 text-sm">
+                {placeholder}
+              </span>
+            ) : (
+              <span className="cube-rn-text min-w-0 flex-1 truncate text-left text-foreground text-sm">
+                {chosen.label}
+              </span>
+            )
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
       <PopoverContent
         align="start"

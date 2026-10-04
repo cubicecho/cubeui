@@ -49,9 +49,7 @@ export const Compound: Story = {
             <NativeDescription>Make one to start a board.</NativeDescription>
           </NativeHeader>
           <NativeContent>
-            <NativeButton variant="info" onPress={onCreate}>
-              New project
-            </NativeButton>
+            <NativeButton variant="info" onPress={onCreate} content="New project" />
           </NativeContent>
         </NativeEmpty>
       }
@@ -65,9 +63,7 @@ export const Compound: Story = {
             <CompiledDescription>Make one to start a board.</CompiledDescription>
           </CompiledHeader>
           <CompiledContent>
-            <CompiledButton variant="info" onClick={onCreate}>
-              New project
-            </CompiledButton>
+            <CompiledButton variant="info" onClick={onCreate} content="New project" />
           </CompiledContent>
         </CompiledEmpty>
       }

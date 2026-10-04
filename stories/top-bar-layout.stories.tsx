@@ -70,9 +70,7 @@ export const Default: Story = {
             ))}
             navLabel="Native main"
             action={
-              <NativeButton size="sm" variant="outline" onPress={signOut}>
-                Sign out
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={signOut} content="Sign out" />
             }
             content={rows("Native").map((row) => (
               <Text key={row} className="px-4 py-2 text-foreground">
@@ -97,9 +95,7 @@ export const Default: Story = {
             ))}
             navLabel="Compiled main"
             action={
-              <CompiledButton size="sm" variant="outline" onClick={signOut}>
-                Sign out
-              </CompiledButton>
+              <CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />
             }
             content={rows("Compiled").map((row) => (
               <p key={row} className="px-4 py-2 text-foreground">
@@ -191,11 +187,7 @@ export const Narrow: Story = {
             {label}
           </a>
         ))}
-        action={
-          <CompiledButton size="sm" variant="outline" onClick={signOut}>
-            Sign out
-          </CompiledButton>
-        }
+        action={<CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />}
         content={<p className="px-4 py-2 text-foreground">The page.</p>}
       />
     </div>

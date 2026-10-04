@@ -90,9 +90,7 @@ export function FormDialogFooter({
       <DialogFooter className={cn("items-center", secondary && "sm:justify-between")}>
         {secondary ? <div className="cube-rn-view">{secondary}</div> : null}
         <div className="cube-rn-view flex-row gap-2">
-          <Button variant="outline" onClick={onCancel}>
-            {cancelLabel}
-          </Button>
+          <Button variant="outline" onClick={onCancel} content={cancelLabel} />
           {children}
         </div>
       </DialogFooter>

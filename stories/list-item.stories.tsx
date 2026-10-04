@@ -57,9 +57,7 @@ export const Pressable: Story = {
             meta="12"
             onPress={openNative}
             action={
-              <NativeButton size="sm" variant="outline" onPress={deleteNative}>
-                Delete
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={deleteNative} content="Delete" />
             }
           />
         </div>
@@ -73,9 +71,12 @@ export const Pressable: Story = {
             meta="12"
             onClick={openCompiled}
             action={
-              <CompiledButton size="sm" variant="outline" onClick={deleteCompiled}>
-                Delete
-              </CompiledButton>
+              <CompiledButton
+                size="sm"
+                variant="outline"
+                onClick={deleteCompiled}
+                content="Delete"
+              />
             }
           />
         </div>

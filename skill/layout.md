@@ -42,7 +42,7 @@ route should reach for first.
 <PageLayout
   title="Workspaces"
   description="Each one exposes the servers you choose."
-  action={<Button size="sm"><Plus /> New workspace</Button>}
+  action={<Button size="sm" icon={<Plus />} content="New workspace" />}
   headerContent={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
   width="page"
   content={<WorkspaceList />}
@@ -115,8 +115,8 @@ It is not a page.
   description="Each one exposes the servers you choose."
   action={
     <>
-      <Button size="sm" variant="outline"><Download /> Export</Button>
-      <Button size="sm"><Plus /> New workspace</Button>
+      <Button size="sm" variant="outline" icon={<Download />} content="Export" />
+      <Button size="sm" icon={<Plus />} content="New workspace" />
     </>
   }
   content={<SearchInput value={query} onChange={setQuery} />}
@@ -270,7 +270,7 @@ for the app's navigation rail, which has a bar to stand in for it.
         <SidebarSection
           as="nav"
           title="Projects"
-          action={<Button variant="outline" size="xs" aria-label="New project"><Plus /></Button>}
+          action={<Button variant="outline" size="xs" aria-label="New project" icon={<Plus />} />}
           status={
             <QueryState
               compact
@@ -457,7 +457,7 @@ while the root's own display class happens to merge first.
       {v.label}
     </Link>
   ))}
-  action={<Button variant="outline" size="sm" onPress={signOut}>Sign out</Button>}
+  action={<Button variant="outline" size="sm" onPress={signOut} content="Sign out" />}
   content={<Outlet />}
 />
 ```
@@ -510,13 +510,13 @@ second wrapper around a sidebar.
 <CardLayout
   title="Categories"
   description="Deleting a category keeps its activities — they go back to uncategorized."
-  action={<Button size="sm">Add</Button>}
+  action={<Button size="sm" content="Add" />}
   loading={isPending}
   content={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
   empty={<EmptyState compact title="No categories yet." />}
-  footerActions={<Button onClick={save}>Save</Button>}
+  footerActions={<Button onClick={save} content="Save" />}
 />
 ```
 
@@ -544,7 +544,7 @@ The title is `text-base` on both halves, never larger than the page's own title.
 The header `action` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under
-the title. One control or a fragment of them — `action={<><ViewToggle /><Button>Save</Button></>}`
+the title. One control or a fragment of them — `action={<><ViewToggle /><Button content="Save" /></>}`
 is laid out as a row. So a long title with two controls is still a `CardLayout`: do not switch to
 `Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
 `CardAction`, which is absolute and reserves no room.
@@ -572,9 +572,7 @@ around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under 
     </form>
   }
   footerActions={
-    <Button type="submit" form="token" disabled={!token.trim()}>
-      Unlock
-    </Button>
+    <Button type="submit" form="token" disabled={!token.trim()} content="Unlock" />
   }
 />
 ```
@@ -594,15 +592,15 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 
 ```tsx
 <DialogLayout
-  trigger={<Button>New workspace</Button>}
+  trigger={<Button content="New workspace" />}
   title="New workspace"
   description="A workspace exposes the servers you choose at its own URL."
   size="lg"
   content={<WorkspaceFields value={draft} onChange={setDraft} />}
   footerActions={(close) => (
     <>
-      <Button variant="outline" onClick={close}>Cancel</Button>
-      <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
+      <Button variant="outline" onClick={close} content="Cancel" />
+      <Button onClick={save} loading={saving} loadingLabel="Saving…" content="Save" />
     </>
   )}
 />
@@ -634,8 +632,8 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   ```tsx
   footerActions={(close) => (
     <>
-      <Button variant="outline" onClick={close}>Cancel</Button>
-      <Button onClick={save}>Save</Button>
+      <Button variant="outline" onClick={close} content="Cancel" />
+      <Button onClick={save} content="Save" />
     </>
   )}
   ```
@@ -657,7 +655,7 @@ second piece of state for the Close button:
 const blocker = useBlocker({ shouldBlockFn: () => dirty, withResolver: true });
 const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
 
-<Button variant="outline" onPress={() => guard.leave(onClose)}>Close</Button>
+<Button variant="outline" onPress={() => guard.leave(onClose)} content="Close" />
 <UnsavedChangesDialog guard={guard} />
 ```
 
@@ -720,7 +718,7 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 ```tsx
 <Disclosure
   title="Raw output"
-  action={<Button size="sm" variant="outline" onPress={copy}>Copy</Button>}
+  action={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
   content={<CodeBlock content={json} />}
 />
 
@@ -969,14 +967,14 @@ and which one is a question of **where the list is**, not how much there is to s
   icon={Inbox}
   title="No agents yet"
   description="An agent runs the lanes you give it."
-  action={<Button onPress={create}>New agent</Button>}
+  action={<Button onPress={create} content="New agent" />}
 />
 
 // The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
 <EmptyState
   compact
   title="No labels yet."
-  action={<Button variant="link" size="xs" onPress={create}>Add one</Button>}
+  action={<Button variant="link" size="xs" onPress={create} content="Add one" />}
 />
 ```
 
@@ -1035,7 +1033,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
     description={p.email}
     meta={relativeTime(p.lastContactedAt)}
     onPress={() => router.push(`/persons/${p.id}`)}
-    action={<Button size="sm" variant="outline" onPress={() => remove(p.id)}>Delete</Button>}
+    action={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
   />
 ))}
 ```

@@ -123,9 +123,8 @@ export const Slots: Story = {
                 size="icon-xs"
                 aria-label="Native clear"
                 onPress={onClear}
-              >
-                <NativeX />
-              </NativeButton>
+                icon={<NativeX />}
+              />
             }
             wrapperClassName="w-64"
           />
@@ -149,9 +148,8 @@ export const Slots: Story = {
                 size="icon-xs"
                 aria-label="Compiled clear"
                 onClick={onClear}
-              >
-                <CompiledX />
-              </CompiledButton>
+                icon={<CompiledX />}
+              />
             }
             wrapperClassName="w-64"
           />

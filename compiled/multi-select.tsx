@@ -395,33 +395,34 @@ export function MultiSelect({
             className,
           )}
           {...props}
-        >
-          <div className="cube-rn-view min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
-            {selected.length === 0 ? (
-              <span className="cube-rn-text text-sm text-foreground/60">{placeholder}</span>
-            ) : (
-              <>
-                {shown.map((option) => (
-                  <Badge
-                    key={option.value}
-                    variant="secondary"
-                    {...chipColors(option.color)}
-                    className={"max-w-40 truncate"}
-                    // Device only: on the web this would be a button inside the trigger's button.
-                  >
-                    {option.label}
-                  </Badge>
-                ))}
-                {overflow > 0 ? (
-                  <span className="cube-rn-text text-xs text-foreground/60">
-                    {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
-                  </span>
-                ) : null}
-              </>
-            )}
-          </div>
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            <div className="cube-rn-view min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
+              {selected.length === 0 ? (
+                <span className="cube-rn-text text-sm text-foreground/60">{placeholder}</span>
+              ) : (
+                <>
+                  {shown.map((option) => (
+                    <Badge
+                      key={option.value}
+                      variant="secondary"
+                      {...chipColors(option.color)}
+                      className={"max-w-40 truncate"}
+                      // Device only: on the web this would be a button inside the trigger's button.
+                    >
+                      {option.label}
+                    </Badge>
+                  ))}
+                  {overflow > 0 ? (
+                    <span className="cube-rn-text text-xs text-foreground/60">
+                      {shown.length === 0 ? `${overflow} selected` : `+${overflow}`}
+                    </span>
+                  ) : null}
+                </>
+              )}
+            </div>
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
 
       <PopoverContent
@@ -494,10 +495,9 @@ export function MultiSelect({
               size="sm"
               className="text-foreground/60"
               onClick={() => onValueChange([])}
-            >
-              <X className="size-4" aria-hidden />
-              Clear
-            </Button>
+              icon={<X className="size-4" aria-hidden />}
+              content="Clear"
+            />
           </div>
         ) : null}
       </PopoverContent>

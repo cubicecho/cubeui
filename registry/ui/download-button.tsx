@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/download-button-base";
 import { Download, Folder, Upload } from "@/components/ui/icons";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/menu";
-import { Spinner } from "@/components/ui/spinner";
 
 export type { DownloadButtonProps, DownloadContent, DownloadDestination };
 
@@ -100,13 +99,12 @@ export function DownloadButton({
       variant={variant}
       size={size}
       aria-label={label}
-      aria-busy={pending}
-      disabled={disabled || pending}
+      loading={pending}
+      disabled={disabled}
       className={className}
       {...(destination === "ask" ? {} : { onPress: () => save(destination) })}
-    >
-      {pending ? <Spinner label="Downloading" /> : <Download aria-hidden />}
-    </Button>
+      icon={<Download aria-hidden />}
+    />
   );
 
   if (destination !== "ask") return button;

@@ -2,7 +2,7 @@
 
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
 import type * as React from "react";
-import { Button } from "@/components/ui/button";
+import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
@@ -143,17 +143,15 @@ function AlertDialogAction({
   onPress,
   ...props
 }: Omit<React.ComponentProps<typeof AlertDialogPrimitive.Action>, "onClick"> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size"> &
+  Pick<ButtonProps, "variant" | "size"> &
   NativePress) {
   return (
-    <Button variant={variant} size={size} asChild>
-      <AlertDialogPrimitive.Action
-        data-slot="alert-dialog-action"
-        className={cn(className)}
-        {...props}
-        onClick={onPress}
-      />
-    </Button>
+    <AlertDialogPrimitive.Action
+      data-slot="alert-dialog-action"
+      className={cn(buttonVariants({ variant, size }), props.disabled && "opacity-50", className)}
+      {...props}
+      onClick={onPress}
+    />
   );
 }
 
@@ -164,17 +162,15 @@ function AlertDialogCancel({
   onPress,
   ...props
 }: Omit<React.ComponentProps<typeof AlertDialogPrimitive.Cancel>, "onClick"> &
-  Pick<React.ComponentProps<typeof Button>, "variant" | "size"> &
+  Pick<ButtonProps, "variant" | "size"> &
   NativePress) {
   return (
-    <Button variant={variant} size={size} asChild>
-      <AlertDialogPrimitive.Cancel
-        data-slot="alert-dialog-cancel"
-        className={cn(className)}
-        {...props}
-        onClick={onPress}
-      />
-    </Button>
+    <AlertDialogPrimitive.Cancel
+      data-slot="alert-dialog-cancel"
+      className={cn(buttonVariants({ variant, size }), props.disabled && "opacity-50", className)}
+      {...props}
+      onClick={onPress}
+    />
   );
 }
 

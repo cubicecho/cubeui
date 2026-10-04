@@ -24,12 +24,8 @@ type Story = StoryObj<typeof meta>;
 
 const Actions = () => (
   <>
-    <Button size="sm" variant="outline">
-      <Download /> Export
-    </Button>
-    <Button size="sm" variant="info">
-      <Plus /> New workspace
-    </Button>
+    <Button size="sm" variant="outline" icon={<Download />} content="Export" />
+    <Button size="sm" variant="info" icon={<Plus />} content="New workspace" />
   </>
 );
 
@@ -136,9 +132,7 @@ export const WithFooter: Story = {
     footer: (
       <div className="flex items-center justify-between py-3 text-foreground/60 text-sm">
         <span>40 workspaces</span>
-        <Button size="sm" variant="outline">
-          Load more
-        </Button>
+        <Button size="sm" variant="outline" content="Load more" />
       </div>
     ),
   },

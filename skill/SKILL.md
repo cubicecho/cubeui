@@ -92,6 +92,7 @@ at the end.
 | A form of any size | `useAppForm` and the bound fields | [forms.md](forms.md) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
+| A button, with a label, an icon, a link or a `loading` state | `Button` | [controls.md](controls.md#button) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
 | A button that saves a file — an export, a note, a report — and waits while it is fetched | `DownloadButton` | [controls.md](controls.md#download-button) |
@@ -394,15 +395,16 @@ take the props the web ones take, with four conversions that are the same everyw
   `onSubmitEditing` is Enter **without Shift**, since Shift+Enter is a new line, and only on the
   web. On a device the return key adds a line and a send button is the way out. A `ref` on either
   gives `focus()`, for putting the caret back after a send.
-- **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
-  that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
+- **No children and no `asChild` on `Button`.** The label is `content`, the icon is `icon`, and a
+  button that navigates takes the link as `link={<Link href="/docs" />}` — see
+  [controls.md](controls.md#button). `loading` is the state for "pressed, still working".
 
 The web halves go the other way too: `Button`, `Dialog`, `Popover`, `Tooltip`, `Tabs`, `Label`
 and `Badge` are a **superset of shadcn's own** there. Every part also takes the props of the radix
 part or DOM element it renders, and shadcn's extra parts and sizes exist — `DialogClose`,
 `DialogPortal`, `DialogOverlay`, `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, controlled `Tabs`,
 `TooltipContent sideOffset`, `Badge asChild`, `size="icon-sm"`. So a shadcn call site compiles
-unchanged. The new parts and sizes exist on native too; the radix and DOM passthrough props are
+unchanged — except a `Button`'s inside, which is `icon` and `content` rather than children. The new parts and sizes exist on native too; the radix and DOM passthrough props are
 web only, and a native call site keeps to the shared contract.
 
 `file-picker` is the one item whose native half does not do the job: it draws the zone and says

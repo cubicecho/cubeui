@@ -168,20 +168,21 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 }
               : {})}
             className="flex-1 justify-start text-left font-normal"
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {/* Its own `Text` in both states, for the id a reference points at; and because
-                native has no colour inheritance, the placeholder's muted class has to be on
-                the words themselves. */}
-            <Text
-              nativeID={valueId}
-              className={
-                value ? buttonTextVariants({ variant: "outline" }) : "text-sm text-foreground/60"
-              }
-            >
-              {valueText}
-            </Text>
-          </Button>
+            icon={<CalendarIcon className="mr-2 h-4 w-4" />}
+            content={
+              // Its own `Text` in both states, for the id a reference points at; and because
+              // native has no colour inheritance, the placeholder's muted class has to be on
+              // the words themselves.
+              <Text
+                nativeID={valueId}
+                className={
+                  value ? buttonTextVariants({ variant: "outline" }) : "text-sm text-foreground/60"
+                }
+              >
+                {valueText}
+              </Text>
+            }
+          />
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
@@ -194,10 +195,13 @@ export function DateTimeInput(props: DateTimeInputProps) {
               `DatePicker` puts its Clear in the same place. */}
           {props.clearable && value ? (
             <View className="flex-row justify-end border-t border-foreground/10 p-1">
-              <Button variant="outline" size="sm" onPress={handleClear}>
-                <X className="h-4 w-4" />
-                Clear
-              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={handleClear}
+                icon={<X className="h-4 w-4" />}
+                content="Clear"
+              />
             </View>
           ) : null}
         </PopoverContent>

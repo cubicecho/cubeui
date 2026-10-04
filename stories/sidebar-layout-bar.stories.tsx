@@ -126,12 +126,18 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <NativeButton variant="outline" size="icon-sm" aria-label="Native settings">
-                <NativeSettings />
-              </NativeButton>
-              <NativeButton variant="outline" size="icon-sm" aria-label="Native theme">
-                <NativeMoon />
-              </NativeButton>
+              <NativeButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Native settings"
+                icon={<NativeSettings />}
+              />
+              <NativeButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Native theme"
+                icon={<NativeMoon />}
+              />
             </>
           }
           content={<Text className="p-4 text-foreground">Native page</Text>}
@@ -161,12 +167,18 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <CompiledButton variant="outline" size="icon-sm" aria-label="Compiled settings">
-                <CompiledSettings />
-              </CompiledButton>
-              <CompiledButton variant="outline" size="icon-sm" aria-label="Compiled theme">
-                <CompiledMoon />
-              </CompiledButton>
+              <CompiledButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Compiled settings"
+                icon={<CompiledSettings />}
+              />
+              <CompiledButton
+                variant="outline"
+                size="icon-sm"
+                aria-label="Compiled theme"
+                icon={<CompiledMoon />}
+              />
             </>
           }
           content={<p className="p-4 text-foreground">Compiled page</p>}

@@ -17,12 +17,8 @@ type Story = StoryObj<typeof meta>;
 
 const Actions = () => (
   <>
-    <Button size="sm" variant="outline">
-      <Download /> Export
-    </Button>
-    <Button size="sm" variant="info">
-      <Plus /> New workspace
-    </Button>
+    <Button size="sm" variant="outline" icon={<Download />} content="Export" />
+    <Button size="sm" variant="info" icon={<Plus />} content="New workspace" />
   </>
 );
 

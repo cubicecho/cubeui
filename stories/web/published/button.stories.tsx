@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 const meta = {
   title: "Controls/Button",
   component: Button,
-  args: { children: "Save changes", onClick: fn() },
+  args: { content: "Save changes", onClick: fn() },
   argTypes: {
     variant: {
       control: "select",
@@ -72,41 +72,21 @@ export const Variants: Story = {
   render: (args) => (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button {...args}>Default</Button>
-        <Button {...args} variant="positive">
-          Positive
-        </Button>
-        <Button {...args} variant="info">
-          Info
-        </Button>
-        <Button {...args} variant="destructive">
-          Destructive
-        </Button>
+        <Button {...args} content="Default" />
+        <Button {...args} variant="positive" content="Positive" />
+        <Button {...args} variant="info" content="Info" />
+        <Button {...args} variant="destructive" content="Destructive" />
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button {...args} variant="outline">
-          Outline
-        </Button>
-        <Button {...args} variant="positive-outline">
-          Positive outline
-        </Button>
-        <Button {...args} variant="info-outline">
-          Info outline
-        </Button>
-        <Button {...args} variant="destructive-outline">
-          Destructive outline
-        </Button>
+        <Button {...args} variant="outline" content="Outline" />
+        <Button {...args} variant="positive-outline" content="Positive outline" />
+        <Button {...args} variant="info-outline" content="Info outline" />
+        <Button {...args} variant="destructive-outline" content="Destructive outline" />
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button {...args} variant="secondary">
-          Secondary
-        </Button>
-        <Button {...args} variant="ghost">
-          Ghost
-        </Button>
-        <Button {...args} variant="link">
-          Link
-        </Button>
+        <Button {...args} variant="secondary" content="Secondary" />
+        <Button {...args} variant="ghost" content="Ghost" />
+        <Button {...args} variant="link" content="Link" />
       </div>
     </div>
   ),
@@ -119,16 +99,10 @@ export const Variants: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <>
-      <Button {...args} size="xs">
-        Extra small
-      </Button>
-      <Button {...args} size="sm">
-        Small
-      </Button>
-      <Button {...args}>Default</Button>
-      <Button {...args} size="lg">
-        Large
-      </Button>
+      <Button {...args} size="xs" content="Extra small" />
+      <Button {...args} size="sm" content="Small" />
+      <Button {...args} content="Default" />
+      <Button {...args} size="lg" content="Large" />
     </>
   ),
   play: async ({ canvasElement }) => {
@@ -152,6 +126,24 @@ export const Disabled: Story = {
     const button = within(canvasElement).getByRole("button", { name: "Save changes" });
     await expect(button).toBeDisabled();
     await expect(getComputedStyle(button).opacity).toBe("0.5");
+
+    await userEvent.click(button);
+    await expect(args.onClick).not.toHaveBeenCalled();
+  },
+};
+
+/**
+ * Pressed, and the work is still running: the same dimming as disabled, `aria-busy` for a screen
+ * reader, and the label swapped for `loadingLabel`. The spinner turning is the app's
+ * `animate-spin`, which is the part a missing Tailwind scan would lose.
+ */
+export const Loading: Story = {
+  args: { loading: true, loadingLabel: "Saving…" },
+  play: async ({ canvasElement, args }) => {
+    const button = within(canvasElement).getByRole("button", { name: "Saving…" });
+    await expect(button).toBeDisabled();
+    await expect(button).toHaveAttribute("aria-busy", "true");
+    await expect(button.querySelector("svg")).not.toBeNull();
 
     await userEvent.click(button);
     await expect(args.onClick).not.toHaveBeenCalled();

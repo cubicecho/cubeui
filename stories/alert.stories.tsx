@@ -60,21 +60,13 @@ export const Default: Story = {
       native={
         <Variants
           Alert={Native}
-          action={
-            <NativeButton size="sm" variant="outline" onPress={() => {}}>
-              Retry
-            </NativeButton>
-          }
+          action={<NativeButton size="sm" variant="outline" onPress={() => {}} content="Retry" />}
         />
       }
       compiled={
         <Variants
           Alert={Compiled as AlertComponent}
-          action={
-            <CompiledButton size="sm" variant="outline" onClick={() => {}}>
-              Retry
-            </CompiledButton>
-          }
+          action={<CompiledButton size="sm" variant="outline" onClick={() => {}} content="Retry" />}
         />
       }
     />

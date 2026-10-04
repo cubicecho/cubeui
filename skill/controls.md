@@ -122,14 +122,44 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
   `segmentedItemClass(active)` and put it in a `SegmentedGroup variant="plain"` for the name.
 
+## Button
+
+`Button` takes no children. What is inside a button is an icon, a label and sometimes something at
+the far end, so those are the props:
+
+```tsx
+<Button content="Save" onPress={save} />
+<Button variant="info" icon={<Plus />} content="New workspace" onPress={create} />
+<Button variant="outline" content={chosen.label} trailing={<ChevronDown />} />
+<Button variant="outline" link={<Link to="/docs" />} content="Docs" />
+<Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
+```
+
+- **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
+  it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
+- **`icon`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
+  is why an icon-only button is an `ActionButton` (below).
+- **`trailing`** is the far end: a trigger's chevron, a count.
+- **`link`** is the link the button is, as an element with no children: `<a href="…" />` or a
+  router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
+  button; on a device it is expo-router's `Link`, which wraps the button with its own `asChild`.
+  Handing a `Button` to a radix trigger is unchanged: `<PopoverTrigger asChild><Button … />`.
+- **`loading`** is "pressed, and the work is still running": the button is disabled, `aria-busy`,
+  and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
+  swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
+  `ActionButton` and `ConfirmButton` take the same props; a form's submit is `form.SubmitButton`,
+  which sets `loading` from the form.
+- A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
+  `<Button><Plus /> New</Button>` → `<Button icon={<Plus />} content="New" />`. Everything else
+  about the web half is still shadcn's: the `<button>` props, the sizes, `buttonVariants`.
+- `AlertDialogAction` and `AlertDialogCancel` keep their label as children, as shadcn's do.
+
 ## Icon buttons
 
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
 
 ```tsx
-<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove}>
-  <Trash2 />
-</ActionButton>
+<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} icon={<Trash2 />} />
 ```
 
 `label` is required and is the accessible name. `title` is not a name — it is a hint, it is not
@@ -142,9 +172,7 @@ deliberate: `disabled:pointer-events-none` is why every `title="Empty the lane f
 apps was unreadable on exactly the control it was explaining. Pass `hint` with the reason:
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0}>
-  <Trash2 />
-</ActionButton>
+<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} icon={<Trash2 />} />
 ```
 
 `hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
@@ -171,9 +199,13 @@ A form's real submit is `SubmitButton`. If you want one of these to submit, say 
 pressable has: `onPress` on a device, `onClick` on the web.
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} onPress={remove}>
-  <Trash2 />
-</ActionButton>
+<ActionButton
+  label="Delete lane"
+  hint="Empty the lane first"
+  disabled={cards.length > 0}
+  onPress={remove}
+  icon={<Trash2 />}
+/>
 ```
 
 - On device the tooltip opens on a **long press**, and a `disabled` one still hears it — that is
@@ -427,9 +459,8 @@ const [body, setBody] = useState(skill.instructions);
   title="Delete this lane?"
   description="The lane takes its cards with it."
   onConfirm={() => deleteLane(id)}
->
-  <Trash2 />
-</ConfirmButton>
+  icon={<Trash2 />}
+/>
 ```
 
 Do not build the `AlertDialog` by hand. There are 22 hand-written ones across these projects and
@@ -467,9 +498,8 @@ repository — pass `requireText`, and the dialog asks for the name before it ac
   requireText={folder.name}
   requireTextLabel={<>Type <strong>{folder.name}</strong> to delete it</>}
   onConfirm={() => deleteFolder(folder.id)}
->
-  <Trash2 />
-</ConfirmButton>
+  icon={<Trash2 />}
+/>
 ```
 
 It is the same prop on all three, so a call site moves between them unchanged:
@@ -496,7 +526,7 @@ on both platforms:
 ```tsx
 <Menu>
   <MenuTrigger asChild>
-    <Button variant="outline">Lane</Button>
+    <Button variant="outline" content="Lane" />
   </MenuTrigger>
   <MenuContent align="end">
     <MenuItem icon={<Pencil />} label="Rename" onSelect={startRename} />
@@ -992,9 +1022,13 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
   onChangeText={setName}
   leading={<Pencil />}
   trailing={
-    <Button variant="outline" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
-      <Undo2 />
-    </Button>
+    <Button
+      variant="outline"
+      size="icon-xs"
+      aria-label="Undo rename"
+      onPress={() => setName(saved)}
+      icon={<Undo2 />}
+    />
   }
   wrapperClassName="w-64"
 />
@@ -1062,7 +1096,7 @@ in one wrapping row. There is no component for it — it is one `div`:
 <div className="flex flex-wrap items-center gap-2">
   <SearchInput placeholder="Search runs" value={query} onChangeText={setQuery} wrapperClassName="w-64" />
   <OptionSelect options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
-  <Button variant="outline" onClick={reset}>Reset</Button>
+  <Button variant="outline" onClick={reset} content="Reset" />
 </div>
 ```
 
@@ -1111,7 +1145,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   variant="destructive"
   title="Last error"
   description={server.lastError}
-  action={<Button size="sm" variant="outline" onPress={restart}>Restart</Button>}
+  action={<Button size="sm" variant="outline" onPress={restart} content="Restart" />}
 />
 ```
 
@@ -1141,13 +1175,11 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 `animate-spin`, and do not reach for `ActivityIndicator`:
 
 ```tsx
-<Button disabled={saving} onPress={save}>
-  {saving ? <Spinner label="Saving" /> : null}
-  <Text>Save</Text>
-</Button>
-
 <Spinner label="Loading servers" className="size-6 text-foreground/60" />
 ```
+
+- A button that is working is `<Button loading>`, not a `Spinner` drawn inside one — see
+  [Button](#button).
 
 - It is `role="status"`, named by `label` (default `Loading`). Name what is loading when more than
   one thing on the screen could be.

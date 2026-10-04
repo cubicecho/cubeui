@@ -77,9 +77,11 @@ function NativeFocus() {
   return (
     <div className="flex flex-col gap-2">
       <Native ref={box} defaultValue="" placeholder="Native reply" />
-      <NativeButton variant="outline" onPress={() => box.current?.focus()}>
-        Reply on native
-      </NativeButton>
+      <NativeButton
+        variant="outline"
+        onPress={() => box.current?.focus()}
+        content="Reply on native"
+      />
     </div>
   );
 }
@@ -89,9 +91,11 @@ function CompiledFocus() {
   return (
     <div className="flex flex-col gap-2">
       <Compiled ref={box} aria-label="Compiled reply" placeholder="Compiled reply" />
-      <CompiledButton variant="outline" onClick={() => box.current?.focus()}>
-        Reply on compiled
-      </CompiledButton>
+      <CompiledButton
+        variant="outline"
+        onClick={() => box.current?.focus()}
+        content="Reply on compiled"
+      />
     </div>
   );
 }

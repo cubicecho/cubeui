@@ -328,31 +328,26 @@ function Buttons() {
       <Row
         content={
           <>
-            <Button>Save changes</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-            <Button variant="destructive">Delete</Button>
-            <Button variant="destructive-outline">Remove</Button>
-            <Button disabled>Disabled</Button>
+            <Button content="Save changes" />
+            <Button variant="secondary" content="Secondary" />
+            <Button variant="outline" content="Outline" />
+            <Button variant="ghost" content="Ghost" />
+            <Button variant="link" content="Link" />
+            <Button variant="destructive" content="Delete" />
+            <Button variant="destructive-outline" content="Remove" />
+            <Button disabled content="Disabled" />
           </>
         }
       />
       <Row
         content={
           <>
-            <Button size="xs">Extra small</Button>
-            <Button size="sm">Small</Button>
-            <Button>Default</Button>
-            <Button size="lg">Large</Button>
-            <Button size="icon" aria-label="Add">
-              <Plus />
-            </Button>
-            <Button>
-              <Download />
-              With an icon
-            </Button>
+            <Button size="xs" content="Extra small" />
+            <Button size="sm" content="Small" />
+            <Button content="Default" />
+            <Button size="lg" content="Large" />
+            <Button size="icon" aria-label="Add" icon={<Plus />} />
+            <Button icon={<Download />} content="With an icon" />
           </>
         }
       />
@@ -421,16 +416,14 @@ function Cards() {
           <CardTitle>atlas</CardTitle>
           <CardDescription>An HTTP server with twelve tools.</CardDescription>
           <CardAction>
-            <Button size="sm" variant="outline">
-              Open
-            </Button>
+            <Button size="sm" variant="outline" content="Open" />
           </CardAction>
         </CardHeader>
         <CardContent>
           <p className="text-foreground text-sm">Last seen four minutes ago.</p>
         </CardContent>
         <CardFooter>
-          <Button size="sm">Restart</Button>
+          <Button size="sm" content="Restart" />
         </CardFooter>
       </Card>
       <Card>
@@ -457,11 +450,7 @@ function Alerts() {
             variant="warning"
             title="Storage is nearly full"
             description="Uploads stop at 100%."
-            action={
-              <Button size="sm" variant="outline">
-                Manage
-              </Button>
-            }
+            action={<Button size="sm" variant="outline" content="Manage" />}
           />
           <Alert
             variant="destructive"
@@ -485,7 +474,7 @@ function Empties() {
         <EmptyDescription>Make one to start a board.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button>New project</Button>
+        <Button content="New project" />
       </EmptyContent>
     </Empty>
   );
@@ -503,9 +492,7 @@ function Items() {
           <ItemDescription>Edited yesterday by Ada.</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Button size="sm" variant="outline">
-            Archive
-          </Button>
+          <Button size="sm" variant="outline" content="Archive" />
         </ItemActions>
       </Item>
       <ItemSeparator />
@@ -638,7 +625,7 @@ function Overlays() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline">Hover for a tooltip</Button>
+                <Button variant="outline" content="Hover for a tooltip" />
               </TooltipTrigger>
               <TooltipContent>Shown on hover and on focus</TooltipContent>
             </Tooltip>
@@ -646,7 +633,7 @@ function Overlays() {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline">Open the popover</Button>
+              <Button variant="outline" content="Open the popover" />
             </PopoverTrigger>
             <PopoverContent aria-label="Filters">
               <PopoverHeader>
@@ -654,14 +641,14 @@ function Overlays() {
                 <PopoverDescription>Narrow the list to what you need.</PopoverDescription>
               </PopoverHeader>
               <PopoverClose asChild>
-                <Button size="sm">Done</Button>
+                <Button size="sm" content="Done" />
               </PopoverClose>
             </PopoverContent>
           </Popover>
 
           <Menu>
             <MenuTrigger asChild>
-              <Button variant="outline">Open the menu</Button>
+              <Button variant="outline" content="Open the menu" />
             </MenuTrigger>
             <MenuContent aria-label="Lane actions">
               <MenuItem icon={<Pencil />} label="Rename" trailing="F2" onSelect={noop} />
@@ -674,7 +661,7 @@ function Overlays() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline">Open the dialog</Button>
+              <Button variant="outline" content="Open the dialog" />
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -683,7 +670,7 @@ function Overlays() {
               </DialogHeader>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant="outline">Close the dialog</Button>
+                  <Button variant="outline" content="Close the dialog" />
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
@@ -710,9 +697,8 @@ function AskFirst() {
               });
               setAnswer(ok ? "confirmed" : "cancelled");
             }}
-          >
-            Ask with useConfirm
-          </Button>
+            content="Ask with useConfirm"
+          />
           <output aria-label="useConfirm answer" className="text-muted-foreground text-sm">
             {answer}
           </output>
@@ -730,7 +716,7 @@ function Confirms() {
         <>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline">Open the alert dialog</Button>
+              <Button variant="outline" content="Open the alert dialog" />
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -746,9 +732,11 @@ function Confirms() {
             </AlertDialogContent>
           </AlertDialog>
 
-          <Button variant="outline" onClick={() => setOpen(true)}>
-            Open the confirm dialog
-          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(true)}
+            content="Open the confirm dialog"
+          />
           <ConfirmDialog
             open={open}
             onOpenChange={setOpen}
@@ -773,12 +761,16 @@ function ToastButtons() {
     <Row
       content={
         <>
-          <Button variant="outline" onClick={() => toast("Saved.", "success")}>
-            Show a success toast
-          </Button>
-          <Button variant="outline" onClick={() => toast("The server did not answer.")}>
-            Show an error toast
-          </Button>
+          <Button
+            variant="outline"
+            onClick={() => toast("Saved.", "success")}
+            content="Show a success toast"
+          />
+          <Button
+            variant="outline"
+            onClick={() => toast("The server did not answer.")}
+            content="Show an error toast"
+          />
         </>
       }
     />
@@ -1028,17 +1020,14 @@ function ActionButtons() {
           <>
             <CopyButton value="sk-live-1234" label="Copy the API key" />
             <DownloadButton source="# Notes" filename="notes.md" label="Download notes.md" />
-            <ActionButton label="Edit" variant="outline" size="icon">
-              <Pencil />
-            </ActionButton>
+            <ActionButton label="Edit" variant="outline" size="icon" icon={<Pencil />} />
             <ActionButton
               label="Refresh"
               hint="Fetches the list again"
               variant="outline"
               size="icon"
-            >
-              <RefreshCw />
-            </ActionButton>
+              icon={<RefreshCw />}
+            />
             <ConfirmButton
               label="Delete the lane"
               variant="destructive-outline"
@@ -1046,9 +1035,8 @@ function ActionButtons() {
               title="Delete this lane?"
               description="Its cards move to the backlog."
               onConfirm={noop}
-            >
-              Delete
-            </ConfirmButton>
+              content="Delete"
+            />
           </>
         }
       />
@@ -1162,7 +1150,7 @@ function AppFormSample() {
         ]}
       />
       <div>
-        <Button type="submit">Save</Button>
+        <Button type="submit" content="Save" />
       </div>
     </form>
   );
@@ -1213,7 +1201,7 @@ function FormElementSample() {
         <Label htmlFor="gallery-invite">Invite by email</Label>
         <Input id="gallery-invite" placeholder="grace@example.com" />
       </div>
-      <Button type="submit">{sent ? "Invited" : "Invite"}</Button>
+      <Button type="submit" content={sent ? "Invited" : "Invite"} />
     </FormElement>
   );
 }
@@ -1222,9 +1210,7 @@ function FormDialogSample() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Open the form dialog
-      </Button>
+      <Button variant="outline" onClick={() => setOpen(true)} content="Open the form dialog" />
       <FormDialog
         open={open}
         onOpenChange={setOpen}
@@ -1236,7 +1222,7 @@ function FormDialogSample() {
           <Input id="gallery-rename" defaultValue="Apollo" />
         </div>
         <FormDialogFooter onCancel={() => setOpen(false)}>
-          <Button onClick={() => setOpen(false)}>Rename</Button>
+          <Button onClick={() => setOpen(false)} content="Rename" />
         </FormDialogFooter>
       </FormDialog>
     </>
@@ -1256,11 +1242,7 @@ function Sections() {
             level={3}
             title="Members"
             description="Who can open this workspace."
-            action={
-              <Button size="sm" variant="outline">
-                Invite
-              </Button>
-            }
+            action={<Button size="sm" variant="outline" content="Invite" />}
             content={<p className="text-foreground text-sm">Ada, Grace and Edsger.</p>}
           />
           <Section
@@ -1290,11 +1272,7 @@ function ListItems() {
         leading={<FileText className="size-4" />}
         title="Release checklist"
         description="A row that is not pressable"
-        action={
-          <Button size="sm" variant="outline">
-            Open
-          </Button>
-        }
+        action={<Button size="sm" variant="outline" content="Open" />}
       />
     </div>
   );
@@ -1379,11 +1357,7 @@ function SettingRows() {
       <SettingRow
         title="Export"
         description="Everything in this workspace, as JSON."
-        action={
-          <Button size="sm" variant="outline">
-            Export
-          </Button>
-        }
+        action={<Button size="sm" variant="outline" content="Export" />}
       />
     </div>
   );
@@ -1438,7 +1412,7 @@ function PageHeaders() {
             icon={<Settings />}
             title="Settings"
             description="Everything about this workspace."
-            action={<Button size="sm">Save</Button>}
+            action={<Button size="sm" content="Save" />}
           />
           <PageHeader level={3} title="Loading" loading />
         </>
@@ -1455,16 +1429,12 @@ function CardLayouts() {
         title="Danger zone"
         description="These cannot be undone."
         content={<p className="text-foreground text-sm">Delete the workspace and all its data.</p>}
-        footerActions={<Button variant="destructive">Delete</Button>}
+        footerActions={<Button variant="destructive" content="Delete" />}
       />
       <CardLayout
         level={3}
         title="Webhooks"
-        action={
-          <Button size="sm" variant="outline">
-            Add
-          </Button>
-        }
+        action={<Button size="sm" variant="outline" content="Add" />}
         empty={<EmptyState compact title="No webhooks yet" />}
       />
     </div>
@@ -1474,7 +1444,7 @@ function CardLayouts() {
 function DialogLayoutSample() {
   return (
     <DialogLayout
-      trigger={<Button variant="outline">Open the dialog layout</Button>}
+      trigger={<Button variant="outline" content="Open the dialog layout" />}
       title="Edit the server"
       description="A long form scrolls between a title and a footer that stay put."
       content={
@@ -1488,10 +1458,8 @@ function DialogLayoutSample() {
       }
       footerActions={(close) => (
         <>
-          <Button variant="outline" onClick={close}>
-            Cancel
-          </Button>
-          <Button onClick={close}>Save the server</Button>
+          <Button variant="outline" onClick={close} content="Cancel" />
+          <Button onClick={close} content="Save the server" />
         </>
       )}
     />
@@ -1691,7 +1659,7 @@ const sections: GallerySection[] = [
                 control={(props) => <Input {...props} placeholder="ada@example.com" />}
               />
             }
-            footerActions={<Button>Continue</Button>}
+            footerActions={<Button content="Continue" />}
           />
         }
       />
@@ -1727,7 +1695,7 @@ const sections: GallerySection[] = [
             level={3}
             title="Servers"
             description="Everything this workspace can reach."
-            action={<Button size="sm">New server</Button>}
+            action={<Button size="sm" content="New server" />}
             content={<div className="px-1">{paragraphs(20)}</div>}
             footer={<p className="text-muted-foreground text-sm">20 rows</p>}
           />
@@ -1834,11 +1802,7 @@ const sections: GallerySection[] = [
                 {place}
               </a>
             ))}
-            action={
-              <Button size="sm" variant="outline">
-                Sign out
-              </Button>
-            }
+            action={<Button size="sm" variant="outline" content="Sign out" />}
             content={<div className="p-4">{paragraphs(20)}</div>}
           />
         }

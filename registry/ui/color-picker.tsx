@@ -290,9 +290,13 @@ export function ColorPicker({
           className="flex-1 font-mono"
         />
         {clearable && current ? (
-          <Button variant="outline" size="sm" disabled={disabled} onPress={() => emit("")}>
-            {clearLabel}
-          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={disabled}
+            onPress={() => emit("")}
+            content={clearLabel}
+          />
         ) : null}
       </View>
     </View>

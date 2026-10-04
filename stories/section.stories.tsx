@@ -103,9 +103,7 @@ function WideActionSections({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
   const Button = half === "native" ? NativeButton : CompiledButton;
   const buttons = toolbarLabels.map((label) => (
-    <Button key={label} variant="outline" size="sm">
-      {label}
-    </Button>
+    <Button key={label} variant="outline" size="sm" content={label} />
   ));
   const row =
     half === "native" ? (
@@ -177,11 +175,7 @@ function SmallActionSection({ half }: { half: "native" | "compiled" }) {
       <Section
         title="Files"
         description={toolbarDescription}
-        action={
-          <Button variant="outline" size="sm">
-            Export
-          </Button>
-        }
+        action={<Button variant="outline" size="sm" content="Export" />}
         content={body}
       />
     </div>

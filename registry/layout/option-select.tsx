@@ -284,18 +284,19 @@ function SearchableMenu({
             }),
             className,
           )}
-        >
-          {chosen === undefined ? (
-            <Text className="min-w-0 flex-1 truncate text-left text-foreground/60 text-sm">
-              {placeholder}
-            </Text>
-          ) : (
-            <Text className="min-w-0 flex-1 truncate text-left text-foreground text-sm">
-              {chosen.label}
-            </Text>
-          )}
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />
-        </Button>
+          content={
+            chosen === undefined ? (
+              <Text className="min-w-0 flex-1 truncate text-left text-foreground/60 text-sm">
+                {placeholder}
+              </Text>
+            ) : (
+              <Text className="min-w-0 flex-1 truncate text-left text-foreground text-sm">
+                {chosen.label}
+              </Text>
+            )
+          }
+          trailing={<ChevronsUpDown className="size-4 shrink-0 opacity-50" aria-hidden />}
+        />
       </PopoverTrigger>
       <PopoverContent
         align="start"

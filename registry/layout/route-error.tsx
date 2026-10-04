@@ -15,7 +15,7 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actions={<Button variant="outline" size="sm" onPress={reload}>Reload</Button>}
+ *   actions={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
  * />
  * ```
  */
@@ -120,9 +120,7 @@ export function RouteError({
         </View>
       ) : null}
       <View className="flex-row flex-wrap items-center justify-center gap-2">
-        <Button variant="outline" size="sm" onPress={reset}>
-          Try again
-        </Button>
+        <Button variant="outline" size="sm" onPress={reset} content="Try again" />
         {actions}
       </View>
     </View>

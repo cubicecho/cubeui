@@ -79,7 +79,7 @@ export const Default: Story = {
             {...args}
             className="native-root"
             content={body}
-            footerActions={<NativeButton>Unlock</NativeButton>}
+            footerActions={<NativeButton content="Unlock" />}
           />
         </Frame>
       }
@@ -89,7 +89,7 @@ export const Default: Story = {
             {...args}
             className="compiled-root"
             content={body}
-            footerActions={<CompiledButton onClick={() => {}}>Unlock</CompiledButton>}
+            footerActions={<CompiledButton onClick={() => {}} content="Unlock" />}
           />
         </Frame>
       }

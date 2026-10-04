@@ -398,9 +398,7 @@ function CommandPalette() {
   const [search, setSearch] = useState("");
   return (
     <>
-      <Button variant="outline" onPress={() => setOpen(true)}>
-        Open command list
-      </Button>
+      <Button variant="outline" onPress={() => setOpen(true)} content="Open command list" />
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput value={search} onValueChange={setSearch} placeholder="Search actions…" />
         <CommandList>
@@ -421,7 +419,7 @@ function Overlays() {
     <Stack>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline">Open dialog</Button>
+          <Button variant="outline" content="Open dialog" />
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -432,7 +430,7 @@ function Overlays() {
       </Dialog>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline">Open alert dialog</Button>
+          <Button variant="outline" content="Open alert dialog" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -447,7 +445,7 @@ function Overlays() {
       </AlertDialog>
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline">Open popover</Button>
+          <Button variant="outline" content="Open popover" />
         </PopoverTrigger>
         <PopoverContent aria-label="Storage">
           <PopoverHeader>
@@ -458,7 +456,7 @@ function Overlays() {
       </Popover>
       <Menu>
         <MenuTrigger asChild>
-          <Button variant="outline">Open menu</Button>
+          <Button variant="outline" content="Open menu" />
         </MenuTrigger>
         <MenuContent aria-label="Project actions">
           <MenuItem label="Rename" icon={<Pencil />} onSelect={noop} />
@@ -469,7 +467,7 @@ function Overlays() {
       </Menu>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline">Long-press for a tooltip</Button>
+          <Button variant="outline" content="Long-press for a tooltip" />
         </TooltipTrigger>
         <TooltipContent>Saved a minute ago</TooltipContent>
       </Tooltip>
@@ -484,9 +482,7 @@ function ConfirmAndToastButtons() {
   const [open, setOpen] = useState(false);
   return (
     <Stack>
-      <Button variant="outline" onPress={() => setOpen(true)}>
-        Open confirm dialog
-      </Button>
+      <Button variant="outline" onPress={() => setOpen(true)} content="Open confirm dialog" />
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}
@@ -505,12 +501,13 @@ function ConfirmAndToastButtons() {
           });
           toast(ok ? "Teammate removed" : "Nothing changed", ok ? "success" : "error");
         }}
-      >
-        Ask, then toast the answer
-      </Button>
-      <Button variant="outline" onPress={() => toast("Changes saved", "success")}>
-        Show a toast
-      </Button>
+        content="Ask, then toast the answer"
+      />
+      <Button
+        variant="outline"
+        onPress={() => toast("Changes saved", "success")}
+        content="Show a toast"
+      />
     </Stack>
   );
 }
@@ -599,9 +596,7 @@ function RenameDialog() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="outline" onPress={() => setOpen(true)}>
-        Open form dialog
-      </Button>
+      <Button variant="outline" onPress={() => setOpen(true)} content="Open form dialog" />
       <FormDialog
         open={open}
         onOpenChange={setOpen}
@@ -610,7 +605,7 @@ function RenameDialog() {
       >
         <Input defaultValue="Quarterly review" aria-label="Project name" />
         <FormDialogFooter onCancel={() => setOpen(false)}>
-          <Button onPress={() => setOpen(false)}>Rename</Button>
+          <Button onPress={() => setOpen(false)} content="Rename" />
         </FormDialogFooter>
       </FormDialog>
     </>
@@ -682,39 +677,35 @@ const sections: GallerySection[] = [
     content: (
       <Stack>
         <Row>
-          <Button onPress={onButtonPress}>Save changes</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-          <Button variant="destructive">Delete</Button>
-          <Button variant="destructive-outline">Remove</Button>
-          <Button disabled>Disabled</Button>
+          <Button onPress={onButtonPress} content="Save changes" />
+          <Button variant="secondary" content="Secondary" />
+          <Button variant="outline" content="Outline" />
+          <Button variant="ghost" content="Ghost" />
+          <Button variant="link" content="Link" />
+          <Button variant="destructive" content="Delete" />
+          <Button variant="destructive-outline" content="Remove" />
+          <Button disabled content="Disabled" />
         </Row>
         <Row>
-          <Button size="xs">Extra small</Button>
-          <Button size="sm">Small</Button>
-          <Button size="default">Default</Button>
-          <Button size="lg">Large</Button>
+          <Button size="xs" content="Extra small" />
+          <Button size="sm" content="Small" />
+          <Button size="default" content="Default" />
+          <Button size="lg" content="Large" />
         </Row>
         <Row>
-          <Button size="icon-xs" variant="outline" aria-label="Add, extra small">
-            <Plus />
-          </Button>
-          <Button size="icon-sm" variant="outline" aria-label="Add, small">
-            <Plus />
-          </Button>
-          <Button size="icon" variant="outline" aria-label="Add">
-            <Plus />
-          </Button>
-          <Button size="icon-lg" variant="outline" aria-label="Add, large">
-            <Plus />
-          </Button>
+          <Button size="icon-xs" variant="outline" aria-label="Add, extra small" icon={<Plus />} />
+          <Button size="icon-sm" variant="outline" aria-label="Add, small" icon={<Plus />} />
+          <Button size="icon" variant="outline" aria-label="Add" icon={<Plus />} />
+          <Button size="icon-lg" variant="outline" aria-label="Add, large" icon={<Plus />} />
         </Row>
         <Row>
-          <ActionButton label="Download report" variant="outline" size="icon" onPress={noop}>
-            <Download />
-          </ActionButton>
+          <ActionButton
+            label="Download report"
+            variant="outline"
+            size="icon"
+            onPress={noop}
+            icon={<Download />}
+          />
           <ConfirmButton
             label="Delete project"
             variant="destructive-outline"
@@ -722,9 +713,8 @@ const sections: GallerySection[] = [
             description="Its tasks go with it."
             confirmLabel="Delete"
             onConfirm={noop}
-          >
-            Delete project
-          </ConfirmButton>
+            content="Delete project"
+          />
         </Row>
       </Stack>
     ),
@@ -861,7 +851,7 @@ const sections: GallerySection[] = [
             <Text className="text-card-foreground text-sm">Twelve open tasks, three overdue.</Text>
           </CardContent>
           <CardFooter>
-            <Button size="sm">Open</Button>
+            <Button size="sm" content="Open" />
           </CardFooter>
         </Card>
         <Card accentColor="#16a34a" accentLabel="Green">
@@ -903,9 +893,7 @@ const sections: GallerySection[] = [
               <ItemDescription>Edited yesterday</ItemDescription>
             </ItemContent>
             <ItemActions>
-              <Button size="sm" variant="outline">
-                Open
-              </Button>
+              <Button size="sm" variant="outline" content="Open" />
             </ItemActions>
           </Item>
           <ItemSeparator />
@@ -1027,7 +1015,7 @@ const sections: GallerySection[] = [
           level={3}
           title="Projects"
           description="Everything your team is working on."
-          action={<Button size="sm">New project</Button>}
+          action={<Button size="sm" content="New project" />}
         />
         <Separator />
         <DetailHeader
@@ -1104,7 +1092,7 @@ const sections: GallerySection[] = [
         <PageLayout
           title="Settings"
           description="For this workspace."
-          action={<Button size="sm">Save</Button>}
+          action={<Button size="sm" content="Save" />}
           footer={<Caption>Last saved a minute ago</Caption>}
           content={<Lines count={6} />}
         />
@@ -1145,7 +1133,7 @@ const sections: GallerySection[] = [
           header={<Text className="p-3 font-semibold text-foreground">Inbox</Text>}
           footer={
             <View className="p-3">
-              <Button>Compose</Button>
+              <Button content="Compose" />
             </View>
           }
           content={
@@ -1167,7 +1155,7 @@ const sections: GallerySection[] = [
           level={3}
           title="Team"
           description="Three members."
-          action={<Button size="sm">Invite</Button>}
+          action={<Button size="sm" content="Invite" />}
           content={<Lines count={2} />}
           footer={<Caption>Seats are billed monthly</Caption>}
         />
@@ -1177,7 +1165,7 @@ const sections: GallerySection[] = [
             title="Sign in"
             description="Use your work email."
             content={<Input placeholder="you@example.com" aria-label="Email" />}
-            footerActions={<Button>Continue</Button>}
+            footerActions={<Button content="Continue" />}
           />
         </Screen>
       </Stack>
@@ -1190,9 +1178,9 @@ const sections: GallerySection[] = [
       <DialogLayout
         title="Invite a teammate"
         description="They get an email with a link."
-        trigger={<Button variant="outline">Open dialog layout</Button>}
+        trigger={<Button variant="outline" content="Open dialog layout" />}
         content={<Input placeholder="name@example.com" aria-label="Teammate's email" />}
-        footerActions={(close) => <Button onPress={close}>Send invite</Button>}
+        footerActions={(close) => <Button onPress={close} content="Send invite" />}
       />
     ),
   },
@@ -1281,11 +1269,7 @@ const sections: GallerySection[] = [
               </Text>
             </>
           }
-          action={
-            <Button size="sm" variant="outline">
-              Sign out
-            </Button>
-          }
+          action={<Button size="sm" variant="outline" content="Sign out" />}
           content={
             <View className="p-3">
               <Lines count={5} />

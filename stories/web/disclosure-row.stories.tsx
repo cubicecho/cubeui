@@ -102,9 +102,13 @@ export const WithAnAction: Story = {
   args: {
     ...args,
     action: (
-      <Button variant="outline" size="icon" onClick={fn()} aria-label="Delete this run">
-        <Trash2 />
-      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={fn()}
+        aria-label="Delete this run"
+        icon={<Trash2 />}
+      />
     ),
   },
   render: (props) => <Controlled {...props} />,

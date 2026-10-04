@@ -189,10 +189,14 @@ export function QueryError({
         </View>
         <Text className="text-foreground/60 text-xs">{reason}</Text>
         <View className="flex-row">
-          <Button variant="outline" size="xs" onPress={retry} disabled={retrying}>
-            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-            {label}
-          </Button>
+          <Button
+            variant="outline"
+            size="xs"
+            onPress={retry}
+            disabled={retrying}
+            icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+            content={label}
+          />
         </View>
       </View>
     );
@@ -215,10 +219,14 @@ export function QueryError({
       </View>
       <Text className="text-foreground/60 text-sm">{reason}</Text>
       <View className="flex-row">
-        <Button variant="outline" size="sm" onPress={retry} disabled={retrying}>
-          <RefreshCw className="h-3.5 w-3.5" aria-hidden />
-          {label}
-        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onPress={retry}
+          disabled={retrying}
+          icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+          content={label}
+        />
       </View>
     </Card>
   );

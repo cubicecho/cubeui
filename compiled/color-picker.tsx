@@ -303,9 +303,13 @@ export function ColorPicker({
           className="flex-1 font-mono"
         />
         {clearable && current ? (
-          <Button variant="outline" size="sm" disabled={disabled} onClick={() => emit("")}>
-            {clearLabel}
-          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={disabled}
+            onClick={() => emit("")}
+            content={clearLabel}
+          />
         ) : null}
       </div>
     </div>

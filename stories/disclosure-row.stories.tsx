@@ -59,9 +59,7 @@ export const Default: Story = {
           DisclosureRow={Native}
           badge={<NativeBadge variant="secondary">done</NativeBadge>}
           action={(onPress) => (
-            <NativeButton size="sm" variant="outline" onPress={onPress}>
-              Delete
-            </NativeButton>
+            <NativeButton size="sm" variant="outline" onPress={onPress} content="Delete" />
           )}
           body={(text) => <Text className="text-foreground/60 text-sm">{text}</Text>}
         />
@@ -72,9 +70,7 @@ export const Default: Story = {
           badge={<CompiledBadge variant="secondary">done</CompiledBadge>}
           action={(onPress) => (
             // `onClick` on this half; see the note in `card.stories.tsx`.
-            <CompiledButton size="sm" variant="outline" onClick={onPress}>
-              Delete
-            </CompiledButton>
+            <CompiledButton size="sm" variant="outline" onClick={onPress} content="Delete" />
           )}
           body={(text) => <p className="text-foreground/60 text-sm">{text}</p>}
         />

@@ -67,9 +67,7 @@ export const Outline: Story = {
               <ItemDescription>Wrote the first published program.</ItemDescription>
             </ItemContent>
             <ItemActions>
-              <NativeButton size="sm" variant="outline" onPress={archiveNative}>
-                Archive
-              </NativeButton>
+              <NativeButton size="sm" variant="outline" onPress={archiveNative} content="Archive" />
             </ItemActions>
           </Item>
         </div>
@@ -85,9 +83,12 @@ export const Outline: Story = {
               <CompiledItemDescription>Wrote the first published program.</CompiledItemDescription>
             </CompiledItemContent>
             <CompiledItemActions>
-              <CompiledButton size="sm" variant="outline" onClick={archiveCompiled}>
-                Archive
-              </CompiledButton>
+              <CompiledButton
+                size="sm"
+                variant="outline"
+                onClick={archiveCompiled}
+                content="Archive"
+              />
             </CompiledItemActions>
           </CompiledItem>
         </div>

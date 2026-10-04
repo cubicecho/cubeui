@@ -18,19 +18,25 @@
  *
  * - `onClick` → `onPress`.
  * - Text colour cannot be inherited on native, so the variants split into
- *   container classes and text classes. Bare string children are wrapped in a
+ *   container classes and text classes. A string `content` is wrapped in a
  *   `<Text>` automatically; elements (icons) pass through untouched, and the
  *   container keeps its `text-*` class so web icons still inherit `currentColor`.
- * - `asChild` is radix's `Slot` on both platforms (see the prop below). On native
- *   the nesting usually inverts anyway — `<Link asChild><Button/></Link>` — because
- *   expo-router's `Link` has its own `asChild`.
+ * - There is no `asChild`. A button that navigates takes the link as `link` (see
+ *   the prop below).
+ *
+ * **It takes no `children`.** What is inside a button is an icon, a label and
+ * sometimes something at the far end, in that order, so those are the props:
+ * `icon`, `content`, `trailing`. That is what lets `loading` put a spinner where
+ * the icon was and swap the label without the caller rebuilding the inside, and
+ * it is the one place this file is *not* shadcn's: `<Button>Save</Button>` is
+ * `<Button content="Save" />` here.
  *
  * On device `type` means nothing — a Pressable is not a form control, so a submit
  * button calls the form's submit handler on press. The compiled web half is a real
- * `<button>` and takes the whole of `<button>`'s props — `type="submit"`, `onClick`,
- * `form`, `aria-*`, `data-*` — which is what makes it a drop-in for shadcn's. Its
- * sizes and variants are a superset of shadcn's too, `xs` and the `icon-*` ladder
- * included, so `buttonVariants({ variant: "ghost", size: "icon-sm" })` ports as is.
+ * `<button>` and takes the rest of `<button>`'s props — `type="submit"`, `onClick`,
+ * `form`, `aria-*`, `data-*`. Its sizes and variants are a superset of shadcn's,
+ * `xs` and the `icon-*` ladder included, so
+ * `buttonVariants({ variant: "ghost", size: "icon-sm" })` ports as is.
  */
 
 import { cva, type VariantProps } from "class-variance-authority";
@@ -38,6 +44,7 @@ import { Slot } from "radix-ui";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
+import { Spinner } from "./spinner";
 
 const buttonVariants = cva(
   "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
@@ -125,23 +132,46 @@ const buttonTextVariants = cva("font-medium", {
   defaultVariants: { variant: "default", size: "default" },
 });
 
-export type ButtonProps = Omit<React.ComponentPropsWithoutRef<"button">, "children" | "className"> &
+export type ButtonProps = Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  // `content` is also an HTML attribute (RDFa's), a string, which the compiled half would
+  // otherwise intersect with the label's type.
+  "children" | "className" | "content"
+> &
   VariantProps<typeof buttonVariants> & {
     // Re-declared rather than inherited: nativewind types it as
     // `className?: string`, which under `exactOptionalPropertyTypes` rejects the
     // conditional `cond ? 'x' : undefined` that call sites pass.
     className?: string | undefined;
     /**
-     * Render the single child with the button's look and behaviour instead of a
-     * `Pressable` around it.
-     *
-     * radix's `Slot` on both platforms, for the reason `ui/form.tsx` gives: it only
-     * clones its child with merged props, so there is no DOM in it and it works under
-     * React Native unchanged. Upstream shadcn components that wrap this Button — the
-     * `alert-dialog` action and cancel buttons — are written against it.
+     * The label. A string is drawn in the variant's ink; anything else is rendered as it is —
+     * a select's trigger passes the chosen value's own `<Text>`.
      */
-    asChild?: boolean | undefined;
-    children?: React.ReactNode;
+    content?: React.ReactNode;
+    /**
+     * Before the label, or alone in an `icon*` size — where the button needs an `aria-label`,
+     * which `ActionButton` makes a required prop.
+     */
+    icon?: React.ReactNode;
+    /** The far end, after the label: a trigger's chevron, a count. */
+    trailing?: React.ReactNode;
+    /**
+     * The link this button is, as an element with no children: `<a href="/docs" />`, a router's
+     * `<Link to="/docs" />`. It gets the button's look and press, and the icon and label are put
+     * inside it.
+     *
+     * On the web the element is drawn *as* the button — radix's `Slot`, which only clones it with
+     * the props merged in. On device a link is expo-router's, which takes the button the other
+     * way round: it is given `asChild` and wraps the `Pressable`.
+     */
+    link?: React.ReactElement | undefined;
+    /**
+     * Pressed, and the work is still running: disabled, `aria-busy`, and a spinner where the
+     * icon is — or before the label when there is none.
+     */
+    loading?: boolean | undefined;
+    /** The label while `loading`: "Saving…". Without one the label stays as it was. */
+    loadingLabel?: string | undefined;
   };
 
 /**
@@ -174,7 +204,25 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, disabled, asChild, children, onClick: onPress, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      disabled: isDisabled,
+      loading = false,
+      loadingLabel,
+      icon,
+      content,
+      trailing,
+      link,
+      onClick: onPress,
+      ...props
+    },
+    ref,
+  ) => {
+    // A button that is still working cannot be pressed again.
+    const disabled = isDisabled || loading;
     const styling = cn(
       buttonVariants({ variant, size, className }),
       // `disabled:` has no pseudo-class to hang off a Pressable on either
@@ -187,56 +235,64 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // inheritance and this is where the colour comes from.
     const labelClass = buttonTextVariants({ variant, size });
 
-    // Two returns rather than one variable element: `Slot.Root` is typed for the DOM
-    // and `Pressable` for a `View`, and a union of the two types nothing usefully —
-    // every prop below would have to satisfy both. Written out, each branch is checked
-    // against the element it actually renders.
-    if (asChild) {
-      return (
-        // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
-        // one child. Inside, the provider was the child: `Slot` merged the classes and
-        // the press onto it, it dropped them, and the caller's `<a>` or radix `Action`
-        // rendered unstyled (#156). No string wrapping here either — an `asChild` child
-        // is an element by definition, and wrapping it would hand `Slot` the wrong one.
-        <IconClassContext.Provider value={labelClass}>
-          {/* `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
-              for the DOM, but it renders nothing itself — it clones its child with these
-              props merged in. The element that receives them is the caller's, so the DOM
-              typing describes neither side, and the cast is the honest way to say so. */}
-          <Slot.Root
-            className={styling}
-            {...({
-              ...props,
-              onClick: onPress,
-              disabled,
-            } as unknown as React.HTMLAttributes<HTMLElement>)}
-            ref={ref as unknown as React.Ref<HTMLElement>}
-          >
-            {children}
-          </Slot.Root>
-        </IconClassContext.Provider>
+    const label = loading && loadingLabel !== undefined ? loadingLabel : content;
+    const leading = loading ? (
+      // Hidden: `aria-busy` is what says the button is working, and a spinner with a name of
+      // its own would be read into the button's — "Loading Save".
+      <div aria-hidden className="cube-rn-view">
+        <Spinner />
+      </div>
+    ) : (
+      icon
+    );
+    const labelled =
+      typeof label === "string" || typeof label === "number" ? (
+        <span className={cn("cube-rn-text", labelClass)}>{label}</span>
+      ) : (
+        label
       );
-    }
+    const busy = loading ? { "aria-busy": true } : {};
 
-    return (
+    const button = (
       <button
         type="button"
         ref={ref as React.Ref<HTMLButtonElement>}
         disabled={disabled}
         className={cn("cube-rn-view cube-rn-pressable", styling)}
+        {...(busy as React.ComponentPropsWithoutRef<"button">)}
         {...(props as React.ComponentPropsWithoutRef<"button">)}
         onClick={pressThenClick(onPress, (props as MergedClick).onClick)}
       >
         <IconClassContext.Provider value={labelClass}>
-          {React.Children.map(children, (child) =>
-            typeof child === "string" || typeof child === "number" ? (
-              <span className={cn("cube-rn-text", labelClass)}>{child}</span>
-            ) : (
-              child
-            ),
-          )}
+          {leading}
+          {labelled}
+          {trailing}
         </IconClassContext.Provider>
       </button>
+    );
+    if (!link) return button;
+    return (
+      // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
+      // one child. Inside, the provider was the child: `Slot` merged the classes and
+      // the press onto it, it dropped them, and the caller's `<a>` rendered unstyled (#156).
+      <IconClassContext.Provider value={labelClass}>
+        {/* `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
+            for the DOM, but it renders nothing itself — it clones its child with these
+            props merged in. The element that receives them is the caller's, so the DOM
+            typing describes neither side, and the cast is the honest way to say so. */}
+        <Slot.Root
+          className={styling}
+          {...({
+            ...props,
+            ...busy,
+            onClick: onPress,
+            disabled,
+          } as unknown as React.HTMLAttributes<HTMLElement>)}
+          ref={ref as unknown as React.Ref<HTMLElement>}
+        >
+          {React.cloneElement(link, undefined, leading, labelled, trailing)}
+        </Slot.Root>
+      </IconClassContext.Provider>
     );
   },
 );

@@ -25,7 +25,7 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actions={<Button variant="outline" size="sm" onPress={reload}>Reload</Button>}
+ *   actions={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
  * />
  * ```
  */
@@ -124,9 +124,7 @@ export function RouteError({
         </div>
       ) : null}
       <div className="cube-rn-view flex-row flex-wrap items-center justify-center gap-2">
-        <Button variant="outline" size="sm" onClick={reset}>
-          Try again
-        </Button>
+        <Button variant="outline" size="sm" onClick={reset} content="Try again" />
         {actions}
       </div>
     </div>
