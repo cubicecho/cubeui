@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { formatAgo, formatBytes, formatCount, formatDate, formatDuration } from "./format";
+import {
+  formatAgo,
+  formatBytes,
+  formatCount,
+  formatDate,
+  formatDuration,
+  joinStats,
+} from "./format";
 
 describe("formatBytes", () => {
   it("counts whole bytes below a kilobyte", () => {
@@ -34,6 +41,24 @@ describe("formatCount", () => {
   it("takes a plural that is not the noun with an s", () => {
     expect(formatCount(1, "entry", "entries")).toBe("1 entry");
     expect(formatCount(2, "entry", "entries")).toBe("2 entries");
+  });
+});
+
+describe("joinStats", () => {
+  it("joins the parts with a middle dot", () => {
+    expect(joinStats("1 file", "2 chunks", "human-only")).toBe("1 file · 2 chunks · human-only");
+  });
+
+  it("leaves out a part that is empty or not there", () => {
+    expect(joinStats("1 file", "", false, null, undefined, "human-only")).toBe(
+      "1 file · human-only",
+    );
+  });
+
+  it("is one part alone, or nothing, without a dot", () => {
+    expect(joinStats("1 file")).toBe("1 file");
+    expect(joinStats()).toBe("");
+    expect(joinStats(false, "")).toBe("");
   });
 });
 

@@ -41,6 +41,17 @@ export function formatCount(count: number, one?: string, many = `${one}s`): stri
 }
 
 /**
+ * The facts under a title as one line: `1 file · 2 chunks · human-only`.
+ *
+ * A part that is empty, `false`, `null` or `undefined` is left out, so a fact that only sometimes
+ * applies is written inline — `joinStats(formatCount(files, "file"), locked && "human-only")` —
+ * and no dot is left hanging where it would have been.
+ */
+export function joinStats(...parts: (string | false | null | undefined)[]): string {
+  return parts.filter(Boolean).join(" · ");
+}
+
+/**
  * A span of seconds at the grain a reader wants: `42s`, `5m`, `3h 12m`, `2d 4h`.
  *
  * Seconds and minutes stand alone; from an hour up the next unit down rides along, because

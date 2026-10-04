@@ -1030,10 +1030,15 @@ where an app would otherwise write its own `lib/format.ts`.
 | `formatDuration(11520)` | `3h 12m` — also `42s`, `5m`, `2d 4h`; it takes seconds |
 | `formatDate(note.updatedAt)` | `Oct 3, 2026`, in the reader's locale |
 | `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `just now` under a minute |
+| `joinStats(formatCount(1, "file"), formatCount(2, "chunk"), locked && "human-only")` | `1 file · 2 chunks · human-only` |
 
 `formatDate` and `formatAgo` take an ISO string, epoch milliseconds or a `Date`, and return an
 empty string for one that does not parse, so a missing timestamp draws nothing. `formatAgo` takes
 a second argument, the moment to count from, for a screen that ticks its own clock.
+
+`joinStats` is the line of facts under a title — an `Item`'s description, a card's subtitle. It
+leaves out a part that is `""`, `false`, `null` or `undefined`, so a fact that only sometimes
+applies is written inline with `&&`. Do not join them by hand with `" · "` and a `filter`.
 
 ## An icon in an input
 

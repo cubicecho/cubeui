@@ -70,7 +70,7 @@
       "name": "format",
       "type": "registry:lib",
       "title": "Format",
-      "description": "How a count, a size in bytes, a duration and a date are written for a reader: formatCount, formatBytes, formatDuration, formatDate and formatAgo, on Intl with no dependency.",
+      "description": "How a count, a size in bytes, a duration and a date are written for a reader, and how a row of them is joined: formatCount, formatBytes, formatDuration, formatDate, formatAgo and joinStats, on Intl with no dependency.",
       "files": [
         {
           "path": "registry/lib/format.ts",
