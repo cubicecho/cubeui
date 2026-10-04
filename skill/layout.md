@@ -675,6 +675,33 @@ const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
 - The wording is `DialogLayout`'s by default. `discardTitle`, `discardDescription`,
   `discardLabel` and `stayLabel` on `UnsavedChangesDialog` change it.
 
+### Saving with Cmd/Ctrl+S
+
+There is no registry item for this, on purpose: it is one listener, it exists only where there
+is a keyboard, and only one app has an editor page that needs it. A web app that does keeps the
+hook itself, beside the page that saves:
+
+```ts
+/** Runs `onSave` on Cmd/Ctrl+S while `enabled`, and always keeps the browser's own save away. */
+export function useSaveShortcut(onSave: () => void, enabled = true) {
+  const latest = useRef(onSave);
+  latest.current = onSave;
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "s") return;
+      event.preventDefault();
+      if (enabled) latest.current();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [enabled]);
+}
+```
+
+Pass it the same function the Save button calls and the same condition that enables the button,
+so the key and the button cannot disagree. The Save button stays on the page: the shortcut is a
+second way in, never the only one.
+
 ## Sections
 
 A heading over a group of fields or rows, inside a page or a card.

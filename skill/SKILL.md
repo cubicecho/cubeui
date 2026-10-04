@@ -345,7 +345,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A date, a date and time, or a date range, behind one trigger — see [controls.md](controls.md#date-and-date-range) | `DatePicker`, `DateRangePicker` | `@cubeui/date-picker` |
 | How much of something is done — an upload, a context window — see [controls.md](controls.md#progress) | `Progress` | `@cubeui/progress` |
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
-| A count, a file size, a duration, a date or "3 days ago" as text — see [controls.md](controls.md#numbers-sizes-and-dates-as-text) | `formatCount`, `formatBytes`, `formatDuration`, `formatDate`, `formatAgo` | `@cubeui/format` |
+| A count, a file size, a duration, a date or "3 days ago" as text, and a row of them joined with ` · ` — see [controls.md](controls.md#numbers-sizes-and-dates-as-text) | `formatCount`, `formatBytes`, `formatDuration`, `formatDate`, `formatAgo`, `joinStats` | `@cubeui/format` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leadingSlot`, `Input trailingSlot` | `@cubeui/input` |
 | A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#multi-select) | `MultiSelect` | `@cubeui/multi-select` |
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
