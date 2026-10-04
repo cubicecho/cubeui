@@ -40,7 +40,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
           onScroll={setPosition}
           content={
             half === "native" ? (
-              // In a view of their own: the slot is a block box on the web, where a `Text` is inline.
+              // In a view of their own, so the rows are one child of the slot whatever it is.
               <View>
                 {rows.map((row) => (
                   <Text key={row} className="px-4 py-2 text-foreground text-sm">
@@ -95,6 +95,57 @@ export const OnScroll: Story = {
 
       body.scrollTop = body.scrollHeight;
       await waitFor(() => expect(status).toHaveTextContent("At the end"));
+    }
+  },
+};
+
+/** A fixed row, then a pane that takes what is left, with `gap-4` on the slot between them. */
+function Filling({ half }: { half: "native" | "compiled" }) {
+  const Chassis = half === "native" ? Native : Compiled;
+  return (
+    <div style={{ height: 200 }} className="border">
+      <Chassis
+        className="h-full"
+        contentClassName="gap-4"
+        content={
+          half === "native" ? (
+            <>
+              <View testID="native-row" className="h-10 bg-muted" />
+              <View testID="native-pane" className="min-h-0 flex-1 bg-muted" />
+            </>
+          ) : (
+            <>
+              <div data-testid="compiled-row" className="h-10 bg-muted" />
+              <div data-testid="compiled-pane" className="min-h-0 flex-1 bg-muted" />
+            </>
+          )
+        }
+      />
+    </div>
+  );
+}
+
+/**
+ * A slot is a flex column on both halves (#241). `gap-4` on the body spaces its two children, and
+ * the `flex-1` one takes the rest of the height — with no `flex flex-col` beside the gap and no
+ * `h-full` in place of the `flex-1`, which is what the web half used to need.
+ */
+export const SlotIsAFlexColumn: Story = {
+  args: { content: null },
+  render: () => (
+    <SideBySide native={<Filling half="native" />} compiled={<Filling half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      const scope = within(canvasElement);
+      const row = scope.getByTestId(`${half}-row`).getBoundingClientRect();
+      const pane = scope.getByTestId(`${half}-pane`).getBoundingClientRect();
+      // `half` rides along so a failure names which half broke.
+      await expect({
+        half,
+        gap: Math.round(pane.top - row.bottom),
+        filled: pane.height > 100,
+      }).toEqual({ half, gap: 16, filled: true });
     }
   },
 };

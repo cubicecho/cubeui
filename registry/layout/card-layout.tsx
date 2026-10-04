@@ -73,12 +73,6 @@ export type CardLayoutProps = {
 /** Sized from outside on the web; see the file comment for the device. */
 const ICON = Platform.select({ web: "[&_svg]:size-4", default: undefined });
 
-/**
- * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
- * view would otherwise be a flex column and lay a sentence and its link out as two rows.
- */
-const SLOT = Platform.select({ web: "block", default: undefined });
-
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
 const BAR = cn("h-4 rounded-md bg-hover", Platform.OS === "web" && "animate-pulse");
 
@@ -217,9 +211,7 @@ export function CardLayout({
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? (
-        <CardContent className={cn(SLOT, "min-w-0", contentClassName)}>{body}</CardContent>
-      ) : null}
+      {body ? <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent> : null}
 
       {hasFooter ? (
         <CardFooter

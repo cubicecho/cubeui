@@ -42,9 +42,6 @@ const BAR_COLUMNS: Record<HeaderContentFooterWidth, string | undefined> = {
 const STICKY = Platform.select({ web: "sticky top-0 z-40", default: undefined });
 const SCROLL = Platform.select({ web: false, default: true });
 
-/** A wrapper around a caller's node stays a block box on the web; see `HeaderContentFooter`. */
-const SLOT = Platform.select({ web: "block", default: undefined });
-
 const NAV = "min-w-0 flex-1";
 const NAV_ROW = "flex-row items-center gap-1";
 
@@ -192,7 +189,7 @@ export function TopBarLayout({
         <View
           role="main"
           testID="top-bar-layout-content"
-          className={cn(SLOT, "min-w-0", contentClassName)}
+          className={cn("min-w-0", contentClassName)}
         >
           {content}
         </View>

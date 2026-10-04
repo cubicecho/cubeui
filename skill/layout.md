@@ -18,18 +18,19 @@ four things differ, and none of them changes a call site:
 - A string or number passed to a slot is wrapped in a `Text` for you, so a bare `"Save"` does not
   crash a `View`. A node you build yourself still needs its own `Text`.
 
-**A slot is a block box on the web and a flex column on a device.** A slot wraps whatever you
-hand it, and on the web a sentence and its link have to stay on one line, so the body slots of
-`CardLayout`, `HeaderContentFooter` (and so `PageLayout`), `SplitLayout`, `SidebarLayout` and
-`TopBarLayout` are `display: block` there, in an Expo app's web build as well as a DOM app. On a
-device there is no other box than a flex column. Two classes fail on the web without a warning
-because of it:
+**A slot is a flex column, on the web and on a device.** The body slots of `CardLayout`,
+`HeaderContentFooter` (and so `PageLayout`), `SplitLayout`, `SidebarLayout` and `TopBarLayout`
+lay their children out the same way on both halves, so one class list is right for both:
 
-- **`gap-*` on a slot does nothing by itself.** Say what the slot is as well:
-  `contentClassName="flex flex-col gap-4"`. That is right on both halves.
-- **A child with `flex-1` has no height in a block slot.** A node that fills its pane is `h-full`
-  on the web and `flex-1` on a device; in a file both read, that is
-  `Platform.select({ web: "h-full", default: "flex-1" })`, with `min-h-0 min-w-0` beside it.
+- **`gap-*` on a slot spaces its children**: `contentClassName="gap-4"`, with no `flex flex-col`
+  beside it.
+- **A child with `flex-1` fills its slot.** Give it `min-h-0 min-w-0` so it can also shrink. No
+  `Platform.select` is needed for it.
+- **A child is as wide as the slot.** A button handed straight to a slot stretches; wrap it in a
+  row, or give it `self-start`, to keep it at its own width.
+- **Text and a link beside it go in one paragraph.** Two inline nodes handed to a slot as
+  siblings stack, as they do on a device; a `<p>` (a `Text` on a device) around them keeps them
+  on a line.
 
 ## Pages
 

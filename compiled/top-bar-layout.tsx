@@ -51,9 +51,6 @@ const BAR_COLUMNS: Record<HeaderContentFooterWidth, string | undefined> = {
 const STICKY = "sticky top-0 z-40";
 const SCROLL = false;
 
-/** A wrapper around a caller's node stays a block box on the web; see `HeaderContentFooter`. */
-const SLOT = "block";
-
 const NAV = "min-w-0 flex-1";
 const NAV_ROW = "flex-row items-center gap-1";
 
@@ -194,7 +191,7 @@ export function TopBarLayout({
       content={
         <main
           data-slot="top-bar-layout-content"
-          className={cn("cube-rn-view", SLOT, "min-w-0", contentClassName)}
+          className={cn("cube-rn-view", "min-w-0", contentClassName)}
         >
           {content}
         </main>

@@ -41,16 +41,6 @@ import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./head
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 /**
- * A chassis slot laid out as a column with gaps between what it holds.
- *
- * The chassis keeps its slots the block boxes a web caller expects (`SLOT` there), which is right
- * for a page header and wrong here: a sidebar's header is a brand and a button stacked, and its
- * footer a column of rows, so both want the gap a flex column gives. On device every view is
- * already one.
- */
-const STACK = "flex flex-col";
-
-/**
  * Hidden under the breakpoint, shown from it up. `flex` is what the root is on both platforms: a
  * compiled view is a flex column by its reset, and every view on device is one already.
  *
@@ -164,9 +154,9 @@ export function Sidebar({
         // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
         // height, and a percentage height would overflow it by the border's width.
         className="min-h-0 flex-1"
-        headerClassName={cn(STACK, "gap-2 p-3", headerClassName)}
-        contentClassName={cn(STACK, "gap-4 p-2", contentClassName)}
-        footerClassName={cn(STACK, "gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
+        headerClassName={cn("gap-2 p-3", headerClassName)}
+        contentClassName={cn("gap-4 p-2", contentClassName)}
+        footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
       />
     </aside>
   );

@@ -18,6 +18,10 @@
  * `ScrollView`. The two are written out as a `Platform.OS` branch in {@link Body}, which the
  * compiler folds — the `ScrollView` never reaches the compiled file.
  *
+ * Every slot is a flex column on both platforms, because on device there is no other box: a
+ * caller's `gap-4` on a slot, and a child's `flex-1`, mean the same thing in a browser as on a
+ * phone. A slot that was a block box on the web let both fail there without a word.
+ *
  * Built to be composed: every slot is a node and every part carries a `testID` (`data-slot` on the
  * web), so a shell built on it — `PageLayout`, `DialogLayout`, an app's sidebar — styles a part by
  * its class prop rather than by reaching into the tree.
@@ -128,16 +132,6 @@ type BodyProps = {
 };
 
 /**
- * How a slot lays out what it was handed.
- *
- * A compiled view is a flex column (`cube-rn-reset.css`), which is what React Native does and what
- * a web caller who passed a sentence and a link does not expect: each would become its own row.
- * The slots are wrappers around a caller's nodes, not layout of their own, so on the web they stay
- * the block boxes they always were. On device there is no other kind of box.
- */
-const SLOT = "block";
-
-/**
  * The floor every body needs, whichever element it is. See {@link HeaderContentFooter}.
  *
  * The growth differs. On the web `flex-1` is `1 1 0%`, which in a chassis of no set height — a
@@ -177,7 +171,7 @@ function Body({ content, scroll, column, contentRef, onScroll, className }: Body
               }),
           }
         : {})}
-      className={cn("cube-rn-view", SLOT, BODY, scroll && "overflow-y-auto", column, className)}
+      className={cn("cube-rn-view", BODY, scroll && "overflow-y-auto", column, className)}
     >
       {content}
     </div>
@@ -225,7 +219,7 @@ export function HeaderContentFooter({
       {header ? (
         <div
           data-slot="header-content-footer-header"
-          className={cn("cube-rn-view", SLOT, "min-w-0 shrink-0", column, headerClassName)}
+          className={cn("cube-rn-view", "min-w-0 shrink-0", column, headerClassName)}
         >
           {header}
         </div>
@@ -243,7 +237,7 @@ export function HeaderContentFooter({
       {footer ? (
         <div
           data-slot="header-content-footer-footer"
-          className={cn("cube-rn-view", SLOT, "min-w-0 shrink-0", bodyColumn, footerClassName)}
+          className={cn("cube-rn-view", "min-w-0 shrink-0", bodyColumn, footerClassName)}
         >
           {footer}
         </div>
