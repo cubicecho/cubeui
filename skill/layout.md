@@ -512,6 +512,9 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
+The title is `text-base` on both halves, never larger than the page's own title.
+`titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
+
 The header `action` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under

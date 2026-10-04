@@ -89,7 +89,9 @@ type CardTitleProps = TextProps & {
   level?: 1 | 2 | 3 | undefined;
 };
 
-const CARD_TITLE = "text-2xl font-semibold leading-none tracking-tight text-foreground";
+// shadcn's current card: the page's own text size, so a card under a page header never has a
+// bigger title than the page does (#249).
+const CARD_TITLE = "text-base font-semibold leading-none text-foreground";
 
 // One arm per level because the compiler emits `<h1>`–`<h3>` from a *literal* `aria-level`; a level
 // held in a variable would be a tag chosen at runtime, which it refuses (see `page-header.tsx`).

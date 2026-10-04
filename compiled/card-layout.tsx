@@ -66,6 +66,8 @@ export type CardLayoutProps = {
   footerActions?: ReactNode | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
+  /** On the title itself: its size, a `line-through`. */
+  titleClassName?: string | undefined;
   contentClassName?: string | undefined;
   footerClassName?: string | undefined;
 };
@@ -169,6 +171,7 @@ export function CardLayout({
   footerActions,
   className,
   headerClassName,
+  titleClassName,
   contentClassName,
   footerClassName,
 }: CardLayoutProps) {
@@ -202,7 +205,10 @@ export function CardLayout({
                       `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts
                       the ascenders and descenders off it. The negative margin gives the space
                       back, so the header keeps the height shadcn drew it at. */}
-                  <CardTitle level={level} className="-my-1 min-w-0 shrink truncate py-1">
+                  <CardTitle
+                    level={level}
+                    className={cn("-my-1 min-w-0 shrink truncate py-1", titleClassName)}
+                  >
                     {title}
                   </CardTitle>
                 </div>

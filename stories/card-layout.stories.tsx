@@ -35,7 +35,7 @@ function render(props: { level?: 1 | 2 | 3 }) {
 }
 
 /**
- * The two titles, native first — after checking both are drawn at `CardTitle`'s own `text-2xl`,
+ * The two titles, native first — after checking both are drawn at `CardTitle`'s own `text-base`,
  * whatever the rank. The rank says where the card sits, not how big its title looks.
  */
 async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
@@ -46,7 +46,7 @@ async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
   }
   for (const title of [native, compiled]) {
     const style = getComputedStyle(title);
-    await expect(style.fontSize).toBe("24px");
+    await expect(style.fontSize).toBe("16px");
     await expect(style.fontWeight).toBe("600");
   }
   return { native, compiled };
@@ -83,6 +83,24 @@ export const Level: Story = {
   play: async ({ canvasElement }) => {
     const { compiled } = await titles(canvasElement, 2);
     await expect(compiled.tagName).toBe("H2");
+  },
+};
+
+/** `titleClassName` reaches the title on both halves, and wins over the card's own size (#249). */
+export const TitleClassName: Story = {
+  args: { ...args, titleClassName: "text-lg" },
+  render: () => (
+    <SideBySide
+      native={<Native {...args} titleClassName="text-lg" />}
+      compiled={<Compiled {...args} titleClassName="text-lg" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const headings = within(canvasElement).getAllByRole("heading", { level: 3, name: "Sign in" });
+    await expect(headings).toHaveLength(2);
+    for (const title of headings) {
+      await expect(getComputedStyle(title).fontSize).toBe("18px");
+    }
   },
 };
 
@@ -279,7 +297,7 @@ export const SmallActionStaysInCorner: Story = {
         }).toEqual({ half, form, fromTop: 25, fromEnd: 25 });
         // Beside a title and a description the button is the shorter of the two, so being in
         // the flow costs the header nothing: the card is as tall as it was.
-        if (form === "described") await expect(Math.round(box.height)).toBe(100);
+        if (form === "described") await expect(Math.round(box.height)).toBe(92);
       }
     }
   },
