@@ -28,26 +28,61 @@
  * `""`; a bound field passes one either way.)
  */
 
-import type { ComponentPropsWithRef } from "react";
+import type { ComponentPropsWithoutRef, KeyboardEventHandler, Ref } from "react";
 import {
+  isSubmitKey,
   type TextareaProps as SharedTextareaProps,
   TEXTAREA_CLASS,
+  type TextareaHandle,
+  type TextareaKeyPressEvent,
+  type TextareaKeyPressHandler,
 } from "@/components/ui/textarea-base";
 import { cn } from "@/lib/utils";
 
-/** The shared contract, widened to everything a DOM `<textarea>` takes. */
-export type TextareaProps = Omit<ComponentPropsWithRef<"textarea">, "className"> &
-  Omit<SharedTextareaProps, "onBlur" | "value"> & {
-    value?: ComponentPropsWithRef<"textarea">["value"];
+/**
+ * The shared contract, widened to everything a DOM `<textarea>` takes. `onKeyPress` hands over
+ * the React keyboard event, which is a shared handler's `{ nativeEvent: { key } }` and a shadcn
+ * call site's `e.key` at once, and the ref is the element, which is a `TextareaHandle` too.
+ */
+export type TextareaProps = Omit<ComponentPropsWithoutRef<"textarea">, "className" | "onKeyPress"> &
+  Omit<SharedTextareaProps, "onBlur" | "value" | "onKeyPress" | "ref"> & {
+    value?: ComponentPropsWithoutRef<"textarea">["value"];
+    onKeyPress?: KeyboardEventHandler<HTMLTextAreaElement> | undefined;
+    ref?: Ref<HTMLTextAreaElement> | Ref<TextareaHandle> | undefined;
   };
 
-function Textarea({ onChange, onChangeText, className, ...props }: TextareaProps) {
+function Textarea({
+  onChange,
+  onChangeText,
+  onKeyDown,
+  onKeyPress,
+  onSubmitEditing,
+  onEscape,
+  className,
+  ref,
+  ...props
+}: TextareaProps) {
   return (
     <textarea
+      // The element is the handle: it has `focus`, which is all `TextareaHandle` asks.
+      ref={ref as Ref<HTMLTextAreaElement>}
       data-slot="textarea"
       onChange={(e) => {
         onChange?.(e);
         onChangeText?.(e.target.value);
+      }}
+      onKeyDown={(e) => {
+        onKeyDown?.(e);
+        // `keydown`, not the DOM's `keypress`, which never fires for Escape. As `Input` does.
+        onKeyPress?.(e);
+        if (e.defaultPrevented) return;
+        if (onSubmitEditing && isSubmitKey(e.nativeEvent)) {
+          // Held back, or the Enter that sent the message would also add a line to the next.
+          e.preventDefault();
+          onSubmitEditing();
+        } else if (e.key === "Escape") {
+          onEscape?.();
+        }
       }}
       {...props}
       className={cn(
@@ -62,4 +97,5 @@ function Textarea({ onChange, onChangeText, className, ...props }: TextareaProps
   );
 }
 
+export type { TextareaHandle, TextareaKeyPressEvent, TextareaKeyPressHandler };
 export { Textarea };

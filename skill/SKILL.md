@@ -386,7 +386,10 @@ take the props the web ones take, with four conversions that are the same everyw
   needs: `onEscape={() => { setDraft(""); setAdding(false); }}`.
   For any other key, `onKeyPress` is React Native's, reading `e.nativeEvent.key`; the web half
   fires it from `keydown`, so it hears Escape and the arrows too. Do not drop to a raw
-  `TextInput` for a key. (`Textarea` has none of these yet.)
+  `TextInput` for a key. `Textarea` takes the same three, with one difference: its
+  `onSubmitEditing` is Enter **without Shift**, since Shift+Enter is a new line, and only on the
+  web. On a device the return key adds a line and a send button is the way out. A `ref` on either
+  gives `focus()`, for putting the caret back after a send.
 - **No `asChild` on `Button`.** It exists for handing a button's look to a link, and the routers
   that need it have their own, so the nesting inverts: `<Link asChild><Button /></Link>`.
 

@@ -10,12 +10,62 @@
  * `input-base.ts` holds, so a bound field looks identical whichever it wraps.
  */
 
+import type { Ref } from "react";
+
+/**
+ * What a caller may do to the box imperatively: put the caret back after a send. On the web the
+ * ref is the `<textarea>` itself, which has `focus`, as `InputHandle` is the `<input>` there.
+ */
+export type TextareaHandle = { focus: () => void };
+
+/**
+ * What `onKeyPress` hands over, as on `Input`: the key, as `nativeEvent.key`. The other two are
+ * what Enter-to-send reads, and only a keyboard with a Shift to hold reports them, so they are
+ * there on the web and absent on a device. Declared here and not taken from `input-base.ts`, so
+ * this item installs without that one.
+ */
+export type TextareaKeyPressEvent = {
+  nativeEvent: {
+    key: string;
+    shiftKey?: boolean | undefined;
+    isComposing?: boolean | undefined;
+  };
+};
+
+/** A handler of that event, as a method so a narrower native handler is still accepted. */
+export type TextareaKeyPressHandler = {
+  bivarianceHack(event: TextareaKeyPressEvent): void;
+}["bivarianceHack"];
+
+/**
+ * Whether a key sends. Enter alone: Shift+Enter is a new line, and an Enter that only accepts
+ * an input method's suggestion is still someone part-way through a word.
+ */
+export function isSubmitKey({
+  key,
+  shiftKey,
+  isComposing,
+}: TextareaKeyPressEvent["nativeEvent"]): boolean {
+  return key === "Enter" && !shiftKey && !isComposing;
+}
+
 export type TextareaProps = {
   value?: string | undefined;
   /** Uncontrolled: where the text starts, when nothing above is holding `value`. */
   defaultValue?: string | undefined;
   onChangeText?: ((text: string) => void) | undefined;
   onBlur?: (() => void) | undefined;
+  /**
+   * Enter without Shift, which is what sends a chat message; Shift+Enter is still a new line.
+   * Where there is a Shift to hold, that is: the web, an Expo app's web build included. On a
+   * device the return key adds a line, as it does in every messaging app, and a send button is
+   * the way out.
+   */
+  onSubmitEditing?: (() => void) | undefined;
+  /** Every key as it goes down, as on `Input`. */
+  onKeyPress?: TextareaKeyPressHandler | undefined;
+  /** Escape, after any `onKeyPress`. A soft keyboard has no such key. */
+  onEscape?: (() => void) | undefined;
   placeholder?: string | undefined;
   /** Visible lines; the box grows no further and scrolls instead. */
   rows?: number | undefined;
@@ -24,6 +74,7 @@ export type TextareaProps = {
   className?: string | undefined;
   /** Web only: ties the control to its `<label>`. */
   id?: string | undefined;
+  ref?: Ref<TextareaHandle> | undefined;
 };
 
 /**
