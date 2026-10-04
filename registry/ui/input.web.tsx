@@ -51,11 +51,12 @@ import { cn } from "@/lib/utils";
  * still one, and a `string` is still a `string | number | readonly string[]` — and `type` is every
  * DOM input type, of which `InputType` is the cross-platform part. `onKeyPress` hands over the
  * React keyboard event, which is a shared handler's `{ nativeEvent: { key } }` and a shadcn call
- * site's `e.key` at once.
+ * site's `e.key` at once. `autoCapitalize` keeps the DOM's wider set, and `autoCorrect` is the
+ * shared boolean or the DOM's `"on"` / `"off"`.
  */
 export type InputProps = Omit<
   ComponentPropsWithoutRef<"input">,
-  "type" | "className" | "onKeyPress"
+  "type" | "className" | "onKeyPress" | "autoCorrect"
 > &
   Omit<
     SharedInputProps,
@@ -70,7 +71,10 @@ export type InputProps = Omit<
     | "onKeyPress"
     | "aria-describedby"
     | "aria-invalid"
+    | "autoCapitalize"
+    | "autoCorrect"
   > & {
+    autoCorrect?: boolean | "on" | "off" | undefined;
     type?: HTMLInputTypeAttribute | undefined;
     ref?: Ref<HTMLInputElement> | Ref<InputHandle> | undefined;
     onKeyPress?: KeyboardEventHandler<HTMLInputElement> | undefined;
@@ -85,18 +89,27 @@ function Input({
   onKeyPress,
   onSubmitEditing,
   onEscape,
+  autoCorrect,
+  spellCheck,
   leading,
   trailing,
   wrapperClassName,
   ref,
   ...props
 }: InputProps) {
+  const corrects = typeof autoCorrect === "string" ? autoCorrect === "on" : autoCorrect;
+  const autoCorrectWord = { true: "on", false: "off" } as const;
+
   const field = (
     <input
       // The element is the handle: it has `focus` and `select`, which is all `InputHandle` asks.
       ref={ref as Ref<HTMLInputElement>}
       data-slot="input"
       type={type}
+      // The DOM attribute is a word, not a boolean. Safari is the browser that reads it; the
+      // others only have the spelling underline, so that follows it, as react-native-web's does.
+      autoCorrect={corrects === undefined ? undefined : autoCorrectWord[`${corrects}`]}
+      spellCheck={spellCheck ?? corrects}
       onChange={(e) => {
         onChange?.(e);
         onChangeText?.(e.target.value);

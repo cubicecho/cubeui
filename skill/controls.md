@@ -931,6 +931,18 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
   the field, as before.
 - A search box is not this: it is `SearchInput`, below, which is this plus the name and the ✕.
 
+## An identifier in an input
+
+```tsx
+<Input value={model} onChangeText={setModel} autoCapitalize="none" autoCorrect={false} />
+```
+
+A URL, a model id, a server id or a shell command is typed as written, and a phone's keyboard
+capitalises the first letter and "corrects" the rest unless told not to. `inputMode="url"` raises
+the right keyboard and switches neither off. `autoCapitalize` is `none`, `sentences`, `words` or
+`characters`; `autoCorrect` is a boolean, and on the web it takes the spelling underline with it.
+`InputField` passes both through.
+
 ## Search
 
 A box that filters or searches is `SearchInput`, on both halves. Do not build it from `Input

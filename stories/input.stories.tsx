@@ -71,6 +71,31 @@ export const Keys: Story = {
   },
 };
 
+/**
+ * `autoCapitalize` and `autoCorrect` (#244), on both halves: what a phone's keyboard is told about
+ * a field holding an identifier. The DOM spells correction as a word and has the spelling
+ * underline beside it, so both follow the one prop.
+ */
+export const TypedAsWritten: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native aria-label="Native model id" autoCapitalize="none" autoCorrect={false} />}
+      compiled={
+        <Compiled aria-label="Compiled model id" autoCapitalize="none" autoCorrect={false} />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native model id", "Compiled model id"]) {
+      const input = canvas.getByRole("textbox", { name });
+      await expect(input).toHaveAttribute("autocapitalize", "none");
+      await expect(input).toHaveAttribute("autocorrect", "off");
+      await expect(input).toHaveAttribute("spellcheck", "false");
+    }
+  },
+};
+
 const onClear = fn();
 
 /**

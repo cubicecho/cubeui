@@ -105,6 +105,17 @@ export type InputProps = {
    * is what gets a phone keypad, and a number field wants both.
    */
   inputMode?: "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url" | undefined;
+  /**
+   * What the keyboard capitalises by itself. `none` for what is typed as written: a URL, a model
+   * id, a shell command. Left out, the platform decides, which on a phone is `sentences`.
+   */
+  autoCapitalize?: "none" | "sentences" | "words" | "characters" | undefined;
+  /**
+   * Whether the keyboard rewrites what was typed. Off for an identifier, which it would "correct"
+   * into a word. On the web it also switches the spelling underline, unless `spellCheck` says
+   * otherwise there.
+   */
+  autoCorrect?: boolean | undefined;
   maxLength?: number | undefined;
   /** Web only; the native keyboard has no equivalent constraint. */
   min?: number | undefined;
