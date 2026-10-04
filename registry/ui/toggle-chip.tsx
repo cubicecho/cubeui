@@ -84,7 +84,7 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         // here. Without this line a selected chip holding markup drew
         // `text-foreground` on `bg-neutral`, which is near-black on near-black.
         selected && !backgroundColor ? "text-active-foreground" : "text-foreground",
-        disabled && "opacity-60",
+        disabled && "opacity-50",
         className,
       )}
       {...(backgroundColor ? { style: { backgroundColor } } : {})}

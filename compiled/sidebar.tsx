@@ -474,8 +474,8 @@ function SidebarNavItemBody({ label, iconSlot, count, status, active }: SidebarN
 
 /**
  * One row of a sidebar: a link with an optional icon, a label that truncates, an optional
- * `status` and an optional count. The current page is filled with `selection`, as every chosen
- * control is; hover fills it from `sidebar-accent`.
+ * `status` and an optional count. The current page is filled with `active`, as every chosen
+ * control is; hover fills it with `hover`.
  *
  * Wrap it in the router's own link rather than passing a router to it:
  *
@@ -605,7 +605,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
  * Every app drew this by hand, as a router link with a class string, and the copies drifted on the
  * three things that matter. **The name**: an icon-only link has none unless it is given one, so
  * `label` is required, and it is also the tooltip, since the icon is all a sighted user has. **The
- * current one**: filled with `selection` and `aria-current="page"`, where the copies used the grey
+ * current one**: filled with `active` and `aria-current="page"`, where the copies used the grey
  * that means hover. **The count**: a row's count had nowhere to go on the bar, so the bar dropped
  * it — here it is a badge on the icon, a `status` is a dot, and both are in the name the way the
  * row builds it: "Skills, MCP on, 12".

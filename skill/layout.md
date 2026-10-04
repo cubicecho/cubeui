@@ -348,8 +348,8 @@ that replaces the rail on a phone — see below):
   type error.
 - **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
   line, truncated), `iconSlot?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
-  the web — and `active` fills it with `selection` and sets `aria-current="page"`. Hover fills it
-  from `sidebar-accent`, so the current page never looks like the row under the pointer. **`status={{ label, iconSlot? }}` marks the row's state** — "MCP on", "offline",
+  the web — and `active` fills it with `active` and sets `aria-current="page"`. Hover fills it
+  with `hover`, so the current page never looks like the row under the pointer. **`status={{ label, iconSlot? }}` marks the row's state** — "MCP on", "offline",
   "draft" — before the count, and the row is named "Work, MCP on, 2": clipped text inside the row
   on the web, part of its `accessibilityLabel` on device. With an `iconSlot` the icon is what is seen
   and is decorative; without one the label is drawn, small and muted. Do not put a status in the
@@ -418,7 +418,7 @@ is the copy this replaces.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
   (hover or focus on the web, a long press on device). **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
-- **`active`** fills it with `selection` and sets `aria-current="page"`; hover is grey. Compute it
+- **`active`** fills it with the `active` colour and sets `aria-current="page"`; hover is grey. Compute it
   from the route, as for the row.
 - **`count`** is a small badge on the icon's corner and **`status={{ label }}`** a dot on the other;
   both are in the name the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
@@ -935,7 +935,7 @@ import { formatCount, formatDuration } from "@/lib/format";
   under it. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
   toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
-  a `selection` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
+  an `active` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.

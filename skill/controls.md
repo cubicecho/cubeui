@@ -1361,12 +1361,12 @@ says.
   nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
-- **A checked, pressed or current control is drawn in `selection`**, not `primary`: a quiet cyan in the
+- **A checked, pressed or current control is drawn in `active`**, not `primary`: a quiet cyan in the
   default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
   `bg-active` and `text-active-foreground` too, so it follows the palette; `primary` stays
-  the colour of a button to press. The active tab and the sidebar's current row are `selection`
-  too. Hover is grey and never `selection`: `hover:bg-hover` on a control, `hover:bg-hover` on a
-  row with muted text in it. A chosen card is ringed with `border-active`, not filled.
+  the colour of a button to press. The active tab and the sidebar's current row are `active`
+  too. Hover is grey and never `active`. The whole rule, state by state, is in
+  [Hover, focus, chosen and disabled](#hover-focus-chosen-and-disabled).
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 
@@ -1399,6 +1399,35 @@ import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
 ```
+
+## Hover, focus, chosen and disabled
+
+Every control in the registry draws its states from the same few classes. A row, a card or a
+control you compose yourself uses them too, so it does not sit beside a registry one and give a
+second answer.
+
+| State | Draw it with | Notes |
+|---|---|---|
+| Under the pointer | `hover:bg-hover` | Grey, on every control and row. A filled button darkens its own fill instead: `hover:bg-neutral/90`. |
+| Keyboard focus | the hover look: `focus-visible:bg-hover` | No ring. A row whose focus is on a child uses `has-[:focus-visible]:bg-hover`. A chosen control that is focused is `focus-visible:bg-active/90`. |
+| Focus in a field | `focus:border-active` | Input, textarea, select trigger. No ring here either. |
+| Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A `ListItem` dims instead, `active:opacity-70`. |
+| Chosen, the one of its group | `bg-active text-active-foreground` | The current sidebar row, the active tab, the pressed segment, a checked box, an on switch, an on chip. |
+| Chosen, a row among many | `bg-active/40` | A table row, a `ListItem` or `Item` with `selected`, the option a select is on. A tint, because the row's own text and badges still have to read. |
+| Chosen, a card | `border-active` | A `StatTile` or radio card with `selected`. The fill stays the card's. |
+| Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. It takes no hover. |
+
+- **Chosen never uses the hover grey, and hover never uses `active`.** A grey chosen row is a
+  hover that stuck. A chosen row keeps its tint under the pointer:
+  `selected && "hover:bg-active/40"`.
+- **The colour is not the whole of chosen.** Say it as well: `aria-current="page"` on the link to
+  the current place, `aria-selected` on an option in a listbox or a tab, `aria-pressed` on a
+  toggle, `aria-checked` on a box or a switch. `ListItem`, `SidebarNavItem`, `Tabs`,
+  `SegmentedGroup` and `ToggleChip` set theirs. On `Item` the link is yours, so `aria-current`
+  goes on it yourself.
+- **Use the prop before the class.** `selected` on `Item`, `ListItem`, `ToggleChip` and
+  `StatTile`, `active` on `SidebarNavItem` and `BarNavItem`, `data-state="selected"` on a
+  `TableRow`. The classes above are for a row that is none of those.
 
 ## File picker
 
