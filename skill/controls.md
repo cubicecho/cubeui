@@ -966,6 +966,14 @@ leading={<Search />}`, and never from a `relative` div, an absolute glyph and a 
   both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
   the user had cleared the box. Controlled or not, it clears.
 - `className` is on the field; size the box with `wrapperClassName`.
+- **A search that asks a server takes `onSettledText`,** not a `useDebounced` beside the box. It
+  is called once typing has paused for `debounce` milliseconds (250 by default), and at once on
+  Enter or when the box is emptied. `onChangeText` still hears every key, so hold the box's text
+  with that and the query with this:
+
+  ```tsx
+  <SearchInput value={text} onChangeText={setText} onSettledText={setQuery} />
+  ```
 
 ### Filter bar
 
