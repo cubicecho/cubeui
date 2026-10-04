@@ -5,11 +5,11 @@ import { ActionButton } from "@/components/action-button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const meta = {
-  title: "Control/ActionButton",
+  title: "Controls/ActionButton",
   component: ActionButton,
   args: {
     label: "Edit workspace",
-    variant: "ghost",
+    variant: "outline",
     size: "icon",
     children: <Pencil />,
     onClick: fn(),
@@ -80,7 +80,7 @@ export const HintReplacesTheLabelInTheTooltip: Story = {
  * assumption being absent.
  */
 export const WorksWithNoProviderAbove: Story = {
-  args: { label: "Delete workspace", variant: "ghost", size: "icon", children: <Trash2 /> },
+  args: { label: "Delete workspace", variant: "outline", size: "icon", children: <Trash2 /> },
   play: async ({ canvas }) => {
     const button = canvas.getByRole("button", { name: "Delete workspace" });
     await userEvent.hover(button);

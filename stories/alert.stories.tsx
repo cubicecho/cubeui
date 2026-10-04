@@ -23,7 +23,7 @@ import { SideBySide } from "./side-by-side";
  * the variant's hue, and that the default glyph is the variant's, sized and coloured without the
  * caller's help. The contrast itself is the axe run every story gets.
  */
-const meta = { title: "Stage 0/Alert" } satisfies Meta;
+const meta = { title: "RN Parity/Alert" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -131,6 +131,8 @@ export const Default: Story = {
     );
     await expect(getComputedStyle(nativeWarning).stroke).not.toBe(foreground);
     for (const svg of glyph("No icon, just the line.")) await expect(svg).toBeNull();
+    // `info` is a colour and not a kind of message, so it draws no glyph of its own.
+    for (const svg of glyph("Re-embedding")) await expect(svg).toBeNull();
   },
 };
 

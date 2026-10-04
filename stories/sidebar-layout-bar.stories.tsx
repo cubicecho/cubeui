@@ -48,7 +48,7 @@ import {
  * beside each other under the breakpoint that draws them.
  */
 const meta = {
-  title: "Stage 0/SidebarLayout bar",
+  title: "RN Parity/SidebarLayout bar",
   parameters: { layout: "fullscreen" },
   globals: { viewport: { value: "mobile2", isRotated: false } },
 } satisfies Meta;
@@ -126,10 +126,10 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <NativeButton variant="ghost" size="icon-sm" aria-label="Native settings">
+              <NativeButton variant="outline" size="icon-sm" aria-label="Native settings">
                 <NativeSettings />
               </NativeButton>
-              <NativeButton variant="ghost" size="icon-sm" aria-label="Native theme">
+              <NativeButton variant="outline" size="icon-sm" aria-label="Native theme">
                 <NativeMoon />
               </NativeButton>
             </>
@@ -161,10 +161,10 @@ function Bars({ width }: { width: number }) {
           status={STATUS}
           action={
             <>
-              <CompiledButton variant="ghost" size="icon-sm" aria-label="Compiled settings">
+              <CompiledButton variant="outline" size="icon-sm" aria-label="Compiled settings">
                 <CompiledSettings />
               </CompiledButton>
-              <CompiledButton variant="ghost" size="icon-sm" aria-label="Compiled theme">
+              <CompiledButton variant="outline" size="icon-sm" aria-label="Compiled theme">
                 <CompiledMoon />
               </CompiledButton>
             </>

@@ -122,7 +122,7 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 **Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
 
 ```tsx
-<ActionButton label="Delete workspace" variant="ghost" size="icon" onClick={remove}>
+<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove}>
   <Trash2 />
 </ActionButton>
 ```
@@ -213,7 +213,7 @@ an `absolute` corner over it.
 - It is an icon button: `Copy`, then `Check` for 1.5 seconds once the text is on the clipboard.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
   one) and `Copied` while the tick shows.
-- `variant` and `size` go to the `Button` underneath; the defaults are `ghost` and `icon-sm`.
+- `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
   `className` is the button's, for placing it.
 - The tick appears only if the write happened. A refused write — an insecure origin, a denied
   permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.
@@ -386,7 +386,7 @@ const [body, setBody] = useState(skill.instructions);
 ```tsx
 <ConfirmButton
   label="Delete lane"
-  variant="ghost"
+  variant="outline"
   size="icon"
   title="Delete this lane?"
   description="The lane takes its cards with it."
@@ -914,7 +914,7 @@ An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the i
   onChangeText={setName}
   leading={<Pencil />}
   trailing={
-    <Button variant="ghost" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
+    <Button variant="outline" size="icon-xs" aria-label="Undo rename" onPress={() => setName(saved)}>
       <Undo2 />
     </Button>
   }
@@ -1024,7 +1024,8 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 - **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
   `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
   once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
-- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`). Pass a bare
+- `icon` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`), except on
+  `info`, which is the blue and draws no icon it was not given. Pass a bare
   `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `icon={null}`
   draws none.
 - `title` and `description` are nodes, so a link can sit inside the description. `action` is the
@@ -1194,7 +1195,7 @@ says.
   nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
-- **A checked, pressed or current control is drawn in `selection`**, not `primary`: blue in the
+- **A checked, pressed or current control is drawn in `selection`**, not `primary`: a quiet cyan in the
   default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
   `bg-active` and `text-active-foreground` too, so it follows the palette; `primary` stays
   the colour of a button to press. The active tab and the sidebar's current row are `selection`
@@ -1300,7 +1301,7 @@ directly, so you do not need a dialog around a zone.
   title="Notes"
   action={
     <FilePickerButton
-      variant="ghost"
+      variant="outline"
       size="icon-sm"
       label="Upload notes"
       accept=".md"

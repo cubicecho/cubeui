@@ -80,7 +80,7 @@ const BAR = cn("h-8 w-20 rounded-md bg-hover", Platform.OS === "web" && "animate
  * text and draws no focus ring of its own. None of it is a class the device can read.
  */
 const PRESSABLE = Platform.select({
-  web: "text-left transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+  web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
   default: undefined,
 });
 

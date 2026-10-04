@@ -159,7 +159,7 @@ export function CodeBlock({ content, action, wrap = false, maxHeight, className 
     <View
       testID="code-block"
       className={cn(
-        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/5",
+        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
         className,
       )}
     >

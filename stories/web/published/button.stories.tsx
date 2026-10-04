@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
  * token. See `stories/web/published/` in the README for the rules every file in here keeps.
  */
 const meta = {
-  title: "cubeui/Button",
+  title: "Controls/Button",
   component: Button,
   args: { children: "Save changes", onClick: fn() },
   argTypes: {
@@ -23,6 +23,10 @@ const meta = {
         "default",
         "destructive",
         "destructive-outline",
+        "positive",
+        "positive-outline",
+        "info",
+        "info-outline",
         "outline",
         "secondary",
         "ghost",
@@ -60,33 +64,54 @@ export const Default: Story = {
   },
 };
 
-/** Every variant at once, which is where axe's colour-contrast rule earns its keep. */
+/**
+ * Every variant at once, which is where axe's colour-contrast rule earns its keep. The filled
+ * ones on the first line, the outline of each under it, and the rest last.
+ */
 export const Variants: Story = {
   render: (args) => (
-    <>
-      <Button {...args}>Default</Button>
-      <Button {...args} variant="destructive">
-        Destructive
-      </Button>
-      <Button {...args} variant="destructive-outline">
-        Destructive outline
-      </Button>
-      <Button {...args} variant="outline">
-        Outline
-      </Button>
-      <Button {...args} variant="secondary">
-        Secondary
-      </Button>
-      <Button {...args} variant="ghost">
-        Ghost
-      </Button>
-      <Button {...args} variant="link">
-        Link
-      </Button>
-    </>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button {...args}>Default</Button>
+        <Button {...args} variant="positive">
+          Positive
+        </Button>
+        <Button {...args} variant="info">
+          Info
+        </Button>
+        <Button {...args} variant="destructive">
+          Destructive
+        </Button>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button {...args} variant="outline">
+          Outline
+        </Button>
+        <Button {...args} variant="positive-outline">
+          Positive outline
+        </Button>
+        <Button {...args} variant="info-outline">
+          Info outline
+        </Button>
+        <Button {...args} variant="destructive-outline">
+          Destructive outline
+        </Button>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button {...args} variant="secondary">
+          Secondary
+        </Button>
+        <Button {...args} variant="ghost">
+          Ghost
+        </Button>
+        <Button {...args} variant="link">
+          Link
+        </Button>
+      </div>
+    </div>
   ),
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getAllByRole("button")).toHaveLength(7);
+    await expect(within(canvasElement).getAllByRole("button")).toHaveLength(11);
   },
 };
 

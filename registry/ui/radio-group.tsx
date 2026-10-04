@@ -351,24 +351,25 @@ function RadioGroupItem({
           }
         : {})}
       className={cn(
-        "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active focus-visible:ring-offset-2",
+        "focus-visible:outline-none",
         bare
-          ? "rounded-full"
+          ? "rounded-full focus-visible:bg-hover"
           : segmented
             ? cn(
                 "min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
                 checked
-                  ? "bg-active text-active-foreground"
-                  : "text-foreground/60 hover:bg-hover hover:text-hover-foreground",
+                  ? "bg-active text-active-foreground focus-visible:bg-active/90"
+                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
               )
             : card
               ? cn(
                   "min-w-0 flex-1 items-center gap-1.5 rounded-lg border p-3",
                   // The border alone says checked: a tinted fill takes the muted description under 4.5:1.
                   checked ? "border-active bg-background" : "border-foreground/15 bg-background",
+                  "focus-visible:bg-hover",
                   group.invalid && "border-negative",
                 )
-              : "flex-row items-start gap-3 rounded-sm",
+              : "flex-row items-start gap-3 rounded-sm focus-visible:bg-hover",
         disabled && "opacity-50",
         className,
       )}

@@ -16,7 +16,7 @@ import { SideBySide } from "./side-by-side";
  * one button, toggled by click and by Space, `aria-expanded` follows it, the body is Item's footer
  * and is mounted only while open, and the action sits outside the button.
  */
-const meta = { title: "Stage 0/DisclosureRow" } satisfies Meta;
+const meta = { title: "RN Parity/DisclosureRow" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -59,7 +59,7 @@ export const Default: Story = {
           DisclosureRow={Native}
           badge={<NativeBadge variant="secondary">done</NativeBadge>}
           action={(onPress) => (
-            <NativeButton size="sm" variant="ghost" onPress={onPress}>
+            <NativeButton size="sm" variant="outline" onPress={onPress}>
               Delete
             </NativeButton>
           )}
@@ -72,7 +72,7 @@ export const Default: Story = {
           badge={<CompiledBadge variant="secondary">done</CompiledBadge>}
           action={(onPress) => (
             // `onClick` on this half; see the note in `card.stories.tsx`.
-            <CompiledButton size="sm" variant="ghost" onClick={onPress}>
+            <CompiledButton size="sm" variant="outline" onClick={onPress}>
               Delete
             </CompiledButton>
           )}

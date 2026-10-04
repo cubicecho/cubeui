@@ -49,7 +49,7 @@ async function write(text: string) {
 export function CopyButton({
   value,
   label = "Copy",
-  variant = "ghost",
+  variant = "outline",
   size = "icon-sm",
   onCopied,
   onError,

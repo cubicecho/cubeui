@@ -17,7 +17,7 @@ import { SideBySide } from "./side-by-side";
  * The device arm — the `ScrollView`s — has no browser to run in: `Platform.OS` is `web` under
  * react-native-web too, so both halves here draw the web arm. It is typechecked, not played.
  */
-const meta = { title: "Stage 0/CodeBlock" } satisfies Meta;
+const meta = { title: "RN Parity/CodeBlock" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

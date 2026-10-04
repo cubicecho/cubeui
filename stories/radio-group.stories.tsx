@@ -17,7 +17,7 @@ import { SideBySide } from "./side-by-side";
  * writes it again. The keyboard is web-only by design (a phone has no arrow keys), and both halves
  * here are the web: react-native-web on the left, the compiled DOM on the right.
  */
-const meta = { title: "Stage 0/RadioGroup" } satisfies Meta;
+const meta = { title: "RN Parity/RadioGroup" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

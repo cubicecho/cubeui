@@ -194,7 +194,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
               `DatePicker` puts its Clear in the same place. */}
           {props.clearable && value ? (
             <View className="flex-row justify-end border-t border-foreground/10 p-1">
-              <Button variant="ghost" size="sm" onPress={handleClear}>
+              <Button variant="outline" size="sm" onPress={handleClear}>
                 <X className="h-4 w-4" />
                 Clear
               </Button>

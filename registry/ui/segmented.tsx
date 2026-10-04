@@ -33,7 +33,7 @@ export function segmentedItemClass(active: boolean, className?: string) {
     "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
     active
       ? "bg-active text-active-foreground"
-      : "text-foreground/60 hover:bg-hover hover:text-hover-foreground",
+      : "text-foreground/60 hover:bg-hover hover:text-foreground",
     className,
   );
 }

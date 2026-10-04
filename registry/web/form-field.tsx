@@ -382,7 +382,7 @@ export function FormField({
             data-slot="form-field-description-trigger"
             type="button"
             aria-label={helpName}
-            className="shrink-0 rounded-full text-foreground/60 outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-active/50 [&_svg]:size-3.5"
+            className="shrink-0 rounded-full text-foreground/60 outline-none transition-colors hover:text-foreground focus-visible:text-foreground [&_svg]:size-3.5"
           >
             {descriptionIcon ?? <CircleQuestionMark aria-hidden />}
           </button>

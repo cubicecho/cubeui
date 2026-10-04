@@ -194,7 +194,7 @@ export function Calendar(props: CalendarProps) {
                       place.edge
                         ? "text-active-foreground"
                         : place.middle
-                          ? "text-hover-foreground"
+                          ? "text-foreground"
                           : isSameMonth(day, shown)
                             ? "text-foreground"
                             : "text-foreground/60",

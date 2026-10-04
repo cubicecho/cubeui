@@ -5,7 +5,7 @@ import { expect, within } from "storybook/test";
 import { Markdown } from "@/components/markdown";
 
 const meta = {
-  title: "Control/Markdown",
+  title: "Controls/Markdown",
   component: Markdown,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof Markdown>;

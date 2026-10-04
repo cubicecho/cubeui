@@ -88,7 +88,7 @@ function TaskForm({
 }
 
 const meta = {
-  title: "Form/FieldTypes",
+  title: "Forms/FieldTypes",
   component: TaskForm,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof TaskForm>;

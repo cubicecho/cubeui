@@ -44,6 +44,18 @@ const NOT_COLOUR = {
  */
 const THEMELESS = /^(transparent|current|inherit)$/;
 
+/**
+ * The opacities a colour may be drawn at. Muted is an opacity on the class and not a token, so
+ * these are the palette's other half: a seventh step is a colour no palette was checked against.
+ * `AGENTS.md` says what each is for.
+ */
+const OPACITY_STEPS = new Set(["10", "15", "40", "60", "90"]);
+
+/** `hover:bg-neutral/90` -> `90`; null with no modifier. */
+function opacityOf(cls) {
+  return /\/([\w.[\]%-]+)$/.exec(cls.replace(/^!|!$/g, ""))?.[1] ?? null;
+}
+
 /** Every string a file spells, from both plain and template literals — the places a class can be. */
 function stringsIn(source, fileName = "source.tsx") {
   const file = ts.createSourceFile(
@@ -96,15 +108,21 @@ export function colourOf(cls) {
 
 /**
  * The colour utilities in `source` that name neither a token in `tokens` nor a colourless keyword,
- * each once, in the order they first appear.
+ * or that draw a token at an opacity that is not one of the steps, each once, in the order they
+ * first appear.
  */
 export function unresolvedColours(source, tokens, fileName) {
   const bad = new Set();
   for (const text of stringsIn(source, fileName)) {
     for (const cls of text.split(/\s+/)) {
       const found = colourOf(cls);
-      if (found && !tokens.has(found.colour) && !THEMELESS.test(found.colour))
+      if (!found) continue;
+      if (!tokens.has(found.colour) && !THEMELESS.test(found.colour)) {
         bad.add(utilityOf(cls));
+        continue;
+      }
+      const opacity = opacityOf(cls);
+      if (opacity !== null && !OPACITY_STEPS.has(opacity)) bad.add(`${utilityOf(cls)}/${opacity}`);
     }
   }
   return [...bad];

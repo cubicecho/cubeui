@@ -15,7 +15,7 @@ import { SideBySide } from "./side-by-side";
  * size. An empty list inside a card, a sidebar section or a popover is one muted line: `compact`.
  */
 const meta = {
-  title: "Stage 0/EmptyState",
+  title: "RN Parity/EmptyState",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -96,7 +96,7 @@ export const Compact: Story = {
             icon={NativeSearch}
             title="No labels yet."
             action={
-              <NativeButton variant="link" size="xs" onPress={onAdd}>
+              <NativeButton variant="info" size="xs" onPress={onAdd}>
                 Add a label
               </NativeButton>
             }
@@ -112,7 +112,7 @@ export const Compact: Story = {
           icon={CompiledSearch}
           title="No labels yet."
           action={
-            <CompiledButton variant="link" size="xs" onClick={onAdd}>
+            <CompiledButton variant="info" size="xs" onClick={onAdd}>
               Add a label
             </CompiledButton>
           }

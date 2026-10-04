@@ -123,7 +123,7 @@ export type DialogLayoutProps = {
    * ```tsx
    * footerActions={(close) => (
    *   <>
-   *     <Button variant="ghost" onClick={close}>Cancel</Button>
+   *     <Button variant="outline" onClick={close}>Cancel</Button>
    *     <Button onClick={save}>Save</Button>
    *   </>
    * )}

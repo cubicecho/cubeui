@@ -41,7 +41,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Control/ColorPicker",
+  title: "Controls/ColorPicker",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;

@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * the right rank, and a region named by it.
  */
 const meta = {
-  title: "Stage 0/Section",
+  title: "RN Parity/Section",
   component: Native,
 } satisfies Meta<typeof Native>;
 

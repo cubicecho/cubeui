@@ -41,7 +41,7 @@ import { SideBySide } from "./side-by-side";
  * a list named by its section title with one item per row, a real `<a href>` per row, and
  * `aria-current="page"` on the row for the page on screen — on both halves.
  */
-const meta = { title: "Stage 0/Sidebar" } satisfies Meta;
+const meta = { title: "RN Parity/Sidebar" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

@@ -38,7 +38,7 @@ function SubmitCounter() {
 }
 
 const meta = {
-  title: "Control/PasswordInput",
+  title: "Controls/PasswordInput",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;

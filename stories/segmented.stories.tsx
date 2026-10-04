@@ -29,7 +29,7 @@ import { SideBySide } from "./side-by-side";
  * the active pill was styled and silent. `registry/ui/segmented.tsx` now passes `aria-pressed`
  * under a web guard, and this story is what holds that.
  */
-const meta = { title: "Stage 0/Segmented" } satisfies Meta;
+const meta = { title: "RN Parity/Segmented" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

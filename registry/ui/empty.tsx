@@ -117,7 +117,7 @@ const EmptyDescription = React.forwardRef<React.ElementRef<typeof Text>, TextPro
       ref={ref}
       testID="empty-description"
       className={cn(
-        "text-center text-sm text-foreground/60 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-neutral",
+        "text-center text-sm text-foreground/60 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-info",
         className,
       )}
       {...props}

@@ -9,7 +9,7 @@ import { SideBySide } from "./side-by-side";
  * out of `max`, in words when `valueLabel` is given, and absent when there is no value — and that
  * the filled part is as wide as the fraction says, the same on both halves.
  */
-const meta = { title: "Stage 0/Progress" } satisfies Meta;
+const meta = { title: "RN Parity/Progress" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

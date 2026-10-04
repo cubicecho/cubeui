@@ -143,7 +143,7 @@ export function CodeBlock({ content, action, wrap = false, maxHeight, className 
       data-slot="code-block"
       className={cn(
         "cube-rn-view",
-        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/5",
+        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
         className,
       )}
     >

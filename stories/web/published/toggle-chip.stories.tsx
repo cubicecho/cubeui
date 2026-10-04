@@ -22,7 +22,7 @@ function Chips() {
   );
 }
 
-const meta = { title: "cubeui/ToggleChip", component: Chips } satisfies Meta<typeof Chips>;
+const meta = { title: "Controls/ToggleChip", component: Chips } satisfies Meta<typeof Chips>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

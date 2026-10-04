@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * size. The rank is semantics only, as on `EmptyState` and `Section`.
  */
 const meta = {
-  title: "Stage 0/CardLayout",
+  title: "RN Parity/CardLayout",
   component: Native,
 } satisfies Meta<typeof Native>;
 

@@ -26,7 +26,7 @@ import { SideBySide } from "./side-by-side";
  * the brand, a named `nav` and the action — and the rail is not. One breakpoint, said once, read by
  * both halves, on both platforms.
  */
-const meta = { title: "Stage 0/SidebarLayout" } satisfies Meta;
+const meta = { title: "RN Parity/SidebarLayout" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -91,7 +91,7 @@ const shell: Story = {
             navLabel="Native main"
             action={
               <NativeButton
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 aria-label="Native theme"
                 onPress={onTheme}
@@ -143,7 +143,7 @@ const shell: Story = {
             navLabel="Compiled main"
             action={
               <CompiledButton
-                variant="ghost"
+                variant="outline"
                 size="icon-sm"
                 aria-label="Compiled theme"
                 onClick={onTheme}

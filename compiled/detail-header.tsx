@@ -65,7 +65,7 @@ export function DetailHeader({
 }: DetailHeaderProps) {
   return (
     <div className="cube-rn-view flex-row items-center gap-3">
-      <Button variant="ghost" size="icon" onClick={onBack} aria-label={backLabel}>
+      <Button variant="outline" size="icon" onClick={onBack} aria-label={backLabel}>
         <ArrowLeft className="h-4 w-4" />
       </Button>
       <div className="cube-rn-view flex-1">

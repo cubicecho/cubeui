@@ -37,7 +37,7 @@ import type {
  * the web half, which ignores `IconClassContext` by design, so the probe reads the context and
  * reports it.
  */
-const meta = { title: "Menu", parameters: { layout: "centered" } } satisfies Meta;
+const meta = { title: "RN Parity/Menu/Menu", parameters: { layout: "centered" } } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

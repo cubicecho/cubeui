@@ -50,7 +50,7 @@ export function DetailHeader({
 }: DetailHeaderProps) {
   return (
     <View className="flex-row items-center gap-3">
-      <Button variant="ghost" size="icon" onPress={onBack} aria-label={backLabel}>
+      <Button variant="outline" size="icon" onPress={onBack} aria-label={backLabel}>
         <ArrowLeft className="h-4 w-4" />
       </Button>
       <View className="flex-1">

@@ -46,7 +46,7 @@ const FLOW = "flex flex-col gap-3";
 const DOCUMENT = cn(
   FLOW,
   "min-w-0 text-sm leading-relaxed text-foreground wrap-anywhere",
-  "[&_a]:font-medium [&_a]:text-neutral [&_a]:underline [&_a]:underline-offset-4",
+  "[&_a]:font-medium [&_a]:text-info [&_a]:underline [&_a]:underline-offset-4",
   "[&_img]:inline-block [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-md",
 );
 

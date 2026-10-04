@@ -39,10 +39,10 @@
  * Only `default`, which sits on `bg-secondary`, keeps the muted line.
  *
  * `info` and `warning` are tokens of cubeui's own, since the shadcn token set has one semantic
- * colour, `destructive`. Their values are Tailwind's `sky-600` and `amber-700`. One
- * shade gives the tint, the border and the icon, so it is the one whose icon clears 3:1 on its own
- * tint in light *and* dark: the 500s the copies used are 2.2 and 2.8:1 on white, `amber-600` misses on
- * the light tint and `sky-700` on the dark one.
+ * colour, `destructive`. One shade gives the tint, the border and the icon, so it is one whose
+ * icon clears 3:1 on its own tint: `amber-700` does in light and dark, and `info` is `sky-700` on
+ * a light page and `sky-500` on a dark one, since it is also a fill that white text sits on.
+ * `info` draws no glyph of its own. It is a colour, not a kind of message.
  *
  * **The role is chosen by the variant, and only `destructive` is an `alert`.** `role="alert"` is
  * an assertive live region: a screen reader interrupts whatever it is saying to read it, and some
@@ -72,8 +72,9 @@ export type AlertProps = {
   variant?: AlertVariant | undefined;
   /**
    * Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink.
-   * Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert`. `null`
-   * draws no icon at all, and the text moves to the edge.
+   * Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except
+   * on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all,
+   * and the text moves to the edge.
    */
   icon?: ReactNode | undefined;
   /** What happened, in a few words: "API key generated", "Last error". */
@@ -120,8 +121,12 @@ const ALERT_DESCRIPTION_INK = {
   destructive: "text-foreground",
 } satisfies Record<AlertVariant, string>;
 
-/** The variant's own glyph, for when the caller passes no `icon`. */
+/**
+ * The variant's own glyph, for when the caller passes no `icon`. `info` has none: it is the blue
+ * and nothing else, so the same alert can say "new" or "tip" without an ⓘ arguing with it.
+ */
 function defaultIcon(variant: AlertVariant): ReactNode {
+  if (variant === "info") return null;
   if (variant === "destructive") return <CircleAlert />;
   if (variant === "warning") return <TriangleAlert />;
   return <Info />;

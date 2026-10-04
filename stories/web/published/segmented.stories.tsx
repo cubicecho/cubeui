@@ -38,7 +38,7 @@ function Row() {
   );
 }
 
-const meta = { title: "cubeui/Segmented", component: Row } satisfies Meta<typeof Row>;
+const meta = { title: "Controls/Segmented", component: Row } satisfies Meta<typeof Row>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -5,7 +5,7 @@ import { FormField } from "@/components/form-field";
 import { MarkdownEditor, type MarkdownEditorView } from "@/components/markdown-editor";
 
 const meta = {
-  title: "Control/MarkdownEditor",
+  title: "Controls/MarkdownEditor",
   component: MarkdownEditor,
   parameters: { layout: "padded" },
 } satisfies Meta<typeof MarkdownEditor>;

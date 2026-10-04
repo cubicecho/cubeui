@@ -58,7 +58,7 @@ function Harness({
           </div>
         }
         footerActions={(close) => (
-          <Button variant="ghost" onClick={close}>
+          <Button variant="outline" onClick={close}>
             Cancel
           </Button>
         )}

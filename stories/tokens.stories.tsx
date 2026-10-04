@@ -296,7 +296,7 @@ export const BordersNameTheirColour: Story = {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Card testID="card">
         <CardContent>
-          <Button variant="ghost">Inside a card</Button>
+          <Button variant="outline">Inside a card</Button>
         </CardContent>
       </Card>
       <Section title="Profile" surface="card" divider content={<Button>Save</Button>} />

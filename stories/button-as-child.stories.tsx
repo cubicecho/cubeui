@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * and the anchor rendered as bare text. shadcn's `AlertDialogAction` and `AlertDialogCancel` are
  * `Button asChild`, so every alert dialog — `ConfirmButton`'s included — lost its buttons' look.
  */
-const meta = { title: "Stage 0/Button asChild" } satisfies Meta;
+const meta = { title: "RN Parity/Button/asChild" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

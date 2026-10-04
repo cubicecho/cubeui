@@ -71,7 +71,7 @@ export function SearchInput({
       trailing={
         clearable && text !== "" && !disabled ? (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon-xs"
             aria-label={clearLabel}
             onPress={() => {

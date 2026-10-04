@@ -29,7 +29,7 @@ import {
  * Router's and Next's links all do — and then does what a router does: preloads on enter and
  * focus, and on a click prevents the browser's navigation and records its own.
  */
-const meta = { title: "Menu links", parameters: { layout: "centered" } } satisfies Meta;
+const meta = { title: "RN Parity/Menu/Links", parameters: { layout: "centered" } } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

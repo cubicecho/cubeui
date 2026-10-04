@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * The device half — `expo-clipboard`'s `setStringAsync` — has no browser to run in, and is
  * typechecked, not played.
  */
-const meta = { title: "Stage 0/CopyButton" } satisfies Meta;
+const meta = { title: "RN Parity/CopyButton" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

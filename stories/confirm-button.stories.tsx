@@ -15,7 +15,7 @@ import { SideBySide } from "./side-by-side";
  *
  * The dialogs are modal, so each half is opened and closed in turn rather than side by side.
  */
-const meta = { title: "Stage 0/ConfirmButton" } satisfies Meta;
+const meta = { title: "RN Parity/ConfirmButton" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

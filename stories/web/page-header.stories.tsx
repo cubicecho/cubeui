@@ -20,7 +20,7 @@ const Actions = () => (
     <Button size="sm" variant="outline">
       <Download /> Export
     </Button>
-    <Button size="sm">
+    <Button size="sm" variant="info">
       <Plus /> New workspace
     </Button>
   </>

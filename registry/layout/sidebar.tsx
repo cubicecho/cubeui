@@ -410,12 +410,12 @@ export type SidebarNavItemProps = SidebarNavItemBaseProps &
 function rowClassName(active: boolean, className: string | undefined) {
   return cn(
     "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+    "focus-visible:outline-none",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     active
-      ? "bg-active text-active-foreground"
-      : "text-foreground hover:bg-hover hover:text-hover-foreground",
+      ? "bg-active text-active-foreground focus-visible:bg-active/90"
+      : "text-foreground hover:bg-hover focus-visible:bg-hover",
     className,
   );
 }
@@ -663,11 +663,11 @@ const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavIt
                 : {})}
               className={cn(
                 "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+                "focus-visible:outline-none",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
-                  ? "bg-active text-active-foreground"
-                  : "text-foreground/60 hover:bg-hover hover:text-hover-foreground",
+                  ? "bg-active text-active-foreground focus-visible:bg-active/90"
+                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
                 className,
               )}
               {...props}

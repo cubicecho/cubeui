@@ -10,7 +10,7 @@ import { SideBySide } from "./side-by-side";
  * measuring.
  */
 const meta = {
-  title: "Stage 0/SectionHeading",
+  title: "RN Parity/SectionHeading",
   component: Native,
 } satisfies Meta<typeof Native>;
 

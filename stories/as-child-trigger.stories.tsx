@@ -58,7 +58,7 @@ import {
  * problem; it is here so the fix is seen not to double it.
  */
 const meta = {
-  title: "Button/asChild trigger",
+  title: "RN Parity/Button/asChild trigger",
   parameters: { layout: "centered" },
 } satisfies Meta;
 export default meta;

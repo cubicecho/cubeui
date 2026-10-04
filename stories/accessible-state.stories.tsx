@@ -17,7 +17,7 @@ import { ToggleChip } from "../registry/ui/toggle-chip";
  * state is now on the element, and the `a11y: { test: "error" }` in `.storybook/preview.ts` is
  * what says the spelling chosen is one the role actually allows.
  */
-const meta = { title: "Accessible state" } satisfies Meta;
+const meta = { title: "RN Parity/Accessible state" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

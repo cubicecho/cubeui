@@ -8,7 +8,7 @@ import { SectionHeading } from "@/components/section-heading";
  * `components/ui/`.
  */
 const meta = {
-  title: "cubeui/SectionHeading",
+  title: "Layout/SectionHeading",
   component: SectionHeading,
   args: { children: "Upcoming" },
   decorators: [

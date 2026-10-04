@@ -56,7 +56,7 @@ function reset() {
 }
 
 const meta = {
-  title: "Stage 0/ThemePicker",
+  title: "RN Parity/ThemePicker",
   // Every story starts from nothing stored and no class, and leaves the page as it found it — the
   // class is on `<html>`, which outlives the story, and so does `localStorage`.
   beforeEach: () => {

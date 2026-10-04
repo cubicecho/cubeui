@@ -1060,8 +1060,9 @@ if (uncoloured.length > 0) {
       "\n`npm run tokens:build`, or use a colour that exists. `black`, `white` and a shade of" +
       "\nTailwind's palette (`bg-green-700`) are reported too: give the colour a token named for" +
       "\nwhat it means. So is one of shadcn's names (`bg-primary`, `border-border`): those are" +
-      "\naliases for vendored components. The tokens and what each means are listed at the top" +
-      "\nof `tokens/palette.mjs`.",
+      "\naliases for vendored components. And so is a token at an opacity that is not one of the" +
+      "\nsteps (10, 15, 40, 60, 90): `AGENTS.md` says what each is for. The tokens and what each" +
+      "\nmeans are listed at the top of `tokens/palette.mjs`.",
   );
 }
 

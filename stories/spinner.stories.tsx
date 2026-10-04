@@ -8,7 +8,7 @@ import { SideBySide } from "./side-by-side";
  * The spinner on both halves: one `status` each, named `Loading` or the caller's `label`, the same
  * glyph at the same size, turning.
  */
-const meta = { title: "Stage 0/Spinner" } satisfies Meta;
+const meta = { title: "RN Parity/Spinner" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

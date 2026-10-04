@@ -110,7 +110,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Control/OptionSelect",
+  title: "RN Parity/OptionSelect",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;

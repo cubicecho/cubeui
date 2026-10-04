@@ -68,7 +68,7 @@ function TabsTrigger({
       // its size is set here; device has no inheritance and uses a context.
       className={cn(
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "inline-flex whitespace-nowrap ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-foreground/60 hover:bg-hover hover:text-hover-foreground data-[state=active]:bg-active data-[state=active]:text-active-foreground",
+        "inline-flex whitespace-nowrap transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 text-foreground/60 hover:bg-hover hover:text-foreground data-[state=inactive]:focus-visible:bg-hover data-[state=inactive]:focus-visible:text-foreground data-[state=active]:focus-visible:bg-active/90 data-[state=active]:bg-active data-[state=active]:text-active-foreground",
         TABS_TRIGGER_CLASS,
         TABS_TRIGGER_TEXT_CLASS,
         className,
@@ -85,10 +85,7 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn(
-        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active focus-visible:ring-offset-2",
-        className,
-      )}
+      className={cn("mt-2 focus-visible:outline-none", className)}
       {...props}
     />
   );

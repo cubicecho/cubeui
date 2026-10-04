@@ -22,9 +22,10 @@
  * - `secondary`: the fill of a surface raised off the page — a card, a popover, the sidebar.
  *   Opaque, because a popover floats over content. Its text is `foreground`.
  * - `neutral`, `positive`, `warning`, `negative`, `info`: what a thing says. A button or a badge
- *   with nothing to say is `neutral`. Each that fills has a `-foreground`; `info` is an icon and
- *   a tint, never a fill.
- * - `hover`: the transient grey under a pointer or a menu's keyboard highlight.
+ *   with nothing to say is `neutral`, and `info` is the blue for one worth pointing out. Each has
+ *   a `-foreground` for the text on its fill.
+ * - `hover`: the transient grey under a pointer or a menu's keyboard highlight. Its text is
+ *   `foreground`.
  * - `active`: the one colour for chosen, current and focused — a checked control, the current
  *   row, the focus ring.
  * - `overlay`: the scrim behind a dialog, drawn at an opacity the component picks.
@@ -46,15 +47,27 @@
 /** The corner radius the whole scale is derived from. */
 export const radius = "0.625rem";
 
-// The status colours are Tailwind's shades in their sRGB form, the same in every palette until one
-// has a reason to differ. White on the two that fill is 5.0:1.
+// The status colours on a light page: Tailwind's 700s in their sRGB form. White on each is 5.0:1 or
+// better.
 const STATUS = {
   positive: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
   "positive-foreground": { l: 1, c: 0, h: 0 },
   warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
   "warning-foreground": { l: 1, c: 0, h: 0 },
+  // sky-700 and not the 600 it was as a tint: white on #0284C7 is 4.1:1.
+  info: { l: 0.5, c: 0.1193, h: 242.749 }, // #0369A1, sky-700 in sRGB
+  "info-foreground": { l: 1, c: 0, h: 0 },
 };
-const INFO = { l: 0.5876, c: 0.1389, h: 241.966 }; // #0284C7, sky-600 in sRGB
+// On a dark page they are the 500s with dark text, as dark `negative` is a light coral: a 700 is
+// dim there, and under 3:1 against the page as an icon.
+const DARK_STATUS = {
+  positive: { l: 0.7227, c: 0.192, h: 149.579 }, // #22C55E, green-500 in sRGB
+  "positive-foreground": { l: 0.145, c: 0, h: 0 },
+  warning: { l: 0.7686, c: 0.1647, h: 70.08 }, // #F59E0B, amber-500 in sRGB
+  "warning-foreground": { l: 0.145, c: 0, h: 0 },
+  info: { l: 0.6847, c: 0.1479, h: 237.323 }, // #0EA5E9, sky-500 in sRGB
+  "info-foreground": { l: 0.145, c: 0, h: 0 },
+};
 const BLACK = { l: 0, c: 0, h: 0 };
 
 /** @type {Record<string, Oklch>} */
@@ -66,14 +79,14 @@ const lightTokens = {
   neutral: { l: 0.205, c: 0, h: 0 },
   "neutral-foreground": { l: 0.985, c: 0, h: 0 },
   // A step darker than `secondary`, or a menu row's highlight would not show on its own popover.
-  hover: { l: 0.922, c: 0, h: 0 },
-  "hover-foreground": { l: 0.205, c: 0, h: 0 },
-  active: { l: 0.5461, c: 0.2152, h: 262.881 }, // #2563EB, blue-600 in sRGB
+  hover: { l: 0.922, c: 0.025, h: 218 }, // `active`, all but grey
+  // A quiet cyan, between `info` and `positive` in hue and nearer `info`, so chosen reads as neither.
+  // Dark enough that white text still reads on it at `/90`, the focused step.
+  active: { l: 0.5, c: 0.07, h: 218 }, // #2D6D7E
   "active-foreground": { l: 1, c: 0, h: 0 },
   ...STATUS,
   negative: { l: 0.577, c: 0.245, h: 27.325 },
   "negative-foreground": { l: 1, c: 0, h: 0 },
-  info: INFO,
   overlay: BLACK,
 };
 
@@ -84,16 +97,15 @@ const darkTokens = {
   secondary: { l: 0.269, c: 0, h: 0 },
   neutral: { l: 0.922, c: 0, h: 0 },
   "neutral-foreground": { l: 0.205, c: 0, h: 0 },
-  hover: { l: 0.371, c: 0, h: 0 },
-  "hover-foreground": { l: 0.985, c: 0, h: 0 },
-  active: { l: 0.7137, c: 0.1434, h: 254.624 }, // #60A5FA, blue-400 in sRGB
+  // `active`, all but grey: the pointer and the chosen row read as one family.
+  hover: { l: 0.371, c: 0.035, h: 218 },
+  active: { l: 0.68, c: 0.065, h: 218 }, // #69A2B3
   "active-foreground": { l: 0.145, c: 0, h: 0 },
-  ...STATUS,
+  ...DARK_STATUS,
   negative: { l: 0.704, c: 0.191, h: 22.216 },
   // Dark text, not white: dark `negative` is a light coral, and white on it is 2.89:1 — short
   // of the 4.5:1 a button label needs. Near-black is 6.85:1. Light mode's white is 4.77:1.
   "negative-foreground": { l: 0.145, c: 0, h: 0 },
-  info: INFO,
   overlay: BLACK,
 };
 
@@ -111,13 +123,17 @@ const monokaiDark = {
   neutral: { l: 0.8414, c: 0.2044, h: 127.286 }, // #A6E22E, the green
   "neutral-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
   hover: { l: 0.3574, c: 0.0184, h: 103.002 }, // #3E3D32, the line highlight
-  "hover-foreground": { l: 0.9775, c: 0.0079, h: 106.545 },
   active: { l: 0.7012, c: 0.1812, h: 298.062 }, // #AE81FF, the purple
   "active-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
-  ...STATUS,
+  // Not Monokai's own green: that is `neutral` here, and a saved badge has to differ from a button.
+  positive: DARK_STATUS.positive,
+  "positive-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
+  warning: { l: 0.7668, c: 0.1683, h: 62.374 }, // #FD971F, the orange
+  "warning-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
+  info: { l: 0.8269, c: 0.108, h: 211.963 }, // #66D9EF, the cyan
+  "info-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
   negative: { l: 0.7058, c: 0.1936, h: 8.454 }, // #FF6188
   "negative-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
-  info: INFO,
   overlay: BLACK,
 };
 
@@ -144,7 +160,7 @@ export const ALIASES = {
   muted: ["foreground", 0.1],
   "muted-foreground": ["foreground", 0.6],
   accent: "hover",
-  "accent-foreground": "hover-foreground",
+  "accent-foreground": "foreground",
   selection: "active",
   "selection-foreground": "active-foreground",
   destructive: "negative",
@@ -157,7 +173,7 @@ export const ALIASES = {
   "sidebar-primary": "active",
   "sidebar-primary-foreground": "active-foreground",
   "sidebar-accent": "hover",
-  "sidebar-accent-foreground": "hover-foreground",
+  "sidebar-accent-foreground": "foreground",
   "sidebar-border": ["foreground", 0.1],
   "sidebar-ring": "active",
 };

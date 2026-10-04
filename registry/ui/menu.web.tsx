@@ -179,7 +179,7 @@ function MenuItem({
         MENU_ITEM_WEB_CLASS,
         destructive
           ? "text-negative focus:bg-negative/10 focus:text-negative"
-          : "text-foreground focus:bg-hover focus:text-hover-foreground",
+          : "text-foreground focus:bg-hover",
         className,
       )}
     >
@@ -228,11 +228,7 @@ function ToggleRowBody({
   );
 }
 
-const TOGGLE_ROW_CLASS = cn(
-  MENU_ITEM_CLASS,
-  MENU_ITEM_WEB_CLASS,
-  "text-foreground focus:bg-hover focus:text-hover-foreground",
-);
+const TOGGLE_ROW_CLASS = cn(MENU_ITEM_CLASS, MENU_ITEM_WEB_CLASS, "text-foreground focus:bg-hover");
 
 function MenuCheckboxItem({
   icon,

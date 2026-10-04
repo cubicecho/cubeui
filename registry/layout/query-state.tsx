@@ -153,7 +153,7 @@ export function QueryError({
   /** A promise returned here is awaited — see above. */
   onRetry: () => unknown;
   what: string;
-  /** No card, smaller type, a ghost retry — see `QueryState`'s `compact`. */
+  /** No card, smaller type, a small outline retry — see `QueryState`'s `compact`. */
   compact?: boolean | undefined;
   /**
    * What the failure means, in the app's words. Without it the line under the heading is the
@@ -176,7 +176,7 @@ export function QueryError({
   const label = retrying ? "Retrying…" : "Try again";
 
   // The same three parts — what failed, why, try again — at the size of a nav row. No card, since a
-  // bordered box inside a rail reads as one more row, and the retry is a ghost button so the rail's
+  // bordered box inside a rail reads as one more row, and the retry is a small outline button so the rail's
   // only filled control stays the primary action above it.
   if (compact)
     return (
@@ -189,7 +189,7 @@ export function QueryError({
         </View>
         <Text className="text-foreground/60 text-xs">{reason}</Text>
         <View className="flex-row">
-          <Button variant="ghost" size="xs" onPress={retry} disabled={retrying}>
+          <Button variant="outline" size="xs" onPress={retry} disabled={retrying}>
             <RefreshCw className="h-3.5 w-3.5" aria-hidden />
             {label}
           </Button>
@@ -205,7 +205,7 @@ export function QueryError({
       // `bg-negative/5`, which drops both the red heading and the grey message under 4.5:1
       // against their own background — 4.36 and 4.33, caught by the story's axe run. The border
       // and the icon say "this failed" without moving the ground the words sit on.
-      className={cn("gap-2 border-negative/50 p-4", className)}
+      className={cn("gap-2 border-negative/40 p-4", className)}
     >
       {/* `flex-row` is explicit because a column is Yoga's default, and the icon carries its own
           colour because native inherits none — the two standing conversion rules. */}

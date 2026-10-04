@@ -29,7 +29,7 @@ import { SideBySide } from "./side-by-side";
  * `EmptyState` draws — the 48-pixel muted bubble with a 24-pixel glyph, a 14-pixel title, a muted
  * line — and that `EmptyState` is those parts, box for box.
  */
-const meta = { title: "Stage 0/Empty" } satisfies Meta;
+const meta = { title: "RN Parity/Empty" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -49,7 +49,9 @@ export const Compound: Story = {
             <NativeDescription>Make one to start a board.</NativeDescription>
           </NativeHeader>
           <NativeContent>
-            <NativeButton onPress={onCreate}>New project</NativeButton>
+            <NativeButton variant="info" onPress={onCreate}>
+              New project
+            </NativeButton>
           </NativeContent>
         </NativeEmpty>
       }
@@ -63,7 +65,9 @@ export const Compound: Story = {
             <CompiledDescription>Make one to start a board.</CompiledDescription>
           </CompiledHeader>
           <CompiledContent>
-            <CompiledButton onClick={onCreate}>New project</CompiledButton>
+            <CompiledButton variant="info" onClick={onCreate}>
+              New project
+            </CompiledButton>
           </CompiledContent>
         </CompiledEmpty>
       }

@@ -179,4 +179,4 @@ export const INPUT_LEADING_PAD_CLASS = "pl-9";
 export const INPUT_TRAILING_PAD_CLASS = "pr-9";
 
 export const INPUT_CLASS =
-  "border-foreground/15 bg-background text-foreground ring-offset-background placeholder:text-foreground/60 focus-visible:ring-active flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  "border-foreground/15 bg-background text-foreground placeholder:text-foreground/60 focus:border-active flex h-10 w-full rounded-md border px-3 py-2 text-sm focus:outline-none";

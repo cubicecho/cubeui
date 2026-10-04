@@ -22,7 +22,7 @@ import {
  * The native half is imported by its full name because Vite would otherwise resolve
  * `popover.web.tsx`.
  */
-const meta = { title: "Popover", parameters: { layout: "centered" } } satisfies Meta;
+const meta = { title: "RN Parity/Popover", parameters: { layout: "centered" } } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

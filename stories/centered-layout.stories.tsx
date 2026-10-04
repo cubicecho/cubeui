@@ -18,7 +18,7 @@ import { SideBySide } from "./side-by-side";
  * this story that it would not say about an app, so those two rules are off here and nowhere else.
  */
 const meta = {
-  title: "Stage 0/Centered Layout",
+  title: "RN Parity/Centered Layout",
   component: Native,
   parameters: {
     a11y: {

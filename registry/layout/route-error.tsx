@@ -15,7 +15,7 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actions={<Button variant="ghost" size="sm" onPress={reload}>Reload</Button>}
+ *   actions={<Button variant="outline" size="sm" onPress={reload}>Reload</Button>}
  * />
  * ```
  */

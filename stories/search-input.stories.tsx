@@ -10,7 +10,7 @@ import { SideBySide } from "./side-by-side";
  * icon inside it, and a "Clear search" button that is there only while the box holds text, empties
  * it through the same handlers typing does, and hands focus back.
  */
-const meta = { title: "Stage 0/SearchInput" } satisfies Meta;
+const meta = { title: "RN Parity/SearchInput" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

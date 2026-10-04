@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
  * variant is the colour check, and it is the consumer's palette it runs against.
  */
 const meta = {
-  title: "cubeui/Badge",
+  title: "Controls/Badge",
   component: Badge,
   args: { children: "Active" },
   decorators: [

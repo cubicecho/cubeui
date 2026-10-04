@@ -211,7 +211,7 @@ function OptionLine({
  * are on is the one that cannot be read. There is no highlight on device.
  */
 const ON_HIGHLIGHT = Platform.select({
-  web: "group-data-[selected=true]:text-hover-foreground/80",
+  web: "group-data-[selected=true]:text-foreground",
   default: "",
 });
 
@@ -385,7 +385,7 @@ export function MultiSelect({
           className={cn(
             "h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal",
             Platform.select({
-              web: "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/20 dark:aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
+              web: "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
               default: "",
             }),
             className,
@@ -502,7 +502,7 @@ export function MultiSelect({
         {clearable && selected.length > 0 ? (
           <View className="flex-row justify-end border-t border-foreground/10 p-1">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               className="text-foreground/60"
               onPress={() => onValueChange([])}

@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * filter tile is one with `aria-pressed` following the caller's state, and the label, the figure
  * and the hint stack in that order at the same size on both halves.
  */
-const meta = { title: "Stage 0/Stat Tile" } satisfies Meta;
+const meta = { title: "RN Parity/Stat Tile" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

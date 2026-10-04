@@ -44,7 +44,7 @@ function Textarea({ onChange, onChangeText, className, ...props }: TextareaProps
         // `resize-y` is the browser's own affordance and has no native
         // counterpart; `disabled:` is the DOM attribute doing what the native
         // half spells out as `disabled && "opacity-50"`.
-        "resize-y disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative",
+        "resize-y disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative aria-invalid:focus:border-active",
         className,
       )}
     />

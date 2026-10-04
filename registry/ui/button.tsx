@@ -31,20 +31,32 @@ import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-neutral text-neutral-foreground hover:bg-neutral/90",
-        destructive: "bg-negative text-negative-foreground hover:bg-negative/90",
+        default:
+          "bg-neutral text-neutral-foreground hover:bg-neutral/90 focus-visible:bg-neutral/90",
+        destructive:
+          "bg-negative text-negative-foreground hover:bg-negative/90 focus-visible:bg-negative/90",
         /** A destructive action that is not the emphasis of its row. */
         "destructive-outline":
-          "border border-negative/40 bg-transparent text-negative hover:bg-negative/10",
+          "border border-negative/40 bg-transparent text-negative hover:bg-negative/10 focus-visible:bg-negative/10",
+        /** The action that keeps the work: save, confirm, create. */
+        positive:
+          "bg-positive text-positive-foreground hover:bg-positive/90 focus-visible:bg-positive/90",
+        "positive-outline":
+          "border border-positive/40 bg-transparent text-positive hover:bg-positive/10 focus-visible:bg-positive/10",
+        /** The action that adds something: add, new, create. */
+        info: "bg-info text-info-foreground hover:bg-info/90 focus-visible:bg-info/90",
+        "info-outline":
+          "border border-info/40 bg-transparent text-info hover:bg-info/10 focus-visible:bg-info/10",
         outline:
-          "border border-foreground/15 bg-background text-foreground hover:bg-hover hover:text-hover-foreground",
-        secondary: "bg-foreground/10 text-foreground hover:bg-foreground/10",
-        ghost: "text-foreground/60 hover:bg-hover hover:text-foreground",
-        link: "text-neutral underline-offset-4 hover:underline",
+          "border border-foreground/15 bg-background text-foreground hover:bg-hover focus-visible:bg-hover",
+        secondary: "bg-foreground/10 text-foreground hover:bg-hover focus-visible:bg-hover",
+        ghost:
+          "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
+        link: "text-info underline-offset-4 hover:underline focus-visible:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -91,10 +103,14 @@ const buttonTextVariants = cva("font-medium", {
       default: "text-neutral-foreground",
       destructive: "text-negative-foreground",
       "destructive-outline": "text-negative",
+      positive: "text-positive-foreground",
+      "positive-outline": "text-positive",
+      info: "text-info-foreground",
+      "info-outline": "text-info",
       outline: "text-foreground",
       secondary: "text-foreground",
       ghost: "text-foreground/60",
-      link: "text-neutral underline",
+      link: "text-info underline",
     },
   },
   defaultVariants: { variant: "default", size: "default" },

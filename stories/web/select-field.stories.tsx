@@ -38,7 +38,7 @@ function LaneForm({ options = DESTINATIONS }: { options?: readonly SelectEntry[]
 }
 
 const meta = {
-  title: "Form/SelectField",
+  title: "Forms/SelectField",
   component: LaneForm,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof LaneForm>;

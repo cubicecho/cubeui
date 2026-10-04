@@ -22,7 +22,7 @@ import { SideBySide } from "./side-by-side";
  * The icon is a probe rather than one from `@cubeui/icons`: here that module is the web half, which
  * ignores the context by design, so the probe reads the context directly and reports it.
  */
-const meta = { title: "Tabs" } satisfies Meta;
+const meta = { title: "RN Parity/Tabs" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

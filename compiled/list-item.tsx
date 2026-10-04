@@ -38,6 +38,11 @@ type ListItemProps = {
    * `meta` become one button between `leading` and `action`, so neither of those is nested in it.
    */
   onClick?: (() => void) | undefined;
+  /**
+   * The chosen row: the one open beside the list. Tinted in `active`, it stays that under the
+   * pointer, and a pressable row says so with `aria-current`.
+   */
+  selected?: boolean | undefined;
   className?: string | undefined;
   titleClassName?: string | undefined;
 };
@@ -79,6 +84,7 @@ export function ListItem({
   meta,
   action,
   onClick: onPress,
+  selected = false,
   className,
   titleClassName,
 }: ListItemProps) {
@@ -124,7 +130,9 @@ export function ListItem({
       className={cn(
         "cube-rn-view",
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2.5",
-        onPress && "transition-colors hover:bg-hover",
+        selected
+          ? "bg-active/40"
+          : onPress && "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
         className,
       )}
     >
@@ -138,11 +146,12 @@ export function ListItem({
         <button
           type="button"
           data-slot="list-item-body"
+          aria-current={selected ? true : undefined}
           onClick={onPress}
           className={cn(
             "cube-rn-view cube-rn-pressable",
             "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
-            "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+            "text-left focus-visible:outline-none",
           )}
         >
           {body}

@@ -220,7 +220,7 @@ function OptionLine({
  * text on it is 4.34:1 — under the 4.5 a body-size string needs, so whichever row the arrow keys
  * are on is the one that cannot be read. There is no highlight on device.
  */
-const ON_HIGHLIGHT = "group-data-[selected=true]:text-hover-foreground/80";
+const ON_HIGHLIGHT = "group-data-[selected=true]:text-foreground";
 
 /**
  * One option, which is up to four things: the tick, the colour dot, what it is called, and what
@@ -391,7 +391,7 @@ export function MultiSelect({
           disabled={disabled}
           className={cn(
             "h-auto min-h-9 w-full justify-between gap-2 bg-transparent px-3 py-1.5 font-normal",
-            "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/20 dark:aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
+            "whitespace-normal shadow-xs aria-invalid:border-negative aria-invalid:ring-negative/40 disabled:cursor-not-allowed",
             className,
           )}
           {...props}
@@ -490,7 +490,7 @@ export function MultiSelect({
         {clearable && selected.length > 0 ? (
           <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 p-1">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               className="text-foreground/60"
               onClick={() => onValueChange([])}

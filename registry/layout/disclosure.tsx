@@ -109,7 +109,7 @@ export function Disclosure({
           className={cn(
             "min-w-0 flex-1 flex-row items-start gap-1.5 rounded-sm",
             Platform.select({
-              web: "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+              web: "text-left focus-visible:bg-hover focus-visible:outline-none",
               default: undefined,
             }),
           )}

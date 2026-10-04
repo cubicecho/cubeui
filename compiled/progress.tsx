@@ -84,7 +84,7 @@ export function Progress({
       {...(label ? { "aria-label": label } : {})}
       className={cn(
         "cube-rn-view",
-        "h-2 w-full overflow-hidden rounded-full bg-neutral/20",
+        "h-2 w-full overflow-hidden rounded-full bg-foreground/10",
         className,
       )}
     >

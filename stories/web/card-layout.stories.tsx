@@ -29,11 +29,15 @@ export const Default: Story = {
     title: "Categories",
     description: "Deleting a category keeps its activities — they go back to uncategorized.",
     action: (
-      <Button size="sm" variant="outline">
+      <Button size="sm" variant="info">
         <Plus /> Add
       </Button>
     ),
-    footerActions: <Button size="sm">Save</Button>,
+    footerActions: (
+      <Button size="sm" variant="positive">
+        Save
+      </Button>
+    ),
     content: <Rows />,
   },
 };
@@ -85,16 +89,18 @@ export const SplitFooter: Story = {
   args: {
     title: "Danger zone",
     footer: (
-      <Button size="sm" variant="ghost" className="text-negative">
+      <Button size="sm" variant="destructive-outline">
         Delete
       </Button>
     ),
     footerActions: (
       <>
-        <Button size="sm" variant="ghost">
+        <Button size="sm" variant="outline">
           Cancel
         </Button>
-        <Button size="sm">Save</Button>
+        <Button size="sm" variant="positive">
+          Save
+        </Button>
       </>
     ),
     content: <Rows />,
@@ -105,7 +111,11 @@ export const SplitFooter: Story = {
 export const ActionsOnly: Story = {
   args: {
     title: "Categories",
-    footerActions: <Button size="sm">Save</Button>,
+    footerActions: (
+      <Button size="sm" variant="positive">
+        Save
+      </Button>
+    ),
     content: <Rows />,
   },
 };

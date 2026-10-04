@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * controls on both, which is what the press tests below hold.
  */
 const meta = {
-  title: "Layout/List Item",
+  title: "RN Parity/ListItem",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -57,7 +57,7 @@ export const Pressable: Story = {
             meta="12"
             onPress={openNative}
             action={
-              <NativeButton size="sm" variant="ghost" onPress={deleteNative}>
+              <NativeButton size="sm" variant="outline" onPress={deleteNative}>
                 Delete
               </NativeButton>
             }
@@ -73,7 +73,7 @@ export const Pressable: Story = {
             meta="12"
             onClick={openCompiled}
             action={
-              <CompiledButton size="sm" variant="ghost" onClick={deleteCompiled}>
+              <CompiledButton size="sm" variant="outline" onClick={deleteCompiled}>
                 Delete
               </CompiledButton>
             }

@@ -13,7 +13,7 @@ import { SideBySide } from "./side-by-side";
  * halves the same bar — brand at the start, the links after it, the actions at the end — and the
  * two landmarks, and that on the web the bar stays where it is while the page under it scrolls.
  */
-const meta = { title: "Stage 0/Top Bar Layout" } satisfies Meta;
+const meta = { title: "RN Parity/Top Bar Layout" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -70,7 +70,7 @@ export const Default: Story = {
             ))}
             navLabel="Native main"
             action={
-              <NativeButton size="sm" variant="ghost" onPress={signOut}>
+              <NativeButton size="sm" variant="outline" onPress={signOut}>
                 Sign out
               </NativeButton>
             }
@@ -97,7 +97,7 @@ export const Default: Story = {
             ))}
             navLabel="Compiled main"
             action={
-              <CompiledButton size="sm" variant="ghost" onClick={signOut}>
+              <CompiledButton size="sm" variant="outline" onClick={signOut}>
                 Sign out
               </CompiledButton>
             }
@@ -192,7 +192,7 @@ export const Narrow: Story = {
           </a>
         ))}
         action={
-          <CompiledButton size="sm" variant="ghost" onClick={signOut}>
+          <CompiledButton size="sm" variant="outline" onClick={signOut}>
             Sign out
           </CompiledButton>
         }

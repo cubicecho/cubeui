@@ -73,7 +73,7 @@ export function Progress({
       {...(valueLabel ? { "aria-valuetext": valueLabel } : {})}
       {...props}
       {...(label ? { "aria-label": label } : {})}
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-neutral/20", className)}
+      className={cn("h-2 w-full overflow-hidden rounded-full bg-foreground/10", className)}
     >
       <View
         testID="progress-indicator"

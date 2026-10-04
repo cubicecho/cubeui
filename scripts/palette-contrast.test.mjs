@@ -22,13 +22,16 @@ const PAIRS = [
   ["foreground", "secondary", 0.6],
   ["foreground", "hover", 0.6],
   ["neutral-foreground", "neutral"],
-  ["hover-foreground", "hover"],
+  ["foreground", "hover"],
   ["active-foreground", "active"],
   ["positive-foreground", "positive"],
   ["warning-foreground", "warning"],
+  ["info-foreground", "info"],
   ["negative-foreground", "negative"],
   ["negative", "background"],
   ["negative", "secondary"],
+  ["info", "background"],
+  ["info", "secondary"],
 ];
 
 /**

@@ -21,7 +21,8 @@ export type BadgeVariant =
   | "ghost"
   | "link"
   | "success"
-  | "warning";
+  | "warning"
+  | "info";
 
 export type BadgeProps = {
   variant?: BadgeVariant | undefined;
@@ -102,6 +103,7 @@ export const badgeContainerVariants = cva("shrink-0 rounded-full border border-t
       link: "bg-transparent",
       success: "bg-positive",
       warning: "bg-warning",
+      info: "bg-info",
     },
     shape: {
       pill: "flex-row items-center justify-center gap-1 px-2 py-0.5",
@@ -118,15 +120,16 @@ const BADGE_INK = {
   destructive: "text-negative-foreground",
   outline: "text-foreground",
   ghost: "text-foreground",
-  link: "text-neutral",
+  link: "text-info",
   success: "text-positive-foreground",
   warning: "text-warning-foreground",
+  info: "text-info-foreground",
 } satisfies Record<BadgeVariant, string>;
 
 /** The label's type and colour, per variant. */
 export const badgeTextVariants = cva("text-xs font-medium", {
   variants: {
-    variant: { ...BADGE_INK, link: "text-neutral underline-offset-4" },
+    variant: { ...BADGE_INK, link: "text-info underline-offset-4" },
   },
   defaultVariants: { variant: "default" },
 });

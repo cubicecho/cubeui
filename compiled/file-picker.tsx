@@ -164,8 +164,8 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
         className={cn(
           "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
           dragging
-            ? "border-neutral bg-neutral/5"
-            : "border-foreground/15 hover:border-foreground/30",
+            ? "border-active bg-active/40"
+            : "border-foreground/15 hover:border-foreground/60",
         )}
       >
         <Upload className="h-8 w-8 text-foreground/60" />
@@ -207,7 +207,7 @@ export function FilePickerButton({
         aria-label={label}
         className={cn(
           buttonVariants({ variant, size }),
-          dragging && "ring-2 ring-neutral ring-offset-2 ring-offset-background",
+          dragging && "ring-2 ring-active ring-offset-2 ring-offset-background",
           className,
         )}
       >

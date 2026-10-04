@@ -106,7 +106,7 @@ export function SearchInput({
             data-slot="search-input-clear"
             aria-label={clearLabel}
             onClick={clear}
-            className={buttonVariants({ variant: "ghost", size: "icon-xs" })}
+            className={buttonVariants({ variant: "secondary", size: "icon-xs" })}
           >
             <X />
           </button>

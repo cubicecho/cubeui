@@ -25,7 +25,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Control/DatePicker",
+  title: "Controls/DatePicker",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;

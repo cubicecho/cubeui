@@ -244,7 +244,7 @@ for the app's navigation rail, which has a bar to stand in for it.
         <SidebarSection
           as="nav"
           title="Projects"
-          action={<Button variant="ghost" size="xs" aria-label="New project"><Plus /></Button>}
+          action={<Button variant="outline" size="xs" aria-label="New project"><Plus /></Button>}
           status={
             <QueryState
               compact
@@ -431,7 +431,7 @@ while the root's own display class happens to merge first.
       {v.label}
     </Link>
   ))}
-  action={<Button variant="ghost" size="sm" onPress={signOut}>Sign out</Button>}
+  action={<Button variant="outline" size="sm" onPress={signOut}>Sign out</Button>}
   content={<Outlet />}
 />
 ```
@@ -572,7 +572,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   content={<WorkspaceFields value={draft} onChange={setDraft} />}
   footerActions={(close) => (
     <>
-      <Button variant="ghost" onClick={close}>Cancel</Button>
+      <Button variant="outline" onClick={close}>Cancel</Button>
       <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
     </>
   )}
@@ -605,7 +605,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   ```tsx
   footerActions={(close) => (
     <>
-      <Button variant="ghost" onClick={close}>Cancel</Button>
+      <Button variant="outline" onClick={close}>Cancel</Button>
       <Button onClick={save}>Save</Button>
     </>
   )}
@@ -656,12 +656,12 @@ A heading over a group of fields or rows, inside a page or a card.
 
 A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
 over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
-counterpart, and instead of a chevron `<button>` or a ghost `Button` with a `useState` beside it.
+counterpart, and instead of a chevron `<button>` or a `Button` with a `useState` beside it.
 
 ```tsx
 <Disclosure
   title="Raw output"
-  action={<Button size="sm" variant="ghost" onPress={copy}>Copy</Button>}
+  action={<Button size="sm" variant="outline" onPress={copy}>Copy</Button>}
   content={<CodeBlock content={json} />}
 />
 
@@ -974,7 +974,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
     description={p.email}
     meta={relativeTime(p.lastContactedAt)}
     onPress={() => router.push(`/persons/${p.id}`)}
-    action={<Button size="sm" variant="ghost" onPress={() => remove(p.id)}>Delete</Button>}
+    action={<Button size="sm" variant="outline" onPress={() => remove(p.id)}>Delete</Button>}
   />
 ))}
 ```
@@ -987,11 +987,15 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `action` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  ghost `Button`s (or `ActionButton`s); the row adds the gap.
+  outline `Button`s (or `ActionButton`s); the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leading` and `action`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
   `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
+- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, stays
+  that under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
+  there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
+  grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
   `Section`, a `CardLayout` `content` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-foreground/10 bg-secondary"`.

@@ -69,7 +69,7 @@ export function PasswordInput({
       trailing={
         revealable ? (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon-xs"
             aria-label={visible ? hideLabel : showLabel}
             disabled={disabled}

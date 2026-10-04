@@ -120,7 +120,7 @@ function Input({
       {...props}
       className={cn(
         INPUT_CLASS,
-        "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative aria-invalid:focus:border-active",
         leading != null && INPUT_LEADING_PAD_CLASS,
         trailing != null && INPUT_TRAILING_PAD_CLASS,
         className,

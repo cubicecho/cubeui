@@ -21,7 +21,7 @@ import { SideBySide } from "./side-by-side";
  * in the description-only row keeps its own text as its name. The a11y addon runs as an error on
  * every story, so each one is also that audit.
  */
-const meta = { title: "Stage 0/SettingRow" } satisfies Meta;
+const meta = { title: "RN Parity/SettingRow" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

@@ -32,7 +32,7 @@ import { SideBySide } from "./side-by-side";
  * The native half is imported by its full name because Vite would otherwise resolve
  * `command.web.tsx`.
  */
-const meta = { title: "Command" } satisfies Meta;
+const meta = { title: "RN Parity/Command" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

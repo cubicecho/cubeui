@@ -25,7 +25,7 @@ export const itemVariants = cva(
       variant: {
         default: "bg-transparent",
         outline: "border-foreground/10",
-        muted: "bg-foreground/5",
+        muted: "bg-foreground/10",
       },
       size: {
         default: "gap-4 p-4",
@@ -35,6 +35,13 @@ export const itemVariants = cva(
     defaultVariants: { variant: "default", size: "default" },
   },
 );
+
+/**
+ * The chosen row: the one whose record is open beside the list. A tint in `active` and not the
+ * hover grey, which on a row that stays put reads as a hover that stuck. The colour is not the
+ * whole of it: say which row it is with `aria-current` on the link, or `aria-selected` in a listbox.
+ */
+export const ITEM_SELECTED_CLASS = "bg-active/40";
 
 /**
  * The start of the row: an icon in a small tile, an image, or whatever is passed. On the web an

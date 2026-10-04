@@ -137,7 +137,7 @@ const EmptyDescription = React.forwardRef<HTMLSpanElement, TextProps>(
       data-slot="empty-description"
       className={cn(
         "cube-rn-text",
-        "text-center text-sm text-foreground/60 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-neutral",
+        "text-center text-sm text-foreground/60 [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-info",
         className,
       )}
       {...(props as React.ComponentPropsWithoutRef<"span">)}

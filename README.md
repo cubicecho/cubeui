@@ -286,7 +286,7 @@ items. 23 of the web items are web-only, and every native item has a web half.
 
 ## Stage 1 — tokens
 
-`tokens/palette.mjs` is the single source of truth: 17 tokens in light and dark, stored as
+`tokens/palette.mjs` is the single source of truth: the tokens in light and dark, stored as
 OKLCH components, each named for what the colour means (the list is in `AGENTS.md`). shadcn's 26
 names are emitted beside them as aliases, so a vendored shadcn component keeps working.
 `npm run tokens:build` emits three encodings of it into `dist/`:

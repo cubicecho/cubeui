@@ -15,7 +15,7 @@ import { SideBySide } from "./side-by-side";
  * runs once and then closes. The React Native half (the native `Dialog` underneath) runs on device
  * only, like every twinned item's.
  */
-const meta = { title: "Stage 0/AlertDialog" } satisfies Meta;
+const meta = { title: "RN Parity/AlertDialog" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

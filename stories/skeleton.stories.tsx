@@ -9,7 +9,7 @@ import { SideBySide } from "./side-by-side";
  * half by CSS animation, the native one by the opacity `Animated` drives. The play test measures
  * each block and checks both are wired to pulse.
  */
-const meta = { title: "Stage 0/Skeleton" } satisfies Meta;
+const meta = { title: "RN Parity/Skeleton" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

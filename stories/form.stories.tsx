@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
  * the right. What is asserted is what a screen reader hears — the date in the trigger's name, a
  * name on the swatch row — and that `SubmitButton`'s `disabled` only ever tightens the guard.
  */
-const meta = { title: "Stage 0/Form" } satisfies Meta;
+const meta = { title: "RN Parity/Form" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

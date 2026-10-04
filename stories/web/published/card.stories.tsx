@@ -14,7 +14,7 @@ import {
  * real heading, and the pressable one, which is a real button rather than a `div` with a click.
  */
 const meta = {
-  title: "cubeui/Card",
+  title: "Layout/Card",
   component: Card,
   decorators: [
     (Story) => (

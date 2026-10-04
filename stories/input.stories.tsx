@@ -12,7 +12,7 @@ import { SideBySide } from "./side-by-side";
  * The keys an inline edit answers, on both halves: Enter commits through `onSubmitEditing`, Escape
  * puts it back through `onEscape`, and `onKeyPress` hears every key as `nativeEvent.key` first.
  */
-const meta = { title: "Stage 0/Input" } satisfies Meta;
+const meta = { title: "RN Parity/Input" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -94,7 +94,7 @@ export const Slots: Story = {
             leading={<NativeSearch />}
             trailing={
               <NativeButton
-                variant="ghost"
+                variant="outline"
                 size="icon-xs"
                 aria-label="Native clear"
                 onPress={onClear}
@@ -120,7 +120,7 @@ export const Slots: Story = {
             leading={<CompiledSearch />}
             trailing={
               <CompiledButton
-                variant="ghost"
+                variant="outline"
                 size="icon-xs"
                 aria-label="Compiled clear"
                 onClick={onClear}

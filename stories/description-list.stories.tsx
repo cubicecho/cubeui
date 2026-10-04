@@ -21,7 +21,7 @@ import { SideBySide } from "./side-by-side";
  * on every story here, so each one is also that audit.
  */
 const meta = {
-  title: "Layout/Description List",
+  title: "RN Parity/DescriptionList",
   component: Native,
 } satisfies Meta<typeof Native>;
 

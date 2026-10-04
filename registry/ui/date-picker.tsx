@@ -158,7 +158,7 @@ function PickerTrigger({
 function ClearRow({ onClear }: { onClear: () => void }) {
   return (
     <View className="flex-row justify-end border-t border-foreground/10 p-1">
-      <Button variant="ghost" size="sm" onPress={onClear}>
+      <Button variant="outline" size="sm" onPress={onClear}>
         <X className="h-4 w-4" aria-hidden />
         Clear
       </Button>

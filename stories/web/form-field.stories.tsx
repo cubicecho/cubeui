@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 const meta = {
-  title: "Form/FormField",
+  title: "Forms/FormField",
   component: FormField,
   parameters: { layout: "centered" },
   args: { className: "w-[360px]" },
@@ -280,7 +280,7 @@ export const LabelAction: Story = {
     label: "Password",
     required: true,
     action: (
-      <Button variant="link" size="sm" className="h-auto p-0 text-xs">
+      <Button variant="outline" size="xs">
         Forgot?
       </Button>
     ),

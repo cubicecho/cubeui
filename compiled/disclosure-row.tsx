@@ -91,7 +91,7 @@ export function DisclosureRow({
         className={cn(
           "cube-rn-view cube-rn-pressable",
           "min-w-0 flex-1 flex-row items-start gap-2 rounded",
-          "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-active",
+          "text-left focus-visible:bg-hover focus-visible:outline-none",
         )}
       >
         <ChevronRight

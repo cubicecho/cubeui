@@ -94,7 +94,7 @@ export const WithAnAction: Story = {
   args: {
     ...args,
     action: (
-      <Button variant="ghost" size="icon" onClick={fn()} aria-label="Delete this run">
+      <Button variant="outline" size="icon" onClick={fn()} aria-label="Delete this run">
         <Trash2 />
       </Button>
     ),
