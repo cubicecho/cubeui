@@ -832,10 +832,12 @@ One figure on a card — a label, the number, a line under it. A row of them is 
 dashboard or a status page; pressable, they are the filter over the list below.
 
 ```tsx
+import { formatCount, formatDuration } from "@/lib/format";
+
 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
   <StatTile label="Turns" value={formatCount(engine.turns)} />
-  <StatTile label="Entities" value={formatCount(engine.entities)} hint={`${edges} edges`} />
-  <StatTile label="Uptime" value={formatUptime(uptime)} hint={`v${version}`} icon={<Clock />} />
+  <StatTile label="Entities" value={formatCount(engine.entities)} hint={formatCount(edges, "edge")} />
+  <StatTile label="Uptime" value={formatDuration(uptime)} hint={`v${version}`} icon={<Clock />} />
   <StatTile label="Embeddings" value={count} loading={isPending} />
 </div>
 

@@ -905,6 +905,24 @@ Showing a colour the user picked is three small items, all on both halves:
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
   inherited foreground. Do not hardcode white on a chip: it fails AA on about half of any palette.
 
+## Numbers, sizes and dates as text
+
+`@cubeui/format` installs `@/lib/format`: plain functions, the same on both halves. Use them
+where an app would otherwise write its own `lib/format.ts`.
+
+| Call | Gives |
+|---|---|
+| `formatCount(1204)` | `1,204` |
+| `formatCount(3, "file")`, `formatCount(2, "entry", "entries")` | `3 files`, `2 entries` |
+| `formatBytes(1536)` | `1.5 KB` — B to GB, a step is 1024 |
+| `formatDuration(11520)` | `3h 12m` — also `42s`, `5m`, `2d 4h`; it takes seconds |
+| `formatDate(note.updatedAt)` | `Oct 3, 2026`, in the reader's locale |
+| `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `just now` under a minute |
+
+`formatDate` and `formatAgo` take an ISO string, epoch milliseconds or a `Date`, and return an
+empty string for one that does not parse, so a missing timestamp draws nothing. `formatAgo` takes
+a second argument, the moment to count from, for a screen that ticks its own clock.
+
 ## An icon in an input
 
 An icon inside a field is `Input`'s `leading`, on both halves. Do not wrap the input in a

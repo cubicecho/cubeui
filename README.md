@@ -399,7 +399,7 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color` |
+| lib | `utils`, `color`, `readable-text-color`, `format` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |

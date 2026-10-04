@@ -67,6 +67,18 @@
       ]
     },
     {
+      "name": "format",
+      "type": "registry:lib",
+      "title": "Format",
+      "description": "How a count, a size in bytes, a duration and a date are written for a reader: formatCount, formatBytes, formatDuration, formatDate and formatAgo, on Intl with no dependency.",
+      "files": [
+        {
+          "path": "registry/lib/format.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 94 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 95 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 94 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 95 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  80 on both platforms · 14 web-only · 0 native-only.
+  81 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -380,6 +380,11 @@
           <th scope="row"><code>@cubeui/form-set</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>Every cubeui form component in one install, TanStack binding included. Named `form-set` rather than `form`: that name is the React Native `Form` component in this registry, and the shadcn CLI resolves a cross-item import by basename, so the two cannot share it.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/format</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>How a count, a size in bytes, a duration and a date are written for a reader: formatCount, formatBytes, formatDuration, formatDate and formatAgo, on Intl with no dependency.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/header-content-footer</code></th>
