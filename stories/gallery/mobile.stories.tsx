@@ -213,6 +213,8 @@ const NOT_SHOWN: Record<string, string> = {
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "copy-button":
     "The native source imports expo-clipboard, which this repo only declares in types/, so it cannot run in a browser.",
+  "download-button":
+    "The native source imports expo-file-system and expo-sharing, which this repo only declares in types/, so it cannot run in a browser.",
 };
 
 const onButtonPress = fn();

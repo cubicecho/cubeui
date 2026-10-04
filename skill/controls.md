@@ -230,6 +230,37 @@ an `absolute` corner over it.
 - Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
   always set, which are the two things `ActionButton` exists to guarantee.
 
+## Download button
+
+A button that saves a file is `DownloadButton`, on both halves. Do not write the busy state, the
+`<a download>` and the `URL.revokeObjectURL` again:
+
+```tsx
+<DownloadButton
+  label="Download note.md"
+  filename="note.md"
+  mimeType="text/markdown"
+  source={() => getFile(path)}
+  onError={(error) => toast.error(String(error))}
+/>
+```
+
+- `source` is the content — a `Blob` or a string — or a function returning either, or a promise
+  of either. A function is called on the press, so a list of rows fetches nothing until asked.
+- While `source` is pending the button is disabled and `aria-busy`, with a spinner where the
+  glyph was. A `source` that throws calls `onError` and leaves the button as it was;
+  `onDownloaded` runs after a good one.
+- `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
+- On the web the file goes to the browser's downloads. **On a device there is no downloads
+  folder**, so `destination` says where: `"share"` opens the share sheet, `"files"` asks for a
+  folder and writes into it, and `"ask"`, the default, puts both in a menu on the button so the
+  person pressing decides. The web half ignores it.
+- `downloadBlob(content, filename, { mimeType, destination })` is the function the button calls,
+  exported from the same module for the download that is not a button — a menu row, the end of
+  an export job. On a device it takes `"share"` (the default) or `"files"`.
+- The native item installs `expo-file-system` and `expo-sharing`; a DOM app installs nothing
+  extra.
+
 ## Code block
 
 A block of preformatted text — a config file, a command to paste, a JSON payload, a log — is

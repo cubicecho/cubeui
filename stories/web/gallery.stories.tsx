@@ -101,6 +101,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DownloadButton } from "@/components/ui/download-button";
 import {
   Empty,
   EmptyContent,
@@ -1024,6 +1025,7 @@ function ActionButtons() {
         content={
           <>
             <CopyButton value="sk-live-1234" label="Copy the API key" />
+            <DownloadButton source="# Notes" filename="notes.md" label="Download notes.md" />
             <ActionButton label="Edit" variant="outline" size="icon">
               <Pencil />
             </ActionButton>
@@ -1604,8 +1606,8 @@ const sections: GallerySection[] = [
     content: <Pickers />,
   },
   {
-    title: "Copy, action and confirm buttons",
-    items: ["copy-button", "action-button", "confirm-button"],
+    title: "Copy, download, action and confirm buttons",
+    items: ["copy-button", "download-button", "action-button", "confirm-button"],
     content: <ActionButtons />,
   },
   { title: "Markdown", items: ["markdown"], content: <Markdown content={NOTES} /> },

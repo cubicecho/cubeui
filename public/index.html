@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 95 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 96 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 95 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 96 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  81 on both platforms · 14 web-only · 0 native-only.
+  82 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -335,6 +335,11 @@
           <th scope="row"><code>@cubeui/disclosure-row</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `content` mounted only while open. Controlled with `open`/`onOpenChange`.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/download-button</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An icon button that saves `source` as a file named `filename`, disabled with a spinner while a fetched `source` is pending, and `downloadBlob()`, the function it calls. The browser's own download on the web; on device the share sheet or a folder the person picks, chosen by `destination` or, by default, from a menu on the button.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/empty</code></th>

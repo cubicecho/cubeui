@@ -1,0 +1,123 @@
+/**
+ * An icon button that saves a file, and waits visibly while the file is fetched.
+ * `download-button.web.tsx` is the web counterpart and `download-button-base.ts` holds what they
+ * share, the pending state included.
+ *
+ * A phone has no downloads folder to drop a file in, so there are two places it can go: the
+ * share sheet (`expo-sharing`), or a folder the person picks (`expo-file-system`). Which is
+ * `destination`, and by default the button asks — a menu of the two — because only the person
+ * holding the phone knows whether this file is for a message or for keeping.
+ */
+import { Directory, File, Paths } from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { Button } from "@/components/ui/button";
+import {
+  type DownloadButtonProps,
+  type DownloadContent,
+  type DownloadDestination,
+  useDownload,
+} from "@/components/ui/download-button-base";
+import { Download, Folder, Upload } from "@/components/ui/icons";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/menu";
+import { Spinner } from "@/components/ui/spinner";
+
+export type { DownloadButtonProps, DownloadContent, DownloadDestination };
+
+/** A `Blob` read through a data URL, for a runtime whose `Blob` has no `arrayBuffer()`. */
+function readAsBytes(blob: Blob): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error ?? new Error("The file could not be read"));
+    reader.onload = () => {
+      const encoded = String(reader.result).split(",")[1] ?? "";
+      resolve(Uint8Array.from(atob(encoded), (character) => character.charCodeAt(0)));
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
+/** What `File.write` takes: text as it is, bytes as a `Uint8Array`. */
+async function writable(content: DownloadContent): Promise<string | Uint8Array> {
+  if (typeof content === "string") return content;
+  if (typeof content.arrayBuffer === "function") return new Uint8Array(await content.arrayBuffer());
+  return readAsBytes(content);
+}
+
+/**
+ * Saves `content` as `filename`: to the share sheet, or into a folder the person picks.
+ *
+ * `share` writes the file to the cache first, because the share sheet shares a file that exists
+ * and not bytes in memory; the cache is the system's to clear. `files` writes straight into the
+ * picked folder.
+ */
+export async function downloadBlob(
+  content: DownloadContent,
+  filename: string,
+  {
+    mimeType = "text/plain",
+    destination = "share",
+  }: {
+    mimeType?: string | undefined;
+    destination?: Exclude<DownloadDestination, "ask"> | undefined;
+  } = {},
+): Promise<void> {
+  const type = typeof content === "string" ? mimeType : content.type || mimeType;
+  const data = await writable(content);
+
+  if (destination === "files") {
+    const folder = await Directory.pickDirectoryAsync();
+    folder.createFile(filename, type).write(data);
+    return;
+  }
+
+  const file = new File(Paths.cache, filename);
+  file.create({ overwrite: true });
+  file.write(data);
+  await Sharing.shareAsync(file.uri, { mimeType: type, dialogTitle: filename });
+}
+
+export function DownloadButton({
+  source,
+  filename,
+  mimeType,
+  label = "Download",
+  variant = "outline",
+  size = "icon-sm",
+  destination = "ask",
+  disabled,
+  onDownloaded,
+  onError,
+  className,
+}: DownloadButtonProps) {
+  const { pending, download } = useDownload({ source, onDownloaded, onError });
+
+  const save = (to: Exclude<DownloadDestination, "ask">) =>
+    void download((content) => downloadBlob(content, filename, { mimeType, destination: to }));
+
+  const button = (
+    <Button
+      data-slot="download-button"
+      variant={variant}
+      size={size}
+      aria-label={label}
+      aria-busy={pending}
+      disabled={disabled || pending}
+      className={className}
+      {...(destination === "ask" ? {} : { onPress: () => save(destination) })}
+    >
+      {pending ? <Spinner label="Downloading" /> : <Download aria-hidden />}
+    </Button>
+  );
+
+  if (destination !== "ask") return button;
+
+  return (
+    <Menu>
+      <MenuTrigger asChild>{button}</MenuTrigger>
+      <MenuContent aria-label={label}>
+        <MenuItem icon={<Upload />} label="Share…" onSelect={() => save("share")} />
+        <MenuItem icon={<Folder />} label="Save to a folder" onSelect={() => save("files")} />
+      </MenuContent>
+    </Menu>
+  );
+}

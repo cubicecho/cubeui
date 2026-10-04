@@ -776,6 +776,28 @@
       ]
     },
     {
+      "name": "download-button",
+      "type": "registry:ui",
+      "title": "Download button",
+      "description": "An icon button that saves `source` as a file named `filename`, disabled with a spinner while a fetched `source` is pending, and `downloadBlob()`, the function it calls. The browser's own download on the web; on device the share sheet or a folder the person picks, chosen by `destination` or, by default, from a menu on the button.",
+      "registryDependencies": [
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/menu",
+        "@cubeui/spinner"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/download-button-base.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/download-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
