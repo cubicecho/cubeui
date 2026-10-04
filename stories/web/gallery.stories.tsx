@@ -1716,25 +1716,31 @@ const sections: GallerySection[] = [
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
           content={
-            <Page>
-              <PageHeader level={3} title="Projects" />
-              <CardGrid>
-                {SERVERS.map((server) => (
-                  <Card key={server.name}>
-                    <CardHeader>
-                      <CardTitle>{server.name}</CardTitle>
-                      <CardDescription>{server.status}</CardDescription>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </CardGrid>
-            </Page>
+            <Page
+              contentSlot={
+                <>
+                  <PageHeader level={3} title="Projects" />
+                  <CardGrid
+                    contentSlot={SERVERS.map((server) => (
+                      <Card key={server.name}>
+                        <CardHeader>
+                          <CardTitle>{server.name}</CardTitle>
+                          <CardDescription>{server.status}</CardDescription>
+                        </CardHeader>
+                      </Card>
+                    ))}
+                  />
+                </>
+              }
+            />
           }
         />
         <Frame
           content={
-            <DetailPage<Server> entity={SERVERS[0]} notFoundLabel="Server not found">
-              {(server) => (
+            <DetailPage<Server>
+              entity={SERVERS[0]}
+              notFoundLabel="Server not found"
+              contentSlot={(server) => (
                 <>
                   <DetailHeader
                     onBack={noop}
@@ -1749,7 +1755,7 @@ const sections: GallerySection[] = [
                   <p className="text-foreground text-sm">The body of the detail page.</p>
                 </>
               )}
-            </DetailPage>
+            />
           }
         />
       </div>

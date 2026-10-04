@@ -194,8 +194,9 @@ prop that takes words (`title`, `description`, `label`) has no suffix and the co
 them itself, and a prop that takes either kept its name: `MenuItem`'s `trailing`, `Button`'s
 `content`. The class props did not move, so `contentClassName` is still `contentClassName`.
 
-The primitives are shadcn-shaped and take children as shadcn's do, and so do the few React Native
-screen shapes (`Page`, `DetailPage`), because a React Native tree is a tree of views. Rule 1 of
+The primitives are shadcn-shaped and take children as shadcn's do. The React Native screen
+shapes (`Page`, `CardGrid`, `DetailPage`) took children too and no longer do: each takes
+`contentSlot`, and `DetailPage`'s is a function called with the loaded record. Rule 1 of
 [`docs/component-conventions.md`](docs/component-conventions.md) carries the argument.
 
 ## The forms assume TanStack Form

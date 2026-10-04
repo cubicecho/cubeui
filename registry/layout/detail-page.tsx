@@ -1,14 +1,14 @@
 /**
  * The `<Page>` shell plus the loading / not-found guard a detail route repeats.
  *
- * `children` is a function so the entity is non-null inside it — the guard and
+ * `contentSlot` is a function so the entity is non-null inside it — the guard and
  * the narrowing are the same act, and a render prop is what makes the type
  * system agree. A detail route's body then never writes `entity!` or an
  * early return of its own.
  */
-import type { ReactNode } from "react";
 import { Text } from "react-native";
 import { Page } from "@/components/page";
+import type { SlotNode } from "@/lib/utils";
 
 type DetailPageProps<T> = {
   /** The loaded entity, or null/undefined while loading or when missing. */
@@ -18,7 +18,7 @@ type DetailPageProps<T> = {
   notFoundLabel: string;
   className?: string;
   /** Rendered only once the entity is present, so it is non-null inside. */
-  children: (entity: T) => ReactNode;
+  contentSlot: (entity: T) => SlotNode;
 };
 
 export function DetailPage<T>({
@@ -26,15 +26,18 @@ export function DetailPage<T>({
   loading,
   notFoundLabel,
   className,
-  children,
+  contentSlot,
 }: DetailPageProps<T>) {
   return (
-    <Page {...(className ? { className } : {})}>
-      {entity ? (
-        children(entity)
-      ) : (
-        <Text className="text-foreground/60">{loading ? "Loading…" : notFoundLabel}</Text>
-      )}
-    </Page>
+    <Page
+      {...(className ? { className } : {})}
+      contentSlot={
+        entity ? (
+          contentSlot(entity)
+        ) : (
+          <Text className="text-foreground/60">{loading ? "Loading…" : notFoundLabel}</Text>
+        )
+      }
+    />
   );
 }

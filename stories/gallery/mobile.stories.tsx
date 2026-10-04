@@ -1065,27 +1065,35 @@ const sections: GallerySection[] = [
     description: "A scrolling screen: a header, a grid of cards, an empty state.",
     content: (
       <Screen>
-        <Page>
-          <PageHeader level={3} title="Projects" description="Two active." />
-          <CardGrid>
-            <Card>
-              <CardHeader>
-                <CardTitle>Quarterly review</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Launch plan</CardTitle>
-              </CardHeader>
-            </Card>
-          </CardGrid>
-          <EmptyState
-            level={3}
-            icon={Folder}
-            title="Nothing archived"
-            description="Archived projects show up here."
-          />
-        </Page>
+        <Page
+          contentSlot={
+            <>
+              <PageHeader level={3} title="Projects" description="Two active." />
+              <CardGrid
+                contentSlot={
+                  <>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Quarterly review</CardTitle>
+                      </CardHeader>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Launch plan</CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </>
+                }
+              />
+              <EmptyState
+                level={3}
+                icon={Folder}
+                title="Nothing archived"
+                description="Archived projects show up here."
+              />
+            </>
+          }
+        />
       </Screen>
     ),
   },
@@ -1110,8 +1118,11 @@ const sections: GallerySection[] = [
     description: "The record when it has loaded, a line of text when it has not.",
     content: (
       <Screen>
-        <DetailPage<Project> entity={project} loading={false} notFoundLabel="Project not found.">
-          {(found) => (
+        <DetailPage<Project>
+          entity={project}
+          loading={false}
+          notFoundLabel="Project not found."
+          contentSlot={(found) => (
             <DescriptionList
               contentSlot={
                 <>
@@ -1121,10 +1132,13 @@ const sections: GallerySection[] = [
               }
             />
           )}
-        </DetailPage>
-        <DetailPage<Project> entity={null} loading={false} notFoundLabel="Project not found.">
-          {() => null}
-        </DetailPage>
+        />
+        <DetailPage<Project>
+          entity={null}
+          loading={false}
+          notFoundLabel="Project not found."
+          contentSlot={() => null}
+        />
       </Screen>
     ),
   },

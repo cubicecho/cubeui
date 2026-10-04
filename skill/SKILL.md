@@ -302,9 +302,10 @@ same thing without the name.
 
 ## Shapes on React Native
 
-The native half is its own set: fewer shells, because a phone screen has fewer shapes in it, and
-the ones it has take `children` rather than a `contentSlot` prop — a React Native tree is a tree of
-views and there is no shell wrapping to hide.
+The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They
+take their body as `contentSlot` like every other shell: `<Page contentSlot={…} />`, and
+`<CardGrid contentSlot={cards} />`, where the cards are an array or a fragment and each one gets a
+cell. `DetailPage`'s `contentSlot` is a function, called with the record once it has loaded.
 
 | The shape you are building | Use | Item |
 | --- | --- | --- |

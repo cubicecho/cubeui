@@ -21,7 +21,7 @@
  * to nothing on device: the breakpoint max-widths it carries are what keeps the
  * web layout centred, and a phone is narrower than the first breakpoint anyway.
  */
-import { Children, type ReactNode } from "react";
+import { Children, Fragment, isValidElement, type ReactElement, type ReactNode } from "react";
 import type { IconComponent } from "@/components/ui/icons-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
@@ -29,7 +29,8 @@ import { PageHeader, type PageHeaderProps } from "./page-header";
 
 type PageProps = {
   className?: string;
-  children: ReactNode;
+  /** The screen's body: the header, the grid, the rows, in the order they are drawn. */
+  contentSlot: SlotNode;
   /**
    * Full-height flex column (`h-full min-h-0`) instead of the default `flex-1`.
    * For a view whose body scrolls internally rather than as a whole.
@@ -41,17 +42,17 @@ type PageProps = {
   width?: "narrow";
 };
 
-export function Page({ className, children, fill = false, scroll = true, width }: PageProps) {
+export function Page({ className, contentSlot, fill = false, scroll = true, width }: PageProps) {
   const content = cn("container mx-auto px-4 py-6", width === "narrow" && "max-w-2xl", className);
   const outer = fill ? "h-full min-h-0" : "flex-1";
 
   if (!scroll) {
-    return <div className={cn("cube-rn-view", outer, "flex-col", content)}>{children}</div>;
+    return <div className={cn("cube-rn-view", outer, "flex-col", content)}>{contentSlot}</div>;
   }
 
   return (
     <div className={cn("cube-rn-view overflow-auto", outer)}>
-      <div className={cn("cube-rn-view", content)}>{children}</div>
+      <div className={cn("cube-rn-view", content)}>{contentSlot}</div>
     </div>
   );
 }
@@ -69,24 +70,46 @@ export { PageHeader, type PageHeaderProps };
  * The responsive card grid shared by list pages.
  *
  * `grid` has no native equivalent, so the columns come from flex wrapping plus
- * a percentage width on each cell. Each child is wrapped here rather than at the
+ * a percentage width on each cell. Each card is wrapped here rather than at the
  * call sites: the width has to sit on the cell, and a `Card` that carried it
  * would then only be layout-correct inside a grid.
+ *
+ * The cards are `contentSlot`, as an array or a fragment. Both are opened, so a
+ * fragment of three cards is three cells and not one.
  */
-export function CardGrid({ className, children }: { className?: string; children: ReactNode }) {
+export function CardGrid({
+  className,
+  contentSlot,
+}: {
+  className?: string;
+  contentSlot: SlotNode;
+}) {
   return (
     <div className={cn("cube-rn-view", "flex-row flex-wrap gap-4", className)}>
-      {Children.map(children, (child) =>
-        child == null || child === false ? null : (
-          // The basis is a fraction of the row minus its share of the `gap-4`
-          // above, which flex-basis percentages do not account for.
-          <div className="cube-rn-view w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)]">
-            {child}
-          </div>
-        ),
-      )}
+      {cells(contentSlot).map(({ key, cell }) => (
+        // The basis is a fraction of the row minus its share of the `gap-4`
+        // above, which flex-basis percentages do not account for.
+        <div
+          key={key}
+          className="cube-rn-view w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)]"
+        >
+          {cell}
+        </div>
+      ))}
     </div>
   );
+}
+
+/**
+ * A slot's elements, one per cell: arrays and fragments opened, the nothing values dropped. A
+ * card's key is prefixed with its fragment's, since two opened fragments number their cards alike.
+ */
+function cells(slot: SlotNode, prefix = ""): { key: string; cell: ReactElement }[] {
+  return Children.toArray(slot).flatMap((child) => {
+    if (!isValidElement<{ children?: SlotNode }>(child)) return [];
+    const key = `${prefix}${child.key}`;
+    return child.type === Fragment ? cells(child.props.children, key) : [{ key, cell: child }];
+  });
 }
 
 type EmptyStateProps = {

@@ -1260,8 +1260,8 @@
       "name": "detail-page",
       "type": "registry:component",
       "title": "Detail Page",
-      "description": "The page shell plus a loading / not-found guard that narrows the entity for its children.",
-      "registryDependencies": ["@cubeui/page"],
+      "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/page"],
       "files": [
         {
           "path": "registry/layout/detail-page.tsx",
