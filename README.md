@@ -1032,10 +1032,11 @@ copy of it is wrong the first time an item is added — silently, since nothing 
 `npm run page:check` fails if the committed page has drifted, the same guard `dist/` and `compiled/`
 are held to, and it runs in CI beside `git diff --exit-code -- public/r`.
 
-One file, no build step of its own, no framework and no CDN font. The palette is cubesite's
-`brand/tokens.css` values inlined rather than imported — this is served from a different host and
-should not fetch a stylesheet to render — and the mark and `favicon.svg` are cubesite's, both
-`currentColor`-driven and so correct in either theme from one file.
+One file, no build step of its own, no framework and no CDN font. The palette is this registry's
+own default one, read from `tokens/palette.mjs` by the script and inlined under the names the
+registry ships (`--background`, `--foreground`, `--secondary`, `--info`), so the page cannot
+drift from the palette and fetches no stylesheet to render. The mark and `favicon.svg` are
+cubesite's, both `currentColor`-driven and so correct in either theme from one file.
 
 ### The Storybook, deployed beside the registry
 
