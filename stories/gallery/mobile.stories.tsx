@@ -499,13 +499,13 @@ function ConfirmAndToastButtons() {
             description: "They lose access straight away.",
             confirmLabel: "Remove",
           });
-          toast(ok ? "Teammate removed" : "Nothing changed", ok ? "success" : "error");
+          toast(ok ? "Teammate removed" : "Nothing changed", ok ? "positive" : "error");
         }}
         content="Ask, then toast the answer"
       />
       <Button
         variant="outline"
-        onPress={() => toast("Changes saved", "success")}
+        onPress={() => toast("Changes saved", "positive")}
         content="Show a toast"
       />
     </Stack>
@@ -653,7 +653,7 @@ function Rows() {
         onOpenChange={setOpen}
         title="Deploy 482"
         meta="2 minutes ago"
-        badges={<Badge variant="success" label="Passed" />}
+        badges={<Badge variant="positive" label="Passed" />}
         content={<Text className="text-foreground text-sm">All 214 checks passed.</Text>}
       />
     </Stack>
@@ -728,7 +728,7 @@ const sections: GallerySection[] = [
           <Badge label="Default" />
           <Badge variant="secondary" label="Secondary" />
           <Badge variant="outline" label="Outline" />
-          <Badge variant="success" label="Success" />
+          <Badge variant="positive" label="Positive" />
           <Badge variant="warning" label="Warning" />
           <Badge variant="destructive" label="Destructive" />
           <Badge variant="ghost" label="Ghost" />
@@ -1025,7 +1025,7 @@ const sections: GallerySection[] = [
           colorLabel="Green"
           title="Quarterly review"
           subtitle="Due on Friday"
-          badge={<Badge variant="success" label="On track" />}
+          badge={<Badge variant="positive" label="On track" />}
           actions={<EditButton onPress={noop} />}
         />
       </Stack>

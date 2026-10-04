@@ -3,7 +3,7 @@
  * Its own module because Metro resolves `./badge` to `badge.web.tsx` on web.
  *
  * The variant names are shadcn's six — `default`, `secondary`, `destructive`,
- * `outline`, `ghost`, `link` — with their meanings, plus `success` and `warning`,
+ * `outline`, `ghost`, `link` — with their meanings, plus `positive`, `warning` and `info`,
  * which shadcn's token set has no answer for and cubeui's has (see `badge.tsx`'s header).
  *
  * The web half also takes every `<span>` attribute (`style`, `title`, `onClick`,
@@ -20,7 +20,7 @@ export type BadgeVariant =
   | "outline"
   | "ghost"
   | "link"
-  | "success"
+  | "positive"
   | "warning"
   | "info";
 
@@ -101,7 +101,7 @@ export const badgeContainerVariants = cva("shrink-0 rounded-full border border-t
       outline: "border-foreground/10 bg-transparent",
       ghost: "bg-transparent",
       link: "bg-transparent",
-      success: "bg-positive",
+      positive: "bg-positive",
       warning: "bg-warning",
       info: "bg-info",
     },
@@ -121,7 +121,7 @@ const BADGE_INK = {
   outline: "text-foreground",
   ghost: "text-foreground",
   link: "text-info",
-  success: "text-positive-foreground",
+  positive: "text-positive-foreground",
   warning: "text-warning-foreground",
   info: "text-info-foreground",
 } satisfies Record<BadgeVariant, string>;

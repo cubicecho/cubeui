@@ -38,7 +38,7 @@ export const Variants: Story = {
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
       <Badge variant="outline">Outline</Badge>
-      <Badge variant="success">Success</Badge>
+      <Badge variant="positive">Positive</Badge>
       <Badge variant="warning">Warning</Badge>
     </>
   ),

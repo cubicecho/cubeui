@@ -15,7 +15,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import type { ViewStyle } from "react-native";
 import { Platform, Pressable, Text, View } from "react-native";
 
-export type ToastTone = "error" | "warning" | "success" | "info";
+export type ToastTone = "error" | "warning" | "positive" | "info";
 
 type Toast = { id: number; message: string; tone: ToastTone };
 
@@ -28,21 +28,21 @@ const ToastContext = createContext<ShowToast | null>(null);
 const DURATION_MS: Record<ToastTone, number> = {
   error: 6000,
   warning: 6000,
-  success: 3000,
+  positive: 3000,
   info: 3000,
 };
 
 const TONE_CLASS: Record<ToastTone, string> = {
   error: "bg-negative",
   warning: "bg-warning",
-  success: "bg-positive",
+  positive: "bg-positive",
   info: "bg-info",
 };
 
 const TONE_TEXT_CLASS: Record<ToastTone, string> = {
   error: "text-negative-foreground",
   warning: "text-warning-foreground",
-  success: "text-positive-foreground",
+  positive: "text-positive-foreground",
   info: "text-info-foreground",
 };
 

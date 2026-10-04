@@ -6,7 +6,7 @@ import { ColorPicker } from "../registry/ui/color-picker";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 
 /**
- * Not a Stage 0 comparison — these two have no compiled counterpart. They are here because the
+ * Not an RN Parity comparison — these two have no compiled counterpart. They are here because the
  * segmented spike found a whole class of bug rather than one instance of it, and a fix nothing
  * holds is a fix that comes back.
  *
@@ -78,7 +78,7 @@ export const Swatches: Story = {
  *
  * Every variant is rendered with a label as well, because the axe pass covers the whole canvas
  * and contrast is the thing this component's colour choices are most likely to get wrong. It
- * already caught one: `success` shipped as `green-600`, which is 3.22:1 against white.
+ * already caught one: `positive` shipped as `green-600`, which is 3.22:1 against white.
  */
 export const Badges: Story = {
   render: () => (
@@ -87,7 +87,7 @@ export const Badges: Story = {
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
       <Badge variant="outline">Outline</Badge>
-      <Badge variant="success">Active</Badge>
+      <Badge variant="positive">Active</Badge>
       <Badge variant="warning">Overdue</Badge>
       <Badge variant="warning" label="Paused" />
       <Badge variant="secondary" />

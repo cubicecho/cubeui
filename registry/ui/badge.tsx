@@ -6,10 +6,10 @@
  *
  * This is the merge of two vocabularies. It keeps shadcn's variant names with
  * shadcn's meanings, so a DOM call site ports over unchanged and
- * `variant="secondary"` still means what it meant there. It adds `success` and
+ * `variant="secondary"` still means what it meant there. It adds `positive` and
  * `warning`, which the shadcn token set has no answer for at all: that set
  * carries exactly one semantic colour, `destructive`. The two additions are
- * tokens of cubeui's own, `success` and `warning`, each with its `-foreground`,
+ * tokens of cubeui's own, `positive` and `warning`, each with its `-foreground`,
  * so a palette can recolour them the way it recolours `destructive`.
  *
  * Their values are Tailwind's 700s and not the friendlier 500s or 600s because white

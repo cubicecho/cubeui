@@ -364,7 +364,7 @@ function Badges() {
           <Badge variant="secondary">Secondary</Badge>
           <Badge variant="outline">Outline</Badge>
           <Badge variant="destructive">Failed</Badge>
-          <Badge variant="success">Passed</Badge>
+          <Badge variant="positive">Passed</Badge>
           <Badge variant="warning">Slow</Badge>
           <Badge backgroundColor="#1d4ed8" textColor={readableTextColor("#1d4ed8") ?? "#ffffff"}>
             Design
@@ -763,8 +763,8 @@ function ToastButtons() {
         <>
           <Button
             variant="outline"
-            onClick={() => toast("Saved.", "success")}
-            content="Show a success toast"
+            onClick={() => toast("Saved.", "positive")}
+            content="Show a positive toast"
           />
           <Button
             variant="outline"
