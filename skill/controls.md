@@ -68,6 +68,11 @@ Name the tablist when no visible heading does: `<TabsList aria-label="Project vi
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.
 
+A `TabsList` with more tabs than fit scrolls sideways inside its own box and brings the selected
+tab into view, at mount and whenever it changes, on both halves. Do not wrap `Tabs` in a
+horizontal `ScrollView` to fit a phone: the scroller would be outside the tablist, and a tab
+chosen by a link would stay off screen. Tabs that fit are centred in the list as before.
+
 ## Segmented control
 
 A row of three or four pills, one current, that switches a view or a period rather than opening a

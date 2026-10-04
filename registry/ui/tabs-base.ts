@@ -28,6 +28,10 @@ export type TabsListProps = {
   "aria-label"?: string | undefined;
   /** The id of a visible heading that names the tablist, in place of `aria-label`. */
   "aria-labelledby"?: string | undefined;
+  /**
+   * On the list's box. A list wider than the space it is given scrolls sideways, and brings the
+   * selected tab into view, so a row of seven tabs needs nothing here to fit a phone.
+   */
   className?: string | undefined;
   children: ReactNode;
 };
@@ -50,8 +54,14 @@ export type TabsContentProps = {
   children: ReactNode;
 };
 
+/**
+ * The list's box. How its tabs are centred is each half's own: a list too narrow for its tabs
+ * scrolls sideways, and the two platforms centre a row that can overflow differently.
+ */
 export const TABS_LIST_CLASS =
-  "h-10 items-center justify-center rounded-md border border-foreground/15 bg-background p-1";
+  "h-10 items-center rounded-md border border-foreground/15 bg-background p-1";
+/** The list's own `p-1`, kept clear of a tab brought into view so it does not sit on the border. */
+export const TABS_LIST_INSET = 4;
 /** A row, so an icon sits beside the label. `gap-1.5` is shadcn's own. */
 export const TABS_TRIGGER_CLASS =
   "flex-row items-center justify-center gap-1.5 rounded-sm px-3 py-1.5";

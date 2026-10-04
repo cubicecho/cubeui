@@ -386,7 +386,7 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour.",
+      "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour. A list with more tabs than fit scrolls sideways and keeps the selected tab in view.",
       "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
