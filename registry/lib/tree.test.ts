@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildTree, type TreeNode } from "./tree";
+import { buildTree, isValidMove, parentPath, type TreeNode } from "./tree";
 
 const shape = (nodes: TreeNode[]): unknown =>
   nodes.map((node) => (node.type === "dir" ? { [node.name]: shape(node.children) } : node.name));
@@ -51,5 +51,32 @@ describe("buildTree", () => {
   it("keeps an empty folder, and returns nothing for an empty list", () => {
     expect(shape(buildTree([{ path: "empty", type: "dir" }]))).toEqual([{ empty: [] }]);
     expect(buildTree([])).toEqual([]);
+  });
+});
+
+describe("parentPath", () => {
+  it("is the folder a path sits in, and empty at the top level", () => {
+    expect(parentPath("ideas/deep/a.md")).toBe("ideas/deep");
+    expect(parentPath("readme.md")).toBe("");
+  });
+});
+
+describe("isValidMove", () => {
+  it("allows a move into another folder or up to the top level", () => {
+    expect(isValidMove("ops/pg.md", "db")).toBe(true);
+    expect(isValidMove("ops/pg.md", "")).toBe(true);
+    expect(isValidMove("ops", "db/old")).toBe(true);
+  });
+
+  it("refuses a folder dropped on itself or on anything under it", () => {
+    expect(isValidMove("ops", "ops")).toBe(false);
+    expect(isValidMove("ops", "ops/deep/er")).toBe(false);
+    // A sibling whose name only starts the same way is not under it.
+    expect(isValidMove("ops", "ops-old")).toBe(true);
+  });
+
+  it("refuses a move into the folder the path is already in", () => {
+    expect(isValidMove("ops/pg.md", "ops")).toBe(false);
+    expect(isValidMove("readme.md", "")).toBe(false);
   });
 });

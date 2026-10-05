@@ -53,3 +53,27 @@ export function buildTree<T extends TreeEntry>(entries: readonly T[]): TreeNode<
   sort(roots);
   return roots;
 }
+
+/**
+ * The folder a path sits in.
+ *
+ * @param path a file's or folder's `/` path.
+ * @returns the parent folder's path, and `""` for the top level.
+ */
+export function parentPath(path: string): string {
+  const slash = path.lastIndexOf("/");
+  return slash === -1 ? "" : path.slice(0, slash);
+}
+
+/**
+ * Whether moving `from` into the folder `into` is a move at all: not onto itself, not a folder
+ * into something under it, and not into the folder it is already in.
+ *
+ * @param from the path being moved.
+ * @param into the folder it would land in, `""` for the top level.
+ * @returns `false` for a move that would change nothing or cannot be made.
+ */
+export function isValidMove(from: string, into: string): boolean {
+  if (into === from || into.startsWith(`${from}/`)) return false;
+  return parentPath(from) !== into;
+}

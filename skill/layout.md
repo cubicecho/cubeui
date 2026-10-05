@@ -1200,6 +1200,22 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 - Every node handed to `meta`, `actionSlot` and `linkSlot` is `{ name, path, type, entry, children }`;
   `entry` is your own object, and is `undefined` on a folder the tree added.
 - **Renaming a file opens a dialog or a form.** There is no rename-in-place on a row.
+- **Moving is a drag onto a folder**, when you pass `onMove={(from, into) => api.move(from, into)}`.
+  Both are paths, and `into` is the folder the row lands in — `""` for the top level — so the new
+  path is yours to join: `into ? `${into}/${node.name}` : node.name`. A file or a folder is dragged
+  onto a folder's row, onto anything inside that folder, or onto the tree's own blank space; the
+  folder it would land in is tinted, and a shut one opens when the row rests on it. The tree
+  refuses a row dropped where it already is, a folder dropped into itself or into what is under
+  it, and a pinned row either way — those show no tint and call nothing.
+  `canMove={(node, into) => !isLocked(into)}` refuses more: a read-only folder, a row that must
+  stay put. It is called while the row is over a target, so it is not somewhere to fetch.
+- `onMove` may return a promise. The row waits where it was, muted, until it settles; then
+  `entries` says where it is. The tree moves nothing itself and shows no error: a move that fails
+  rejects in your code, and the `Toast` is yours.
+- **A drag needs a pointer and a browser, so it is never the only way to move a row.** There is
+  no drag from the keyboard, on a touch screen or in a native build. Keep a "Move to…" item in the
+  row's `actionSlot` menu that opens a dialog with a folder field, and have it call the same
+  function `onMove` does.
 - It is a list of lists, reached with Tab and pressed with Enter or Space. It is not a
   `role="tree"`, so do not promise arrow keys.
 - A view of the same files with nothing to nest — "recently changed", search results — is not a

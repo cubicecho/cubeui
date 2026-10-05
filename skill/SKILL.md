@@ -86,7 +86,7 @@ at the end.
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout.md](layout.md#stat-tiles) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout.md](layout.md#listitem) |
-| Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row | `FileTree` | [layout.md](layout.md#filetree) |
+| Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout.md](layout.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout.md](layout.md#empty-states) |
 | A list row that opens onto detail | `DisclosureRow` | [layout.md](layout.md) |
 | A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Disclosure` | [layout.md](layout.md#disclosure) |
@@ -375,7 +375,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
-| Files and folders nested from a flat list of paths, with folding folders, a selected file and row actions — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
+| Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout.md](layout.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actionsSlot` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
