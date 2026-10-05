@@ -23,6 +23,7 @@ import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
 import { DisclosureRow } from "@/components/disclosure-row";
 import { FieldRow } from "@/components/field-row";
+import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { ListItem } from "@/components/list-item";
@@ -242,6 +243,7 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths, functions only.",
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
+  tree: "`buildTree`, a function; the file tree is drawn from what it returns.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   control: "A bundle: it installs the controls shown here one by one.",
@@ -1278,6 +1280,39 @@ function ListItems() {
   );
 }
 
+const FILES = [
+  { path: "references/api/endpoints.md", type: "file" as const, size: "4 KB" },
+  { path: "references/forms.md", type: "file" as const, size: "1 KB" },
+  { path: "scripts/build.sh", type: "file" as const, size: "256 B" },
+  { path: "notes.md", type: "file" as const, size: "512 B" },
+];
+
+function FileTrees() {
+  const [selected, setSelected] = useState("SKILL.md");
+  return (
+    <div className="max-w-xs">
+      <FileTree
+        label="Skill files"
+        pinned={[{ path: "SKILL.md", type: "file", size: "2 KB" }]}
+        entries={FILES}
+        selected={selected}
+        onSelect={setSelected}
+        meta={(node) => node.entry?.size}
+        actionSlot={(node) =>
+          node.type === "file" ? (
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              aria-label={`Rename ${node.path}`}
+              iconSlot={<Pencil />}
+            />
+          ) : null
+        }
+      />
+    </div>
+  );
+}
+
 function Disclosures() {
   const [open, setOpen] = useState(false);
   return (
@@ -1623,6 +1658,7 @@ const sections: GallerySection[] = [
     content: <Sections />,
   },
   { title: "List item", items: ["list-item"], content: <ListItems /> },
+  { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
     title: "Disclosure and disclosure row",
     items: ["disclosure", "disclosure-row"],

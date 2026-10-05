@@ -47,6 +47,7 @@ export {
   Ellipsis,
   Eye,
   EyeOff,
+  File,
   FilePen,
   FileText,
   Folder,

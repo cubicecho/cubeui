@@ -145,6 +145,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `SidebarLayout`'s bar a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
 | `leadingSlot` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `iconSlot` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badgesSlot` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `actionSlot` — still facts about the title, placed where a list scans them. |
+| `entries` | The things a tree is built from: a flat list of `{ path, type }`, in any order, each carrying whatever else the caller's rows hold. On `FileTree`, which nests and sorts them. Not `items` or `options`: those are rows drawn as given, and these are rearranged. |
+| `pinned` | The entries kept above the rest, in the order given and out of the sort: a folder's README. On `FileTree`. |
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
@@ -171,6 +173,12 @@ Notes on why the layering is where it is:
   held. It also draws three words of its own — Edit, Split, Preview — as `ThemePicker` draws
   Light, Dark and System: a toggle every call site labels identically is three props nobody
   needed.
+- **`FileTree`'s `linkSlot`, `meta` and `actionSlot` are functions of a row's node,** where every
+  other shell takes the element itself. The tree draws its rows from `entries`, so there is no
+  call site per row to hand an element to; the words keep their meaning and their place in the
+  row, and the function is how one prop reaches each of them. Its `selected` is the open file's
+  path and its `open` the open folders' paths for the same reason — the same words as a row's
+  boolean, said once for the whole tree.
 - **`DisclosureRow` and `ListItem` take `actionSlot`, not `actionsSlot`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.

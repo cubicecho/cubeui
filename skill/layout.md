@@ -7,7 +7,7 @@ are not repeated here.
 sections, disclosures, sidebars and the top bar are written once in React Native and compiled to
 the web, so the same item installs in a Vite app and an Expo app with the same props. The
 list-page parts at the end are the exception: `Table` is web-only, and `QueryState` is its own
-item on each half; `DisclosureRow` and `ListItem` are on both, like the shells. On a device,
+item on each half; `DisclosureRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
 four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -1157,6 +1157,54 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `ItemDescription` the two lines, `ItemActions` the `actionSlot`. On a device a string in a part is
   wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
   hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
+
+### FileTree
+
+Files and folders, nested as they sit on disk, from the flat list a server hands back. One source
+for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree`, `@/lib/tree`).
+
+```tsx
+<FileTree
+  label="Skill files"
+  pinned={[skillMd]}
+  entries={files}                       // { path: "references/forms.md", type: "file", size: 1024 }
+  selected={openPath}
+  onSelect={setOpenPath}
+  meta={(node) => (node.entry ? formatBytes(node.entry.size) : null)}
+  actionSlot={(node) => <FileMenu node={node} />}
+/>
+```
+
+- `entries` is flat and in any order: `{ path, type: "file" | "dir" }` plus whatever else your row
+  holds. A parent the list leaves out is added, and every level is sorted folders first, then by
+  name. List a folder only to keep an empty one, or to give it an entry of its own.
+- A **folder** is a button that folds what is under it (`aria-expanded`, a turning chevron).
+  Every folder starts open. `defaultOpen={[...paths]}` starts only those open; `open` with
+  `onOpenChange` hands the open paths to you — to keep them across a reload, or to open the way to
+  a file. `onOpenChange` is called either way.
+- A **file** is a link or a button, never both. With the open file in the URL pass
+  `linkSlot={(node) => <Link to="/notes/$" params={{ _splat: node.path }} />}` — the router's link
+  with no children; the row is drawn inside it, so it is a real `<a href>` and the selected one
+  carries `aria-current="page"`. With the open file in state pass `onSelect`, and the row is a
+  button. With neither, the row is only a row.
+- `selected` is the open file's **path**. Its row is filled `active`; do not hand-write that.
+- `meta` is what follows a name: return a string (a size, a count) and it is drawn muted and
+  `text-xs`, or return an element (a `Badge`) and it is placed as given. It is inside the pressed
+  area, so nothing pressable goes there. It is called for folders too — return `null` to skip one.
+- `actionSlot` is the row's far end, **outside** the pressed area: `icon-xs` ghost `Button`s with an
+  `aria-label`, a `ConfirmButton`, or one `Menu` behind an `Ellipsis` when there are more than two.
+  Where there is a pointer they show on hover and on keyboard focus; on a touch screen they are
+  always drawn. Return `null` for a row that has none (a locked skill, a folder).
+- `pinned` is drawn above the tree, in the order given, by its whole path, and is not nested or
+  sorted — a skill's `SKILL.md`. Leave those entries out of `entries`.
+- Every node handed to `meta`, `actionSlot` and `linkSlot` is `{ name, path, type, entry, children }`;
+  `entry` is your own object, and is `undefined` on a folder the tree added.
+- **Renaming a file opens a dialog or a form.** There is no rename-in-place on a row.
+- It is a list of lists, reached with Tab and pressed with Enter or Space. It is not a
+  `role="tree"`, so do not promise arrow keys.
+- A view of the same files with nothing to nest — "recently changed", search results — is not a
+  tree: draw it as `ListItem`s.
+- For the nodes without the look: `buildTree(entries)` returns the same sorted `TreeNode[]`.
 
 ### Table
 
