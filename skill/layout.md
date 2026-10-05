@@ -325,7 +325,8 @@ for the app's navigation rail, which has a bar to stand in for it.
 
 `@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
 Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
-that replaces the rail on a phone — see below):
+that replaces the rail on a phone, and a fifth, `SidebarCollapseButton`, folds the sidebar to a
+rail of icons — both below):
 
 - **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on `bg-secondary` at a
   fixed `w-64` with a `border-foreground/10` rule on the edge facing the page (`side="end"` moves
@@ -381,6 +382,52 @@ router around it goes nowhere and does nothing — it is drawn as an inert butto
 
 Do not pass an icon a size or a colour: the row sizes it to `size-4` and colours it with the label.
 A row in the footer takes no `SidebarSection` — a list item with no list around it is invalid.
+
+### Folded to a rail of icons
+
+```tsx
+const [collapsed, setCollapsed] = useState(false); // or wherever the app remembers it
+
+<Sidebar
+  label="Main"
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+  headerSlot={<Brand />}
+  contentSlot={sections}
+  footerSlot={
+    <>
+      <SidebarNavItem href="/settings" label="Settings" iconSlot={<Settings />} />
+      <SidebarCollapseButton />
+    </>
+  }
+/>
+
+function Brand() {
+  const { collapsed } = useSidebar();
+  return collapsed ? <Mark /> : <Wordmark />;
+}
+```
+
+- **`collapsed` and `onCollapsedChange` are on `Sidebar`**, not on `SidebarLayout`: a layout only
+  places panes. With `sidebarWidth="auto"` the pane follows the sidebar from `w-64` to `w-14`
+  with nothing passed to the layout. It is controlled and keeps no state; store the choice where
+  the app stores preferences.
+- **The rows and sections fold themselves.** Do not pass them anything and do not branch on the
+  state to draw a second set of rows. A `SidebarNavItem` becomes its icon, with its label as the
+  accessible name and a tooltip, its `count` a badge on the icon and its `status` a dot — all
+  three still in the name. Give every row in a sidebar that folds an `iconSlot`; one without is
+  drawn as its first letter. A `SidebarSection` keeps its `title` for screen readers and draws
+  neither it, its `actionSlot` nor its `status`.
+- **`SidebarCollapseButton`** is the fold button, drawn as a row: put it in `footerSlot` or
+  `headerSlot`. It calls `onCollapsedChange` with the other state and carries `aria-expanded`.
+  `collapseLabel` and `expandLabel` rename it. Do not hand-draw a toggle.
+- **`useSidebar()`** returns `{ collapsed, onCollapsedChange, side }` to anything inside the
+  sidebar — for a header or footer that is a different thing folded: a brand that becomes a
+  mark, a "New chat" button that becomes an icon button. Outside a `Sidebar` it says
+  `collapsed: false`.
+- This is not `SplitLayout`'s collapsed pane, which is an absent one: a folded sidebar still shows
+  every destination. And it is not `sidebarHideBelow`, which still swaps the rail for a bar on a
+  phone, folded or not.
 
 ### On a phone, a bar instead of the rail
 
