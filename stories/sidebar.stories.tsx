@@ -18,15 +18,19 @@ import {
 } from "../compiled/icons";
 import { QueryState as CompiledQueryState } from "../compiled/query-state";
 import {
+  SidebarCollapseButton as CompiledCollapseButton,
   SidebarNavItem as CompiledNavItem,
   SidebarSection as CompiledSection,
   Sidebar as CompiledSidebar,
+  useSidebar as useCompiledSidebar,
 } from "../compiled/sidebar";
 import { QueryState as NativeQueryState } from "../registry/layout/query-state";
 import {
+  SidebarCollapseButton as NativeCollapseButton,
   SidebarNavItem as NativeNavItem,
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
+  useSidebar as useNativeSidebar,
 } from "../registry/layout/sidebar";
 import {
   ArrowRight as NativeArrowRight,
@@ -726,6 +730,132 @@ export const Status: Story = {
       // Without one, the words are drawn.
       const shown = within(home).getByText("human-only");
       await expect(shown.getBoundingClientRect().width).toBeGreaterThan(1);
+    }
+  },
+};
+
+/** A brand that is its mark while the sidebar is folded, told which by `useSidebar`. */
+function NativeBrand() {
+  const { collapsed } = useNativeSidebar();
+  return brand(collapsed ? "T" : "Telos");
+}
+
+function CompiledBrand() {
+  const { collapsed } = useCompiledSidebar();
+  return <span className="font-semibold text-foreground">{collapsed ? "T" : "Telos"}</span>;
+}
+
+function NativeFolding() {
+  const [collapsed, setCollapsed] = useState(true);
+  return (
+    <Frame>
+      <NativeSidebar
+        label="Native sidebar"
+        collapsed={collapsed}
+        onCollapsedChange={setCollapsed}
+        headerSlot={<NativeBrand />}
+        contentSlot={
+          <NativeSection
+            as="nav"
+            label="Native projects"
+            title="Projects"
+            contentSlot={[
+              <NativeNavItem
+                key="work"
+                href="#/work"
+                label="Work"
+                iconSlot={<NativeSettings />}
+                count={2}
+                status={{ label: "MCP on" }}
+                active
+              />,
+              <NativeNavItem key="garden" href="#/garden" label="Garden" />,
+            ]}
+          />
+        }
+        footerSlot={<NativeCollapseButton />}
+      />
+    </Frame>
+  );
+}
+
+function CompiledFolding() {
+  const [collapsed, setCollapsed] = useState(true);
+  return (
+    <Frame>
+      <CompiledSidebar
+        label="Compiled sidebar"
+        collapsed={collapsed}
+        onCollapsedChange={setCollapsed}
+        headerSlot={<CompiledBrand />}
+        contentSlot={
+          <CompiledSection
+            as="nav"
+            label="Compiled projects"
+            title="Projects"
+            contentSlot={[
+              <CompiledNavItem
+                key="work"
+                href="#/work"
+                label="Work"
+                iconSlot={<CompiledSettings />}
+                count={2}
+                status={{ label: "MCP on" }}
+                active
+              />,
+              <CompiledNavItem key="garden" href="#/garden" label="Garden" />,
+            ]}
+          />
+        }
+        footerSlot={<CompiledCollapseButton />}
+      />
+    </Frame>
+  );
+}
+
+/**
+ * `collapsed`: the sidebar folded to a rail of icons, with every destination still there. A row is
+ * its icon — or its first letter, with none — named by its label, status and count; the section's
+ * title is read and not drawn; and the header learns the state from `useSidebar`. The button in
+ * the footer opens it again, and it is the app's `useState` that remembers.
+ */
+export const Collapsed: Story = {
+  render: () => <SideBySide native={<NativeFolding />} compiled={<CompiledFolding />} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ["Native sidebar", "Compiled sidebar"]) {
+      const aside = canvas.getByRole("complementary", { name });
+      const side = within(aside);
+      await expect(aside.getBoundingClientRect().width).toBe(56);
+      await expect(side.getByText("T")).toBeVisible();
+
+      // The row has no text on screen, and is still named in full.
+      const work = side.getByRole("link", { name: "Work, MCP on, 2" });
+      await expect(work).toHaveAttribute("aria-current", "page");
+      await expect(within(work).queryByText("Work")).toBeNull();
+      await expect(side.getByRole("link", { name: "Garden" })).toHaveTextContent("G");
+
+      // The title still names the list, from off the screen.
+      await expect(side.getByRole("navigation", { name: /projects$/ })).toBeInTheDocument();
+      await expect(side.getByRole("list", { name: "Projects" })).toBeInTheDocument();
+      const title = side.getByRole("heading", { name: "Projects" });
+      await expect(title.getBoundingClientRect().width).toBeLessThanOrEqual(1);
+
+      // The button says which state it is in, and opens the sidebar.
+      const open = side.getByRole("button", { name: "Expand sidebar" });
+      await expect(open).toHaveAttribute("aria-expanded", "false");
+      await userEvent.click(open);
+
+      await expect(aside.getBoundingClientRect().width).toBe(256);
+      await expect(side.getByText("Telos")).toBeVisible();
+      await expect(
+        within(side.getByRole("link", { current: "page" })).getByText("Work"),
+      ).toBeVisible();
+      await expect(side.getByRole("button", { name: "Collapse sidebar" })).toHaveAttribute(
+        "aria-expanded",
+        "true",
+      );
     }
   },
 };

@@ -11,12 +11,13 @@
 /**
  * An app's sidebar — written once here and compiled for the web by `scripts/rn2web`.
  *
- * Four parts, and only the first is required. `Sidebar` is the frame: the header / scrolling
+ * Five parts, and only the first is required. `Sidebar` is the frame: the header / scrolling
  * body / footer chassis on the sidebar palette at a fixed width. `SidebarSection` is a titled list
  * of rows, and `SidebarNavItem` is the row. An app that only wants the frame uses `Sidebar` and
  * fills it with anything; one that wants a navigation column gets the rows for free.
  * `BarNavItem` is the same place drawn for the bar that stands in for the rail on a phone — the
- * icon alone — so one array of places renders both.
+ * icon alone — so one array of places renders both. `SidebarCollapseButton` folds the frame to a
+ * rail of icons and opens it again, where the app keeps that choice.
  *
  * Every cubicecho app had written this by hand, and the nav row is where the copies drift: the
  * active fill, the `aria-current`, the truncating label, the count at the far end, and which of
@@ -38,6 +39,7 @@ import { IconClassContext } from "@/components/ui/icons-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Badge } from "./badge";
 import { type HeaderContentFooterProps, StickyHeaderContentFooter } from "./header-content-footer";
+import { ChevronLeft, ChevronRight } from "./icons";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 /**
@@ -55,6 +57,26 @@ const HIDE_BELOW = {
   lg: "hidden lg:flex",
   xl: "hidden xl:flex",
 } as const;
+
+/** What a sidebar tells what is inside it: whether it is folded, and which edge it is on. */
+type SidebarState = {
+  /** Folded down to a rail of icons. `false` outside a `Sidebar`. */
+  collapsed: boolean;
+  /** The `Sidebar`'s own `onCollapsedChange`: call it to fold or open the sidebar. */
+  onCollapsedChange?: ((collapsed: boolean) => void) | undefined;
+  side: "start" | "end";
+};
+
+const SidebarContext = React.createContext<SidebarState>({ collapsed: false, side: "start" });
+
+/**
+ * The state of the `Sidebar` this is drawn in, for a header or footer that is a different thing
+ * folded: a brand that becomes its mark, a "New chat" button that becomes an icon button. The rows
+ * and sections read it themselves.
+ */
+export function useSidebar(): SidebarState {
+  return React.useContext(SidebarContext);
+}
 
 export type SidebarProps = {
   /** The body: sections, rows, whatever the rail lists. The only part that scrolls. */
@@ -85,6 +107,17 @@ export type SidebarProps = {
    * the same breakpoint and draws the bar that stands in for the rail, from the one value.
    */
   hideBelow?: keyof typeof HIDE_BELOW | undefined;
+  /**
+   * Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, and
+   * a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the
+   * choice is remembered is the app's.
+   */
+  collapsed?: boolean | undefined;
+  /**
+   * Called with the state the reader asked for, by a `SidebarCollapseButton` anywhere inside. Left
+   * out, that button does nothing.
+   */
+  onCollapsedChange?: ((collapsed: boolean) => void) | undefined;
   /** The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. */
   contentRef?: HeaderContentFooterProps["contentRef"];
   /** On the root. A different width is a `w-*` here. */
@@ -117,6 +150,13 @@ export type SidebarProps = {
  * same two classes, owned here. Inside a `SidebarLayout` the layout's `sidebarHideBelow` is the
  * same switch one level up — it hides the pane rather than leaving an empty one, and draws the
  * bar that stands in for the rail under the same breakpoint.
+ *
+ * **`collapsed` folds it to a rail**, `w-14`, without taking a destination away. A split layout's
+ * collapsed pane is an absent one, and that is right for a detail pane; a navigation sidebar still
+ * has to show every place it goes, so folded it is the rows' icons. The state is here and not on
+ * `SidebarLayout`, which only places panes: with `sidebarWidth="auto"` the pane follows this width.
+ * The rows and sections fold themselves from context, and `useSidebar` hands the same state to
+ * whatever the app put in the header and footer.
  */
 export function Sidebar({
   contentSlot,
@@ -125,12 +165,19 @@ export function Sidebar({
   label,
   side = "start",
   hideBelow,
+  collapsed = false,
+  onCollapsedChange,
   contentRef,
   className,
   headerClassName,
   contentClassName,
   footerClassName,
 }: SidebarProps) {
+  const state = React.useMemo(
+    () => ({ collapsed, onCollapsedChange, side }),
+    [collapsed, onCollapsedChange, side],
+  );
+
   return (
     // `complementary` rather than `webAs="aside"`: it is the same `<aside>` once compiled, and it
     // is also what react-native-web renders, where a bare `div` would carry an `aria-label` that
@@ -140,24 +187,28 @@ export function Sidebar({
       aria-label={label}
       className={cn(
         "cube-rn-view",
-        "h-full w-64 min-h-0 shrink-0 border-foreground/10 bg-secondary",
+        "h-full min-h-0 shrink-0 border-foreground/10 bg-secondary",
+        collapsed ? "w-14" : "w-64",
         side === "start" ? "border-r" : "border-l",
         hideBelow ? HIDE_BELOW[hideBelow] : undefined,
         className,
       )}
     >
-      <StickyHeaderContentFooter
-        headerSlot={headerSlot}
-        contentSlot={contentSlot}
-        footerSlot={footerSlot}
-        contentRef={contentRef}
-        // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
-        // height, and a percentage height would overflow it by the border's width.
-        className="min-h-0 flex-1"
-        headerClassName={cn("gap-2 p-3", headerClassName)}
-        contentClassName={cn("gap-4 p-2", contentClassName)}
-        footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
-      />
+      <SidebarContext.Provider value={state}>
+        <StickyHeaderContentFooter
+          headerSlot={headerSlot}
+          contentSlot={contentSlot}
+          footerSlot={footerSlot}
+          contentRef={contentRef}
+          // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
+          // height, and a percentage height would overflow it by the border's width.
+          className="min-h-0 flex-1"
+          // Folded, the header's inset is the rows', so what is in it lines up with their icons.
+          headerClassName={cn("gap-2", collapsed ? "p-2" : "p-3", headerClassName)}
+          contentClassName={cn("gap-4 p-2", contentClassName)}
+          footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
+        />
+      </SidebarContext.Provider>
     </aside>
   );
 }
@@ -228,6 +279,9 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
  * nothing in a sidebar of links is otherwise navigation, so a landmark jump never reached the rows
  * and every app wrapped the section in a hand-written `<nav aria-label>`. The whole section is the
  * landmark — title, status and list — named by the title unless `label` says otherwise.
+ *
+ * **In a collapsed sidebar** the title is read and not drawn, so the list keeps its name, and the
+ * `actionSlot` and `status` are not drawn at all: neither has a rail's width to be in.
  */
 export function SidebarSection({
   as,
@@ -241,15 +295,20 @@ export function SidebarSection({
   contentClassName,
 }: SidebarSectionProps) {
   const titleId = React.useId();
+  const { collapsed } = React.useContext(SidebarContext);
   const rows = React.Children.toArray(contentSlot);
   const sectionClassName = cn("min-w-0 gap-1", className);
 
   const body = (
     <>
-      {title || actionSlot ? (
+      {(collapsed ? title : title || actionSlot) ? (
         <div
           data-slot="sidebar-section-heading"
-          className="cube-rn-view min-h-8 min-w-0 flex-row items-center gap-2 px-2"
+          // Folded, the whole row is clipped: the title is still what names the list.
+          className={cn(
+            "cube-rn-view",
+            collapsed ? SR_ONLY : "min-h-8 min-w-0 flex-row items-center gap-2 px-2",
+          )}
         >
           <div className="cube-rn-view min-w-0 flex-1">
             {title ? (
@@ -265,7 +324,7 @@ export function SidebarSection({
               </span>
             ) : null}
           </div>
-          {actionSlot ? (
+          {actionSlot && !collapsed ? (
             <div data-slot="sidebar-section-action" className="cube-rn-view shrink-0">
               {actionSlot}
             </div>
@@ -273,7 +332,7 @@ export function SidebarSection({
         </div>
       ) : null}
 
-      {status}
+      {collapsed ? null : status}
 
       {rows.length > 0 ? (
         <ul
@@ -411,20 +470,110 @@ function rowClassName(active: boolean, className: string | undefined) {
   );
 }
 
+/**
+ * A count and a status where there is only an icon to hang them on: the count a small badge on the
+ * top corner, the status a dot on the bottom one. Neither is named here — the words are in the
+ * name of the link they sit on. `ring` is the fill behind the item, which is what keeps a marker
+ * apart from the glyph under it.
+ */
+function IconMarkers({
+  count,
+  status,
+  ring,
+}: {
+  count: number | string | undefined;
+  status: SidebarNavItemStatus | undefined;
+  ring: string;
+}) {
+  return (
+    <>
+      {count === undefined ? null : (
+        // Hung off the item's top corner, in the 8px the icon leaves above it, so the count sits
+        // over the glyph's corner rather than over the glyph — and by little enough that it never
+        // reaches a neighbour's icon. The text is its own element because a badge's label is 12px
+        // on a 16px line, which is taller than that corner.
+        <Badge variant="secondary" className={cn("-right-1.5 -top-1.5 absolute px-1 py-0", ring)}>
+          <span className="cube-rn-text font-medium text-[10px] text-foreground leading-3 tabular-nums">
+            {count}
+          </span>
+        </Badge>
+      )}
+      {status ? (
+        <Badge className={cn("-bottom-0.5 -right-0.5 absolute h-2.5 w-2.5", ring)} />
+      ) : null}
+    </>
+  );
+}
+
+/** The row's whole name, as device reads it and as a folded row, with no text in it, is named. */
+function rowName(
+  label: string,
+  status: SidebarNavItemStatus | undefined,
+  count: number | string | undefined,
+) {
+  return [label, status?.label, count].filter((part) => part !== undefined).join(", ");
+}
+
+/**
+ * A folded row under its tooltip: the label is nowhere on screen, so a pointer or a long press
+ * brings it up, on the side the page is on. Its own provider, as `BarNavItem`'s is.
+ */
+function withTooltip(row: React.ReactElement, label: string, side: "start" | "end") {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{row}</TooltipTrigger>
+        <TooltipContent side={side === "start" ? "right" : "left"}>{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 type SidebarNavItemBodyProps = {
   label: string;
   iconSlot: SlotNode | undefined;
   count: number | string | undefined;
   status: SidebarNavItemStatus | undefined;
   active: boolean;
+  collapsed: boolean;
 };
 
 /** What is inside the row, the same for both forms: icon, label, status, count. */
-function SidebarNavItemBody({ label, iconSlot, count, status, active }: SidebarNavItemBodyProps) {
+function SidebarNavItemBody({
+  label,
+  iconSlot,
+  count,
+  status,
+  active,
+  collapsed,
+}: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
   const text = active ? "text-active-foreground" : "text-foreground";
   const muted = active ? "text-active-foreground" : "text-foreground/60";
+
+  if (collapsed) {
+    // The icon alone, as the bar's item draws a place. A row with no icon is its first letter, so
+    // it is still something to aim at rather than a gap in the rail.
+    return (
+      <>
+        {iconSlot ? (
+          <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
+            {iconSlot}
+          </IconClassContext.Provider>
+        ) : (
+          <span
+            data-slot="sidebar-nav-item-initial"
+            aria-hidden
+            className={cn("cube-rn-text", "font-medium text-sm", text)}
+          >
+            {Array.from(label.trim())[0]?.toUpperCase()}
+          </span>
+        )}
+        <IconMarkers count={count} status={status} ring="border-secondary" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -509,17 +658,30 @@ function SidebarNavItemBody({ label, iconSlot, count, status, active }: SidebarN
  * ```tsx
  * <SidebarNavItem label="Sign out" iconSlot={<LogOut />} onPress={signOut} />
  * ```
+ *
+ * **In a collapsed `Sidebar` it is its icon**, and the same link or button underneath. The label
+ * is its accessible name and its tooltip, the count is a badge on the icon and the status a dot,
+ * both still in the name — the way `BarNavItem` draws a place. A row with no `iconSlot` is its
+ * first letter.
  */
 const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
+    const { collapsed, side } = React.useContext(SidebarContext);
+    const name = rowName(label, status, count);
+    const rail = (row: React.ReactElement) => (collapsed ? withTooltip(row, label, side) : row);
+    // Folded, the row is a square around its icon, and the markers hang off its corners.
+    const box = cn(collapsed && "relative justify-center px-0", className);
+
     // Two elements written out rather than one with a chosen role: the compiler picks the tag from
     // the role, and a button and a link do not share a prop list anyway.
     if (href === undefined) {
-      return (
+      return rail(
         <button
           type="button"
           ref={ref as React.Ref<HTMLButtonElement>}
-          className={cn("cube-rn-view cube-rn-pressable", rowClassName(false, className))}
+          className={cn("cube-rn-view cube-rn-pressable", rowClassName(false, box))}
+          // Nothing inside a folded row is text, so the web's name is written out too.
+          {...(collapsed ? { "aria-label": name } : {})}
           {...(props as React.ComponentPropsWithoutRef<"button">)}
         >
           <SidebarNavItemBody
@@ -528,12 +690,13 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
             count={count}
             status={status}
             active={false}
+            collapsed={collapsed}
           />
-        </button>
+        </button>,
       );
     }
 
-    return (
+    return rail(
       <a
         ref={ref as React.Ref<HTMLAnchorElement>}
         // React Native has no `href` and no `aria-current`; the web has both, and needs both. The
@@ -541,7 +704,8 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
         // its name is joined here — before `props`, so a caller's own label still wins.
         href={href}
         aria-current={active ? "page" : undefined}
-        className={cn("cube-rn-view cube-rn-pressable", rowClassName(active, className))}
+        {...(collapsed ? { "aria-label": name } : {})}
+        className={cn("cube-rn-view cube-rn-pressable", rowClassName(active, box))}
         {...(props as React.ComponentPropsWithoutRef<"a">)}
       >
         <SidebarNavItemBody
@@ -550,12 +714,48 @@ const SidebarNavItem = React.forwardRef<HTMLButtonElement, SidebarNavItemProps>(
           count={count}
           status={status}
           active={active}
+          collapsed={collapsed}
         />
-      </a>
+      </a>,
     );
   },
 );
 SidebarNavItem.displayName = "SidebarNavItem";
+
+export type SidebarCollapseButtonProps = {
+  /** What it is called while the sidebar is open. */
+  collapseLabel?: string | undefined;
+  /** What it is called while the sidebar is folded. */
+  expandLabel?: string | undefined;
+  className?: string | undefined;
+};
+
+/**
+ * The button that folds the sidebar it is in and opens it again: a row like any other, so it sits
+ * in the header or the footer without a look of its own, and folded it is its icon under a
+ * tooltip like the rows around it.
+ *
+ * It holds nothing. It calls the `Sidebar`'s `onCollapsedChange` with the other state, and says
+ * which state that is with `aria-expanded`. The chevron points the way the sidebar will move, so
+ * it turns round on a sidebar at the `end` edge.
+ */
+export function SidebarCollapseButton({
+  collapseLabel = "Collapse sidebar",
+  expandLabel = "Expand sidebar",
+  className,
+}: SidebarCollapseButtonProps) {
+  const { collapsed, onCollapsedChange, side } = useSidebar();
+  return (
+    <SidebarNavItem
+      data-slot="sidebar-collapse-button"
+      label={collapsed ? expandLabel : collapseLabel}
+      iconSlot={(side === "start") === collapsed ? <ChevronRight /> : <ChevronLeft />}
+      aria-expanded={!collapsed}
+      onClick={() => onCollapsedChange?.(!collapsed)}
+      className={className}
+    />
+  );
+}
 
 export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "style"> & {
   /**
@@ -634,9 +834,7 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
               data-slot="bar-nav-item"
               // Nothing inside is text, so the name is written out on both platforms — joined the
               // way the row's is, and before `props`, so a caller's own label still wins.
-              aria-label={[label, status?.label, count]
-                .filter((part) => part !== undefined)
-                .join(", ")}
+              aria-label={rowName(label, status, count)}
               // React Native has no `href` and no `aria-current`; the web has both, and needs both.
               href={href}
               aria-current={active ? "page" : undefined}
@@ -655,25 +853,7 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
               <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
                 {iconSlot}
               </IconClassContext.Provider>
-              {count === undefined ? null : (
-                // Hung off the item's top corner, in the 8px the icon leaves above it, so the count
-                // sits over the glyph's corner rather than over the glyph — and by little enough
-                // that it never reaches a neighbour's icon. The ring in the bar's own fill is what
-                // keeps it apart from what is under it. The text is its own element because a
-                // badge's label is 12px on a 16px line, which is taller than that corner.
-                <Badge
-                  variant="secondary"
-                  className="-right-1.5 -top-1.5 absolute border-background px-1 py-0"
-                >
-                  <span className="cube-rn-text font-medium text-[10px] text-foreground leading-3 tabular-nums">
-                    {count}
-                  </span>
-                </Badge>
-              )}
-              {status ? (
-                // No label on the dot: it is decoration, and the words are in the link's name.
-                <Badge className="-bottom-0.5 -right-0.5 absolute h-2.5 w-2.5 border-background" />
-              ) : null}
+              <IconMarkers count={count} status={status} ring="border-background" />
             </a>
           </TooltipTrigger>
           <TooltipContent side="bottom">{label}</TooltipContent>
