@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 97 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 99 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 97 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 99 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  83 on both platforms · 14 web-only · 0 native-only.
+  85 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -360,6 +360,11 @@
           <th scope="row"><code>@cubeui/file-picker</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A drop zone, or a button, over a hidden file input on web. The native half is a placeholder, not an implementation.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/file-tree</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, and `pinned` keeps a file above the tree.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/form</code></th>
@@ -635,6 +640,11 @@
           <th scope="row"><code>@cubeui/top-bar-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>An app shell with a bar across the top and no sidebar: brand at the start, navigation after it that scrolls sideways when narrow, actions at the end, and the page below — a banner and a main landmark, the bar sticky on the web.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/tree</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Nests a flat list of `/` paths into folders and files: a parent the list leaves out is added, and every level is sorted folders first and then by name. Each node keeps the entry it was built from, so a size or a count rides along. What `FileTree` draws.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/unsaved-changes-guard</code></th>

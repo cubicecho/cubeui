@@ -481,6 +481,12 @@ Recorded so the next pass does not re-derive them:
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
   so the row that opens is on both halves too.
+- **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
+  and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.
+  Settled: `buildTree` is `registry/lib/tree.ts` and the look is `registry/layout/file-tree.tsx`,
+  one source for both halves. A file's row is a link (`linkSlot`) or a button (`onSelect`), row
+  actions are siblings of it and hidden only where a pointer can hover, folders fold, and it is
+  a list of lists rather than a `role="tree"`, which would promise arrow keys on two platforms.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot. `EmptyState` did ship later, in `@cubeui/page`, and `empty`
   is now shadcn's parts on both halves drawn the same way — `EmptyState` is built on them.

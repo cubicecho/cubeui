@@ -37,6 +37,9 @@
  * and `FolderPen` for a rename, `ArrowDownWideNarrow` for a sort menu, `UserRound`
  * for a thing only a person may touch, and `Library` for a collection.
  *
+ * And `File` (#226), which two apps wrapped for the rows of a file tree and
+ * `FileTree` now draws itself: a file that is not known to be text.
+ *
  * A glyph an app needs and this set does not ship belongs in the app's own
  * file, wrapped with the exported `icon` (below), rather than in this one:
  * the next `shadcn add` of this item overwrites whatever was added here.
@@ -80,6 +83,7 @@ import DownloadSource from "lucide-react-native/icons/download";
 import EllipsisSource from "lucide-react-native/icons/ellipsis";
 import EyeSource from "lucide-react-native/icons/eye";
 import EyeOffSource from "lucide-react-native/icons/eye-off";
+import FileSource from "lucide-react-native/icons/file";
 import FilePenSource from "lucide-react-native/icons/file-pen";
 import FileTextSource from "lucide-react-native/icons/file-text";
 import FolderSource from "lucide-react-native/icons/folder";
@@ -167,6 +171,7 @@ export const Download = icon(DownloadSource);
 export const Ellipsis = icon(EllipsisSource);
 export const Eye = icon(EyeSource);
 export const EyeOff = icon(EyeOffSource);
+export const File = icon(FileSource);
 export const FilePen = icon(FilePenSource);
 export const FileText = icon(FileTextSource);
 export const Folder = icon(FolderSource);

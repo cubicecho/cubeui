@@ -564,6 +564,31 @@
       ]
     },
     {
+      "name": "tree",
+      "type": "registry:lib",
+      "title": "buildTree",
+      "description": "Nests a flat list of `/` paths into folders and files: a parent the list leaves out is added, and every level is sorted folders first and then by name. Each node keeps the entry it was built from, so a size or a count rides along. What `FileTree` draws.",
+      "files": [
+        {
+          "path": "registry/lib/tree.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "file-tree",
+      "type": "registry:component",
+      "title": "File Tree",
+      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, and `pinned` keeps a file above the tree.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tree", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/file-tree.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "disclosure",
       "type": "registry:component",
       "title": "Disclosure",

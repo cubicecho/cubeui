@@ -12,6 +12,7 @@ import { DetailPage } from "../../registry/layout/detail-page";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
+import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { ListItem } from "../../registry/layout/list-item";
 import { MultiSelect } from "../../registry/layout/multi-select";
@@ -211,6 +212,7 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths helpers. Functions, not components.",
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
+  tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   "copy-button":
@@ -916,6 +918,24 @@ const sections: GallerySection[] = [
         />
         <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
       </Stack>
+    ),
+  },
+  {
+    title: "File tree",
+    items: ["file-tree"],
+    content: (
+      <FileTree
+        label="Skill files"
+        pinned={[{ path: "SKILL.md", type: "file" }]}
+        entries={[
+          { path: "references/api/endpoints.md", type: "file" },
+          { path: "references/forms.md", type: "file" },
+          { path: "notes.md", type: "file" },
+        ]}
+        selected="references/forms.md"
+        onSelect={noop}
+        meta={(node) => (node.type === "file" ? "1 KB" : null)}
+      />
     ),
   },
   {
