@@ -31,9 +31,19 @@ The set, on both halves — check it before wrapping a glyph in the app:
 - **Time:** `Calendar`, `Clock`
 - **Transport and theme:** `Play`, `Pause`, `Square`, `Sun`, `Moon`, `Monitor`
 
-**A glyph the set does not ship is wrapped in the app, with the exported `icon`.** Do not copy the
-native wrapper, and do not add to `icons.tsx` — the next `shadcn add` of `@cubeui/icons`
-overwrites it. Write the app's own pair of files, one line per glyph, beside each other so Metro
+**A glyph the set does not ship is the app's, and that is the settled answer (#251), not a gap
+to report.** The set is curated: what the registry's own components draw, plus the glyphs two
+apps had each wrapped. Do not open an issue for a glyph one app wants, do not copy the native
+wrapper, and do not add to `icons.tsx` — the next `shadcn add` of `@cubeui/icons` overwrites it.
+
+- **A DOM app imports it from `lucide-react`**, as it is. There is nothing to wrap: an `<svg>`
+  takes `className` and `currentColor` already, and it is an `IconComponent` as it stands.
+- **An Expo app wraps it with the exported `icon`, one line per glyph.** The line is not
+  ceremony: off the web nothing inherits a colour and lucide's component does not take
+  `className`, so a glyph imported straight from `lucide-react-native` ignores `size-4` and stays
+  black inside a destructive `Button`.
+
+For the Expo app, write the app's own pair of files, one line per glyph, beside each other so Metro
 picks the `.web.tsx` on web the same way it does for `icons`:
 
 ```tsx
@@ -56,9 +66,17 @@ On native `icon` is the same wrapper every icon in the set goes through — `cla
 `text-foreground` floor and `IconClassContext` — so the app's glyph follows a `Button`'s colour
 like the rest. On web it hands the glyph back unchanged, since an `<svg>` already inherits
 `currentColor`; it exists so both files read the same. Keep the two files' names in step, as
-`icons` does: TypeScript only resolves the native one. A DOM-only app needs only the second file,
-or can import the glyph from `lucide-react` directly. `IconProps` is exported beside `icon` for a
+`icons` does: TypeScript only resolves the native one. `IconProps` is exported beside `icon` for a
 component that forwards an icon's props.
+
+The other ways to get there were weighed and left. A barrel regenerated from the names an app
+imports is a build step every app has to run and a file `shadcn add` and the script both write. A
+lazy `<Icon name>` paints a placeholder first and makes a glyph a string the compiler cannot
+check. An item per glyph is 1600 items for one line each. Re-exporting all of lucide on the web
+only makes the two halves export different names, which is the one thing `registry:check` holds
+them to. Each of them trades the one line above for machinery, and none removes a glyph from a
+device bundle that the line would have put there. **A glyph joins the set when a second app has
+wrapped it** — that duplication is what the set exists to remove.
 
 A tab can carry an icon too: `<TabsTrigger value="board"><Calendar /> Board</TabsTrigger>`.
 The trigger lays its children out in a row, puts only the text in a `<Text>`, and hands the icon

@@ -41,6 +41,15 @@
  * file, wrapped with the exported `icon` (below), rather than in this one:
  * the next `shadcn add` of this item overwrites whatever was added here.
  *
+ * That is the settled answer and not a stopgap (#251). A barrel generated from
+ * the names an app imports, a lazy `<Icon name>`, an item per glyph and a
+ * web-only re-export of all of lucide were each weighed against it; every one
+ * trades a one-line `icon(...)` in the app for a build step, an async paint, a
+ * thousand items or two halves that export different names, and none keeps a
+ * glyph out of a device bundle that the line would have put there. On the web
+ * an app needs no line at all: a glyph from `lucide-react` is already what
+ * `icon` would hand back.
+ *
  * Adding to this set is for the registry itself, and it goes in **both files**:
  * the web counterpart must export the same names, and TypeScript will not tell
  * you it does not, because it only ever resolves the native file. `npm run
