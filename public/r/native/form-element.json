@@ -9,7 +9,7 @@
   "files": [
     {
       "path": "registry/ui/form-element-base.ts",
-      "content": "/**\n * The contract `form-element.tsx` (native) and `form-element.web.tsx` implement.\n *\n * Its own module because Metro resolves `./form-element` to the `.web.tsx` file\n * on web, so that file cannot import the shared pieces from `./form-element`\n * without importing itself.\n */\nimport type { ReactNode } from \"react\";\n\nexport type FormElementProps = {\n  /** Submits the form. Web wires it to the DOM submit event; native does not. */\n  onSubmit: () => void;\n  className?: string | undefined;\n  children?: ReactNode;\n};\n",
+      "content": "/**\n * The contract `form-element.tsx` (native) and `form-element.web.tsx` implement.\n *\n * Its own module because Metro resolves `./form-element` to the `.web.tsx` file\n * on web, so that file cannot import the shared pieces from `./form-element`\n * without importing itself.\n */\nimport type { ReactNode } from \"react\";\n\nexport type FormElementProps = {\n  /** Submits the form. Web wires it to the DOM submit event; native does not. */\n  onSubmit: () => void;\n  /**\n   * The `<form>`'s id on web, for a submit control that sits outside it and names it with\n   * `form=\"…\"` — a dialog's footer, a card's. Native has no form element to name.\n   */\n  id?: string | undefined;\n  className?: string | undefined;\n  children?: ReactNode;\n};\n",
       "type": "registry:ui"
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "path": "registry/ui/form-element.web.tsx",
-      "content": "/**\n * The element `<Form>` renders on web: a real `<form>`.\n *\n * Kept for one reason — Enter inside a field raises the DOM submit event, and\n * nothing else in the tree does. `SubmitButton` is a `Pressable`, not a submit\n * control, so the two paths cannot both fire for one press.\n */\nimport type { FormElementProps } from \"@/components/ui/form-element-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport function FormElement({ onSubmit, className, children }: FormElementProps) {\n  return (\n    <form\n      className={cn(\"flex flex-col\", className)}\n      onSubmit={(e) => {\n        e.preventDefault();\n        e.stopPropagation();\n        onSubmit();\n      }}\n    >\n      {children}\n    </form>\n  );\n}\n",
+      "content": "/**\n * The element `<Form>` renders on web: a real `<form>`.\n *\n * Kept for one reason — Enter inside a field raises the DOM submit event, and\n * nothing else in the tree does. `SubmitButton` is a `Pressable`, not a submit\n * control, so the two paths cannot both fire for one press.\n */\nimport type { FormElementProps } from \"@/components/ui/form-element-base\";\nimport { cn } from \"@/lib/utils\";\n\nexport function FormElement({ onSubmit, id, className, children }: FormElementProps) {\n  return (\n    <form\n      id={id}\n      className={cn(\"flex flex-col\", className)}\n      onSubmit={(e) => {\n        e.preventDefault();\n        e.stopPropagation();\n        onSubmit();\n      }}\n    >\n      {children}\n    </form>\n  );\n}\n",
       "type": "registry:ui"
     }
   ],

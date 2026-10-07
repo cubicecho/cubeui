@@ -2,10 +2,18 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ColorField as CompiledColorField } from "../compiled/color-picker-field";
 import { DateTimeField as CompiledDateTimeField } from "../compiled/date-time-field";
-import { Form as CompiledForm, createAppForm as compiledCreateAppForm } from "../compiled/form";
+import {
+  FieldRow as CompiledFieldRow,
+  Form as CompiledForm,
+  createAppForm as compiledCreateAppForm,
+} from "../compiled/form";
 import { ColorField as NativeColorField } from "../registry/ui/color-picker-field";
 import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-field";
-import { Form as NativeForm, createAppForm as nativeCreateAppForm } from "../registry/ui/form";
+import {
+  FieldRow as NativeFieldRow,
+  Form as NativeForm,
+  createAppForm as nativeCreateAppForm,
+} from "../registry/ui/form";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -155,6 +163,69 @@ export const DisabledFalseCannotEnable: Story = {
       await userEvent.click(half.getByRole("button", { name: "Save" }));
       await waitFor(() => expect(half.getByRole("alert")).toBeInTheDocument());
       await expect(half.getByRole("button", { name: "Save" })).toBeDisabled();
+    }
+  },
+};
+
+type RowKit = Kit & { FieldRow: typeof NativeFieldRow };
+
+function NameForm({ kit }: { kit: RowKit }) {
+  const { useAppForm, Form, FieldRow } = kit;
+  const form = useAppForm({
+    defaultValues: { first: "", last: "", middle: "" },
+    onSubmit: () => {},
+  });
+  const hasMiddle = false;
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <FieldRow
+          contentSlot={
+            <>
+              <form.AppField name="first">
+                {(field) => <field.InputField label="First name" />}
+              </form.AppField>
+              {hasMiddle && (
+                <form.AppField name="middle">
+                  {(field) => <field.InputField label="Middle name" />}
+                </form.AppField>
+              )}
+              <form.AppField name="last">
+                {(field) => <field.InputField label="Last name" />}
+              </form.AppField>
+            </>
+          }
+        />
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `FieldRow` takes `contentSlot`, as the web one does (#280): the fragment is opened into a cell
+ * per field, so the two share a line, and the field that rendered nothing left no cell behind.
+ */
+export const Row: Story = {
+  render: () => (
+    <SideBySide
+      native={<NameForm kit={{ ...NATIVE, FieldRow: NativeFieldRow }} />}
+      compiled={
+        <NameForm
+          kit={{ ...COMPILED, FieldRow: CompiledFieldRow as unknown as typeof NativeFieldRow }}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const first = half.getByRole("textbox", { name: "First name" });
+      const last = half.getByRole("textbox", { name: "Last name" });
+      const a = first.getBoundingClientRect();
+      const b = last.getBoundingClientRect();
+      await expect(Math.round(a.top)).toBe(Math.round(b.top));
+      await expect(b.left).toBeGreaterThan(a.right);
+      // Equal cells, so nothing sits in a third one.
+      await expect(Math.round(a.width)).toBe(Math.round(b.width));
     }
   },
 };

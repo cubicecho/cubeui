@@ -387,11 +387,17 @@ type SubmitButtonProps = Omit<
  * without a way to say them the whole component gets dropped for a hand-written
  * `<Button type="submit">` that re-derives `canSubmit` and `isSubmitting`, which is the
  * duplication this exists to remove.
+ *
+ * Inside a `<form>`, or naming one with `form="…"`, it is a submit control and the form's own
+ * `onSubmit` runs. With no form to submit — a dialog's `footerActionsSlot`, a card's footer —
+ * a `type="submit"` button does nothing at all, so there it calls `form.handleSubmit()` itself,
+ * as the native `SubmitButton` always does.
  */
 export function SubmitButton({
   content = "Save",
   pendingLabel = "Saving…",
   disabled,
+  onClick,
   ...props
 }: SubmitButtonProps) {
   const form = useFormContext();
@@ -404,6 +410,11 @@ export function SubmitButton({
     <Button
       type="submit"
       {...props}
+      onClick={(event) => {
+        onClick?.(event);
+        // `button.form` is the form that owns it, by ancestry or by the `form` attribute.
+        if (!event.defaultPrevented && !event.currentTarget.form) form.handleSubmit();
+      }}
       disabled={disabled || !canSubmit}
       loading={isSubmitting}
       loadingLabel={pendingLabel}
