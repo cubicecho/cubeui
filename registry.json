@@ -79,6 +79,18 @@
       ]
     },
     {
+      "name": "error-message",
+      "type": "registry:lib",
+      "title": "messageOf",
+      "description": "The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.",
+      "files": [
+        {
+          "path": "registry/lib/error-message.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -518,7 +530,12 @@
       "title": "Radio Group Field",
       "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
       "dependencies": ["@tanstack/react-form@^1.33.5"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/radio-group"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/error-message",
+        "@cubeui/field",
+        "@cubeui/radio-group"
+      ],
       "files": [
         {
           "path": "registry/layout/radio-group-field.tsx",
@@ -1080,6 +1097,7 @@
         "@cubeui/utils",
         "@cubeui/button",
         "@cubeui/checkbox",
+        "@cubeui/error-message",
         "@cubeui/field",
         "@cubeui/form-element",
         "@cubeui/input",

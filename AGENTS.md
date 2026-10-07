@@ -232,7 +232,7 @@ Storybook `storybook/`. The landing page lists every item and which platforms it
 tokens/palette.mjs                    the one colour source; `tokens:build` emits dist/
 registry/ui/                          primitives, React Native, some with a .web.tsx half
 registry/layout/                      the shells, React Native, compiled for the web
-registry/lib/                         `cn`, readableTextColor, the colour helpers
+registry/lib/                         `cn`, readableTextColor, the colour helpers, `messageOf`
 registry/web/                         the web-only tier, hand-written DOM
 registry/web/ui/                      upstream shadcn primitives, re-published from here
 skill/                                the usage skill: SKILL.md and its three references;

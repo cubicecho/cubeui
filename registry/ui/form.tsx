@@ -52,6 +52,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { TextareaProps } from "@/components/ui/textarea-base";
+import { messageOf } from "@/lib/error-message";
 import { cn, type SlotNode } from "@/lib/utils";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -62,22 +63,6 @@ export const { fieldContext, formContext, useFieldContext, useFormContext } =
  * names the control by `htmlFor` or the control points back at it by `aria-labelledby`.
  */
 const IdContext = React.createContext<{ id: string; asGroup: boolean } | null>(null);
-
-function messageOf(error: unknown): string | undefined {
-  // A validator may yield a string, a `{ message }`, or something else entirely — a
-  // standard-schema issue, a thrown value. Narrow, then fall back to `String`, because showing
-  // the wrong text beats showing none.
-  if (error == null) {
-    return undefined;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return String(error);
-}
 
 /**
  * The field's first error, or nothing — and *when* is most of what this does.

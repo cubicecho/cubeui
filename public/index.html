@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 101 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 102 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 101 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 102 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  86 on both platforms · 15 web-only · 0 native-only.
+  87 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -345,6 +345,11 @@
           <th scope="row"><code>@cubeui/empty</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/error-message</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/field</code></th>

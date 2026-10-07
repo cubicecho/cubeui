@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { messageOf } from "@/lib/error-message";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
@@ -59,19 +60,6 @@ export function splitProps<T>(props: FieldProps & T): [FieldProps, T] {
     }
   }
   return [field as FieldProps, control as T];
-}
-
-function messageOf(error: unknown): string | undefined {
-  if (error == null) {
-    return undefined;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return String(error);
 }
 
 /**

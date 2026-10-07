@@ -5,6 +5,7 @@ import * as React from "react";
 import { Text, View } from "react-native";
 import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { messageOf } from "@/lib/error-message";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** One choice. `description` is the line under it — what picking this one means. */
@@ -101,19 +102,6 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
   loadingClassName?: string | undefined;
   groupClassName?: string | undefined;
 };
-
-function messageOf(error: unknown): string | undefined {
-  if (error == null) {
-    return undefined;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return String(error);
-}
 
 type BodyProps = Omit<
   RadioGroupFieldProps<BindableForm, never>,

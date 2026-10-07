@@ -12,6 +12,7 @@ import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
+import { messageOf } from "@/lib/error-message";
 import { cn, type SlotNode } from "@/lib/utils";
 import { FieldDescription, FieldError, FieldTitle } from "./field";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
@@ -110,19 +111,6 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
   loadingClassName?: string | undefined;
   groupClassName?: string | undefined;
 };
-
-function messageOf(error: unknown): string | undefined {
-  if (error == null) {
-    return undefined;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return String(error);
-}
 
 type BodyProps = Omit<
   RadioGroupFieldProps<BindableForm, never>,

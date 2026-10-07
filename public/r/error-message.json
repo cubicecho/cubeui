@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "error-message",
+  "title": "messageOf",
+  "description": "The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.",
+  "files": [
+    {
+      "path": "registry/lib/error-message.ts",
+      "content": "/**\n * The text a validator's error shows, or nothing when there is no error.\n *\n * A validator may yield a string, a `{ message }`, or something else entirely: a standard-schema\n * issue, a thrown value. This narrows and then falls back to `String`, because showing the wrong\n * text beats showing none.\n */\nexport function messageOf(error: unknown): string | undefined {\n  if (error == null) {\n    return undefined;\n  }\n  if (typeof error === \"string\") {\n    return error;\n  }\n  if (typeof error === \"object\" && \"message\" in error) {\n    return String(error.message);\n  }\n  return String(error);\n}\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

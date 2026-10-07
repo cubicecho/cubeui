@@ -11,6 +11,7 @@
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
+        "@cubeui/error-message",
         "@cubeui/form-field",
         "@cubeui/input",
         "@cubeui/option-select",
