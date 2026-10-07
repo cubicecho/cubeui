@@ -2,7 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
+import { migrateThemePreference as migrateCompiled } from "../compiled/theme-preference";
 import { ThemePicker as NativeThemePicker } from "../registry/ui/theme-picker";
+import { migrateThemePreference } from "../registry/ui/theme-preference";
 import {
   PALETTE_PREFERENCES,
   PALETTE_STORAGE_KEY,
@@ -198,6 +200,54 @@ export const PrePaint: Story = {
     await expect(run("light")).toBe("dark");
     await expect(html()).toHaveAttribute("data-palette", "monokai");
     await expect(background()).toBe(MONOKAI);
+  },
+};
+
+/**
+ * Issue #266: an app that already stored a theme under its own key. `migrateThemePreference` at
+ * boot copies it to cubeui's key and removes the old one, and the pickers already on the page
+ * show it. A choice already made under cubeui's key wins.
+ *
+ * The two halves are two copies of the module here, so each is told; the first does the copy and
+ * the second finds nothing left to do, which is also what a call after the pre-paint script finds.
+ */
+export const MigratesALegacyKey: Story = {
+  render: () => both,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const storage = window.localStorage;
+    const legacyKeys = { theme: ["app-theme"], palette: ["app-palette"] };
+    try {
+      storage.setItem("app-theme", "dark");
+      storage.setItem("app-palette", "monokai");
+      void migrateThemePreference(legacyKeys);
+      void migrateCompiled(legacyKeys);
+      // Done by the time the call returns: nothing renders in between on the web.
+      await expect(stored()).toBe("dark");
+      await expect(storedPalette()).toBe("monokai");
+      await expect(storage.getItem("app-theme")).toBeNull();
+      await expect(storage.getItem("app-palette")).toBeNull();
+      await expect(html()).toHaveClass("dark");
+      await expect(html()).toHaveAttribute("data-palette", "monokai");
+      for (const name of ["Native theme", "Compiled theme"]) {
+        const group = within(canvas.getByRole("radiogroup", { name }));
+        await waitFor(() =>
+          expect(group.getByRole("radio", { name: "Dark" })).toHaveAttribute(
+            "aria-checked",
+            "true",
+          ),
+        );
+      }
+
+      // One way, and once: what the reader has chosen since is not overwritten.
+      storage.setItem("app-theme", "light");
+      void migrateThemePreference(legacyKeys);
+      await expect(stored()).toBe("dark");
+      await expect(storage.getItem("app-theme")).toBe("light");
+    } finally {
+      storage.removeItem("app-theme");
+      storage.removeItem("app-palette");
+    }
   },
 };
 

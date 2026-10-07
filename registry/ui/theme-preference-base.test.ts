@@ -8,6 +8,7 @@ import {
   PALETTE_STORAGE_KEY,
   THEME_PRE_PAINT_SCRIPT,
   THEME_STORAGE_KEY,
+  themePrePaintScript,
 } from "./theme-preference-base";
 
 const root = resolve(import.meta.dirname, "../..");
@@ -28,6 +29,60 @@ describe("THEME_PRE_PAINT_SCRIPT", () => {
 
   it("parses as a script", () => {
     expect(() => new Function(THEME_PRE_PAINT_SCRIPT)).not.toThrow();
+  });
+});
+
+/** The script run against a page that holds `items`, giving back what storage holds after. */
+function prePaint(script: string, items: Record<string, string>) {
+  const store = new Map(Object.entries(items));
+  const classes = new Set<string>();
+  const localStorage = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+    removeItem: (key: string) => void store.delete(key),
+  };
+  const document = {
+    documentElement: {
+      classList: {
+        toggle: (name: string, on: boolean) => void (on ? classes.add(name) : classes.delete(name)),
+      },
+      setAttribute: (name: string, value: string) => void classes.add(`${name}=${value}`),
+    },
+  };
+  new Function("localStorage", "document", "matchMedia", script)(localStorage, document, () => ({
+    matches: false,
+  }));
+  return { stored: Object.fromEntries(store), painted: [...classes].sort() };
+}
+
+// Issue #266: an app that had its own theme key lost every reader's choice on adopting the picker.
+describe("themePrePaintScript with legacy keys", () => {
+  const script = themePrePaintScript({
+    legacyKeys: { theme: ["app-theme", "app-theme-v0"], palette: ["app-palette"] },
+  });
+
+  it("is the plain script when there is nothing to migrate", () => {
+    expect(themePrePaintScript()).toBe(THEME_PRE_PAINT_SCRIPT);
+    expect(themePrePaintScript({ legacyKeys: { theme: [] } })).toBe(THEME_PRE_PAINT_SCRIPT);
+  });
+
+  it("paints the old choice on the first load, and moves it to our key", () => {
+    expect(prePaint(script, { "app-theme": "dark", "app-palette": "monokai" })).toEqual({
+      stored: { [THEME_STORAGE_KEY]: "dark", [PALETTE_STORAGE_KEY]: "monokai" },
+      painted: ["dark", "data-palette=monokai"],
+    });
+  });
+
+  it("takes the first old key that holds one of our values", () => {
+    expect(prePaint(script, { "app-theme": "sepia", "app-theme-v0": "light" })).toEqual({
+      stored: { "app-theme": "sepia", [THEME_STORAGE_KEY]: "light" },
+      painted: ["light"],
+    });
+  });
+
+  it("leaves a choice already made under our key alone", () => {
+    const items = { "app-theme": "dark", [THEME_STORAGE_KEY]: "light" };
+    expect(prePaint(script, items)).toEqual({ stored: items, painted: ["light"] });
   });
 });
 
