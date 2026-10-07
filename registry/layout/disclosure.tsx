@@ -5,7 +5,10 @@ import { ChevronRight } from "@/components/ui/icons";
 import { cn, type SlotNode } from "@/lib/utils";
 
 type DisclosureProps = {
-  /** What the button says: "Completed (3)", "Raw output". It is the button's accessible name. */
+  /**
+   * What the button says: "Completed (3)", "Raw output". It is the button's accessible name. A
+   * string is drawn as the title; an element is placed as it is and styles itself.
+   */
   title: ReactNode;
   /** One line under the title, inside the button, drawn whether open or shut. */
   description?: ReactNode | undefined;
@@ -30,6 +33,20 @@ type DisclosureProps = {
   titleClassName?: string | undefined;
   contentClassName?: string | undefined;
 };
+
+/**
+ * A string gets a `Text` around it; an element is placed as it is, because a `View` inside a
+ * `Text` lays out inline on device and loses most of its own styling.
+ */
+function asText(node: ReactNode, className: string, testID: string) {
+  return typeof node === "string" || typeof node === "number" ? (
+    <Text testID={testID} className={className}>
+      {node}
+    </Text>
+  ) : (
+    node
+  );
+}
 
 /**
  * A titled part of a screen whose body shows and hides — "Show completed (3)" under a list, "Raw
@@ -114,17 +131,14 @@ export function Disclosure({
             )}
           />
           <View className="min-w-0 flex-1 gap-0.5">
-            <Text
-              testID="disclosure-title"
-              className={cn("font-medium text-foreground/60 text-sm", titleClassName)}
-            >
-              {title}
-            </Text>
-            {description ? (
-              <Text testID="disclosure-description" className="text-foreground/60 text-xs">
-                {description}
-              </Text>
-            ) : null}
+            {asText(
+              title,
+              cn("font-medium text-foreground/60 text-sm", titleClassName),
+              "disclosure-title",
+            )}
+            {description
+              ? asText(description, "text-foreground/60 text-xs", "disclosure-description")
+              : null}
           </View>
         </Pressable>
         {actionSlot ? (

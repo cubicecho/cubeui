@@ -175,3 +175,51 @@ export const LongTitle: Story = {
     }
   },
 };
+
+const nativeTitle = (
+  <View testID="composed-title" className="flex-row items-center gap-2">
+    <Text className="font-medium text-foreground text-sm">Ada Lovelace</Text>
+    <View testID="composed-badge" className="rounded-full bg-foreground/10 px-2 py-0.5">
+      <Text className="text-foreground text-xs">Owner</Text>
+    </View>
+  </View>
+);
+const compiledTitle = (
+  <div data-testid="composed-title" className="flex flex-row items-center gap-2">
+    <span className="font-medium text-foreground text-sm">Ada Lovelace</span>
+    <div data-testid="composed-badge" className="rounded-full bg-foreground/10 px-2 py-0.5">
+      <span className="text-foreground text-xs">Owner</span>
+    </div>
+  </div>
+);
+
+/**
+ * `title` and `description` are nodes, so an element has to be drawn as one (#287). A string
+ * gets the row's `Text`; an element is placed as given, the way `meta` always was — inside a
+ * `Text` it would lay out inline on device and lose its own styling.
+ */
+export const ComposedTitle: Story = {
+  args: { title: "Ada Lovelace" },
+  render: () => (
+    <SideBySide
+      native={<Native title={nativeTitle} description="ada@example.com" />}
+      compiled={<Compiled title={compiledTitle} description="ada@example.com" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const sections = Array.from(canvasElement.querySelectorAll("section"));
+    await expect(sections).toHaveLength(2);
+    for (const section of sections) {
+      // No title `Text` was wrapped around the element; the string description still has its own.
+      await expect(
+        section.querySelector('[data-slot="list-item-title"], [data-testid="list-item-title"]'),
+      ).toBeNull();
+      await expect(within(section).getByText("ada@example.com")).toBeInTheDocument();
+      // The badge sits beside the name on the name's line, as the element laid it out.
+      const name = within(section).getByText("Ada Lovelace").getBoundingClientRect();
+      const badge = bounds(section, "composed-badge");
+      await expect(badge.left).toBeGreaterThanOrEqual(name.right);
+      await expect(badge.top).toBeLessThan(name.bottom);
+    }
+  },
+};

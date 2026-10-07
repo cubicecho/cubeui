@@ -14,7 +14,10 @@ import { cn, type SlotNode } from "@/lib/utils";
 import { ChevronRight } from "./icons";
 
 type DisclosureProps = {
-  /** What the button says: "Completed (3)", "Raw output". It is the button's accessible name. */
+  /**
+   * What the button says: "Completed (3)", "Raw output". It is the button's accessible name. A
+   * string is drawn as the title; an element is placed as it is and styles itself.
+   */
   title: ReactNode;
   /** One line under the title, inside the button, drawn whether open or shut. */
   description?: ReactNode | undefined;
@@ -39,6 +42,20 @@ type DisclosureProps = {
   titleClassName?: string | undefined;
   contentClassName?: string | undefined;
 };
+
+/**
+ * A string gets a `Text` around it; an element is placed as it is, because a `View` inside a
+ * `Text` lays out inline on device and loses most of its own styling.
+ */
+function asText(node: ReactNode, className: string, testID: string) {
+  return typeof node === "string" || typeof node === "number" ? (
+    <span data-slot={testID} className={cn("cube-rn-text", className)}>
+      {node}
+    </span>
+  ) : (
+    node
+  );
+}
 
 /**
  * A titled part of a screen whose body shows and hides — "Show completed (3)" under a list, "Raw
@@ -120,24 +137,14 @@ export function Disclosure({
             )}
           />
           <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
-            <span
-              data-slot="disclosure-title"
-              className={cn(
-                "cube-rn-text",
-                "font-medium text-foreground/60 text-sm",
-                titleClassName,
-              )}
-            >
-              {title}
-            </span>
-            {description ? (
-              <span
-                data-slot="disclosure-description"
-                className="cube-rn-text text-foreground/60 text-xs"
-              >
-                {description}
-              </span>
-            ) : null}
+            {asText(
+              title,
+              cn("font-medium text-foreground/60 text-sm", titleClassName),
+              "disclosure-title",
+            )}
+            {description
+              ? asText(description, "text-foreground/60 text-xs", "disclosure-description")
+              : null}
           </div>
         </button>
         {actionSlot ? (
