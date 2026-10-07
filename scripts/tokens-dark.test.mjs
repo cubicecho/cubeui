@@ -43,7 +43,7 @@ test("every token carries a dark value the compiler can see", async () => {
 
   assert.equal(vars.size, names.length, "not every token became a root variable");
 
-  const missing = names.filter((n) => !isDark(vars.get(n)));
+  const missing = names.filter((n) => isDark(vars.get(n)) === false);
   assert.deepEqual(
     missing,
     [],
@@ -148,7 +148,7 @@ test("an element selector is dropped on native, as `*` is", async () => {
 test("the manual override carries the whole palette, in both directions", () => {
   const css = readFileSync(join(root, "dist/tokens.native.css"), "utf8");
   const system = css.slice(css.indexOf("@media (prefers-color-scheme: dark)"));
-  const lightRoot = declarations(css, ":root").filter((d) => !d.startsWith("--radius:"));
+  const lightRoot = declarations(css, ":root").filter((d) => d.startsWith("--radius:") === false);
 
   assert.equal(lightRoot.length, names.length);
   assert.deepEqual(declarations(css, ":is(html.light)"), lightRoot);

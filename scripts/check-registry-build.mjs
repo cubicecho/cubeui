@@ -425,14 +425,14 @@ function placementProblems(built, item, items) {
   const problems = [];
   const reachable = installedBy([`${NAMESPACE}/${item.name}`], items);
   for (const file of item.files ?? []) {
-    if (!/\.(tsx?|jsx?|mjs)$/.test(file.path)) {
+    if (/\.(tsx?|jsx?|mjs)$/.test(file.path) === false) {
       continue;
     }
     const where = `${built}: "${item.name}" (${path.basename(file.path)})`;
     for (const spec of specifiersIn(file)) {
       if (spec.startsWith(".")) {
         problems.push(`${where} imports \`${spec}\`, a relative path the CLI will not rewrite`);
-      } else if (spec.startsWith("@/") && !reachable.has(spec)) {
+      } else if (spec.startsWith("@/") && reachable.has(spec) === false) {
         problems.push(
           `${where} imports \`${spec}\`, which neither it nor its registryDependencies install there`,
         );
@@ -446,7 +446,7 @@ function placementProblems(built, item, items) {
 function storyProblems(built, item, items) {
   const problems = [];
   const name = item.name.replace(/-stories$/, "");
-  if (!(item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`)) {
+  if ((item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`) === false) {
     problems.push(`${built}: "${item.name}" does not depend on \`${NAMESPACE}/${name}\``);
   }
 
@@ -455,10 +455,13 @@ function storyProblems(built, item, items) {
   for (const file of item.files ?? []) {
     const source = ts.createSourceFile(file.path, file.content ?? "", ts.ScriptTarget.Latest);
     for (const statement of source.statements) {
-      if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) {
+      if (
+        ts.isImportDeclaration(statement) === false &&
+        ts.isExportDeclaration(statement) === false
+      ) {
         continue;
       }
-      if (!statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) {
+      if (!statement.moduleSpecifier || ts.isStringLiteral(statement.moduleSpecifier) === false) {
         continue;
       }
       const spec = statement.moduleSpecifier.text;
@@ -467,14 +470,14 @@ function storyProblems(built, item, items) {
       if (spec.startsWith(".")) {
         problems.push(`${where} imports \`${spec}\`, a local file that does not ship`);
       } else if (spec.startsWith("@/")) {
-        if (!reachable.has(spec)) {
+        if (reachable.has(spec) === false) {
           problems.push(
             `${where} imports \`${spec}\`, which nothing in its registryDependencies installs`,
           );
         }
-      } else if (!STORY_PACKAGES.has(spec)) {
+      } else if (STORY_PACKAGES.has(spec) === false) {
         problems.push(`${where} imports \`${spec}\`, which a consumer's Storybook may not have`);
-      } else if (STORY_TYPE_ONLY.has(spec) && !statement.importClause?.isTypeOnly) {
+      } else if (STORY_TYPE_ONLY.has(spec) && statement.importClause?.isTypeOnly !== true) {
         problems.push(`${where} imports \`${spec}\` at runtime; only \`import type\` is allowed`);
       } else if (spec === "storybook/test") {
         const bindings = statement.importClause?.namedBindings;
@@ -482,7 +485,7 @@ function storyProblems(built, item, items) {
           bindings && ts.isNamedImports(bindings)
             ? bindings.elements.map((e) => (e.propertyName ?? e.name).text)
             : ["*"];
-        for (const imported of names.filter((n) => !STORY_TEST_API.has(n))) {
+        for (const imported of names.filter((n) => STORY_TEST_API.has(n) === false)) {
           problems.push(`${where} imports \`${imported}\` from storybook/test, outside the floor`);
         }
       }
@@ -576,7 +579,7 @@ function classPartsOf(source, item) {
   const prefix = `${item.replace(/-/g, "_").toUpperCase()}_`;
   const parts = new Map();
   for (const [, name] of source.matchAll(/^export const ([A-Z][A-Z0-9_]*_CLASS)\b/gm)) {
-    if (!name.startsWith(prefix) && name !== `${prefix.slice(0, -1)}_CLASS`) {
+    if (name.startsWith(prefix) === false && name !== `${prefix.slice(0, -1)}_CLASS`) {
       continue;
     }
     const middle = name.slice(prefix.length, -"_CLASS".length);
@@ -622,7 +625,7 @@ const seen = new Map();
 for (const dir of dirs) {
   const here = path.join(SOURCES, dir.name);
   const files = (await readdir(here)).filter(
-    (f) => /\.(tsx|ts)$/.test(f) && !f.endsWith(".test.ts"),
+    (f) => /\.(tsx|ts)$/.test(f) && f.endsWith(".test.ts") === false,
   );
 
   for (const file of files) {
@@ -667,10 +670,10 @@ for (const dir of dirs) {
           continue;
         }
         for (const [constant, part] of parts) {
-          if (part === own || !claimed.has(part)) {
+          if (part === own || claimed.has(part) === false) {
             continue;
           }
-          if (!new RegExp(`\\b${constant}\\b`).test(body)) {
+          if (new RegExp(`\\b${constant}\\b`).test(body) === false) {
             continue;
           }
           misapplied.push(
@@ -684,7 +687,7 @@ for (const dir of dirs) {
 
   for (const web of files.filter((f) => f.endsWith(".web.tsx"))) {
     const native = web.replace(/\.web\.tsx$/, ".tsx");
-    if (!files.includes(native)) {
+    if (files.includes(native) === false) {
       drift.push(`${here}/${web} has no ${native} beside it`);
       continue;
     }
@@ -698,8 +701,8 @@ for (const dir of dirs) {
       continue;
     }
 
-    const missingOnWeb = [...nativeNames].filter((n) => !webNames.has(n));
-    const missingOnNative = [...webNames].filter((n) => !nativeNames.has(n));
+    const missingOnWeb = [...nativeNames].filter((n) => webNames.has(n) === false);
+    const missingOnNative = [...webNames].filter((n) => nativeNames.has(n) === false);
 
     if (missingOnWeb.length > 0) {
       drift.push(`${here}/${web} is missing: ${missingOnWeb.join(", ")}`);
@@ -722,7 +725,7 @@ const [nativeTokens, webTokens] = await Promise.all(
 );
 const tokens = new Set(tokenNames.filter((t) => nativeTokens.has(t) && webTokens.has(t)));
 for (const file of await readdir(SOURCES, { recursive: true })) {
-  if (!/\.(tsx|ts)$/.test(file)) {
+  if (/\.(tsx|ts)$/.test(file) === false) {
     continue;
   }
   const where = path.join(SOURCES, file);
@@ -735,7 +738,7 @@ for (const file of await readdir(SOURCES, { recursive: true })) {
 const NATIVE_SOURCES = ["ui", "layout", "lib"].map((dir) => path.join(SOURCES, dir));
 for (const dir of NATIVE_SOURCES) {
   for (const file of await readdir(dir)) {
-    if (!/\.(tsx|ts)$/.test(file) || /\.(web\.tsx|test\.ts)$/.test(file)) {
+    if (/\.(tsx|ts)$/.test(file) === false || /\.(web\.tsx|test\.ts)$/.test(file)) {
       continue;
     }
     const where = path.join(dir, file);
@@ -762,7 +765,7 @@ for (const built of BUILT) {
   const listed = index === null ? null : new Set(JSON.parse(index).items.map((i) => i.name));
 
   for (const entry of (await readdir(built).catch(() => [])).sort()) {
-    if (!entry.endsWith(".json") || entry === "registry.json") {
+    if (entry.endsWith(".json") === false || entry === "registry.json") {
       continue;
     }
 
@@ -771,7 +774,7 @@ for (const built of BUILT) {
     present.add(item.name);
     items.set(item.name, item);
 
-    if (listed && !listed.has(item.name)) {
+    if (listed && listed.has(item.name) === false) {
       orphans.push(`${where}: "${item.name}" is not in ${built}/registry.json`);
     }
 
@@ -787,7 +790,7 @@ for (const built of BUILT) {
     for (const dependency of [...(item.dependencies ?? []), ...(item.devDependencies ?? [])]) {
       // A scoped name is `@scope/name`, so the `@` that separates the range is
       // never the first character.
-      if (!dependency.slice(1).includes("@")) {
+      if (dependency.slice(1).includes("@") === false) {
         unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
       }
       const name = packageName(dependency);
@@ -805,7 +808,7 @@ for (const built of BUILT) {
     // Rule 7. What the item's own files reach for, against what it tells the CLI to install.
     const imported = new Set();
     for (const file of item.files ?? []) {
-      if (!isSource(file.path) || file.path.endsWith(".test.ts")) {
+      if (isSource(file.path) === false || file.path.endsWith(".test.ts")) {
         continue;
       }
       for (const name of packagesIn(file.content ?? "", file.path)) {
@@ -885,7 +888,11 @@ for (const built of BUILT) {
       built === BUILT[0] &&
       (item.files ?? []).some((f) => isSource(f.path) && (f.content ?? "").includes(RESET_CLASS));
     const tokens = `${NAMESPACE}/${TOKENS}`;
-    if (wearsReset && item.name !== TOKENS && !item.registryDependencies?.includes(tokens)) {
+    if (
+      wearsReset &&
+      item.name !== TOKENS &&
+      item.registryDependencies?.includes(tokens) !== true
+    ) {
       resetless.push(
         `${where}: "${item.name}" wears \`${RESET_CLASS}*\`, not depending on ${tokens}`,
       );
@@ -901,7 +908,7 @@ for (const built of BUILT) {
   }
 
   for (const { from, dependency } of wanted) {
-    if (!dependency.startsWith("@")) {
+    if (dependency.startsWith("@") === false) {
       unreachable.push(
         `${built}: "${from}" depends on \`${dependency}\` — a bare name, which is ui.shadcn.com's`,
       );
@@ -911,7 +918,7 @@ for (const built of BUILT) {
     const name = rest.join("/");
     if (namespace !== NAMESPACE.slice(1)) {
       unreachable.push(`${built}: "${from}" depends on \`${dependency}\` — not \`${NAMESPACE}\``);
-    } else if (!present.has(name)) {
+    } else if (present.has(name) === false) {
       unreachable.push(
         `${built}: "${from}" depends on \`${dependency}\`, which ${built} does not hold`,
       );
@@ -955,7 +962,7 @@ if (webItems && nativeItems) {
   const onNative = new Set(nativeItems.map((i) => i.name));
   for (const item of nativeItems) {
     const layout = (item.files ?? []).some((f) => f.path.startsWith(LAYOUT_DIR));
-    if (layout && !onWeb.has(item.name)) {
+    if (layout && onWeb.has(item.name) === false) {
       oneSided.push(`"${item.name}" is a layout on React Native and has no compiled web half`);
     }
   }
@@ -979,12 +986,12 @@ for (const item of webOnlyItems) {
     continue;
   }
   declared.add(item.name);
-  if (!(item.name in WEB_ONLY)) {
+  if (item.name in WEB_ONLY === false) {
     undeclared.push(`"${item.name}" is web-only and \`WEB_ONLY\` does not say why`);
   }
 }
 for (const name of Object.keys(WEB_ONLY)) {
-  if (!declared.has(name)) {
+  if (declared.has(name) === false) {
     undeclared.push(`"${name}" is named in \`WEB_ONLY\` and is no longer a web-only item`);
   }
 }

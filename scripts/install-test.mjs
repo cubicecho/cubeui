@@ -40,6 +40,11 @@ const PUBLIC = join(root, "public");
 const SHADCN = process.env.SHADCN ?? `node ${join(root, "node_modules/shadcn/dist/index.js")}`;
 const base = process.env.INSTALL_TEST_DIR ?? mkdtempSync(join(tmpdir(), "cubeui-install-"));
 
+const OK = 200;
+const NOT_FOUND = 404;
+/** The most of a command the log prints before it is cut. */
+const LOGGED_COMMAND = 200;
+
 const TYPES = { ".json": "application/json", ".css": "text/css", ".html": "text/html" };
 
 /** `public/`, read-only, on an ephemeral port. */
@@ -48,10 +53,10 @@ function serve() {
     const rel = normalize(decodeURIComponent(new URL(req.url, "http://x").pathname));
     try {
       const body = readFileSync(join(PUBLIC, rel));
-      res.writeHead(200, { "content-type": TYPES[extname(rel)] ?? "application/octet-stream" });
+      res.writeHead(OK, { "content-type": TYPES[extname(rel)] ?? "application/octet-stream" });
       res.end(body);
     } catch {
-      res.writeHead(404).end();
+      res.writeHead(NOT_FOUND).end();
     }
   });
   return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve(server)));
@@ -61,7 +66,7 @@ const json = (value) => `${JSON.stringify(value, null, 2)}\n`;
 
 /** Asynchronous on purpose: the registry server is in this process, and a sync child blocks it. */
 function run(cmd, cwd) {
-  console.log(`  $ ${cmd.length > 200 ? `${cmd.slice(0, 200)}…` : cmd}`);
+  console.log(`  $ ${cmd.length > LOGGED_COMMAND ? `${cmd.slice(0, LOGGED_COMMAND)}…` : cmd}`);
   return new Promise((resolve, reject) => {
     const child = spawn(cmd, {
       cwd,
@@ -77,7 +82,7 @@ function run(cmd, cwd) {
 
 function itemsOf(registry) {
   const index = JSON.parse(readFileSync(join(PUBLIC, registry, "registry.json"), "utf8"));
-  return index.items.map((i) => i.name).filter((n) => !n.endsWith("-stories"));
+  return index.items.map((i) => i.name).filter((n) => n.endsWith("-stories") === false);
 }
 
 function componentsJson(url, ui) {

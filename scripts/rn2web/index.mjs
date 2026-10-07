@@ -63,6 +63,11 @@ const WEB_ONLY = "registry/web";
  */
 const LIB = ["registry/lib/utils.ts"];
 
+/** Room for the largest formatted file Biome hands back on stdout. */
+const MEBIBYTE = 1_048_576;
+const FORMAT_BUFFER_MEBIBYTES = 16;
+const FORMAT_BUFFER = FORMAT_BUFFER_MEBIBYTES * MEBIBYTE;
+
 /**
  * Biome, as a filter.
  *
@@ -76,7 +81,7 @@ function format(code, path) {
     cwd: root,
     input: code,
     encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024,
+    maxBuffer: FORMAT_BUFFER,
   });
 }
 
@@ -89,7 +94,7 @@ function neutral() {
   const names = new Set();
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir))) {
-      if (file.endsWith(".ts") && !file.endsWith(".test.ts")) {
+      if (file.endsWith(".ts") && file.endsWith(".test.ts") === false) {
         names.add(basename(file, ".ts"));
       }
     }
@@ -113,7 +118,7 @@ function items() {
   // `compiled/` holds one file per item and the basename check is what guards that.
   for (const dir of [WEB_ONLY, `${WEB_ONLY}/ui`]) {
     for (const file of readdirSync(join(root, dir)).sort()) {
-      if (!file.endsWith(".tsx")) {
+      if (file.endsWith(".tsx") === false) {
         continue;
       }
       found.push({
@@ -126,7 +131,7 @@ function items() {
   }
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir)).sort()) {
-      if (!file.endsWith(".tsx")) {
+      if (file.endsWith(".tsx") === false) {
         continue;
       }
       if (file.endsWith(".web.tsx")) {
@@ -170,7 +175,7 @@ function assemble() {
   for (;;) {
     results = new Map();
     for (const item of all) {
-      if (!tree.has(item.name)) {
+      if (tree.has(item.name) === false) {
         continue;
       }
       results.set(item.name, emit(item, tree));
@@ -179,7 +184,7 @@ function assemble() {
     if (failed.length === 0) {
       break;
     }
-    const next = new Set([...tree].filter((n) => !failed.includes(n)));
+    const next = new Set([...tree].filter((n) => failed.includes(n) === false));
     if (next.size === tree.size) {
       break;
     }
@@ -226,7 +231,7 @@ for (const [file, code] of emitted) {
 // started refusing. Stale output keeps shipping from the registry, so it is removed rather than
 // reported — except under `--check`, where removing it would be the thing being checked for.
 const stale = readdirSync(OUT)
-  .filter((f) => /\.tsx?$/.test(f) && !emitted.has(f))
+  .filter((f) => /\.tsx?$/.test(f) && emitted.has(f) === false)
   .sort();
 for (const file of stale) {
   if (check) {

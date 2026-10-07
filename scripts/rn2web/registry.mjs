@@ -72,7 +72,7 @@ const PEERS_OF = { "radix-ui": ["@types/react", "@types/react-dom"] };
 function webPackages(files, emitted) {
   const used = new Set();
   for (const file of files) {
-    if (!isSource(file.path) || file.path.endsWith(".test.ts")) {
+    if (isSource(file.path) === false || file.path.endsWith(".test.ts")) {
       continue;
     }
     for (const name of packagesIn(webText(file, emitted), file.path)) {
@@ -88,7 +88,7 @@ function webPackages(files, emitted) {
  * React Native source's.
  */
 function webText(file, emitted) {
-  if (!isSource(file.path)) {
+  if (isSource(file.path) === false) {
     return "";
   }
   const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
@@ -304,7 +304,11 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     // it. The native half does not need it, so it is added here, to the half that does.
     const needsUtils = files.some((f) => /from\s+"@\/lib\/utils"/.test(webText(f, emitted)));
     const utils = "@cubeui/utils";
-    if (needsUtils && item.name !== "utils" && !item.registryDependencies?.includes(utils)) {
+    if (
+      needsUtils &&
+      item.name !== "utils" &&
+      item.registryDependencies?.includes(utils) !== true
+    ) {
       next.registryDependencies = [...(item.registryDependencies ?? []), utils];
     }
     // The same move for the stylesheet. A compiled file wearing `cube-rn-view` is written against
@@ -313,7 +317,7 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     // emitted text rather than listed, so it follows the compiler's output as that moves.
     if (item.name !== TOKENS && files.some((f) => webText(f, emitted).includes(RESET_CLASS))) {
       const deps = next.registryDependencies ?? item.registryDependencies ?? [];
-      if (!deps.includes(`@cubeui/${TOKENS}`)) {
+      if (deps.includes(`@cubeui/${TOKENS}`) === false) {
         next.registryDependencies = [...deps, `@cubeui/${TOKENS}`];
       }
     }
@@ -327,7 +331,7 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     const have = new Set(items.map((i) => i.name));
     const broken = items.filter((i) =>
       (i.registryDependencies ?? []).some(
-        (d) => d.startsWith("@cubeui/") && !have.has(d.slice("@cubeui/".length)),
+        (d) => d.startsWith("@cubeui/") && have.has(d.slice("@cubeui/".length)) === false,
       ),
     );
     if (broken.length === 0) {
@@ -405,7 +409,7 @@ export function deriveStoryItems(webItems, stories) {
 
     const deps = new Set([name]);
     for (const { fileName } of ts.preProcessFile(text, true, true).importedFiles) {
-      if (!fileName.startsWith("@/")) {
+      if (fileName.startsWith("@/") === false) {
         continue;
       }
       const module = fileName.split("/").pop();

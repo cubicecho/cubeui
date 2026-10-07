@@ -41,10 +41,10 @@ export function reactNativeClassName(): Plugin {
     enforce: "pre",
     transform(code, id) {
       const [file] = id.split("?");
-      if (!file || !ours.some((dir) => file.startsWith(dir))) {
+      if (!file || ours.some((dir) => file.startsWith(dir)) === false) {
         return null;
       }
-      if (!code.includes('"react-native"') && !code.includes("'react-native'")) {
+      if (code.includes('"react-native"') === false && code.includes("'react-native'") === false) {
         return null;
       }
 

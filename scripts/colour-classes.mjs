@@ -102,7 +102,7 @@ function utilityOf(cls) {
 export function colourOf(cls) {
   const utility = utilityOf(cls);
   for (const family of FAMILIES) {
-    if (!utility.startsWith(`${family}-`) && utility !== family) {
+    if (utility.startsWith(`${family}-`) === false && utility !== family) {
       continue;
     }
     let rest = utility.slice(family.length + 1);
@@ -131,12 +131,12 @@ export function unresolvedColours(source, tokens, fileName) {
       if (!found) {
         continue;
       }
-      if (!tokens.has(found.colour) && !THEMELESS.test(found.colour)) {
+      if (tokens.has(found.colour) === false && THEMELESS.test(found.colour) === false) {
         bad.add(utilityOf(cls));
         continue;
       }
       const opacity = opacityOf(cls);
-      if (opacity !== null && !OPACITY_STEPS.has(opacity)) {
+      if (opacity !== null && OPACITY_STEPS.has(opacity) === false) {
         bad.add(`${utilityOf(cls)}/${opacity}`);
       }
     }
@@ -155,7 +155,7 @@ export function tokensIn(css) {
  */
 export function isBorderWidth(cls) {
   const match = /^border(-[xytrblse])?(-(\d+(\.\d+)?|px|\[[^\]]+\]))?$/.exec(utilityOf(cls));
-  return match !== null && !/^-0(\.0+)?$/.test(match[2] ?? "");
+  return match !== null && /^-0(\.0+)?$/.test(match[2] ?? "") === false;
 }
 
 /** The class-joining calls whose arguments are one class list: every string in one is in scope. */
@@ -193,7 +193,7 @@ const ESCAPE = /@border-colour\b/;
 
 /** Whether a comment above the string, up to its statement or property, carries the escape. */
 function excused(node, source) {
-  for (let at = node; at && !ts.isSourceFile(at); at = at.parent) {
+  for (let at = node; at && ts.isSourceFile(at) === false; at = at.parent) {
     const ranges = ts.getLeadingCommentRanges(source, at.getFullStart()) ?? [];
     if (ranges.some((r) => ESCAPE.test(source.slice(r.pos, r.end)))) {
       return true;
@@ -237,7 +237,7 @@ export function uncolouredBorders(source, fileName = "source.tsx") {
   const classesOf = (node) => node.text.split(/\s+/).filter(Boolean);
   const bad = [];
   for (const literal of literals) {
-    if (!classesOf(literal).some(isBorderWidth)) {
+    if (classesOf(literal).some(isBorderWidth) === false) {
       continue;
     }
     let root = literal;

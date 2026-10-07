@@ -28,7 +28,7 @@
   },
   "overrides": [
     {
-      "includes": ["registry/**", "compiled/**"],
+      "includes": ["registry/**", "compiled/**", "scripts/**", "tokens/**", ".storybook/**"],
       "plugins": ["./no-negation.grit"],
       "linter": {
         "rules": {
@@ -55,7 +55,7 @@
       }
     },
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs"],
       "linter": { "rules": { "style": { "noMagicNumbers": "off" } } }
     },
     {

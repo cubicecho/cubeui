@@ -156,16 +156,16 @@ function foldPlatform(sourceFile) {
     // `Platform.select({ web, default })` — take the web arm, or the default, in that order.
     if (access.getName() === "select") {
       const call = access.getParent();
-      if (!Node.isCallExpression(call)) {
+      if (Node.isCallExpression(call) === false) {
         continue;
       }
       const arg = call.getArguments()[0];
-      if (!Node.isObjectLiteralExpression(arg)) {
+      if (Node.isObjectLiteralExpression(arg) === false) {
         continue;
       }
       const pick =
         arg.getProperty("web") ?? arg.getProperty("default") ?? arg.getProperty("native");
-      if (!pick || !Node.isPropertyAssignment(pick)) {
+      if (!pick || Node.isPropertyAssignment(pick) === false) {
         continue;
       }
       call.replaceWithText(pick.getInitializer().getText());
@@ -216,7 +216,7 @@ function foldPlatform(sourceFile) {
       continue;
     }
     const container = stmt.getParent();
-    if (!Node.isBlock(container) && !Node.isSourceFile(container)) {
+    if (Node.isBlock(container) === false && Node.isSourceFile(container) === false) {
       continue;
     }
 
@@ -250,7 +250,7 @@ function foldPlatform(sourceFile) {
       continue;
     }
     for (const named of decl.getNamedImports()) {
-      if (!FOLDED_IMPORTS.has(named.getName())) {
+      if (FOLDED_IMPORTS.has(named.getName()) === false) {
         continue;
       }
       named.remove();
@@ -276,7 +276,7 @@ function inlineSpreads(sourceFile) {
     while (Node.isParenthesizedExpression(expr) || Node.isAsExpression(expr)) {
       expr = Node.isAsExpression(expr) ? expr.getExpression() : expr.getExpression();
     }
-    if (!Node.isObjectLiteralExpression(expr)) {
+    if (Node.isObjectLiteralExpression(expr) === false) {
       continue;
     }
 
@@ -288,14 +288,14 @@ function inlineSpreads(sourceFile) {
         parts.push(`${prop.getName()}={${prop.getName()}}`);
         continue;
       }
-      if (!Node.isPropertyAssignment(prop)) {
+      if (Node.isPropertyAssignment(prop) === false) {
         literal = false;
         break;
       }
       const nameNode = prop.getNameNode();
       const name = Node.isStringLiteral(nameNode) ? nameNode.getLiteralValue() : nameNode.getText();
       // `{}` from a collapsed guard, and anything computed, are the two cases to leave alone.
-      if (!/^[A-Za-z_][\w-]*$/.test(name)) {
+      if (/^[A-Za-z_][\w-]*$/.test(name) === false) {
         literal = false;
         break;
       }
@@ -394,7 +394,7 @@ function checkAccessibilityState(rnName, find, attrs, diagnostics) {
 
   const init = attr.getInitializer();
   const object = Node.isJsxExpression(init) ? init.getExpression() : null;
-  if (!Node.isObjectLiteralExpression(object)) {
+  if (Node.isObjectLiteralExpression(object) === false) {
     refuse(
       diagnostics,
       attr,
@@ -440,11 +440,14 @@ function checkAccessibilityState(rnName, find, attrs, diagnostics) {
   return true;
 }
 
+/** The last heading rank HTML has: `h6`. */
+const DEEPEST_HEADING = 6;
+
 function transformElement(open, elements, diagnostics) {
   const tagNode = open.getTagNameNode();
   const rnName = tagNode.getText();
   const entry = ELEMENTS[rnName];
-  if (!entry || !elements.has(rnName)) {
+  if (!entry || elements.has(rnName) === false) {
     return false;
   }
 
@@ -509,11 +512,11 @@ function transformElement(open, elements, diagnostics) {
       level === null &&
       Node.isJsxExpression(levelInit) &&
       levelInit.getExpression() !== undefined &&
-      !Node.isNumericLiteral(levelInit.getExpression()) &&
-      !Node.isStringLiteral(levelInit.getExpression());
+      Node.isNumericLiteral(levelInit.getExpression()) === false &&
+      Node.isStringLiteral(levelInit.getExpression()) === false;
     if (dynamic) {
       // Keep both attributes and the element map's own tag.
-    } else if (!level || Number(level) < 1 || Number(level) > 6) {
+    } else if (!level || Number(level) < 1 || Number(level) > DEEPEST_HEADING) {
       refuse(
         diagnostics,
         roleAttr,
@@ -533,7 +536,7 @@ function transformElement(open, elements, diagnostics) {
   }
   // A role with no element of its own — `radiogroup`, `alert`, `img` — keeps its attribute. What
   // it may not keep is an element whose own semantics it overrides: see `BUTTON_ROLES`.
-  else if (role && entry.generic && !BUTTON_ROLES.has(role)) {
+  else if (role && entry.generic && BUTTON_ROLES.has(role) === false) {
     tag = entry.generic.tag;
     reset = entry.generic.reset;
   }
@@ -600,7 +603,7 @@ function transformElement(open, elements, diagnostics) {
     }
     for (const spread of open.getAttributes().filter(Node.isJsxSpreadAttribute)) {
       const expr = spread.getExpression();
-      if (!Node.isIdentifier(expr)) {
+      if (Node.isIdentifier(expr) === false) {
         continue;
       }
       spread.replaceWithText(
@@ -701,7 +704,7 @@ function checkNestedInteractive(sourceFile, diagnostics) {
  */
 function checkElementLeaks(sourceFile, elements, diagnostics) {
   for (const id of sourceFile.getDescendantsOfKind(SyntaxKind.Identifier)) {
-    if (id.wasForgotten() || !elements.has(id.getText())) {
+    if (id.wasForgotten() || elements.has(id.getText()) === false) {
       continue;
     }
     if (id.getFirstAncestorByKind(SyntaxKind.ImportDeclaration)) {
@@ -748,7 +751,7 @@ function checkNativePropLeaks(sourceFile, diagnostics) {
 
   // A shorthand is both positions at once, which is exactly how this class of bug hides.
   for (const node of sourceFile.getDescendantsOfKind(SyntaxKind.ShorthandPropertyAssignment)) {
-    if (!node.wasForgotten() && native(node.getName())) {
+    if (node.wasForgotten() === false && native(node.getName())) {
       leaked(node, node.getName());
     }
   }
@@ -852,7 +855,7 @@ function renamePublicProps(sourceFile) {
     if (!owner) {
       continue;
     }
-    if (!/^[A-Z]/.test(owner.getTagNameNode().getText())) {
+    if (/^[A-Z]/.test(owner.getTagNameNode().getText()) === false) {
       continue;
     }
     attr.getNameNode().replaceWithText(mapped);
@@ -990,7 +993,7 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics)
      * is left for the CLI rather than refused.
      */
     const component = spec.match(/^@\/components\/([^/]+)$/);
-    if (component && compiledNames.has(component[1]) && !neutralNames.has(component[1])) {
+    if (component && compiledNames.has(component[1]) && neutralNames.has(component[1]) === false) {
       decl.setModuleSpecifier(`./${component[1]}`);
       continue;
     }
@@ -1011,7 +1014,7 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics)
       continue;
     }
 
-    if (!compiledNames.has(name)) {
+    if (compiledNames.has(name) === false) {
       refuse(
         diagnostics,
         decl,
@@ -1087,6 +1090,9 @@ const HEADER = {
  */
 const WEB_ONLY_IGNORE = /^([ \t]*(?:\{\/\*\s*)?)\/\/ web: biome-ignore /gm;
 
+/** Far more passes than any file needs; a loop that reaches it is a transform that never settles. */
+const MAX_PASSES = 12;
+
 /**
  * Compiles one file. Returns `{ code, diagnostics }`; `code` is null when anything was refused,
  * because a partially-transformed file is the one output worse than none.
@@ -1109,7 +1115,7 @@ export function compileSource({
 
   // Each pass is idempotent, so running them to a fixed point is both simpler than ordering the
   // mutations by hand and the only thing that survives ts-morph forgetting a node mid-walk.
-  for (let pass = 0; pass < 12; pass += 1) {
+  for (let pass = 0; pass < MAX_PASSES; pass += 1) {
     let changed = false;
     if (foldPlatform(sourceFile)) {
       changed = true;

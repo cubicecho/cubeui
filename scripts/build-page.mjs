@@ -94,7 +94,7 @@ function storyItems() {
 }
 
 function classify() {
-  const webNames = new Set(web.items.filter((i) => !isStoryItem(i)).map((i) => i.name));
+  const webNames = new Set(web.items.filter((i) => isStoryItem(i) === false).map((i) => i.name));
   const nativeNames = new Set(native.items.map((i) => i.name));
   const rows = [];
   for (const name of [...new Set([...webNames, ...nativeNames])].sort()) {

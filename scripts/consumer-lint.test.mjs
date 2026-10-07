@@ -29,7 +29,7 @@ const DIR_FOR_TYPE = {
 
 function layOut(into) {
   for (const entry of readdirSync(published)) {
-    if (!entry.endsWith(".json") || entry === "registry.json") {
+    if (entry.endsWith(".json") === false || entry === "registry.json") {
       continue;
     }
     const item = JSON.parse(readFileSync(join(published, entry), "utf8"));

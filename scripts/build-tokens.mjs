@@ -45,10 +45,10 @@ const paletteBlocks = (format, wrap = (s) => s) =>
   Object.entries(palettes)
     .flatMap(([name, family]) => {
       const attr = `[data-palette="${name}"]`;
-      const one = !(family.light && family.dark);
+      const both = Boolean(family.light && family.dark);
       return [
         family.light && block(wrap(`html${attr}`), family.light, format, false),
-        family.dark && block(wrap(`html${one ? "" : ".dark"}${attr}`), family.dark, format, false),
+        family.dark && block(wrap(`html${both ? ".dark" : ""}${attr}`), family.dark, format, false),
       ];
     })
     .filter(Boolean)
@@ -67,6 +67,7 @@ const paletteBlocks = (format, wrap = (s) => s) =>
  * \`[scrollbar-width:none]\` on a tab row still hides its own.
  */
 const SCROLLBAR_ALPHA = 0.3;
+const PERCENT = 100;
 
 const scrollbarWidth = (indent = "") =>
   ["* {", "  scrollbar-width: thin;", "}"].map((line) => indent + line).join("\n");
@@ -96,10 +97,10 @@ const nativeScrollbars = () =>
     scrollbarColor(":is(html.light)", light),
     ...Object.entries(palettes).flatMap(([name, family]) => {
       const attr = `[data-palette="${name}"]`;
-      const one = !(family.light && family.dark);
+      const both = Boolean(family.light && family.dark);
       return [
         family.light && scrollbarColor(`:is(html${attr})`, family.light),
-        family.dark && scrollbarColor(`:is(html${one ? "" : ".dark"}${attr})`, family.dark),
+        family.dark && scrollbarColor(`:is(html${both ? ".dark" : ""}${attr})`, family.dark),
       ].filter(Boolean);
     }),
   ].join("\n\n");
@@ -156,7 +157,7 @@ ${paletteBlocks(formatOklch)}
  */
 @layer base {
   * {
-    scrollbar-color: color-mix(in oklab, var(--foreground) ${SCROLLBAR_ALPHA * 100}%, transparent) transparent;
+    scrollbar-color: color-mix(in oklab, var(--foreground) ${SCROLLBAR_ALPHA * PERCENT}%, transparent) transparent;
     scrollbar-width: thin;
   }
 }

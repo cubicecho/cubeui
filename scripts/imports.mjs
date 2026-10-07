@@ -56,7 +56,7 @@ export function packagesIn(source, path = "") {
       continue;
     }
     const name = packageOf(fileName);
-    if (!PEERS.has(name)) {
+    if (PEERS.has(name) === false) {
       found.add(name);
     }
   }

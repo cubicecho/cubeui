@@ -105,8 +105,8 @@ if (problems.length === 0) {
       problems.push(`${SKILL}: no layer "${skillHeading}".`);
       continue;
     }
-    const missingFromSkill = a.filter((w) => !b.includes(w));
-    const missingFromConventions = b.filter((w) => !a.includes(w));
+    const missingFromSkill = a.filter((w) => b.includes(w) === false);
+    const missingFromConventions = b.filter((w) => a.includes(w) === false);
     if (missingFromSkill.length > 0) {
       problems.push(`"${skillHeading}" in ${SKILL} is missing: ${missingFromSkill.join(", ")}`);
     }
