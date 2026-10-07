@@ -8,7 +8,7 @@
  *
  * `compiled/` is flat, and inside this repo `./button` is the right spelling for it — the compiler
  * writes it so that a compiled file never resolves a sibling through a tsconfig that means the
- * React Native half (see `rewriteSpecifiers` in `compile.mjs`). A consumer's tree is not flat. The
+ * React Native half (see `rewriteSpecifiers` in `passes/specifiers.mjs`). A consumer's tree is not flat. The
  * shadcn CLI places each file by its type — `registry:ui` in `components/ui/`, `registry:component`
  * in `components/`, `registry:lib` in `lib/` — and rewrites an `@/` alias against the consumer's
  * `components.json`, but leaves a relative specifier exactly as written. So `app-form`, a
