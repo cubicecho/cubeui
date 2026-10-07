@@ -25,6 +25,8 @@ import {
   DARK_ONLY_PALETTES,
   isPalettePreference,
   isThemePreference,
+  type LegacyPreferenceKeys,
+  legacyMigrations,
   PALETTE_STORAGE_KEY,
   type PalettePreference,
   type PalettePreferenceState,
@@ -48,6 +50,8 @@ let storage: ThemeStorage | null = null;
 const settled = { theme: false, palette: false };
 /** Whether the stored values have been asked for, so a second hook does not ask again. */
 let loading = false;
+/** A migration under way, which the first read waits for so it sees what was brought across. */
+let migration: Promise<void> | null = null;
 const listeners = new Set<() => void>();
 
 /**
@@ -107,7 +111,10 @@ function load(adapter: ThemeStorage) {
   storage = adapter;
   if (loading) return;
   loading = true;
-  Promise.all([adapter.getItem(THEME_STORAGE_KEY), adapter.getItem(PALETTE_STORAGE_KEY)])
+  Promise.resolve(migration)
+    .then(() =>
+      Promise.all([adapter.getItem(THEME_STORAGE_KEY), adapter.getItem(PALETTE_STORAGE_KEY)]),
+    )
     .then(([theme, palette]) => {
       // A choice made while the read was in flight is newer than what it will return.
       let changed = false;
@@ -126,6 +133,36 @@ function load(adapter: ThemeStorage) {
       // Nothing readable is the same as nothing stored: follow the system, in the default palette.
       settled.theme = settled.palette = true;
     });
+}
+
+/**
+ * Brings a choice stored under an app's older keys across to cubeui's, once: call it with
+ * `storage` where the app boots, before the first render, so the hooks' first read waits for it.
+ * The old key is removed when the adapter has a `removeItem`, and left where it has not.
+ *
+ * A read or a write that fails leaves things as they were: the app starts on System, as it would
+ * have with nothing stored.
+ */
+export function migrateThemePreference(
+  legacyKeys: LegacyPreferenceKeys,
+  options: ThemePreferenceOptions = {},
+): Promise<void> {
+  const adapter = options.storage ?? storage;
+  if (!adapter) return Promise.resolve();
+  const run = async () => {
+    for (const { key, from, values } of legacyMigrations(legacyKeys)) {
+      if ((await adapter.getItem(key)) != null) continue;
+      for (const old of from) {
+        const value = await adapter.getItem(old);
+        if (value == null || !values.includes(value)) continue;
+        await adapter.setItem(key, value);
+        await adapter.removeItem?.(old);
+        break;
+      }
+    }
+  };
+  migration = run().catch(() => {});
+  return migration;
 }
 
 /**

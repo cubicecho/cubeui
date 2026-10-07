@@ -1440,6 +1440,23 @@ and the storage, the class and the first paint are what hand-rolled versions get
   there the caption is only the name VoiceOver and TalkBack read. Do not hand-draw an icon-only
   theme `<fieldset>` beside it.
 - `aria-label` defaults to "Theme". Pass `aria-labelledby` when a heading names the group.
+- **An app that already stored a theme under its own key** keeps its readers' choices with
+  `migrateThemePreference`. The storage keys are fixed, so without it everyone who had chosen
+  dark is back on System the day the app adopts the picker. Call it once where the app boots,
+  before the first render:
+
+  ```tsx
+  import { migrateThemePreference } from "@/components/ui/theme-preference";
+
+  void migrateThemePreference({ theme: ["myapp-theme"], palette: ["myapp-palette"] });
+  // On device, pass the adapter: migrateThemePreference({ theme: ["myapp-theme"] }, { storage })
+  ```
+
+  For each of cubeui's keys that is empty, the first old key holding a valid value (`light`,
+  `dark` or `system`; a palette name) is copied in and removed. A choice already under cubeui's
+  key is never overwritten. On the web the copy is done when the call returns. On a device it is
+  asynchronous, the hooks' first read waits for it, and the old key is removed only if `storage`
+  has a `removeItem`. Translate values that are not these three in your own code first.
 
 ### Palettes
 
@@ -1498,6 +1515,12 @@ than pasting it:
 import { THEME_PRE_PAINT_SCRIPT } from "@/components/ui/theme-preference-base";
 
 <script dangerouslySetInnerHTML={{ __html: THEME_PRE_PAINT_SCRIPT }} />
+
+// With older keys to bring across, so the first paint after the upgrade is already right:
+import { themePrePaintScript } from "@/components/ui/theme-preference-base";
+
+const script = themePrePaintScript({ legacyKeys: { theme: ["myapp-theme"] } });
+<script dangerouslySetInnerHTML={{ __html: script }} />
 ```
 
 ## Hover, focus, chosen and disabled

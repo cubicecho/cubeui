@@ -28,6 +28,8 @@ import {
   DARK_ONLY_PALETTES,
   isPalettePreference,
   isThemePreference,
+  type LegacyPreferenceKeys,
+  legacyMigrations,
   PALETTE_STORAGE_KEY,
   type PalettePreference,
   type PalettePreferenceState,
@@ -120,6 +122,35 @@ function setPalette(next: PalettePreference) {
   unsaved.palette = store(PALETTE_STORAGE_KEY, next) ? null : next;
   apply();
   for (const listener of listeners) listener();
+}
+
+/**
+ * Brings a choice stored under an app's older keys across to cubeui's, once: call it where the
+ * app boots, before the first render. The copy is done by the time it returns — it is a promise
+ * only so one call site serves the device, where storage is asynchronous.
+ *
+ * `themePrePaintScript({ legacyKeys })` does the same copy before the first paint; this is for
+ * the page that has no such script, and it finds nothing left to do on one that has.
+ */
+export function migrateThemePreference(
+  legacyKeys: LegacyPreferenceKeys,
+  _options: ThemePreferenceOptions = {},
+): Promise<void> {
+  try {
+    const storage = window.localStorage;
+    for (const { key, from, values } of legacyMigrations(legacyKeys)) {
+      if (storage.getItem(key) !== null) continue;
+      const old = from.find((name) => values.includes(storage.getItem(name) ?? ""));
+      if (old === undefined) continue;
+      storage.setItem(key, storage.getItem(old) ?? "");
+      storage.removeItem(old);
+    }
+    apply();
+    for (const listener of listeners) listener();
+  } catch {
+    // No storage, or a server render: there is nothing to bring across.
+  }
+  return Promise.resolve();
 }
 
 /**

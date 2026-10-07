@@ -357,6 +357,12 @@ each named by its caption, which is also its tooltip on the web (#126). The hook
   not a `registry:file`. A file cannot put itself into `index.html`, so the head gets edited either
   way, and a `<script src>` would add a render-blocking request and break under a base path. A
   unit test holds the copy to the export.
+- **The storage keys are fixed, and an older key is migrated, not configured.** An app that
+  already stored `light` / `dark` / `system` under its own key calls
+  `migrateThemePreference({ theme: ["myapp-theme"] })` at boot, and builds its head script with
+  `themePrePaintScript({ legacyKeys })`. Both copy the first valid old value into cubeui's key
+  when that key is empty and remove the old one, so the picker, the root hook and the first paint
+  still read one key.
 
 **The native stylesheet also carries the few lines of preflight a web build needs.** The first is
 `*, ::before, ::after { box-sizing: border-box; }`. Preflight itself stays out — it would fight
