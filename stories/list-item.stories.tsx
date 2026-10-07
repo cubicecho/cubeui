@@ -223,3 +223,64 @@ export const ComposedTitle: Story = {
     }
   },
 };
+
+/**
+ * A row that goes somewhere is a link (#281): `href` for a URL no router owns, `linkSlot` for the
+ * router's own link, which the middle is drawn inside. Either way it is an `<a href>` a middle
+ * click opens, and the action beside it is still a control of its own.
+ */
+export const Link: Story = {
+  args: { title: "Ada Lovelace" },
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root flex flex-col gap-2">
+          <Native title="Ada Lovelace" description="By href" href="#/people/ada" selected />
+          <Native
+            title="Grace Hopper"
+            description="By the router's link"
+            linkSlot={<a href="#/people/grace" />}
+            actionSlot={<NativeButton size="sm" variant="outline" content="Delete" />}
+          />
+        </div>
+      }
+      compiled={
+        <div className="compiled-root flex flex-col gap-2">
+          <Compiled title="Ada Lovelace" description="By href" href="#/people/ada" selected />
+          <Compiled
+            title="Grace Hopper"
+            description="By the router's link"
+            linkSlot={<a href="#/people/grace" />}
+            actionSlot={<CompiledButton size="sm" variant="outline" content="Delete" />}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const selector of [".native-root", ".compiled-root"]) {
+      const root = canvasElement.querySelector<HTMLElement>(selector);
+      if (!root) throw new Error(`${selector} should render`);
+      const canvas = within(root);
+
+      const ada = canvas.getByRole("link", { name: /Ada Lovelace/ });
+      await expect(ada.tagName).toBe("A");
+      await expect(ada).toHaveAttribute("href", "#/people/ada");
+      await expect(ada).toHaveAttribute("aria-current", "page");
+
+      const grace = canvas.getByRole("link", { name: /Grace Hopper/ });
+      await expect(grace).toHaveAttribute("href", "#/people/grace");
+      await expect(grace).not.toHaveAttribute("aria-current");
+      // Laid out as the button row is: the title over its line, the action at the far end.
+      const title = canvas.getByText("Grace Hopper").getBoundingClientRect();
+      const line = canvas.getByText("By the router's link").getBoundingClientRect();
+      await expect(line.top).toBeGreaterThanOrEqual(title.bottom - 1);
+      const del = canvas.getByRole("button", { name: "Delete" });
+      await expect(grace.contains(del)).toBe(false);
+      await expect(del.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+        grace.getBoundingClientRect().right,
+      );
+      await expect(canvas.queryByRole("button", { name: /Lovelace|Hopper/ })).toBeNull();
+    }
+  },
+};
