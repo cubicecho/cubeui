@@ -82,15 +82,39 @@ export function formatDate(moment: Moment): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(time);
 }
 
-/** The units `formatAgo` counts in, largest first, each with its length in seconds. */
+/**
+ * A medium date and a short time in the reader's own locale — `Oct 3, 2026, 2:32 PM` — for the
+ * place where two things arrived on the same day and the hour is what tells them apart. Empty for
+ * a moment that does not parse, as in {@link formatDate}.
+ */
+export function formatDateTime(moment: Moment): string {
+  const time = milliseconds(moment);
+  if (time === undefined) return "";
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(
+    time,
+  );
+}
+
+/**
+ * The units `formatAgo` counts in, largest first, each with its length in seconds and the letters
+ * the narrow English fallback writes it with.
+ */
 const AGO_STEPS = [
-  ["year", 365 * 24 * 3600],
-  ["month", 30 * 24 * 3600],
-  ["week", 7 * 24 * 3600],
-  ["day", 24 * 3600],
-  ["hour", 3600],
-  ["minute", 60],
+  ["year", 365 * 24 * 3600, "y"],
+  ["month", 30 * 24 * 3600, "mo"],
+  ["week", 7 * 24 * 3600, "w"],
+  ["day", 24 * 3600, "d"],
+  ["hour", 3600, "h"],
+  ["minute", 60, "m"],
 ] as const;
+
+export type FormatAgoOptions = {
+  /**
+   * `long`, the default, writes `5 minutes ago`. `narrow` writes `5m ago`, for a column where the
+   * time is one fact among several.
+   */
+  style?: "long" | "narrow" | undefined;
+};
 
 /**
  * How long ago a moment was, in its largest whole unit: `3 days ago`, `yesterday`, `just now`
@@ -98,23 +122,29 @@ const AGO_STEPS = [
  * empty string, as in {@link formatDate}.
  *
  * @param now - The moment to count from, for a caller that ticks its own clock.
+ * @param options.style - `narrow` writes `5m ago`, `3d ago`, `in 2h` for a dense column.
  */
-export function formatAgo(moment: Moment, now: Moment = Date.now()): string {
+export function formatAgo(
+  moment: Moment,
+  now: Moment = Date.now(),
+  { style = "long" }: FormatAgoOptions = {},
+): string {
   const then = milliseconds(moment);
   const from = milliseconds(now);
   if (then === undefined || from === undefined) return "";
 
   const seconds = Math.round((then - from) / 1000);
-  for (const [unit, size] of AGO_STEPS) {
+  for (const [unit, size, letters] of AGO_STEPS) {
     if (Math.abs(seconds) < size) continue;
     const amount = Math.round(seconds / size);
     // Hermes ships `Intl` without `RelativeTimeFormat` on some devices, and a missing
     // constructor would take the screen down with it. English is the fallback there.
     if (typeof Intl.RelativeTimeFormat !== "function") {
-      const span = formatCount(Math.abs(amount), unit);
+      const count = Math.abs(amount);
+      const span = style === "narrow" ? `${count}${letters}` : formatCount(count, unit);
       return amount < 0 ? `${span} ago` : `in ${span}`;
     }
-    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto" }).format(amount, unit);
+    return new Intl.RelativeTimeFormat(undefined, { numeric: "auto", style }).format(amount, unit);
   }
   return "just now";
 }
