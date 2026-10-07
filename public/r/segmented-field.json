@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "segmented-field",
+  "title": "Segmented Field",
+  "description": "A `SegmentedGroup` bound to a string form field: a few short choices as pills on the page, the row named by the field's label. For `createAppForm` or inside `form.AppField`.",
+  "registryDependencies": [
+    "@cubeui/utils",
+    "@cubeui/segmented",
+    "@cubeui/form"
+  ],
+  "files": [
+    {
+      "path": "compiled/segmented-field.tsx",
+      "content": "/**\n * Compiled from `registry/ui/segmented-field.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * The prose below is the source's own, carried across untouched, which is the property that makes\n * a compiled registry worth having: this is the same component, not a second one to keep in step\n * by hand. Where a comment names a React Native component it is describing the source; the\n * element map in `scripts/rn2web/tables.mjs` says what that became here.\n */\n\n/**\n * A `SegmentedGroup`, bound to a form field holding one of a few strings.\n *\n * For the choice that is two to five short words and belongs on the page: a channel, a sentiment,\n * a priority. More than fit on a line is a `SelectField`; choices that each need a sentence of\n * their own are a `RadioGroupField`.\n *\n * The field is `asGroup`: the pills' row is a `group`, which a `<label>` cannot name, so it points\n * back at the label by `aria-labelledby`. The pills come from `options` and not from children,\n * because the field is what knows which one is current.\n *\n * ```tsx\n * <form.AppField name=\"channel\">\n *   {() => <SegmentedField label=\"Channel\" options={CHANNELS} />}\n * </form.AppField>\n * ```\n *\n * Or on `field.*`, with `createAppForm({ SegmentedField })`.\n */\nimport type { ComponentProps } from \"react\";\nimport type { SlotNode } from \"@/lib/utils\";\nimport { type FieldProps, FieldWrapper, splitProps, useFieldContext } from \"@/components/ui/form\";\nimport { SegmentedButton, SegmentedGroup } from \"@/components/ui/segmented\";\n\n/** One pill. `iconSlot` is drawn before the label, and alone under `labelHideBelow`. */\ntype SegmentedOption = {\n  value: string;\n  label: string;\n  iconSlot?: SlotNode | undefined;\n  disabled?: boolean | undefined;\n};\n\ntype SegmentedFieldProps = FieldProps &\n  Pick<ComponentProps<typeof SegmentedGroup>, \"variant\" | \"labelHideBelow\"> & {\n    options: readonly SegmentedOption[];\n    /** Every pill is drawn and none can be pressed. */\n    disabled?: boolean | undefined;\n  };\n\n/** The row, as one element for `FieldControl` to hand the `id` and the `aria-*` props to. */\nfunction SegmentedFieldControl({\n  options,\n  disabled = false,\n  ...group\n}: Omit<SegmentedFieldProps, keyof FieldProps>) {\n  const field = useFieldContext<string | null>();\n  return (\n    <SegmentedGroup\n      {...group}\n      value={field.state.value ?? \"\"}\n      onValueChange={(next) => {\n        field.handleChange(next);\n        // Pressing a pill is the whole interaction, so it is also what marks the field touched.\n        field.handleBlur();\n      }}\n    >\n      {options.map((option) => (\n        <SegmentedButton\n          key={option.value}\n          value={option.value}\n          iconSlot={option.iconSlot}\n          disabled={disabled || option.disabled}\n        >\n          {option.label}\n        </SegmentedButton>\n      ))}\n    </SegmentedGroup>\n  );\n}\n\nexport function SegmentedField(props: SegmentedFieldProps) {\n  const [fieldProps, control] = splitProps(props);\n  return (\n    <FieldWrapper asGroup {...fieldProps} controlSlot={<SegmentedFieldControl {...control} />} />\n  );\n}\n\nexport type { SegmentedFieldProps, SegmentedOption };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

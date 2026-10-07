@@ -918,7 +918,9 @@ is a `Popover`. `MultiSelectField` already does.
   `Badge` with `onRemove` — since there is no keyboard to reopen the list and untick it with.
   The search matches every word on both halves (`matchesEveryWord`), so the same typing finds the
   same rows.
-- `MultiSelectField`, the bound one, is still web only.
+- In a native form it is `MultiSelectField` from `@cubeui/multi-select-form-field`, on `field.*`
+  through `createAppForm` — see [forms.md](forms.md#on-react-native). The web `app-form`'s is
+  `@cubeui/multi-select-field`.
 
 ## Date and date range
 

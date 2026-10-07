@@ -350,6 +350,8 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
+| Several of a list, bound to a form field | `MultiSelectField` | `@cubeui/multi-select-form-field` |
+| One of a few short choices as pills, bound to a form field | `SegmentedField` | `@cubeui/segmented-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 98 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 100 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 98 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 100 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  84 on both platforms · 14 web-only · 0 native-only.
+  86 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -452,6 +452,11 @@
           <td>The multi-select as one line of a form, over a field the compiler checked holds a list of strings.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/multi-select-form-field</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/option-select</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.</td>
@@ -540,6 +545,11 @@
           <th scope="row"><code>@cubeui/segmented</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A segmented control: the pill, with an optional icon before its label; the named row it sits in, which can hold the current value and drop the labels to icons under a width; and the two class helpers a router link needs instead.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/segmented-field</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A `SegmentedGroup` bound to a string form field: a few short choices as pills on the page, the row named by the field's label. For `createAppForm` or inside `form.AppField`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/select</code></th>

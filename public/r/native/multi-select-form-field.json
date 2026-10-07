@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "multi-select-form-field",
+  "title": "Multi Select Form Field",
+  "description": "`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.",
+  "registryDependencies": [
+    "@cubeui/multi-select",
+    "@cubeui/form"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/multi-select-form-field.tsx",
+      "content": "/**\n * `MultiSelect`, bound to a form field holding a list of strings.\n *\n * Its own item rather than another export of `@cubeui/form`, so a form of plain inputs does not\n * pull in the popover and the command list — the split the web `multi-select-field` makes. Named\n * `multi-select-form-field` because `multi-select-field` is that web-only item, and one name\n * cannot be two items on the web.\n *\n * The field is `asGroup`: a device has no `htmlFor`, so the trigger points back at the label by\n * `aria-labelledby`. The wiring lands on the trigger and not on the `Popover` root, because\n * `MultiSelect` takes the `id` and the `aria-*` props itself and puts them there.\n *\n * ```tsx\n * <form.AppField name=\"labelIds\">\n *   {() => <MultiSelectField label=\"Labels\" options={labels} />}\n * </form.AppField>\n * ```\n *\n * Or on `field.*`, with `createAppForm({ MultiSelectField })`.\n */\nimport type { ComponentProps } from \"react\";\nimport { MultiSelect, type MultiSelectOption } from \"@/components/multi-select\";\nimport { type FieldProps, FieldWrapper, splitProps, useFieldContext } from \"@/components/ui/form\";\n\ntype MultiSelectFieldProps = FieldProps &\n  Omit<\n    ComponentProps<typeof MultiSelect>,\n    | \"id\"\n    | \"value\"\n    | \"onValueChange\"\n    | \"className\"\n    | \"aria-describedby\"\n    | \"aria-invalid\"\n    | \"aria-required\"\n  >;\n\n/** The control, as one element for `FieldControl` to hand the `id` and the `aria-*` props to. */\nfunction MultiSelectFieldControl(control: Omit<MultiSelectFieldProps, keyof FieldProps>) {\n  const field = useFieldContext<readonly string[] | null>();\n  return (\n    <MultiSelect\n      {...control}\n      value={field.state.value ?? []}\n      onValueChange={(next) => {\n        field.handleChange(next);\n        // A popover control has no blur that means \"done with this field\": focus goes into the\n        // sheet and comes back. Choosing is the interaction, so choosing marks it touched.\n        field.handleBlur();\n      }}\n    />\n  );\n}\n\nexport function MultiSelectField(props: MultiSelectFieldProps) {\n  const [fieldProps, control] = splitProps(props);\n  return (\n    <FieldWrapper asGroup {...fieldProps} controlSlot={<MultiSelectFieldControl {...control} />} />\n  );\n}\n\nexport type { MultiSelectFieldProps, MultiSelectOption };\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

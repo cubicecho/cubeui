@@ -8,6 +8,8 @@ import {
   Form as CompiledForm,
   createAppForm as compiledCreateAppForm,
 } from "../compiled/form";
+import { MultiSelectField as CompiledMultiSelectField } from "../compiled/multi-select-form-field";
+import { SegmentedField as CompiledSegmentedField } from "../compiled/segmented-field";
 import { ColorField as NativeColorField } from "../registry/ui/color-picker-field";
 import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-field";
 import {
@@ -15,6 +17,8 @@ import {
   Form as NativeForm,
   createAppForm as nativeCreateAppForm,
 } from "../registry/ui/form";
+import { MultiSelectField as NativeMultiSelectField } from "../registry/ui/multi-select-form-field";
+import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -32,10 +36,14 @@ const SWATCHES = ["#ef4444", "#22c55e", "#3b82f6"];
 const native = nativeCreateAppForm({
   DateTimeField: NativeDateTimeField,
   ColorField: NativeColorField,
+  MultiSelectField: NativeMultiSelectField,
+  SegmentedField: NativeSegmentedField,
 });
 const compiled = compiledCreateAppForm({
   DateTimeField: CompiledDateTimeField,
   ColorField: CompiledColorField,
+  MultiSelectField: CompiledMultiSelectField,
+  SegmentedField: CompiledSegmentedField,
 });
 
 type Kit = { useAppForm: typeof native.useAppForm; Form: typeof NativeForm };
@@ -301,6 +309,89 @@ export const SelectKeepsAValueAheadOfItsOption: Story = {
       await userEvent.click(half.getByRole("button", { name: "Refetch" }));
       await waitFor(() => expect(half.getByLabelText("Type")).toHaveTextContent("Mentor"));
       await expect(stored).toHaveTextContent("mentor");
+    }
+  },
+};
+
+const LABELS = [
+  { value: "family", label: "Family" },
+  { value: "work", label: "Work" },
+  { value: "school", label: "School" },
+];
+const CHANNELS = [
+  { value: "call", label: "Call" },
+  { value: "email", label: "Email" },
+  { value: "in-person", label: "In person" },
+];
+
+function InteractionForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { labelIds: ["work"] as string[], channel: "call" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="labelIds">
+          {(field) => <field.MultiSelectField label="Labels" options={LABELS} />}
+        </form.AppField>
+        <form.AppField
+          name="channel"
+          validators={{
+            onChange: ({ value }) => (value === "email" ? "Email is not logged here" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.SegmentedField label="Channel" description="How you spoke." options={CHANNELS} />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${values.labelIds.join("+")} by ${values.channel}`}</output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * The two bound fields a form used to wire by hand (#279), passed to `createAppForm` as
+ * `DateTimeField` is: a `MultiSelect` over a list of strings and a `SegmentedGroup` over one. Each
+ * is named by its label, writes the field, and shows the field's error.
+ */
+export const MultiSelectAndSegmented: Story = {
+  render: () => (
+    <SideBySide
+      native={<InteractionForm kit={NATIVE} />}
+      compiled={<InteractionForm kit={COMPILED} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+      await expect(stored).toHaveTextContent("work by call");
+
+      const channel = half.getByRole("group", { name: "Channel" });
+      await expect(within(channel).getByRole("button", { name: "Call" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      await userEvent.click(within(channel).getByRole("button", { name: "In person" }));
+      await expect(stored).toHaveTextContent("work by in-person");
+
+      await userEvent.click(within(channel).getByRole("button", { name: "Email" }));
+      await waitFor(() => expect(half.getByRole("alert")).toHaveTextContent("Email is not logged"));
+      await userEvent.click(within(channel).getByRole("button", { name: "Call" }));
+
+      // The list is in a portal, outside the half.
+      await userEvent.click(half.getByRole("combobox", { name: /Labels/ }));
+      const page = within(canvasElement.ownerDocument.body);
+      await userEvent.click(await page.findByRole("option", { name: "Family" }));
+      await waitFor(() => expect(stored).toHaveTextContent("work+family by call"));
+      await userEvent.keyboard("{Escape}");
+      await waitFor(() => expect(page.queryByRole("option", { name: "Family" })).toBeNull());
     }
   },
 };
