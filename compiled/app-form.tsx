@@ -13,6 +13,7 @@ import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { useState } from "react";
+import { messageOf } from "@/lib/error-message";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
 import { FormField } from "./form-field";
@@ -70,19 +71,6 @@ export function splitProps<T>(props: FieldProps & T): [FieldProps, T] {
     }
   }
   return [field as FieldProps, control as T];
-}
-
-function messageOf(error: unknown): string | undefined {
-  if (error == null) {
-    return undefined;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return String(error);
 }
 
 /**

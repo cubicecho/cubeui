@@ -73,6 +73,18 @@
       ]
     },
     {
+      "name": "error-message",
+      "type": "registry:lib",
+      "title": "messageOf",
+      "description": "The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.",
+      "files": [
+        {
+          "path": "registry/lib/error-message.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -456,6 +468,7 @@
       "dependencies": ["@tanstack/react-form@^1.33.5"],
       "registryDependencies": [
         "@cubeui/utils",
+        "@cubeui/error-message",
         "@cubeui/field",
         "@cubeui/radio-group",
         "@cubeui/tokens"
@@ -987,6 +1000,7 @@
         "@cubeui/utils",
         "@cubeui/button",
         "@cubeui/checkbox",
+        "@cubeui/error-message",
         "@cubeui/field",
         "@cubeui/form-element",
         "@cubeui/input",
@@ -1402,6 +1416,7 @@
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
+        "@cubeui/error-message",
         "@cubeui/form-field",
         "@cubeui/input",
         "@cubeui/option-select",

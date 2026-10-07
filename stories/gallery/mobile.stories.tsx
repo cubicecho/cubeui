@@ -213,6 +213,8 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths helpers. Functions, not components.",
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
+  "error-message":
+    "Turns a validator's error into the text a field shows. A function, not a component.",
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
