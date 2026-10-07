@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, FormDialog, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -298,8 +298,9 @@ is saving. A value never turns into an input where it sits — no click-to-renam
 on a row that becomes a box on press, no commit on blur. The set used to ship `InlineTextEdit`
 and `InlineNumberEdit`; they were removed, and nothing replaces them.
 
-- **A rename or a one-value change** is a `FormDialog` opened from a Rename row, a pencil
-  `ActionButton`, or the row itself, with the value in a bound field and Save / Cancel.
+- **A rename or a one-value change** is a `DialogLayout` holding a form, opened from a Rename
+  row, a pencil `ActionButton`, or the row itself, with the value in a bound field and Save /
+  Cancel — see [forms.md](forms.md#forms-in-dialogs).
 - **A settings page** is a form with its fields showing, or a `SettingRow` whose `actionSlot` is a
   real control — a `Switch`, an `OptionSelect` — that is always drawn as one.
 - **An "Add lane" box** that appears at the end of a list is a field, not an edit: it holds
@@ -369,7 +370,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A pulsing placeholder block — see [controls.md](controls.md#skeleton) | `Skeleton` | `@cubeui/skeleton` |
 | A one-pixel rule between groups — see [controls.md](controls.md#separator) | `Separator` | `@cubeui/separator` |
 | An icon — see [controls.md](controls.md#icons) | the lucide names | `@cubeui/icons` |
-| A form in a modal | `FormDialog` | `@cubeui/form-dialog` |
+| A form in a modal, with the unsaved-changes guard — see [forms.md](forms.md#forms-in-dialogs) | `DialogLayout hasUnsavedChanges` | `@cubeui/dialog-layout` |
 | A page that asks before it is left with unsaved edits — see [layout.md](layout.md#a-page-with-unsaved-edits) | `useUnsavedChangesGuard`, `UnsavedChangesDialog` | `@cubeui/unsaved-changes-guard` |
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |

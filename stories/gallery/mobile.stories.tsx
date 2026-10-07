@@ -96,7 +96,6 @@ import {
 } from "../../registry/ui/field";
 import { FilePicker, FilePickerButton } from "../../registry/ui/file-picker.tsx";
 import { createAppForm, Form } from "../../registry/ui/form";
-import { FormDialog, FormDialogFooter } from "../../registry/ui/form-dialog";
 import { FormElement } from "../../registry/ui/form-element.tsx";
 import {
   CircleCheck,
@@ -594,26 +593,6 @@ function PlainFields() {
   );
 }
 
-function RenameDialog() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onPress={() => setOpen(true)} content="Open form dialog" />
-      <FormDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Rename project"
-        description="The new name shows everywhere straight away."
-      >
-        <Input defaultValue="Quarterly review" aria-label="Project name" />
-        <FormDialogFooter onCancel={() => setOpen(false)}>
-          <Button onPress={() => setOpen(false)} content="Rename" />
-        </FormDialogFooter>
-      </FormDialog>
-    </>
-  );
-}
-
 function Rows() {
   const [open, setOpen] = useState(false);
   return (
@@ -1009,11 +988,6 @@ const sections: GallerySection[] = [
     title: "Fields without a form library",
     items: ["form-element", "field"],
     content: <PlainFields />,
-  },
-  {
-    title: "Form dialog",
-    items: ["form-dialog"],
-    content: <RenameDialog />,
   },
   {
     title: "Sections and rows",

@@ -1,7 +1,7 @@
 /**
  * Transient messages for mutations fired outside a form.
  *
- * A dialog can show a failure in `FormDialogFooter`, and a card can show one in
+ * A dialog can show a failure beside its form, and a card can show one in
  * the card. Everything else — a checkbox toggled in a list, a drag that
  * reorders, a switch on a settings row — has no surface of its own, so those failures reach
  * `console.error` and nowhere else: the control springs back and the user is

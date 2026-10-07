@@ -414,7 +414,7 @@ the React Native set.
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `form-dialog`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
+| forms | `field`, `form`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
 | docs | `skill` |
