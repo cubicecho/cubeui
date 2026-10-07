@@ -140,6 +140,11 @@ const monokaiDark = {
 /** The names a palette writes, and the only ones a cubeui component may name. */
 export const tokenNames = Object.keys(lightTokens);
 
+// The alphas the aliases lay `foreground` down at.
+const FAINT = 0.1;
+const INPUT_EDGE = 0.15;
+const QUIET_TEXT = 0.6;
+
 /**
  * shadcn's names, each as the token it now is. A string is that token; `[token, alpha]` is the
  * token at an opacity, for the names that were a quieter copy of another colour. They are written
@@ -157,16 +162,16 @@ export const ALIASES = {
   primary: "neutral",
   "primary-foreground": "neutral-foreground",
   "secondary-foreground": "foreground",
-  muted: ["foreground", 0.1],
-  "muted-foreground": ["foreground", 0.6],
+  muted: ["foreground", FAINT],
+  "muted-foreground": ["foreground", QUIET_TEXT],
   accent: "hover",
   "accent-foreground": "foreground",
   selection: "active",
   "selection-foreground": "active-foreground",
   destructive: "negative",
   "destructive-foreground": "negative-foreground",
-  border: ["foreground", 0.1],
-  input: ["foreground", 0.15],
+  border: ["foreground", FAINT],
+  input: ["foreground", INPUT_EDGE],
   ring: "active",
   sidebar: "secondary",
   "sidebar-foreground": "foreground",
@@ -174,7 +179,7 @@ export const ALIASES = {
   "sidebar-primary-foreground": "active-foreground",
   "sidebar-accent": "hover",
   "sidebar-accent-foreground": "foreground",
-  "sidebar-border": ["foreground", 0.1],
+  "sidebar-border": ["foreground", FAINT],
   "sidebar-ring": "active",
 };
 

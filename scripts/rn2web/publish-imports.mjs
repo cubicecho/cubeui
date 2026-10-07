@@ -51,7 +51,9 @@ async function publish(dir) {
   for (const { item } of items) {
     for (const file of item.files ?? []) {
       const alias = INSTALL_ALIAS[file.type];
-      if (alias && !file.target) aliasOf.set(stem(file.path), alias);
+      if (alias && !file.target) {
+        aliasOf.set(stem(file.path), alias);
+      }
     }
   }
 
@@ -59,10 +61,14 @@ async function publish(dir) {
   for (const { where, item } of items) {
     let changed = false;
     for (const file of item.files ?? []) {
-      if (typeof file.content !== "string") continue;
+      if (typeof file.content !== "string") {
+        continue;
+      }
       const next = file.content.replace(RELATIVE, (whole, lead, quote, name) => {
         const alias = aliasOf.get(stem(name));
-        if (!alias) return whole;
+        if (!alias) {
+          return whole;
+        }
         rewritten += 1;
         return `${lead}${quote}${alias}/${stem(name)}${quote}`;
       });
@@ -72,7 +78,9 @@ async function publish(dir) {
       }
     }
     // `shadcn build`'s own layout: two-space JSON, no trailing newline.
-    if (changed) await writeFile(where, JSON.stringify(item, null, 2));
+    if (changed) {
+      await writeFile(where, JSON.stringify(item, null, 2));
+    }
   }
   console.log(`${dir}: ${rewritten} relative imports rewritten to their install alias.`);
 }
@@ -82,4 +90,6 @@ if (dirs.length === 0) {
   console.error("usage: publish-imports.mjs <built registry dir>…");
   process.exit(2);
 }
-for (const dir of dirs) await publish(dir);
+for (const dir of dirs) {
+  await publish(dir);
+}

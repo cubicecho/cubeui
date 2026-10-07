@@ -67,7 +67,9 @@ function stringsIn(source, fileName = "source.tsx") {
   );
   const out = [];
   const visit = (node) => {
-    if (ts.isStringLiteralLike(node) || ts.isTemplateLiteralToken(node)) out.push(node.text);
+    if (ts.isStringLiteralLike(node) || ts.isTemplateLiteralToken(node)) {
+      out.push(node.text);
+    }
     ts.forEachChild(node, visit);
   };
   visit(file);
@@ -79,9 +81,13 @@ function utilityOf(cls) {
   let depth = 0;
   let start = 0;
   for (let i = 0; i < cls.length; i++) {
-    if (cls[i] === "[" || cls[i] === "(") depth++;
-    else if (cls[i] === "]" || cls[i] === ")") depth--;
-    else if (cls[i] === ":" && depth === 0) start = i + 1;
+    if (cls[i] === "[" || cls[i] === "(") {
+      depth++;
+    } else if (cls[i] === "]" || cls[i] === ")") {
+      depth--;
+    } else if (cls[i] === ":" && depth === 0) {
+      start = i + 1;
+    }
   }
   return cls
     .slice(start)
@@ -96,11 +102,17 @@ function utilityOf(cls) {
 export function colourOf(cls) {
   const utility = utilityOf(cls);
   for (const family of FAMILIES) {
-    if (!utility.startsWith(`${family}-`) && utility !== family) continue;
+    if (utility.startsWith(`${family}-`) === false && utility !== family) {
+      continue;
+    }
     let rest = utility.slice(family.length + 1);
     // `border-t-destructive` is a colour on one side; `border-t` alone is a width.
-    if (family === "border") rest = rest.replace(/^[xytrblse](-|$)/, "");
-    if (rest === "" || /^[[(]/.test(rest) || NOT_COLOUR[family].test(rest)) return null;
+    if (family === "border") {
+      rest = rest.replace(/^[xytrblse](-|$)/, "");
+    }
+    if (rest === "" || /^[[(]/.test(rest) || NOT_COLOUR[family].test(rest)) {
+      return null;
+    }
     return { family, colour: rest };
   }
   return null;
@@ -116,13 +128,17 @@ export function unresolvedColours(source, tokens, fileName) {
   for (const text of stringsIn(source, fileName)) {
     for (const cls of text.split(/\s+/)) {
       const found = colourOf(cls);
-      if (!found) continue;
-      if (!tokens.has(found.colour) && !THEMELESS.test(found.colour)) {
+      if (!found) {
+        continue;
+      }
+      if (tokens.has(found.colour) === false && THEMELESS.test(found.colour) === false) {
         bad.add(utilityOf(cls));
         continue;
       }
       const opacity = opacityOf(cls);
-      if (opacity !== null && !OPACITY_STEPS.has(opacity)) bad.add(`${utilityOf(cls)}/${opacity}`);
+      if (opacity !== null && OPACITY_STEPS.has(opacity) === false) {
+        bad.add(`${utilityOf(cls)}/${opacity}`);
+      }
     }
   }
   return [...bad];
@@ -139,7 +155,7 @@ export function tokensIn(css) {
  */
 export function isBorderWidth(cls) {
   const match = /^border(-[xytrblse])?(-(\d+(\.\d+)?|px|\[[^\]]+\]))?$/.exec(utilityOf(cls));
-  return match !== null && !/^-0(\.0+)?$/.test(match[2] ?? "");
+  return match !== null && /^-0(\.0+)?$/.test(match[2] ?? "") === false;
 }
 
 /** The class-joining calls whose arguments are one class list: every string in one is in scope. */
@@ -148,7 +164,9 @@ const JOINERS = new Set(["cn", "cva", "clsx", "twMerge"]);
 /** Whether `node`'s parent is still the same class list, climbing out from a string. */
 function joins(node) {
   const parent = node.parent;
-  if (!parent) return false;
+  if (!parent) {
+    return false;
+  }
   if (
     ts.isParenthesizedExpression(parent) ||
     ts.isConditionalExpression(parent) ||
@@ -175,10 +193,14 @@ const ESCAPE = /@border-colour\b/;
 
 /** Whether a comment above the string, up to its statement or property, carries the escape. */
 function excused(node, source) {
-  for (let at = node; at && !ts.isSourceFile(at); at = at.parent) {
+  for (let at = node; at && ts.isSourceFile(at) === false; at = at.parent) {
     const ranges = ts.getLeadingCommentRanges(source, at.getFullStart()) ?? [];
-    if (ranges.some((r) => ESCAPE.test(source.slice(r.pos, r.end)))) return true;
-    if (ts.isStatement(at) || ts.isPropertyAssignment(at)) break;
+    if (ranges.some((r) => ESCAPE.test(source.slice(r.pos, r.end)))) {
+      return true;
+    }
+    if (ts.isStatement(at) || ts.isPropertyAssignment(at)) {
+      break;
+    }
   }
   return false;
 }
@@ -205,7 +227,9 @@ export function uncolouredBorders(source, fileName = "source.tsx") {
   const file = parse(source, fileName);
   const literals = [];
   const visit = (node) => {
-    if (ts.isStringLiteralLike(node) || ts.isTemplateLiteralToken(node)) literals.push(node);
+    if (ts.isStringLiteralLike(node) || ts.isTemplateLiteralToken(node)) {
+      literals.push(node);
+    }
     ts.forEachChild(node, visit);
   };
   visit(file);
@@ -213,13 +237,19 @@ export function uncolouredBorders(source, fileName = "source.tsx") {
   const classesOf = (node) => node.text.split(/\s+/).filter(Boolean);
   const bad = [];
   for (const literal of literals) {
-    if (!classesOf(literal).some(isBorderWidth)) continue;
+    if (classesOf(literal).some(isBorderWidth) === false) {
+      continue;
+    }
     let root = literal;
-    while (joins(root)) root = root.parent;
+    while (joins(root)) {
+      root = root.parent;
+    }
     const coloured = literals
       .filter((l) => l.pos >= root.pos && l.end <= root.end)
       .some((l) => classesOf(l).some((cls) => colourOf(cls)?.family === "border"));
-    if (coloured || excused(literal, source)) continue;
+    if (coloured || excused(literal, source)) {
+      continue;
+    }
     const { line } = file.getLineAndCharacterOfPosition(literal.getStart());
     bad.push(`${line + 1}: "${literal.text.trim()}"`);
   }

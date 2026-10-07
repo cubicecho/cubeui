@@ -52,9 +52,13 @@ export function packagesIn(source, path = "") {
     ? cssImportsIn(source)
     : ts.preProcessFile(source, true, true).importedFiles.map((f) => f.fileName);
   for (const fileName of specifiers) {
-    if (fileName.startsWith(".") || fileName.startsWith("@/")) continue;
+    if (fileName.startsWith(".") || fileName.startsWith("@/")) {
+      continue;
+    }
     const name = packageOf(fileName);
-    if (!PEERS.has(name)) found.add(name);
+    if (PEERS.has(name) === false) {
+      found.add(name);
+    }
   }
   return found;
 }

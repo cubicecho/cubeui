@@ -323,7 +323,9 @@ const PROVIDED = new Set([
 
 async function peersOf(name) {
   const manifest = await readFile(`node_modules/${name}/package.json`, "utf8").catch(() => null);
-  if (manifest === null) return [];
+  if (manifest === null) {
+    return [];
+  }
   const pkg = JSON.parse(manifest);
   const meta = pkg.peerDependenciesMeta ?? {};
   return Object.keys(pkg.peerDependencies ?? {}).map((peer) => ({
@@ -369,10 +371,14 @@ function installedBy(dependencies, items) {
   const visited = new Set();
   while (queue.length > 0) {
     const dep = queue.shift().slice(`${NAMESPACE}/`.length);
-    if (visited.has(dep)) continue;
+    if (visited.has(dep)) {
+      continue;
+    }
     visited.add(dep);
     const target = items.get(dep);
-    if (!target) continue;
+    if (!target) {
+      continue;
+    }
     for (const file of target.files ?? []) {
       const alias = INSTALL_ALIAS[file.type];
       if (alias && !file.target) {
@@ -404,7 +410,9 @@ function specifiersIn(file) {
       found.push(node.arguments[0].text);
     } else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) {
       const literal = node.argument.literal;
-      if (ts.isStringLiteral(literal)) found.push(literal.text);
+      if (ts.isStringLiteral(literal)) {
+        found.push(literal.text);
+      }
     }
     ts.forEachChild(node, visit);
   };
@@ -417,12 +425,14 @@ function placementProblems(built, item, items) {
   const problems = [];
   const reachable = installedBy([`${NAMESPACE}/${item.name}`], items);
   for (const file of item.files ?? []) {
-    if (!/\.(tsx?|jsx?|mjs)$/.test(file.path)) continue;
+    if (/\.(tsx?|jsx?|mjs)$/.test(file.path) === false) {
+      continue;
+    }
     const where = `${built}: "${item.name}" (${path.basename(file.path)})`;
     for (const spec of specifiersIn(file)) {
       if (spec.startsWith(".")) {
         problems.push(`${where} imports \`${spec}\`, a relative path the CLI will not rewrite`);
-      } else if (spec.startsWith("@/") && !reachable.has(spec)) {
+      } else if (spec.startsWith("@/") && reachable.has(spec) === false) {
         problems.push(
           `${where} imports \`${spec}\`, which neither it nor its registryDependencies install there`,
         );
@@ -436,7 +446,7 @@ function placementProblems(built, item, items) {
 function storyProblems(built, item, items) {
   const problems = [];
   const name = item.name.replace(/-stories$/, "");
-  if (!(item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`)) {
+  if ((item.registryDependencies ?? []).includes(`${NAMESPACE}/${name}`) === false) {
     problems.push(`${built}: "${item.name}" does not depend on \`${NAMESPACE}/${name}\``);
   }
 
@@ -445,22 +455,29 @@ function storyProblems(built, item, items) {
   for (const file of item.files ?? []) {
     const source = ts.createSourceFile(file.path, file.content ?? "", ts.ScriptTarget.Latest);
     for (const statement of source.statements) {
-      if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
-      if (!statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+      if (
+        ts.isImportDeclaration(statement) === false &&
+        ts.isExportDeclaration(statement) === false
+      ) {
+        continue;
+      }
+      if (!statement.moduleSpecifier || ts.isStringLiteral(statement.moduleSpecifier) === false) {
+        continue;
+      }
       const spec = statement.moduleSpecifier.text;
       const where = `${built}: "${item.name}" (${path.basename(file.path)})`;
 
       if (spec.startsWith(".")) {
         problems.push(`${where} imports \`${spec}\`, a local file that does not ship`);
       } else if (spec.startsWith("@/")) {
-        if (!reachable.has(spec)) {
+        if (reachable.has(spec) === false) {
           problems.push(
             `${where} imports \`${spec}\`, which nothing in its registryDependencies installs`,
           );
         }
-      } else if (!STORY_PACKAGES.has(spec)) {
+      } else if (STORY_PACKAGES.has(spec) === false) {
         problems.push(`${where} imports \`${spec}\`, which a consumer's Storybook may not have`);
-      } else if (STORY_TYPE_ONLY.has(spec) && !statement.importClause?.isTypeOnly) {
+      } else if (STORY_TYPE_ONLY.has(spec) && statement.importClause?.isTypeOnly !== true) {
         problems.push(`${where} imports \`${spec}\` at runtime; only \`import type\` is allowed`);
       } else if (spec === "storybook/test") {
         const bindings = statement.importClause?.namedBindings;
@@ -468,7 +485,7 @@ function storyProblems(built, item, items) {
           bindings && ts.isNamedImports(bindings)
             ? bindings.elements.map((e) => (e.propertyName ?? e.name).text)
             : ["*"];
-        for (const imported of names.filter((n) => !STORY_TEST_API.has(n))) {
+        for (const imported of names.filter((n) => STORY_TEST_API.has(n) === false)) {
           problems.push(`${where} imports \`${imported}\` from storybook/test, outside the floor`);
         }
       }
@@ -524,7 +541,9 @@ function exportsOf(source) {
   const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
   const names = new Set();
 
-  if (/^\s*export\s+\*/m.test(code)) return undefined;
+  if (/^\s*export\s+\*/m.test(code)) {
+    return undefined;
+  }
 
   for (const [, name] of code.matchAll(
     /^\s*export\s+(?:default\s+)?(?:async\s+)?(?:const|let|var|function|class|type|interface|enum)\s+(\w+)/gm,
@@ -539,7 +558,9 @@ function exportsOf(source) {
         .split(/\s+as\s+/)
         .pop()
         ?.trim();
-      if (name) names.add(name.replace(/^type\s+/, ""));
+      if (name) {
+        names.add(name.replace(/^type\s+/, ""));
+      }
     }
   }
 
@@ -558,7 +579,9 @@ function classPartsOf(source, item) {
   const prefix = `${item.replace(/-/g, "_").toUpperCase()}_`;
   const parts = new Map();
   for (const [, name] of source.matchAll(/^export const ([A-Z][A-Z0-9_]*_CLASS)\b/gm)) {
-    if (!name.startsWith(prefix) && name !== `${prefix.slice(0, -1)}_CLASS`) continue;
+    if (name.startsWith(prefix) === false && name !== `${prefix.slice(0, -1)}_CLASS`) {
+      continue;
+    }
     const middle = name.slice(prefix.length, -"_CLASS".length);
     const part = middle.endsWith("_TEXT") ? middle.slice(0, -"_TEXT".length) : middle;
     parts.set(name, part);
@@ -602,7 +625,7 @@ const seen = new Map();
 for (const dir of dirs) {
   const here = path.join(SOURCES, dir.name);
   const files = (await readdir(here)).filter(
-    (f) => /\.(tsx|ts)$/.test(f) && !f.endsWith(".test.ts"),
+    (f) => /\.(tsx|ts)$/.test(f) && f.endsWith(".test.ts") === false,
   );
 
   for (const file of files) {
@@ -620,7 +643,9 @@ for (const dir of dirs) {
   for (const base of files.filter((f) => f.endsWith("-base.ts"))) {
     const item = itemName(base);
     const parts = classPartsOf(await readFile(path.join(here, base), "utf8"), item);
-    if (parts.size === 0) continue;
+    if (parts.size === 0) {
+      continue;
+    }
 
     const implementations = files.filter(
       (f) => itemName(f) === item && f !== base && f.endsWith(".tsx"),
@@ -641,10 +666,16 @@ for (const dir of dirs) {
     for (const [file, text] of sources) {
       for (const [name, body] of declarationsIn(text)) {
         const own = [...claimed].find((part) => componentFor(item, part) === name);
-        if (own === undefined) continue;
+        if (own === undefined) {
+          continue;
+        }
         for (const [constant, part] of parts) {
-          if (part === own || !claimed.has(part)) continue;
-          if (!new RegExp(`\\b${constant}\\b`).test(body)) continue;
+          if (part === own || claimed.has(part) === false) {
+            continue;
+          }
+          if (new RegExp(`\\b${constant}\\b`).test(body) === false) {
+            continue;
+          }
           misapplied.push(
             `${here}/${file}: \`${name}\` applies \`${constant}\`, which belongs to ` +
               `\`${componentFor(item, part)}\``,
@@ -656,7 +687,7 @@ for (const dir of dirs) {
 
   for (const web of files.filter((f) => f.endsWith(".web.tsx"))) {
     const native = web.replace(/\.web\.tsx$/, ".tsx");
-    if (!files.includes(native)) {
+    if (files.includes(native) === false) {
       drift.push(`${here}/${web} has no ${native} beside it`);
       continue;
     }
@@ -670,11 +701,12 @@ for (const dir of dirs) {
       continue;
     }
 
-    const missingOnWeb = [...nativeNames].filter((n) => !webNames.has(n));
-    const missingOnNative = [...webNames].filter((n) => !nativeNames.has(n));
+    const missingOnWeb = [...nativeNames].filter((n) => webNames.has(n) === false);
+    const missingOnNative = [...webNames].filter((n) => nativeNames.has(n) === false);
 
-    if (missingOnWeb.length > 0)
+    if (missingOnWeb.length > 0) {
       drift.push(`${here}/${web} is missing: ${missingOnWeb.join(", ")}`);
+    }
     if (missingOnNative.length > 0) {
       drift.push(`${here}/${native} is missing: ${missingOnNative.join(", ")}`);
     }
@@ -693,7 +725,9 @@ const [nativeTokens, webTokens] = await Promise.all(
 );
 const tokens = new Set(tokenNames.filter((t) => nativeTokens.has(t) && webTokens.has(t)));
 for (const file of await readdir(SOURCES, { recursive: true })) {
-  if (!/\.(tsx|ts)$/.test(file)) continue;
+  if (/\.(tsx|ts)$/.test(file) === false) {
+    continue;
+  }
   const where = path.join(SOURCES, file);
   for (const cls of unresolvedColours(await readFile(where, "utf8"), tokens, file)) {
     uncoloured.push(`${where}: \`${cls}\``);
@@ -704,13 +738,17 @@ for (const file of await readdir(SOURCES, { recursive: true })) {
 const NATIVE_SOURCES = ["ui", "layout", "lib"].map((dir) => path.join(SOURCES, dir));
 for (const dir of NATIVE_SOURCES) {
   for (const file of await readdir(dir)) {
-    if (!/\.(tsx|ts)$/.test(file) || /\.(web\.tsx|test\.ts)$/.test(file)) continue;
+    if (/\.(tsx|ts)$/.test(file) === false || /\.(web\.tsx|test\.ts)$/.test(file)) {
+      continue;
+    }
     const where = path.join(dir, file);
     const source = await readFile(where, "utf8");
     for (const one of uncolouredBorders(source, file)) {
       inkless.push(`${where}:${one} draws a border and names no colour for it`);
     }
-    for (const one of weblessColours(source, file)) inkless.push(`${where}:${one}`);
+    for (const one of weblessColours(source, file)) {
+      inkless.push(`${where}:${one}`);
+    }
   }
 }
 
@@ -727,28 +765,32 @@ for (const built of BUILT) {
   const listed = index === null ? null : new Set(JSON.parse(index).items.map((i) => i.name));
 
   for (const entry of (await readdir(built).catch(() => [])).sort()) {
-    if (!entry.endsWith(".json") || entry === "registry.json") continue;
+    if (entry.endsWith(".json") === false || entry === "registry.json") {
+      continue;
+    }
 
     const where = path.join(built, entry);
     const item = JSON.parse(await readFile(where, "utf8"));
     present.add(item.name);
     items.set(item.name, item);
 
-    if (listed && !listed.has(item.name)) {
+    if (listed && listed.has(item.name) === false) {
       orphans.push(`${where}: "${item.name}" is not in ${built}/registry.json`);
     }
 
     for (const dependency of item.registryDependencies ?? []) {
       // A full URL resolves on its own and names its own registry. Everything else goes through
       // the consumer's map, including a bare name — which goes through it to ui.shadcn.com.
-      if (/^https?:\/\//.test(dependency)) continue;
+      if (/^https?:\/\//.test(dependency)) {
+        continue;
+      }
       wanted.push({ from: item.name, dependency });
     }
 
     for (const dependency of [...(item.dependencies ?? []), ...(item.devDependencies ?? [])]) {
       // A scoped name is `@scope/name`, so the `@` that separates the range is
       // never the first character.
-      if (!dependency.slice(1).includes("@")) {
+      if (dependency.slice(1).includes("@") === false) {
         unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
       }
       const name = packageName(dependency);
@@ -766,8 +808,12 @@ for (const built of BUILT) {
     // Rule 7. What the item's own files reach for, against what it tells the CLI to install.
     const imported = new Set();
     for (const file of item.files ?? []) {
-      if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
-      for (const name of packagesIn(file.content ?? "", file.path)) imported.add(name);
+      if (isSource(file.path) === false || file.path.endsWith(".test.ts")) {
+        continue;
+      }
+      for (const name of packagesIn(file.content ?? "", file.path)) {
+        imported.add(name);
+      }
     }
     // Rule 7's one exemption: a story's Storybook imports are the app's own, and rule 10 is what
     // narrows them to the ones a consumer is sure to have.
@@ -781,7 +827,9 @@ for (const built of BUILT) {
       packageName,
     );
     for (const name of imported) {
-      if (declared.includes(name)) continue;
+      if (declared.includes(name)) {
+        continue;
+      }
       mismatched.push(`${built}: "${item.name}" imports \`${name}\` and does not declare it`);
     }
 
@@ -791,9 +839,13 @@ for (const built of BUILT) {
     const peers = new Set();
     for (const name of declared) {
       for (const { peer, optional } of await peersOf(name)) {
-        if (PROVIDED.has(peer)) continue;
+        if (PROVIDED.has(peer)) {
+          continue;
+        }
         peers.add(peer);
-        if (declared.includes(peer)) continue;
+        if (declared.includes(peer)) {
+          continue;
+        }
         peerless.push(
           `${built}: "${item.name}" declares \`${name}\`, which ` +
             `${optional ? "optionally peers" : "requires"} \`${peer}\` — and it is declared nowhere`,
@@ -802,7 +854,9 @@ for (const built of BUILT) {
     }
 
     for (const name of declared) {
-      if (imported.has(name) || peers.has(name)) continue;
+      if (imported.has(name) || peers.has(name)) {
+        continue;
+      }
       mismatched.push(`${built}: "${item.name}" declares \`${name}\` and no file imports it`);
     }
 
@@ -834,7 +888,11 @@ for (const built of BUILT) {
       built === BUILT[0] &&
       (item.files ?? []).some((f) => isSource(f.path) && (f.content ?? "").includes(RESET_CLASS));
     const tokens = `${NAMESPACE}/${TOKENS}`;
-    if (wearsReset && item.name !== TOKENS && !item.registryDependencies?.includes(tokens)) {
+    if (
+      wearsReset &&
+      item.name !== TOKENS &&
+      item.registryDependencies?.includes(tokens) !== true
+    ) {
       resetless.push(
         `${where}: "${item.name}" wears \`${RESET_CLASS}*\`, not depending on ${tokens}`,
       );
@@ -842,12 +900,15 @@ for (const built of BUILT) {
   }
 
   for (const item of items.values()) {
-    if (isStory(item)) stories.push(...storyProblems(built, item, items));
-    else misplaced.push(...placementProblems(built, item, items));
+    if (isStory(item)) {
+      stories.push(...storyProblems(built, item, items));
+    } else {
+      misplaced.push(...placementProblems(built, item, items));
+    }
   }
 
   for (const { from, dependency } of wanted) {
-    if (!dependency.startsWith("@")) {
+    if (dependency.startsWith("@") === false) {
       unreachable.push(
         `${built}: "${from}" depends on \`${dependency}\` — a bare name, which is ui.shadcn.com's`,
       );
@@ -857,7 +918,7 @@ for (const built of BUILT) {
     const name = rest.join("/");
     if (namespace !== NAMESPACE.slice(1)) {
       unreachable.push(`${built}: "${from}" depends on \`${dependency}\` — not \`${NAMESPACE}\``);
-    } else if (!present.has(name)) {
+    } else if (present.has(name) === false) {
       unreachable.push(
         `${built}: "${from}" depends on \`${dependency}\`, which ${built} does not hold`,
       );
@@ -901,14 +962,16 @@ if (webItems && nativeItems) {
   const onNative = new Set(nativeItems.map((i) => i.name));
   for (const item of nativeItems) {
     const layout = (item.files ?? []).some((f) => f.path.startsWith(LAYOUT_DIR));
-    if (layout && !onWeb.has(item.name)) {
+    if (layout && onWeb.has(item.name) === false) {
       oneSided.push(`"${item.name}" is a layout on React Native and has no compiled web half`);
     }
   }
   const bundle = webItems.find((i) => i.name === LAYOUT_BUNDLE);
   for (const dependency of bundle?.registryDependencies ?? []) {
     const name = dependency.split("/").pop();
-    if (onNative.has(name)) continue;
+    if (onNative.has(name)) {
+      continue;
+    }
     oneSided.push(`"${name}" is in the web \`${LAYOUT_BUNDLE}\` set and has no React Native half`);
   }
 }
@@ -919,21 +982,25 @@ const undeclared = [];
 const declared = new Set();
 for (const item of webOnlyItems) {
   // A bundle ships no file of its own; what it gathers is judged item by item.
-  if ((item.files ?? []).length === 0) continue;
+  if ((item.files ?? []).length === 0) {
+    continue;
+  }
   declared.add(item.name);
-  if (!(item.name in WEB_ONLY)) {
+  if (item.name in WEB_ONLY === false) {
     undeclared.push(`"${item.name}" is web-only and \`WEB_ONLY\` does not say why`);
   }
 }
 for (const name of Object.keys(WEB_ONLY)) {
-  if (!declared.has(name)) {
+  if (declared.has(name) === false) {
     undeclared.push(`"${name}" is named in \`WEB_ONLY\` and is no longer a web-only item`);
   }
 }
 
 if (collisions.length > 0) {
   console.error("Two files claim one name:\n");
-  for (const collision of collisions) console.error(`  ${collision}`);
+  for (const collision of collisions) {
+    console.error(`  ${collision}`);
+  }
   console.error(
     "\nThe CLI resolves a cross-item import by the file's basename, so an import of one is" +
       "\nrewritten to the other. It resolves, to the wrong file, and fails on the members." +
@@ -943,7 +1010,9 @@ if (collisions.length > 0) {
 
 if (drift.length > 0) {
   console.error(`${collisions.length > 0 ? "\n" : ""}A platform pair has drifted:\n`);
-  for (const one of drift) console.error(`  ${one}`);
+  for (const one of drift) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nBoth halves must export the same names, so no call site has to know which platform it is" +
       "\non. TypeScript will not catch this: it only ever resolves the native file, so the web" +
@@ -953,7 +1022,9 @@ if (drift.length > 0) {
 
 if (unpinned.length > 0) {
   console.error(`${collisions.length + drift.length > 0 ? "\n" : ""}An npm dependency is bare:\n`);
-  for (const one of unpinned) console.error(`  ${one}`);
+  for (const one of unpinned) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nThe CLI runs `npm install <name>`, which takes the latest stable. `nativewind` alone" +
       "\ninstalls 4 into an app whose components are written against 5, and the app fails at" +
@@ -965,7 +1036,9 @@ if (empties.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length > 0 ? "\n" : ""}Built items are missing content:\n`,
   );
-  for (const empty of empties) console.error(`  ${empty}`);
+  for (const empty of empties) {
+    console.error(`  ${empty}`);
+  }
   console.error(
     "\nThe file is empty, or registry.json names a path that is not the one holding the text." +
       "\n`shadcn build` writes an empty `content` for an empty file and reports success.",
@@ -976,7 +1049,9 @@ if (unreachable.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length > 0 ? "\n" : ""}A cross-item dependency does not resolve:\n`,
   );
-  for (const one of unreachable) console.error(`  ${one}`);
+  for (const one of unreachable) {
+    console.error(`  ${one}`);
+  }
   console.error(
     `\nA \`registryDependencies\` entry resolves against the *consumer's* \`components.json\`, so` +
       `\n${NAMESPACE} has to be the namespace and the item has to be in this registry. Otherwise the` +
@@ -990,7 +1065,9 @@ if (orphans.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length > 0 ? "\n" : ""}A built item outlived its registry entry:\n`,
   );
-  for (const one of orphans) console.error(`  ${one}`);
+  for (const one of orphans) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\n`shadcn build` writes item files and never removes one, so a renamed or deleted item keeps" +
       "\nserving its old self at its old URL forever. The index is right and the orphan collides" +
@@ -1002,7 +1079,9 @@ if (mismatched.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length > 0 ? "\n" : ""}An item's dependencies are not the ones its files import:\n`,
   );
-  for (const one of mismatched) console.error(`  ${one}`);
+  for (const one of mismatched) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nThe CLI installs what the item declares and copies the files either way, so an undeclared" +
       "\nimport reaches the consumer as a resolve error in a file they did not write — and a" +
@@ -1015,7 +1094,9 @@ if (peerless.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length > 0 ? "\n" : ""}A required peer reaches no consumer:\n`,
   );
-  for (const one of peerless) console.error(`  ${one}`);
+  for (const one of peerless) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nnpm does not install a required peer, and floats an optional one to its newest version." +
       "\n`icons` declared `lucide-react-native` without `react-native-svg`, so it installed into an" +
@@ -1030,7 +1111,9 @@ if (ranges.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length > 0 ? "\n" : ""}One package, two version ranges:\n`,
   );
-  for (const one of ranges) console.error(`  ${one}`);
+  for (const one of ranges) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nA consumer installing both items runs one install, and which range wins depends on which" +
       "\nitem they added last. Pick one range and use it in every item that names the package.",
@@ -1041,7 +1124,9 @@ if (misapplied.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length > 0 ? "\n" : ""}A component wears another component's class:\n`,
   );
-  for (const one of misapplied) console.error(`  ${one}`);
+  for (const one of misapplied) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\n`cn` is tailwind-merge, so the last class of a property wins and the extra one is simply" +
       "\nobeyed. This shipped: every row in every web select menu was `h-px` — one pixel tall —" +
@@ -1054,7 +1139,9 @@ if (uncoloured.length > 0) {
   console.error(
     `${collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length + misapplied.length > 0 ? "\n" : ""}A colour class names no token:\n`,
   );
-  for (const one of uncoloured) console.error(`  ${one}`);
+  for (const one of uncoloured) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nTailwind generates nothing for a colour its theme does not hold, and says nothing either:" +
       "\nthe class stays in the markup and the element inherits. `text-destructive-foreground`" +
@@ -1070,7 +1157,9 @@ if (uncoloured.length > 0) {
 
 if (stories.length > 0) {
   console.error("\nA published story would not compile in the app that installs it:\n");
-  for (const one of stories) console.error(`  ${one}`);
+  for (const one of stories) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nA story item is copied into the consumer's components/ and built by their Storybook, so" +
       "\nevery import has to resolve in their tree: an @/ path an item it depends on installs," +
@@ -1083,7 +1172,9 @@ if (oneSided.length > 0) {
   console.error(
     `${stories.length + collisions.length + drift.length + unpinned.length + empties.length + unreachable.length + orphans.length + mismatched.length + peerless.length + ranges.length + misapplied.length + uncoloured.length > 0 ? "\n" : ""}A layout exists on one platform only:\n`,
   );
-  for (const one of oneSided) console.error(`  ${one}`);
+  for (const one of oneSided) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nThe layout family is written once, in `registry/layout/`, and compiled for the web. A layout" +
       "\nwhose compile was refused drops out of the web registry without failing the build; run" +
@@ -1095,7 +1186,9 @@ if (oneSided.length > 0) {
 
 if (reexports.length > 0) {
   console.error("\nA built file re-exports with `export … from`:\n");
-  for (const one of reexports) console.error(`  ${one}`);
+  for (const one of reexports) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nThe shadcn CLI rewrites import declarations against the consumer's aliases and leaves" +
       "\nre-export declarations alone, so this path installs verbatim and points at a file the" +
@@ -1105,7 +1198,9 @@ if (reexports.length > 0) {
 
 if (misplaced.length > 0) {
   console.error("\nA built file imports something the install will not put where it points:\n");
-  for (const one of misplaced) console.error(`  ${one}`);
+  for (const one of misplaced) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nThe CLI places each file by its type — `registry:ui` in components/ui/, `registry:component`" +
       "\nin components/, `registry:lib` in lib/ — and rewrites `@/` aliases, never relative paths." +
@@ -1116,7 +1211,9 @@ if (misplaced.length > 0) {
 
 if (inkless.length > 0) {
   console.error("\nA React Native source leaves a colour to what only the compiled half has:\n");
-  for (const one of inkless) console.error(`  ${one}`);
+  for (const one of inkless) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nReact Native's default border colour is black, react-native-web's base `View` class says" +
       "\n`border: 0 solid black`, and a react-native-web `Text` sets its own black `color` — so a" +
@@ -1128,7 +1225,9 @@ if (inkless.length > 0) {
 
 if (resetless.length > 0) {
   console.error("\nA built item wears the reset's classes without installing the reset:\n");
-  for (const one of resetless) console.error(`  ${one}`);
+  for (const one of resetless) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\n`cube-rn-*` classes are defined in `cubeui-reset.css`, which only `@cubeui/tokens` installs." +
       "\n`deriveWebRegistry` in scripts/rn2web/registry.mjs adds the dependency to every web item" +
@@ -1138,7 +1237,9 @@ if (resetless.length > 0) {
 
 if (undeclared.length > 0) {
   console.error("\nThe web-only tier changed:\n");
-  for (const one of undeclared) console.error(`  ${one}`);
+  for (const one of undeclared) {
+    console.error(`  ${one}`);
+  }
   console.error(
     "\nEvery item is written once in React Native and compiled for the web. A new item in" +
       "\n`registry.web-only.json` is one more thing kept by hand on one platform; write it in" +

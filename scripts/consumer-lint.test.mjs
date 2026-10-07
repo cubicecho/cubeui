@@ -29,16 +29,26 @@ const DIR_FOR_TYPE = {
 
 function layOut(into) {
   for (const entry of readdirSync(published)) {
-    if (!entry.endsWith(".json") || entry === "registry.json") continue;
+    if (entry.endsWith(".json") === false || entry === "registry.json") {
+      continue;
+    }
     const item = JSON.parse(readFileSync(join(published, entry), "utf8"));
     // Stories are for the consumer's Storybook, and skills are agent docs, not source.
-    if (item.name.endsWith("-stories") || item.type === "registry:file") continue;
+    if (item.name.endsWith("-stories") || item.type === "registry:file") {
+      continue;
+    }
     for (const file of item.files ?? []) {
       let rel;
-      if (file.target?.startsWith("~/")) rel = file.target.slice(2);
-      else if (file.target) rel = file.target;
-      else rel = join(DIR_FOR_TYPE[file.type] ?? "src/components", basename(file.path));
-      if (rel.includes(".claude")) continue;
+      if (file.target?.startsWith("~/")) {
+        rel = file.target.slice(2);
+      } else if (file.target) {
+        rel = file.target;
+      } else {
+        rel = join(DIR_FOR_TYPE[file.type] ?? "src/components", basename(file.path));
+      }
+      if (rel.includes(".claude")) {
+        continue;
+      }
       const to = join(into, rel);
       mkdirSync(dirname(to), { recursive: true });
       writeFileSync(to, file.content);

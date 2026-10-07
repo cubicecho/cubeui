@@ -24,7 +24,9 @@ const cases = [
 ];
 
 test("oklch converts to the expected sRGB hex", () => {
-  for (const [t, want] of cases) assert.equal(toNativeCss(t), want, formatOklch(t));
+  for (const [t, want] of cases) {
+    assert.equal(toNativeCss(t), want, formatOklch(t));
+  }
 });
 
 test("alpha becomes rgba, which React Native can parse", () => {
@@ -50,5 +52,9 @@ test("only negative, and the shadcn name for it, is outside sRGB", () => {
 
 test("every emitted native colour is a form RN can parse", () => {
   const ok = /^(#[0-9a-f]{6}|rgba\(\d+, \d+, \d+, [\d.]+\))$/;
-  for (const n of names) for (const map of [light, dark]) assert.match(toNativeCss(map[n]), ok, n);
+  for (const n of names) {
+    for (const map of [light, dark]) {
+      assert.match(toNativeCss(map[n]), ok, n);
+    }
+  }
 });

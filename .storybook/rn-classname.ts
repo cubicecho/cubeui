@@ -41,8 +41,12 @@ export function reactNativeClassName(): Plugin {
     enforce: "pre",
     transform(code, id) {
       const [file] = id.split("?");
-      if (!file || !ours.some((dir) => file.startsWith(dir))) return null;
-      if (!code.includes('"react-native"') && !code.includes("'react-native'")) return null;
+      if (!file || ours.some((dir) => file.startsWith(dir)) === false) {
+        return null;
+      }
+      if (code.includes('"react-native"') === false && code.includes("'react-native'") === false) {
+        return null;
+      }
 
       // Anchored on `from` so it cannot touch `react-native-svg`, `react-native-css` or a string
       // in the prose of a comment.
