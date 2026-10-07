@@ -56,6 +56,17 @@ function Select(props: SelectProps) {
   const defined = Object.fromEntries(
     Object.entries(props).filter(([, value]) => value !== undefined),
   ) as RootProps;
+  const { onValueChange } = defined;
+  // Inside a `<form>` radix mirrors the value into a hidden native `<select>` and reports that
+  // element's `change` back. A value whose item has not rendered yet — a list still being fetched,
+  // an option just created — has no `<option>` there, so the element reads `""` and radix hands
+  // that back as if it had been picked. No item can carry `""` (radix refuses one), so it is never
+  // a choice: dropping it keeps the value until its option arrives.
+  if (onValueChange) {
+    defined.onValueChange = (next) => {
+      if (next !== "") onValueChange(next);
+    };
+  }
   return <SelectPrimitive.Root data-slot="select" {...defined} />;
 }
 

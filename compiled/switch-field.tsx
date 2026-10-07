@@ -22,7 +22,12 @@
  * the switch itself is a click on interactive content, which a label does not re-activate.
  */
 
-import { SWITCH_FIELD_LABEL_CLASS, type SwitchFieldProps } from "@/components/ui/switch-field-base";
+import {
+  SWITCH_FIELD_DESCRIPTION_CLASS,
+  SWITCH_FIELD_LABEL_CLASS,
+  type SwitchFieldProps,
+  switchFieldIds,
+} from "@/components/ui/switch-field-base";
 import { cn } from "@/lib/utils";
 import { Label } from "./label";
 import { Switch } from "./switch";
@@ -30,19 +35,49 @@ import { Switch } from "./switch";
 export function SwitchField({
   id,
   label,
+  description,
   checked,
   onCheckedChange,
+  disabled,
   className,
   labelClassName,
 }: SwitchFieldProps) {
+  const { labelId, descriptionId } = switchFieldIds(id);
+  const caption = cn(SWITCH_FIELD_LABEL_CLASS, disabled && "opacity-50", labelClassName);
   return (
     <Label
       htmlFor={id}
       data-slot="switch-field"
-      className={cn("flex cursor-pointer flex-row items-center gap-2", className)}
+      className={cn(
+        "flex flex-row gap-2",
+        description ? "items-start" : "items-center",
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
+        className,
+      )}
     >
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <span className={cn(SWITCH_FIELD_LABEL_CLASS, labelClassName)}>{label}</span>
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        disabled={disabled}
+        // The description sits inside the `<label>` so the whole row stays the hit target, and a
+        // label names its control with everything in it. Naming the switch by the caption alone
+        // keeps the description out of the name and leaves it to be the description.
+        aria-labelledby={description ? labelId : undefined}
+        aria-describedby={description ? descriptionId : undefined}
+      />
+      {description ? (
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span id={labelId} className={caption}>
+            {label}
+          </span>
+          <span id={descriptionId} className={SWITCH_FIELD_DESCRIPTION_CLASS}>
+            {description}
+          </span>
+        </span>
+      ) : (
+        <span className={caption}>{label}</span>
+      )}
     </Label>
   );
 }

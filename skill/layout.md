@@ -946,8 +946,9 @@ that changes it at the end.
 - It draws no surface, no border and no heading. Put the rows in a `Section` (`surface="card"`) or
   `CardLayout` `contentSlot`; the gap between them is the parent's.
 - **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
-  the switch with its caption beside it, the whole row one hit target. Take `SettingRow` for any
-  other control — a select, a button, an input — and for a switch that needs a description or
+  the switch with its caption beside it, the whole row one hit target. It takes a `description`
+  under the caption and `disabled`, so a switch that cannot be changed can say why. Take
+  `SettingRow` for any other control — a select, a button, an input — and for a switch that
   sits at the far end of a settings card. A read-only fact is `PropertyRow`, not this; a value
   inside a form is a field (`FormField`, the bound fields).
 

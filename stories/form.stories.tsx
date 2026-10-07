@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ColorField as CompiledColorField } from "../compiled/color-picker-field";
 import { DateTimeField as CompiledDateTimeField } from "../compiled/date-time-field";
@@ -226,6 +227,80 @@ export const Row: Story = {
       await expect(b.left).toBeGreaterThan(a.right);
       // Equal cells, so nothing sits in a third one.
       await expect(Math.round(a.width)).toBe(Math.round(b.width));
+    }
+  },
+};
+
+const TYPES = [
+  { label: "Friend", value: "friend" },
+  { label: "Colleague", value: "colleague" },
+];
+
+function RelationshipForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const [types, setTypes] = useState(TYPES);
+  const form = useAppForm({
+    defaultValues: { type: "", role: "" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="type">
+          {(field) => <field.SelectField label="Type" options={types} placeholder="Pick a type" />}
+        </form.AppField>
+        <form.AppField name="role">
+          {(field) => (
+            <field.SelectField label="Role" options={[]} placeholder="No roles yet" disabled />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values.type}>
+          {(type) => <output aria-label="Stored type">{type}</output>}
+        </form.Subscribe>
+        <button type="button" onClick={() => form.setFieldValue("type", "mentor")}>
+          Create and pick
+        </button>
+        <button
+          type="button"
+          onClick={() => setTypes([...TYPES, { label: "Mentor", value: "mentor" }])}
+        >
+          Refetch
+        </button>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `SelectField` takes `disabled`, and keeps a value its list does not hold yet (#278). The second
+ * is the dialog that creates an option and picks it before the refetch lands: inside a `<form>`
+ * the web select used to hand `""` back for a value with no item, so the field cleared itself and
+ * its validator fired a moment before the option arrived.
+ */
+export const SelectKeepsAValueAheadOfItsOption: Story = {
+  render: () => (
+    <SideBySide
+      native={<RelationshipForm kit={NATIVE} />}
+      compiled={<RelationshipForm kit={COMPILED} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      // Named by its label, which is the wiring landing on the trigger and not on the root.
+      const role = half.getByLabelText("Role");
+      await expect(role).toHaveTextContent("No roles yet");
+      await expect(role).toBeDisabled();
+
+      await userEvent.click(half.getByRole("button", { name: "Create and pick" }));
+      const stored = half.getByLabelText("Stored type");
+      await waitFor(() => expect(stored).toHaveTextContent("mentor"));
+      // The cleared value arrived on a later tick, so the wait is what makes this a test of it.
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await expect(stored).toHaveTextContent("mentor");
+
+      await userEvent.click(half.getByRole("button", { name: "Refetch" }));
+      await waitFor(() => expect(half.getByLabelText("Type")).toHaveTextContent("Mentor"));
+      await expect(stored).toHaveTextContent("mentor");
     }
   },
 };

@@ -437,31 +437,45 @@ type SelectOption = {
 type SelectFieldProps = BoundFieldProps & {
   options: readonly SelectOption[];
   placeholder?: string;
+  /** The trigger will not open: a list with nothing in it yet, a choice another field decides. */
+  disabled?: boolean | undefined;
 };
 
-function SelectField(props: SelectFieldProps) {
-  const [fieldProps, { options, placeholder }] = splitProps(props);
-  const field = useFieldContext<string>();
+type SelectControlProps = Pick<SelectFieldProps, "options" | "placeholder" | "disabled"> &
+  Omit<React.ComponentProps<typeof SelectTrigger>, "children" | "onBlur" | "disabled">;
 
+/**
+ * The select as one control, so the wiring `FieldControl` hands down lands on the trigger. The
+ * root renders no element on either platform: handed the `id` and the `aria-*` props it drops
+ * them, leaving a trigger the label does not name and an error message nothing points at.
+ */
+function SelectControl({ options, placeholder, disabled, ...wired }: SelectControlProps) {
+  const field = useFieldContext<string>();
   return (
-    <FieldWrapper
-      {...fieldProps}
-      controlSlot={
-        <Select value={field.state.value} onValueChange={(v) => field.handleChange(v)}>
-          <SelectTrigger onBlur={field.handleBlur}>
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map(({ label: optionLabel, value }) => (
-              <SelectItem key={value} value={value}>
-                {optionLabel}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      }
-    />
+    <Select
+      value={field.state.value}
+      onValueChange={(v) => field.handleChange(v)}
+      disabled={disabled}
+    >
+      <SelectTrigger {...wired} onBlur={field.handleBlur}>
+        <SelectValue placeholder={placeholder}>
+          {options.find((option) => option.value === field.state.value)?.label}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {options.map(({ label: optionLabel, value }) => (
+          <SelectItem key={value} value={value}>
+            {optionLabel}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
+}
+
+function SelectField(props: SelectFieldProps) {
+  const [fieldProps, control] = splitProps(props);
+  return <FieldWrapper {...fieldProps} controlSlot={<SelectControl {...control} />} />;
 }
 
 type CheckboxFieldProps = Omit<BoundFieldProps, "label"> & {
