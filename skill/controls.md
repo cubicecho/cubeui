@@ -1150,6 +1150,20 @@ the right keyboard and switches neither off. `autoCapitalize` is `none`, `senten
 `characters`; `autoCorrect` is a boolean, and on the web it takes the spelling underline with it.
 `InputField` passes both through.
 
+## A field the browser can fill
+
+```tsx
+<InputField form={form} name="email" label="Email" type="email" autoComplete="email" />
+```
+
+`autoComplete` says what a field holds, so a saved address, a password manager's entry or a
+texted code is offered for it. `type="email"` alone does not: without `autoComplete="email"` a
+sign-in loses the browser's autofill. It is on `Input`, on both halves, and `InputField` passes it
+through. The shared values are the ones HTML and React Native both have: `email`, `username`,
+`current-password`, `new-password`, `one-time-code`, `name`, `given-name`, `family-name`, `tel`,
+`street-address`, `postal-code`, `country` and the rest of `InputAutoComplete`. `off` asks for no
+suggestions. The web half takes any DOM token.
+
 ## Search
 
 A box that filters or searches is `SearchInput`, on both halves. Do not build it from `Input

@@ -47,6 +47,7 @@ import {
   INPUT_TRAILING_CLASS,
   INPUT_TRAILING_PAD_CLASS,
   INPUT_WRAPPER_CLASS,
+  type InputAutoComplete,
   type InputHandle,
   type InputKeyPressEvent,
   type InputKeyPressHandler,
@@ -63,7 +64,8 @@ import { cn } from "@/lib/utils";
  * DOM input type, of which `InputType` is the cross-platform part. `onKeyPress` hands over the
  * React keyboard event, which is a shared handler's `{ nativeEvent: { key } }` and a shadcn call
  * site's `e.key` at once. `autoCapitalize` keeps the DOM's wider set, and `autoCorrect` is the
- * shared boolean or the DOM's `"on"` / `"off"`.
+ * shared boolean or the DOM's `"on"` / `"off"`. `autoComplete` keeps the DOM's wider set too, of
+ * which `InputAutoComplete` is the part a device also understands.
  */
 export type InputProps = Omit<
   ComponentPropsWithoutRef<"input">,
@@ -84,6 +86,7 @@ export type InputProps = Omit<
     | "aria-invalid"
     | "autoCapitalize"
     | "autoCorrect"
+    | "autoComplete"
   > & {
     autoCorrect?: boolean | "on" | "off" | undefined;
     type?: HTMLInputTypeAttribute | undefined;
@@ -178,5 +181,5 @@ function Input({
  */
 const SLOT_ICON = "text-foreground/60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
-export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputType };
+export type { InputAutoComplete, InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputType };
 export { Input };
