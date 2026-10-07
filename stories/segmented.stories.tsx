@@ -34,6 +34,7 @@ export default meta;
 type Story = StoryObj;
 
 const OPTIONS = ["Day", "Week", "Month"] as const;
+type Range = (typeof OPTIONS)[number];
 
 /**
  * Pills that each pass `active`, the way every call site did before `SegmentedGroup` existed —
@@ -97,8 +98,10 @@ export const Row: Story = {
 };
 
 function NativeGrouped() {
-  const [range, setRange] = useState<string>("Week");
-  const [view, setView] = useState<string>("List");
+  // The unions and not `string`: `setRange` takes a `Range`, so this only type-checks because the
+  // group hands back the type its `value` has (#285).
+  const [range, setRange] = useState<Range>("Week");
+  const [view, setView] = useState<"List" | "Board">("List");
   return (
     <>
       <NativeGroup aria-label="Native period" value={range} onValueChange={setRange}>
@@ -120,8 +123,8 @@ function NativeGrouped() {
 }
 
 function CompiledGrouped() {
-  const [range, setRange] = useState<string>("Week");
-  const [view, setView] = useState<string>("List");
+  const [range, setRange] = useState<Range>("Week");
+  const [view, setView] = useState<"List" | "Board">("List");
   return (
     <>
       <CompiledGroup aria-label="Compiled period" value={range} onValueChange={setRange}>

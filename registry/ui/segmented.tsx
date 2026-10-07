@@ -101,17 +101,22 @@ const SEGMENTED_GROUP_VARIANTS = {
   plain: "",
 } as const;
 
-export type SegmentedGroupProps = Omit<
+export type SegmentedGroupProps<TValue extends string = string> = Omit<
   React.ComponentProps<typeof View>,
-  "children" | "className" | "style" | "role"
+  "children" | "className" | "style" | "role" | "ref"
 > & {
   /**
    * The current pill's `value`. With it, a `SegmentedButton value="week"` works
    * out whether it is current, so no pill needs `active={x === value}`.
    */
-  value?: string | undefined;
-  /** Called with a pill's `value` when it is pressed. */
-  onValueChange?: ((value: string) => void) | undefined;
+  value?: TValue | undefined;
+  /**
+   * Called with a pill's `value` when it is pressed. Typed as the group's
+   * `value` is, so a group over a closed set hands back a member of the set
+   * and the caller neither looks it up again nor asserts it.
+   */
+  onValueChange?: ((value: TValue) => void) | undefined;
+  ref?: React.Ref<React.ElementRef<typeof View>> | undefined;
   /** `framed` (the default) draws the input-height box; `plain` draws the row alone. */
   variant?: keyof typeof SEGMENTED_GROUP_VARIANTS | undefined;
   /**
@@ -143,39 +148,53 @@ export type SegmentedGroupProps = Omit<
  *
  * Holds no value of its own. `value` and `onValueChange` are the caller's, and
  * both are optional: a row of pills that each pass `active` still works inside it.
+ *
+ * Generic over the value, `string` unless the caller's `value` says otherwise, so
+ * a group over `"week" | "month"` calls `onValueChange` with that union.
  */
-const SegmentedGroup = React.forwardRef<React.ElementRef<typeof View>, SegmentedGroupProps>(
-  (
-    { value, onValueChange, variant = "framed", labelHideBelow, className, children, ...props },
-    ref,
-  ) => {
-    const framed = variant === "framed";
-    const context = React.useMemo(
-      () => ({ value, onValueChange, framed, labelHideBelow }),
-      [value, onValueChange, framed, labelHideBelow],
-    );
-    return (
-      <SegmentedGroupContext.Provider value={context}>
-        <View
-          ref={ref}
-          role="group"
-          className={cn(
-            "flex-row items-center gap-1 self-start",
-            // A flex container is block-level on the web and would stretch the
-            // frame across the page; on device `self-start` already hugs it.
-            Platform.select({ web: "w-fit", default: undefined }),
-            SEGMENTED_GROUP_VARIANTS[variant],
-            className,
-          )}
-          {...props}
-        >
-          {children}
-        </View>
-      </SegmentedGroupContext.Provider>
-    );
-  },
-);
-SegmentedGroup.displayName = "SegmentedGroup";
+function SegmentedGroup<TValue extends string = string>({
+  value,
+  onValueChange,
+  variant = "framed",
+  labelHideBelow,
+  className,
+  children,
+  ref,
+  ...props
+}: SegmentedGroupProps<TValue>) {
+  const framed = variant === "framed";
+  const context = React.useMemo<SegmentedGroupContextValue>(
+    () => ({
+      value,
+      // The one place `TValue` is taken on trust. A pill only compares its own
+      // `value` and hands it back, so the context carries `string`; what makes
+      // that string a `TValue` is that the caller wrote the pills from the set.
+      onValueChange: onValueChange as ((value: string) => void) | undefined,
+      framed,
+      labelHideBelow,
+    }),
+    [value, onValueChange, framed, labelHideBelow],
+  );
+  return (
+    <SegmentedGroupContext.Provider value={context}>
+      <View
+        ref={ref}
+        role="group"
+        className={cn(
+          "flex-row items-center gap-1 self-start",
+          // A flex container is block-level on the web and would stretch the
+          // frame across the page; on device `self-start` already hugs it.
+          Platform.select({ web: "w-fit", default: undefined }),
+          SEGMENTED_GROUP_VARIANTS[variant],
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </View>
+    </SegmentedGroupContext.Provider>
+  );
+}
 
 export type SegmentedButtonProps = Omit<
   React.ComponentProps<typeof Pressable>,
