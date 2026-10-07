@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   InputField,
   SelectField,
@@ -9,6 +9,7 @@ import {
 } from "@/components/app-form";
 import { FieldRow } from "@/components/field-row";
 import { Button } from "@/components/ui/button";
+import { FormElement } from "@/components/ui/form-element";
 
 const PRIORITIES = [
   { value: "1", label: "Low" },
@@ -327,5 +328,61 @@ export const AListenerDoesNotOverwriteAChoice: Story = {
     await choose(canvas.getByLabelText(/^List/), "Work");
 
     expect(canvas.getByLabelText(/^Priority/)).toHaveTextContent("Low");
+  },
+};
+
+function OutsideSubmit({
+  onSubmit,
+  named,
+}: {
+  onSubmit?: ((value: unknown) => void) | undefined;
+  named: boolean;
+}) {
+  const form = useAppForm({
+    defaultValues: { title: "Buy milk" },
+    onSubmit: ({ value }) => onSubmit?.(value),
+  });
+  return (
+    <div className="grid gap-4">
+      <FormElement id={named ? "outside" : undefined} onSubmit={() => form.handleSubmit()}>
+        <InputField form={form} name="title" label="Title" />
+      </FormElement>
+      <footer className="flex justify-end">
+        <form.AppForm>
+          <form.SubmitButton form={named ? "outside" : undefined} content="Rename" />
+        </form.AppForm>
+      </footer>
+    </div>
+  );
+}
+
+/**
+ * A dialog's `footerActionsSlot` and a card's footer put the submit outside the `<form>`, where
+ * a bare `type="submit"` button does nothing and says nothing (#271). With no form owning it,
+ * `SubmitButton` submits through the form it has from context.
+ */
+export const TheSubmitCanSitOutsideTheForm: Story = {
+  args: { onSubmit: fn() },
+  render: (args) => <OutsideSubmit onSubmit={args.onSubmit} named={false} />,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Rename" }));
+    await waitFor(() => expect(args.onSubmit).toHaveBeenCalledTimes(1));
+    expect(args.onSubmit).toHaveBeenCalledWith({ title: "Buy milk" });
+  },
+};
+
+/**
+ * `FormElement` takes an `id`, so `form="…"` names it. The form owns the button then, and the
+ * press goes through the DOM submit once — not once from the event and again from the button.
+ */
+export const OrNameTheFormItSubmits: Story = {
+  args: { onSubmit: fn() },
+  render: (args) => <OutsideSubmit onSubmit={args.onSubmit} named />,
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Rename" }));
+    await waitFor(() => expect(args.onSubmit).toHaveBeenCalledTimes(1));
+    // Enter in the field is the other path to the same submit.
+    await userEvent.type(canvas.getByLabelText(/^Title/), "{Enter}");
+    await waitFor(() => expect(args.onSubmit).toHaveBeenCalledTimes(2));
   },
 };

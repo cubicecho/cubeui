@@ -442,6 +442,21 @@ field drops to its own line at full width rather than three of them sharing one 
 
 - `contentSlot` takes a fragment. A field that renders nothing leaves no cell behind, so
   `{isEdit && <InputField … />}` is safe to put in the middle of one.
+- That is the web item, `@cubeui/field-row`. In an Expo app `FieldRow` comes from `@cubeui/form`
+  and takes the same props; only the fields in it are spelled the native way:
+
+  ```tsx
+  import { FieldRow } from "@/components/ui/form";
+
+  <FieldRow
+    contentSlot={
+      <>
+        <form.AppField name="first">{(field) => <field.InputField label="First name" />}</form.AppField>
+        <form.AppField name="last">{(field) => <field.InputField label="Last name" />}</form.AppField>
+      </>
+    }
+  />
+  ```
 - `perRow` is `2` (the default) or `3`, and it only moves that minimum.
 - The cells are equal width. A field that should be wider is not this component — put it on its
   own line.
@@ -458,20 +473,24 @@ children and closed without asking, and it was removed. An app that vendored it 
   onOpenChange={onOpenChange}
   title={isEdit ? "Edit todo" : "New todo"}
   hasUnsavedChanges={() => !form.state.isDefaultValue}
-  contentSlot={<form id="todo" onSubmit={…}>…</form>}
+  contentSlot={<FormElement onSubmit={() => form.handleSubmit()}>…</FormElement>}
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
       <form.AppForm>
-        <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
+        <form.SubmitButton content={isEdit ? "Save changes" : "Create"} />
       </form.AppForm>
     </>
   )}
 />
 ```
 
-- The `form="todo"` attribute is what lets the submit live outside the `<form>` in the dialog's
-  footer while still submitting it.
+- The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
+  `SubmitButton` that no form owns calls `form.handleSubmit()` itself. The same holds in a
+  `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
+  `preventDefault` already in it, so Enter in a field submits too.
+- To send the press through the DOM submit event instead, name the form: `<FormElement id="todo" …>`
+  and `<form.SubmitButton form="todo" … />`. A hand-written `<form id="todo">` works the same way.
 - `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is
   thrown away, and Cancel asks too because it calls the `close` it was handed, not a
   `setOpen(false)` of its own. See [layout.md](layout.md) for the rest of the dialog.

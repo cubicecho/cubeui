@@ -123,10 +123,11 @@ function useFieldComponentContext() {
  * submits; on native it is a `View` and `SubmitButton` is the only path to
  * submission. Either way the submit is routed through form context.
  */
-function Form({ className, children }: Omit<FormElementProps, "onSubmit">) {
+function Form({ id, className, children }: Omit<FormElementProps, "onSubmit">) {
   const form = useFormContext();
   return (
     <FormElement
+      id={id}
       onSubmit={() => {
         form.handleSubmit();
       }}
@@ -212,20 +213,55 @@ function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitiv
   );
 }
 
+/** The floor a cell holds: what makes the row wrap instead of squeezing. */
+const CELL_FLOOR = {
+  2: "min-w-[45%]",
+  3: "min-w-[30%]",
+} as const;
+
+type FieldRowProps = {
+  /**
+   * The fields, as the web `FieldRow` takes them. Each gets a cell of its own, and one that
+   * renders nothing (`{isEdit && <field.InputField … />}`) leaves no empty cell behind.
+   */
+  contentSlot?: ReactNode;
+  /** How many fit on a line before the row wraps. */
+  perRow?: keyof typeof CELL_FLOOR | undefined;
+  className?: string | undefined;
+  cellClassName?: string | undefined;
+};
+
+/**
+ * The fields, one entry each, keyed. A fragment is how a slot holding several things arrives,
+ * and `Children.toArray` counts it as one child, so a fragment at the top is opened once.
+ */
+function fieldsOf(content: ReactNode): Array<{ key: string; node: ReactNode }> {
+  const flat = React.Children.toArray(content).flatMap((child) =>
+    React.isValidElement<{ children?: ReactNode }>(child) && child.type === React.Fragment
+      ? React.Children.toArray(child.props.children)
+      : [child],
+  );
+  return flat.map((node, position) => ({
+    key: React.isValidElement(node) && node.key ? node.key : `cell-${position}`,
+    node,
+  }));
+}
+
 /**
  * Fields side by side, two to a row — what `grid grid-cols-2 gap-4` did on web.
  * `grid` has no native equivalent, and the `flex-1` has to sit on each cell
  * rather than on the field, which would then only be laid out correctly inside
- * a row. `min-w-[45%]` is what makes a third field wrap instead of squeezing.
+ * a row. The cell's minimum width is what makes a third field wrap instead of
+ * squeezing.
  */
-function FieldRow({ className, children }: { className?: string; children: ReactNode }) {
+function FieldRow({ contentSlot, perRow = 2, className, cellClassName }: FieldRowProps) {
   return (
     <div className={cn("cube-rn-view", "flex-row flex-wrap gap-4", className)}>
-      {React.Children.map(children, (child) =>
-        child == null || child === false ? null : (
-          <div className="cube-rn-view min-w-[45%] flex-1">{child}</div>
-        ),
-      )}
+      {fieldsOf(contentSlot).map(({ key, node }) => (
+        <div key={key} className={cn("cube-rn-view", "flex-1", CELL_FLOOR[perRow], cellClassName)}>
+          {node}
+        </div>
+      ))}
     </div>
   );
 }

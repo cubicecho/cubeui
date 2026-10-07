@@ -8,9 +8,10 @@
 import type { FormElementProps } from "@/components/ui/form-element-base";
 import { cn } from "@/lib/utils";
 
-export function FormElement({ onSubmit, className, children }: FormElementProps) {
+export function FormElement({ onSubmit, id, className, children }: FormElementProps) {
   return (
     <form
+      id={id}
       className={cn("flex flex-col", className)}
       onSubmit={(e) => {
         e.preventDefault();
