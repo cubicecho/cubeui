@@ -89,6 +89,14 @@ function isDisabled(day: Date, disabled: CalendarProps["disabled"]): boolean {
   return covers(day, disabled as DateMatcher);
 }
 
+/** A day's text colour: the edge of a selection, a day in plain ink, or one from a neighbouring month. */
+function dayInk(edge: boolean, plain: boolean) {
+  if (edge) {
+    return "text-active-foreground";
+  }
+  return plain ? "text-foreground" : "text-foreground/60";
+}
+
 /** Where a day sits in the selection, which is what decides how it is drawn. */
 function placeInRange(day: Date, range: DateRange | undefined) {
   if (!range?.from) {
@@ -225,13 +233,7 @@ export function Calendar(props: CalendarProps) {
                   <Text
                     className={cn(
                       "text-sm",
-                      place.edge
-                        ? "text-active-foreground"
-                        : place.middle
-                          ? "text-foreground"
-                          : isSameMonth(day, shown)
-                            ? "text-foreground"
-                            : "text-foreground/60",
+                      dayInk(place.edge, place.middle || isSameMonth(day, shown)),
                     )}
                   >
                     {format(day, "d")}

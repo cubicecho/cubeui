@@ -108,7 +108,8 @@ export function StatTile({
   const toggle = onPress !== undefined && selected !== undefined;
   // The pressed state in each platform's spelling. react-native-web forwards `aria-*` and drops
   // `accessibilityState`; the device reads `accessibilityState` and has no `aria-pressed`.
-  const pressed = toggle ? { "aria-pressed": selected } : {};
+  const pressedState = { "aria-pressed": selected };
+  const pressed = toggle ? pressedState : {};
 
   // The label, hint and icon. A selected tile keeps its card fill and is marked by its border
   // alone, so this ink is the same whether or not it is chosen.
@@ -119,6 +120,27 @@ export function StatTile({
     toggle && selected && "border-active",
     className,
   );
+
+  const figure =
+    typeof value === "string" || typeof value === "number" ? (
+      <span
+        data-slot="stat-tile-value"
+        className={cn(
+          "cube-rn-text",
+          "font-semibold text-2xl text-foreground tabular-nums",
+          valueClassName,
+        )}
+      >
+        {value}
+      </span>
+    ) : (
+      <div
+        data-slot="stat-tile-value"
+        className={cn("cube-rn-view", SLOT, "min-w-0", valueClassName)}
+      >
+        {value}
+      </div>
+    );
 
   const body = (
     <>
@@ -142,24 +164,8 @@ export function StatTile({
       </div>
       {loading ? (
         <div data-slot="stat-tile-skeleton" aria-hidden className={cn("cube-rn-view", BAR)} />
-      ) : typeof value === "string" || typeof value === "number" ? (
-        <span
-          data-slot="stat-tile-value"
-          className={cn(
-            "cube-rn-text",
-            "font-semibold text-2xl text-foreground tabular-nums",
-            valueClassName,
-          )}
-        >
-          {value}
-        </span>
       ) : (
-        <div
-          data-slot="stat-tile-value"
-          className={cn("cube-rn-view", SLOT, "min-w-0", valueClassName)}
-        >
-          {value}
-        </div>
+        figure
       )}
       {hint ? (
         <span data-slot="stat-tile-hint" className={cn("cube-rn-text", "text-xs", ink)}>

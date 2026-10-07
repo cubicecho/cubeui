@@ -280,6 +280,14 @@ export function PageHeader({
   // and not one of the section headings in these apps draws a second line.
   const rule = level === 1 && !contentSlot ? "border-b border-foreground/10" : undefined;
 
+  const descriptionLine = loading ? (
+    <View testID="page-header-description" aria-hidden className={cn(BAR, "h-5 w-72")} />
+  ) : (
+    <Text testID="page-header-description" webAs="p" className="text-foreground/60 text-sm">
+      {description}
+    </Text>
+  );
+
   return (
     // `px-4` is the seam: the body of a `width="page"` chassis carries the same, and nothing else
     // in this tree adds to it, so the title sits above the body's first column.
@@ -341,19 +349,7 @@ export function PageHeader({
             )}
           </View>
 
-          {description ? (
-            loading ? (
-              <View testID="page-header-description" aria-hidden className={cn(BAR, "h-5 w-72")} />
-            ) : (
-              <Text
-                testID="page-header-description"
-                webAs="p"
-                className="text-foreground/60 text-sm"
-              >
-                {description}
-              </Text>
-            )
-          ) : null}
+          {description ? descriptionLine : null}
         </View>
 
         {actionSlot ? (

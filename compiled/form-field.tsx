@@ -299,6 +299,18 @@ export function FormField({
   const labelId = label ? `${controlId}-label` : undefined;
   const groupLabelId = asGroup ? labelId : undefined;
 
+  const rendered = renderControl
+    ? renderControl(
+        {
+          id: controlId,
+          "aria-labelledby": groupLabelId,
+          "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
+          "aria-invalid": shownError ? true : undefined,
+          "aria-required": required || undefined,
+        },
+        { labelId },
+      )
+    : controlSlot;
   const wired = element
     ? cloneElement(element, {
         id: controlId,
@@ -313,18 +325,7 @@ export function FormField({
         "aria-invalid": element.props["aria-invalid"] ?? (shownError ? true : undefined),
         "aria-required": element.props["aria-required"] ?? (required || undefined),
       })
-    : renderControl
-      ? renderControl(
-          {
-            id: controlId,
-            "aria-labelledby": groupLabelId,
-            "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
-            "aria-invalid": shownError ? true : undefined,
-            "aria-required": required || undefined,
-          },
-          { labelId },
-        )
-      : controlSlot;
+    : rendered;
 
   const body = loading ? (
     <Skeleton
@@ -351,7 +352,7 @@ export function FormField({
 
   // `FieldTitle` in group mode: the same type in the same place, drawn as a `<div>`, because the
   // element it names is one a `<label>` cannot name. Its `id` is what the group points back at.
-  const labelNode = !label ? null : asGroup ? (
+  const drawnLabel = asGroup ? (
     <FieldTitle id={labelId} className={labelClassName}>
       {labelText}
     </FieldTitle>
@@ -366,6 +367,7 @@ export function FormField({
       {labelText}
     </FieldLabel>
   );
+  const labelNode = label ? drawnLabel : null;
 
   // Beside the label rather than inside it: `FieldLabel` renders a real `<label>`, and a button
   // nested in one is a button whose click the label also claims.

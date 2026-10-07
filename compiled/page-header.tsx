@@ -286,6 +286,18 @@ export function PageHeader({
   // and not one of the section headings in these apps draws a second line.
   const rule = level === 1 && !contentSlot ? "border-b border-foreground/10" : undefined;
 
+  const descriptionLine = loading ? (
+    <div
+      data-slot="page-header-description"
+      aria-hidden
+      className={cn("cube-rn-view", BAR, "h-5 w-72")}
+    />
+  ) : (
+    <p data-slot="page-header-description" className="cube-rn-text text-foreground/60 text-sm">
+      {description}
+    </p>
+  );
+
   return (
     // `px-4` is the seam: the body of a `width="page"` chassis carries the same, and nothing else
     // in this tree adds to it, so the title sits above the body's first column.
@@ -353,22 +365,7 @@ export function PageHeader({
             )}
           </div>
 
-          {description ? (
-            loading ? (
-              <div
-                data-slot="page-header-description"
-                aria-hidden
-                className={cn("cube-rn-view", BAR, "h-5 w-72")}
-              />
-            ) : (
-              <p
-                data-slot="page-header-description"
-                className="cube-rn-text text-foreground/60 text-sm"
-              >
-                {description}
-              </p>
-            )
-          ) : null}
+          {description ? descriptionLine : null}
         </div>
 
         {actionSlot ? (

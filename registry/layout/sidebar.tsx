@@ -293,9 +293,12 @@ export function SidebarSection({
   const rows = React.Children.toArray(contentSlot);
   const sectionClassName = cn("min-w-0 gap-1", className);
 
+  // Folded, the action is gone, so only a title is worth a heading row.
+  const headed = Boolean(collapsed ? title : title || actionSlot);
+
   const body = (
     <>
-      {(collapsed ? title : title || actionSlot) ? (
+      {headed ? (
         <View
           testID="sidebar-section-heading"
           // Folded, the whole row is clipped: the title is still what names the list.
@@ -351,11 +354,12 @@ export function SidebarSection({
   // Two roots written out rather than one with a chosen role: the compiler picks the tag from the
   // role, and a role it cannot read is one it refuses.
   if (as === "nav") {
+    const titled = title ? { "aria-labelledby": titleId } : {};
     return (
       <View
         role="navigation"
         testID="sidebar-section"
-        {...(label ? { "aria-label": label } : title ? { "aria-labelledby": titleId } : {})}
+        {...(label ? { "aria-label": label } : titled)}
         className={sectionClassName}
       >
         {body}

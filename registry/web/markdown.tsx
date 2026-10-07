@@ -305,7 +305,8 @@ function fromBase(basePath: string, url: string): string | undefined {
   const path = cut < 0 ? url : url.slice(0, cut);
   const rooted = basePath.startsWith("/");
   const floor = rooted ? 1 : 0;
-  const parts = path.startsWith("/") ? (rooted ? [""] : []) : basePath.split("/").slice(0, -1);
+  const fromRoot = rooted ? [""] : [];
+  const parts = path.startsWith("/") ? fromRoot : basePath.split("/").slice(0, -1);
   for (const part of path.split("/")) {
     if (part === "" || part === ".") {
       continue;
@@ -468,6 +469,7 @@ function ImagePlaceholder({
   reason?: string | undefined;
 }) {
   const Icon = missing ? ImageOff : ImageIcon;
+  const missingText = label ? `Missing image: ${label}` : "Missing image";
   return (
     <span
       data-slot={missing ? "markdown-missing-image" : "markdown-pending-image"}
@@ -479,7 +481,7 @@ function ImagePlaceholder({
       )}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-      {missing ? (label ? `Missing image: ${label}` : "Missing image") : label || "Image"}
+      {missing ? missingText : label || "Image"}
     </span>
   );
 }

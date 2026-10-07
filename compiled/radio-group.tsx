@@ -199,11 +199,14 @@ function RadioGroup({
     const order = enabled();
     const at = order.indexOf(from);
     const last = order.length - 1;
+    // Where a step past either end lands: round to the other end, or nowhere.
+    const pastLast = loop ? 0 : at;
+    const pastFirst = loop ? last : at;
     let to: number;
     if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-      to = at < last ? at + 1 : loop ? 0 : at;
+      to = at < last ? at + 1 : pastLast;
     } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-      to = at > 0 ? at - 1 : loop ? last : at;
+      to = at > 0 ? at - 1 : pastFirst;
     } else if (event.key === "Home") {
       to = 0;
     } else if (event.key === "End") {
@@ -226,6 +229,7 @@ function RadioGroup({
   const tabStop = value !== undefined && order.includes(value) ? value : order[0];
   const horizontal =
     (orientation ?? (variant === "card" ? "horizontal" : "vertical")) === "horizontal";
+  const stacked = horizontal ? "flex-row flex-wrap gap-3" : "gap-3";
   const layout =
     variant === "segmented"
       ? cn(
@@ -235,9 +239,7 @@ function RadioGroup({
           "h-10 self-stretch flex-row gap-1 rounded-md border bg-background p-1",
           ariaInvalid === true ? "border-negative" : "border-foreground/15",
         )
-      : horizontal
-        ? "flex-row flex-wrap gap-3"
-        : "gap-3";
+      : stacked;
 
   return (
     <RadioGroupContext.Provider
@@ -355,6 +357,97 @@ function RadioGroupItem({
     </div>
   );
 
+  // The item's box, one shape per variant.
+  const look = () => {
+    if (bare) {
+      return "rounded-full focus-visible:bg-hover";
+    }
+    if (segmented) {
+      return cn(
+        "min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
+        checked
+          ? "bg-active text-active-foreground focus-visible:bg-active/90"
+          : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
+      );
+    }
+    if (card) {
+      return cn(
+        "min-w-0 flex-1 items-center gap-1.5 rounded-lg border p-3",
+        // The border alone says checked: a tinted fill takes the muted description under 4.5:1.
+        checked ? "border-active bg-background" : "border-foreground/15 bg-background",
+        "focus-visible:bg-hover",
+        group.invalid && "border-negative",
+      );
+    }
+    return "flex-row items-start gap-3 rounded-sm focus-visible:bg-hover";
+  };
+
+  // What the box holds, in the same order.
+  const content = () => {
+    if (bare) {
+      return circle;
+    }
+    if (segmented) {
+      return (
+        <>
+          {iconSlot ? (
+            <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
+          ) : null}
+          {label !== undefined ? (
+            <span
+              id={labelId}
+              className={cn(
+                "cube-rn-text",
+                "truncate text-sm font-medium",
+                checked ? "text-active-foreground" : "text-foreground/60",
+              )}
+            >
+              {label}
+            </span>
+          ) : null}
+        </>
+      );
+    }
+    if (card) {
+      return (
+        <>
+          {iconSlot ? (
+            <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
+          ) : null}
+          <span
+            id={labelId}
+            className="cube-rn-text text-center text-foreground text-sm font-medium"
+          >
+            {label}
+          </span>
+          {description ? (
+            <span
+              id={descriptionId}
+              className="cube-rn-text text-center text-foreground/60 text-xs"
+            >
+              {description}
+            </span>
+          ) : null}
+        </>
+      );
+    }
+    return (
+      <>
+        <div className="cube-rn-view mt-0.5">{circle}</div>
+        <div className="cube-rn-view min-w-0 flex-1 gap-1">
+          <span id={labelId} className="cube-rn-text text-foreground text-sm">
+            {label}
+          </span>
+          {description ? (
+            <span id={descriptionId} className="cube-rn-text text-foreground/60 text-sm">
+              {description}
+            </span>
+          ) : null}
+        </div>
+      </>
+    );
+  };
+
   return (
     <button
       type="button"
@@ -375,83 +468,12 @@ function RadioGroupItem({
       className={cn(
         "cube-rn-view cube-rn-pressable",
         "focus-visible:outline-none",
-        bare
-          ? "rounded-full focus-visible:bg-hover"
-          : segmented
-            ? cn(
-                "min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
-                checked
-                  ? "bg-active text-active-foreground focus-visible:bg-active/90"
-                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
-              )
-            : card
-              ? cn(
-                  "min-w-0 flex-1 items-center gap-1.5 rounded-lg border p-3",
-                  // The border alone says checked: a tinted fill takes the muted description under 4.5:1.
-                  checked ? "border-active bg-background" : "border-foreground/15 bg-background",
-                  "focus-visible:bg-hover",
-                  group.invalid && "border-negative",
-                )
-              : "flex-row items-start gap-3 rounded-sm focus-visible:bg-hover",
+        look(),
         disabled && "opacity-50",
         className,
       )}
     >
-      {bare ? (
-        circle
-      ) : segmented ? (
-        <>
-          {iconSlot ? (
-            <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
-          ) : null}
-          {label !== undefined ? (
-            <span
-              id={labelId}
-              className={cn(
-                "cube-rn-text",
-                "truncate text-sm font-medium",
-                checked ? "text-active-foreground" : "text-foreground/60",
-              )}
-            >
-              {label}
-            </span>
-          ) : null}
-        </>
-      ) : card ? (
-        <>
-          {iconSlot ? (
-            <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
-          ) : null}
-          <span
-            id={labelId}
-            className="cube-rn-text text-center text-foreground text-sm font-medium"
-          >
-            {label}
-          </span>
-          {description ? (
-            <span
-              id={descriptionId}
-              className="cube-rn-text text-center text-foreground/60 text-xs"
-            >
-              {description}
-            </span>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <div className="cube-rn-view mt-0.5">{circle}</div>
-          <div className="cube-rn-view min-w-0 flex-1 gap-1">
-            <span id={labelId} className="cube-rn-text text-foreground text-sm">
-              {label}
-            </span>
-            {description ? (
-              <span id={descriptionId} className="cube-rn-text text-foreground/60 text-sm">
-                {description}
-              </span>
-            ) : null}
-          </div>
-        </>
-      )}
+      {content()}
     </button>
   );
 }

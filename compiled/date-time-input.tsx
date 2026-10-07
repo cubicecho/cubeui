@@ -163,6 +163,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
     setOpen(false);
   }
 
+  const ownTimeLabel = ariaLabel ? `${ariaLabel}, time` : "Time";
+
   return (
     <div className={cn("cube-rn-view", "flex-row items-center gap-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
@@ -232,7 +234,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           // box itself, whose own `aria-label` is what that second reference reads — so there is
           // no hidden text node to render. With no name given, it is "Time", as it always was.
           id={ariaLabelledBy ? timeId : undefined}
-          aria-label={ariaLabelledBy ? "time" : ariaLabel ? `${ariaLabel}, time` : "Time"}
+          aria-label={ariaLabelledBy ? "time" : ownTimeLabel}
           aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${timeId}` : undefined}
           value={value ? format(value, "HH:mm") : ""}
           onChangeText={handleTimeChange}

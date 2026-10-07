@@ -36,7 +36,7 @@ with them.
 | R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | open |
 | R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | open |
-| R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | open |
+| R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | open |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
 | D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | open |
@@ -123,6 +123,11 @@ in 28 files were counted and not filed.
 **File:** `card-layout.tsx:159`, `radio-group-field.tsx:155`, `sidebar.tsx:298,358`,
 `alert.tsx:178`, `command.tsx:279`, `date-time-input.tsx:227`, `menu.web.tsx:155`,
 `radio-group.tsx:195,197`, `web/form-field.tsx:350`, `web/markdown.tsx:137`.
+
+**Done:** the count above came from a text search and was low. A syntax-tree scan for a
+ternary sitting directly in another's test or branch found 28 in 20 files, and all 28 are
+rewritten: the inner choice gets a name, or a chain of three or more arms becomes a function
+with early returns. `radio-group-field.tsx:155` and `web/markdown.tsx:137` were false hits.
 
 ### R10 [simplify] — Split module: `scripts/rn2web/compile.mjs`
 
