@@ -78,7 +78,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(open) => {
-          if (!open) {
+          if (open === false) {
             settle(false);
           }
         }}

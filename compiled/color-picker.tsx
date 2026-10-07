@@ -202,7 +202,7 @@ export function ColorPicker({
   if (seen !== current) {
     setSeen(current);
     const typed = normalizeHex(draft);
-    if (typed !== current && !sameColor(typed, current)) {
+    if (typed !== current && sameColor(typed, current) === false) {
       setDraft(current);
     }
   }

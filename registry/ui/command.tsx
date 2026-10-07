@@ -266,7 +266,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
   const id = useId();
   const shownIn = () => store.shownIn(id);
   const shown = useSyncExternalStore(store.subscribe, shownIn, shownIn);
-  const hidden = !forceMount && shown === 0;
+  const hidden = forceMount === false && shown === 0;
   return (
     <CommandGroupContext.Provider value={id}>
       {/* Hidden rather than unmounted: the items inside have to stay mounted to say whether they
@@ -289,7 +289,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
 
 function CommandSeparator({ alwaysRender = false, className }: CommandSeparatorProps) {
   const { search } = useContext(CommandContext);
-  if (search !== "" && !alwaysRender) {
+  if (search !== "" && alwaysRender === false) {
     return null;
   }
   return <View aria-hidden className={cn("-mx-1 h-px bg-foreground/10", className)} />;
@@ -321,7 +321,7 @@ function CommandItem({
   }, [store, id, matches, shown, group]);
   useLayoutEffect(() => () => store.remove(id), [store, id]);
 
-  if (!shown) {
+  if (shown === false) {
     return null;
   }
   return (

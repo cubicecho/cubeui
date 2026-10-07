@@ -411,7 +411,7 @@ export function MultiSelect({
                         default: "max-w-40",
                       })}
                       // Device only: on the web this would be a button inside the trigger's button.
-                      {...(Platform.OS !== "web" && !disabled
+                      {...(Platform.OS !== "web" && disabled !== true
                         ? { onRemove: () => toggle(option.value) }
                         : {})}
                     >

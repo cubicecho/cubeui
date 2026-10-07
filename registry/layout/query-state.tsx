@@ -176,7 +176,7 @@ export function QueryError({
   const [retrying, setRetrying] = useState(false);
   const retry = () => {
     const result = onRetry();
-    if (!settles(result)) {
+    if (settles(result) === false) {
       return;
     }
     setRetrying(true);

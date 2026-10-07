@@ -82,14 +82,14 @@ function TooltipContent({ side = "top", className, children }: TooltipContentPro
   const { open, setOpen } = useContext(TooltipContext);
 
   useEffect(() => {
-    if (!open) {
+    if (open === false) {
       return;
     }
     const timer = setTimeout(() => setOpen(false), VISIBLE_MS);
     return () => clearTimeout(timer);
   }, [open, setOpen]);
 
-  if (!open) {
+  if (open === false) {
     return null;
   }
   return (

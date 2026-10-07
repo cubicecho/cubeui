@@ -92,7 +92,7 @@ export function useUnsavedChangesGuard({
     const target = globalThis as unknown as UnloadTarget;
     const ask = (event: UnloadEvent) => {
       const dirty = typeof isDirty.current === "function" ? isDirty.current() : isDirty.current;
-      if (!dirty) {
+      if (dirty === false) {
         return;
       }
       event.preventDefault();
@@ -168,7 +168,7 @@ export function UnsavedChangesDialog({
     <ConfirmDialog
       open={guard.asking}
       onOpenChange={(open) => {
-        if (!open) {
+        if (open === false) {
           guard.stay();
         }
       }}

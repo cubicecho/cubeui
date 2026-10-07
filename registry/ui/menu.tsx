@@ -94,7 +94,7 @@ function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) 
     // On the close edge only, however it closed: a row, the backdrop or the back button. A
     // `focusesElsewhere` row has already moved focus to where it belongs, so leave it there.
     if (wasOpen.current && isOpen === false) {
-      if (!skipReturnRef.current) {
+      if (skipReturnRef.current === false) {
         returnFocus(triggerRef.current);
       }
       skipReturnRef.current = false;
@@ -202,7 +202,7 @@ function MenuItem({
   // `href` alone is only the web's: there is no URL to open on device, and the app's router is
   // what navigates. Its link takes the row the way it takes a `Button` — `asChild`, which hands
   // the row its press handler beside the row's own `onSelect`. A disabled row is not handed over.
-  return linkSlot && !disabled
+  return linkSlot && disabled === false
     ? cloneElement(linkSlot as ReactElement<{ asChild?: boolean }>, { asChild: true }, row)
     : row;
 }

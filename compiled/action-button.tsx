@@ -195,7 +195,7 @@ export function ActionButton({
 
   // `tooltip={false}` drops the tooltip, not the explanation: the hint is still the reason the
   // control is the way it is, and it is still the only place a screen reader can get it.
-  if (!tooltip) {
+  if (tooltip === false) {
     return (
       <>
         {button}
