@@ -203,13 +203,21 @@ export function CardLayout({
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? <CardContent className={cn("min-w-0", contentClassName)}>{body}</CardContent> : null}
+      {body ? (
+        // `CardContent` is `pt-0` because a header above it brings the top padding. With no
+        // header the body is the first thing in the card and sat on its top edge.
+        <CardContent className={cn("min-w-0", !hasHeader && "pt-6", contentClassName)}>
+          {body}
+        </CardContent>
+      ) : null}
 
       {hasFooter ? (
         <CardFooter
           className={cn(
             footerSlot && footerActionsSlot && "justify-between",
             !footerSlot && "justify-end",
+            // The same, for a footer with neither a header nor a body over it.
+            !hasHeader && !body && "pt-6",
             footerClassName,
           )}
         >

@@ -597,6 +597,9 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
 `contentSlot` and leaves `loading` off.
 
+A card with no `title`, `description` or `actionSlot` draws no header, and its body starts 24px
+down from the card's top edge like its other three sides. Do not add `contentClassName="pt-6"`.
+
 `level` is which heading the title is, `1 | 2 | 3`, and it defaults to 3 — right for a card on a
 page that already has a title. When the card **is** the page — a sign-in, a token gate, a lone
 settings panel with nothing above it — pass `level={1}`, so the page's only heading is its `<h1>`.

@@ -296,3 +296,62 @@ export const SmallActionStaysInCorner: Story = {
     }
   },
 };
+
+function HeaderlessCards({ half }: { half: "native" | "compiled" }) {
+  const Card = half === "native" ? Native : Compiled;
+  const Button = half === "native" ? NativeButton : CompiledButton;
+  return (
+    <div className="grid gap-4">
+      <div data-testid={`${half}-body`}>
+        <Card
+          contentSlot={
+            <div
+              data-testid={`${half}-body-content`}
+              className="h-10 border border-foreground/15"
+            />
+          }
+        />
+      </div>
+      <div data-testid={`${half}-footer`}>
+        <Card footerActionsSlot={<Button content="Save" />} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * #268: a card with no header. `CardContent` and `CardFooter` are `pt-0` because the header above
+ * them brings the top padding, so with no header the first part of the card sat on its top edge.
+ * It is 24px in on every side now, as it is at the start, the end and the bottom.
+ */
+export const Headerless: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={<HeaderlessCards half="native" />}
+      compiled={<HeaderlessCards half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["native", "compiled"] as const) {
+      const targets = {
+        body: canvas.getByTestId(`${half}-body-content`),
+        footer: within(canvas.getByTestId(`${half}-footer`)).getByRole("button", { name: "Save" }),
+      };
+      for (const [form, target] of Object.entries(targets)) {
+        const card = canvas.getByTestId(`${half}-${form}`).firstElementChild;
+        if (!card) throw new Error(`the ${half} card should render`);
+        const box = card.getBoundingClientRect();
+        const inner = target.getBoundingClientRect();
+        // The card's 1px border, then `p-6`.
+        await expect({
+          half,
+          form,
+          fromTop: Math.round(inner.top - box.top),
+          fromBottom: Math.round(box.bottom - inner.bottom),
+        }).toEqual({ half, form, fromTop: 25, fromBottom: 25 });
+      }
+    }
+  },
+};
