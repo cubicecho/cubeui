@@ -203,6 +203,20 @@ test("an expression aria-level on a heading keeps the role and the level", () =>
   );
 });
 
+// Issue #286: the rule reads DOM elements, so the comment is unused on the `Text` and needed on
+// the `span`.
+test("a web-only lint suppression is switched on in the output", () => {
+  const code = ok(
+    "export const A = ({ level }: { level: 1 | 2 | 3 }) => (\n" +
+      "  // web: biome-ignore lint/a11y/useSemanticElements: no heading element on a device\n" +
+      '  <Text role="heading" aria-level={level}>a</Text>\n' +
+      ");",
+    "Text",
+  );
+  assert.match(code, /^ {2}\/\/ biome-ignore lint\/a11y\/useSemanticElements: no heading/m);
+  assert.doesNotMatch(code, /web: biome-ignore/);
+});
+
 test("a heading with no aria-level is still refused", () => {
   const { code, diagnostics } = compile(
     'export const A = () => <Text role="heading">a</Text>;',

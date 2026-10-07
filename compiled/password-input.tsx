@@ -84,7 +84,7 @@ export function PasswordInput({
             size="icon-xs"
             aria-label={visible ? hideLabel : showLabel}
             disabled={disabled}
-            onClick={() => setShown((was) => !was)}
+            onClick={() => setShown((was) => was === false)}
             content={visible ? <EyeOff /> : <Eye />}
           />
         ) : undefined

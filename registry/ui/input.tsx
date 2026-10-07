@@ -84,7 +84,9 @@ function Input({
       onSubmitEditing={onSubmitEditing}
       onKeyPress={(event: InputKeyPressEvent) => {
         onKeyPress?.(event);
-        if (event.nativeEvent.key === "Escape") onEscape?.();
+        if (event.nativeEvent.key === "Escape") {
+          onEscape?.();
+        }
       }}
       placeholder={placeholder}
       autoCapitalize={autoCapitalize}
@@ -119,7 +121,9 @@ function Input({
     />
   );
 
-  if (leadingSlot == null && trailingSlot == null) return field;
+  if (leadingSlot == null && trailingSlot == null) {
+    return field;
+  }
 
   return (
     <View className={cn(INPUT_WRAPPER_CLASS, wrapperClassName)}>

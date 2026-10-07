@@ -79,7 +79,9 @@ function Textarea({
   const grows = maxRows !== undefined;
   const minRows = rows ?? 1;
   const refit = () => {
-    if (grows && inner.current) fitRows(inner.current, minRows, maxRows);
+    if (grows && inner.current) {
+      fitRows(inner.current, minRows, maxRows);
+    }
   };
   // After every render and not only a changed `value`: the text can also arrive as a new
   // `defaultValue`, and the box can change width under it.
@@ -91,17 +93,25 @@ function Textarea({
   const end = selection?.end;
   useLayoutEffect(() => {
     const box = inner.current;
-    if (!box || start === undefined || end === undefined) return;
-    if (box.selectionStart !== start || box.selectionEnd !== end) box.setSelectionRange(start, end);
+    if (!box || start === undefined || end === undefined) {
+      return;
+    }
+    if (box.selectionStart !== start || box.selectionEnd !== end) {
+      box.setSelectionRange(start, end);
+    }
   });
 
   // Told once per change. React's `select` covers the keys and the pointer but arrives a keyup
   // after the text, and a menu reading both would see the new text with the old caret between.
   const reported = useRef<TextareaSelection | null>(null);
   const report = (box: HTMLTextAreaElement) => {
-    if (!onSelectionChange) return;
+    if (!onSelectionChange) {
+      return;
+    }
     const next = { start: box.selectionStart, end: box.selectionEnd };
-    if (reported.current?.start === next.start && reported.current.end === next.end) return;
+    if (reported.current?.start === next.start && reported.current.end === next.end) {
+      return;
+    }
     reported.current = next;
     onSelectionChange(next);
   };
@@ -113,8 +123,12 @@ function Textarea({
       ref={(element) => {
         inner.current = element;
         const outer = ref as Ref<HTMLTextAreaElement> | undefined;
-        if (typeof outer === "function") return outer(element);
-        if (outer) outer.current = element;
+        if (typeof outer === "function") {
+          return outer(element);
+        }
+        if (outer) {
+          outer.current = element;
+        }
       }}
       data-slot="textarea"
       rows={grows ? minRows : rows}
@@ -133,7 +147,9 @@ function Textarea({
         onKeyDown?.(e);
         // `keydown`, not the DOM's `keypress`, which never fires for Escape. As `Input` does.
         onKeyPress?.(e);
-        if (e.defaultPrevented) return;
+        if (e.defaultPrevented) {
+          return;
+        }
         if (onSubmitEditing && isSubmitKey(e.nativeEvent)) {
           // Held back, or the Enter that sent the message would also add a line to the next.
           e.preventDefault();

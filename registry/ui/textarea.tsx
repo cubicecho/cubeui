@@ -56,7 +56,9 @@ function Textarea({
   // A device's multiline input grows with its text by itself, and only needs the two ends. Under
   // react-native-web the input is a `<textarea>`, which does not, so it is measured.
   const refit = () => {
-    if (!grows || Platform.OS !== "web" || !inner.current) return;
+    if (!grows || Platform.OS !== "web" || !inner.current) {
+      return;
+    }
     fitRows(inner.current as unknown as GrowingBox, minRows, maxRows);
   };
   // After every render and not only a changed `value`: the text can also arrive as a new
@@ -84,7 +86,9 @@ function Textarea({
       {...(autoFocus !== undefined ? { autoFocus } : {})}
       onKeyPress={(event) => {
         onKeyPress?.(event);
-        if (event.nativeEvent.key === "Escape") onEscape?.();
+        if (event.nativeEvent.key === "Escape") {
+          onEscape?.();
+        }
         // Only where the key reports its Shift. A device's return key does not, and taking it
         // would leave a message with no way to hold a second line.
         if (Platform.OS === "web" && onSubmitEditing && isSubmitKey(event.nativeEvent)) {

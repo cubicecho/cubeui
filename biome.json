@@ -28,6 +28,37 @@
   },
   "overrides": [
     {
+      "includes": ["registry/**", "compiled/**"],
+      "plugins": ["./no-negation.grit"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "error",
+            "noUnusedImports": "error",
+            "noUnusedVariables": "error",
+            "noUnusedFunctionParameters": "error"
+          },
+          "style": {
+            "useImportType": "error",
+            "useBlockStatements": "error",
+            "noMagicNumbers": "error",
+            "noCommonJs": "error",
+            "noEnum": "error",
+            "noNamespace": "error",
+            "noParameterProperties": "error",
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": { "filenameCases": ["kebab-case"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": { "rules": { "style": { "noMagicNumbers": "off" } } }
+    },
+    {
       "includes": [
         "compiled/color-picker.tsx",
         "compiled/field.tsx",

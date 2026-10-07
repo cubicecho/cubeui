@@ -11,6 +11,7 @@
 export type Moment = string | number | Date;
 
 const BYTE_UNITS = ["B", "KB", "MB", "GB"] as const;
+const BYTE_STEP = 1024;
 
 /**
  * A size in bytes as `512 B`, `1.5 KB`, `3.0 MB`, `2.1 GB`.
@@ -21,8 +22,8 @@ const BYTE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export function formatBytes(bytes: number): string {
   let value = bytes;
   let unit = 0;
-  while (value >= 1024 && unit < BYTE_UNITS.length - 1) {
-    value /= 1024;
+  while (value >= BYTE_STEP && unit < BYTE_UNITS.length - 1) {
+    value /= BYTE_STEP;
     unit += 1;
   }
   return `${unit === 0 ? value : value.toFixed(1)} ${BYTE_UNITS[unit]}`;
@@ -58,11 +59,17 @@ export function joinStats(...parts: (string | false | null | undefined)[]): stri
  * `3h` could be anything up to an hour out.
  */
 export function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${Math.floor(seconds)}s`;
+  if (seconds < 60) {
+    return `${Math.floor(seconds)}s`;
+  }
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  if (hours < 24) {
+    return `${hours}h ${minutes % 60}m`;
+  }
   return `${Math.floor(hours / 24)}d ${hours % 24}h`;
 }
 
@@ -78,7 +85,9 @@ function milliseconds(moment: Moment): number | undefined {
  */
 export function formatDate(moment: Moment): string {
   const time = milliseconds(moment);
-  if (time === undefined) return "";
+  if (time === undefined) {
+    return "";
+  }
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(time);
 }
 
@@ -89,23 +98,34 @@ export function formatDate(moment: Moment): string {
  */
 export function formatDateTime(moment: Moment): string {
   const time = milliseconds(moment);
-  if (time === undefined) return "";
+  if (time === undefined) {
+    return "";
+  }
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(
     time,
   );
 }
+
+const MS_PER_SECOND = 1000;
+/** Lengths in seconds. A month is thirty days and a year 365: this is for "3 mo ago", not dates. */
+const MINUTE = 60;
+const HOUR = 3600;
+const DAY = 86_400;
+const WEEK = 604_800;
+const MONTH = 2_592_000;
+const YEAR = 31_536_000;
 
 /**
  * The units `formatAgo` counts in, largest first, each with its length in seconds and the letters
  * the narrow English fallback writes it with.
  */
 const AGO_STEPS = [
-  ["year", 365 * 24 * 3600, "y"],
-  ["month", 30 * 24 * 3600, "mo"],
-  ["week", 7 * 24 * 3600, "w"],
-  ["day", 24 * 3600, "d"],
-  ["hour", 3600, "h"],
-  ["minute", 60, "m"],
+  ["year", YEAR, "y"],
+  ["month", MONTH, "mo"],
+  ["week", WEEK, "w"],
+  ["day", DAY, "d"],
+  ["hour", HOUR, "h"],
+  ["minute", MINUTE, "m"],
 ] as const;
 
 export type FormatAgoOptions = {
@@ -131,11 +151,15 @@ export function formatAgo(
 ): string {
   const then = milliseconds(moment);
   const from = milliseconds(now);
-  if (then === undefined || from === undefined) return "";
+  if (then === undefined || from === undefined) {
+    return "";
+  }
 
-  const seconds = Math.round((then - from) / 1000);
+  const seconds = Math.round((then - from) / MS_PER_SECOND);
   for (const [unit, size, letters] of AGO_STEPS) {
-    if (Math.abs(seconds) < size) continue;
+    if (Math.abs(seconds) < size) {
+      continue;
+    }
     const amount = Math.round(seconds / size);
     // Hermes ships `Intl` without `RelativeTimeFormat` on some devices, and a missing
     // constructor would take the screen down with it. English is the fallback there.

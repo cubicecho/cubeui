@@ -126,9 +126,15 @@ const ALERT_DESCRIPTION_INK = {
  * blue and nothing else, so the same alert can say "new" or "tip" without an ⓘ arguing with it.
  */
 function defaultIcon(variant: AlertVariant): ReactNode {
-  if (variant === "info") return null;
-  if (variant === "destructive") return <CircleAlert />;
-  if (variant === "warning") return <TriangleAlert />;
+  if (variant === "info") {
+    return null;
+  }
+  if (variant === "destructive") {
+    return <CircleAlert />;
+  }
+  if (variant === "warning") {
+    return <TriangleAlert />;
+  }
   return <Info />;
 }
 
@@ -180,7 +186,7 @@ export function Alert({
     ),
   );
   const textParts = parts.filter(isTextPart);
-  const iconParts = parts.filter((child) => !isTextPart(child));
+  const iconParts = parts.filter((child) => isTextPart(child) === false);
   const glyph = iconSlot !== undefined ? iconSlot : parts.length > 0 ? null : defaultIcon(variant);
   const ink = ALERT_ICON_INK[variant];
 

@@ -81,11 +81,15 @@ function paletteSnapshot() {
 function apply() {
   const scheme = DARK_ONLY_PALETTES.includes(currentPalette) ? "dark" : current;
   Appearance.setColorScheme(scheme === "system" ? FOLLOW_SYSTEM : scheme);
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function persist(key: string, value: string) {
-  if (!storage) return;
+  if (!storage) {
+    return;
+  }
   Promise.resolve(storage.setItem(key, value)).catch(() => {
     // Not persisted, but still applied: the app should not ignore the tap.
   });
@@ -109,7 +113,9 @@ function setPalette(next: PalettePreference) {
 /** Read both stored choices once, the first time a hook is handed somewhere to read them from. */
 function load(adapter: ThemeStorage) {
   storage = adapter;
-  if (loading) return;
+  if (loading) {
+    return;
+  }
   loading = true;
   Promise.resolve(migration)
     .then(() =>
@@ -127,7 +133,9 @@ function load(adapter: ThemeStorage) {
         changed = true;
       }
       settled.theme = settled.palette = true;
-      if (changed) apply();
+      if (changed) {
+        apply();
+      }
     })
     .catch(() => {
       // Nothing readable is the same as nothing stored: follow the system, in the default palette.
@@ -148,13 +156,19 @@ export function migrateThemePreference(
   options: ThemePreferenceOptions = {},
 ): Promise<void> {
   const adapter = options.storage ?? storage;
-  if (!adapter) return Promise.resolve();
+  if (!adapter) {
+    return Promise.resolve();
+  }
   const run = async () => {
     for (const { key, from, values } of legacyMigrations(legacyKeys)) {
-      if ((await adapter.getItem(key)) != null) continue;
+      if ((await adapter.getItem(key)) != null) {
+        continue;
+      }
       for (const old of from) {
         const value = await adapter.getItem(old);
-        if (value == null || !values.includes(value)) continue;
+        if (value == null || values.includes(value) === false) {
+          continue;
+        }
         await adapter.setItem(key, value);
         await adapter.removeItem?.(old);
         break;
@@ -175,7 +189,9 @@ export function useThemePreference(options: ThemePreferenceOptions = {}): ThemeP
   const preference = useSyncExternalStore(subscribe, snapshot, snapshot);
 
   useEffect(() => {
-    if (adapter) load(adapter);
+    if (adapter) {
+      load(adapter);
+    }
   }, [adapter]);
 
   return [preference, setPreference] as const;
@@ -190,7 +206,9 @@ export function usePalettePreference(options: ThemePreferenceOptions = {}): Pale
   const palette = useSyncExternalStore(subscribe, paletteSnapshot, paletteSnapshot);
 
   useEffect(() => {
-    if (adapter) load(adapter);
+    if (adapter) {
+      load(adapter);
+    }
   }, [adapter]);
 
   return [palette, setPalette] as const;

@@ -73,8 +73,12 @@ export function splitProps<T>(props: FieldProps & T): [FieldProps, T] {
 }
 
 function messageOf(error: unknown): string | undefined {
-  if (error == null) return undefined;
-  if (typeof error === "string") return error;
+  if (error == null) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
@@ -96,7 +100,9 @@ export function useFieldError(): string | undefined {
   const isTouched = useStore(field.store, (state) => state.meta.isTouched);
   const attempts = useStore(field.form.store, (state) => state.submissionAttempts);
 
-  if (!isTouched && attempts === 0) return undefined;
+  if (isTouched === false && attempts === 0) {
+    return undefined;
+  }
   return messageOf(errors[0]);
 }
 
@@ -137,7 +143,9 @@ function BoundInputField(props: InputFieldProps) {
  */
 function parseNumber(text: string): number | null {
   const trimmed = text.trim();
-  if (trimmed === "") return null;
+  if (trimmed === "") {
+    return null;
+  }
   const parsed = Number(trimmed);
   return Number.isNaN(parsed) ? null : parsed;
 }
@@ -413,9 +421,11 @@ export function SubmitButton({
       onClick={(event) => {
         onClick?.(event);
         // `button.form` is the form that owns it, by ancestry or by the `form` attribute.
-        if (!event.defaultPrevented && !event.currentTarget.form) form.handleSubmit();
+        if (!event.defaultPrevented && !event.currentTarget.form) {
+          form.handleSubmit();
+        }
       }}
-      disabled={disabled || !canSubmit}
+      disabled={disabled || canSubmit === false}
       loading={isSubmitting}
       loadingLabel={pendingLabel}
       content={content}

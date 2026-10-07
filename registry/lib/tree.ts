@@ -32,23 +32,34 @@ export function buildTree<T extends TreeEntry>(entries: readonly T[]): TreeNode<
     const found = byPath.get(path);
     if (found) {
       // A folder made for a child that came first takes its own entry when it arrives.
-      if (entry) found.entry = entry;
+      if (entry) {
+        found.entry = entry;
+      }
       return found;
     }
     const slash = path.lastIndexOf("/");
     const node: TreeNode<T> = { name: path.slice(slash + 1), path, type, children: [] };
-    if (entry) node.entry = entry;
+    if (entry) {
+      node.entry = entry;
+    }
     byPath.set(path, node);
-    if (slash === -1) roots.push(node);
-    else ensure(path.slice(0, slash), "dir").children.push(node);
+    if (slash === -1) {
+      roots.push(node);
+    } else {
+      ensure(path.slice(0, slash), "dir").children.push(node);
+    }
     return node;
   };
-  for (const entry of entries) ensure(entry.path, entry.type, entry);
+  for (const entry of entries) {
+    ensure(entry.path, entry.type, entry);
+  }
   const sort = (nodes: TreeNode<T>[]): void => {
     nodes.sort((a, b) =>
       a.type !== b.type ? (a.type === "dir" ? -1 : 1) : a.name.localeCompare(b.name),
     );
-    for (const node of nodes) sort(node.children);
+    for (const node of nodes) {
+      sort(node.children);
+    }
   };
   sort(roots);
   return roots;
@@ -74,6 +85,8 @@ export function parentPath(path: string): string {
  * @returns `false` for a move that would change nothing or cannot be made.
  */
 export function isValidMove(from: string, into: string): boolean {
-  if (into === from || into.startsWith(`${from}/`)) return false;
+  if (into === from || into.startsWith(`${from}/`)) {
+    return false;
+  }
   return parentPath(from) !== into;
 }

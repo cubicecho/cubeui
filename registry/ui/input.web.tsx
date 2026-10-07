@@ -122,7 +122,9 @@ function Input({
         // `keydown`, not the DOM's `keypress`: that one is deprecated and never fires for Escape,
         // the key `onKeyPress` is most often passed to hear. react-native-web makes the same swap.
         onKeyPress?.(e);
-        if (e.defaultPrevented) return;
+        if (e.defaultPrevented) {
+          return;
+        }
         if (e.key === "Enter" && onSubmitEditing) {
           e.preventDefault();
           onSubmitEditing();
@@ -144,7 +146,9 @@ function Input({
     />
   );
 
-  if (leadingSlot == null && trailingSlot == null) return field;
+  if (leadingSlot == null && trailingSlot == null) {
+    return field;
+  }
 
   return (
     <div data-slot="input-wrapper" className={cn(INPUT_WRAPPER_CLASS, wrapperClassName)}>

@@ -72,14 +72,18 @@ const RadioGroupContext = React.createContext<RadioGroupContextValue | null>(nul
 
 function useRadioGroup() {
   const context = React.useContext(RadioGroupContext);
-  if (!context) throw new Error("RadioGroupItem must be used within <RadioGroup>");
+  if (!context) {
+    throw new Error("RadioGroupItem must be used within <RadioGroup>");
+  }
   return context;
 }
 
 /** DOM order, where there is a DOM. On device there is no keyboard to need it. */
 function byDocumentPosition(a: Focusable | null, b: Focusable | null) {
   const node = a as unknown as { compareDocumentPosition?: (other: unknown) => number } | null;
-  if (!node?.compareDocumentPosition || !b) return 0;
+  if (!node?.compareDocumentPosition || !b) {
+    return 0;
+  }
   // `Node.DOCUMENT_POSITION_FOLLOWING`, spelled out: `Node` is not a global on device.
   return node.compareDocumentPosition(b) & 4 ? -1 : 1;
 }
@@ -147,7 +151,9 @@ function RadioGroup({
     (option: string, ref: React.RefObject<Focusable | null>, optionDisabled: boolean) => {
       refs.current.set(option, ref);
       setOptions((prev) => {
-        if (prev.get(option) === optionDisabled) return prev;
+        if (prev.get(option) === optionDisabled) {
+          return prev;
+        }
         const next = new Map(prev);
         next.set(option, optionDisabled);
         return next;
@@ -158,7 +164,9 @@ function RadioGroup({
   const unregister = React.useCallback((option: string) => {
     refs.current.delete(option);
     setOptions((prev) => {
-      if (!prev.has(option)) return prev;
+      if (prev.has(option) === false) {
+        return prev;
+      }
       const next = new Map(prev);
       next.delete(option);
       return next;
@@ -179,8 +187,12 @@ function RadioGroup({
           );
 
   const select = (next: string) => {
-    if (valueProp === undefined) setUncontrolled(next);
-    if (next !== value) onValueChange?.(next);
+    if (valueProp === undefined) {
+      setUncontrolled(next);
+    }
+    if (next !== value) {
+      onValueChange?.(next);
+    }
   };
 
   const move = (from: string, event: KeyEvent) => {
@@ -203,7 +215,9 @@ function RadioGroup({
     // scroll the page.
     event.preventDefault();
     const target = order[to];
-    if (target === undefined || target === from) return;
+    if (target === undefined || target === from) {
+      return;
+    }
     refs.current.get(target)?.current?.focus();
     select(target);
   };

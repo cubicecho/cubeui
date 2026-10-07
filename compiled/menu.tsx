@@ -77,7 +77,9 @@ function Menu({
   const [uncontrolled, setUncontrolled] = useState(defaultOpen);
   const isOpen = open ?? uncontrolled;
   const setOpen = (next: boolean) => {
-    if (open === undefined) setUncontrolled(next);
+    if (open === undefined) {
+      setUncontrolled(next);
+    }
     onOpenChange?.(next);
   };
   const skipReturnRef = useRef(false);
@@ -119,7 +121,9 @@ function MenuContent({
           onCloseAutoFocus?.(event);
           // Radix focuses the trigger unless the event is prevented. A `focusesElsewhere` row
           // has already focused its target by now, and the trigger would take it back.
-          if (skipReturnRef.current) event.preventDefault();
+          if (skipReturnRef.current) {
+            event.preventDefault();
+          }
           skipReturnRef.current = false;
         }}
       />

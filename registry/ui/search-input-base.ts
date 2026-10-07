@@ -63,7 +63,9 @@ export function useSettledText(
   };
   const later = (text: string) => {
     clearTimeout(timer.current);
-    if (onSettledText === undefined) return;
+    if (onSettledText === undefined) {
+      return;
+    }
     timer.current = setTimeout(() => handler.current?.(text), debounce);
   };
   return { later, now };
@@ -88,7 +90,11 @@ export function searchInputName({
   ariaLabelledBy: string | undefined;
   id: string | undefined;
 }): string | undefined {
-  if (ariaLabel !== undefined) return ariaLabel;
-  if (label !== undefined) return label;
+  if (ariaLabel !== undefined) {
+    return ariaLabel;
+  }
+  if (label !== undefined) {
+    return label;
+  }
   return ariaLabelledBy || id ? undefined : SEARCH_LABEL;
 }

@@ -957,6 +957,16 @@ const HEADER = {
 };
 
 /**
+ * A lint suppression for what the file becomes, not what it is: `// web: biome-ignore lint/…`.
+ *
+ * `useSemanticElements` only reads DOM elements, so on `<Text role="heading">` it has nothing to
+ * say and a plain `biome-ignore` there is reported as unused — in this repo, and in every Expo app
+ * that vendors the source (#286). The `<span role="heading">` it compiles to is where the rule
+ * fires, so the comment is written inert in the source and switched on here.
+ */
+const WEB_ONLY_IGNORE = /^([ \t]*(?:\{\/\*\s*)?)\/\/ web: biome-ignore /gm;
+
+/**
  * Compiles one file. Returns `{ code, diagnostics }`; `code` is null when anything was refused,
  * because a partially-transformed file is the one output worse than none.
  */
@@ -995,7 +1005,8 @@ export function compileSource({
   rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics);
   if (diagnostics.length) return { code: null, diagnostics };
 
-  return { code: `${HEADER[origin](filePath)}\n${sourceFile.getFullText()}`, diagnostics };
+  const code = sourceFile.getFullText().replace(WEB_ONLY_IGNORE, "$1// biome-ignore ");
+  return { code: `${HEADER[origin](filePath)}\n${code}`, diagnostics };
 }
 
 /**

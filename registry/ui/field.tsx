@@ -175,7 +175,9 @@ function FieldError({
       </Text>
     );
   }
-  if (messages.length === 0) return null;
+  if (messages.length === 0) {
+    return null;
+  }
   return (
     <View role="alert" testID="field-error" id={props.id} className="gap-1">
       <View role="list" className="gap-1">

@@ -50,11 +50,17 @@ const FALLBACK = "The server did not answer.";
 
 /** The error's own `message`, which is the transport's wording rather than the app's. */
 function messageOf(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && error !== null && "message" in error) {
     const { message } = error as { message: unknown };
-    if (typeof message === "string") return message;
+    if (typeof message === "string") {
+      return message;
+    }
   }
   return "";
 }
@@ -99,7 +105,7 @@ export function QueryState({
   describe?: ((error: unknown) => string) | undefined;
   className?: string | undefined;
 }) {
-  if (query.isError)
+  if (query.isError) {
     return (
       <QueryError
         error={query.error}
@@ -110,7 +116,8 @@ export function QueryState({
         {...(className === undefined ? {} : { className })}
       />
     );
-  if (query.isPending)
+  }
+  if (query.isPending) {
     return (
       <RowSkeleton
         rows={rows}
@@ -118,7 +125,10 @@ export function QueryState({
         {...(className === undefined ? {} : { className })}
       />
     );
-  if (count === 0) return <>{emptySlot}</>;
+  }
+  if (count === 0) {
+    return <>{emptySlot}</>;
+  }
   return null;
 }
 
@@ -166,7 +176,9 @@ export function QueryError({
   const [retrying, setRetrying] = useState(false);
   const retry = () => {
     const result = onRetry();
-    if (!settles(result)) return;
+    if (!settles(result)) {
+      return;
+    }
     setRetrying(true);
     Promise.resolve(result)
       .catch(() => {})
@@ -178,7 +190,7 @@ export function QueryError({
   // The same three parts — what failed, why, try again — at the size of a nav row. No card, since a
   // bordered box inside a rail reads as one more row, and the retry is a small outline button so the rail's
   // only filled control stays the primary action above it.
-  if (compact)
+  if (compact) {
     return (
       <View role="alert" testID="query-error" className={cn("min-w-0 gap-1 px-2 py-1", className)}>
         <View className="min-w-0 flex-row items-center gap-1.5">
@@ -200,6 +212,7 @@ export function QueryError({
         </View>
       </View>
     );
+  }
 
   return (
     <Card
@@ -260,7 +273,7 @@ export function RowSkeleton({
   compact?: boolean | undefined;
   className?: string | undefined;
 }) {
-  if (compact)
+  if (compact) {
     return (
       <View role="status" aria-label="Loading" className={cn("gap-1", className)}>
         {Array.from({ length: rows }, (_, index) => (
@@ -274,6 +287,7 @@ export function RowSkeleton({
         ))}
       </View>
     );
+  }
 
   return (
     <View role="status" aria-label="Loading" className={cn("gap-2", className)}>

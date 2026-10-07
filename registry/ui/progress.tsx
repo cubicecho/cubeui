@@ -48,9 +48,13 @@ export type ProgressProps = ViewProps & {
   indicatorClassName?: string | undefined;
 };
 
+/** What `max` is when nobody gives one, which makes `value` a percentage. */
+const DEFAULT_MAX = 100;
+const PERCENT = 100;
+
 export function Progress({
   value,
-  max = 100,
+  max = DEFAULT_MAX,
   label,
   valueLabel,
   className,
@@ -58,10 +62,10 @@ export function Progress({
   ...props
 }: ProgressProps) {
   // A zero or negative `max` has no fraction to draw; treat it as nothing done rather than NaN.
-  const limit = max > 0 ? max : 100;
+  const limit = max > 0 ? max : DEFAULT_MAX;
   const known = typeof value === "number" && Number.isFinite(value);
   const now = known ? Math.min(Math.max(value, 0), limit) : undefined;
-  const percent = now === undefined ? 0 : (now / limit) * 100;
+  const percent = now === undefined ? 0 : (now / limit) * PERCENT;
 
   return (
     <View

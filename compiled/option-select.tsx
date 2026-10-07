@@ -274,7 +274,9 @@ function SearchableMenu({
     setUncontrolledOpen(next);
     onOpenChange?.(next);
     // A menu reopened on the last search hides the row the reader came back for.
-    if (!next) setSearch("");
+    if (!next) {
+      setSearch("");
+    }
   };
 
   return (

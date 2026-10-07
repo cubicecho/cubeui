@@ -250,7 +250,9 @@ export function DatePicker({
             }
             // The clock survives the day changing — the whole reason this is not `new Date(day)`.
             onValueChange(value ? combineDateAndTime(day, value) : day);
-            if (!showTime) setOpen(false);
+            if (!showTime) {
+              setOpen(false);
+            }
           }}
         />
         {showTime ? (
@@ -262,7 +264,9 @@ export function DatePicker({
               aria-label="Time"
               value={value ? timeValue(value) : ""}
               onChangeText={(text) => {
-                if (value && text) onValueChange(setTime(value, text));
+                if (value && text) {
+                  onValueChange(setTime(value, text));
+                }
               }}
               className="w-full"
             />
@@ -325,7 +329,9 @@ export function DateRangePicker({
   // visit is the same interaction on both.
   const presses = useRef(0);
   const openPane = (next: boolean) => {
-    if (next) presses.current = 0;
+    if (next) {
+      presses.current = 0;
+    }
     setOpen(next);
   };
   const pattern = format ?? "PP";
@@ -356,7 +362,9 @@ export function DateRangePicker({
           onSelect={(range) => {
             presses.current += 1;
             onValueChange(range ?? null);
-            if (presses.current >= 2 && range?.from && range.to) setOpen(false);
+            if (presses.current >= 2 && range?.from && range.to) {
+              setOpen(false);
+            }
           }}
         />
         {clearable && value?.from ? (

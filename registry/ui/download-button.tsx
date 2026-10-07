@@ -37,8 +37,12 @@ function readAsBytes(blob: Blob): Promise<Uint8Array> {
 
 /** What `File.write` takes: text as it is, bytes as a `Uint8Array`. */
 async function writable(content: DownloadContent): Promise<string | Uint8Array> {
-  if (typeof content === "string") return content;
-  if (typeof content.arrayBuffer === "function") return new Uint8Array(await content.arrayBuffer());
+  if (typeof content === "string") {
+    return content;
+  }
+  if (typeof content.arrayBuffer === "function") {
+    return new Uint8Array(await content.arrayBuffer());
+  }
   return readAsBytes(content);
 }
 
@@ -146,7 +150,9 @@ export function DownloadButton({
     />
   );
 
-  if (destination !== "ask") return button;
+  if (destination !== "ask") {
+    return button;
+  }
 
   return (
     <Menu>

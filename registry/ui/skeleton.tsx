@@ -25,6 +25,11 @@ type SkeletonProps = Omit<React.ComponentProps<typeof View>, "className"> & {
   className?: string | undefined;
 };
 
+/** Tailwind's `animate-pulse` curve, so the device breathes the way the web does. */
+const PULSE_EASE_IN = 0.4;
+const PULSE_EASE_OUT = 0.6;
+const PULSE_EASING = Easing.bezier(PULSE_EASE_IN, 0, PULSE_EASE_OUT, 1);
+
 const PulsingView = Animated.createAnimatedComponent(View);
 
 function Skeleton({ className, style, ...props }: SkeletonProps) {
@@ -33,7 +38,7 @@ function Skeleton({ className, style, ...props }: SkeletonProps) {
   useEffect(() => {
     const half = {
       duration: PULSE_DURATION / 2,
-      easing: Easing.bezier(0.4, 0, 0.6, 1),
+      easing: PULSE_EASING,
       useNativeDriver: true,
     };
     const loop = Animated.loop(

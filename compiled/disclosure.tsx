@@ -104,7 +104,9 @@ export function Disclosure({
   const shown = open && contentSlot !== undefined && contentSlot !== null && contentSlot !== false;
 
   const toggle = () => {
-    if (openProp === undefined) setOwnOpen(!open);
+    if (openProp === undefined) {
+      setOwnOpen(!open);
+    }
     onOpenChange?.(!open);
   };
 

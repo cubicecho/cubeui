@@ -18,7 +18,10 @@ import { Check, Copy } from "@/components/ui/icons";
 export type { CopyButtonProps };
 
 async function write(text: string) {
-  if (!(await Clipboard.setStringAsync(text))) throw new Error("The clipboard refused the text");
+  const copied = await Clipboard.setStringAsync(text);
+  if (copied === false) {
+    throw new Error("The clipboard refused the text");
+  }
 }
 
 export function CopyButton({

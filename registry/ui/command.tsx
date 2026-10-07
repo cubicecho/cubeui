@@ -73,17 +73,23 @@ function createItemStore() {
   const entries = new Map<string, Entry>();
   const listeners = new Set<() => void>();
   const notify = () => {
-    for (const listener of listeners) listener();
+    for (const listener of listeners) {
+      listener();
+    }
   };
   return {
     set(id: string, entry: Entry) {
       const was = entries.get(id);
-      if (was && was.matches === entry.matches && was.shown === entry.shown) return;
+      if (was && was.matches === entry.matches && was.shown === entry.shown) {
+        return;
+      }
       entries.set(id, entry);
       notify();
     },
     remove(id: string) {
-      if (entries.delete(id)) notify();
+      if (entries.delete(id)) {
+        notify();
+      }
     },
     subscribe(listener: () => void) {
       listeners.add(listener);
@@ -94,13 +100,21 @@ function createItemStore() {
     /** Items that match the search: what cmdk calls the filtered count. */
     matching() {
       let count = 0;
-      for (const entry of entries.values()) if (entry.matches) count++;
+      for (const entry of entries.values()) {
+        if (entry.matches) {
+          count++;
+        }
+      }
       return count;
     },
     /** Items drawn in one group, forced or matching. */
     shownIn(group: string) {
       let count = 0;
-      for (const entry of entries.values()) if (entry.group === group && entry.shown) count++;
+      for (const entry of entries.values()) {
+        if (entry.group === group && entry.shown) {
+          count++;
+        }
+      }
       return count;
     },
   };
@@ -186,7 +200,9 @@ function CommandInput({
   // A controlled box drives the search; an uncontrolled one writes it as it is typed. cmdk's
   // arrangement, so a caller who holds `value` and clears it clears the filter too.
   useEffect(() => {
-    if (value !== undefined) setSearch(value);
+    if (value !== undefined) {
+      setSearch(value);
+    }
   }, [value, setSearch]);
 
   return (
@@ -195,7 +211,9 @@ function CommandInput({
         type="search"
         value={value ?? search}
         onChangeText={(text) => {
-          if (value === undefined) setSearch(text);
+          if (value === undefined) {
+            setSearch(text);
+          }
           onValueChange?.(text);
         }}
         placeholder={placeholder}
@@ -229,7 +247,9 @@ function CommandList({ label = COMMAND_LIST_LABEL, className, children }: Comman
 function CommandEmpty({ className, children }: CommandEmptyProps) {
   const { store } = useContext(CommandContext);
   const matching = useSyncExternalStore(store.subscribe, store.matching, store.matching);
-  if (matching > 0) return null;
+  if (matching > 0) {
+    return null;
+  }
   return (
     <View className={cn("py-6", className)}>
       {typeof children === "string" ? (
@@ -269,7 +289,9 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
 
 function CommandSeparator({ alwaysRender = false, className }: CommandSeparatorProps) {
   const { search } = useContext(CommandContext);
-  if (search !== "" && !alwaysRender) return null;
+  if (search !== "" && !alwaysRender) {
+    return null;
+  }
   return <View aria-hidden className={cn("-mx-1 h-px bg-foreground/10", className)} />;
 }
 
@@ -289,7 +311,8 @@ function CommandItem({
   const group = useContext(CommandGroupContext);
   const id = useId();
   const itemValue = (value ?? commandItemText(children)).trim();
-  const matches = !shouldFilter || search.trim() === "" || filter(itemValue, search, keywords) > 0;
+  const matches =
+    shouldFilter === false || search.trim() === "" || filter(itemValue, search, keywords) > 0;
   const shown = matches || forceMount;
 
   // Before paint, so `CommandEmpty` does not flash "No results" over a list that has rows.
@@ -298,7 +321,9 @@ function CommandItem({
   }, [store, id, matches, shown, group]);
   useLayoutEffect(() => () => store.remove(id), [store, id]);
 
-  if (!shown) return null;
+  if (!shown) {
+    return null;
+  }
   return (
     <Pressable
       role="option"

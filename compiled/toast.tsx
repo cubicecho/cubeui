@@ -100,7 +100,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const pending = timers.current;
     return () => {
-      for (const timer of pending.values()) clearTimeout(timer);
+      for (const timer of pending.values()) {
+        clearTimeout(timer);
+      }
       pending.clear();
     };
   }, []);

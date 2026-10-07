@@ -76,7 +76,9 @@ function ThemeOptions({
       variant={compact ? "segmented" : "card"}
       value={value}
       onValueChange={(next) => {
-        if (isThemePreference(next)) onValueChange?.(next);
+        if (isThemePreference(next)) {
+          onValueChange?.(next);
+        }
       }}
       disabled={disabled}
       id={id}
@@ -154,7 +156,9 @@ function PaletteSection({
         variant={compact ? "segmented" : "card"}
         value={palette}
         onValueChange={(next) => {
-          if (isPalettePreference(next)) onPaletteChange?.(next);
+          if (isPalettePreference(next)) {
+            onPaletteChange?.(next);
+          }
         }}
         disabled={props.disabled}
         aria-label="Palette"
@@ -189,7 +193,9 @@ function BoundPaletteSection({ onPaletteChange, ...props }: PaletteSectionProps)
 
 function ThemePicker(props: ThemePickerProps) {
   const { palettes } = props;
-  if (!palettes) return <ThemeChoice {...props} />;
+  if (!palettes) {
+    return <ThemeChoice {...props} />;
+  }
   return props.palette === undefined ? (
     <BoundPaletteSection {...props} palettes={palettes} />
   ) : (

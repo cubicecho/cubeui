@@ -195,7 +195,9 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
   onPress: Press,
   onClick: MergedClick["onClick"],
 ): Press {
-  if (!onClick) return onPress;
+  if (!onClick) {
+    return onPress;
+  }
   const both = (event: never) => {
     onPress?.(event);
     onClick(event);
@@ -270,7 +272,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </IconClassContext.Provider>
       </button>
     );
-    if (!linkSlot) return button;
+    if (!linkSlot) {
+      return button;
+    }
     return (
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
       // one child. Inside, the provider was the child: `Slot` merged the classes and

@@ -86,11 +86,15 @@ export function useUnsavedChangesGuard({
 
   useEffect(() => {
     // A function is asked when the tab closes; a boolean that is false needs no listener at all.
-    if (dirtyNow === false) return;
+    if (dirtyNow === false) {
+      return;
+    }
     const target = globalThis as unknown as UnloadTarget;
     const ask = (event: UnloadEvent) => {
       const dirty = typeof isDirty.current === "function" ? isDirty.current() : isDirty.current;
-      if (!dirty) return;
+      if (!dirty) {
+        return;
+      }
       event.preventDefault();
       // What Chrome reads; `preventDefault` alone is the standard and is not enough there.
       event.returnValue = "";
@@ -114,12 +118,16 @@ export function useUnsavedChangesGuard({
   const discard = () => {
     setHeld(undefined);
     held?.();
-    if (blocked) blocker?.proceed?.();
+    if (blocked) {
+      blocker?.proceed?.();
+    }
   };
 
   const stay = () => {
     setHeld(undefined);
-    if (blocked) blocker?.reset?.();
+    if (blocked) {
+      blocker?.reset?.();
+    }
   };
 
   return { leave, asking: held !== undefined || blocked, discard, stay };
@@ -160,7 +168,9 @@ export function UnsavedChangesDialog({
     <ConfirmDialog
       open={guard.asking}
       onOpenChange={(open) => {
-        if (!open) guard.stay();
+        if (!open) {
+          guard.stay();
+        }
       }}
       title={discardTitle}
       description={discardDescription}
