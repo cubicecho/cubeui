@@ -119,7 +119,9 @@ export const EveryElement: Story = {
       "Status",
       "Size",
     ]);
-    for (const header of headers) await expect(header).toHaveAttribute("scope", "col");
+    for (const header of headers) {
+      await expect(header).toHaveAttribute("scope", "col");
+    }
     await expect(getComputedStyle(headers[2] as Element).textAlign).toBe("right");
     await expect(
       getComputedStyle(within(table).getByRole("cell", { name: "Stable" })).textAlign,
@@ -168,7 +170,9 @@ export const UntrustedContent: Story = {
   play: async ({ canvas, canvasElement }) => {
     const document = root(canvasElement);
     await expect(document).not.toBeNull();
-    if (!document) return;
+    if (!document) {
+      return;
+    }
 
     // Nothing the HTML asked for exists, and nothing ran.
     await expect(document.querySelector("script")).toBeNull();
@@ -352,7 +356,9 @@ export const ResolvedLinks: Story = {
       "href",
       "https://example.com",
     );
-    for (const image of canvas.getAllByRole("img")) await expect(image).toHaveAttribute("src", DOT);
+    for (const image of canvas.getAllByRole("img")) {
+      await expect(image).toHaveAttribute("src", DOT);
+    }
     await expect(canvas.getAllByRole("img")).toHaveLength(2);
   },
 };
@@ -452,7 +458,9 @@ const one = "a line of code that is a good deal longer than the column it has be
   play: async ({ canvasElement }) => {
     const document = root(canvasElement);
     await expect(document).not.toBeNull();
-    if (!document) return;
+    if (!document) {
+      return;
+    }
     await expect(document.getBoundingClientRect().width).toBeCloseTo(280, 0);
     await expect(document.scrollWidth).toBeLessThanOrEqual(document.clientWidth);
 

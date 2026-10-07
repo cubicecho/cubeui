@@ -97,7 +97,9 @@ export const OnScroll: Story = {
     for (const half of ["native", "compiled"] as const) {
       const frame = within(canvasElement).getByTestId(`${half}-frame`);
       const body = frame.querySelector<HTMLElement>(bodies[half]);
-      if (!body) throw new Error(`the ${half} body should render`);
+      if (!body) {
+        throw new Error(`the ${half} body should render`);
+      }
       const status = within(frame).getByRole("status");
       await expect(status).toHaveTextContent("Not scrolled");
 

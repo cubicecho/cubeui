@@ -99,7 +99,9 @@ function halves(width: number) {
 function roots(canvasElement: HTMLElement) {
   const native = canvasElement.querySelector<HTMLElement>(".native-root");
   const compiled = canvasElement.querySelector<HTMLElement>(".compiled-root");
-  if (!native || !compiled) throw new Error("both halves should render");
+  if (!native || !compiled) {
+    throw new Error("both halves should render");
+  }
   return [native, compiled] as const;
 }
 

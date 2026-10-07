@@ -39,8 +39,11 @@ const meta = {
     return () => {
       html().classList.toggle("dark", dark);
       html().classList.toggle("light", light);
-      if (before === null) window.localStorage.removeItem(THEME_STORAGE_KEY);
-      else window.localStorage.setItem(THEME_STORAGE_KEY, before);
+      if (before === null) {
+        window.localStorage.removeItem(THEME_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(THEME_STORAGE_KEY, before);
+      }
     };
   },
 } satisfies Meta<typeof Remountable>;
@@ -76,7 +79,9 @@ export const Default: Story = {
     await waitFor(() => expect(radio("System")).toHaveAttribute("aria-checked", "true"));
     await expect(stored()).toBe("system");
     await expect(html()).not.toHaveClass("light");
-    if (lightBrowser) await expect(html()).not.toHaveClass("dark");
+    if (lightBrowser) {
+      await expect(html()).not.toHaveClass("dark");
+    }
   },
 };
 

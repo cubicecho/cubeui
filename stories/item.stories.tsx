@@ -39,13 +39,17 @@ type Story = StoryObj;
 
 function slot(root: HTMLElement, name: string) {
   const el = root.querySelector<HTMLElement>(`[data-slot="${name}"], [data-testid="${name}"]`);
-  if (!el) throw new Error(`${name} should render`);
+  if (!el) {
+    throw new Error(`${name} should render`);
+  }
   return el;
 }
 
 function rootOf(canvasElement: HTMLElement, selector: string) {
   const root = canvasElement.querySelector<HTMLElement>(selector);
-  if (!root) throw new Error(`${selector} should render`);
+  if (!root) {
+    throw new Error(`${selector} should render`);
+  }
   return root;
 }
 
@@ -127,12 +131,16 @@ export const Outline: Story = {
     const [native, compiled] = cases.map(({ selector }) =>
       within(rootOf(canvasElement, selector)).getByText("Ada Lovelace"),
     );
-    if (!native || !compiled) throw new Error("both titles should render");
+    if (!native || !compiled) {
+      throw new Error("both titles should render");
+    }
     await expect(getComputedStyle(compiled).fontSize).toBe(getComputedStyle(native).fontSize);
     await expect(getComputedStyle(compiled).fontWeight).toBe(getComputedStyle(native).fontWeight);
     await expect(getComputedStyle(compiled).color).toBe(getComputedStyle(native).color);
     const [n, c] = boxes;
-    if (!n?.row || !n.title || !c?.row || !c.title) throw new Error("both rows should measure");
+    if (!n?.row || !n.title || !c?.row || !c.title) {
+      throw new Error("both rows should measure");
+    }
     await expect(Math.abs(n.title.left - n.row.left - (c.title.left - c.row.left))).toBeLessThan(1);
     await expect(Math.abs(n.title.top - n.row.top - (c.title.top - c.row.top))).toBeLessThan(1);
     // The description is the same two clipped lines on both. (Not the row's height: the web half's
@@ -140,7 +148,9 @@ export const Outline: Story = {
     const [nd, cd] = [".native-root", ".compiled-root"].map((selector) =>
       slot(rootOf(canvasElement, selector), "item-description").getBoundingClientRect(),
     );
-    if (!nd || !cd) throw new Error("both descriptions should measure");
+    if (!nd || !cd) {
+      throw new Error("both descriptions should measure");
+    }
     await expect(Math.abs(nd.height - cd.height)).toBeLessThan(2);
     await expect(Math.abs(nd.width - cd.width)).toBeLessThan(2);
   },
@@ -247,7 +257,9 @@ export const GroupAndFooter: Story = {
     for (const selector of [".native-root", ".compiled-root"]) {
       const root = rootOf(canvasElement, selector);
       const first = root.querySelector<HTMLElement>('[data-slot="item"], [data-testid="item"]');
-      if (!first) throw new Error("the rows should render");
+      if (!first) {
+        throw new Error("the rows should render");
+      }
       const footer = slot(root, "item-footer").getBoundingClientRect();
       const title = within(root).getByText("First").getBoundingClientRect();
       const inner = first.getBoundingClientRect();

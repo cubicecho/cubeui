@@ -208,7 +208,9 @@ export const ClearIsAbsentWhenEmpty: Story = {
 export const Disabled: Story = {
   args: { initial: "#10b981", disabled: true },
   play: async ({ canvas }) => {
-    for (const swatch of canvas.getAllByRole("radio")) expect(swatch).toBeDisabled();
+    for (const swatch of canvas.getAllByRole("radio")) {
+      expect(swatch).toBeDisabled();
+    }
     expect(canvas.getByLabelText("Hex")).toBeDisabled();
   },
 };

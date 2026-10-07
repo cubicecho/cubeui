@@ -57,7 +57,9 @@ export const PageHeading: Story = {
     const headings = canvas.getAllByRole("heading", { level: 1, name: "Project not found" });
     await expect(headings).toHaveLength(2);
     const [native, compiled] = headings;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     // The same size as the plain title: the rank says where it sits, not how big it looks.
     await expect(getComputedStyle(native).fontSize).toBe("14px");
@@ -126,7 +128,9 @@ export const Compact: Story = {
     for (const title of titles) {
       // One line: the icon, the text and the action side by side, not a centred column.
       const line = title.parentElement;
-      if (!line) throw new Error("the title should sit in the line");
+      if (!line) {
+        throw new Error("the title should sit in the line");
+      }
       await expect(getComputedStyle(line).flexDirection).toBe("row");
       await expect(line.getBoundingClientRect().height).toBeLessThan(48);
       await expect(line.querySelector("svg")?.getBoundingClientRect().width).toBe(16);
@@ -158,7 +162,9 @@ export const CompactTextOnly: Story = {
     const titles = canvas.getAllByText("No projects yet.");
     await expect(titles).toHaveLength(2);
     const [native, compiled] = titles;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await expect(native.parentElement?.querySelector("svg")).toBeNull();
     await expect(compiled.parentElement?.querySelector("svg")).toBeNull();
     await expect(getComputedStyle(compiled).color).toBe(getComputedStyle(native).color);

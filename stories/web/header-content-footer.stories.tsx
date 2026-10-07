@@ -66,7 +66,9 @@ export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
       "[data-slot=header-content-footer-content]",
     );
     expect(body).not.toBeNull();
-    if (!body) return;
+    if (!body) {
+      return;
+    }
 
     // The body overflows and owns the scroll — not the window, not the chassis.
     expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
@@ -107,7 +109,9 @@ export const WideContentKeepsItsFloor: StoryObj<typeof StickyHeaderContentFooter
       "[data-slot=header-content-footer-header]",
     );
     expect(chassis).not.toBeNull();
-    if (!chassis || !header) return;
+    if (!chassis || !header) {
+      return;
+    }
 
     // The chassis stayed inside its 600px box instead of being grown by the 2000px child.
     expect(chassis.clientWidth).toBeLessThanOrEqual(600);

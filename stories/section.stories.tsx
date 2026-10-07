@@ -38,7 +38,9 @@ export const Default: Story = {
     const headings = canvas.getAllByRole("heading", { level: 2, name: "Pomodoro" });
     await expect(headings).toHaveLength(2);
     const [native, compiled] = headings;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     // The compiled root is a `<section>` named by its title, which is what makes it a landmark.
     const region = canvas.getByRole("region", { name: "Pomodoro" });
@@ -80,7 +82,9 @@ export const CardSurface: Story = {
   play: async ({ canvasElement }) => {
     const native = canvasElement.querySelector(".native-root");
     const compiled = canvasElement.querySelector(".compiled-root");
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
@@ -159,7 +163,9 @@ export const WideActionNarrow: Story = {
           within(frame).getByRole("button", { name }).getBoundingClientRect(),
         );
         const [first] = buttons;
-        if (!first) throw new Error("expected five buttons");
+        if (!first) {
+          throw new Error("expected five buttons");
+        }
         // `half` and `form` ride along so a failure names which case broke.
         await expect({
           half,

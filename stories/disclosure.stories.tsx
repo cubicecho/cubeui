@@ -126,7 +126,9 @@ export const Default: Story = {
       .getAllByRole("button", { name: /Raw output/ })
       .map((button) => button.querySelector("svg"));
     const [nativeChevron, compiledChevron] = chevrons;
-    if (!nativeChevron || !compiledChevron) throw new Error("both halves should draw a chevron");
+    if (!nativeChevron || !compiledChevron) {
+      throw new Error("both halves should draw a chevron");
+    }
     await expect(getComputedStyle(nativeChevron).width).toBe("16px");
     await expect(getComputedStyle(compiledChevron).width).toBe("16px");
     // Turned, however each half says it: Tailwind's `rotate` property, or a `transform` where the

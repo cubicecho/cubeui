@@ -61,11 +61,15 @@ export const Removable: Story = {
     // the caller's `textColor` where something does.
     const stroke = (button: HTMLElement) => {
       const svg = button.querySelector("svg");
-      if (!svg) throw new Error("the remove button should draw an icon");
+      if (!svg) {
+        throw new Error("the remove button should draw an icon");
+      }
       return getComputedStyle(svg).stroke;
     };
     const [nativeUrgentText] = canvas.getAllByText("Urgent");
-    if (!nativeUrgentText) throw new Error("the native label should render");
+    if (!nativeUrgentText) {
+      throw new Error("the native label should render");
+    }
     await expect(stroke(nativeUrgent)).toBe(getComputedStyle(nativeUrgentText).color);
     await expect(stroke(compiledUrgent)).toBe(getComputedStyle(nativeUrgentText).color);
     await expect(stroke(nativeDesign)).toBe("rgb(255, 255, 255)");

@@ -84,7 +84,9 @@ export const Default: Story = {
 
     const pair = (text: string) => {
       const [native, compiled] = canvas.getAllByText(text);
-      if (!native || !compiled) throw new Error(`both halves should render "${text}"`);
+      if (!native || !compiled) {
+        throw new Error(`both halves should render "${text}"`);
+      }
       return [native, compiled] as const;
     };
     const colour = (el: Element) => getComputedStyle(el).color;
@@ -116,16 +118,22 @@ export const Default: Story = {
       return box.map((el) => el.querySelector("svg"));
     };
     const [nativeWarning, compiledWarning] = glyph("Store this token securely");
-    if (!nativeWarning || !compiledWarning) throw new Error("a warning should draw its glyph");
+    if (!nativeWarning || !compiledWarning) {
+      throw new Error("a warning should draw its glyph");
+    }
     await expect(nativeWarning.getBoundingClientRect().width).toBe(16);
     await expect(compiledWarning.getBoundingClientRect().width).toBe(16);
     await expect(getComputedStyle(compiledWarning).stroke).toBe(
       getComputedStyle(nativeWarning).stroke,
     );
     await expect(getComputedStyle(nativeWarning).stroke).not.toBe(foreground);
-    for (const svg of glyph("No icon, just the line.")) await expect(svg).toBeNull();
+    for (const svg of glyph("No icon, just the line.")) {
+      await expect(svg).toBeNull();
+    }
     // `info` is a colour and not a kind of message, so it draws no glyph of its own.
-    for (const svg of glyph("Re-embedding")) await expect(svg).toBeNull();
+    for (const svg of glyph("Re-embedding")) {
+      await expect(svg).toBeNull();
+    }
   },
 };
 
@@ -162,7 +170,9 @@ export const ShadcnParts: Story = {
       // The caller's icon only: children replace the variant's own glyph.
       await expect(svgs).toHaveLength(1);
       const svg = svgs[0];
-      if (!svg) throw new Error("the icon should render");
+      if (!svg) {
+        throw new Error("the icon should render");
+      }
       await expect(svg.getBoundingClientRect().width).toBe(16);
       const title = within(alert).getByText("Unsaved changes");
       const description = within(alert).getByText("Leaving now discards them.");

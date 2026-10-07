@@ -68,7 +68,9 @@ function Fetched() {
         value={value}
         onValueChange={setValue}
         onOpenChange={(open) => {
-          if (!open || models) return;
+          if (!open || models) {
+            return;
+          }
           setFetches((n) => n + 1);
           // Slow enough that the story can see the menu waiting, which is the state being tested.
           setTimeout(() => setModels(MODELS), 50);

@@ -186,7 +186,9 @@ export const Slots: Story = {
         const search = canvas.getByRole("textbox", { name: `${half} search` });
         const box = search.getBoundingClientRect();
         const icon = search.parentElement?.querySelector("svg");
-        if (!icon) throw new Error("the leading icon should be drawn beside the field");
+        if (!icon) {
+          throw new Error("the leading icon should be drawn beside the field");
+        }
         const glyph = icon.getBoundingClientRect();
 
         // The icon is inside the field, at its start, at 16px, and the text starts past it.
@@ -200,7 +202,9 @@ export const Slots: Story = {
 
         // It takes no press: a click on it is a click on the field underneath.
         const slot = icon.parentElement;
-        if (!slot) throw new Error("the icon should sit in a slot");
+        if (!slot) {
+          throw new Error("the icon should sit in a slot");
+        }
         await expect(getComputedStyle(slot).pointerEvents).toBe("none");
 
         // The trailing button is pressable, inside the field's far end, and the text stops short.

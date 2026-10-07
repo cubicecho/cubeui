@@ -76,7 +76,9 @@ export const Compound: Story = {
     // Plain text unless the caller makes it a heading.
     await expect(canvas.queryAllByRole("heading")).toHaveLength(0);
     const [native, compiled] = titles;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     await expect(getComputedStyle(compiled).fontSize).toBe("14px");
     await expect(getComputedStyle(native).fontSize).toBe("14px");
@@ -85,14 +87,18 @@ export const Compound: Story = {
 
     const lines = canvas.getAllByText("Make one to start a board.");
     const [nativeLine, compiledLine] = lines;
-    if (!nativeLine || !compiledLine) throw new Error("both halves should render the line");
+    if (!nativeLine || !compiledLine) {
+      throw new Error("both halves should render the line");
+    }
     await expect(getComputedStyle(compiledLine).color).toBe(getComputedStyle(nativeLine).color);
 
     for (const title of titles) {
       // The bubble is the title's sibling in the header: round, 48 pixels, a 24-pixel glyph.
       const glyph = title.parentElement?.querySelector("svg");
       const bubble = glyph?.parentElement;
-      if (!glyph || !bubble) throw new Error("the icon should sit in its bubble");
+      if (!glyph || !bubble) {
+        throw new Error("the icon should sit in its bubble");
+      }
       await expect(bubble.getBoundingClientRect().width).toBe(48);
       await expect(bubble.getBoundingClientRect().height).toBe(48);
       await expect(glyph.getBoundingClientRect().width).toBe(24);

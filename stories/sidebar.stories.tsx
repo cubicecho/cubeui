@@ -150,7 +150,9 @@ export const Default: Story = {
     const [nativeCurrent, compiledCurrent] = [native, compiled].map((half) =>
       within(half).getByRole("link", { current: "page" }),
     );
-    if (!nativeCurrent || !compiledCurrent) throw new Error("both halves should render");
+    if (!nativeCurrent || !compiledCurrent) {
+      throw new Error("both halves should render");
+    }
     await expect(getComputedStyle(compiledCurrent).backgroundColor).toBe(
       getComputedStyle(nativeCurrent).backgroundColor,
     );
@@ -219,8 +221,11 @@ export const HiddenBelow: Story = {
     }
     for (const name of ["Native rail", "Compiled rail"]) {
       const landmark = canvas.queryByRole("complementary", { name });
-      if (wide) await expect(landmark).not.toBeNull();
-      else await expect(landmark).toBeNull();
+      if (wide) {
+        await expect(landmark).not.toBeNull();
+      } else {
+        await expect(landmark).toBeNull();
+      }
     }
 
     // Without `hideBelow` the sidebar is drawn at every width, the same flex column as before.
@@ -342,7 +347,9 @@ export const NavigationLandmark: Story = {
     const [nativeNav, compiledNav] = ["Native", "Compiled"].map((half) =>
       canvas.getByRole("navigation", { name: `${half} projects` }),
     );
-    if (!nativeNav || !compiledNav) throw new Error("both halves should render");
+    if (!nativeNav || !compiledNav) {
+      throw new Error("both halves should render");
+    }
     await expect(compiledNav.getBoundingClientRect().height).toBe(
       nativeNav.getBoundingClientRect().height,
     );
@@ -425,13 +432,17 @@ export const ActionRow: Story = {
       // The same row as the link above it: box, icon and ink all match.
       const settings = side.getByRole("link", { name: "Settings" });
       const [a, b] = [settings, signOut].map((row) => getComputedStyle(row));
-      if (!a || !b) throw new Error("both rows should render");
+      if (!a || !b) {
+        throw new Error("both rows should render");
+      }
       for (const prop of ["height", "paddingLeft", "borderRadius", "columnGap"] as const) {
         await expect(b[prop]).toBe(a[prop]);
       }
       const svg = (row: HTMLElement) => {
         const icon = row.querySelector("svg");
-        if (!icon) throw new Error("the row should draw its icon");
+        if (!icon) {
+          throw new Error("the row should draw its icon");
+        }
         return icon.getBoundingClientRect();
       };
       await expect(svg(signOut).width).toBe(svg(settings).width);
@@ -631,8 +642,9 @@ export const States: Story = {
     // The compact failure is an alert too, on both halves — it replaces the rows it stands in for.
     const alerts = canvas.getAllByRole("alert");
     await expect(alerts).toHaveLength(2);
-    for (const alert of alerts)
+    for (const alert of alerts) {
       await expect(alert).toHaveTextContent("Could not load shared projects");
+    }
     await expect(canvas.getAllByRole("button", { name: "Try again" })).toHaveLength(2);
 
     // Compact means a nav row's height, not a card's: each placeholder is one row tall.
@@ -640,7 +652,9 @@ export const States: Story = {
       '[data-slot="row-skeleton"], [data-testid="row-skeleton"]',
     );
     await expect(bars).toHaveLength(4);
-    for (const bar of Array.from(bars)) await expect(bar.getBoundingClientRect().height).toBe(32);
+    for (const bar of Array.from(bars)) {
+      await expect(bar.getBoundingClientRect().height).toBe(32);
+    }
   },
 };
 
@@ -723,7 +737,9 @@ export const Status: Story = {
       const hidden = within(work).getByText("MCP on");
       await expect(hidden.getBoundingClientRect().width).toBeLessThanOrEqual(1);
       const icon = work.querySelector("svg");
-      if (!icon) throw new Error("the status icon should be drawn");
+      if (!icon) {
+        throw new Error("the status icon should be drawn");
+      }
       await expect(icon.closest('[aria-hidden="true"]')).not.toBeNull();
       await expect(icon.getBoundingClientRect().width).toBeGreaterThan(0);
 

@@ -54,7 +54,9 @@ function near(a: number, b: number) {
 
 async function expectCentred(root: HTMLElement) {
   const card = root.firstElementChild;
-  if (!card) throw new Error("the card should render inside the root");
+  if (!card) {
+    throw new Error("the card should render inside the root");
+  }
   const outer = root.getBoundingClientRect();
   const inner = card.getBoundingClientRect();
   await expect(near(inner.left - outer.left, outer.right - inner.right)).toBe(true);
@@ -65,7 +67,9 @@ async function expectCentred(root: HTMLElement) {
 function roots(canvasElement: HTMLElement) {
   const native = canvasElement.querySelector<HTMLElement>(".native-root");
   const compiled = canvasElement.querySelector<HTMLElement>(".compiled-root");
-  if (!native || !compiled) throw new Error("both halves should render");
+  if (!native || !compiled) {
+    throw new Error("both halves should render");
+  }
   return [native, compiled] as const;
 }
 

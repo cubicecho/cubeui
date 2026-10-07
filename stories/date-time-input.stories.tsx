@@ -43,8 +43,12 @@ void typeChecks;
 
 /** What the last `onChange` said, as local wall-clock time so midnight is visible. */
 function describe(value: Date | null | undefined): string {
-  if (value === undefined) return "nothing yet";
-  if (value === null) return "null";
+  if (value === undefined) {
+    return "nothing yet";
+  }
+  if (value === null) {
+    return "null";
+  }
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}`;
 }
@@ -151,7 +155,9 @@ export const RequiredDateAndTime: Story = {
   ),
   play: async ({ canvasElement }) => {
     const [native, compiled] = Array.from(canvasElement.querySelectorAll("section"));
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     // The time field is there on both halves.
     await expect(native.querySelector("input")).not.toBeNull();
     await expect(compiled.querySelector("input")).not.toBeNull();
@@ -224,7 +230,9 @@ function DomLabel({
 async function assertNamed(section: HTMLElement, prefix: string) {
   const half = within(section);
   const [due, starts, ends, review] = half.getAllByRole("button");
-  if (!due || !starts || !ends || !review) throw new Error("four triggers should render");
+  if (!due || !starts || !ends || !review) {
+    throw new Error("four triggers should render");
+  }
 
   // `htmlFor` → the trigger's `id`, and the label names it. A `<label for>` replaces the
   // button's contents as its name, so the placeholder is only its text — which is why the skill
@@ -237,7 +245,9 @@ async function assertNamed(section: HTMLElement, prefix: string) {
   // Read through the accessible-name algorithm rather than `getByLabelText`: the starts box names
   // itself partly by pointing at its own id, which a label-text query does not follow.
   const [startsTime, endsTime] = Array.from(section.querySelectorAll("input"));
-  if (!startsTime || !endsTime) throw new Error("both datetime fields should draw a time box");
+  if (!startsTime || !endsTime) {
+    throw new Error("both datetime fields should draw a time box");
+  }
 
   // `aria-labelledby` names the trigger by the label and then the date, so the date is not lost
   // to the name (issue #111); the time box is the label's name plus "time".
@@ -277,7 +287,9 @@ export const NamedByAForm: Story = {
   ),
   play: async ({ canvasElement }) => {
     const [native, compiled] = Array.from(canvasElement.querySelectorAll("section"));
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await assertNamed(native, "Native");
     await assertNamed(compiled, "Compiled");
   },

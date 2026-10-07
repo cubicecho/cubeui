@@ -51,7 +51,9 @@ export const Parts: Story = {
       const icon = button.querySelector(".lucide-plus")?.getBoundingClientRect();
       const label = within(button).getByText("New workspace").getBoundingClientRect();
       const trailing = button.querySelector(".lucide-chevron-down")?.getBoundingClientRect();
-      if (!icon || !trailing) throw new Error(`the ${half} icons should render`);
+      if (!icon || !trailing) {
+        throw new Error(`the ${half} icons should render`);
+      }
       // `half` rides along so a failure names which half broke.
       await expect({
         half,
@@ -115,7 +117,9 @@ export const Loading: Story = {
       // With no `loadingLabel` the label stays, and with no icon the spinner goes before it.
       const reloading = frame.getByRole("button", { name: "Reload models" });
       const spinner = reloading.querySelector("svg");
-      if (!spinner) throw new Error(`the ${half} spinner should render`);
+      if (!spinner) {
+        throw new Error(`the ${half} spinner should render`);
+      }
       const label = within(reloading).getByText("Reload models").getBoundingClientRect();
       await expect(spinner.getBoundingClientRect().right).toBeLessThanOrEqual(label.left);
     }

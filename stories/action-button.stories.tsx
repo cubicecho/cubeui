@@ -130,7 +130,9 @@ export const DisabledButStillReadable: Story = {
       // compiled half — react-native-web's `Pressable` writes its own `aria-disabled` from
       // `disabled` over the one it is handed, so under Expo web the refusal is not announced.
       await expect(remove).not.toHaveAttribute("disabled");
-      if (half === halves[1]) await expect(remove).toHaveAttribute("aria-disabled", "true");
+      if (half === halves[1]) {
+        await expect(remove).toHaveAttribute("aria-disabled", "true");
+      }
 
       // Reachable by keyboard, and the press is refused.
       remove.focus();

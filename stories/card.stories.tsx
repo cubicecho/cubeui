@@ -182,7 +182,9 @@ export const Accent: Story = {
     await expect(bars).toHaveLength(2);
 
     const [nativeBar, compiledBar] = bars;
-    if (!nativeBar || !compiledBar) throw new Error("both bars should render");
+    if (!nativeBar || !compiledBar) {
+      throw new Error("both bars should render");
+    }
 
     const inside = (bar: Element, card: Element) => {
       const b = bar.getBoundingClientRect();

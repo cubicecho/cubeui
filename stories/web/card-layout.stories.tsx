@@ -63,7 +63,9 @@ export const WithIcon: Story = {
   play: async ({ canvasElement }) => {
     const svg = canvasElement.querySelector("svg");
     expect(svg).not.toBeNull();
-    if (svg) expect(svg.getBoundingClientRect().width).toBeCloseTo(16, 0);
+    if (svg) {
+      expect(svg.getBoundingClientRect().width).toBeCloseTo(16, 0);
+    }
   },
 };
 

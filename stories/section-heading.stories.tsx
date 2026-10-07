@@ -33,7 +33,9 @@ export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const [native, compiled] = canvas.getAllByText("Upcoming");
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
@@ -53,7 +55,9 @@ export const Overline: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const [native, compiled] = canvas.getAllByText("This week");
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     await expect(getComputedStyle(compiled).textTransform).toBe(
       getComputedStyle(native).textTransform,

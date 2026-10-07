@@ -143,13 +143,17 @@ export const NarrowFooterActions: Story = {
     for (const half of ["native", "compiled"] as const) {
       const frame = within(canvasElement).getByTestId(`${half}-frame`);
       const card = frame.firstElementChild;
-      if (!card) throw new Error(`the ${half} card should render`);
+      if (!card) {
+        throw new Error(`the ${half} card should render`);
+      }
       const box = card.getBoundingClientRect();
       const buttons = actionLabels.map((name) =>
         within(frame).getByRole("button", { name }).getBoundingClientRect(),
       );
       const [first, , last] = buttons;
-      if (!first || !last) throw new Error("expected three buttons");
+      if (!first || !last) {
+        throw new Error("expected three buttons");
+      }
       // `half` rides along in each value so a failure names which half broke.
       await expect({
         half,
@@ -215,7 +219,9 @@ export const LongTitleWithAction: Story = {
       for (const width of headerWidths) {
         const frame = within(canvasElement).getByTestId(`${half}-${width}`);
         const card = frame.firstElementChild;
-        if (!card) throw new Error(`the ${half} card should render`);
+        if (!card) {
+          throw new Error(`the ${half} card should render`);
+        }
         const box = card.getBoundingClientRect();
         const scope = within(frame);
         const title = scope.getByRole("heading", { name: longTitle }).getBoundingClientRect();
@@ -279,7 +285,9 @@ export const SmallActionStaysInCorner: Story = {
       for (const form of ["described", "titled"] as const) {
         const frame = within(canvasElement).getByTestId(`${half}-${form}`);
         const card = frame.firstElementChild;
-        if (!card) throw new Error(`the ${half} card should render`);
+        if (!card) {
+          throw new Error(`the ${half} card should render`);
+        }
         const box = card.getBoundingClientRect();
         const button = within(frame).getByRole("button", { name: "Add" }).getBoundingClientRect();
         // The card's 1px border, then the header's `p-6`.
@@ -291,7 +299,9 @@ export const SmallActionStaysInCorner: Story = {
         }).toEqual({ half, form, fromTop: 25, fromEnd: 25 });
         // Beside a title and a description the button is the shorter of the two, so being in
         // the flow costs the header nothing: the card is as tall as it was.
-        if (form === "described") await expect(Math.round(box.height)).toBe(92);
+        if (form === "described") {
+          await expect(Math.round(box.height)).toBe(92);
+        }
       }
     }
   },
@@ -341,7 +351,9 @@ export const Headerless: Story = {
       };
       for (const [form, target] of Object.entries(targets)) {
         const card = canvas.getByTestId(`${half}-${form}`).firstElementChild;
-        if (!card) throw new Error(`the ${half} card should render`);
+        if (!card) {
+          throw new Error(`the ${half} card should render`);
+        }
         const box = card.getBoundingClientRect();
         const inner = target.getBoundingClientRect();
         // The card's 1px border, then `p-6`.

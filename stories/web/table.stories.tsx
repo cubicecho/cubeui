@@ -82,7 +82,9 @@ export const Default: Story = {
     }
     const rows = canvas.getAllByRole("rowheader");
     expect(rows.map((r) => r.textContent)).toEqual(["filesystem", "github", "postgres", "Total"]);
-    for (const row of rows) expect(row).toHaveAttribute("scope", "row");
+    for (const row of rows) {
+      expect(row).toHaveAttribute("scope", "row");
+    }
 
     const container = table.parentElement as HTMLElement;
     expect(container).toHaveAttribute("data-slot", "table-container");

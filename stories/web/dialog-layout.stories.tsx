@@ -217,7 +217,9 @@ export const NarrowFooterActionsWrap: Story = {
       within(dialog).getByRole("button", { name }).getBoundingClientRect(),
     );
     const [first, , last] = buttons;
-    if (!first || !last) throw new Error("expected three buttons");
+    if (!first || !last) {
+      throw new Error("expected three buttons");
+    }
     await expect({
       inside: buttons.every((b) => b.left >= box.left && b.right <= box.right),
       wrapped: last.top >= first.bottom,

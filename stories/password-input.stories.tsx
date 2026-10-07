@@ -45,7 +45,9 @@ export const Default: Story = {
     onSubmit.mockClear();
 
     const [nativeForm, compiledForm] = Array.from(canvasElement.querySelectorAll("form"));
-    if (!nativeForm || !compiledForm) throw new Error("both halves should render their form");
+    if (!nativeForm || !compiledForm) {
+      throw new Error("both halves should render their form");
+    }
 
     for (const [half, form] of [
       ["Native", nativeForm],
@@ -59,7 +61,9 @@ export const Default: Story = {
         await expect(box).toHaveAttribute("type", "password");
 
         const eye = inForm.getAllByRole("button", { name: "Show password" })[0];
-        if (!eye || !box.parentElement?.contains(eye)) throw new Error("the eye is in the box");
+        if (!eye || !box.parentElement?.contains(eye)) {
+          throw new Error("the eye is in the box");
+        }
 
         await userEvent.click(eye);
         await expect(box).toHaveAttribute("type", "text");
@@ -79,7 +83,9 @@ export const Default: Story = {
 
         const disabled = inForm.getByLabelText(`${half} disabled`);
         const eye = eyes.find((button) => disabled.parentElement?.contains(button));
-        if (!eye) throw new Error("a disabled box still shows its eye");
+        if (!eye) {
+          throw new Error("a disabled box still shows its eye");
+        }
         // A DOM `<button disabled>` on one side, react-native-web's `aria-disabled` on the other.
         await expect(
           eye.hasAttribute("disabled") || eye.getAttribute("aria-disabled") === "true",

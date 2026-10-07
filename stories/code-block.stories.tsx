@@ -45,13 +45,17 @@ function Frame({ content }: { content: ReactNode }) {
 /** A part of the block on either half: `testID` is `data-testid` on one and `data-slot` on the other. */
 function part(half: Element, name: string) {
   const found = half.querySelector<HTMLElement>(`[data-slot="${name}"], [data-testid="${name}"]`);
-  if (!found) throw new Error(`no ${name} in this half`);
+  if (!found) {
+    throw new Error(`no ${name} in this half`);
+  }
   return found;
 }
 
 function halvesOf(canvasElement: HTMLElement) {
   const halves = Array.from(canvasElement.querySelectorAll("section"));
-  if (halves.length !== 2) throw new Error("both halves should render");
+  if (halves.length !== 2) {
+    throw new Error("both halves should render");
+  }
   return halves;
 }
 

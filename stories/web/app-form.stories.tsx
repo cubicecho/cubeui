@@ -102,7 +102,9 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
             // Filing something under Work answers a question the form was about to ask again.
             // Guarded on the other field having been left alone, because a listener that writes
             // over a choice somebody made is not a convenience, it is the form arguing back.
-            if (form.state.fieldMeta.priority?.isTouched) return;
+            if (form.state.fieldMeta.priority?.isTouched) {
+              return;
+            }
             form.setFieldValue("priority", value === "work" ? "3" : "2");
           },
         }}

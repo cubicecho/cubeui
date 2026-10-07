@@ -28,7 +28,14 @@
   },
   "overrides": [
     {
-      "includes": ["registry/**", "compiled/**", "scripts/**", "tokens/**", ".storybook/**"],
+      "includes": [
+        "registry/**",
+        "compiled/**",
+        "scripts/**",
+        "tokens/**",
+        ".storybook/**",
+        "stories/**"
+      ],
       "plugins": ["./no-negation.grit"],
       "linter": {
         "rules": {
@@ -55,7 +62,7 @@
       }
     },
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs", "stories/**"],
       "linter": { "rules": { "style": { "noMagicNumbers": "off" } } }
     },
     {

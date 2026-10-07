@@ -215,7 +215,9 @@ const shell: Story = {
       await expect(canvas.queryByRole("navigation", { name: `${half} rail places` })).toBeNull();
 
       // The bar's navigation is a named landmark, and every place in it is a named link.
-      if (!bar) throw new Error(`${half}: the bar's navigation should be drawn under md`);
+      if (!bar) {
+        throw new Error(`${half}: the bar's navigation should be drawn under md`);
+      }
       await expect(bar.tagName).toBe("NAV");
       const links = within(bar).getAllByRole("link");
       await expect(links.map((a) => a.textContent)).toEqual(["Servers", "Browse", "Settings"]);
@@ -230,14 +232,18 @@ const shell: Story = {
       await expect(theme.closest("nav")).toBeNull();
     }
 
-    if (wide) return;
+    if (wide) {
+      return;
+    }
 
     await expect(onTheme).toHaveBeenCalledTimes(2);
 
     for (const header of headers) {
       // The bar sits over the page, not beside it: the page starts where the bar ends.
       const content = header.nextElementSibling;
-      if (!content) throw new Error("the page should follow the bar");
+      if (!content) {
+        throw new Error("the page should follow the bar");
+      }
       await expect(content.getBoundingClientRect().top).toBeGreaterThanOrEqual(
         header.getBoundingClientRect().bottom - 0.5,
       );
@@ -254,7 +260,9 @@ const shell: Story = {
 
     // The same bar on both halves: the same height and the same fill.
     const [native, compiled] = headers;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await expect(compiled.getBoundingClientRect().height).toBe(
       native.getBoundingClientRect().height,
     );
