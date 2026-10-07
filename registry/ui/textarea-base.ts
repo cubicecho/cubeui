@@ -49,6 +49,9 @@ export function isSubmitKey({
   return key === "Enter" && !shiftKey && !isComposing;
 }
 
+/** Where the caret is, as offsets into the text. A caret with nothing selected has the two equal. */
+export type TextareaSelection = { start: number; end: number };
+
 export type TextareaProps = {
   value?: string | undefined;
   /** Uncontrolled: where the text starts, when nothing above is holding `value`. */
@@ -62,6 +65,16 @@ export type TextareaProps = {
    * the way out.
    */
   onSubmitEditing?: (() => void) | undefined;
+  /**
+   * Holds the caret, as `TextInput`'s does: the way to put it after a name a completion has just
+   * inserted. Controlled, so keep it in step from `onSelectionChange` or it pins the caret.
+   */
+  selection?: TextareaSelection | undefined;
+  /**
+   * The caret moved, or the selection changed: by a key, a click, or the text changing under it.
+   * What an `@mention` menu reads to find the word the caret is in, wherever in the note that is.
+   */
+  onSelectionChange?: ((selection: TextareaSelection) => void) | undefined;
   /** Every key as it goes down, as on `Input`. */
   onKeyPress?: TextareaKeyPressHandler | undefined;
   /** Escape, after any `onKeyPress`. A soft keyboard has no such key. */
@@ -80,6 +93,8 @@ export type TextareaProps = {
   maxRows?: number | undefined;
   maxLength?: number | undefined;
   disabled?: boolean | undefined;
+  /** Takes focus when it mounts, as `Input`'s does: a reply box that opens ready to type in. */
+  autoFocus?: boolean | undefined;
   className?: string | undefined;
   /** Web only: ties the control to its `<label>`. */
   id?: string | undefined;

@@ -22,6 +22,7 @@ import {
   type TextareaKeyPressEvent,
   type TextareaKeyPressHandler,
   type TextareaProps,
+  type TextareaSelection,
 } from "@/components/ui/textarea-base";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,8 @@ function Textarea({
   onChangeText,
   onBlur,
   onSubmitEditing,
+  selection,
+  onSelectionChange,
   onKeyPress,
   onEscape,
   placeholder,
@@ -38,6 +41,7 @@ function Textarea({
   maxRows,
   maxLength,
   disabled,
+  autoFocus,
   className,
   id,
   ref,
@@ -73,6 +77,11 @@ function Textarea({
         refit();
       }}
       onBlur={onBlur}
+      {...(selection !== undefined ? { selection } : {})}
+      {...(onSelectionChange
+        ? { onSelectionChange: (event) => onSelectionChange(event.nativeEvent.selection) }
+        : {})}
+      {...(autoFocus !== undefined ? { autoFocus } : {})}
       onKeyPress={(event) => {
         onKeyPress?.(event);
         if (event.nativeEvent.key === "Escape") onEscape?.();
@@ -99,5 +108,11 @@ function Textarea({
   );
 }
 
-export type { TextareaHandle, TextareaKeyPressEvent, TextareaKeyPressHandler, TextareaProps };
+export type {
+  TextareaHandle,
+  TextareaKeyPressEvent,
+  TextareaKeyPressHandler,
+  TextareaProps,
+  TextareaSelection,
+};
 export { Textarea };
