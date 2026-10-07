@@ -4,6 +4,7 @@ import {
   formatBytes,
   formatCount,
   formatDate,
+  formatDateTime,
   formatDuration,
   joinStats,
 } from "./format";
@@ -96,6 +97,25 @@ describe("formatDate", () => {
   });
 });
 
+describe("formatDateTime", () => {
+  const moment = new Date(2026, 9, 3, 14, 32);
+  const expected = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(moment);
+
+  it("carries the time of day beside the date", () => {
+    expect(formatDateTime(moment)).toBe(expected);
+    expect(formatDateTime(moment.toISOString())).toBe(expected);
+    expect(formatDateTime(moment)).not.toBe(formatDate(moment));
+    expect(formatDateTime(moment)).toContain("32");
+  });
+
+  it("is empty for a moment that does not parse", () => {
+    expect(formatDateTime("not a date")).toBe("");
+  });
+});
+
 describe("formatAgo", () => {
   const now = new Date(2026, 9, 3, 12).getTime();
   const ago = (seconds: number) => formatAgo(now - seconds * 1000, now);
@@ -121,12 +141,25 @@ describe("formatAgo", () => {
     expect(formatAgo("not a date", now)).toBe("");
   });
 
+  it("writes the narrow form when asked, and the long one otherwise", () => {
+    const narrow = new Intl.RelativeTimeFormat(undefined, { numeric: "auto", style: "narrow" });
+    const short = (seconds: number) => formatAgo(now - seconds * 1000, now, { style: "narrow" });
+    expect(short(5 * 60)).toBe(narrow.format(-5, "minute"));
+    expect(short(3 * 86_400)).toBe(narrow.format(-3, "day"));
+    expect(short(59)).toBe("just now");
+    expect(formatAgo(now - 5 * 60 * 1000, now, { style: "long" })).toBe(ago(5 * 60));
+    expect(formatAgo(now - 5 * 60 * 1000, now, {})).toBe(ago(5 * 60));
+  });
+
   it("falls back to English where the runtime has no RelativeTimeFormat", () => {
     vi.stubGlobal("Intl", {});
     try {
       expect(ago(3 * 86_400)).toBe("3 days ago");
       expect(ago(3600)).toBe("1 hour ago");
       expect(formatAgo(now + 2 * 3600 * 1000, now)).toBe("in 2 hours");
+      expect(formatAgo(now - 5 * 60 * 1000, now, { style: "narrow" })).toBe("5m ago");
+      expect(formatAgo(now - 90 * 86_400 * 1000, now, { style: "narrow" })).toBe("3mo ago");
+      expect(formatAgo(now + 2 * 3600 * 1000, now, { style: "narrow" })).toBe("in 2h");
     } finally {
       vi.unstubAllGlobals();
     }

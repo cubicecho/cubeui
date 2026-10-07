@@ -1088,12 +1088,16 @@ where an app would otherwise write its own `lib/format.ts`.
 | `formatBytes(1536)` | `1.5 KB` — B to GB, a step is 1024 |
 | `formatDuration(11520)` | `3h 12m` — also `42s`, `5m`, `2d 4h`; it takes seconds |
 | `formatDate(note.updatedAt)` | `Oct 3, 2026`, in the reader's locale |
+| `formatDateTime(doc.addedAt)` | `Oct 3, 2026, 2:32 PM`, in the reader's locale |
 | `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `just now` under a minute |
+| `formatAgo(call.at, undefined, { style: "narrow" })` | `5m ago`, `3d ago`, `in 2h` — for a dense column |
 | `joinStats(formatCount(1, "file"), formatCount(2, "chunk"), locked && "human-only")` | `1 file · 2 chunks · human-only` |
 
-`formatDate` and `formatAgo` take an ISO string, epoch milliseconds or a `Date`, and return an
-empty string for one that does not parse, so a missing timestamp draws nothing. `formatAgo` takes
-a second argument, the moment to count from, for a screen that ticks its own clock.
+`formatDate`, `formatDateTime` and `formatAgo` take an ISO string, epoch milliseconds or a `Date`,
+and return an empty string for one that does not parse, so a missing timestamp draws nothing.
+`formatAgo` takes a second argument, the moment to count from, for a screen that ticks its own
+clock, and a third, `{ style: "narrow" }`, for a column too tight for `5 minutes ago`. Do not keep
+a `formatRelativeTime` of your own for the short form.
 
 `joinStats` is the line of facts under a title — an `Item`'s description, a card's subtitle. It
 leaves out a part that is `""`, `false`, `null` or `undefined`, so a fact that only sometimes
