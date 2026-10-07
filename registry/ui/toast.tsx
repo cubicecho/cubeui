@@ -62,7 +62,7 @@ const VIEWPORT_STYLE = Platform.select({
     bottom: 32,
     zIndex: 50,
   },
-}) as unknown as ViewStyle;
+}) as ViewStyle;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
