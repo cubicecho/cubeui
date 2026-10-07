@@ -110,7 +110,9 @@ export const Default: Story = {
         await userEvent.type(screen.getByLabelText("Search"), "infra back");
         await waitFor(() =>
           expect(
-            screen.getAllByRole("option").filter((row) => !/^Add /.test(row.textContent ?? "")),
+            screen
+              .getAllByRole("option")
+              .filter((row) => /^Add /.test(row.textContent ?? "") === false),
           ).toHaveLength(1),
         );
         await expect(screen.getByRole("option", { name: /Backend/ })).toBeVisible();

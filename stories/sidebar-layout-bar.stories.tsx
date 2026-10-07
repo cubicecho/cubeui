@@ -199,7 +199,7 @@ function barsOf(canvasElement: HTMLElement) {
   return headers.map((header) => {
     const part = (slot: string) => {
       const el = Array.from(header.children).find((child) => slotOf(child) === slot);
-      if (!(el instanceof HTMLElement)) {
+      if (el instanceof HTMLElement === false) {
         throw new Error(`the bar should draw ${slot}`);
       }
       return el;
@@ -254,7 +254,7 @@ export const Phone390: Story = {
       // The status is the part that gave way: it holds less than its line needs, and says so with
       // an ellipsis rather than by wrapping or by pushing the actions out.
       const line = status.firstElementChild;
-      if (!(line instanceof HTMLElement)) {
+      if (line instanceof HTMLElement === false) {
         throw new Error("a string status is drawn as text");
       }
       await expect(line).toHaveTextContent(STATUS);

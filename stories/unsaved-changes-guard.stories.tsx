@@ -43,7 +43,7 @@ function Editor({ half, name }: { half: typeof Native; name: string }) {
 
   return (
     <div className="flex flex-col items-start gap-2 text-foreground">
-      <button type="button" onClick={() => setDirty((was) => !was)}>
+      <button type="button" onClick={() => setDirty((was) => was === false)}>
         {`${name} ${dirty ? "edited" : "clean"}`}
       </button>
       <button type="button" onClick={() => guard.leave(() => onClose(name))}>

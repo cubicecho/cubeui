@@ -46,12 +46,14 @@ export function unaccountedItems(
   const names = new Set(registry.map((item) => item.name));
   return [
     ...registry
-      .filter((item) => !shown.has(item.name) && !(item.name in notShown))
+      .filter((item) => shown.has(item.name) === false && item.name in notShown === false)
       .map((item) => item.name),
     ...Object.keys(notShown)
-      .filter((name) => shown.has(name) || !names.has(name))
+      .filter((name) => shown.has(name) || names.has(name) === false)
       .map((name) => `stale notShown: ${name}`),
-    ...[...shown].filter((name) => !names.has(name)).map((name) => `not in the registry: ${name}`),
+    ...[...shown]
+      .filter((name) => names.has(name) === false)
+      .map((name) => `not in the registry: ${name}`),
   ];
 }
 

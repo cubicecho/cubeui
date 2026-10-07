@@ -213,7 +213,7 @@ export const OneAtATime: Story = {
 /** The `compiled` column of a `SideBySide`, so a query does not also find the native half. */
 function compiledColumn(canvasElement: HTMLElement) {
   const column = canvasElement.querySelectorAll("section")[1];
-  if (!(column instanceof HTMLElement)) {
+  if (column instanceof HTMLElement === false) {
     throw new Error("the story should render both halves");
   }
   return column;
@@ -297,7 +297,7 @@ export const AsAButton: Story = {
 
     // A press opens the file dialog straight away. The input is the button's next sibling.
     const uploadInput = upload.nextElementSibling;
-    if (!(uploadInput instanceof HTMLInputElement)) {
+    if (uploadInput instanceof HTMLInputElement === false) {
       throw new Error("the input should follow");
     }
     await expect(uploadInput.multiple).toBe(true);
