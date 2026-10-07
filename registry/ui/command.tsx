@@ -267,6 +267,12 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
   const shownIn = () => store.shownIn(id);
   const shown = useSyncExternalStore(store.subscribe, shownIn, shownIn);
   const hidden = forceMount === false && shown === 0;
+  const title =
+    typeof heading === "string" ? (
+      <Text className="px-2 py-1.5 text-xs font-medium text-foreground/60">{heading}</Text>
+    ) : (
+      heading
+    );
   return (
     <CommandGroupContext.Provider value={id}>
       {/* Hidden rather than unmounted: the items inside have to stay mounted to say whether they
@@ -276,11 +282,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
         aria-label={typeof heading === "string" ? heading : undefined}
         className={cn("p-1", hidden && "hidden", className)}
       >
-        {heading == null ? null : typeof heading === "string" ? (
-          <Text className="px-2 py-1.5 text-xs font-medium text-foreground/60">{heading}</Text>
-        ) : (
-          heading
-        )}
+        {title}
         {children}
       </View>
     </CommandGroupContext.Provider>

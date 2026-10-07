@@ -163,11 +163,9 @@ function MenuItem({
   // which every router's click does — so a menu handed the router's click would never close.
   // Cloned the other way, the router link is handed radix's click and runs it first. A disabled
   // row is no link at all, so nothing can follow it.
-  const anchor = disabled ? undefined : linkSlot ? (
-    cloneElement(linkSlot, undefined, row)
-  ) : href !== undefined ? (
-    <a href={href}>{row}</a>
-  ) : undefined;
+  const plainAnchor = href !== undefined ? <a href={href}>{row}</a> : undefined;
+  const liveAnchor = linkSlot ? cloneElement(linkSlot, undefined, row) : plainAnchor;
+  const anchor = disabled ? undefined : liveAnchor;
   return (
     <MenuPrimitive.Item
       data-slot="menu-item"

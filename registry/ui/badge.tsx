@@ -74,6 +74,9 @@ export function Badge({
   const shape = badgeHasLabel(children) ? "pill" : "dot";
   const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
   const inkClass = backgroundColor ? badgeInkFallback : badgeInkVariants({ variant });
+  const dotName = label
+    ? ({ role: "img", "aria-label": label } as const)
+    : ({ "aria-hidden": true } as const);
 
   return (
     <View
@@ -83,11 +86,7 @@ export function Badge({
       {...(backgroundColor ? { style: { backgroundColor } } : {})}
       // A dot carries meaning and no text, so it is named or it is decoration;
       // the same split `color-dot` makes, for the same reason.
-      {...(shape === "dot"
-        ? label
-          ? ({ role: "img", "aria-label": label } as const)
-          : ({ "aria-hidden": true } as const)
-        : {})}
+      {...(shape === "dot" ? dotName : {})}
     >
       {shape === "pill"
         ? Children.map(children, (child) =>

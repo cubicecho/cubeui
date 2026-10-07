@@ -183,6 +183,48 @@ export function ListItem({
     </>
   );
 
+  // The body in the one form its props ask for: the caller's link, a link, a button, or plain.
+  const pressableBody = () => {
+    if (linkSlot) {
+      return bodyLink(linkSlot, selected, body);
+    }
+    if (href !== undefined) {
+      return (
+        <Pressable
+          testID="list-item-body"
+          role="link"
+          accessibilityState={{ selected }}
+          // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+          {...(Platform.OS === "web"
+            ? ({ href, "aria-current": selected ? "page" : undefined } as const)
+            : {})}
+          {...(onPress ? { onPress } : {})}
+          className={BODY_CLASS}
+        >
+          {body}
+        </Pressable>
+      );
+    }
+    if (onPress) {
+      return (
+        <Pressable
+          testID="list-item-body"
+          role="button"
+          aria-current={selected ? true : undefined}
+          onPress={onPress}
+          className={BODY_CLASS}
+        >
+          {body}
+        </Pressable>
+      );
+    }
+    return (
+      <View testID="list-item-body" className="min-w-0 flex-1 flex-row items-center gap-3">
+        {body}
+      </View>
+    );
+  };
+
   return (
     <View
       testID="list-item"
@@ -204,37 +246,7 @@ export function ListItem({
         </View>
       ) : null}
 
-      {linkSlot ? (
-        bodyLink(linkSlot, selected, body)
-      ) : href !== undefined ? (
-        <Pressable
-          testID="list-item-body"
-          role="link"
-          accessibilityState={{ selected }}
-          // React Native has no `href` and no `aria-current`; the web has both, and needs both.
-          {...(Platform.OS === "web"
-            ? ({ href, "aria-current": selected ? "page" : undefined } as const)
-            : {})}
-          {...(onPress ? { onPress } : {})}
-          className={BODY_CLASS}
-        >
-          {body}
-        </Pressable>
-      ) : onPress ? (
-        <Pressable
-          testID="list-item-body"
-          role="button"
-          aria-current={selected ? true : undefined}
-          onPress={onPress}
-          className={BODY_CLASS}
-        >
-          {body}
-        </Pressable>
-      ) : (
-        <View testID="list-item-body" className="min-w-0 flex-1 flex-row items-center gap-3">
-          {body}
-        </View>
-      )}
+      {pressableBody()}
 
       {actionSlot ? (
         <View testID="list-item-action" className="shrink-0 flex-row items-center gap-1">

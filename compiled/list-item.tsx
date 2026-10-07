@@ -177,6 +177,48 @@ export function ListItem({
     </>
   );
 
+  // The body in the one form its props ask for: the caller's link, a link, a button, or plain.
+  const pressableBody = () => {
+    if (linkSlot) {
+      return bodyLink(linkSlot, selected, body);
+    }
+    if (href !== undefined) {
+      return (
+        <a
+          data-slot="list-item-body"
+          // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+          href={href}
+          aria-current={selected ? "page" : undefined}
+          {...(onPress ? { onClick: onPress } : {})}
+          className={cn("cube-rn-view cube-rn-pressable", BODY_CLASS)}
+        >
+          {body}
+        </a>
+      );
+    }
+    if (onPress) {
+      return (
+        <button
+          type="button"
+          data-slot="list-item-body"
+          aria-current={selected ? true : undefined}
+          onClick={onPress}
+          className={cn("cube-rn-view cube-rn-pressable", BODY_CLASS)}
+        >
+          {body}
+        </button>
+      );
+    }
+    return (
+      <div
+        data-slot="list-item-body"
+        className="cube-rn-view min-w-0 flex-1 flex-row items-center gap-3"
+      >
+        {body}
+      </div>
+    );
+  };
+
   return (
     <div
       data-slot="list-item"
@@ -196,37 +238,7 @@ export function ListItem({
         </div>
       ) : null}
 
-      {linkSlot ? (
-        bodyLink(linkSlot, selected, body)
-      ) : href !== undefined ? (
-        <a
-          data-slot="list-item-body"
-          // React Native has no `href` and no `aria-current`; the web has both, and needs both.
-          href={href}
-          aria-current={selected ? "page" : undefined}
-          {...(onPress ? { onClick: onPress } : {})}
-          className={cn("cube-rn-view cube-rn-pressable", BODY_CLASS)}
-        >
-          {body}
-        </a>
-      ) : onPress ? (
-        <button
-          type="button"
-          data-slot="list-item-body"
-          aria-current={selected ? true : undefined}
-          onClick={onPress}
-          className={cn("cube-rn-view cube-rn-pressable", BODY_CLASS)}
-        >
-          {body}
-        </button>
-      ) : (
-        <div
-          data-slot="list-item-body"
-          className="cube-rn-view min-w-0 flex-1 flex-row items-center gap-3"
-        >
-          {body}
-        </div>
-      )}
+      {pressableBody()}
 
       {actionSlot ? (
         <div

@@ -247,6 +247,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
     const ink = current ? "text-active-foreground" : "text-foreground/60";
     // Only a pill with an icon has something left to draw once its label is gone.
     const labelHideBelow = iconSlot ? group?.labelHideBelow : undefined;
+    const iconOnlyHeight = group?.framed ? "min-h-7" : "min-h-8";
     return (
       <Pressable
         ref={ref}
@@ -286,7 +287,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
           // The label's line is what gives a pill its height, and an icon is
           // shorter than it: with the label hidden the pill would shrink, so it
           // is held at the height a labelled pill beside it has.
-          iconSlot ? (group?.framed ? "min-h-7" : "min-h-8") : undefined,
+          iconSlot ? iconOnlyHeight : undefined,
           className,
         )}
         {...props}

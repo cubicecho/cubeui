@@ -296,6 +296,15 @@ type DateRangePickerProps = Omit<
   calendarProps?: Omit<CalendarProps, "mode" | "selected" | "onSelect" | "disabled"> | undefined;
 };
 
+/** The range as the trigger shows it: one date while only the start is chosen, nothing before that. */
+function rangeText(range: DateRange | null | undefined, pattern: string) {
+  if (!range?.from) {
+    return undefined;
+  }
+  const from = formatDateFns(range.from, pattern);
+  return range.to ? `${from} – ${formatDateFns(range.to, pattern)}` : from;
+}
+
 /**
  * A start and an end, behind a popover.
  *
@@ -336,11 +345,7 @@ export function DateRangePicker({
   };
   const pattern = format ?? "PP";
 
-  const label = value?.from
-    ? value.to
-      ? `${formatDateFns(value.from, pattern)} – ${formatDateFns(value.to, pattern)}`
-      : formatDateFns(value.from, pattern)
-    : placeholder;
+  const label = rangeText(value, pattern) ?? placeholder;
 
   return (
     <Popover open={open} onOpenChange={openPane}>

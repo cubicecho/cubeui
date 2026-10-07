@@ -179,12 +179,8 @@ function BoundNumberField(props: NumberFieldProps) {
   const stored = field.state.value ?? null;
   // `String`, not the raw number: the DOM `<input>` this was written against took either, and
   // `TextInput` takes only a string — so the registry's `Input` does too, on both platforms.
-  const value =
-    draft !== undefined && parseNumber(draft) === stored
-      ? draft
-      : stored === null
-        ? ""
-        : String(stored);
+  const storedText = stored === null ? "" : String(stored);
+  const value = draft !== undefined && parseNumber(draft) === stored ? draft : storedText;
 
   return (
     <FormField

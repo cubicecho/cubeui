@@ -187,7 +187,8 @@ export function Alert({
   );
   const textParts = parts.filter(isTextPart);
   const iconParts = parts.filter((child) => isTextPart(child) === false);
-  const glyph = iconSlot !== undefined ? iconSlot : parts.length > 0 ? null : defaultIcon(variant);
+  const ownIcon = parts.length > 0 ? null : defaultIcon(variant);
+  const glyph = iconSlot !== undefined ? iconSlot : ownIcon;
   const ink = ALERT_ICON_INK[variant];
 
   return (
