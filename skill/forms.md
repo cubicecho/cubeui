@@ -580,12 +580,23 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
+| `MultiSelectField` | `string[]` | `@cubeui/multi-select-form-field` |
+| `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
 `useAppForm` from `@cubeui/form` has the first five. `DateTimeField` and `ColorField` are their
 own items for the weight of the calendar and the picker, as on the web; add them with
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
+
+`MultiSelectField` and `SegmentedField` join the same way —
+`createAppForm({ MultiSelectField, SegmentedField })` — and replace a `FieldWrapper` around a bare
+`MultiSelect` or `SegmentedGroup`. `MultiSelectField` takes `options` and the rest of
+`MultiSelect`'s props (`onCreateOption`, `clearable`, `searchable`). `SegmentedField` takes
+`options` of `{ value, label, iconSlot?, disabled? }` and draws the pills itself, plus `variant`,
+`labelHideBelow` and `disabled`. It is for two to five short choices; more is a `SelectField`,
+and choices that each need a sentence are a `RadioGroupField`. The item is
+`multi-select-form-field` because `multi-select-field` is the web one.
 
 Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
 `*ClassName` props, plus the control's own. `className` is the field's, not the control's.
@@ -598,6 +609,8 @@ How each is named:
   date text — "Due September 15th, 2026". The time box is "Due time".
 - **`ColorField`**: the label is `htmlFor` the hex box; the swatch row is a `radiogroup`, which a
   label cannot name, so it takes `aria-labelledby` the label's id.
+- **`MultiSelectField`, `SegmentedField`** are `asGroup`: the trigger and the pills' row are
+  `aria-labelledby` the label.
 - **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
   has no `htmlFor`.
 - **`SelectField`**: the `id` and the `aria-*` wiring go on the trigger, not on the `Select` root,

@@ -160,6 +160,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@/components/ui/menu";
+import { MultiSelectField as HookMultiSelectField } from "@/components/ui/multi-select-form-field";
 import {
   Popover,
   PopoverClose,
@@ -173,6 +174,7 @@ import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SearchInput } from "@/components/ui/search-input";
 import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
+import { SegmentedField } from "@/components/ui/segmented-field";
 import {
   Select,
   SelectContent,
@@ -1157,7 +1159,23 @@ function AppFormSample() {
   );
 }
 
-const { useAppForm: useHookForm } = createAppForm({ DateTimeField, ColorField: HookColorField });
+const { useAppForm: useHookForm } = createAppForm({
+  DateTimeField,
+  ColorField: HookColorField,
+  MultiSelectField: HookMultiSelectField,
+  SegmentedField,
+});
+
+const HOOK_PRIORITIES = [
+  { value: "low", label: "Low" },
+  { value: "normal", label: "Normal" },
+  { value: "high", label: "High" },
+];
+const HOOK_TAGS = [
+  { value: "home", label: "Home" },
+  { value: "errand", label: "Errand" },
+  { value: "work", label: "Work" },
+];
 
 function HookFormSample() {
   const form = useHookForm({
@@ -1167,6 +1185,8 @@ function HookFormSample() {
       notify: true,
       due: new Date(2026, 8, 15) as Date | null,
       color: "#1d4ed8",
+      priority: "normal",
+      tags: ["home"] as string[],
     },
     onSubmit: noop,
   });
@@ -1186,6 +1206,12 @@ function HookFormSample() {
           </form.AppField>
           <form.AppField name="color">
             {(field) => <field.ColorField label="Task colour" swatches={SWATCHES} />}
+          </form.AppField>
+          <form.AppField name="priority">
+            {(field) => <field.SegmentedField label="Priority" options={HOOK_PRIORITIES} />}
+          </form.AppField>
+          <form.AppField name="tags">
+            {(field) => <field.MultiSelectField label="Task tags" options={HOOK_TAGS} />}
           </form.AppField>
           <form.SubmitButton createLabel="Add the task" />
         </Form>
@@ -1620,7 +1646,13 @@ const sections: GallerySection[] = [
   },
   {
     title: "Form",
-    items: ["form", "date-time-field", "color-picker-field"],
+    items: [
+      "form",
+      "date-time-field",
+      "color-picker-field",
+      "segmented-field",
+      "multi-select-form-field",
+    ],
     description: "The hook both platforms share, with its fields on `field.*`.",
     content: <HookFormSample />,
   },

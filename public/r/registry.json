@@ -1125,6 +1125,32 @@
       ]
     },
     {
+      "name": "multi-select-form-field",
+      "type": "registry:ui",
+      "title": "Multi Select Form Field",
+      "description": "`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.",
+      "registryDependencies": ["@cubeui/multi-select", "@cubeui/form"],
+      "files": [
+        {
+          "path": "compiled/multi-select-form-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "segmented-field",
+      "type": "registry:ui",
+      "title": "Segmented Field",
+      "description": "A `SegmentedGroup` bound to a string form field: a few short choices as pills on the page, the row named by the field's label. For `createAppForm` or inside `form.AppField`.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/segmented", "@cubeui/form"],
+      "files": [
+        {
+          "path": "compiled/segmented-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "file-picker",
       "type": "registry:ui",
       "title": "File Picker",

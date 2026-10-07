@@ -131,6 +131,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "../../registry/ui/menu.tsx";
+import { MultiSelectField } from "../../registry/ui/multi-select-form-field";
 import { PasswordInput } from "../../registry/ui/password-input";
 import {
   Popover,
@@ -144,6 +145,7 @@ import { Progress } from "../../registry/ui/progress";
 import { RadioGroup, RadioGroupItem } from "../../registry/ui/radio-group";
 import { SearchInput } from "../../registry/ui/search-input.tsx";
 import { SegmentedButton, SegmentedGroup } from "../../registry/ui/segmented";
+import { SegmentedField } from "../../registry/ui/segmented-field";
 import {
   Select,
   SelectContent,
@@ -523,7 +525,23 @@ function ConfirmAndToast() {
   );
 }
 
-const { useAppForm } = createAppForm({ DateTimeField, ColorField });
+const { useAppForm } = createAppForm({
+  DateTimeField,
+  ColorField,
+  MultiSelectField,
+  SegmentedField,
+});
+
+const PRIORITY_OPTIONS = [
+  { value: "low", label: "Low" },
+  { value: "normal", label: "Normal" },
+  { value: "high", label: "High" },
+];
+const TAG_OPTIONS = [
+  { value: "finance", label: "Finance" },
+  { value: "planning", label: "Planning" },
+  { value: "people", label: "People" },
+];
 
 const VISIBILITY_OPTIONS = [
   { value: "private", label: "Private", description: "Only people you invite." },
@@ -536,6 +554,8 @@ function ProjectForm() {
       name: "Quarterly review",
       notes: "",
       visibility: "team",
+      priority: "normal",
+      tags: ["planning"] as string[],
       pinned: false,
       notify: true,
       due: SAMPLE_DAY as Date | null,
@@ -556,6 +576,12 @@ function ProjectForm() {
           label="Visibility"
           options={VISIBILITY_OPTIONS}
         />
+        <form.AppField name="priority">
+          {(field) => <field.SegmentedField label="Priority" options={PRIORITY_OPTIONS} />}
+        </form.AppField>
+        <form.AppField name="tags">
+          {(field) => <field.MultiSelectField label="Tags" options={TAG_OPTIONS} />}
+        </form.AppField>
         <form.AppField name="pinned">
           {(field) => <field.CheckboxField label="Pin to the top" />}
         </form.AppField>
@@ -980,7 +1006,14 @@ const sections: GallerySection[] = [
   },
   {
     title: "Form",
-    items: ["form", "radio-group-field", "date-time-field", "color-picker-field"],
+    items: [
+      "form",
+      "radio-group-field",
+      "date-time-field",
+      "color-picker-field",
+      "multi-select-form-field",
+      "segmented-field",
+    ],
     description: "One bound form, a field of each kind.",
     content: <ProjectForm />,
   },
