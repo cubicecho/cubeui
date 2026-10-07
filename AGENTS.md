@@ -292,7 +292,8 @@ registry items — a form of plain inputs installs `@cubeui/app-form` and pulls 
 `react-markdown` and `remark-gfm` are the same case: `markdown` is written on them, and they are
 declared by that one item. `markdown` and `markdown-editor` are in no bundle for the same reason
 `multi-select` is its own item — nothing installs a Markdown parser except the app that asked for
-one.
+one. `markdown-code-editor` is the same again with CodeMirror (`@codemirror/*`, `@lezer/highlight`),
+and is a default export so an app can load it with `lazy()`.
 
 ## The forms assume TanStack Form
 

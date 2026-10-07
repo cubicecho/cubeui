@@ -882,6 +882,8 @@ const WEB_ONLY = {
   "form-field": "part of the web form layer; to merge into `form`",
   markdown:
     "drawn by react-markdown, which emits DOM elements and bare strings; React Native has neither, and `table`, which it composes, is web-only too",
+  "markdown-code-editor":
+    "CodeMirror, which edits a contenteditable DOM node; a device's editor is a `TextInput`",
   "markdown-editor": "a preview beside a textarea, and the preview is `markdown`",
   "multi-select-field": "a bound field of `app-form`; to merge into `form`",
   "password-field": "a bound field of `app-form`; to merge into `form`",

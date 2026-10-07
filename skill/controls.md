@@ -551,6 +551,52 @@ const [body, setBody] = useState(skill.instructions);
 - The textarea stays mounted in all three views, so undo history and the cursor survive a look at
   the preview. Beside the preview it is as tall as the preview; alone it is sixteen rem and
   resizes by its corner.
+
+### Markdown code editor
+
+An app whose main job is editing Markdown files wants `MarkdownCodeEditor`, from
+`@cubeui/markdown-code-editor`: CodeMirror 6, coloured from the theme's tokens. **Web only.** Do
+not set up CodeMirror by hand, and do not bundle a CodeMirror theme.
+
+**Which one:** `MarkdownEditor` for a field in a form — a description, a skill body, a comment. It
+is a textarea, costs nothing, and brings its preview. `MarkdownCodeEditor` for a document — a note,
+a README, a page of a wiki — where highlighting, undo and a save key earn about half a megabyte of
+CodeMirror. It brings no preview: draw a `Markdown` beside it if the screen wants one.
+
+It is a default export, so the weight is its own chunk and arrives only when an editor is shown:
+
+```tsx
+const MarkdownCodeEditor = lazy(() => import("@/components/markdown-code-editor"));
+
+<Suspense fallback={<Skeleton className="min-h-64 w-full" />}>
+  <MarkdownCodeEditor
+    label="Document"
+    value={source}
+    onValueChange={setSource}
+    onSave={(text) => save.mutate(text)}
+  />
+</Suspense>
+```
+
+- **`value`, `onValueChange`** — the source is yours, as with every control. Handing it a `value`
+  that is not what it shows replaces the document without calling `onValueChange`: that is how
+  opening another file works, and it does not mark the file changed.
+- **`onSave`** is Cmd+S / Ctrl+S, called with the source as it stands. Given, the browser no longer
+  offers to save the page.
+- **`label`** is the accessible name. With a visible label, pass its id as `aria-labelledby`
+  instead. One of the two is required: nothing else names the editor.
+- **`readOnly`** shows the source, selectable and copyable, and refuses edits.
+- **`placeholder`** is what an empty document shows.
+- **`extensions`** are CodeMirror extensions of your own — a completion source for `[[wikilinks]]`,
+  a linter, a keymap. They are tried before the editor's own, so a key you bind wins. Hold the
+  array in a module constant or `useMemo`: a new array each render reconfigures the editor each
+  render. Completion and lint popovers are already drawn in the popover's colours.
+- **`autoFocus`** puts the cursor in it on mount. **`className`** is the box: `min-h-64` unless
+  given, so `className="min-h-[60vh]"` for a full page.
+- **Keep it mounted** to keep the undo history and the cursor. To show a preview in its place,
+  hide the editor (`hidden`), do not unmount it.
+- Tab leaves the editor, as it leaves any field. Soft wrap, list continuation on Enter and
+  highlighting inside fenced code blocks are on.
 - **Nothing in the preview is editable**, and nothing becomes a field when it is pressed. The
   source is edited in the textarea and only there.
 - The preview is the plain `Markdown`. Documents that need their own `components` or plugins put

@@ -165,6 +165,28 @@
       "dependencies": ["lucide-react@^1.34.0", "react-markdown@^10.1.0", "remark-gfm@^4.0.1"]
     },
     {
+      "name": "markdown-code-editor",
+      "type": "registry:component",
+      "title": "Markdown Code Editor",
+      "description": "A Markdown source editor on CodeMirror 6, coloured from the theme's tokens: syntax highlighting, soft wrap, list continuation, undo history, a save key, and room for an app's own extensions. Heavy, so it is a default export to load with lazy(). The textarea markdown-editor is the light one.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/web/markdown-code-editor.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": [
+        "@codemirror/commands@^6.11.1",
+        "@codemirror/lang-markdown@^6.5.2",
+        "@codemirror/language-data@^6.5.2",
+        "@codemirror/language@^6.13.1",
+        "@codemirror/state@^6.7.6",
+        "@codemirror/view@^6.43.14",
+        "@lezer/highlight@^1.2.5"
+      ]
+    },
+    {
       "name": "markdown-editor",
       "type": "registry:component",
       "title": "Markdown Editor",

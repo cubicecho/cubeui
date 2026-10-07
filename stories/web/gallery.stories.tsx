@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ActionButton } from "@/components/action-button";
 import {
@@ -1052,6 +1052,18 @@ function MarkdownEditing() {
   return <MarkdownEditor aria-label="Notes" value={value} onValueChange={setValue} rows={6} />;
 }
 
+// Its own chunk, as an app loads it: CodeMirror is most of the editor's weight.
+const MarkdownCodeEditor = lazy(() => import("@/components/markdown-code-editor"));
+
+function MarkdownCodeEditing() {
+  const [value, setValue] = useState("# Draft\n\nWrite **Markdown** here, with a [link](#).\n");
+  return (
+    <Suspense fallback={<Skeleton className="min-h-64 w-full" />}>
+      <MarkdownCodeEditor label="Document" value={value} onValueChange={setValue} />
+    </Suspense>
+  );
+}
+
 function Fields() {
   return (
     <FieldGroup className="max-w-xl">
@@ -1623,6 +1635,12 @@ const sections: GallerySection[] = [
   },
   { title: "Markdown", items: ["markdown"], content: <Markdown content={NOTES} /> },
   { title: "Markdown editor", items: ["markdown-editor"], content: <MarkdownEditing /> },
+  {
+    title: "Markdown code editor",
+    items: ["markdown-code-editor"],
+    description: "CodeMirror, loaded lazily, for the app whose job is editing Markdown files.",
+    content: <MarkdownCodeEditing />,
+  },
 
   // Forms
   { title: "Field", items: ["field"], content: <Fields /> },
