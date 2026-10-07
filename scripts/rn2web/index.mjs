@@ -89,7 +89,9 @@ function neutral() {
   const names = new Set();
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir))) {
-      if (file.endsWith(".ts") && !file.endsWith(".test.ts")) names.add(basename(file, ".ts"));
+      if (file.endsWith(".ts") && !file.endsWith(".test.ts")) {
+        names.add(basename(file, ".ts"));
+      }
     }
   }
   return names;
@@ -111,7 +113,9 @@ function items() {
   // `compiled/` holds one file per item and the basename check is what guards that.
   for (const dir of [WEB_ONLY, `${WEB_ONLY}/ui`]) {
     for (const file of readdirSync(join(root, dir)).sort()) {
-      if (!file.endsWith(".tsx")) continue;
+      if (!file.endsWith(".tsx")) {
+        continue;
+      }
       found.push({
         name: basename(file, ".tsx"),
         kind: "passthrough",
@@ -122,7 +126,9 @@ function items() {
   }
   for (const dir of SOURCES) {
     for (const file of readdirSync(join(root, dir)).sort()) {
-      if (!file.endsWith(".tsx")) continue;
+      if (!file.endsWith(".tsx")) {
+        continue;
+      }
       if (file.endsWith(".web.tsx")) {
         found.push({
           name: basename(file, ".web.tsx"),
@@ -136,7 +142,9 @@ function items() {
       // An item with a hand-written web half never reaches the transform. `select.web.tsx` is a
       // Radix anchored popper and `select.tsx` is a native `Modal` sheet; there is no transform
       // between those two, and pretending otherwise is what would sink this.
-      if (existsSync(join(root, dir, `${name}.web.tsx`))) continue;
+      if (existsSync(join(root, dir, `${name}.web.tsx`))) {
+        continue;
+      }
       found.push({ name, kind: "compile", rel: `${dir}/${file}`, out: file });
     }
   }
@@ -162,13 +170,19 @@ function assemble() {
   for (;;) {
     results = new Map();
     for (const item of all) {
-      if (!tree.has(item.name)) continue;
+      if (!tree.has(item.name)) {
+        continue;
+      }
       results.set(item.name, emit(item, tree));
     }
     const failed = [...results].filter(([, r]) => r.code === null).map(([name]) => name);
-    if (failed.length === 0) break;
+    if (failed.length === 0) {
+      break;
+    }
     const next = new Set([...tree].filter((n) => !failed.includes(n)));
-    if (next.size === tree.size) break;
+    if (next.size === tree.size) {
+      break;
+    }
     tree = next;
   }
 
@@ -176,7 +190,9 @@ function assemble() {
   // "a sibling was dropped in the round before this one".
   const refusals = [];
   for (const item of all) {
-    if (results.get(item.name)?.code != null) continue;
+    if (results.get(item.name)?.code != null) {
+      continue;
+    }
     refusals.push({ ...item, diagnostics: emit(item, tree).diagnostics });
   }
 
@@ -195,10 +211,15 @@ const { emitted, refusals, all } = assemble();
 let drift = 0;
 for (const [file, code] of emitted) {
   const out = join(OUT, file);
-  if ((existsSync(out) ? readFileSync(out, "utf8") : null) === code) continue;
+  if ((existsSync(out) ? readFileSync(out, "utf8") : null) === code) {
+    continue;
+  }
   drift += 1;
-  if (check) console.error(`  drift: compiled/${file} is not what its source compiles to`);
-  else writeFileSync(out, code);
+  if (check) {
+    console.error(`  drift: compiled/${file} is not what its source compiles to`);
+  } else {
+    writeFileSync(out, code);
+  }
 }
 
 // A `.tsx` in compiled/ with no item behind it any more: the source was deleted or renamed, or it
@@ -208,8 +229,11 @@ const stale = readdirSync(OUT)
   .filter((f) => /\.tsx?$/.test(f) && !emitted.has(f))
   .sort();
 for (const file of stale) {
-  if (check) console.error(`  stale: compiled/${file} has no item behind it`);
-  else unlinkSync(join(OUT, file));
+  if (check) {
+    console.error(`  stale: compiled/${file} has no item behind it`);
+  } else {
+    unlinkSync(join(OUT, file));
+  }
 }
 
 // The second registry, derived from the first rather than kept beside it. See `registry.mjs` for
@@ -234,15 +258,20 @@ web.items.push(...storyItems);
 const webJson = format(`${JSON.stringify(web, null, 2)}\n`, "registry.web.json");
 if ((existsSync(WEB_REGISTRY) ? readFileSync(WEB_REGISTRY, "utf8") : null) !== webJson) {
   drift += 1;
-  if (check) console.error("  drift: registry.web.json is not what registry.json derives to");
-  else writeFileSync(WEB_REGISTRY, webJson);
+  if (check) {
+    console.error("  drift: registry.web.json is not what registry.json derives to");
+  } else {
+    writeFileSync(WEB_REGISTRY, webJson);
+  }
 }
 
 for (const { name, kind, rel, diagnostics } of refusals) {
   console.error(
     `\n${name} — no web half (${rel}${kind === "passthrough" ? ", hand-written" : ""})`,
   );
-  for (const d of diagnostics) console.error(`  ${d.file}:${d.line}  ${d.message}`);
+  for (const d of diagnostics) {
+    console.error(`  ${d.file}:${d.line}  ${d.message}`);
+  }
 }
 
 const byKind = (k) => all.filter((i) => i.kind === k && emitted.has(i.out)).length;
@@ -257,4 +286,6 @@ console.log(
     `${dropped.length ? ` — no web half for ${dropped.join(", ")}` : ""}.`,
 );
 
-if (check && (drift || stale.length)) process.exit(1);
+if (check && (drift || stale.length)) {
+  process.exit(1);
+}

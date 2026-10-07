@@ -26,7 +26,9 @@ const LAYERS = [
 
 const between = (text, start, end) => {
   const from = text.indexOf(start);
-  if (from === -1) return null;
+  if (from === -1) {
+    return null;
+  }
   const rest = text.slice(from + start.length);
   const to = rest.indexOf(end);
   return to === -1 ? rest : rest.slice(0, to);
@@ -79,12 +81,14 @@ const rule2 = between(conventions, "## 2. One vocabulary across the set", "\n## 
 const vocabulary = between(skill, "## The slot vocabulary", "\n## What does not belong");
 
 const problems = [];
-if (rule2 === null)
+if (rule2 === null) {
   problems.push(`${CONVENTIONS}: rule 2's heading was renamed; this check cannot find it.`);
-if (vocabulary === null)
+}
+if (vocabulary === null) {
   problems.push(
     `${SKILL}: the vocabulary section's heading was renamed; this check cannot find it.`,
   );
+}
 
 if (problems.length === 0) {
   const left = fromConventions(rule2);
@@ -103,12 +107,14 @@ if (problems.length === 0) {
     }
     const missingFromSkill = a.filter((w) => !b.includes(w));
     const missingFromConventions = b.filter((w) => !a.includes(w));
-    if (missingFromSkill.length > 0)
+    if (missingFromSkill.length > 0) {
       problems.push(`"${skillHeading}" in ${SKILL} is missing: ${missingFromSkill.join(", ")}`);
-    if (missingFromConventions.length > 0)
+    }
+    if (missingFromConventions.length > 0) {
       problems.push(
         `"${conventionsHeading}" in ${CONVENTIONS} is missing: ${missingFromConventions.join(", ")}`,
       );
+    }
   }
 
   // A word taught in one layer and argued in another is the `hasUnsavedChanges` case: it reads as
@@ -117,7 +123,11 @@ if (problems.length === 0) {
     const found = new Map();
     for (const [heading, words] of layers) {
       const index = headings.indexOf(heading);
-      for (const word of words) if (index !== -1) found.set(word, index);
+      for (const word of words) {
+        if (index !== -1) {
+          found.set(word, index);
+        }
+      }
     }
     return found;
   };
@@ -131,16 +141,19 @@ if (problems.length === 0) {
   );
   for (const [word, index] of leftLayer) {
     const other = rightLayer.get(word);
-    if (other !== undefined && other !== index)
+    if (other !== undefined && other !== index) {
       problems.push(
         `\`${word}\` is a "${LAYERS[index][0]}" word in ${CONVENTIONS} and a "${LAYERS[other][1]}" word in ${SKILL}.`,
       );
+    }
   }
 }
 
 if (problems.length > 0) {
   console.error("The vocabulary in rule 2 and the vocabulary in the skill disagree:\n");
-  for (const problem of problems) console.error(`  ${problem}`);
+  for (const problem of problems) {
+    console.error(`  ${problem}`);
+  }
   console.error(
     "\nAdding a word is a decision about the whole set (rule 2). Write it in both places, or in neither.",
   );

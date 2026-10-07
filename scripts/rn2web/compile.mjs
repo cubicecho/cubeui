@@ -69,7 +69,9 @@ function readReactNativeImport(sourceFile, diagnostics) {
   // discard the `className` re-declaration every component in this repo depends on.
   const types = new Set();
   for (const decl of sourceFile.getImportDeclarations()) {
-    if (decl.getModuleSpecifierValue() !== "react-native") continue;
+    if (decl.getModuleSpecifierValue() !== "react-native") {
+      continue;
+    }
 
     for (const named of decl.getNamedImports()) {
       const name = named.getName();
@@ -126,8 +128,12 @@ function foldPlatform(sourceFile) {
   let changed = false;
 
   for (const access of sourceFile.getDescendantsOfKind(SyntaxKind.PropertyAccessExpression)) {
-    if (access.wasForgotten()) continue;
-    if (access.getExpression().getText() !== "Platform") continue;
+    if (access.wasForgotten()) {
+      continue;
+    }
+    if (access.getExpression().getText() !== "Platform") {
+      continue;
+    }
 
     if (access.getName() === "OS") {
       const parent = access.getParent();
@@ -150,12 +156,18 @@ function foldPlatform(sourceFile) {
     // `Platform.select({ web, default })` — take the web arm, or the default, in that order.
     if (access.getName() === "select") {
       const call = access.getParent();
-      if (!Node.isCallExpression(call)) continue;
+      if (!Node.isCallExpression(call)) {
+        continue;
+      }
       const arg = call.getArguments()[0];
-      if (!Node.isObjectLiteralExpression(arg)) continue;
+      if (!Node.isObjectLiteralExpression(arg)) {
+        continue;
+      }
       const pick =
         arg.getProperty("web") ?? arg.getProperty("default") ?? arg.getProperty("native");
-      if (!pick || !Node.isPropertyAssignment(pick)) continue;
+      if (!pick || !Node.isPropertyAssignment(pick)) {
+        continue;
+      }
       call.replaceWithText(pick.getInitializer().getText());
       changed = true;
     }
@@ -163,9 +175,13 @@ function foldPlatform(sourceFile) {
 
   // `true ? a : b` is `a`. Runs after the substitution above, in the same loop the driver repeats.
   for (const cond of sourceFile.getDescendantsOfKind(SyntaxKind.ConditionalExpression)) {
-    if (cond.wasForgotten()) continue;
+    if (cond.wasForgotten()) {
+      continue;
+    }
     const test = cond.getCondition().getText();
-    if (test !== "true" && test !== "false") continue;
+    if (test !== "true" && test !== "false") {
+      continue;
+    }
     cond.replaceWithText((test === "true" ? cond.getWhenTrue() : cond.getWhenFalse()).getText());
     changed = true;
   }
@@ -173,10 +189,14 @@ function foldPlatform(sourceFile) {
   // `true && a` is `a` and `false && a` is `false`; `||` the mirror. The class-list idiom
   // `cn(Platform.OS === "web" && "animate-pulse")` is what leaves these behind.
   for (const bin of sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression)) {
-    if (bin.wasForgotten()) continue;
+    if (bin.wasForgotten()) {
+      continue;
+    }
     const op = bin.getOperatorToken().getText();
     const left = bin.getLeft().getText();
-    if ((op !== "&&" && op !== "||") || (left !== "true" && left !== "false")) continue;
+    if ((op !== "&&" && op !== "||") || (left !== "true" && left !== "false")) {
+      continue;
+    }
     const keepsRight = (op === "&&") === (left === "true");
     bin.replaceWithText(keepsRight ? bin.getRight().getText() : left);
     changed = true;
@@ -188,11 +208,17 @@ function foldPlatform(sourceFile) {
   // either outside a JSX tag. An arm that returns makes whatever follows it in the block dead, and
   // the dead half is dropped with it, so the native element never reaches the element pass.
   for (const stmt of sourceFile.getDescendantsOfKind(SyntaxKind.IfStatement)) {
-    if (stmt.wasForgotten()) continue;
+    if (stmt.wasForgotten()) {
+      continue;
+    }
     const test = stmt.getExpression().getText();
-    if (test !== "true" && test !== "false") continue;
+    if (test !== "true" && test !== "false") {
+      continue;
+    }
     const container = stmt.getParent();
-    if (!Node.isBlock(container) && !Node.isSourceFile(container)) continue;
+    if (!Node.isBlock(container) && !Node.isSourceFile(container)) {
+      continue;
+    }
 
     const arm = test === "true" ? stmt.getThenStatement() : stmt.getElseStatement();
     const body = arm === undefined ? [] : Node.isBlock(arm) ? arm.getStatements() : [arm];
@@ -207,18 +233,26 @@ function foldPlatform(sourceFile) {
     const statements = container.getStatementsWithComments();
     const index = statements.findIndex((s) => s.compilerNode === stmt.compilerNode);
     if (exits) {
-      for (const dead of statements.slice(index + 1).reverse()) dead.remove();
+      for (const dead of statements.slice(index + 1).reverse()) {
+        dead.remove();
+      }
     }
     stmt.remove();
-    if (texts.length) container.insertStatements(index, texts);
+    if (texts.length) {
+      container.insertStatements(index, texts);
+    }
     changed = true;
   }
 
   // The `Platform` import itself, once nothing references it.
   for (const decl of sourceFile.getImportDeclarations()) {
-    if (decl.getModuleSpecifierValue() !== "react-native") continue;
+    if (decl.getModuleSpecifierValue() !== "react-native") {
+      continue;
+    }
     for (const named of decl.getNamedImports()) {
-      if (!FOLDED_IMPORTS.has(named.getName())) continue;
+      if (!FOLDED_IMPORTS.has(named.getName())) {
+        continue;
+      }
       named.remove();
       changed = true;
     }
@@ -234,13 +268,17 @@ function inlineSpreads(sourceFile) {
   let changed = false;
 
   for (const spread of sourceFile.getDescendantsOfKind(SyntaxKind.JsxSpreadAttribute)) {
-    if (spread.wasForgotten()) continue;
+    if (spread.wasForgotten()) {
+      continue;
+    }
 
     let expr = spread.getExpression();
     while (Node.isParenthesizedExpression(expr) || Node.isAsExpression(expr)) {
       expr = Node.isAsExpression(expr) ? expr.getExpression() : expr.getExpression();
     }
-    if (!Node.isObjectLiteralExpression(expr)) continue;
+    if (!Node.isObjectLiteralExpression(expr)) {
+      continue;
+    }
 
     const parts = [];
     let literal = true;
@@ -266,7 +304,9 @@ function inlineSpreads(sourceFile) {
         Node.isStringLiteral(value) ? `${name}=${value.getText()}` : `${name}={${value.getText()}}`,
       );
     }
-    if (!literal) continue;
+    if (!literal) {
+      continue;
+    }
 
     spread.replaceWithText(parts.join(" ") || "");
     changed = true;
@@ -280,11 +320,17 @@ function inlineSpreads(sourceFile) {
 
 /** The `cn(...)` call, the string literal, or the bare expression a `className` was written as. */
 function injectClasses(attr, classes, diagnostics) {
-  if (!classes) return;
-  if (!attr) return;
+  if (!classes) {
+    return;
+  }
+  if (!attr) {
+    return;
+  }
 
   const init = attr.getInitializer();
-  if (!init) return;
+  if (!init) {
+    return;
+  }
 
   if (Node.isStringLiteral(init)) {
     attr.setInitializer(`"${classes} ${init.getLiteralValue()}"`);
@@ -292,7 +338,9 @@ function injectClasses(attr, classes, diagnostics) {
   }
   if (Node.isJsxExpression(init)) {
     const expr = init.getExpression();
-    if (!expr) return;
+    if (!expr) {
+      return;
+    }
     if (Node.isCallExpression(expr) && expr.getExpression().getText() === "cn") {
       expr.insertArgument(0, `"${classes}"`);
       return;
@@ -310,13 +358,21 @@ function injectClasses(attr, classes, diagnostics) {
 
 /** The string value of a JSX attribute, when it is written as a literal. */
 function literalValue(attr) {
-  if (!attr) return null;
+  if (!attr) {
+    return null;
+  }
   const init = attr.getInitializer();
-  if (Node.isStringLiteral(init)) return init.getLiteralValue();
+  if (Node.isStringLiteral(init)) {
+    return init.getLiteralValue();
+  }
   if (Node.isJsxExpression(init)) {
     const expr = init.getExpression();
-    if (Node.isStringLiteral(expr)) return expr.getLiteralValue();
-    if (Node.isNumericLiteral(expr)) return expr.getLiteralValue();
+    if (Node.isStringLiteral(expr)) {
+      return expr.getLiteralValue();
+    }
+    if (Node.isNumericLiteral(expr)) {
+      return expr.getLiteralValue();
+    }
   }
   return null;
 }
@@ -332,7 +388,9 @@ function literalValue(attr) {
  */
 function checkAccessibilityState(rnName, find, attrs, diagnostics) {
   const attr = find("accessibilityState");
-  if (!attr) return true;
+  if (!attr) {
+    return true;
+  }
 
   const init = attr.getInitializer();
   const object = Node.isJsxExpression(init) ? init.getExpression() : null;
@@ -356,10 +414,14 @@ function checkAccessibilityState(rnName, find, attrs, diagnostics) {
             .getText()
             .replace(/^["']|["']$/g, "")
         : null;
-    if (!key) continue;
+    if (!key) {
+      continue;
+    }
 
     const accepted = ACCESSIBILITY_STATE_ARIA[key] ?? [];
-    if (accepted.some((aria) => present.has(aria))) continue;
+    if (accepted.some((aria) => present.has(aria))) {
+      continue;
+    }
 
     refuse(
       diagnostics,
@@ -382,7 +444,9 @@ function transformElement(open, elements, diagnostics) {
   const tagNode = open.getTagNameNode();
   const rnName = tagNode.getText();
   const entry = ELEMENTS[rnName];
-  if (!entry || !elements.has(rnName)) return false;
+  if (!entry || !elements.has(rnName)) {
+    return false;
+  }
 
   const attrs = () => open.getAttributes().filter(Node.isJsxAttribute);
   const find = (name) => attrs().find((a) => a.getNameNode().getText() === name);
@@ -409,7 +473,9 @@ function transformElement(open, elements, diagnostics) {
       return false;
     }
   }
-  if (!checkAccessibilityState(rnName, find, attrs, diagnostics)) return false;
+  if (!checkAccessibilityState(rnName, find, attrs, diagnostics)) {
+    return false;
+  }
 
   // --- the tag. `webAs` (level 3) beats inferred ARIA (level 2) beats the element map (level 1).
   const webAs = literalValue(find("webAs"));
@@ -471,7 +537,9 @@ function transformElement(open, elements, diagnostics) {
     tag = entry.generic.tag;
     reset = entry.generic.reset;
   }
-  if (dropRole) roleAttr.remove();
+  if (dropRole) {
+    roleAttr.remove();
+  }
 
   // --- the props.
   const extraClasses = [];
@@ -499,7 +567,9 @@ function transformElement(open, elements, diagnostics) {
       continue;
     }
     const mapped = PROP_MAP[name];
-    if (mapped) attr.getNameNode().replaceWithText(mapped);
+    if (mapped) {
+      attr.getNameNode().replaceWithText(mapped);
+    }
   }
 
   // --- the reset class, and whatever the element map adds on top of it.
@@ -524,12 +594,15 @@ function transformElement(open, elements, diagnostics) {
     const refInit = refAttr?.getInitializer();
     if (Node.isJsxExpression(refInit)) {
       const expr = refInit.getExpression();
-      if (Node.isIdentifier(expr))
+      if (Node.isIdentifier(expr)) {
         refInit.replaceWithText(`{${expr.getText()} as React.Ref<${dom}>}`);
+      }
     }
     for (const spread of open.getAttributes().filter(Node.isJsxSpreadAttribute)) {
       const expr = spread.getExpression();
-      if (!Node.isIdentifier(expr)) continue;
+      if (!Node.isIdentifier(expr)) {
+        continue;
+      }
       spread.replaceWithText(
         `{...(${expr.getText()} as React.ComponentPropsWithoutRef<"${tag}">)}`,
       );
@@ -579,8 +652,12 @@ function transformElements(sourceFile, elements, diagnostics) {
     ...sourceFile.getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement),
   ];
   for (const open of opens) {
-    if (open.wasForgotten()) continue;
-    if (transformElement(open, elements, diagnostics)) changed = true;
+    if (open.wasForgotten()) {
+      continue;
+    }
+    if (transformElement(open, elements, diagnostics)) {
+      changed = true;
+    }
   }
   return changed;
 }
@@ -591,7 +668,9 @@ function transformElements(sourceFile, elements, diagnostics) {
  */
 function checkNestedInteractive(sourceFile, diagnostics) {
   for (const open of sourceFile.getDescendantsOfKind(SyntaxKind.JsxOpeningElement)) {
-    if (open.getTagNameNode().getText() !== "button") continue;
+    if (open.getTagNameNode().getText() !== "button") {
+      continue;
+    }
     const outer = open.getFirstAncestor(
       (a) =>
         Node.isJsxElement(a) &&
@@ -622,8 +701,12 @@ function checkNestedInteractive(sourceFile, diagnostics) {
  */
 function checkElementLeaks(sourceFile, elements, diagnostics) {
   for (const id of sourceFile.getDescendantsOfKind(SyntaxKind.Identifier)) {
-    if (id.wasForgotten() || !elements.has(id.getText())) continue;
-    if (id.getFirstAncestorByKind(SyntaxKind.ImportDeclaration)) continue;
+    if (id.wasForgotten() || !elements.has(id.getText())) {
+      continue;
+    }
+    if (id.getFirstAncestorByKind(SyntaxKind.ImportDeclaration)) {
+      continue;
+    }
     refuse(
       diagnostics,
       id,
@@ -665,7 +748,9 @@ function checkNativePropLeaks(sourceFile, diagnostics) {
 
   // A shorthand is both positions at once, which is exactly how this class of bug hides.
   for (const node of sourceFile.getDescendantsOfKind(SyntaxKind.ShorthandPropertyAssignment)) {
-    if (!node.wasForgotten() && native(node.getName())) leaked(node, node.getName());
+    if (!node.wasForgotten() && native(node.getName())) {
+      leaked(node, node.getName());
+    }
   }
   for (const kind of [
     SyntaxKind.JsxAttribute,
@@ -673,12 +758,16 @@ function checkNativePropLeaks(sourceFile, diagnostics) {
     SyntaxKind.PropertyAssignment,
   ]) {
     for (const node of sourceFile.getDescendantsOfKind(kind)) {
-      if (node.wasForgotten()) continue;
+      if (node.wasForgotten()) {
+        continue;
+      }
       const name = node
         .getNameNode()
         .getText()
         .replace(/^["']|["']$/g, "");
-      if (native(name)) leaked(node.getNameNode(), name);
+      if (native(name)) {
+        leaked(node.getNameNode(), name);
+      }
     }
   }
 }
@@ -709,14 +798,20 @@ function renamePublicProps(sourceFile) {
 
   for (const sig of sourceFile.getDescendantsOfKind(SyntaxKind.PropertySignature)) {
     const mapped = PROP_MAP[sig.getName()];
-    if (mapped) sig.getNameNode().replaceWithText(key(mapped));
+    if (mapped) {
+      sig.getNameNode().replaceWithText(key(mapped));
+    }
   }
 
   for (const binding of sourceFile.getDescendantsOfKind(SyntaxKind.BindingElement)) {
-    if (binding.getPropertyNameNode()) continue;
+    if (binding.getPropertyNameNode()) {
+      continue;
+    }
     const name = binding.getNameNode().getText();
     const mapped = PROP_MAP[name];
-    if (mapped) binding.replaceWithText(`${key(mapped)}: ${name}`);
+    if (mapped) {
+      binding.replaceWithText(`${key(mapped)}: ${name}`);
+    }
   }
 
   /*
@@ -735,8 +830,12 @@ function renamePublicProps(sourceFile) {
    */
   for (const short of sourceFile.getDescendantsOfKind(SyntaxKind.ShorthandPropertyAssignment)) {
     const mapped = PROP_MAP[short.getName()];
-    if (!mapped) continue;
-    if (!short.getFirstAncestorByKind(SyntaxKind.JsxSpreadAttribute)) continue;
+    if (!mapped) {
+      continue;
+    }
+    if (!short.getFirstAncestorByKind(SyntaxKind.JsxSpreadAttribute)) {
+      continue;
+    }
     short.replaceWithText(`${key(mapped)}: ${short.getName()}`);
   }
 
@@ -744,12 +843,18 @@ function renamePublicProps(sourceFile) {
   // mapped element became a lowercase tag two passes ago.
   for (const attr of sourceFile.getDescendantsOfKind(SyntaxKind.JsxAttribute)) {
     const mapped = PROP_MAP[attr.getNameNode().getText()];
-    if (!mapped) continue;
+    if (!mapped) {
+      continue;
+    }
     const owner = attr.getFirstAncestor(
       (a) => Node.isJsxOpeningElement(a) || Node.isJsxSelfClosingElement(a),
     );
-    if (!owner) continue;
-    if (!/^[A-Z]/.test(owner.getTagNameNode().getText())) continue;
+    if (!owner) {
+      continue;
+    }
+    if (!/^[A-Z]/.test(owner.getTagNameNode().getText())) {
+      continue;
+    }
     attr.getNameNode().replaceWithText(mapped);
   }
 }
@@ -768,16 +873,22 @@ function renamePublicProps(sourceFile) {
  */
 function pruneRewrittenTypeImports(sourceFile) {
   const react = sourceFile.getImportDeclaration((d) => d.getModuleSpecifierValue() === "react");
-  if (!react) return;
+  if (!react) {
+    return;
+  }
   for (const spec of react.getNamedImports()) {
     const name = spec.getName();
-    if (name !== "ElementRef" && name !== "ComponentProps") continue;
+    if (name !== "ElementRef" && name !== "ComponentProps") {
+      continue;
+    }
     const used = sourceFile
       .getDescendantsOfKind(SyntaxKind.Identifier)
       .some(
         (id) => id.getText() === name && !id.getFirstAncestorByKind(SyntaxKind.ImportDeclaration),
       );
-    if (!used) spec.remove();
+    if (!used) {
+      spec.remove();
+    }
   }
   if (
     react.getNamedImports().length === 0 &&
@@ -792,7 +903,9 @@ function rewriteTypes(sourceFile, types, diagnostics) {
   let changed = false;
 
   for (const ref of sourceFile.getDescendantsOfKind(SyntaxKind.TypeReference)) {
-    if (ref.wasForgotten()) continue;
+    if (ref.wasForgotten()) {
+      continue;
+    }
     const name = ref.getTypeName().getText();
     const args = ref.getTypeArguments();
 
@@ -883,7 +996,9 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics)
     }
 
     const sibling = spec.match(/^@\/components\/(?:ui|layout)\/(.+)$/);
-    if (!sibling) continue;
+    if (!sibling) {
+      continue;
+    }
     const name = sibling[1];
 
     /**
@@ -892,7 +1007,9 @@ function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics)
      * exactly that reason. It has no web half because it needs none, so its specifier is left
      * alone and the shadcn CLI rewrites the alias at install time as usual.
      */
-    if (neutralNames.has(name)) continue;
+    if (neutralNames.has(name)) {
+      continue;
+    }
 
     if (!compiledNames.has(name)) {
       refuse(
@@ -916,12 +1033,16 @@ function ensureCn(sourceFile) {
   const used = sourceFile
     .getDescendantsOfKind(SyntaxKind.CallExpression)
     .some((call) => call.getExpression().getText() === "cn");
-  if (!used) return;
+  if (!used) {
+    return;
+  }
 
   const imported = sourceFile
     .getImportDeclarations()
     .some((decl) => decl.getNamedImports().some((spec) => spec.getName() === "cn"));
-  if (imported) return;
+  if (imported) {
+    return;
+  }
 
   const last = sourceFile.getImportDeclarations().at(-1);
   sourceFile.insertImportDeclaration(last ? last.getChildIndex() + 1 : 0, {
@@ -982,18 +1103,32 @@ export function compileSource({
   const diagnostics = [];
 
   const { elements, types } = readReactNativeImport(sourceFile, diagnostics);
-  if (diagnostics.length) return { code: null, diagnostics };
+  if (diagnostics.length) {
+    return { code: null, diagnostics };
+  }
 
   // Each pass is idempotent, so running them to a fixed point is both simpler than ordering the
   // mutations by hand and the only thing that survives ts-morph forgetting a node mid-walk.
   for (let pass = 0; pass < 12; pass += 1) {
     let changed = false;
-    if (foldPlatform(sourceFile)) changed = true;
-    if (inlineSpreads(sourceFile)) changed = true;
-    if (transformElements(sourceFile, elements, diagnostics)) changed = true;
-    if (rewriteTypes(sourceFile, types, diagnostics)) changed = true;
-    if (diagnostics.length) return { code: null, diagnostics };
-    if (!changed) break;
+    if (foldPlatform(sourceFile)) {
+      changed = true;
+    }
+    if (inlineSpreads(sourceFile)) {
+      changed = true;
+    }
+    if (transformElements(sourceFile, elements, diagnostics)) {
+      changed = true;
+    }
+    if (rewriteTypes(sourceFile, types, diagnostics)) {
+      changed = true;
+    }
+    if (diagnostics.length) {
+      return { code: null, diagnostics };
+    }
+    if (!changed) {
+      break;
+    }
   }
 
   renamePublicProps(sourceFile);
@@ -1003,7 +1138,9 @@ export function compileSource({
   checkNativePropLeaks(sourceFile, diagnostics);
   checkNestedInteractive(sourceFile, diagnostics);
   rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics);
-  if (diagnostics.length) return { code: null, diagnostics };
+  if (diagnostics.length) {
+    return { code: null, diagnostics };
+  }
 
   const code = sourceFile.getFullText().replace(WEB_ONLY_IGNORE, "$1// biome-ignore ");
   return { code: `${HEADER[origin](filePath)}\n${code}`, diagnostics };

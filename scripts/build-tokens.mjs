@@ -433,7 +433,9 @@ const outputs = [
 ];
 
 let stale = 0;
-if (!check) mkdirSync(dist, { recursive: true });
+if (!check) {
+  mkdirSync(dist, { recursive: true });
+}
 for (const [name, body] of outputs) {
   const path = join(dist, name);
   if (check) {
@@ -441,7 +443,9 @@ for (const [name, body] of outputs) {
     if (current !== body) {
       stale++;
       console.error(`  stale   dist/${name}`);
-    } else console.log(`  ok      dist/${name}`);
+    } else {
+      console.log(`  ok      dist/${name}`);
+    }
   } else {
     writeFileSync(path, body);
     console.log(`  wrote   dist/${name}`);
@@ -461,7 +465,9 @@ const clipped = names.flatMap((n) =>
     .filter(([, t]) => isOutOfGamut(t))
     .map(([mode]) => `${n} (${mode})`),
 );
-if (clipped.length) console.log(`\n  note: clamped to sRGB — ${clipped.join(", ")}`);
+if (clipped.length) {
+  console.log(`\n  note: clamped to sRGB — ${clipped.join(", ")}`);
+}
 
 if (check && stale) {
   console.error(`\n${stale} file(s) out of date. Run: npm run tokens:build`);

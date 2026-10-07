@@ -217,7 +217,9 @@ const results = [];
 try {
   for (const name of wanted) {
     const app = APPS[name];
-    if (!app) throw new Error(`unknown app "${name}" — one of ${Object.keys(APPS).join(", ")}`);
+    if (!app) {
+      throw new Error(`unknown app "${name}" — one of ${Object.keys(APPS).join(", ")}`);
+    }
     const dir = join(base, name);
     rmSync(dir, { recursive: true, force: true });
     const url = `http://127.0.0.1:${port}/${app.registry}/{name}.json`;
@@ -245,4 +247,6 @@ try {
 }
 
 console.log(`\n${results.join("\n")}\n(apps left in ${base})`);
-if (results.some((r) => r.endsWith("FAILED"))) process.exit(1);
+if (results.some((r) => r.endsWith("FAILED"))) {
+  process.exit(1);
+}

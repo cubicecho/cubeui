@@ -72,8 +72,12 @@ const PEERS_OF = { "radix-ui": ["@types/react", "@types/react-dom"] };
 function webPackages(files, emitted) {
   const used = new Set();
   for (const file of files) {
-    if (!isSource(file.path) || file.path.endsWith(".test.ts")) continue;
-    for (const name of packagesIn(webText(file, emitted), file.path)) used.add(name);
+    if (!isSource(file.path) || file.path.endsWith(".test.ts")) {
+      continue;
+    }
+    for (const name of packagesIn(webText(file, emitted), file.path)) {
+      used.add(name);
+    }
   }
   return used;
 }
@@ -84,7 +88,9 @@ function webPackages(files, emitted) {
  * React Native source's.
  */
 function webText(file, emitted) {
-  if (!isSource(file.path)) return "";
+  if (!isSource(file.path)) {
+    return "";
+  }
   const compiled = file.path.startsWith("compiled/") ? emitted.get(basename(file.path)) : null;
   return compiled ?? readFileSync(join(root, file.path), "utf8");
 }
@@ -188,11 +194,15 @@ const DESCRIPTIONS = {
  * registry entry pointing at a file that is not there.
  */
 function webPath(path, emitted) {
-  if (NATIVE_ONLY_FILES.has(path)) return null;
+  if (NATIVE_ONLY_FILES.has(path)) {
+    return null;
+  }
 
   // A `-base.ts` is the contract both halves implement. It is platform-neutral by construction and
   // installs unchanged, which is also why the compiled tree leaves its import specifiers alone.
-  if (/-base\.ts$/.test(path)) return path;
+  if (/-base\.ts$/.test(path)) {
+    return path;
+  }
 
   // `.tsx` and `.web.tsx` of the same item are two sources for one output, so the pair collapses
   // here: `select.tsx` and `select.web.tsx` both name `compiled/select.tsx`, and the duplicate is
@@ -210,8 +220,12 @@ function webPath(path, emitted) {
   // The palette, in the encoding the platform can read. The web one is `oklch()`; `cubeui-theme.ts` exists
   // for React Native props that take a colour string and cannot read a CSS variable, which is not a
   // problem the DOM has.
-  if (path === "dist/tokens.native.css") return "dist/tokens.web.css";
-  if (path === "dist/cubeui-theme.ts") return null;
+  if (path === "dist/tokens.native.css") {
+    return "dist/tokens.web.css";
+  }
+  if (path === "dist/cubeui-theme.ts") {
+    return null;
+  }
 
   return path;
 }
@@ -236,12 +250,16 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
 
     for (const file of item.files) {
       const path = webPath(file.path, emitted);
-      if (path === null) continue;
+      if (path === null) {
+        continue;
+      }
       if (path === "missing") {
         drop = true;
         break;
       }
-      if (files.some((f) => f.path === path)) continue;
+      if (files.some((f) => f.path === path)) {
+        continue;
+      }
       files.push({ ...file, path });
     }
 
@@ -257,9 +275,15 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     files.push(...(WEB_ONLY[item.name]?.files ?? []));
 
     const next = { ...item, files };
-    if (DESCRIPTIONS[item.name]) next.description = DESCRIPTIONS[item.name];
-    if (WEB_ONLY[item.name]?.docs) next.docs = WEB_ONLY[item.name].docs;
-    if (webOnlyNames.has(item.name)) next.description = `${next.description} ${WEB_ONLY_NOTE}`;
+    if (DESCRIPTIONS[item.name]) {
+      next.description = DESCRIPTIONS[item.name];
+    }
+    if (WEB_ONLY[item.name]?.docs) {
+      next.docs = WEB_ONLY[item.name].docs;
+    }
+    if (webOnlyNames.has(item.name)) {
+      next.description = `${next.description} ${WEB_ONLY_NOTE}`;
+    }
     // A package is in the web half either because a web file imports it, or because something a
     // web file imports peers it — `@types/react-dom` is imported by nothing and pins itself to the
     // line Expo's own `@types/react` is on. An item whose only reason for a peer was a dependency
@@ -270,8 +294,11 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
       return used.has(name) || [...used].some((reason) => PEERS_OF[reason]?.includes(name));
     });
     deps.push(...(WEB_ONLY[item.name]?.dependencies ?? []));
-    if (deps.length) next.dependencies = deps;
-    else delete next.dependencies;
+    if (deps.length) {
+      next.dependencies = deps;
+    } else {
+      delete next.dependencies;
+    }
     // `cn` is the one import the compiler writes on its own (`ensureCn`), so a native item with no
     // class merging of its own — `toast` — can come out needing `utils` without having declared
     // it. The native half does not need it, so it is added here, to the half that does.
@@ -303,7 +330,9 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
         (d) => d.startsWith("@cubeui/") && !have.has(d.slice("@cubeui/".length)),
       ),
     );
-    if (broken.length === 0) break;
+    if (broken.length === 0) {
+      break;
+    }
     for (const item of broken) {
       dropped.push(item.name);
       items.splice(items.indexOf(item), 1);
@@ -370,14 +399,20 @@ export function deriveStoryItems(webItems, stories) {
   for (const { path, text } of [...stories].sort((a, b) => a.path.localeCompare(b.path))) {
     const name = basename(path, ".stories.tsx");
     const item = byName.get(name);
-    if (!item) throw new Error(`${path}: no web item named "${name}" for this story to ship with`);
+    if (!item) {
+      throw new Error(`${path}: no web item named "${name}" for this story to ship with`);
+    }
 
     const deps = new Set([name]);
     for (const { fileName } of ts.preProcessFile(text, true, true).importedFiles) {
-      if (!fileName.startsWith("@/")) continue;
+      if (!fileName.startsWith("@/")) {
+        continue;
+      }
       const module = fileName.split("/").pop();
       const from = owner.get(module);
-      if (!from) throw new Error(`${path}: \`${fileName}\` is not a file any web item ships`);
+      if (!from) {
+        throw new Error(`${path}: \`${fileName}\` is not a file any web item ships`);
+      }
       deps.add(from);
     }
 

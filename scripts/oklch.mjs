@@ -77,6 +77,8 @@ export function toRgb(t) {
  */
 export function toNativeCss(t) {
   const [r, g, b] = toRgb(t);
-  if (t.a !== undefined) return `rgba(${r}, ${g}, ${b}, ${num(t.a)})`;
+  if (t.a !== undefined) {
+    return `rgba(${r}, ${g}, ${b}, ${num(t.a)})`;
+  }
   return `#${[r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
 }
