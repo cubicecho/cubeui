@@ -152,6 +152,9 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
   write no `aria-label`. A pill with no `iconSlot` keeps its label.
 - The pills are toggle buttons with `aria-pressed`, not radios. For a choice that belongs in a
   form and reads as a list of options, use `RadioGroup`.
+- The group is generic over its value. Give it a `value` typed as a union (`"week" | "month"`,
+  a `Channel`) and `onValueChange` is called with that union, so `onValueChange={setView}` or
+  `field.handleChange` takes it as it is. Do not look the value up again or write `next as Channel`.
 - A pill that navigates is a router link, not a `SegmentedButton`. Give the link
   `segmentedItemClass(active)` and put it in a `SegmentedGroup variant="plain"` for the name.
 
