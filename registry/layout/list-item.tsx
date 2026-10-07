@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { cloneElement, type ReactElement, type ReactNode } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -37,6 +37,19 @@ type ListItemProps = {
    */
   onPress?: (() => void) | undefined;
   /**
+   * Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web,
+   * so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On
+   * device there is no URL to open, so `onPress` is what navigates.
+   */
+  href?: string | undefined;
+  /**
+   * The router's link the row is, as an element with no children — `<Link href="/people/1" />` —
+   * which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element
+   * *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`,
+   * which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say.
+   */
+  linkSlot?: ReactElement | undefined;
+  /**
    * The chosen row: the one open beside the list. Tinted in `active`, it stays that under the
    * pointer, and a pressable row says so with `aria-current`.
    */
@@ -59,6 +72,49 @@ function asText(node: ReactNode, className: string, testID?: string) {
   );
 }
 
+/** The pressed part of a row, whichever of a button or a link it is. */
+const BODY_CLASS = cn(
+  "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
+  Platform.select({
+    web: "text-left focus-visible:outline-none",
+    default: "active:opacity-70",
+  }),
+);
+
+/**
+ * The middle as the router's link. On the web the caller's element *is* the middle — cloned with
+ * its classes and what is inside it, so it stays the router's own `<a>`. On device a link is
+ * expo-router's, which takes the middle the other way round: given `asChild`, it wraps the
+ * `Pressable`.
+ */
+function bodyLink(link: ReactElement, selected: boolean, body: ReactNode) {
+  if (Platform.OS !== "web") {
+    return cloneElement(
+      link as ReactElement<{ asChild?: boolean }>,
+      { asChild: true },
+      <Pressable
+        testID="list-item-body"
+        role="link"
+        accessibilityState={{ selected }}
+        className={BODY_CLASS}
+      >
+        {body}
+      </Pressable>,
+    );
+  }
+
+  const element = link as ReactElement<Record<string, unknown>>;
+  return cloneElement(
+    element,
+    {
+      "data-slot": "list-item-body",
+      className: cn("flex", BODY_CLASS, element.props.className as string | undefined),
+      "aria-current": selected ? "page" : undefined,
+    },
+    body,
+  );
+}
+
 /**
  * One row of a list: something at the start, a title with a line under it, small facts and
  * buttons at the far end, and optionally the whole middle pressable. One source for both
@@ -77,6 +133,11 @@ function asText(node: ReactNode, className: string, testID?: string) {
  * the pressable middle, `actionSlot` — and each control is reached, pressed and announced on its
  * own. On the web the middle is a real `<button>`, named by the text inside it.
  *
+ * **A row that goes somewhere is a link, not a press that navigates.** `href` or `linkSlot` makes
+ * the middle an `<a>` on the web and `role="link"` on device, so it opens in a new tab, shows its
+ * URL on hover, and a screen reader hears a link. `onPress` alone stays a button, for a row that
+ * opens something on the page it is on.
+ *
  * No surface: a row lives in a list, a card or a section, and that owns the border. Pass
  * `className="rounded-lg border border-foreground/10 bg-secondary"` for the telos look.
  */
@@ -87,10 +148,15 @@ export function ListItem({
   meta,
   actionSlot,
   onPress,
+  href,
+  linkSlot,
   selected = false,
   className,
   titleClassName,
 }: ListItemProps) {
+  // The muted grey is measured against the page. On the selected row's tint it falls short of
+  // 4.5:1 at this size, so there the small lines are drawn in the full colour.
+  const muted = selected ? "text-foreground" : "text-foreground/60";
   const body = (
     <>
       <View className="min-w-0 flex-1 gap-0.5">
@@ -106,12 +172,12 @@ export function ListItem({
           "list-item-title",
         )}
         {description
-          ? asText(description, "line-clamp-2 text-foreground/60 text-xs", "list-item-description")
+          ? asText(description, cn("line-clamp-2 text-xs", muted), "list-item-description")
           : null}
       </View>
       {meta ? (
         <View testID="list-item-meta" className="shrink-0 flex-row items-center gap-1">
-          {asText(meta, "text-foreground/60 text-xs tabular-nums")}
+          {asText(meta, cn("text-xs tabular-nums", muted))}
         </View>
       ) : null}
     </>
@@ -124,7 +190,7 @@ export function ListItem({
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2.5",
         selected
           ? "bg-active/40"
-          : onPress &&
+          : (onPress || href !== undefined || linkSlot) &&
               Platform.select({
                 web: "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
                 default: undefined,
@@ -138,19 +204,29 @@ export function ListItem({
         </View>
       ) : null}
 
-      {onPress ? (
+      {linkSlot ? (
+        bodyLink(linkSlot, selected, body)
+      ) : href !== undefined ? (
+        <Pressable
+          testID="list-item-body"
+          role="link"
+          accessibilityState={{ selected }}
+          // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+          {...(Platform.OS === "web"
+            ? ({ href, "aria-current": selected ? "page" : undefined } as const)
+            : {})}
+          {...(onPress ? { onPress } : {})}
+          className={BODY_CLASS}
+        >
+          {body}
+        </Pressable>
+      ) : onPress ? (
         <Pressable
           testID="list-item-body"
           role="button"
           aria-current={selected ? true : undefined}
           onPress={onPress}
-          className={cn(
-            "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
-            Platform.select({
-              web: "text-left focus-visible:outline-none",
-              default: "active:opacity-70",
-            }),
-          )}
+          className={BODY_CLASS}
         >
           {body}
         </Pressable>

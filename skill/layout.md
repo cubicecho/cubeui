@@ -1129,7 +1129,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
     title={`${p.firstName} ${p.lastName}`}
     description={p.email}
     meta={relativeTime(p.lastContactedAt)}
-    onPress={() => router.push(`/persons/${p.id}`)}
+    linkSlot={<Link href={`/persons/${p.id}`} />}
     actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
   />
 ))}
@@ -1149,7 +1149,14 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
-  `<a>`, which is the button-in-a-button this avoids. For a route, call the router in the handler.
+  `<a>`, which is the button-in-a-button this avoids.
+- **A row that goes somewhere is a link, not an `onPress` that calls the router.** Hand it the
+  router's link as an element with no children, `linkSlot={<Link href={`/persons/${p.id}`} />}`,
+  and the middle is drawn inside it: the router's own `<a href>` on the web — a new tab, a middle
+  click, the URL on hover, "link" to a screen reader — and expo-router's `Link asChild` on device.
+  `href="https://…"` alone is a plain `<a href>` for a URL no router owns; on device it only runs
+  `onPress`. A `selected` link carries `aria-current="page"`. Keep `onPress` on its own for a row
+  that opens something on the page it is on: a dialog, a pane.
 - `selected` is the chosen row — the one open beside the list. It is tinted in `active`, stays
   that under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
@@ -1158,7 +1165,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `Section`, a `CardLayout` `contentSlot` or a `<ul>` of your own; for a bordered card per row pass
   `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
-  line, a badge beside the title, a whole row that is one link — compose shadcn's `Item` parts
+  line, a whole row that is one link, actions and all — compose shadcn's `Item` parts
   (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
   names, props and metrics: `ItemMedia` is `leadingSlot`, `ItemContent` the middle, `ItemTitle` and
   `ItemDescription` the two lines, `ItemActions` the `actionSlot`. On a device a string in a part is
