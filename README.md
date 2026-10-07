@@ -437,8 +437,8 @@ open decision 4, as `badge`.
 pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
 choice with its own permission flow, so the registry ships the contract and the working web half
 rather than a control that silently opens nothing. The contract stays one a native half can
-implement: a picked file is a name, a path, a type, its text and — with `read="bytes"` — a
-`Uint8Array`, never the DOM's `File`. `directory`, which picks a folder, is the one prop that is
+implement: a picked file is a name, a path, a type, a size, its text and — with `read="bytes"` — a
+`Uint8Array`, or with `read="none"` an unread `Blob`, never the DOM's `File`. `directory`, which picks a folder, is the one prop that is
 web only.
 
 The `tokens` item installs `dist/tokens.native.css` as `cubeui-tokens.css` at the project root —

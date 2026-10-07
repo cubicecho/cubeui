@@ -43,6 +43,18 @@ export async function downloadBlob(
 ): Promise<void> {
   const blob = typeof content === "string" ? new Blob([content], { type: mimeType }) : content;
   const url = URL.createObjectURL(blob);
+  await downloadUrl(url, filename);
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+/**
+ * Saves what `url` serves as `filename`, with no fetch in the page: the browser streams the
+ * file to disk itself, so its size never passes through memory.
+ *
+ * `download` is ignored for a URL on another origin. There the server decides: without
+ * `Content-Disposition: attachment` a file the browser can show opens in place of the page.
+ */
+export async function downloadUrl(url: string, filename: string): Promise<void> {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
@@ -50,11 +62,11 @@ export async function downloadBlob(
   document.body.append(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 export function DownloadButton({
   source,
+  href,
   filename,
   mimeType,
   label = "Download",
@@ -65,7 +77,7 @@ export function DownloadButton({
   onError,
   className,
 }: DownloadButtonProps) {
-  const { pending, download } = useDownload({ source, onDownloaded, onError });
+  const { pending, download } = useDownload({ source, href, onDownloaded, onError });
 
   return (
     <Button
@@ -76,7 +88,12 @@ export function DownloadButton({
       loading={pending}
       disabled={disabled}
       className={className}
-      onClick={() => void download((content) => downloadBlob(content, filename, { mimeType }))}
+      onClick={() =>
+        void download({
+          content: (content) => downloadBlob(content, filename, { mimeType }),
+          url: (url) => downloadUrl(url, filename),
+        })
+      }
       iconSlot={<Download aria-hidden />}
     />
   );

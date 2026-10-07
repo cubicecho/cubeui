@@ -3,7 +3,7 @@ import type { SlotNode } from "@/lib/utils";
 
 /**
  * One picked file. Plain data rather than the DOM's `File`, which native does
- * not have: a string and a `Uint8Array` exist on both platforms.
+ * not have: a string, a `Uint8Array` and a `Blob` exist on both platforms.
  */
 export type PickedFile = {
   name: string;
@@ -14,10 +14,23 @@ export type PickedFile = {
   path: string;
   /** The MIME type, when the platform knows it; `""` when it does not. */
   type: string;
-  /** The file decoded as text. `""` when `read` is `"bytes"`, which decodes nothing. */
+  /**
+   * How many bytes the file is on disk. Known without reading it, so it is there
+   * whatever `read` is — which is what lets "too large" be said before the read.
+   */
+  size: number;
+  /** The file decoded as text. `""` unless `read` is `"text"`: the other two decode nothing. */
   text: string;
   /** The file as it is on disk. Only there when `read` is `"bytes"`. */
   bytes?: Uint8Array;
+  /**
+   * A handle on the file, unread. Only there when `read` is `"none"`. In a
+   * browser it is the `File` the input gave — a `Blob` the browser streams from
+   * disk, so `XMLHttpRequest.send(blob)` or `fetch(url, { body: blob })` uploads
+   * a file of any size without holding it; on device it is what
+   * `fetch(uri).blob()` gives.
+   */
+  blob?: Blob;
 };
 
 type FilePickerCommonProps = {
@@ -36,11 +49,14 @@ type FilePickerCommonProps = {
   /**
    * What to read from each file. `text` (the default) decodes it, which is right
    * for JSON or Markdown and corrupts a `.zip` or an image. `bytes` hands back
-   * the file undecoded as `bytes`, and leaves `text` empty.
+   * the file undecoded as `bytes`, and leaves `text` empty. `none` reads nothing
+   * at all and hands back a `blob` to read or upload later — for a file too big
+   * to hold in memory, or one to refuse by its `size` first.
    *
-   * `onPick` only ever carries text and a name, so take `bytes` with `onPickMany`.
+   * `onPick` only ever carries text and a name, so take `bytes` or `none` with
+   * `onPickMany`.
    */
-  read?: "text" | "bytes" | undefined;
+  read?: "text" | "bytes" | "none" | undefined;
   /**
    * Pick a folder and everything under it instead of files: the dialog chooses
    * a folder, a dropped folder is walked, and each file reports where it sat as

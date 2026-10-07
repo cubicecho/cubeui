@@ -12,9 +12,9 @@
 /**
  * The web file picker: a drop zone, or a button, over a hidden `<input type="file">`.
  *
- * Both are DOM-only, which is why this is a `.web.tsx`. The caller never sees a
- * `File` — it gets the decoded text, or the bytes — so the calling screen stays
- * shared.
+ * Both are DOM-only, which is why this is a `.web.tsx`. The caller is never
+ * typed a `File` — it gets the decoded text, the bytes, or with `read="none"` a
+ * `Blob` — so the calling screen stays shared.
  */
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
 import {
@@ -100,7 +100,9 @@ function useFilePick({ onPick, onPickMany, accept, multiple, read, directory }: 
     if (files.length === 0) return;
     const picked = await Promise.all(
       files.map(async ({ file, path }): Promise<PickedFile> => {
-        const base = { name: file.name, path, type: file.type };
+        const base = { name: file.name, path, type: file.type, size: file.size };
+        // The file itself, unread: the browser streams it from disk when it is sent.
+        if (read === "none") return { ...base, text: "", blob: file };
         // One or the other: decoding a `.zip` to hand back a string nobody
         // reads would cost its whole size again.
         return read === "bytes"

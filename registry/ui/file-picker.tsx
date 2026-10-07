@@ -9,7 +9,9 @@
  * and `directory` are taken so a shared call site typechecks, and do nothing
  * here; an implementation would hand the first two to `expo-document-picker` as
  * its `multiple` and `type`, can filter what comes back with `acceptsFile` the
- * way the web half does, and fills `bytes` as a `Uint8Array` for `read="bytes"`.
+ * way the web half does, fills `size` from the picker's asset, `bytes` as a
+ * `Uint8Array` for `read="bytes"`, and `blob` from `fetch(uri).blob()` for
+ * `read="none"`.
  * `directory` is web only: that picker has no folder mode. Replace
  * this file in your app once those are wired up; `file-picker-base.ts` is the
  * contract to implement, and `file-picker.web.tsx` is a working reference for

@@ -102,7 +102,7 @@ at the end.
 | A button, with a label, an icon, a link or a `loading` state | `Button` | [controls.md](controls.md#button) |
 | An icon-only button | `ActionButton` | [controls.md](controls.md) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
-| A button that saves a file — an export, a note, a report — and waits while it is fetched | `DownloadButton` | [controls.md](controls.md#download-button) |
+| A button that saves a file — an export, a note, a report — and waits while it is fetched, or a URL the browser downloads itself (`href`) | `DownloadButton` | [controls.md](controls.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
 | A Markdown string drawn as a document — a note, a README, a skill, a model's answer — instead of `react-markdown` and an element map of your own (web only) | `Markdown` | [controls.md](controls.md#markdown) |
 | Links between an app's Markdown documents — `[[wikilinks]]`, relative links, the router's link, a link or image that is pending or broken (web only) | `Markdown` with `wikilinks`, `resolveLink`, `basePath` | [controls.md](controls.md#markdown) |
@@ -121,7 +121,7 @@ at the end.
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leadingSlot`, `Input trailingSlot` | [controls.md](controls.md#an-icon-in-an-input) |
 | A search or filter box — named, with a ✕ that clears it — alone or in a filter bar | `SearchInput` | [controls.md](controls.md#search) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
-| An upload of one file or several, dropped or picked — as text, as bytes (`read="bytes"`, for a `.zip` or an image), or a whole folder (`directory`) | `FilePicker` | [controls.md](controls.md#file-picker) |
+| An upload of one file or several, dropped or picked — as text, as bytes (`read="bytes"`, for a `.zip` or an image), unread as a `Blob` with its `size` (`read="none"`, for a large upload), or a whole folder (`directory`) | `FilePicker` | [controls.md](controls.md#file-picker) |
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls.md](controls.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls.md](controls.md#alert) |
 | A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls.md](controls.md#spinner) |
@@ -371,7 +371,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | An icon-only button, with a tooltip on a long press and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `ActionButton` | `@cubeui/action-button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls.md](controls.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
-| A button that saves a file, and `downloadBlob()` — see [controls.md](controls.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
+| A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls.md](controls.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button — see [controls.md](controls.md#code-block) | `CodeBlock` | `@cubeui/code` |
 | A callout — a warning, a note, the last error — see [controls.md](controls.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls.md](controls.md#spinner) | `Spinner` | `@cubeui/spinner` |

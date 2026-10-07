@@ -7,6 +7,15 @@ declare module "expo-file-system" {
   export class File {
     constructor(...uris: (string | File | Directory)[]);
     readonly uri: string;
+    /** The MIME type, when the system knows it. */
+    readonly type: string;
+    /** Downloads `url` to `destination`. `idempotent` overwrites a file already there. */
+    static downloadFileAsync(
+      url: string,
+      destination: Directory | File,
+      options?: { headers?: Record<string, string>; idempotent?: boolean },
+    ): Promise<File>;
+    bytes(): Promise<Uint8Array>;
     /** Throws if the file exists, unless `overwrite`. */
     create(options?: { overwrite?: boolean; intermediates?: boolean }): void;
     write(content: string | Uint8Array): void;
