@@ -667,7 +667,7 @@ on both platforms:
   loses the focus it was just given. It covers that row's close only: Escape, a click outside and
   the other rows still return focus.
   `<MenuItem label="Add note" focusesElsewhere onSelect={showNoteField} />`, on both halves.
-- **A Rename row opens a form** — a `FormDialog` with the name in a field and a Save button —
+- **A Rename row opens a form** — a `DialogLayout` with the name in a field and a Save button —
   not a text that turns into an input where it sits. See [No inline edits](SKILL.md#no-inline-edits).
 - **A toggle list is `MenuCheckboxItem`** — labels on a todo, columns shown in a table, anything
   on or off, several at once. Do not hand-build `role="checkbox"` rows in a `Popover`, and do not

@@ -121,7 +121,6 @@ import {
 } from "@/components/ui/field";
 import { FilePicker, FilePickerButton } from "@/components/ui/file-picker";
 import { createAppForm, Form } from "@/components/ui/form";
-import { FormDialog, FormDialogFooter } from "@/components/ui/form-dialog";
 import { FormElement } from "@/components/ui/form-element";
 import {
   Calendar as CalendarIcon,
@@ -1208,29 +1207,6 @@ function FormElementSample() {
   );
 }
 
-function FormDialogSample() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)} content="Open the form dialog" />
-      <FormDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Rename the project"
-        description="The link keeps working."
-      >
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="gallery-rename">Project name</Label>
-          <Input id="gallery-rename" defaultValue="Apollo" />
-        </div>
-        <FormDialogFooter onCancel={() => setOpen(false)}>
-          <Button onClick={() => setOpen(false)} content="Rename" />
-        </FormDialogFooter>
-      </FormDialog>
-    </>
-  );
-}
-
 function Sections() {
   return (
     <Stack
@@ -1649,7 +1625,6 @@ const sections: GallerySection[] = [
     content: <HookFormSample />,
   },
   { title: "Form element", items: ["form-element"], content: <FormElementSample /> },
-  { title: "Form dialog", items: ["form-dialog"], content: <FormDialogSample /> },
 
   // Layout rows
   {

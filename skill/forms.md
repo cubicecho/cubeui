@@ -448,25 +448,62 @@ field drops to its own line at full width rather than three of them sharing one 
 
 ## Forms in dialogs
 
-There is no `FormDialog`. A form in a dialog is `DialogLayout` with a `<form>` as its `contentSlot`
-and the submit in `footerActionsSlot`:
+A form in a dialog is `DialogLayout`, on both halves, with the form as its `contentSlot` and the
+submit in `footerActionsSlot`. There is no `FormDialog`: the registry shipped one that took
+children and closed without asking, and it was removed. An app that vendored it moves to this.
 
 ```tsx
 <DialogLayout
   open={open}
   onOpenChange={onOpenChange}
   title={isEdit ? "Edit todo" : "New todo"}
+  hasUnsavedChanges={() => !form.state.isDefaultValue}
   contentSlot={<form id="todo" onSubmit={…}>…</form>}
-  footerActionsSlot={
-    <form.AppForm>
-      <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
-    </form.AppForm>
-  }
+  footerActionsSlot={(close) => (
+    <>
+      <Button variant="outline" onClick={close} content="Cancel" />
+      <form.AppForm>
+        <form.SubmitButton form="todo" content={isEdit ? "Save changes" : "Create"} />
+      </form.AppForm>
+    </>
+  )}
 />
 ```
 
-The `form="todo"` attribute is what lets the submit live outside the `<form>` in the dialog's
-footer while still submitting it.
+- The `form="todo"` attribute is what lets the submit live outside the `<form>` in the dialog's
+  footer while still submitting it.
+- `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is
+  thrown away, and Cancel asks too because it calls the `close` it was handed, not a
+  `setOpen(false)` of its own. See [layout.md](layout.md) for the rest of the dialog.
+- What only the server knows (a delete the database refused) is an `Alert` in `contentSlot`,
+  under the fields. Validation stays under its own field.
+
+In an Expo app it is the same shell with the native form in it. `form.SubmitButton` submits by
+itself there, so it needs no `form` attribute:
+
+```tsx
+<DialogLayout
+  open={open}
+  onOpenChange={onOpenChange}
+  title="Rename project"
+  hasUnsavedChanges={() => !form.state.isDefaultValue}
+  contentSlot={
+    <form.AppForm>
+      <Form>
+        <form.AppField name="name">{(field) => <field.InputField label="Name" />}</form.AppField>
+      </Form>
+    </form.AppForm>
+  }
+  footerActionsSlot={(close) => (
+    <>
+      <Button variant="outline" onPress={close} content="Cancel" />
+      <form.AppForm>
+        <form.SubmitButton createLabel="Rename" />
+      </form.AppForm>
+    </>
+  )}
+/>
+```
 
 ## Writing a field the registry does not ship
 

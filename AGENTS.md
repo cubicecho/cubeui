@@ -503,9 +503,14 @@ Recorded so the next pass does not re-derive them:
 - **Inline edits — never add them back.** `InlineTextEdit` and `InlineNumberEdit` (a value
   shown as text that became an input on press, committing on blur) were removed. Every form and
   input in this set is explicit: a field is always drawn as a field, and an edit goes through a
-  form with a Save — a `FormDialog` for a rename. Do not rebuild the pattern under another name,
+  form with a Save — a `DialogLayout` holding the form, for a rename. Do not rebuild the pattern under another name,
   as a prop on `Text` or a heading, or as a documented recipe, however many apps hand-roll it;
   rule 1's evidence does not apply to this one.
+- **`FormDialog` — removed (#273).** `@cubeui/form-dialog` was dialog chrome that took `children`
+  and a `FormDialogFooter`, on both halves, beside a `DialogLayout` that already owned the shape
+  with slots and the unsaved-changes guard — and the skill said both "use it" and "there is none".
+  A form in a dialog is `DialogLayout` on both halves. Do not add a second dialog shell for forms;
+  what a form needs from its dialog goes on `DialogLayout`.
 - **`FormButtons`**. Too bound to private project 1's `isNew`/`isDeleted`/restore vocabulary to
   port.
 - **`SliderField` / a slider control.** Asked for and not built, and the grep that suggested it

@@ -1004,24 +1004,6 @@
       ]
     },
     {
-      "name": "form-dialog",
-      "type": "registry:ui",
-      "title": "Form Dialog",
-      "description": "Dialog chrome for a form, with a footer that leaves the submit control to the caller.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/button",
-        "@cubeui/dialog",
-        "@cubeui/tokens"
-      ],
-      "files": [
-        {
-          "path": "compiled/form-dialog.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
