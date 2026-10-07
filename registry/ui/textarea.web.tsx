@@ -32,6 +32,7 @@ import {
   type TextareaHandle,
   type TextareaKeyPressEvent,
   type TextareaKeyPressHandler,
+  type TextareaSelection,
 } from "@/components/ui/textarea-base";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,9 @@ export type TextareaProps = Omit<ComponentPropsWithoutRef<"textarea">, "classNam
 function Textarea({
   onChange,
   onChangeText,
+  onSelect,
+  selection,
+  onSelectionChange,
   onKeyDown,
   onKeyPress,
   onSubmitEditing,
@@ -70,6 +74,27 @@ function Textarea({
   // `defaultValue`, and the box can change width under it.
   useLayoutEffect(refit);
 
+  // The caret is the element's own, so a held `selection` is written to it after each render,
+  // once the new text is in the box and there is somewhere to put it.
+  const start = selection?.start;
+  const end = selection?.end;
+  useLayoutEffect(() => {
+    const box = inner.current;
+    if (!box || start === undefined || end === undefined) return;
+    if (box.selectionStart !== start || box.selectionEnd !== end) box.setSelectionRange(start, end);
+  });
+
+  // Told once per change. React's `select` covers the keys and the pointer but arrives a keyup
+  // after the text, and a menu reading both would see the new text with the old caret between.
+  const reported = useRef<TextareaSelection | null>(null);
+  const report = (box: HTMLTextAreaElement) => {
+    if (!onSelectionChange) return;
+    const next = { start: box.selectionStart, end: box.selectionEnd };
+    if (reported.current?.start === next.start && reported.current.end === next.end) return;
+    reported.current = next;
+    onSelectionChange(next);
+  };
+
   return (
     <textarea
       // The element is the handle: it has `focus`, which is all `TextareaHandle` asks. It is kept
@@ -87,6 +112,11 @@ function Textarea({
         onChangeText?.(e.target.value);
         // An uncontrolled box does not render again on a keystroke.
         refit();
+        report(e.target);
+      }}
+      onSelect={(e) => {
+        onSelect?.(e);
+        report(e.currentTarget);
       }}
       onKeyDown={(e) => {
         onKeyDown?.(e);
@@ -116,5 +146,5 @@ function Textarea({
   );
 }
 
-export type { TextareaHandle, TextareaKeyPressEvent, TextareaKeyPressHandler };
+export type { TextareaHandle, TextareaKeyPressEvent, TextareaKeyPressHandler, TextareaSelection };
 export { Textarea };

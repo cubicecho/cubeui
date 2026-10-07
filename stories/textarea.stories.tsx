@@ -1,10 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useRef } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { useRef, useState } from "react";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { Textarea as Compiled } from "../compiled/textarea";
 import { Button as NativeButton } from "../registry/ui/button";
-import { Textarea as Native, type TextareaHandle } from "../registry/ui/textarea";
+import {
+  Textarea as Native,
+  type TextareaHandle,
+  type TextareaSelection,
+} from "../registry/ui/textarea";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -153,6 +157,86 @@ export const Grows: Story = {
 
         await userEvent.clear(box);
         await expect(box.offsetHeight).toBe(one);
+      });
+    }
+  },
+};
+
+/** The `@word` the caret is in or just after, which is what a mention menu completes. */
+function mentionAt(text: string, caret: number): { from: number; query: string } | null {
+  const match = /@(\w*)$/.exec(text.slice(0, caret));
+  return match ? { from: match.index, query: match[1] ?? "" } : null;
+}
+
+function Mentions({ half, Box }: { half: string; Box: typeof Native }) {
+  const [text, setText] = useState("");
+  const [selection, setSelection] = useState<TextareaSelection>({ start: 0, end: 0 });
+  const mention = selection.start === selection.end ? mentionAt(text, selection.start) : null;
+  return (
+    <div className="flex flex-col gap-2">
+      <Box
+        value={text}
+        onChangeText={setText}
+        selection={selection}
+        onSelectionChange={setSelection}
+        placeholder={`${half} note`}
+        autoFocus
+      />
+      <output aria-label={`${half} caret`}>{`${selection.start}-${selection.end}`}</output>
+      {mention ? (
+        <button
+          type="button"
+          onClick={() => {
+            const name = "@Alice ";
+            setText(text.slice(0, mention.from) + name + text.slice(selection.start));
+            const caret = mention.from + name.length;
+            setSelection({ start: caret, end: caret });
+          }}
+        >
+          {`${half}: complete @${mention.query}`}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * `selection` and `onSelectionChange` (#277): a mention typed in the middle of a note is found by
+ * where the caret is, and the caret is put after the name once it is inserted. `autoFocus` is on
+ * both, so the one mounted last holds the focus.
+ */
+export const Selection: Story = {
+  render: () => (
+    <SideBySide
+      native={<Mentions half="Native" Box={Native} />}
+      compiled={<Mentions half="Compiled" Box={Compiled as unknown as typeof Native} />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByPlaceholderText("Compiled note")).toHaveFocus();
+
+    for (const half of ["Compiled", "Native"]) {
+      await step(half, async () => {
+        const box = canvas.getByPlaceholderText<HTMLTextAreaElement>(`${half} note`);
+        const caret = canvas.getByLabelText(`${half} caret`);
+
+        await userEvent.click(box);
+        await userEvent.keyboard("ask  today");
+        await waitFor(() => expect(caret).toHaveTextContent("10-10"));
+
+        // Back to the gap in the middle, where the end of the text says nothing.
+        await userEvent.keyboard(
+          "{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}",
+        );
+        await waitFor(() => expect(caret).toHaveTextContent("4-4"));
+        await userEvent.keyboard("@al");
+        await waitFor(() => expect(caret).toHaveTextContent("7-7"));
+
+        await userEvent.click(canvas.getByRole("button", { name: `${half}: complete @al` }));
+        await expect(box).toHaveValue("ask @Alice  today");
+        await waitFor(() => expect(box.selectionStart).toBe(11));
+        await expect(box.selectionEnd).toBe(11);
       });
     }
   },

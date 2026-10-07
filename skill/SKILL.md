@@ -427,6 +427,11 @@ take the props the web ones take, with four conversions that are the same everyw
   `<Textarea rows={1} maxRows={6} onSubmitEditing={send} ref={box} />` on both halves. Without
   `maxRows`, `rows` is a fixed height as before. The rows are counted at the box's own `text-sm`
   line; a `className` that changes the text size changes what a row is.
+- **`selection` and `onSelectionChange` on `Textarea`, not a ref and `selectionStart`.** Both
+  halves report the caret as `{ start, end }` and hold it when `selection` is passed, which is
+  what an `@mention` menu needs: find the word under `selection.start`, insert the name, then set
+  `selection` to just after it. Keep `selection` in step from `onSelectionChange`, or it pins the
+  caret. `autoFocus` is there too, as on `Input`.
 - **No children and no `asChild` on `Button`.** The label is `content`, the icon is `iconSlot`, and a
   button that navigates takes the link as `linkSlot={<Link href="/docs" />}` — see
   [controls.md](controls.md#button). `loading` is the state for "pressed, still working".
