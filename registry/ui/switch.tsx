@@ -9,7 +9,7 @@
  */
 
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import {
   SWITCH_THUMB_CLASS,
   SWITCH_TRACK_CLASS,
@@ -25,6 +25,7 @@ function Switch({
   onBlur,
   accessibilityLabel,
   "aria-labelledby": ariaLabelledBy,
+  "aria-describedby": ariaDescribedBy,
   className,
 }: SwitchProps) {
   // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
@@ -36,6 +37,11 @@ function Switch({
       aria-checked={checked}
       aria-label={accessibilityLabel}
       aria-labelledby={ariaLabelledBy}
+      // What react-native has no prop for, in the spelling react-native-web reads — the same
+      // arrangement as `Input`'s.
+      {...(Platform.OS === "web" && ariaDescribedBy !== undefined
+        ? { "aria-describedby": ariaDescribedBy }
+        : {})}
       disabled={disabled}
       onPress={() => {
         setCheckedState(!checked);

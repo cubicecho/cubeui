@@ -309,8 +309,10 @@ of the control's hit target. Stacked, a 16px box sits on a line of its own above
 A **settings row** — a title and a paragraph on the left, a switch, select or button pushed to
 the far right — is not this. That is a row, not a field: use `SettingRow`
 ([layout.md](layout.md#setting-rows)), inside a `Section` or `CardLayout`. A lone boolean with its
-caption beside it and no description is `SwitchField` (`@cubeui/switch-field`); anything more —
-another control, a description, the switch at the far end — is `SettingRow`.
+caption beside it is `SwitchField` (`@cubeui/switch-field`). It takes a `description` — a line
+under the caption, wired with `aria-describedby` — and `disabled`, which is how a switch that
+cannot be changed says why: `<SwitchField … disabled description="ocrmypdf is not installed." />`.
+Another control, or the switch at the far end of a row, is `SettingRow`.
 
 ### When the props belong on something nested
 
@@ -587,7 +589,8 @@ own items for the weight of the calendar and the picker, as on the web; add them
 
 Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
 `*ClassName` props, plus the control's own. `className` is the field's, not the control's.
-`DateTimeField` passes `mode`, `clearable` and `placeholder` through.
+`DateTimeField` passes `mode`, `clearable` and `placeholder` through. `SelectField` takes
+`options`, `placeholder` and `disabled` — a list with nothing in it yet.
 
 How each is named:
 
@@ -597,6 +600,13 @@ How each is named:
   label cannot name, so it takes `aria-labelledby` the label's id.
 - **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
   has no `htmlFor`.
+- **`SelectField`**: the `id` and the `aria-*` wiring go on the trigger, not on the `Select` root,
+  which renders no element. Wiring a `Select` by hand inside `FieldControl` puts them on the root
+  and loses them: spread what the control is handed onto `SelectTrigger`.
+
+A `SelectField` keeps a value its `options` do not hold yet, so a dialog that creates an option
+can `form.setFieldValue` to it before the refetch lands. The trigger shows the placeholder until
+the option arrives. The same holds for a bare `Select` inside a `<form>` on the web.
 
 `Field asGroup` is the same switch as `FormField`'s: `FieldLabel` gets an id and `FieldControl`
 puts `aria-labelledby` on the control in place of `htmlFor`. Use it for a trigger or a group.
