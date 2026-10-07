@@ -30,6 +30,7 @@ import {
   INPUT_TRAILING_CLASS,
   INPUT_TRAILING_PAD_CLASS,
   INPUT_WRAPPER_CLASS,
+  type InputAutoComplete,
   type InputHandle,
   type InputKeyPressEvent,
   type InputKeyPressHandler,
@@ -53,6 +54,7 @@ function Input({
   placeholder,
   autoCapitalize,
   autoCorrect,
+  autoComplete,
   maxLength,
   disabled,
   readOnly,
@@ -87,6 +89,7 @@ function Input({
       placeholder={placeholder}
       autoCapitalize={autoCapitalize}
       autoCorrect={autoCorrect}
+      autoComplete={autoComplete}
       maxLength={maxLength}
       editable={!disabled && !readOnly}
       autoFocus={autoFocus}
@@ -129,5 +132,12 @@ function Input({
   );
 }
 
-export type { InputHandle, InputKeyPressEvent, InputKeyPressHandler, InputProps, InputType };
+export type {
+  InputAutoComplete,
+  InputHandle,
+  InputKeyPressEvent,
+  InputKeyPressHandler,
+  InputProps,
+  InputType,
+};
 export { Input };

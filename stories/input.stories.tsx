@@ -96,6 +96,26 @@ export const TypedAsWritten: Story = {
   },
 };
 
+/**
+ * `autoComplete` (#276), on both halves: what the field holds, said to the browser's autofill and
+ * a password manager. `type="email"` alone does not say it, so a sign-in without this lost the
+ * saved address.
+ */
+export const AutoComplete: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native aria-label="Native email" type="email" autoComplete="email" />}
+      compiled={<Compiled aria-label="Compiled email" type="email" autoComplete="email" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native email", "Compiled email"]) {
+      await expect(canvas.getByRole("textbox", { name })).toHaveAttribute("autocomplete", "email");
+    }
+  },
+};
+
 const onClear = fn();
 
 /**
