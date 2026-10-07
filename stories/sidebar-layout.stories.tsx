@@ -2,22 +2,38 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { Text } from "react-native";
 import { expect, fn, userEvent, within } from "storybook/test";
+import { ActionButton as CompiledAction } from "../compiled/action-button";
 import { Button as CompiledButton } from "../compiled/button";
-import { Moon as CompiledMoon } from "../compiled/icons";
 import {
+  Folder as CompiledFolder,
+  Moon as CompiledMoon,
+  RefreshCw as CompiledRefresh,
+  Settings as CompiledSettings,
+} from "../compiled/icons";
+import {
+  BarNavItem as CompiledBarItem,
   SidebarNavItem as CompiledNavItem,
   SidebarSection as CompiledSection,
   Sidebar as CompiledSidebar,
 } from "../compiled/sidebar";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
+import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
+import { ActionButton as NativeAction } from "../registry/layout/action-button";
 import {
+  BarNavItem as NativeBarItem,
   SidebarNavItem as NativeNavItem,
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
 } from "../registry/layout/sidebar";
 import { SidebarLayout as NativeLayout } from "../registry/layout/split-layout";
 import { Button as NativeButton } from "../registry/ui/button";
-import { Moon as NativeMoon } from "../registry/ui/icons";
+import {
+  Folder as NativeFolder,
+  Moon as NativeMoon,
+  RefreshCw as NativeRefresh,
+  Settings as NativeSettings,
+} from "../registry/ui/icons";
+import { ThemePicker as NativeThemePicker } from "../registry/ui/theme-picker";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -268,5 +284,106 @@ export const Narrow: Story = {
   play: async (context) => {
     await expect(window.matchMedia("(min-width: 48rem)").matches).toBe(false);
     await shell.play?.(context);
+  },
+};
+
+/**
+ * Issue #267: the bar on the narrowest phone, 320px, holding what it was made to hold — two
+ * `BarNavItem`s, a compact `ThemePicker` and an icon button, with no brand. The halves are
+ * stacked rather than side by side, so each has the whole 320px, and neither may be wider than
+ * it: a bar that is scrolls the whole page sideways.
+ */
+export const BarFitsAPhone: Story = {
+  globals: { viewport: { value: "mobile1", isRotated: false } },
+  render: () => (
+    <div className="flex flex-col gap-4 bg-background text-foreground">
+      <section>
+        <Frame>
+          <NativeLayout
+            className="h-full"
+            sidebarHideBelow="md"
+            sidebarSlot={<NativeSidebar label="Native rail" contentSlot={null} />}
+            navLabel="Native main"
+            navSlot={
+              <>
+                <NativeBarItem href="#/files" label="Files" iconSlot={<NativeFolder />} active />
+                <NativeBarItem href="#/settings" label="Settings" iconSlot={<NativeSettings />} />
+              </>
+            }
+            actionSlot={
+              <>
+                <NativeThemePicker variant="compact" aria-label="Native theme" />
+                <NativeAction
+                  label="Native refresh"
+                  variant="outline"
+                  size="icon-sm"
+                  iconSlot={<NativeRefresh />}
+                />
+              </>
+            }
+            contentSlot={<Text className="p-4 text-foreground">Native page</Text>}
+          />
+        </Frame>
+      </section>
+      <section>
+        <Frame>
+          <CompiledLayout
+            className="h-full"
+            sidebarHideBelow="md"
+            sidebarSlot={<CompiledSidebar label="Compiled rail" contentSlot={null} />}
+            navLabel="Compiled main"
+            navSlot={
+              <>
+                <CompiledBarItem
+                  href="#/files"
+                  label="Files"
+                  iconSlot={<CompiledFolder />}
+                  active
+                />
+                <CompiledBarItem
+                  href="#/settings"
+                  label="Settings"
+                  iconSlot={<CompiledSettings />}
+                />
+              </>
+            }
+            actionSlot={
+              <>
+                <CompiledThemePicker variant="compact" aria-label="Compiled theme" />
+                <CompiledAction
+                  label="Compiled refresh"
+                  variant="outline"
+                  size="icon-sm"
+                  iconSlot={<CompiledRefresh />}
+                />
+              </>
+            }
+            contentSlot={<span className="p-4 text-foreground">Compiled page</span>}
+          />
+        </Frame>
+      </section>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(window.innerWidth).toBe(320);
+    const canvas = within(canvasElement);
+    const headers = canvas.getAllByRole("banner");
+    await expect(headers).toHaveLength(2);
+
+    for (const header of headers) {
+      const bar = header.getBoundingClientRect();
+      // Everything in the bar is inside the bar.
+      for (const part of Array.from(header.children)) {
+        const box = part.getBoundingClientRect();
+        await expect(box.left).toBeGreaterThanOrEqual(bar.left);
+        await expect(box.right).toBeLessThanOrEqual(bar.right + 0.5);
+      }
+      await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
+      // All three theme choices are still there to press.
+      await expect(within(header).getAllByRole("radio")).toHaveLength(3);
+    }
+    // The page does not scroll sideways.
+    await expect(canvasElement.scrollWidth).toBeLessThanOrEqual(canvasElement.clientWidth);
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
   },
 };

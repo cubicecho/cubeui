@@ -23,7 +23,7 @@ import { usePalettePreference, useThemePreference } from "./theme-preference";
 type ThemePickerProps = {
   /**
    * `card` (the default): three tiles, icon over caption, for a settings page. `compact`: one
-   * full-width row of icon-only segments, the caption as the name and (on the web) the tooltip.
+   * row of icon-only segments, the caption as the name and (on the web) the tooltip.
    */
   variant?: "card" | "compact" | undefined;
   /** The checked choice, for a controlled picker. Left out, the picker is bound to the hook. */

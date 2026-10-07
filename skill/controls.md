@@ -1403,7 +1403,7 @@ field's and `wrapperClassName` the box around the field and its eye. `leadingSlo
 // Web: nothing to pass. The picker stores the choice and applies it.
 <ThemePicker />
 
-// A sidebar footer or a header bar: one full-width row of icon-only radios.
+// A sidebar footer or a header bar: one row of icon-only radios.
 <ThemePicker variant="compact" />
 
 // Device: pass storage once, where the app starts. The picker writes through it too.
@@ -1433,7 +1433,10 @@ and the storage, the class and the first paint are what hand-rolled versions get
   asynchronously, so hold the splash screen if a flash of the system theme matters.
 - **`variant="compact"`** is for where tiles do not fit, such as a 14rem sidebar footer or a 6rem
   phone header. It draws one row of Sun / Moon / Monitor segments (`RadioGroup
-  variant="segmented"`) and fills its container's width, so size the container, not the picker.
+  variant="segmented"`) and is as wide as the column it is stacked in, so size the container, not the picker. In a
+  row beside other things — `SidebarLayout`'s `actionSlot`, a header bar — it is as wide as its
+  three segments, which is what lets it and a button fit a 320px bar; pass `className="flex-1"`
+  there to make it take what the row has left.
   It is still a radiogroup of three radios with the same keyboard and the same `value` /
   `onValueChange` or hook binding. Each caption ("Light", "Dark", "System") is the radio's
   `aria-label`, and on the web it is also the hover tooltip (`title`). A device has no hover, so

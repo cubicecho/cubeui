@@ -338,7 +338,7 @@ device there is no `<html>`, so `PaletteProvider` hands `cssVariables` to Native
 
 **`theme-picker` is that picker, and the wiring beside it.** `ThemePicker` is a
 `RadioGroup variant="card"` of Light, Dark and System, bound by default to `useThemePreference()`
-and controlled when given `value`. `variant="compact"` is the same three choices as a full-width
+and controlled when given `value`. `variant="compact"` is the same three choices as a
 row of icon-only radios (`RadioGroup variant="segmented"`) for a sidebar footer or a header bar,
 each named by its caption, which is also its tooltip on the web (#126). The hook is split by platform like any other item, as
 `theme-preference.tsx` / `.web.tsx` over a shared `theme-preference-base.ts`, because

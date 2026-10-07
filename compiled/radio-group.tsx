@@ -94,8 +94,10 @@ type RadioGroupProps = {
   /**
    * `row` (the default): a circle, a label and an optional description per option, stacked.
    * `card`: a bordered tile per option, icon over label, sharing a row.
-   * `segmented`: one framed, input-height row of equal segments, full width. Each segment shows
-   * its `iconSlot`, its `label`, or both; an icon-only segment is named by its `aria-label`.
+   * `segmented`: one framed, input-height row of equal segments. Each segment shows its
+   * `iconSlot`, its `label`, or both; an icon-only segment is named by its `aria-label`. It is as
+   * wide as a column it is stacked in, and as wide as its segments in a row of other things — a
+   * header bar — where `className="flex-1"` makes it take what the row has left.
    */
   variant?: RadioGroupVariant | undefined;
   /**
@@ -213,7 +215,10 @@ function RadioGroup({
   const layout =
     variant === "segmented"
       ? cn(
-          "h-10 w-full flex-row gap-1 rounded-md border bg-background p-1",
+          // `self-stretch`, not `w-full`: in a row that is sized by its content, a browser
+          // measures a percentage width as the content's and then resolves it against the total,
+          // which pushed the group's neighbours out of the row by their own width.
+          "h-10 self-stretch flex-row gap-1 rounded-md border bg-background p-1",
           ariaInvalid === true ? "border-negative" : "border-foreground/15",
         )
       : horizontal
