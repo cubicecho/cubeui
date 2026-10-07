@@ -72,9 +72,15 @@ type SyntaxNode = NonNullable<ExtraProps["node"]>;
 
 /** The text of a node and everything in it, as written: what a fenced block or a heading says. */
 function textOf(node: SyntaxNode | SyntaxNode["children"][number] | undefined): string {
-  if (!node) return "";
-  if (node.type === "text") return node.value;
-  if (node.type === "element") return node.children.map(textOf).join("");
+  if (!node) {
+    return "";
+  }
+  if (node.type === "text") {
+    return node.value;
+  }
+  if (node.type === "element") {
+    return node.children.map(textOf).join("");
+  }
   return "";
 }
 
@@ -145,7 +151,9 @@ function ListItem({ className, children }: ComponentPropsWithoutRef<"li">) {
   // Items a little apart, a nested list a little under its item, and the paragraphs of a loose
   // item apart from each other.
   const look = "mt-1 first:mt-0 [&>ol]:mt-1 [&>p+p]:mt-2 [&>ul]:mt-1";
-  if (!className?.includes("task-list-item")) return <li className={look}>{children}</li>;
+  if (className?.includes("task-list-item") !== true) {
+    return <li className={look}>{children}</li>;
+  }
   return (
     <li id={id} className={look}>
       <TaskItemContext.Provider value={id}>{children}</TaskItemContext.Provider>
@@ -218,9 +226,13 @@ function cutWikilinks(text: string): TreeNode[] {
     const [whole, bang, inner = ""] = match;
     const bar = inner.indexOf("|");
     const target = (bar < 0 ? inner : inner.slice(0, bar)).trim();
-    if (target === "") continue;
+    if (target === "") {
+      continue;
+    }
     const label = bar < 0 ? "" : inner.slice(bar + 1).trim();
-    if (match.index > from) nodes.push({ type: "text", value: text.slice(from, match.index) });
+    if (match.index > from) {
+      nodes.push({ type: "text", value: text.slice(from, match.index) });
+    }
     const url = encodeURIComponent(target);
     nodes.push(
       bang
@@ -235,16 +247,24 @@ function cutWikilinks(text: string): TreeNode[] {
     );
     from = match.index + whole.length;
   }
-  if (from === 0) return [{ type: "text", value: text }];
-  if (from < text.length) nodes.push({ type: "text", value: text.slice(from) });
+  if (from === 0) {
+    return [{ type: "text", value: text }];
+  }
+  if (from < text.length) {
+    nodes.push({ type: "text", value: text.slice(from) });
+  }
   return nodes;
 }
 
 /** Text inside a link is left alone: a link cannot hold another. Code is not text, so it is too. */
 function rewriteWikilinks(node: TreeNode) {
-  if (!node.children || node.type === "link" || node.type === "linkReference") return;
+  if (!node.children || node.type === "link" || node.type === "linkReference") {
+    return;
+  }
   node.children = node.children.flatMap((child) => {
-    if (child.type === "text" && child.value) return cutWikilinks(child.value);
+    if (child.type === "text" && child.value) {
+      return cutWikilinks(child.value);
+    }
     rewriteWikilinks(child);
     return [child];
   });
@@ -270,7 +290,7 @@ function decode(url: string): string {
 
 /** A URL the document wrote that names something beside it: no scheme, no host, not a `#fragment`. */
 function isRelative(url: string): boolean {
-  return !/^([a-z][a-z0-9+.-]*:|\/\/|#)/i.test(url);
+  return /^([a-z][a-z0-9+.-]*:|\/\/|#)/i.test(url) === false;
 }
 
 const OUTSIDE = "This points outside the documents.";
@@ -287,10 +307,16 @@ function fromBase(basePath: string, url: string): string | undefined {
   const floor = rooted ? 1 : 0;
   const parts = path.startsWith("/") ? (rooted ? [""] : []) : basePath.split("/").slice(0, -1);
   for (const part of path.split("/")) {
-    if (part === "" || part === ".") continue;
-    if (part !== "..") parts.push(part);
-    else if (parts.length > floor) parts.pop();
-    else return undefined;
+    if (part === "" || part === ".") {
+      continue;
+    }
+    if (part !== "..") {
+      parts.push(part);
+    } else if (parts.length > floor) {
+      parts.pop();
+    } else {
+      return undefined;
+    }
   }
   return parts.join("/") + (cut < 0 ? "" : url.slice(cut));
 }
@@ -319,10 +345,14 @@ function useResolution(target: string, kind: MarkdownLinkKind): MarkdownLinkReso
   }>();
 
   useEffect(() => {
-    if (!isPromise(answer)) return;
+    if (isPromise(answer) === false) {
+      return;
+    }
     let current = true;
     const settle = (resolution: MarkdownLinkResolution | undefined) => {
-      if (current) setSettled({ target, kind, resolution });
+      if (current) {
+        setSettled({ target, kind, resolution });
+      }
     };
     answer.then(settle, (error: unknown) =>
       settle({ broken: true, reason: error instanceof Error ? error.message : undefined }),
@@ -332,7 +362,9 @@ function useResolution(target: string, kind: MarkdownLinkKind): MarkdownLinkReso
     };
   }, [answer, target, kind]);
 
-  if (!isPromise(answer)) return answer;
+  if (isPromise(answer) === false) {
+    return answer;
+  }
   return settled?.target === target && settled.kind === kind ? settled.resolution : PENDING;
 }
 
@@ -373,7 +405,9 @@ function ResolvedLink({
       <BrokenLink reason={undefined}>{children}</BrokenLink>
     );
   }
-  if ("render" in resolution) return <>{resolution.render(children)}</>;
+  if ("render" in resolution) {
+    return <>{resolution.render(children)}</>;
+  }
   if ("href" in resolution) {
     return (
       <a {...anchor} href={resolution.href}>
@@ -381,7 +415,9 @@ function ResolvedLink({
       </a>
     );
   }
-  if ("broken" in resolution) return <BrokenLink reason={resolution.reason}>{children}</BrokenLink>;
+  if ("broken" in resolution) {
+    return <BrokenLink reason={resolution.reason}>{children}</BrokenLink>;
+  }
   return (
     <span data-slot="markdown-pending-link" aria-busy="true" className="text-foreground/60">
       {children}
@@ -400,7 +436,7 @@ function DocumentLink({ href, children, ...anchor }: ComponentPropsWithoutRef<"a
       </ResolvedLink>
     );
   }
-  if (!resolveLink || !href || !isRelative(href)) {
+  if (!resolveLink || !href || isRelative(href) === false) {
     return (
       <a {...anchor} href={href}>
         {children}
@@ -408,7 +444,9 @@ function DocumentLink({ href, children, ...anchor }: ComponentPropsWithoutRef<"a
     );
   }
   const target = basePath === undefined ? decode(href) : fromBase(basePath, decode(href));
-  if (target === undefined) return <BrokenLink reason={OUTSIDE}>{children}</BrokenLink>;
+  if (target === undefined) {
+    return <BrokenLink reason={OUTSIDE}>{children}</BrokenLink>;
+  }
   return (
     <ResolvedLink {...anchor} href={href} target={target} kind="link">
       {children}
@@ -467,8 +505,12 @@ function ResolvedImage({
       <ImagePlaceholder label={alt} missing />
     );
   }
-  if ("render" in resolution) return <>{resolution.render(alt)}</>;
-  if ("href" in resolution) return <img src={resolution.href} alt={alt} title={title} />;
+  if ("render" in resolution) {
+    return <>{resolution.render(alt)}</>;
+  }
+  if ("href" in resolution) {
+    return <img src={resolution.href} alt={alt} title={title} />;
+  }
   if ("broken" in resolution) {
     return <ImagePlaceholder label={alt} missing reason={resolution.reason} />;
   }
@@ -483,13 +525,16 @@ function ResolvedImage({
 function DocumentImage({ src, alt = "", title }: ComponentPropsWithoutRef<"img">) {
   const { resolveLink, basePath } = useContext(LinkContext);
   const name = wikiTarget(src, WIKIEMBED);
-  if (name !== undefined)
+  if (name !== undefined) {
     return <ResolvedImage target={name} kind="embed" alt={alt} title={title} />;
-  if (!resolveLink || !src || !isRelative(src)) {
+  }
+  if (!resolveLink || !src || isRelative(src) === false) {
     return <img src={src || undefined} alt={alt} title={title} />;
   }
   const target = basePath === undefined ? decode(src) : fromBase(basePath, decode(src));
-  if (target === undefined) return <ImagePlaceholder label={alt} missing reason={OUTSIDE} />;
+  if (target === undefined) {
+    return <ImagePlaceholder label={alt} missing reason={OUTSIDE} />;
+  }
   return <ResolvedImage target={target} kind="image" src={src} alt={alt} title={title} />;
 }
 
@@ -698,7 +743,9 @@ export function Markdown({
   // a document cannot reach them by spelling one out.
   const policy = useMemo<UrlTransform>(() => {
     const given = urlTransform ?? defaultUrlTransform;
-    if (!wikilinks) return given;
+    if (!wikilinks) {
+      return given;
+    }
     return (url, key, node) =>
       url.startsWith(WIKILINK) || url.startsWith(WIKIEMBED) ? url : given(url, key, node);
   }, [urlTransform, wikilinks]);

@@ -24,12 +24,16 @@ function useOverflowsX() {
   const [overflows, setOverflows] = React.useState(false);
   React.useEffect(() => {
     const node = ref.current;
-    if (!node || typeof ResizeObserver === "undefined") return;
+    if (!node || typeof ResizeObserver === "undefined") {
+      return;
+    }
     const measure = () => setOverflows(node.scrollWidth > node.clientWidth);
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     // The container keeps its width when a column grows, so the table is watched as well.
-    if (node.firstElementChild) observer.observe(node.firstElementChild);
+    if (node.firstElementChild) {
+      observer.observe(node.firstElementChild);
+    }
     measure();
     return () => observer.disconnect();
   }, []);

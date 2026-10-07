@@ -66,7 +66,7 @@ export type BadgeProps = {
 
 /** Whether `children` holds anything to show, which is what decides pill or dot. */
 export function badgeHasLabel(children: ReactNode): boolean {
-  return !(children === undefined || children === null || children === false || children === "");
+  return children !== undefined && children !== null && children !== false && children !== "";
 }
 
 /**

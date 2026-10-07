@@ -272,7 +272,9 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
         // `aria-label` still wins.
         {...(labelHideBelow && typeof children === "string" ? { "aria-label": children } : {})}
         onClick={(event) => {
-          if (group && value !== undefined) group.onValueChange?.(value);
+          if (group && value !== undefined) {
+            group.onValueChange?.(value);
+          }
           onPress?.(event);
         }}
         className={cn(

@@ -70,8 +70,12 @@ function messageOf(error: unknown): string | undefined {
   // A validator may yield a string, a `{ message }`, or something else entirely — a
   // standard-schema issue, a thrown value. Narrow, then fall back to `String`, because showing
   // the wrong text beats showing none.
-  if (error == null) return undefined;
-  if (typeof error === "string") return error;
+  if (error == null) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
@@ -90,7 +94,9 @@ function useFieldError(): string | undefined {
   const errors = useStore(field.store, (s) => s.meta.errors);
   const isTouched = useStore(field.store, (s) => s.meta.isTouched);
   const submissionAttempts = useStore(field.form.store, (s) => s.submissionAttempts);
-  if (!isTouched && submissionAttempts === 0) return undefined;
+  if (isTouched === false && submissionAttempts === 0) {
+    return undefined;
+  }
   return messageOf(errors[0]);
 }
 
@@ -101,7 +107,9 @@ function useFieldError(): string | undefined {
  */
 function useFieldIds() {
   const context = React.useContext(IdContext);
-  if (!context) throw new Error("Form field components must be used within <Field>");
+  if (!context) {
+    throw new Error("Form field components must be used within <Field>");
+  }
   const { id, asGroup } = context;
   return {
     labelId: `${id}-label`,
@@ -205,7 +213,9 @@ function FieldDescription({ ...props }: React.ComponentProps<typeof FieldDescrip
 
 function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitive>) {
   const { error, messageId } = useFieldComponentContext();
-  if (!error) return null;
+  if (!error) {
+    return null;
+  }
   return (
     <FieldErrorPrimitive id={messageId} {...props}>
       {error}
@@ -307,8 +317,11 @@ function splitProps<T>(props: BoundFieldProps & T): [BoundFieldProps, T] {
   const field: Record<string, unknown> = {};
   const control: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(props)) {
-    if (FIELD_KEYS.has(key)) field[key] = value;
-    else control[key] = value;
+    if (FIELD_KEYS.has(key)) {
+      field[key] = value;
+    } else {
+      control[key] = value;
+    }
   }
   return [field as BoundFieldProps, control as T];
 }
@@ -597,7 +610,7 @@ function SubmitButton({
         form.handleSubmit();
       }}
       {...props}
-      disabled={disabled === true || !canSubmit}
+      disabled={disabled === true || canSubmit === false}
       loading={isSubmitting}
       loadingLabel={savingLabel}
       iconSlot={iconSlot}

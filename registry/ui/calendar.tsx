@@ -33,15 +33,36 @@ const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 /** Whether one matcher covers a day. Several are ORed by the caller below. */
 function covers(day: Date, matcher: DateMatcher): boolean {
-  if (typeof matcher === "function") return matcher(day);
-  if (matcher instanceof Date) return isSameDay(day, matcher);
-  if (Array.isArray(matcher)) return matcher.some((d) => isSameDay(day, d));
-  if ("from" in matcher) {
-    return !isBefore(day, startOfDay(matcher.from)) && !isAfter(day, endOfDay(matcher.to));
+  if (typeof matcher === "function") {
+    return matcher(day);
   }
-  if ("before" in matcher) return isBefore(day, startOfDay(matcher.before));
+  if (matcher instanceof Date) {
+    return isSameDay(day, matcher);
+  }
+  if (Array.isArray(matcher)) {
+    return matcher.some((d) => isSameDay(day, d));
+  }
+  if ("from" in matcher) {
+    return (
+      isBefore(day, startOfDay(matcher.from)) === false &&
+      isAfter(day, endOfDay(matcher.to)) === false
+    );
+  }
+  if ("before" in matcher) {
+    return isBefore(day, startOfDay(matcher.before));
+  }
   return isAfter(day, endOfDay(matcher.after));
 }
+
+/** The last millisecond of a day, as `setHours` takes it. */
+const LAST_HOUR = 23;
+const LAST_MINUTE = 59;
+const LAST_SECOND = 59;
+const LAST_MILLISECOND = 999;
+const DAYS_IN_WEEK = 7;
+const PERCENT = 100;
+/** One day's share of a row. */
+const DAY_WIDTH = `${PERCENT / DAYS_IN_WEEK}%`;
 
 // Comparisons are between calendar days, not instants: `{ before: new Date() }`
 // means "before today", and a matcher built at 14:00 must not disable this morning.
@@ -52,15 +73,17 @@ function startOfDay(date: Date): Date {
 }
 function endOfDay(date: Date): Date {
   const out = new Date(date);
-  out.setHours(23, 59, 59, 999);
+  out.setHours(LAST_HOUR, LAST_MINUTE, LAST_SECOND, LAST_MILLISECOND);
   return out;
 }
 
 function isDisabled(day: Date, disabled: CalendarProps["disabled"]): boolean {
-  if (!disabled) return false;
+  if (!disabled) {
+    return false;
+  }
   // A bare `Date[]` is one matcher, not a list of them — `covers` handles it — so the
   // list case is only reached for a genuine array of matchers.
-  if (Array.isArray(disabled) && disabled.some((m) => !(m instanceof Date))) {
+  if (Array.isArray(disabled) && disabled.some((m) => m instanceof Date === false)) {
     return (disabled as DateMatcher[]).some((m) => covers(day, m));
   }
   return covers(day, disabled as DateMatcher);
@@ -68,12 +91,16 @@ function isDisabled(day: Date, disabled: CalendarProps["disabled"]): boolean {
 
 /** Where a day sits in the selection, which is what decides how it is drawn. */
 function placeInRange(day: Date, range: DateRange | undefined) {
-  if (!range?.from) return { selected: false, edge: false, middle: false };
+  if (!range?.from) {
+    return { selected: false, edge: false, middle: false };
+  }
   const from = range.from;
   const to = range.to;
-  if (!to) return { selected: isSameDay(day, from), edge: isSameDay(day, from), middle: false };
+  if (!to) {
+    return { selected: isSameDay(day, from), edge: isSameDay(day, from), middle: false };
+  }
   const edge = isSameDay(day, from) || isSameDay(day, to);
-  const inside = !isBefore(day, startOfDay(from)) && !isAfter(day, endOfDay(to));
+  const inside = isBefore(day, startOfDay(from)) === false && isAfter(day, endOfDay(to)) === false;
   return { selected: inside, edge, middle: inside && !edge };
 }
 
@@ -83,8 +110,12 @@ function placeInRange(day: Date, range: DateRange | undefined) {
  * than producing a backwards range.
  */
 function nextRange(day: Date, current: DateRange | undefined): DateRange {
-  if (!current?.from || current.to) return { from: day, to: undefined };
-  if (isBefore(day, current.from)) return { from: day, to: undefined };
+  if (!current?.from || current.to) {
+    return { from: day, to: undefined };
+  }
+  if (isBefore(day, current.from)) {
+    return { from: day, to: undefined };
+  }
   return { from: current.from, to: day };
 }
 
@@ -107,8 +138,11 @@ export function Calendar(props: CalendarProps) {
   const weekdays = [...WEEKDAYS.slice(weekStartsOn), ...WEEKDAYS.slice(0, weekStartsOn)];
 
   const press = (day: Date) => {
-    if (props.mode === "range") props.onSelect(nextRange(day, props.selected));
-    else props.onSelect(day);
+    if (props.mode === "range") {
+      props.onSelect(nextRange(day, props.selected));
+    } else {
+      props.onSelect(day);
+    }
   };
 
   return (
@@ -116,9 +150,9 @@ export function Calendar(props: CalendarProps) {
       <View className="mb-2 flex-row items-center justify-between">
         <Pressable
           onPress={() => setMonth(addMonths(month, -1))}
-          disabled={!canGoBack}
+          disabled={canGoBack === false}
           aria-label="Previous month"
-          className={cn("p-1", !canGoBack && "opacity-30")}
+          className={cn("p-1", canGoBack === false && "opacity-30")}
         >
           <ChevronLeft className="h-4 w-4 text-foreground" />
         </Pressable>
@@ -186,7 +220,7 @@ export function Calendar(props: CalendarProps) {
                   // Seven per row, and `flex-wrap` needs a width it can measure.
                   // A `w-[14.2857%]` class would round to the same place; the style
                   // keeps the arithmetic visible.
-                  style={{ width: `${100 / 7}%` }}
+                  style={{ width: DAY_WIDTH }}
                 >
                   <Text
                     className={cn(

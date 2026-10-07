@@ -505,8 +505,12 @@ export function ticks(text: string): ReactNode {
   return parts.map((part, index) => {
     // An even part is plain prose. An odd one sat between two backticks — unless it is the last
     // one, in which case the tick that opened it never closed and was only ever a tick.
-    if (index % 2 === 0) return part;
-    if (index === parts.length - 1) return `\`${part}`;
+    if (index % 2 === 0) {
+      return part;
+    }
+    if (index === parts.length - 1) {
+      return `\`${part}`;
+    }
 
     // No background. `code` in shadcn's docs is `bg-foreground/10`, and this lands inside a
     // `text-foreground/60` description — muted on muted is 4.34:1, under the 4.5 a body-size

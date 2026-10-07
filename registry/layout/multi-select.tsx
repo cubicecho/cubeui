@@ -72,7 +72,7 @@ export function mergeMultiSelectOptions(
   value: readonly string[],
 ): MultiSelectOption[] {
   const known = new Set(options.map((option) => option.value));
-  const orphans = value.filter((selected) => !known.has(selected));
+  const orphans = value.filter((selected) => known.has(selected) === false);
   return orphans.length === 0
     ? [...options]
     : [...options, ...orphans.map((selected) => ({ value: selected, label: selected }))];
@@ -110,9 +110,11 @@ function groupsOf(options: readonly MultiSelectOption[]): MultiSelectRun[] {
  */
 export function isAddableOptionName(name: string, options: readonly MultiSelectOption[]): boolean {
   const trimmed = name.trim();
-  if (trimmed === "") return false;
+  if (trimmed === "") {
+    return false;
+  }
   const folded = trimmed.toLocaleLowerCase();
-  return !options.some((option) => option.label.trim().toLocaleLowerCase() === folded);
+  return options.every((option) => option.label.trim().toLocaleLowerCase() !== folded);
 }
 
 /**
@@ -123,7 +125,9 @@ export function isAddableOptionName(name: string, options: readonly MultiSelectO
  * down to it.
  */
 function chipColors(color: string | undefined) {
-  if (!color) return {};
+  if (!color) {
+    return {};
+  }
   return { backgroundColor: color, textColor: readableTextColor(color) };
 }
 

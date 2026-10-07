@@ -65,7 +65,9 @@ const MenuContext = createContext<MenuState>({
 
 /** Put focus back on the trigger, in whichever sense of focus the platform has. */
 function returnFocus(node: View | null) {
-  if (!node) return;
+  if (!node) {
+    return;
+  }
   if (Platform.OS === "web") {
     (node as unknown as { focus?: () => void }).focus?.();
   } else {
@@ -79,7 +81,9 @@ function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) 
   const [uncontrolled, setUncontrolled] = useState(defaultOpen);
   const isOpen = open ?? uncontrolled;
   const setOpen = (next: boolean) => {
-    if (open === undefined) setUncontrolled(next);
+    if (open === undefined) {
+      setUncontrolled(next);
+    }
     onOpenChange?.(next);
   };
 
@@ -89,8 +93,10 @@ function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) 
   useEffect(() => {
     // On the close edge only, however it closed: a row, the backdrop or the back button. A
     // `focusesElsewhere` row has already moved focus to where it belongs, so leave it there.
-    if (wasOpen.current && !isOpen) {
-      if (!skipReturnRef.current) returnFocus(triggerRef.current);
+    if (wasOpen.current && isOpen === false) {
+      if (!skipReturnRef.current) {
+        returnFocus(triggerRef.current);
+      }
       skipReturnRef.current = false;
     }
     wasOpen.current = isOpen;
@@ -121,8 +127,11 @@ function MenuTrigger({ asChild, children }: MenuTriggerProps) {
         "aria-expanded": open,
         ref: (node: View | null) => {
           triggerRef.current = node;
-          if (typeof own === "function") own(node);
-          else if (own) own.current = node;
+          if (typeof own === "function") {
+            own(node);
+          } else if (own) {
+            own.current = node;
+          }
         },
       },
     );
@@ -218,7 +227,9 @@ type ToggleRowProps = Pick<
  * `aria-checked` read as "checked", so there it is the plain `checkbox` / `radio`.
  */
 function toggleRole(kind: ToggleRowProps["kind"]): Role {
-  if (Platform.OS !== "web") return kind;
+  if (Platform.OS !== "web") {
+    return kind;
+  }
   return (kind === "checkbox" ? "menuitemcheckbox" : "menuitemradio") as Role;
 }
 

@@ -57,7 +57,9 @@ const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
  */
 export function normalizeHex(value: string): string {
   const trimmed = value.trim();
-  if (trimmed === "") return "";
+  if (trimmed === "") {
+    return "";
+  }
   return trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
 }
 
@@ -71,10 +73,12 @@ export function isHexColor(value: string): boolean {
   return HEX.test(value);
 }
 
+const SHORTHAND_DIGITS = 3;
+
 /** `#f80` and `#FF8800` are one colour. Shorthand doubles each digit; it does not pad. */
 function expand(value: string): string {
   const digits = value.replace("#", "").toLowerCase();
-  return digits.length === 3
+  return digits.length === SHORTHAND_DIGITS
     ? digits
         .split("")
         .map((digit) => digit + digit)
@@ -189,7 +193,9 @@ export function ColorPicker({
   if (seen !== current) {
     setSeen(current);
     const typed = normalizeHex(draft);
-    if (typed !== current && !sameColor(typed, current)) setDraft(current);
+    if (typed !== current && !sameColor(typed, current)) {
+      setDraft(current);
+    }
   }
 
   const onChangeText = (text: string) => {
@@ -197,7 +203,9 @@ export function ColorPicker({
     const typed = normalizeHex(text);
     // Emptying the box is an answer — the same "no colour" Clear gives — and a whole colour is
     // one. Everything between is a draft, and stays in the box.
-    if ((typed === "" || isHexColor(typed)) && typed !== current) emit(typed);
+    if ((typed === "" || isHexColor(typed)) && typed !== current) {
+      emit(typed);
+    }
   };
 
   return (

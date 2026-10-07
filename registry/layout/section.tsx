@@ -121,14 +121,14 @@ export function Section({
           className={cn(
             "min-w-0 flex-row flex-wrap items-center gap-2",
             // With no text there is no column to push the action along, so the row does it.
-            !hasText && "justify-end",
+            hasText === false && "justify-end",
             divider && "border-b border-foreground/10 pb-1",
           )}
         >
           {hasText ? (
             <View className={TEXT}>
               {title ? (
-                // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
+                // web: biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
                 <Text
                   testID="section-title"
                   nativeID={titleId}

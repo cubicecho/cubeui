@@ -352,6 +352,11 @@ does the same thing itself now that it is native-first.
 
 - Biome-enforced: double quotes, semicolons, trailing commas, 2-space indent, 100 line width,
   `import type` for type-only imports, imports organised on save
+- In `registry/` and `compiled/`, the cubicecho rules as well, as errors: braces on every `if` and
+  loop body, no bare numbers outside a `const NAME = 5`, and `x === false` (not `!x`) for a logic
+  check, with `!` left for null guards (`no-negation.grit`). An app that vendors these files lints
+  them with those rules, so a file that fails them gets the linter turned off around it (#286).
+  A suppression only the compiled element needs is written `// web: biome-ignore …`
 - Files `kebab-case.tsx`; components `PascalCase`; vars and functions `camelCase`; true
   constants `SCREAMING_SNAKE_CASE`
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error

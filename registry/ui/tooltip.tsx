@@ -82,12 +82,16 @@ function TooltipContent({ side = "top", className, children }: TooltipContentPro
   const { open, setOpen } = useContext(TooltipContext);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     const timer = setTimeout(() => setOpen(false), VISIBLE_MS);
     return () => clearTimeout(timer);
   }, [open, setOpen]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
   return (
     <View
       className={cn("absolute z-50", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}

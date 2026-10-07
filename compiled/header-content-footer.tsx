@@ -168,8 +168,11 @@ function toEnd(scroller: unknown, animated: boolean) {
 
 /** Hands a node to a caller's ref, whichever kind of ref it is. */
 function assign<T>(ref: Ref<T> | undefined, node: T | null) {
-  if (typeof ref === "function") ref(node);
-  else if (ref) ref.current = node;
+  if (typeof ref === "function") {
+    ref(node);
+  } else if (ref) {
+    ref.current = node;
+  }
 }
 
 /**
@@ -202,7 +205,9 @@ function Body({
   const scroller = useRef<unknown>(null);
   useImperativeHandle<ScrollHandle, ScrollHandle>(scrollRef, () => ({
     scrollToEnd: ({ animated = true } = {}) => {
-      if (scroll && scroller.current) toEnd(scroller.current, animated);
+      if (scroll && scroller.current) {
+        toEnd(scroller.current, animated);
+      }
     },
   }));
   return (

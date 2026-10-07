@@ -74,7 +74,9 @@ async function walk(entries: FileSystemEntry[]): Promise<Found[]> {
         const batch = await new Promise<FileSystemEntry[]>((resolve, reject) =>
           reader.readEntries(resolve, reject),
         );
-        if (batch.length === 0) break;
+        if (batch.length === 0) {
+          break;
+        }
         found.push(...(await walk(batch)));
       }
     }
@@ -97,12 +99,16 @@ function useFilePick({ onPick, onPickMany, accept, multiple, read, directory }: 
     const allowed = found.filter(({ file }) => acceptsFile(accept, file));
     // A folder is every file in it; `multiple` is about picking files.
     const files = multiple || directory ? allowed : allowed.slice(0, 1);
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      return;
+    }
     const picked = await Promise.all(
       files.map(async ({ file, path }): Promise<PickedFile> => {
         const base = { name: file.name, path, type: file.type, size: file.size };
         // The file itself, unread: the browser streams it from disk when it is sent.
-        if (read === "none") return { ...base, text: "", blob: file };
+        if (read === "none") {
+          return { ...base, text: "", blob: file };
+        }
         // One or the other: decoding a `.zip` to hand back a string nobody
         // reads would cost its whole size again.
         return read === "bytes"
@@ -110,8 +116,13 @@ function useFilePick({ onPick, onPickMany, accept, multiple, read, directory }: 
           : { ...base, text: await file.text() };
       }),
     );
-    if (onPickMany) onPickMany(picked);
-    else for (const file of picked) onPick?.(file.text, file.name);
+    if (onPickMany) {
+      onPickMany(picked);
+    } else {
+      for (const file of picked) {
+        onPick?.(file.text, file.name);
+      }
+    }
   }
 
   const trigger = {

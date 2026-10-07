@@ -111,7 +111,9 @@ export function MarkdownEditor({
         aria-label="Editor view"
         value={view}
         onValueChange={(next) => {
-          if (!isView(next)) return;
+          if (isView(next) === false) {
+            return;
+          }
           setOwnView(next);
           onViewChange?.(next);
         }}

@@ -99,7 +99,9 @@ export function Badge({
               }}
               // The keys that press it, stopped too, so a badge's own `onKeyDown` does not act on them.
               onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") event.stopPropagation();
+                if (event.key === "Enter" || event.key === " ") {
+                  event.stopPropagation();
+                }
               }}
             >
               <X className={badgeIconClass} aria-hidden />

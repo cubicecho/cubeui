@@ -63,11 +63,16 @@ function Tabs({
  */
 function reveal(list: HTMLElement) {
   const tab = list.querySelector('[role="tab"][data-state="active"]');
-  if (!tab) return;
+  if (!tab) {
+    return;
+  }
   const box = list.getBoundingClientRect();
   const span = tab.getBoundingClientRect();
-  if (span.left < box.left) list.scrollLeft -= box.left - span.left + TABS_LIST_INSET;
-  else if (span.right > box.right) list.scrollLeft += span.right - box.right + TABS_LIST_INSET;
+  if (span.left < box.left) {
+    list.scrollLeft -= box.left - span.left + TABS_LIST_INSET;
+  } else if (span.right > box.right) {
+    list.scrollLeft += span.right - box.right + TABS_LIST_INSET;
+  }
 }
 
 function TabsList({
@@ -81,7 +86,9 @@ function TabsList({
   // is watched: it covers a click, an arrow key, the caller's `value` and a `defaultValue` alike.
   useEffect(() => {
     const node = list.current;
-    if (!node) return;
+    if (!node) {
+      return;
+    }
     reveal(node);
     const observer = new MutationObserver(() => reveal(node));
     observer.observe(node, { attributes: true, attributeFilter: ["data-state"], subtree: true });
@@ -93,8 +100,12 @@ function TabsList({
       data-slot="tabs-list"
       ref={(node) => {
         list.current = node;
-        if (typeof ref === "function") return ref(node);
-        if (ref) ref.current = node;
+        if (typeof ref === "function") {
+          return ref(node);
+        }
+        if (ref) {
+          ref.current = node;
+        }
       }}
       // `justify-center-safe`: plain centring puts the first tabs of a row that overflows past
       // the start, where no scrolling reaches them. The scrollbar is hidden because the row is

@@ -214,7 +214,9 @@ export function DialogLayout({
   const isOpen = open ?? selfOpen;
 
   const setOpenState = (next: boolean) => {
-    if (open === undefined) setSelfOpen(next);
+    if (open === undefined) {
+      setSelfOpen(next);
+    }
     onOpenChange?.(next);
   };
 

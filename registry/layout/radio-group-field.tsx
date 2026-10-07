@@ -103,8 +103,12 @@ type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<Val
 };
 
 function messageOf(error: unknown): string | undefined {
-  if (error == null) return undefined;
-  if (typeof error === "string") return error;
+  if (error == null) {
+    return undefined;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
   if (typeof error === "object" && "message" in error) {
     return String((error as { message: unknown }).message);
   }
@@ -164,7 +168,7 @@ function RadioGroupFieldBody({
   ) : null;
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: React Native has no fieldset; role="group" is the cross-platform form
+    // web: biome-ignore lint/a11y/useSemanticElements: React Native has no fieldset; role="group" is the cross-platform form
     <View role="group" testID="radio-group-field" className={cn("w-full min-w-0 gap-2", className)}>
       {actionSlot ? (
         <View className="min-w-0 flex-row items-center gap-2">

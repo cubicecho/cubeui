@@ -120,12 +120,15 @@ export function useDownload({
 
   const download = useCallback(
     async (write: DownloadWriters) => {
-      if (busy.current) return;
+      if (busy.current) {
+        return;
+      }
       busy.current = true;
       setPending(true);
       try {
-        if (href !== undefined) await write.url(typeof href === "function" ? await href() : href);
-        else if (source !== undefined) {
+        if (href !== undefined) {
+          await write.url(typeof href === "function" ? await href() : href);
+        } else if (source !== undefined) {
           await write.content(typeof source === "function" ? await source() : source);
         }
         onDownloaded?.();
@@ -133,7 +136,9 @@ export function useDownload({
         onError?.(error);
       } finally {
         busy.current = false;
-        if (mounted.current) setPending(false);
+        if (mounted.current) {
+          setPending(false);
+        }
       }
     },
     [source, href, onDownloaded, onError],

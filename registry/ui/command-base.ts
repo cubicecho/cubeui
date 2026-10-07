@@ -134,7 +134,9 @@ export const COMMAND_DIALOG_DESCRIPTION = "Search for a command to run...";
  */
 export function matchesEveryWord(value: string, search: string, keywords?: string[]): number {
   const words = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return 1;
+  if (words.length === 0) {
+    return 1;
+  }
   const target = [value, ...(keywords ?? [])].join(" ").toLocaleLowerCase();
   return words.every((word) => target.includes(word)) ? 1 : 0;
 }
@@ -148,8 +150,11 @@ export function commandItemText(children: ReactNode): string {
   const parts: string[] = [];
   const walk = (node: ReactNode) => {
     for (const child of Children.toArray(node)) {
-      if (typeof child === "string" || typeof child === "number") parts.push(String(child));
-      else if (isValidElement<{ children?: ReactNode }>(child)) walk(child.props.children);
+      if (typeof child === "string" || typeof child === "number") {
+        parts.push(String(child));
+      } else if (isValidElement<{ children?: ReactNode }>(child)) {
+        walk(child.props.children);
+      }
     }
   };
   walk(children);

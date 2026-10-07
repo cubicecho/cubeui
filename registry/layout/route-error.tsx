@@ -70,8 +70,12 @@ function friendlyMessage(error: unknown): string {
 
 /** What `details={true}` shows: the message as thrown, for whoever files the bug. */
 function rawMessage(error: unknown): string | undefined {
-  if (error instanceof Error) return error.message || undefined;
-  if (typeof error === "string") return error || undefined;
+  if (error instanceof Error) {
+    return error.message || undefined;
+  }
+  if (typeof error === "string") {
+    return error || undefined;
+  }
   return undefined;
 }
 

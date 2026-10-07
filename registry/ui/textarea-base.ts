@@ -46,7 +46,7 @@ export function isSubmitKey({
   shiftKey,
   isComposing,
 }: TextareaKeyPressEvent["nativeEvent"]): boolean {
-  return key === "Enter" && !shiftKey && !isComposing;
+  return key === "Enter" && shiftKey !== true && isComposing !== true;
 }
 
 /** Where the caret is, as offsets into the text. A caret with nothing selected has the two equal. */

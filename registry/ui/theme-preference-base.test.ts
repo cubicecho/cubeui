@@ -110,7 +110,7 @@ describe("the palettes the hooks offer", () => {
   it("are dark-only where the tokens have no light set", () => {
     expect([...DARK_ONLY_PALETTES]).toEqual(
       Object.entries(palettes)
-        .filter(([, modes]) => !("light" in modes))
+        .filter(([, modes]) => "light" in modes === false)
         .map(([name]) => name),
     );
   });

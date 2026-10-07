@@ -71,6 +71,8 @@ const ROW_CLASS = cn(
 
 /** How far one level sits inside the one above it: the chevron's own width. */
 const INDENT = 16;
+/** The gap between the tree's edge and its outermost rows. */
+const EDGE = 8;
 
 const NO_PATHS: ReadonlySet<string> = new Set();
 
@@ -157,11 +159,13 @@ export function FileTree<T extends TreeEntry>({
       : (defaultOpen === "all" || defaultOpen.includes(path)) !== toggled.has(path);
 
   const toggle = (path: string) => {
-    const next = !isOpen(path);
+    const next = isOpen(path) === false;
     if (openProp === undefined) {
       setToggled((before) => {
         const after = new Set(before);
-        if (!after.delete(path)) after.add(path);
+        if (!after.delete(path)) {
+          after.add(path);
+        }
         return after;
       });
     }
@@ -174,7 +178,9 @@ export function FileTree<T extends TreeEntry>({
   const [moving, setMoving] = React.useState(NO_PATHS);
 
   const droppable = (node: TreeNode<T>, into: string) =>
-    isValidMove(node.path, into) && !moving.has(node.path) && (canMove?.(node, into) ?? true);
+    isValidMove(node.path, into) &&
+    moving.has(node.path) === false &&
+    (canMove?.(node, into) ?? true);
   const dropInto = dragged && over !== null && droppable(dragged, over) ? over : null;
 
   const endDrag = () => {
@@ -184,7 +190,9 @@ export function FileTree<T extends TreeEntry>({
 
   const move = (from: string, into: string) => {
     const done: unknown = onMove?.(from, into);
-    if (!(done instanceof Promise)) return;
+    if (done instanceof Promise === false) {
+      return;
+    }
     setMoving((before) => new Set(before).add(from));
     const settle = () =>
       setMoving((before) => {
@@ -212,27 +220,37 @@ export function FileTree<T extends TreeEntry>({
   const dropProps = (into: string) => ({
     onDragOver: (event: React.DragEvent) => {
       // Something dragged in from outside the tree is not this tree's to place.
-      if (!dragged) return;
+      if (!dragged) {
+        return;
+      }
       event.stopPropagation();
       setOver(into);
-      if (!droppable(dragged, into)) return;
+      if (!droppable(dragged, into)) {
+        return;
+      }
       event.preventDefault();
       event.dataTransfer.dropEffect = "move";
     },
     onDrop: (event: React.DragEvent) => {
-      if (!dragged) return;
+      if (!dragged) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       // Here as well as on `dragend`, which never arrives once the move has taken the row away.
       endDrag();
-      if (droppable(dragged, into)) move(dragged.path, into);
+      if (droppable(dragged, into)) {
+        move(dragged.path, into);
+      }
     },
   });
 
   // Pinned rows are outside the tree's order: nothing lands on one, the top level included.
   const refuseDrop = {
     onDragOver: (event: React.DragEvent) => {
-      if (!dragged) return;
+      if (!dragged) {
+        return;
+      }
       event.stopPropagation();
       setOver(null);
     },
@@ -240,18 +258,22 @@ export function FileTree<T extends TreeEntry>({
 
   const leaveTree = (event: React.DragEvent) => {
     const next = event.relatedTarget as Node | null;
-    if (!event.currentTarget.contains(next)) setOver(null);
+    if (!event.currentTarget.contains(next)) {
+      setOver(null);
+    }
   };
 
   const canDrop = Platform.OS === "web" && onMove !== undefined;
 
   const springOpen =
-    dragged && over && over !== dragged.path && folders.includes(over) && !isOpen(over)
+    dragged && over && over !== dragged.path && folders.includes(over) && isOpen(over) === false
       ? over
       : null;
   // biome-ignore lint/correctness/useExhaustiveDependencies: `toggle` is this render's, taken when the row came to rest; the timer is dropped if anything it read changes
   React.useEffect(() => {
-    if (springOpen === null) return;
+    if (springOpen === null) {
+      return;
+    }
     const timer = setTimeout(() => toggle(springOpen), SPRING_OPEN_MS);
     return () => clearTimeout(timer);
   }, [springOpen]);
@@ -264,11 +286,11 @@ export function FileTree<T extends TreeEntry>({
     const isSelected = isFile && selected === node.path;
     const ink = isSelected ? "text-active-foreground" : "text-foreground";
     const muted = isSelected ? "text-active-foreground" : "text-foreground/60";
-    const indent = { paddingLeft: depth * INDENT + 8 };
-    const pressable = !isFile || linkSlot !== undefined || onSelect !== undefined;
+    const indent = { paddingLeft: depth * INDENT + EDGE };
+    const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
     const actions = actionSlot?.(node);
-    const drag = canDrop && !isPinned ? dragProps(node) : {};
+    const drag = canDrop && isPinned === false ? dragProps(node) : {};
 
     const inside = (
       <>
@@ -312,7 +334,7 @@ export function FileTree<T extends TreeEntry>({
     );
 
     let row: ReactElement;
-    if (!isFile) {
+    if (isFile === false) {
       const expanded = isOpen(node.path);
       row = (
         <Pressable
@@ -411,7 +433,9 @@ export function FileTree<T extends TreeEntry>({
       </View>
     ));
 
-  if (tree.length === 0 && !pinned?.length) return null;
+  if (tree.length === 0 && !pinned?.length) {
+    return null;
+  }
 
   return (
     <View

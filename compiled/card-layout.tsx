@@ -167,7 +167,7 @@ export function CardLayout({
   return (
     <Card data-slot="card-layout" className={className}>
       {hasHeader ? (
-        <CardHeader className={cn(HEADER, !hasText && "justify-end", headerClassName)}>
+        <CardHeader className={cn(HEADER, hasText === false && "justify-end", headerClassName)}>
           {hasText ? (
             <div className={cn("cube-rn-view", HEADER_TEXT)}>
               {title ? (
@@ -206,7 +206,7 @@ export function CardLayout({
       {body ? (
         // `CardContent` is `pt-0` because a header above it brings the top padding. With no
         // header the body is the first thing in the card and sat on its top edge.
-        <CardContent className={cn("min-w-0", !hasHeader && "pt-6", contentClassName)}>
+        <CardContent className={cn("min-w-0", hasHeader === false && "pt-6", contentClassName)}>
           {body}
         </CardContent>
       ) : null}
@@ -217,7 +217,7 @@ export function CardLayout({
             footerSlot && footerActionsSlot && "justify-between",
             !footerSlot && "justify-end",
             // The same, for a footer with neither a header nor a body over it.
-            !hasHeader && !body && "pt-6",
+            hasHeader === false && !body && "pt-6",
             footerClassName,
           )}
         >

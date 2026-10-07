@@ -60,13 +60,17 @@ function stored(key: string): string | null {
 }
 
 function read(): ThemePreference {
-  if (unsaved.theme) return unsaved.theme;
+  if (unsaved.theme) {
+    return unsaved.theme;
+  }
   const value = stored(THEME_STORAGE_KEY);
   return isThemePreference(value) ? value : "system";
 }
 
 function readPalette(): PalettePreference {
-  if (unsaved.palette) return unsaved.palette;
+  if (unsaved.palette) {
+    return unsaved.palette;
+  }
   const value = stored(PALETTE_STORAGE_KEY);
   return isPalettePreference(value) ? value : "default";
 }
@@ -84,15 +88,23 @@ function apply(theme = read(), palette = readPalette()) {
     darkOnly || theme === "dark" || (theme === "system" && prefersDark()),
   );
   html.classList.toggle("light", !darkOnly && theme === "light");
-  if (palette === "default") html.removeAttribute("data-palette");
-  else html.setAttribute("data-palette", palette);
+  if (palette === "default") {
+    html.removeAttribute("data-palette");
+  } else {
+    html.setAttribute("data-palette", palette);
+  }
 }
 
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
   const onStorage = (event: StorageEvent) => {
-    if (event.key === THEME_STORAGE_KEY || event.key === PALETTE_STORAGE_KEY || event.key === null)
+    if (
+      event.key === THEME_STORAGE_KEY ||
+      event.key === PALETTE_STORAGE_KEY ||
+      event.key === null
+    ) {
       onChange();
+    }
   };
   window.addEventListener("storage", onStorage);
   return () => {
@@ -115,13 +127,17 @@ function store(key: string, value: string): boolean {
 function setPreference(next: ThemePreference) {
   unsaved.theme = store(THEME_STORAGE_KEY, next) ? null : next;
   apply();
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 function setPalette(next: PalettePreference) {
   unsaved.palette = store(PALETTE_STORAGE_KEY, next) ? null : next;
   apply();
-  for (const listener of listeners) listener();
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 /**
@@ -139,14 +155,20 @@ export function migrateThemePreference(
   try {
     const storage = window.localStorage;
     for (const { key, from, values } of legacyMigrations(legacyKeys)) {
-      if (storage.getItem(key) !== null) continue;
+      if (storage.getItem(key) !== null) {
+        continue;
+      }
       const old = from.find((name) => values.includes(storage.getItem(name) ?? ""));
-      if (old === undefined) continue;
+      if (old === undefined) {
+        continue;
+      }
       storage.setItem(key, storage.getItem(old) ?? "");
       storage.removeItem(old);
     }
     apply();
-    for (const listener of listeners) listener();
+    for (const listener of listeners) {
+      listener();
+    }
   } catch {
     // No storage, or a server render: there is nothing to bring across.
   }
@@ -166,7 +188,9 @@ export function useThemePreference(_options: ThemePreferenceOptions = {}): Theme
   useEffect(() => {
     // The palette as well: another tab changing it reaches here, and nothing else repaints.
     apply(preference, palette);
-    if (preference !== "system" || typeof window.matchMedia !== "function") return;
+    if (preference !== "system" || typeof window.matchMedia !== "function") {
+      return;
+    }
     // Following the device means repainting when the device changes, without a reload.
     const query = window.matchMedia(DARK_QUERY);
     const onChange = () => apply();

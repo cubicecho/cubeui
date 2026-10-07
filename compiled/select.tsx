@@ -64,7 +64,9 @@ function Select(props: SelectProps) {
   // a choice: dropping it keeps the value until its option arrives.
   if (onValueChange) {
     defined.onValueChange = (next) => {
-      if (next !== "") onValueChange(next);
+      if (next !== "") {
+        onValueChange(next);
+      }
     };
   }
   return <SelectPrimitive.Root data-slot="select" {...defined} />;

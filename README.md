@@ -140,8 +140,8 @@ drop-in](#where-the-compiled-half-is-not-a-drop-in)). Turn it off for the ui ali
 That override does not reach everything. The shells (`section`, `sidebar`, `section-heading`,
 `radio-group-field`, and so on) install next to the ui folder, in `components/`, not inside it.
 The ones that write a deliberate `role="heading"` or `role="group"` carry their own
-`// biome-ignore lint/a11y/useSemanticElements` comment, written in the React Native source and
-kept by the compiler, so they pass with no config of yours. The same goes for the stylesheets
+`// biome-ignore lint/a11y/useSemanticElements` comment, written in the React Native source as
+`// web: biome-ignore …` and switched on by the compiler, so they pass with no config of yours. The same goes for the stylesheets
 `@cubeui/tokens` installs next to `components.json`: `cubeui-reset.css` starts with a
 `biome-ignore-all` for `complexity/noImportantStyles`, because its `!important`s copy
 react-native-web's `pointer-events` rules on purpose (#134).
@@ -162,6 +162,19 @@ That clears the errors and leaves warnings: with the rule off, Biome reports eac
 the shells carry as `suppressions/unused`. They are warnings, so `biome check` still passes unless
 it runs with `--error-on-warnings`. Turning the rule off for the whole project does the same to
 every file, which is the thing to avoid.
+
+### The cubicecho rules
+
+The sources and the compiled tree are also linted with the stricter rules cubicecho apps run, so a
+vendored file needs no `"linter": { "enabled": false }` around it: `style/useBlockStatements`,
+`style/noMagicNumbers`, `style/noNonNullAssertion`, `style/useImportType`, the unused-code rules,
+`correctness/useHookAtTopLevel`, kebab-case file names, and the
+[`no-negation.grit`](no-negation.grit) plugin, which wants `x === false` rather than `!x` on a
+logic check. This repo's `biome.json` turns them on for `registry/**` and `compiled/**`, so a
+change that breaks one fails `npm run check`.
+
+That covers lint and not format: these files are written with double quotes at 100 columns, so
+leave the formatter off for them, or let it reformat them once.
 
 A shadcn primitive installed from ui.shadcn.com beside these still brings its own lint findings.
 Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
@@ -880,9 +893,10 @@ decision 6. The stories carry a note at each of the two places it shows.
 `field`, `radio-group` and `segmented` in `biome.json`, which is strict JSON and cannot hold the
 comment, hence this paragraph). Those install into the consumer's ui folder, which the consumer
 already exempts. The compiled shells install outside it, so they are linted here with the rule on
-and carry a `biome-ignore` from their RN source instead; Biome reports those comments as unused in
-`registry/layout/`, since it does not know `<Text role="heading">` becomes a `<span>`. Those four
-warnings are expected (#134). The rule asks for `<input type="checkbox">` where
+and carry a `biome-ignore` from their RN source instead. There it is written `// web: biome-ignore …`,
+which Biome does not read: the rule has nothing to say about `<Text role="heading">`, so a live
+comment in the source is reported as unused, here and in every Expo app that vendors the file
+(#286). The compiler drops the `web: ` when it writes the `<span>` (#134). The rule asks for `<input type="checkbox">` where
 the compiled tree writes `role="checkbox"` on a `<button>`, and `<fieldset>` where it writes
 `role="group"`. Both are valid ARIA and both are the only thing the RN source could have said: there
 is no `<input>` on a phone, so those patterns are built from a `Pressable` and a role. Every other

@@ -70,8 +70,11 @@ export function SearchInput({
     (node: InputHandle | null) => {
       element.current = node as HTMLInputElement | null;
       // The node is both: an `HTMLInputElement` has `focus` and `select`.
-      if (typeof ref === "function") (ref as (node: InputHandle | null) => void)(node);
-      else if (ref) (ref as { current: InputHandle | null }).current = node;
+      if (typeof ref === "function") {
+        (ref as (node: InputHandle | null) => void)(node);
+      } else if (ref) {
+        (ref as { current: InputHandle | null }).current = node;
+      }
     },
     [ref],
   );
@@ -89,7 +92,9 @@ export function SearchInput({
 
   const clear = () => {
     const box = element.current;
-    if (!box) return;
+    if (!box) {
+      return;
+    }
     // The prototype's setter, not `box.value = ""`: React tracks the last value it saw on the
     // element, and a plain assignment updates that too, so the `input` event would read as no
     // change and `onChange` would never fire.
@@ -109,8 +114,11 @@ export function SearchInput({
         setTyped(text !== "");
         onChangeText?.(text);
         // An emptied box is not someone part-way through a word, so there is nothing to wait for.
-        if (text === "") settled.now(text);
-        else settled.later(text);
+        if (text === "") {
+          settled.now(text);
+        } else {
+          settled.later(text);
+        }
       }}
       onSubmitEditing={submit}
       disabled={disabled}

@@ -63,7 +63,9 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
   const [uncontrolled, setUncontrolled] = useState(defaultOpen);
   const isOpen = open ?? uncontrolled;
   const setOpen = (next: boolean) => {
-    if (open === undefined) setUncontrolled(next);
+    if (open === undefined) {
+      setUncontrolled(next);
+    }
     onOpenChange?.(next);
   };
   const escapeRef = useRef<((event: Event) => void) | undefined>(undefined);
@@ -74,16 +76,20 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
   // appear. This is why `DialogTrigger` must be a direct child of `Dialog`.
   const parts = Children.toArray(children);
   const triggers = parts.filter((c) => isValidElement(c) && c.type === DialogTrigger);
-  const rest = parts.filter((c) => !(isValidElement(c) && c.type === DialogTrigger));
+  const rest = parts.filter((c) => (isValidElement(c) && c.type === DialogTrigger) === false);
 
   // Android's back button is native's Escape: the one way the dialog closes that the
   // caller did not ask for. `preventDefault` keeps it open, exactly as it does on web.
   const requestClose = () => {
     const handler = escapeRef.current;
-    if (!handler) return setOpen(false);
+    if (!handler) {
+      return setOpen(false);
+    }
     const event = new Event("keydown", { cancelable: true });
     handler(event);
-    if (!event.defaultPrevented) setOpen(false);
+    if (!event.defaultPrevented) {
+      setOpen(false);
+    }
   };
 
   return (
@@ -166,10 +172,14 @@ function DialogContent({
   // The backdrop press is native's "interact outside". `preventDefault` on the
   // synthetic event is what a caller uses to keep the dialog open, matching radix.
   const interactOutside = () => {
-    if (!onInteractOutside) return close();
+    if (!onInteractOutside) {
+      return close();
+    }
     const event = new Event("pointerdown", { cancelable: true });
     onInteractOutside(event);
-    if (!event.defaultPrevented) close();
+    if (!event.defaultPrevented) {
+      close();
+    }
   };
   return (
     <View className="flex-1 items-center justify-center bg-overlay/60 p-6">

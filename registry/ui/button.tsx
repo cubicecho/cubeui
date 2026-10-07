@@ -186,7 +186,9 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
   onPress: Press,
   onClick: MergedClick["onClick"],
 ): Press {
-  if (!onClick) return onPress;
+  if (!onClick) {
+    return onPress;
+  }
   const both = (event: never) => {
     onPress?.(event);
     onClick(event);
@@ -266,7 +268,9 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         </IconClassContext.Provider>
       </Pressable>
     );
-    if (!linkSlot) return button;
+    if (!linkSlot) {
+      return button;
+    }
 
     if (Platform.OS !== "web") {
       // On device the link wraps the button: expo-router's takes its child with `asChild`.

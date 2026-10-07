@@ -160,7 +160,9 @@ function ConfirmDialogBody({
             value={typed}
             onChangeText={setTyped}
             onSubmitEditing={() => {
-              if (!locked) onConfirm();
+              if (!locked) {
+                onConfirm();
+              }
             }}
             autoFocus
           />

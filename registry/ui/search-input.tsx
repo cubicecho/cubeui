@@ -59,11 +59,16 @@ export function SearchInput({
   const settled = useSettledText(onSettledText, debounce);
 
   const change = (next: string) => {
-    if (value === undefined) setDraft(next);
+    if (value === undefined) {
+      setDraft(next);
+    }
     onChangeText?.(next);
     // An emptied box is not someone part-way through a word, so there is nothing to wait for.
-    if (next === "") settled.now(next);
-    else settled.later(next);
+    if (next === "") {
+      settled.now(next);
+    } else {
+      settled.later(next);
+    }
   };
 
   // Enter asks now. Left as the caller's own when nothing is settling, so the key is not taken

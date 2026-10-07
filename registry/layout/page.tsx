@@ -103,7 +103,9 @@ export function CardGrid({
  */
 function cells(slot: SlotNode, prefix = ""): { key: string; cell: ReactElement }[] {
   return Children.toArray(slot).flatMap((child) => {
-    if (!isValidElement<{ children?: SlotNode }>(child)) return [];
+    if (!isValidElement<{ children?: SlotNode }>(child)) {
+      return [];
+    }
     const key = `${prefix}${child.key}`;
     return child.type === Fragment ? cells(child.props.children, key) : [{ key, cell: child }];
   });

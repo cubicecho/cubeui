@@ -180,7 +180,9 @@ function FieldError({
       </span>
     );
   }
-  if (messages.length === 0) return null;
+  if (messages.length === 0) {
+    return null;
+  }
   return (
     <div role="alert" data-slot="field-error" id={props.id} className="cube-rn-view gap-1">
       <ul className="cube-rn-view gap-1">
