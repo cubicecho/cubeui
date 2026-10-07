@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 100 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 101 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 100 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 101 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  86 on both platforms · 14 web-only · 0 native-only.
+  86 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -430,6 +430,11 @@
           <th scope="row"><code>@cubeui/markdown</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>A Markdown string rendered from the theme's tokens and the registry's own primitives: a fenced block is a CodeBlock, a table the Table, a rule a Separator, a task item a Checkbox. GitHub-flavoured, raw HTML never rendered, URLs filtered. Optional wikilinks, and a resolveLink for links between an app's documents with the pending and broken looks built in.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/markdown-code-editor</code></th>
+          <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
+          <td>A Markdown source editor on CodeMirror 6, coloured from the theme's tokens: syntax highlighting, soft wrap, list continuation, undo history, a save key, and room for an app's own extensions. Heavy, so it is a default export to load with lazy(). The textarea markdown-editor is the light one.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/markdown-editor</code></th>
