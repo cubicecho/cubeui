@@ -315,7 +315,7 @@ export function SidebarSection({
               </Text>
             ) : null}
           </View>
-          {actionSlot && !collapsed ? (
+          {actionSlot && collapsed === false ? (
             <View testID="sidebar-section-action" className="shrink-0">
               {actionSlot}
             </View>

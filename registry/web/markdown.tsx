@@ -743,7 +743,7 @@ export function Markdown({
   // a document cannot reach them by spelling one out.
   const policy = useMemo<UrlTransform>(() => {
     const given = urlTransform ?? defaultUrlTransform;
-    if (!wikilinks) {
+    if (wikilinks === false) {
       return given;
     }
     return (url, key, node) =>

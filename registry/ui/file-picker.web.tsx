@@ -192,7 +192,7 @@ export function FilePickerButton({
   // At an icon size the square has no room for words, so `label` is the name alone.
   const iconOnly = typeof size === "string" && size.startsWith("icon");
   let content: ReactNode = iconSlot;
-  if (!iconOnly) {
+  if (iconOnly === false) {
     content = (
       <>
         {iconSlot}

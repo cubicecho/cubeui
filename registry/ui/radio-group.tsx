@@ -168,7 +168,7 @@ function RadioGroup({
     disabled
       ? []
       : [...options]
-          .filter(([, optionDisabled]) => !optionDisabled)
+          .filter(([, optionDisabled]) => optionDisabled === false)
           .map(([option]) => option)
           .sort((a, b) =>
             byDocumentPosition(
@@ -329,11 +329,11 @@ function RadioGroupItem({
   const card = group.variant === "card";
   const segmented = group.variant === "segmented";
   // The bare circle is for a caller's own `<Label>`; a segment is never one.
-  const bare = label === undefined && !segmented;
+  const bare = label === undefined && segmented === false;
   const tooltip = hint ?? (segmented && label === undefined ? ariaLabel : undefined);
   // A segment has no room for a description and draws none, so it points at none either.
   const describedBy =
-    [description && !segmented ? descriptionId : null, ariaDescribedByProp ?? null]
+    [description && segmented === false ? descriptionId : null, ariaDescribedByProp ?? null]
       .filter(Boolean)
       .join(" ") || undefined;
 

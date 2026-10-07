@@ -117,7 +117,7 @@ export function SearchInput({
       className={cn(SEARCH_INPUT_CLASS, className)}
       leadingSlot={<Search />}
       trailingSlot={
-        clearable && filled && !disabled ? (
+        clearable && filled && disabled !== true ? (
           <button
             type="button"
             data-slot="search-input-clear"

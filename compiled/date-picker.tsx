@@ -250,7 +250,7 @@ export function DatePicker({
             }
             // The clock survives the day changing — the whole reason this is not `new Date(day)`.
             onValueChange(value ? combineDateAndTime(day, value) : day);
-            if (!showTime) {
+            if (showTime === false) {
               setOpen(false);
             }
           }}

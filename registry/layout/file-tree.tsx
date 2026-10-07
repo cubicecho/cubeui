@@ -163,7 +163,7 @@ export function FileTree<T extends TreeEntry>({
     if (openProp === undefined) {
       setToggled((before) => {
         const after = new Set(before);
-        if (!after.delete(path)) {
+        if (after.delete(path) === false) {
           after.add(path);
         }
         return after;
@@ -225,7 +225,7 @@ export function FileTree<T extends TreeEntry>({
       }
       event.stopPropagation();
       setOver(into);
-      if (!droppable(dragged, into)) {
+      if (droppable(dragged, into) === false) {
         return;
       }
       event.preventDefault();
@@ -258,7 +258,7 @@ export function FileTree<T extends TreeEntry>({
 
   const leaveTree = (event: React.DragEvent) => {
     const next = event.relatedTarget as Node | null;
-    if (!event.currentTarget.contains(next)) {
+    if (event.currentTarget.contains(next) === false) {
       setOver(null);
     }
   };

@@ -46,7 +46,7 @@ export function Page({ className, contentSlot, fill = false, scroll = true, widt
   const content = cn("container mx-auto px-4 py-6", width === "narrow" && "max-w-2xl", className);
   const outer = fill ? "h-full min-h-0" : "flex-1";
 
-  if (!scroll) {
+  if (scroll === false) {
     return <div className={cn("cube-rn-view", outer, "flex-col", content)}>{contentSlot}</div>;
   }
 
@@ -106,7 +106,7 @@ export function CardGrid({
  */
 function cells(slot: SlotNode, prefix = ""): { key: string; cell: ReactElement }[] {
   return Children.toArray(slot).flatMap((child) => {
-    if (!isValidElement<{ children?: SlotNode }>(child)) {
+    if (isValidElement<{ children?: SlotNode }>(child) === false) {
       return [];
     }
     const key = `${prefix}${child.key}`;

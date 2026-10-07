@@ -101,7 +101,7 @@ function placeInRange(day: Date, range: DateRange | undefined) {
   }
   const edge = isSameDay(day, from) || isSameDay(day, to);
   const inside = isBefore(day, startOfDay(from)) === false && isAfter(day, endOfDay(to)) === false;
-  return { selected: inside, edge, middle: inside && !edge };
+  return { selected: inside, edge, middle: inside && edge === false };
 }
 
 /**

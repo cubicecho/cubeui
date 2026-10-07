@@ -124,11 +124,11 @@ function load(adapter: ThemeStorage) {
     .then(([theme, palette]) => {
       // A choice made while the read was in flight is newer than what it will return.
       let changed = false;
-      if (!settled.theme && isThemePreference(theme) && theme !== current) {
+      if (settled.theme === false && isThemePreference(theme) && theme !== current) {
         current = theme;
         changed = true;
       }
-      if (!settled.palette && isPalettePreference(palette) && palette !== currentPalette) {
+      if (settled.palette === false && isPalettePreference(palette) && palette !== currentPalette) {
         currentPalette = palette;
         changed = true;
       }

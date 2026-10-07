@@ -93,7 +93,7 @@ function Input({
       autoCorrect={autoCorrect}
       autoComplete={autoComplete}
       maxLength={maxLength}
-      editable={!disabled && !readOnly}
+      editable={disabled !== true && readOnly !== true}
       autoFocus={autoFocus}
       id={id}
       aria-label={ariaLabel}

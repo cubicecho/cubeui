@@ -56,7 +56,7 @@ function Textarea({
   // A device's multiline input grows with its text by itself, and only needs the two ends. Under
   // react-native-web the input is a `<textarea>`, which does not, so it is measured.
   const refit = () => {
-    if (!grows || Platform.OS !== "web" || !inner.current) {
+    if (grows === false || Platform.OS !== "web" || !inner.current) {
       return;
     }
     fitRows(inner.current as unknown as GrowingBox, minRows, maxRows);
@@ -99,7 +99,7 @@ function Textarea({
       }}
       placeholder={placeholder}
       // Not while it grows: Android reads `numberOfLines` as the height, not as where it starts.
-      {...(rows !== undefined && !grows ? { numberOfLines: rows } : {})}
+      {...(rows !== undefined && grows === false ? { numberOfLines: rows } : {})}
       {...(maxLength !== undefined ? { maxLength } : {})}
       editable={!disabled}
       id={id}

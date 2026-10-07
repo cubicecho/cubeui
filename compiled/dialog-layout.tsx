@@ -228,7 +228,7 @@ export function DialogLayout({
     // a child without subscribing to either.
     const unsaved =
       typeof hasUnsavedChanges === "function" ? hasUnsavedChanges() : hasUnsavedChanges;
-    if (!next && unsaved) {
+    if (next === false && unsaved) {
       setAskingToDiscard(true);
       return;
     }

@@ -94,7 +94,7 @@ export function SearchInput({
       aria-labelledby={ariaLabelledBy}
       leadingSlot={<Search />}
       trailingSlot={
-        clearable && text !== "" && !disabled ? (
+        clearable && text !== "" && disabled !== true ? (
           <Button
             variant="secondary"
             size="icon-xs"

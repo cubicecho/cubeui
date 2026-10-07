@@ -87,7 +87,7 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
     }
     const event = new Event("keydown", { cancelable: true });
     handler(event);
-    if (!event.defaultPrevented) {
+    if (event.defaultPrevented === false) {
       setOpen(false);
     }
   };
@@ -177,7 +177,7 @@ function DialogContent({
     }
     const event = new Event("pointerdown", { cancelable: true });
     onInteractOutside(event);
-    if (!event.defaultPrevented) {
+    if (event.defaultPrevented === false) {
       close();
     }
   };

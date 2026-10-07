@@ -421,7 +421,7 @@ export function SubmitButton({
       onClick={(event) => {
         onClick?.(event);
         // `button.form` is the form that owns it, by ancestry or by the `form` attribute.
-        if (!event.defaultPrevented && !event.currentTarget.form) {
+        if (event.defaultPrevented === false && !event.currentTarget.form) {
           form.handleSubmit();
         }
       }}

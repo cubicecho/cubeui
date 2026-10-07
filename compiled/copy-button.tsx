@@ -43,7 +43,7 @@ async function write(text: string) {
   area.select();
   const ok = document.execCommand("copy");
   area.remove();
-  if (!ok) {
+  if (ok === false) {
     throw new Error("The clipboard refused the text");
   }
 }

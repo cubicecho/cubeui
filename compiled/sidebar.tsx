@@ -324,7 +324,7 @@ export function SidebarSection({
               </span>
             ) : null}
           </div>
-          {actionSlot && !collapsed ? (
+          {actionSlot && collapsed === false ? (
             <div data-slot="sidebar-section-action" className="cube-rn-view shrink-0">
               {actionSlot}
             </div>
