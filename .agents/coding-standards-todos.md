@@ -35,7 +35,7 @@ with them.
 | R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — | open |
 | R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | open |
-| R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | open |
+| R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | done |
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | open |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
@@ -117,6 +117,13 @@ wrapper in one module both read. (unverified)
 `form.tsx:771`, `item.tsx:136`, `menu.tsx:72`, `radio-group.tsx:74`, `textarea.tsx:62`,
 `theme-preference.tsx:63`, `toast.tsx:65`, `web/app-form.tsx:630`. A further 58 plain `as T`
 in 28 files were counted and not filed.
+
+**Done:** seven of the twelve are gone. `rest as TProps` (both forms), the content ref, and
+the toast viewport style pass as a single `as`, which the compiler checks for overlap. The
+document-position probe is a type guard, and `node.focus()` needs no cast at all: `View`
+declares it. Five stay doubled on purpose, because the registry is vendored into apps whose
+React Native and DOM typings differ from this repo's: `button.tsx` (two), `item.tsx`,
+`textarea.tsx`, `theme-preference.tsx`, `unsaved-changes-guard.tsx`. Each carries its reason.
 
 ### R9 [readability] — nested ternaries
 

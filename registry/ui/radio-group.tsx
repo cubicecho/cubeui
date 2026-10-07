@@ -69,14 +69,20 @@ function useRadioGroup() {
   return context;
 }
 
+/** The one DOM method the ordering needs, which a device's node does not have. */
+type Positioned = { compareDocumentPosition: (other: unknown) => number };
+
+function isPositioned(node: unknown): node is Positioned {
+  return typeof node === "object" && node !== null && "compareDocumentPosition" in node;
+}
+
 /** DOM order, where there is a DOM. On device there is no keyboard to need it. */
 function byDocumentPosition(a: Focusable | null, b: Focusable | null) {
-  const node = a as unknown as { compareDocumentPosition?: (other: unknown) => number } | null;
-  if (!node?.compareDocumentPosition || !b) {
+  if (isPositioned(a) === false || !b) {
     return 0;
   }
   // `Node.DOCUMENT_POSITION_FOLLOWING`, spelled out: `Node` is not a global on device.
-  return node.compareDocumentPosition(b) & 4 ? -1 : 1;
+  return a.compareDocumentPosition(b) & 4 ? -1 : 1;
 }
 
 type RadioGroupProps = {

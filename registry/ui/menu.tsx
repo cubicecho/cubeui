@@ -69,7 +69,7 @@ function returnFocus(node: View | null) {
     return;
   }
   if (Platform.OS === "web") {
-    (node as unknown as { focus?: () => void }).focus?.();
+    node.focus();
   } else {
     AccessibilityInfo.sendAccessibilityEvent(node, "focus");
   }

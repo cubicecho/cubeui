@@ -623,7 +623,7 @@ export function bindToForm<TProps extends object, TValue = unknown>(
       >
         {(field) => (
           <fieldContext.Provider value={field}>
-            <Bound {...(rest as unknown as TProps)} />
+            <Bound {...(rest as TProps)} />
           </fieldContext.Provider>
         )}
       </Subscribe>

@@ -67,7 +67,7 @@ const VIEWPORT_STYLE = {
   right: 16,
   bottom: 16,
   zIndex: 50,
-} as unknown as React.CSSProperties;
+} as React.CSSProperties;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
