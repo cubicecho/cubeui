@@ -146,6 +146,23 @@ kept by the compiler, so they pass with no config of yours. The same goes for th
 `biome-ignore-all` for `complexity/noImportantStyles`, because its `!important`s copy
 react-native-web's `pointer-events` rules on purpose (#134).
 
+**That is tested on Biome 2.5**, the version this repo lints with (`^2.5.11`), and a `biome-ignore`
+is written for what that version reports. An older Biome reports more: 2.4.6 also wants `<output>`
+for the `role="status"` that `query-state` and `option-select` write, and those lines carry no
+ignore, because on 2.5 an ignore there would itself be reported as unused. So on 2.4.x the note
+above cannot be followed to a clean run, and the fix is to upgrade Biome.
+
+Where that has to wait, widen the override to the folder the shells install in:
+
+```jsonc
+"includes": ["src/components/**"]
+```
+
+That clears the errors and leaves warnings: with the rule off, Biome reports each `biome-ignore`
+the shells carry as `suppressions/unused`. They are warnings, so `biome check` still passes unless
+it runs with `--error-on-warnings`. Turning the rule off for the whole project does the same to
+every file, which is the thing to avoid.
+
 A shadcn primitive installed from ui.shadcn.com beside these still brings its own lint findings.
 Those are shadcn's to fix, so switch the linter off for that file rather than editing it, because
 the next `shadcn add` overwrites the edit.
