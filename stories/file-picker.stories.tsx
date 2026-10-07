@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, waitFor, within } from "storybook/test";
+import { expect, fn, spyOn, waitFor, within } from "storybook/test";
 import {
   FilePicker as Compiled,
   FilePickerButton as CompiledButton,
@@ -96,6 +96,8 @@ const text = (name: string, text: string, type = "text/markdown"): PickedFile =>
   name,
   path: name,
   type,
+  // The fixtures are ASCII, so a character is a byte.
+  size: text.length,
   text,
 });
 
@@ -355,8 +357,48 @@ export const Binary: Story = {
       name: "skill.zip",
       path: "skill.zip",
       type: "application/zip",
+      size: ZIP.length,
       text: "",
     });
+  },
+};
+
+/**
+ * Issue #269: an app that uploads straight to a bucket needs the file unread — a 100 MB video
+ * should not be in memory to be refused for its size. With `read="none"` nothing is read: `size`
+ * says how big the file is, and `blob` is the file the input gave, the same object, for
+ * `XMLHttpRequest.send` to stream from disk.
+ */
+export const Unread: Story = {
+  render: () => (
+    <CompiledButton
+      variant="outline"
+      label="Choose a video"
+      accept="video/*"
+      read="none"
+      onPickMany={onPickMany}
+    />
+  ),
+  play: async ({ canvasElement, userEvent }) => {
+    onPickMany.mockClear();
+
+    const video = bytesFile("talk.mp4", ZIP, "video/mp4");
+    const read = [spyOn(video, "text"), spyOn(video, "arrayBuffer")];
+
+    await userEvent.upload(fileInput(canvasElement), video);
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+
+    const [picked] = lastPick();
+    await expect(picked).toMatchObject({
+      name: "talk.mp4",
+      path: "talk.mp4",
+      type: "video/mp4",
+      size: ZIP.length,
+      text: "",
+    });
+    await expect(picked?.bytes).toBeUndefined();
+    await expect(picked?.blob).toBe(video);
+    for (const spy of read) await expect(spy).not.toHaveBeenCalled();
   },
 };
 

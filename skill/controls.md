@@ -327,8 +327,25 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 
 - `source` is the content — a `Blob` or a string — or a function returning either, or a promise
   of either. A function is called on the press, so a list of rows fetches nothing until asked.
-- While `source` is pending the button is disabled and `aria-busy`, with a spinner where the
-  glyph was. A `source` that throws calls `onError` and leaves the button as it was;
+- A file the server hands out as a URL takes `href` in place of `source`: a string, or a function
+  returning one that is called on the press, for a presigned URL that is minted on demand and
+  expires. The platform fetches it — the browser streams it to disk with its own progress, a
+  device downloads it to a file — so a 100 MB file is never a `Blob` in memory. Pass one of
+  `source` and `href`, never both.
+
+  ```tsx
+  <DownloadButton
+    label="Download the original"
+    filename={doc.filename}
+    href={() => api.presignDownload(doc.id)}
+  />
+  ```
+
+- In a browser the `download` attribute is ignored for a URL on another origin. A bucket there
+  has to send `Content-Disposition: attachment; filename="…"` itself, or a file the browser can
+  show opens in place of the page and `filename` is not used.
+- While `source` or `href` is pending the button is disabled and `aria-busy`, with a spinner where the
+  glyph was. A `source` or `href` that throws calls `onError` and leaves the button as it was;
   `onDownloaded` runs after a good one.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
 - On the web the file goes to the browser's downloads. **On a device there is no downloads
@@ -338,6 +355,7 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 - `downloadBlob(content, filename, { mimeType, destination })` is the function the button calls,
   exported from the same module for the download that is not a button — a menu row, the end of
   an export job. On a device it takes `"share"` (the default) or `"files"`.
+  `downloadUrl(url, filename)` beside it is the same for a URL.
 - The native item installs `expo-file-system` and `expo-sharing`; a DOM app installs nothing
   extra.
 
@@ -1522,21 +1540,37 @@ hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a fo
   hint="Drop .md files, or click to choose"
   accept=".md,text/markdown"
   multiple
-  onPickMany={(files) => upload(files)} // [{ name, path, type, text }, ...]
+  onPickMany={(files) => upload(files)} // [{ name, path, type, size, text }, ...]
 />
 ```
 
 - The caller gets plain data for each file, never a `File`, so the calling screen is the same on
-  both halves. A picked file is `{ name, path, type, text, bytes? }`: `type` is the MIME type, or
-  `""` when the browser does not know it, and `path` is `name` unless a folder was picked.
+  both halves. A picked file is `{ name, path, type, size, text, bytes?, blob? }`: `type` is the
+  MIME type, or `""` when the browser does not know it, `path` is `name` unless a folder was
+  picked, and `size` is the file's bytes on disk, there whatever `read` is.
 - `onPick(text, name)` is one file. `onPickMany(files)` is one call for the whole pick. Pass
   either one, or both. If `onPickMany` is there, `onPick` is not called. With `multiple` and
   only `onPick`, `onPick` is called once for each file, in order.
-- `onPick` carries the text and the name and nothing else. Take `onPickMany` for `bytes`, `path`
-  or `type`, including when the pick is one file: it is then a list of one.
+- `onPick` carries the text and the name and nothing else. Take `onPickMany` for `bytes`, `blob`,
+  `size`, `path` or `type`, including when the pick is one file: it is then a list of one.
 - `read` is what to read from each file. `"text"`, the default, decodes it, which is right for
   JSON and Markdown and corrupts a `.zip` or an image. `read="bytes"` gives the file undecoded as
   `bytes`, a `Uint8Array`, and leaves `text` as `""`.
+- `read="none"` reads nothing: `text` is `""` and the file comes back as `blob`, a handle the
+  browser streams from disk. Use it for an upload straight to a bucket, and to refuse a file by
+  its `size` before a byte is read. Do not keep a hidden input for either:
+
+  ```tsx
+  <FilePicker
+    label="Upload a recording"
+    read="none"
+    onPickMany={([file]) => {
+      if (!file?.blob) return;
+      if (file.size > MAX_BYTES) return toast.error("That file is over 100 MB");
+      xhr.send(file.blob); // a presigned PUT, with `xhr.upload.onprogress` for the bar
+    }}
+  />
+  ```
 - `directory` picks a folder instead of files. The dialog chooses a folder, a dropped folder is
   walked, and every file under it arrives in one call. Each file's `path` is its place in the
   folder, with the folder's own name first: `my-skill/assets/logo.png`. `multiple` is not needed,

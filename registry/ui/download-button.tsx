@@ -75,8 +75,44 @@ export async function downloadBlob(
   await Sharing.shareAsync(file.uri, { mimeType: type, dialogTitle: filename });
 }
 
+/**
+ * Saves what `url` serves as `filename`. The system downloads it to a file in the cache — the
+ * bytes never pass through JavaScript — and the share sheet shares that file.
+ *
+ * `files` asks for the folder first, so the wait comes after the question and not before it, and
+ * then copies the download in. That copy is read into memory, the one place a URL's file is: a
+ * picked folder is written through, not downloaded into.
+ */
+export async function downloadUrl(
+  url: string,
+  filename: string,
+  {
+    mimeType,
+    destination = "share",
+  }: {
+    mimeType?: string | undefined;
+    destination?: Exclude<DownloadDestination, "ask"> | undefined;
+  } = {},
+): Promise<void> {
+  const folder = destination === "files" ? await Directory.pickDirectoryAsync() : undefined;
+  const file = await File.downloadFileAsync(url, new File(Paths.cache, filename), {
+    idempotent: true,
+  });
+
+  if (folder) {
+    folder.createFile(filename, mimeType ?? (file.type || null)).write(await file.bytes());
+    return;
+  }
+
+  await Sharing.shareAsync(file.uri, {
+    dialogTitle: filename,
+    ...(mimeType ? { mimeType } : {}),
+  });
+}
+
 export function DownloadButton({
   source,
+  href,
   filename,
   mimeType,
   label = "Download",
@@ -88,10 +124,13 @@ export function DownloadButton({
   onError,
   className,
 }: DownloadButtonProps) {
-  const { pending, download } = useDownload({ source, onDownloaded, onError });
+  const { pending, download } = useDownload({ source, href, onDownloaded, onError });
 
   const save = (to: Exclude<DownloadDestination, "ask">) =>
-    void download((content) => downloadBlob(content, filename, { mimeType, destination: to }));
+    void download({
+      content: (content) => downloadBlob(content, filename, { mimeType, destination: to }),
+      url: (url) => downloadUrl(url, filename, { mimeType, destination: to }),
+    });
 
   const button = (
     <Button

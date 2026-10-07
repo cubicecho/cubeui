@@ -99,3 +99,77 @@ export const Default: Story = {
     }
   },
 };
+
+const mintUrl = fn(async () => "https://bucket.example/original.mp4?signature=abc");
+
+/**
+ * Issue #272: a file the server hands out as a URL — a presigned bucket link, a 100 MB original —
+ * should not be fetched into a `Blob` to be saved. With `href` the page fetches nothing: the
+ * anchor that is clicked points at the URL itself and the browser streams it to disk. The
+ * function form is asked on the press, which is when a link that expires has to be minted.
+ */
+export const FromAUrl: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          label="Download the original"
+          filename="original.mp4"
+          href={mintUrl}
+          onDownloaded={onDownloaded}
+          onError={onError}
+        />
+      }
+      compiled={
+        <Compiled
+          label="Download the original"
+          filename="original.mp4"
+          href="/files/original.mp4"
+          onDownloaded={onDownloaded}
+          onError={onError}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onDownloaded.mockClear();
+    onError.mockClear();
+    mintUrl.mockClear();
+    const saved: [href: string, download: string][] = [];
+    const click = spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      saved.push([this.getAttribute("href") ?? "", this.download]);
+    });
+    const fetched = spyOn(window, "fetch");
+    const objectUrl = spyOn(URL, "createObjectURL");
+
+    try {
+      const [minted, fixed] = canvas.getAllByRole("button", { name: "Download the original" });
+      if (!minted || !fixed) throw new Error("both halves should render the button");
+
+      // Nothing is asked of the server until the press.
+      await expect(mintUrl).not.toHaveBeenCalled();
+      await userEvent.click(minted);
+      await waitFor(() => expect(onDownloaded).toHaveBeenCalledTimes(1));
+      await expect(mintUrl).toHaveBeenCalledTimes(1);
+
+      await userEvent.click(fixed);
+      await waitFor(() => expect(onDownloaded).toHaveBeenCalledTimes(2));
+
+      await expect(saved).toEqual([
+        ["https://bucket.example/original.mp4?signature=abc", "original.mp4"],
+        ["/files/original.mp4", "original.mp4"],
+      ]);
+      // The browser's download, not the page's: no fetch and no `Blob` in between.
+      await expect(fetched).not.toHaveBeenCalled();
+      await expect(objectUrl).not.toHaveBeenCalled();
+      await expect(onError).not.toHaveBeenCalled();
+    } finally {
+      click.mockRestore();
+      fetched.mockRestore();
+      objectUrl.mockRestore();
+    }
+  },
+};
