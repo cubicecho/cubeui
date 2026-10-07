@@ -114,14 +114,18 @@ export const Default: Story = {
 
       // The icon sits before its label, at the tile's size.
       const icon = half.querySelector("svg");
-      if (!icon) throw new Error("the Uptime tile should draw its icon");
+      if (!icon) {
+        throw new Error("the Uptime tile should draw its icon");
+      }
       const uptime = scope.getByText("Uptime").getBoundingClientRect();
       await expect(icon.getBoundingClientRect().right).toBeLessThanOrEqual(uptime.left);
       await expect(icon.getBoundingClientRect().width).toBe(16);
 
       // Loading keeps the label and holds the figure's place with a bar, and says it is busy.
       const loading = scope.getByText("Embeddings").closest("[aria-busy]");
-      if (!loading) throw new Error("a loading tile should be aria-busy");
+      if (!loading) {
+        throw new Error("a loading tile should be aria-busy");
+      }
       await expect(loading.getAttribute("aria-busy")).toBe("true");
       await expect(
         loading.querySelector(
@@ -136,7 +140,9 @@ export const Default: Story = {
     await expect(sizes[0]).toBe(sizes[2]);
     await expect(sizes[1]).toBe(sizes[3]);
     const [nativeBox, compiledBox] = boxes;
-    if (!nativeBox || !compiledBox) throw new Error("both halves should draw the Turns tile");
+    if (!nativeBox || !compiledBox) {
+      throw new Error("both halves should draw the Turns tile");
+    }
     await expect(Math.abs(nativeBox.height - compiledBox.height)).toBeLessThanOrEqual(1);
   },
 };

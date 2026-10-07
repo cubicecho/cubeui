@@ -34,7 +34,9 @@ const onPick = fn();
  */
 function drop(target: Element, files: File[]) {
   const dataTransfer = new DataTransfer();
-  for (const file of files) dataTransfer.items.add(file);
+  for (const file of files) {
+    dataTransfer.items.add(file);
+  }
   for (const type of ["dragenter", "dragover", "drop"]) {
     target.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer }));
   }
@@ -70,7 +72,9 @@ export const Zone: Story = {
     const icon = zone.querySelector("svg");
     const label = within(zone).getByText("Import a board");
     const hint = within(zone).getByText("A .json export");
-    if (!icon) throw new Error("the zone should draw its icon");
+    if (!icon) {
+      throw new Error("the zone should draw its icon");
+    }
     const box = (el: Element) => el.getBoundingClientRect();
 
     // Stacked: each part starts below the one before it, 8px (`gap-2`) apart.
@@ -108,7 +112,9 @@ const png = new File(["\u0089PNG"], "diagram.png", { type: "image/png" });
 
 function fileInput(canvasElement: HTMLElement) {
   const input = canvasElement.querySelector<HTMLInputElement>('input[type="file"]');
-  if (!input) throw new Error("the picker should render its file input");
+  if (!input) {
+    throw new Error("the picker should render its file input");
+  }
   return input;
 }
 
@@ -207,7 +213,9 @@ export const OneAtATime: Story = {
 /** The `compiled` column of a `SideBySide`, so a query does not also find the native half. */
 function compiledColumn(canvasElement: HTMLElement) {
   const column = canvasElement.querySelectorAll("section")[1];
-  if (!(column instanceof HTMLElement)) throw new Error("the story should render both halves");
+  if (!(column instanceof HTMLElement)) {
+    throw new Error("the story should render both halves");
+  }
   return column;
 }
 
@@ -289,7 +297,9 @@ export const AsAButton: Story = {
 
     // A press opens the file dialog straight away. The input is the button's next sibling.
     const uploadInput = upload.nextElementSibling;
-    if (!(uploadInput instanceof HTMLInputElement)) throw new Error("the input should follow");
+    if (!(uploadInput instanceof HTMLInputElement)) {
+      throw new Error("the input should follow");
+    }
     await expect(uploadInput.multiple).toBe(true);
     const opened = catchDialog(uploadInput);
     await userEvent.click(upload);
@@ -398,7 +408,9 @@ export const Unread: Story = {
     });
     await expect(picked?.bytes).toBeUndefined();
     await expect(picked?.blob).toBe(video);
-    for (const spy of read) await expect(spy).not.toHaveBeenCalled();
+    for (const spy of read) {
+      await expect(spy).not.toHaveBeenCalled();
+    }
   },
 };
 

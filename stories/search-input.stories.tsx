@@ -65,7 +65,9 @@ export const Default: Story = {
       await expect(canvas.getAllByRole("searchbox", { name: "Search" })).toHaveLength(2);
       for (const box of canvas.getAllByRole("searchbox")) {
         const icon = box.parentElement?.querySelector("svg");
-        if (!icon) throw new Error("every search box should draw its icon");
+        if (!icon) {
+          throw new Error("every search box should draw its icon");
+        }
         await expect(icon.getBoundingClientRect().left).toBeGreaterThan(
           box.getBoundingClientRect().left,
         );
@@ -90,13 +92,17 @@ export const Default: Story = {
         await expect(clearButtons()).toHaveLength(before + 1);
 
         const clear = clearButtons().find((b) => box.parentElement?.contains(b));
-        if (!clear) throw new Error("the ✕ should be inside this box");
+        if (!clear) {
+          throw new Error("the ✕ should be inside this box");
+        }
         await userEvent.click(clear);
         await expect(onText).toHaveBeenLastCalledWith("");
         await expect(box).toHaveValue("");
         await expect(box).toHaveFocus();
         await expect(clearButtons()).toHaveLength(before);
-        if (half === "Compiled") await expect(onCompiledChange).toHaveLastReturnedWith("");
+        if (half === "Compiled") {
+          await expect(onCompiledChange).toHaveLastReturnedWith("");
+        }
       });
     }
 
@@ -104,7 +110,9 @@ export const Default: Story = {
       for (const half of ["Native", "Compiled"]) {
         const box = canvas.getByRole("searchbox", { name: `${half} uncontrolled` });
         const clear = box.parentElement?.querySelector("button");
-        if (!clear) throw new Error("a prefilled box should show its ✕");
+        if (!clear) {
+          throw new Error("a prefilled box should show its ✕");
+        }
         await userEvent.click(clear);
         await expect(box).toHaveValue("");
         await expect(box.parentElement?.querySelector("button")).toBeNull();
@@ -182,7 +190,9 @@ export const SettledText: Story = {
         await expect(onSettled).toHaveBeenLastCalledWith("plans");
 
         const clear = box.parentElement?.querySelector("button");
-        if (!clear) throw new Error("a filled box should show its ✕");
+        if (!clear) {
+          throw new Error("a filled box should show its ✕");
+        }
         await userEvent.click(clear);
         await expect(onSettled).toHaveBeenLastCalledWith("");
         // Enter and the ✕ each ended a wait rather than adding to one.

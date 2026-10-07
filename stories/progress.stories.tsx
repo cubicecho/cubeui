@@ -51,13 +51,17 @@ export const Default: Story = {
 
     const pair = (name: string) => {
       const [native, compiled] = canvas.getAllByRole("progressbar", { name });
-      if (!native || !compiled) throw new Error(`both halves should render "${name}"`);
+      if (!native || !compiled) {
+        throw new Error(`both halves should render "${name}"`);
+      }
       return [native, compiled] as const;
     };
     // How much of its track the filled part covers, as a fraction.
     const fill = (bar: Element) => {
       const indicator = bar.firstElementChild;
-      if (!indicator) throw new Error("a progress bar should draw its indicator");
+      if (!indicator) {
+        throw new Error("a progress bar should draw its indicator");
+      }
       return indicator.getBoundingClientRect().width / bar.getBoundingClientRect().width;
     };
 
@@ -73,8 +77,11 @@ export const Default: Story = {
       for (const bar of pair(name)) {
         await expect(bar).toHaveAttribute("aria-valuemin", "0");
         await expect(bar).toHaveAttribute("aria-valuemax", max);
-        if (now === null) await expect(bar).not.toHaveAttribute("aria-valuenow");
-        else await expect(bar).toHaveAttribute("aria-valuenow", now);
+        if (now === null) {
+          await expect(bar).not.toHaveAttribute("aria-valuenow");
+        } else {
+          await expect(bar).toHaveAttribute("aria-valuenow", now);
+        }
         await expect(fill(bar)).toBeCloseTo(fraction, 2);
       }
     }
@@ -83,7 +90,9 @@ export const Default: Story = {
     for (const bar of pair("Re-embedding progress")) {
       await expect(bar).toHaveAttribute("aria-valuetext", "1,204 of 5,880 turns");
     }
-    for (const bar of pair("Upload")) await expect(bar).not.toHaveAttribute("aria-valuetext");
+    for (const bar of pair("Upload")) {
+      await expect(bar).not.toHaveAttribute("aria-valuetext");
+    }
 
     // The track and the fill are the same colours and height on both halves, and the slot
     // className reaches the fill.

@@ -82,7 +82,9 @@ export const TheDialogButtonsLookLikeButtons: Story = {
     };
     // The dialog focuses one of its buttons, and a focused button wears its hover fill when the
     // last input was a key — which, in a full run, depends on the story before this one.
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     // Waited for, because the content zooms and fades in, and a colour read mid-animation is not
     // the one it settles on.
     await waitFor(() => expect(look(confirm)).toEqual(look(plain("Plain destructive"))));

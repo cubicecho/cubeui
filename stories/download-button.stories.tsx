@@ -147,7 +147,9 @@ export const FromAUrl: Story = {
 
     try {
       const [minted, fixed] = canvas.getAllByRole("button", { name: "Download the original" });
-      if (!minted || !fixed) throw new Error("both halves should render the button");
+      if (!minted || !fixed) {
+        throw new Error("both halves should render the button");
+      }
 
       // Nothing is asked of the server until the press.
       await expect(mintUrl).not.toHaveBeenCalled();

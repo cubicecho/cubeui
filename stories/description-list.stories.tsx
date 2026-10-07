@@ -65,7 +65,9 @@ export const Inline: Story = {
   play: async ({ canvasElement }) => {
     const native = canvasElement.querySelector<HTMLElement>(".native-root");
     const compiled = canvasElement.querySelector<HTMLElement>(".compiled-root");
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
 
     // Device: a list of three items. (react-native-web draws `role="list"` as a `<ul>`.)
     await expect(native.getAttribute("role") ?? native.tagName).toMatch(/^(list|UL)$/);
@@ -90,7 +92,9 @@ export const Inline: Story = {
 
     // The hint and the action belong to the value: both are inside its `<dd>`.
     const [embedder, docs] = web.getAllByRole("definition");
-    if (!embedder || !docs) throw new Error("the rows should have values");
+    if (!embedder || !docs) {
+      throw new Error("the rows should have values");
+    }
     await expect(embedder.textContent).toBe("bge-smallSet with RAGDOWN_EMBEDDER");
     await expect(within(docs).getByRole("button", { name: "Copy path" })).toBeTruthy();
 
@@ -129,7 +133,9 @@ export const InlineWhenNarrow: Story = {
   play: async ({ canvasElement }) => {
     for (const root of [".native-root", ".compiled-root"]) {
       const list = canvasElement.querySelector<HTMLElement>(root);
-      if (!list) throw new Error(`${root} should render`);
+      if (!list) {
+        throw new Error(`${root} should render`);
+      }
       const term = within(list).getByText("Embedder").getBoundingClientRect();
       const value = within(list).getByText("bge-small").getBoundingClientRect();
       await expect(value.top).toBeGreaterThanOrEqual(term.bottom);
@@ -160,7 +166,9 @@ export const Stacked: Story = {
   play: async ({ canvasElement }) => {
     for (const root of [".native-root", ".compiled-root"]) {
       const list = canvasElement.querySelector<HTMLElement>(root);
-      if (!list) throw new Error(`${root} should render`);
+      if (!list) {
+        throw new Error(`${root} should render`);
+      }
       const term = within(list).getByText("Docs folder").getBoundingClientRect();
       const value = within(list).getByText("/data/notes").getBoundingClientRect();
       await expect(value.top).toBeGreaterThanOrEqual(term.bottom);
@@ -210,7 +218,9 @@ export const MonospaceValue: Story = {
     const sizes: string[] = [];
     for (const root of [".native-root", ".compiled-root"]) {
       const list = canvasElement.querySelector<HTMLElement>(root);
-      if (!list) throw new Error(`${root} should render`);
+      if (!list) {
+        throw new Error(`${root} should render`);
+      }
       const path = within(list).getByText("/data/notes");
       await expect(isMonospace(path)).toBe(true);
       await expect(isMonospace(within(list).getByText("8787"))).toBe(true);
@@ -251,7 +261,9 @@ export const MonospaceValueWhenNarrow: Story = {
   play: async ({ canvasElement }) => {
     for (const root of [".native-root", ".compiled-root"]) {
       const list = canvasElement.querySelector<HTMLElement>(root);
-      if (!list) throw new Error(`${root} should render`);
+      if (!list) {
+        throw new Error(`${root} should render`);
+      }
       const path = within(list).getByText(LONG_PATH);
       await expect(isMonospace(path)).toBe(true);
 

@@ -31,7 +31,9 @@ export const TwoUp: Story = {
     const [first, second] = cells(canvasElement);
     expect(first).toBeDefined();
     expect(second).toBeDefined();
-    if (!first || !second) return;
+    if (!first || !second) {
+      return;
+    }
 
     const a = first.getBoundingClientRect();
     const b = second.getBoundingClientRect();
@@ -64,7 +66,9 @@ export const WrapsRatherThanSqueezing: Story = {
   decorators: [(Story) => <div className="w-[420px] border p-4">{Story()}</div>],
   play: async ({ canvasElement }) => {
     const [first, second, third] = cells(canvasElement);
-    if (!first || !second || !third) return;
+    if (!first || !second || !third) {
+      return;
+    }
 
     expect(second.getBoundingClientRect().top).toBe(first.getBoundingClientRect().top);
 

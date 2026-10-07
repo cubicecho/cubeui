@@ -73,12 +73,21 @@ const meta = {
     return () => {
       html().classList.toggle("dark", classes.dark);
       html().classList.toggle("light", classes.light);
-      if (attribute === null) html().removeAttribute("data-palette");
-      else html().setAttribute("data-palette", attribute);
-      if (before === null) window.localStorage.removeItem(THEME_STORAGE_KEY);
-      else window.localStorage.setItem(THEME_STORAGE_KEY, before);
-      if (beforePalette === null) window.localStorage.removeItem(PALETTE_STORAGE_KEY);
-      else window.localStorage.setItem(PALETTE_STORAGE_KEY, beforePalette);
+      if (attribute === null) {
+        html().removeAttribute("data-palette");
+      } else {
+        html().setAttribute("data-palette", attribute);
+      }
+      if (before === null) {
+        window.localStorage.removeItem(THEME_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(THEME_STORAGE_KEY, before);
+      }
+      if (beforePalette === null) {
+        window.localStorage.removeItem(PALETTE_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(PALETTE_STORAGE_KEY, beforePalette);
+      }
     };
   },
 } satisfies Meta;
@@ -182,8 +191,11 @@ export const PrePaint: Story = {
   play: async () => {
     const run = (value: ThemePreference | null) => {
       html().classList.remove("dark", "light");
-      if (value === null) window.localStorage.removeItem(THEME_STORAGE_KEY);
-      else window.localStorage.setItem(THEME_STORAGE_KEY, value);
+      if (value === null) {
+        window.localStorage.removeItem(THEME_STORAGE_KEY);
+      } else {
+        window.localStorage.setItem(THEME_STORAGE_KEY, value);
+      }
       // The script as the page's `<head>` would run it.
       new Function(THEME_PRE_PAINT_SCRIPT)();
       return ["dark", "light"].filter((c) => html().classList.contains(c)).join(" ");
@@ -308,7 +320,9 @@ export const FollowsTheDevice: Story = {
     let dark = false;
     const changes = new Set<() => void>();
     window.matchMedia = (q: string) => {
-      if (q !== query) return real.call(window, q);
+      if (q !== query) {
+        return real.call(window, q);
+      }
       return {
         get matches() {
           return dark;
@@ -320,7 +334,9 @@ export const FollowsTheDevice: Story = {
     };
     const flip = (next: boolean) => {
       dark = next;
-      for (const change of changes) change();
+      for (const change of changes) {
+        change();
+      }
     };
     try {
       for (const name of ["Native theme", "Compiled theme"]) {
@@ -447,7 +463,9 @@ async function assertCompact(canvasElement: HTMLElement, name: string, tooltips:
     for (const radio of radios) {
       // Icon-only: the caption is the name, not text on the screen.
       await expect(radio.textContent).toBe("");
-      if (tooltips) await expect(radio).toHaveAttribute("title", radio.getAttribute("aria-label"));
+      if (tooltips) {
+        await expect(radio).toHaveAttribute("title", radio.getAttribute("aria-label"));
+      }
     }
     // It fills the box it is put in, which is how the caller sizes it.
     const box = canvas.getByTestId(`${name} ${where}`);

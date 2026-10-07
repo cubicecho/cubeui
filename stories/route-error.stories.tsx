@@ -57,7 +57,9 @@ export const Details: Story = {
     }
     // The raw message is monospace on both halves.
     const [native, compiled] = canvas.getAllByText(crash.message);
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await expect(getComputedStyle(compiled).fontFamily).toBe(getComputedStyle(native).fontFamily);
   },
 };

@@ -27,15 +27,23 @@ type RangePicker = ComponentType<React.ComponentProps<typeof NativeDateRangePick
 
 /** What the last `onValueChange` said, as local wall-clock time so the clock is visible. */
 function describe(value: Date | null | undefined): string {
-  if (value === undefined) return "nothing yet";
-  if (value === null) return "null";
+  if (value === undefined) {
+    return "nothing yet";
+  }
+  if (value === null) {
+    return "null";
+  }
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())} ${pad(value.getHours())}:${pad(value.getMinutes())}`;
 }
 
 function describeRange(value: DateRange | null | undefined): string {
-  if (value === undefined) return "nothing yet";
-  if (value === null) return "null";
+  if (value === undefined) {
+    return "nothing yet";
+  }
+  if (value === null) {
+    return "null";
+  }
   return `${describe(value.from ?? null)} to ${value.to ? describe(value.to) : "open"}`;
 }
 
@@ -70,7 +78,9 @@ const body = () => within(document.body);
 
 function halves(canvasElement: HTMLElement) {
   const [native, compiled] = Array.from(canvasElement.querySelectorAll("section"));
-  if (!native || !compiled) throw new Error("both halves should render");
+  if (!native || !compiled) {
+    throw new Error("both halves should render");
+  }
   return [native, compiled] as const;
 }
 

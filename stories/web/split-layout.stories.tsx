@@ -67,7 +67,9 @@ export const Default: Story = {
     const second = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-second]");
     expect(first).not.toBeNull();
     expect(second).not.toBeNull();
-    if (!first || !second) return;
+    if (!first || !second) {
+      return;
+    }
 
     // Neither width set is an even split. A component whose panes have no ranking should not
     // invent one in its defaults.
@@ -187,7 +189,9 @@ export const WidthScale: SidebarStory = {
     // No rung stacks: on every one the sidebar is beside the body.
     for (const [index, main] of mains.entries()) {
       const sidebar = sidebars[index];
-      if (sidebar === undefined) throw new Error(`no sidebar for rung ${index}`);
+      if (sidebar === undefined) {
+        throw new Error(`no sidebar for rung ${index}`);
+      }
       expect(sidebar.getBoundingClientRect().top).toBeCloseTo(main.getBoundingClientRect().top, 0);
       expect(sidebar.getBoundingClientRect().left).toBeGreaterThan(
         main.getBoundingClientRect().left,
@@ -235,7 +239,9 @@ export const NoSidebarIsOneColumn: SidebarStory = {
     const main = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-first]");
     expect(root).not.toBeNull();
     expect(main).not.toBeNull();
-    if (!root || !main) return;
+    if (!root || !main) {
+      return;
+    }
 
     // Neither the cell nor the rule is drawn — even though `divider="line"` was asked for, since
     // there is nothing on the far side of it to divide.
@@ -275,7 +281,9 @@ export const DividedByALine: SidebarStory = {
     expect(sidebar).not.toBeNull();
     expect(rule).not.toBeNull();
     expect(main).not.toBeNull();
-    if (!sidebar || !rule || !main) return;
+    if (!sidebar || !rule || !main) {
+      return;
+    }
 
     const sidebarBox = sidebar.getBoundingClientRect();
     const ruleBox = rule.getBoundingClientRect();
@@ -333,7 +341,9 @@ export const DividerIsNotAControl: SidebarStory = {
     const rule = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout-divider]");
     expect(root).not.toBeNull();
     expect(rule).not.toBeNull();
-    if (!root || !rule) return;
+    if (!root || !rule) {
+      return;
+    }
 
     // The rule is scenery: hidden from assistive technology, holding no role, taking no focus.
     expect(rule.getAttribute("aria-hidden")).toBe("true");
@@ -352,7 +362,9 @@ export const DividerIsNotAControl: SidebarStory = {
 
     // And that pane scrolls inside the split rather than growing it: 30 rows of content, and
     // the split is still exactly as tall as the box it was given.
-    if (!body) return;
+    if (!body) {
+      return;
+    }
     expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
     expect(root.getBoundingClientRect().height).toBeCloseTo(
       root.parentElement?.clientHeight ?? 0,
@@ -390,7 +402,9 @@ export const WideContentKeepsItsFloor: SidebarStory = {
     expect(root).not.toBeNull();
     expect(sidebar).not.toBeNull();
     expect(main).not.toBeNull();
-    if (!root || !sidebar || !main) return;
+    if (!root || !sidebar || !main) {
+      return;
+    }
 
     const rootBox = root.getBoundingClientRect();
     const sidebarBox = sidebar.getBoundingClientRect();
@@ -433,7 +447,9 @@ export const StacksWhenNarrow: SidebarStory = {
     expect(sidebar).not.toBeNull();
     expect(rule).not.toBeNull();
     expect(main).not.toBeNull();
-    if (!sidebar || !rule || !main) return;
+    if (!sidebar || !rule || !main) {
+      return;
+    }
 
     const sidebarBox = sidebar.getBoundingClientRect();
     const ruleBox = rule.getBoundingClientRect();

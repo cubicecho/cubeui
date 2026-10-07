@@ -35,7 +35,9 @@ const compiledAvatar = (
 
 function bounds(root: HTMLElement, slot: string) {
   const el = root.querySelector<HTMLElement>(`[data-slot="${slot}"], [data-testid="${slot}"]`);
-  if (!el) throw new Error(`${slot} should render`);
+  if (!el) {
+    throw new Error(`${slot} should render`);
+  }
   return el.getBoundingClientRect();
 }
 
@@ -91,7 +93,9 @@ export const Pressable: Story = {
 
     for (const { root: selector, open, remove } of cases) {
       const root = canvasElement.querySelector<HTMLElement>(selector);
-      if (!root) throw new Error(`${selector} should render`);
+      if (!root) {
+        throw new Error(`${selector} should render`);
+      }
       open.mockClear();
       remove.mockClear();
 
@@ -159,7 +163,9 @@ export const LongTitle: Story = {
   play: async ({ canvasElement }) => {
     for (const selector of [".native-root", ".compiled-root"]) {
       const root = canvasElement.querySelector<HTMLElement>(selector);
-      if (!root) throw new Error(`${selector} should render`);
+      if (!root) {
+        throw new Error(`${selector} should render`);
+      }
       await expect(within(root).queryByRole("button")).toBeNull();
 
       const title = within(root).getByText(LONG);
@@ -260,7 +266,9 @@ export const Link: Story = {
   play: async ({ canvasElement }) => {
     for (const selector of [".native-root", ".compiled-root"]) {
       const root = canvasElement.querySelector<HTMLElement>(selector);
-      if (!root) throw new Error(`${selector} should render`);
+      if (!root) {
+        throw new Error(`${selector} should render`);
+      }
       const canvas = within(root);
 
       const ada = canvas.getByRole("link", { name: /Ada Lovelace/ });

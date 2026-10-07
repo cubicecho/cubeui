@@ -94,7 +94,9 @@ const COMPILED = { useAppForm: compiled.useAppForm, Form: CompiledForm } as unkn
 
 function halves(canvasElement: HTMLElement) {
   const sections = Array.from(canvasElement.querySelectorAll("section"));
-  if (sections.length !== 2) throw new Error("both halves should render");
+  if (sections.length !== 2) {
+    throw new Error("both halves should render");
+  }
   return sections.map((section) => within(section));
 }
 

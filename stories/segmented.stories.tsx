@@ -71,7 +71,9 @@ export const Row: Story = {
     await expect(canvas.getAllByRole("button")).toHaveLength(6);
 
     const [nativeWeek, compiledWeek] = canvas.getAllByRole("button", { name: "Week" });
-    if (!nativeWeek || !compiledWeek) throw new Error("both halves should render the active pill");
+    if (!nativeWeek || !compiledWeek) {
+      throw new Error("both halves should render the active pill");
+    }
 
     // The state both halves have to expose, and the assertion that caught its absence.
     await expect(nativeWeek.getAttribute("aria-pressed")).toBe("true");
@@ -88,7 +90,9 @@ export const Row: Story = {
     await expect(background(compiledWeek)).toBe(background(nativeWeek));
 
     const [nativeDay] = canvas.getAllByRole("button", { name: "Day" });
-    if (!nativeDay) throw new Error("the inactive pill should render");
+    if (!nativeDay) {
+      throw new Error("the inactive pill should render");
+    }
     await expect(background(nativeWeek)).not.toBe(background(nativeDay));
 
     // The row is a named group on both halves, so a screen reader says what the pills choose.
@@ -244,7 +248,9 @@ const TRANSPARENT = "rgba(0, 0, 0, 0)";
 /** The pill's icon, which is the only `<svg>` in it. */
 function iconOf(pill: HTMLElement) {
   const svg = pill.querySelector("svg");
-  if (!svg) throw new Error(`the ${pill.textContent} pill should draw its icon`);
+  if (!svg) {
+    throw new Error(`the ${pill.textContent} pill should draw its icon`);
+  }
   return svg;
 }
 
@@ -264,10 +270,14 @@ function hoverFill() {
     for (const rule of rules) {
       const text = rule.cssText;
       const at = text.indexOf(".hover\\:bg-hover");
-      if (at === -1) continue;
+      if (at === -1) {
+        continue;
+      }
       const own = text.slice(at, at + 400);
       const fill = own.match(/background-color:\s*([^;}]+)/)?.[1]?.trim();
-      if (own.includes(":hover") && fill) return fill;
+      if (own.includes(":hover") && fill) {
+        return fill;
+      }
     }
   }
   return undefined;
@@ -354,7 +364,9 @@ export const IconAndLabel: Story = {
 
     // One source, two renderers: the same pill box on both halves.
     const [native, compiled] = canvas.getAllByRole("button", { name: "History" });
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await expect(compiled.getBoundingClientRect().width).toBe(native.getBoundingClientRect().width);
     await expect(compiled.getBoundingClientRect().height).toBe(
       native.getBoundingClientRect().height,
@@ -428,8 +440,11 @@ const responsive: Story = {
         // Named the same at either width, so a test or a screen reader finds one pill.
         const pill = group.getByRole("button", { name });
         const label = within(pill).getByText(name);
-        if (wide) await expect(label).toBeVisible();
-        else await expect(getComputedStyle(label).display).toBe("none");
+        if (wide) {
+          await expect(label).toBeVisible();
+        } else {
+          await expect(getComputedStyle(label).display).toBe("none");
+        }
         await expect(iconOf(pill)).toBeVisible();
       }
       const raw = group.getByRole("button", { name: "Raw" });

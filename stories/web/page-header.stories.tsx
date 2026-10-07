@@ -67,7 +67,9 @@ export const WithIcon: Story = {
   play: async ({ canvasElement }) => {
     const svg = canvasElement.querySelector("svg");
     expect(svg).not.toBeNull();
-    if (svg) expect(svg.getBoundingClientRect().width).toBeCloseTo(20, 0);
+    if (svg) {
+      expect(svg.getBoundingClientRect().width).toBeCloseTo(20, 0);
+    }
   },
 };
 
@@ -112,7 +114,9 @@ export const WithBreadcrumbs: Story = {
     const row = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-title-row]");
     expect(trail).not.toBeNull();
     expect(row).not.toBeNull();
-    if (!trail || !row) return;
+    if (!trail || !row) {
+      return;
+    }
 
     // The trail is inside the header's inset, not beside it. Passed as the caller's own node
     // above the header, it would start 16px to the left of the title it belongs to.
@@ -152,7 +156,9 @@ export const AlignsWithTheBodyOfAPageChassis: StoryObj<typeof PageHeader> = {
     );
     expect(row).not.toBeNull();
     expect(body).not.toBeNull();
-    if (!row || !body) return;
+    if (!row || !body) {
+      return;
+    }
 
     const header = row.getBoundingClientRect();
     const rows = body.getBoundingClientRect();
@@ -187,7 +193,9 @@ export const TheRuleFollowsTheControlRow: StoryObj<typeof PageHeader> = {
   play: async ({ canvasElement }) => {
     const [bare, withControls] =
       canvasElement.querySelectorAll<HTMLElement>("[data-slot=page-header]");
-    if (!bare || !withControls) return;
+    if (!bare || !withControls) {
+      return;
+    }
     expect(getComputedStyle(bare).borderBottomWidth).not.toBe("0px");
     expect(getComputedStyle(withControls).borderBottomWidth).toBe("0px");
   },
@@ -222,7 +230,9 @@ export const Loading: StoryObj<typeof PageHeader> = {
   play: async ({ canvasElement }) => {
     const [waiting, landed] =
       canvasElement.querySelectorAll<HTMLElement>("[data-slot=page-header]");
-    if (!waiting || !landed) return;
+    if (!waiting || !landed) {
+      return;
+    }
 
     // The whole header, not only the title row: this is the number the page below inherits.
     expect(waiting.getBoundingClientRect().height).toBeCloseTo(
@@ -264,7 +274,9 @@ export const NarrowContainer: StoryObj<typeof PageHeader> = {
     const root = canvasElement.querySelector<HTMLElement>("[data-slot=page-header]");
     const titles = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-titles]");
     const action = canvasElement.querySelector<HTMLElement>("[data-slot=page-header-action]");
-    if (!root || !titles || !action) return;
+    if (!root || !titles || !action) {
+      return;
+    }
 
     // Wrapped: the buttons are under the title block, not beside it.
     expect(action.getBoundingClientRect().top).toBeGreaterThan(

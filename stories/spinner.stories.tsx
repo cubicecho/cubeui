@@ -44,7 +44,9 @@ export const Default: Story = {
     // The same glyph at the same size: 16px by default, and the caller's class wins.
     const size = (el: Element) => {
       const svg = el.tagName.toLowerCase() === "svg" ? el : el.querySelector("svg");
-      if (!svg) throw new Error("a spinner should draw an svg");
+      if (!svg) {
+        throw new Error("a spinner should draw an svg");
+      }
       return svg.getBoundingClientRect().width;
     };
     await expect(size(nativeDefault)).toBe(16);

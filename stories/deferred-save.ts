@@ -19,9 +19,14 @@ export function deferredSave<T>() {
     settle(outcome: "resolve" | Error) {
       const current = outstanding;
       outstanding = null;
-      if (!current) throw new Error("no save is outstanding");
-      if (outcome === "resolve") current.resolve();
-      else current.reject(outcome);
+      if (!current) {
+        throw new Error("no save is outstanding");
+      }
+      if (outcome === "resolve") {
+        current.resolve();
+      } else {
+        current.reject(outcome);
+      }
     },
   };
 }

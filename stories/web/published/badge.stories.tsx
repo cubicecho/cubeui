@@ -119,11 +119,15 @@ export const Removable: Story = {
     // The glyph takes the label's colour — the variant's ink, and the caller's `textColor`.
     const ink = (button: HTMLElement) => {
       const svg = button.querySelector("svg");
-      if (!svg) throw new Error("the remove button should draw an icon");
+      if (!svg) {
+        throw new Error("the remove button should draw an icon");
+      }
       return getComputedStyle(svg).color;
     };
     const pill = (button: HTMLElement) => {
-      if (!button.parentElement) throw new Error("the remove button should sit in the pill");
+      if (!button.parentElement) {
+        throw new Error("the remove button should sit in the pill");
+      }
       return button.parentElement;
     };
     await expect(ink(urgent)).toBe(getComputedStyle(pill(urgent)).color);

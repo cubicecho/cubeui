@@ -288,7 +288,9 @@ export const LabelAction: Story = {
     const action = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-action]");
     expect(label).not.toBeNull();
     expect(action).not.toBeNull();
-    if (!label || !action) return;
+    if (!label || !action) {
+      return;
+    }
     expect(action.getBoundingClientRect().left).toBeGreaterThan(
       label.getBoundingClientRect().right,
     );
@@ -311,7 +313,9 @@ export const Horizontal: Story = {
     const box = controlFor(canvasElement, "Email me about releases");
     const label = canvasElement.querySelector<HTMLElement>("[data-slot=field-label]");
     expect(label).not.toBeNull();
-    if (!label) return;
+    if (!label) {
+      return;
+    }
 
     const boxRect = box.getBoundingClientRect();
     const labelRect = label.getBoundingClientRect();
@@ -409,7 +413,9 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
     const bare = skeletons[0];
     const hinted = skeletons[1];
     const real = fields[2];
-    if (!bare || !hinted || !textarea || !real) return;
+    if (!bare || !hinted || !textarea || !real) {
+      return;
+    }
 
     const target = textarea.getBoundingClientRect().height;
     expect(hinted.getBoundingClientRect().height).toBeCloseTo(target, 0);
@@ -443,7 +449,9 @@ export const WideControlKeepsItsFloor: Story = {
   play: async ({ canvasElement }) => {
     const field = canvasElement.querySelector<HTMLElement>("[data-slot=field]");
     expect(field).not.toBeNull();
-    if (!field) return;
+    if (!field) {
+      return;
+    }
     expect(field.clientWidth).toBeLessThanOrEqual(400);
   },
 };
@@ -542,7 +550,9 @@ export const AForm: Story = {
     for (const field of fields) {
       const label = field.querySelector<HTMLLabelElement>("[data-slot=field-label]");
       expect(label).not.toBeNull();
-      if (!label) return;
+      if (!label) {
+        return;
+      }
       const control = canvasElement.ownerDocument.getElementById(label.htmlFor);
       expect(control).not.toBeNull();
     }

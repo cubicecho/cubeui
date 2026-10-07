@@ -90,8 +90,12 @@ export const Default: Story = {
       // is the DOM one here and its `testID` does not become `data-testid` — it does on a device
       // and under react-native-web proper. The compiled half says `data-slot="disclosure-row"`.
       const row = header.parentElement;
-      if (!row) throw new Error("the row should render");
-      if (index === 1) await expect(row).toHaveAttribute("data-slot", "disclosure-row");
+      if (!row) {
+        throw new Error("the row should render");
+      }
+      if (index === 1) {
+        await expect(row).toHaveAttribute("data-slot", "disclosure-row");
+      }
 
       // Shut: no body, and no `aria-controls` pointing at one.
       await expect(header).toHaveAttribute("aria-expanded", "false");
@@ -119,7 +123,9 @@ export const Default: Story = {
       await expect(controlled).toBeTruthy();
       // The id is the footer's `nativeID`, which only the compiled half turns into `id` here (see
       // above: the native half's `ItemFooter` is the DOM one under Storybook).
-      if (index === 1) await expect(body.closest(`[id="${controlled}"]`)).not.toBeNull();
+      if (index === 1) {
+        await expect(body.closest(`[id="${controlled}"]`)).not.toBeNull();
+      }
       // The footer is its own line under the heading, and stays inside the row.
       const footerBox = (footer as HTMLElement).getBoundingClientRect();
       await expect(footerBox.top).toBeGreaterThanOrEqual(title.bottom);
@@ -142,7 +148,9 @@ export const Default: Story = {
 
     // Shut, the two halves draw the row at the same height.
     const [native, compiled] = rows;
-    if (!native || !compiled) throw new Error("both rows should measure");
+    if (!native || !compiled) {
+      throw new Error("both rows should measure");
+    }
     await expect(Math.abs(native.height - compiled.height)).toBeLessThan(3);
   },
 };

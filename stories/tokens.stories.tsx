@@ -168,7 +168,9 @@ export const SwitchThumbSitsInItsTrack: Story = {
     ] as const) {
       const track = canvas.getByRole("switch", { name });
       const thumb = track.querySelector("[data-slot=switch-thumb]");
-      if (!thumb) throw new Error(`the ${name} switch should render a thumb`);
+      if (!thumb) {
+        throw new Error(`the ${name} switch should render a thumb`);
+      }
       const style = getComputedStyle(track);
       await expect(style.paddingLeft).toBe("0px");
       await expect(style.paddingRight).toBe("0px");
@@ -180,8 +182,11 @@ export const SwitchThumbSitsInItsTrack: Story = {
       const box = thumb.getBoundingClientRect();
       await expect(box.left).toBeGreaterThanOrEqual(inner.left);
       await expect(box.right).toBeLessThanOrEqual(inner.right);
-      if (checked) await expect(box.right).toBe(inner.right);
-      else await expect(box.left).toBe(inner.left);
+      if (checked) {
+        await expect(box.right).toBe(inner.right);
+      } else {
+        await expect(box.left).toBe(inner.left);
+      }
     }
   },
 };
@@ -374,7 +379,9 @@ export const TitlesTakeTheTheme: Story = {
     const canvas = within(canvasElement);
     await inDark(async () => {
       const [title, overridden] = canvas.getAllByTestId("page-header-title");
-      if (!title || !overridden) throw new Error("both headers should render a title");
+      if (!title || !overridden) {
+        throw new Error("both headers should render a title");
+      }
       const foreground = resolved("foreground", canvasElement);
       // The dark palette's foreground is near-white; the bug was black.
       await expect(foreground).not.toBe("rgb(0, 0, 0)");

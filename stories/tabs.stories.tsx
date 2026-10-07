@@ -234,7 +234,9 @@ export const FewTabsStayCentred: Story = {
       const [first, last] = within(list)
         .getAllByRole("tab")
         .map((tab) => tab.getBoundingClientRect());
-      if (!first || !last) throw new Error("expected two tabs");
+      if (!first || !last) {
+        throw new Error("expected two tabs");
+      }
       const before = first.left - box.left;
       const after = box.right - last.right;
       await expect({ name, centred: Math.abs(before - after) <= 1 }).toEqual({

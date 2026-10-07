@@ -108,7 +108,9 @@ const SLOT = (slot: string) => `[data-slot="${slot}"], [data-testid="${slot}"]`;
 
 function rootOf(canvasElement: HTMLElement, selector: string) {
   const root = canvasElement.querySelector<HTMLElement>(selector);
-  if (!root) throw new Error(`${selector} should render`);
+  if (!root) {
+    throw new Error(`${selector} should render`);
+  }
   return root;
 }
 
@@ -308,7 +310,9 @@ export const Links: Story = {
 
       // The link fills the row, so the whole row is the target.
       const row = short.closest<HTMLElement>(SLOT("file-tree-row"));
-      if (!row) throw new Error("the link should sit in a row");
+      if (!row) {
+        throw new Error("the link should sit in a row");
+      }
       await expect(short.getBoundingClientRect().width).toBeCloseTo(
         row.getBoundingClientRect().width,
         0,
@@ -404,7 +408,9 @@ export const Move: Story = {
     const row = (name: string) => canvas.getByRole("button", { name });
     const item = (name: string) => {
       const found = row(name).closest<HTMLElement>(SLOT("file-tree-item"));
-      if (!found) throw new Error(`${name} should sit in an item`);
+      if (!found) {
+        throw new Error(`${name} should sit in an item`);
+      }
       return found;
     };
     slowMove.calls.mockClear();
@@ -457,7 +463,9 @@ export const Move: Story = {
 
     // While the move is pending the row waits where it was, muted, and the tint is gone.
     const waiting = row("deploy.md").closest<HTMLElement>(SLOT("file-tree-row"));
-    if (!waiting) throw new Error("the file should sit in a row");
+    if (!waiting) {
+      throw new Error("the file should sit in a row");
+    }
     await waitFor(() => expect(getComputedStyle(waiting).opacity).toBe("0.5"));
     await expect(isTinted(item("old"))).toBe(false);
     await expect(item("ops").contains(row("deploy.md"))).toBe(true);

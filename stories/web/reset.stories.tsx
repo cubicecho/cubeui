@@ -52,7 +52,9 @@ export const BareBorderTakesTheAppsColour: Story = {
     const top = canvas.getByRole("region", { name: "Top" });
     const slot = canvasElement.querySelector("[data-slot=section-content].border-b");
     const text = canvas.getByText("A text");
-    if (!slot) throw new Error("the third section should render its content slot");
+    if (!slot) {
+      throw new Error("the third section should render its content slot");
+    }
 
     const holds = async () => {
       const border = resolved("border", canvasElement);

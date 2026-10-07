@@ -136,7 +136,9 @@ export const TheCalendarFollowsTheTheme: Story = {
     const day = await screen.findByRole("button", { name: /June 10th, 2026/ });
     const grid = day.closest(".rdp-root");
     const chevron = grid?.querySelector(".rdp-chevron");
-    if (!grid || !chevron) throw new Error("no react-day-picker root or chevron");
+    if (!grid || !chevron) {
+      throw new Error("no react-day-picker root or chevron");
+    }
 
     const check = async () => {
       const selection = tokenColor("selection");

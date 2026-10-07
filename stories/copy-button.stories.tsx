@@ -49,7 +49,9 @@ export const Default: Story = {
 
     try {
       const [native, compiled] = canvas.getAllByRole("button", { name: "Copy endpoint URL" });
-      if (!native || !compiled) throw new Error("both halves should render the button");
+      if (!native || !compiled) {
+        throw new Error("both halves should render the button");
+      }
 
       // A press writes the value, says so, and turns the name to `Copied` — on both halves.
       for (const button of [native, compiled]) {

@@ -199,7 +199,9 @@ function barsOf(canvasElement: HTMLElement) {
   return headers.map((header) => {
     const part = (slot: string) => {
       const el = Array.from(header.children).find((child) => slotOf(child) === slot);
-      if (!(el instanceof HTMLElement)) throw new Error(`the bar should draw ${slot}`);
+      if (!(el instanceof HTMLElement)) {
+        throw new Error(`the bar should draw ${slot}`);
+      }
       return el;
     };
     return {
@@ -252,7 +254,9 @@ export const Phone390: Story = {
       // The status is the part that gave way: it holds less than its line needs, and says so with
       // an ellipsis rather than by wrapping or by pushing the actions out.
       const line = status.firstElementChild;
-      if (!(line instanceof HTMLElement)) throw new Error("a string status is drawn as text");
+      if (!(line instanceof HTMLElement)) {
+        throw new Error("a string status is drawn as text");
+      }
       await expect(line).toHaveTextContent(STATUS);
       await expect(line.scrollWidth).toBeGreaterThan(line.clientWidth);
       await expect(getComputedStyle(line).textOverflow).toBe("ellipsis");
@@ -285,7 +289,9 @@ export const Phone390: Story = {
 
     // The same bar on both halves.
     const [native, compiled] = bars;
-    if (!native || !compiled) throw new Error("both halves should render");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
     await expect(compiled.header.getBoundingClientRect().height).toBe(
       native.header.getBoundingClientRect().height,
     );
