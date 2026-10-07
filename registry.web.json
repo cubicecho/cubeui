@@ -813,6 +813,10 @@
           "type": "registry:ui"
         },
         {
+          "path": "compiled/copy-button-view.tsx",
+          "type": "registry:ui"
+        },
+        {
           "path": "compiled/copy-button.tsx",
           "type": "registry:ui"
         }

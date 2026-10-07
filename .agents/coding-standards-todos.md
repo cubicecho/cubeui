@@ -34,7 +34,7 @@ with them.
 | B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — | open |
 | R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — | open |
 | R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
-| R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | open |
+| R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | done |
 | R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | done |
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | open |
@@ -110,6 +110,11 @@ wrapper in one module both read. (unverified)
 ### R7 [reuse] — one `CopyButton` component
 
 **File:** `registry/ui/copy-button.tsx:27-49`, `registry/ui/copy-button.web.tsx:40-62`.
+
+**Done:** the component is `registry/ui/copy-button-view.tsx`, which takes `write` as a prop and
+is compiled like any other file; each half is now its writer and a three-line `CopyButton` that
+hands it over. A `.ts`/`.web.ts` pair for the writer alone was the other shape, and the compiler
+knows no such pair.
 
 ### R8 [readability] — review the twelve `as unknown as`
 
