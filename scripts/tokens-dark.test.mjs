@@ -70,13 +70,15 @@ const declarations = (css, selector) => {
 
 /**
  * The rules that exist for Expo *web* and nothing else: the `box-sizing`, `<button>`, form-field,
- * heading-margin and page-font resets raw DOM controls need, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
+ * heading-margin and page-font resets raw DOM controls need, the scrollbar colours, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
  * safe to ship in the one stylesheet because the native compiler drops them — and the spellings
  * that look equivalent do not get dropped: `:root.dark` fails the compile, `html.dark` becomes a
  * class style. So what is asserted is the compiler's own output, with and without them.
  */
 const WEB_ONLY = [
   /^\*,\n::before,\n::after \{[\s\S]*?\n\}/m,
+  /^\* \{[\s\S]*?\n\}/m,
+  /^@media \(prefers-color-scheme: dark\) \{\n {2}:where\(html\) \{[\s\S]*?\n {2}\}\n\}/m,
   /^:where\((button|html|input, select, textarea|h1, h2, h3, h4, h5, h6, p)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html\.(dark|light)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{[\s\S]*?\n\}/gm,
@@ -97,12 +99,24 @@ test("the web-only rules compile to nothing on native", async () => {
   );
   assert.match(css, /^:where\(h1, h2, h3, h4, h5, h6, p\) \{\n {2}margin: 0;\n\}/m);
   assert.match(css, /^:where\(html\) \{\n {2}font-family: [^;]+;\n\}/m);
-  assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 2);
+  assert.match(css, /^\* \{\n {2}scrollbar-width: thin;\n\}/m);
+  // One thumb colour beside every block that sets `--foreground`: the root, the system's dark,
+  // the picker's two, and each palette mode.
+  const paletteModes = Object.values(palettes).flatMap((modes) => Object.keys(modes)).length;
+  assert.equal(
+    (css.match(/^ *scrollbar-color: rgba\(\d+, \d+, \d+, 0\.3\) transparent;$/gm) ?? []).length,
+    4 + paletteModes,
+  );
+  assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 4);
   assert.equal(
     (css.match(/^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{/gm) ?? []).length,
-    Object.values(palettes).flatMap((modes) => Object.keys(modes)).length,
+    2 * paletteModes,
   );
-  assert.equal(/box-sizing|:where\(|:is\(html/.test(without), false, "the strip missed something");
+  assert.equal(
+    /box-sizing|scrollbar|:where\(|:is\(html/.test(without),
+    false,
+    "the strip missed something",
+  );
   assert.deepEqual(await stylesheet(css), await stylesheet(without));
 });
 

@@ -41,6 +41,11 @@ app does not import. Put `@import "../cubeui-tokens.css";` in the app's CSS entr
 `@import "tailwindcss";` and before the app's own palette. Without it a compiled component lays
 out as stacked blocks and nothing errors.
 
+**Do not style scrollbars.** The tokens stylesheet does it on the web, on both halves: thin, the
+foreground at 30%, no track, following the theme and the palette. An app's own `::-webkit-scrollbar`
+or `scrollbar-color` block is a copy that drifts, so delete it when moving onto cubeui. A region
+that should show none takes `[scrollbar-width:none]`.
+
 **Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `command`, `tabs`,
 `tooltip`, `badge`, `calendar`, `field`, `item`, `separator`, `skeleton`, `toast`, `empty`, `query-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of

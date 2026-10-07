@@ -319,6 +319,14 @@ compile outright ("Class-qualified :root selectors are unsupported on native"), 
 outranks the media query's `:root`, and react-native-css drops it without a word;
 `scripts/tokens-dark.test.mjs` asserts the compiled native output is identical with and without it.
 
+**Scrollbars are in the palette.** Both stylesheets set `scrollbar-width: thin` and a
+`scrollbar-color` of the foreground at 30% on a transparent track, so a scrolling region on the
+web does not draw the browser's wide grey bar over a dark theme. In `tokens.web.css` it is one
+rule in `@layer base`, a `color-mix` of `--foreground`, so any utility still overrides it. In
+`tokens.native.css` it is a literal `rgba()` beside each block that sets `--foreground`, in the
+same order, because react-native-css reads that file too and the same test shows it drops them.
+Device scroll indicators are the platform's and are not touched.
+
 **A palette is a second choice beside light and dark.** `palettes` in `tokens/palette.mjs` holds
 each one's colours for the modes it has; Monokai has only `dark`, so choosing it makes the app dark.
 Both stylesheets gain a block per palette keyed on `data-palette` on `<html>` — the native one as

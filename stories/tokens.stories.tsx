@@ -386,3 +386,35 @@ export const TitlesTakeTheTheme: Story = {
     });
   },
 };
+
+/**
+ * A scrolling region draws its scrollbar in the palette, not the browser's wide grey bar (#282):
+ * thin, the foreground at 30%, on no track. The rule is specificity zero, so the tab row's
+ * `[scrollbar-width:none]` still hides its own.
+ */
+export const ScrollbarsFollowThePalette: Story = {
+  render: () => (
+    <div style={{ display: "flex", gap: 16 }}>
+      <div data-testid="scroller" style={{ height: 80, width: 160, overflowY: "scroll" }}>
+        <div style={{ height: 400 }} />
+      </div>
+      <div
+        data-testid="hidden"
+        className="[scrollbar-width:none]"
+        style={{ height: 80, width: 160, overflowY: "scroll" }}
+      >
+        <div style={{ height: 400 }} />
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const scroller = getComputedStyle(canvas.getByTestId("scroller"));
+    await expect(scroller.scrollbarWidth).toBe("thin");
+    // "<thumb> <track>": the foreground at 30%, and nothing behind it.
+    await expect(scroller.scrollbarColor).toMatch(
+      /^rgba\(\d+, \d+, \d+, 0\.3\) rgba\(0, 0, 0, 0\)$/,
+    );
+    await expect(getComputedStyle(canvas.getByTestId("hidden")).scrollbarWidth).toBe("none");
+  },
+};
