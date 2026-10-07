@@ -839,6 +839,7 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 - The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
   disclosure is the heading of its part of the page; `contentClassName` to indent the body.
+  An element as `title` or `description` is placed as it is and styles itself.
 - A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
   `meta` and surface.
 
@@ -1137,7 +1138,9 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   sized the way `iconSlot` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
   area — a `Checkbox` there is its own control (telos' todo row).
 - `title` is one line and truncates; `description` is the muted line under it, two lines at most.
-  `titleClassName` reaches the title (a done todo's `line-through`).
+  `titleClassName` reaches the title (a done todo's `line-through`). Both are for words. An
+  element given to either — a name with a badge beside it — is placed as it is, with none of
+  that styling or truncation, so it styles its own text; in an Expo app its words need a `Text`.
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `actionSlot` is the far end, **outside** the pressed area: one button or a fragment of them. Pass

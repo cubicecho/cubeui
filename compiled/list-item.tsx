@@ -12,9 +12,15 @@ import type { ReactNode } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 
 type ListItemProps = {
-  /** What the row is: a person's name, a todo's text. One line, truncated when it runs long. */
+  /**
+   * What the row is: a person's name, a todo's text. A string is one line, truncated when it runs
+   * long; an element — a name with a badge beside it — is placed as it is and styles itself.
+   */
   title: ReactNode;
-  /** The line under the title — an email, the first line of the notes. Two lines at most. */
+  /**
+   * The line under the title — an email, the first line of the notes. A string is two lines at
+   * most; an element is placed as it is.
+   */
   description?: ReactNode | undefined;
   /**
    * The start of the row, before the title: an avatar, a checkbox, an icon. Placed as given — not
@@ -48,10 +54,15 @@ type ListItemProps = {
   titleClassName?: string | undefined;
 };
 
-/** A string on its own is a crash on device, so a string `meta` gets a `Text` around it. */
-function asText(node: ReactNode, className: string) {
+/**
+ * A string on its own is a crash on device, so a string gets a `Text` around it. An element does
+ * not: a `View` inside a `Text` lays out inline on device and loses most of its own styling.
+ */
+function asText(node: ReactNode, className: string, testID?: string) {
   return typeof node === "string" || typeof node === "number" ? (
-    <span className={cn("cube-rn-text", className)}>{node}</span>
+    <span data-slot={testID} className={cn("cube-rn-text", className)}>
+      {node}
+    </span>
   ) : (
     node
   );
@@ -92,27 +103,20 @@ export function ListItem({
   const body = (
     <>
       <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
-        <span
-          data-slot="list-item-title"
-          className={cn(
-            "cube-rn-text",
+        {asText(
+          title,
+          cn(
             "font-medium text-foreground text-sm",
             // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
             // what `line-clamp-1` becomes and what `truncate` does not.
             "truncate",
             titleClassName,
-          )}
-        >
-          {title}
-        </span>
-        {description ? (
-          <span
-            data-slot="list-item-description"
-            className="cube-rn-text line-clamp-2 text-foreground/60 text-xs"
-          >
-            {description}
-          </span>
-        ) : null}
+          ),
+          "list-item-title",
+        )}
+        {description
+          ? asText(description, "line-clamp-2 text-foreground/60 text-xs", "list-item-description")
+          : null}
       </div>
       {meta ? (
         <div
