@@ -579,7 +579,7 @@
       "name": "file-tree",
       "type": "registry:component",
       "title": "File Tree",
-      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, and `pinned` keeps a file above the tree.",
+      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, `pinned` keeps a file above the tree, and `onMove` lets a row be dragged onto a folder in a browser.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tree", "@cubeui/tokens"],
       "files": [
         {

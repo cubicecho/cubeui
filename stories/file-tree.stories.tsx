@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { FileTree as Compiled } from "../compiled/file-tree";
 import { Trash2 as CompiledTrash } from "../compiled/icons";
 import { FileTree as Native } from "../registry/layout/file-tree";
 import { Button as NativeButton } from "../registry/ui/button";
 import { Trash2 as NativeTrash } from "../registry/ui/icons";
+import { deferredSave } from "./deferred-save";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -322,5 +323,158 @@ export const Links: Story = {
         root.getBoundingClientRect().right,
       );
     }
+  },
+};
+
+const MOVABLE: Entry[] = [
+  { path: "archive", type: "dir" },
+  { path: "db/old/schema.md", type: "file" },
+  { path: "db/pg.md", type: "file" },
+  { path: "ops/deploy.md", type: "file" },
+  { path: "ops/runbook.md", type: "file" },
+  { path: "inbox.md", type: "file" },
+];
+
+const slowMove = deferredSave<{ from: string; into: string }>();
+
+function MovableTree() {
+  const [entries, setEntries] = useState(MOVABLE);
+  return (
+    <Compiled
+      label="Notes"
+      pinned={[{ path: "README.md", type: "file" }]}
+      entries={entries}
+      defaultOpen={["db", "ops"]}
+      onSelect={() => {}}
+      // `archive` is read-only: nothing may be dropped there.
+      canMove={(_node, into) => into !== "archive"}
+      onMove={async (from, into) => {
+        await slowMove.save({ from, into });
+        const name = from.slice(from.lastIndexOf("/") + 1);
+        const to = into ? `${into}/${name}` : name;
+        setEntries((before) =>
+          before.map((entry) => (entry.path === from ? { ...entry, path: to } : entry)),
+        );
+      }}
+    />
+  );
+}
+
+/**
+ * One drag, as the browser's own `DragEvent`s on one `DataTransfer`. `over` hands the event back
+ * so a test can ask whether the target took it: a `dragover` nobody prevented is a drop the
+ * browser will not make. Each event waits a turn before the next, as the browser's own do: the
+ * tree answers one with what the last one left it.
+ */
+async function drag(source: Element) {
+  const dataTransfer = new DataTransfer();
+  const send = async (type: string, target: Element) => {
+    const event = new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer });
+    target.dispatchEvent(event);
+    await new Promise((resolve) => setTimeout(resolve));
+    return event;
+  };
+  await send("dragstart", source);
+  return {
+    dataTransfer,
+    over: (target: Element) => send("dragover", target),
+    drop: (target: Element) => send("drop", target),
+    end: () => send("dragend", source),
+  };
+}
+
+const isTinted = (el: Element) => getComputedStyle(el).backgroundColor !== "rgba(0, 0, 0, 0)";
+
+/**
+ * Issue #263: a row is dragged onto a folder and `onMove` hears the two paths. Only the compiled
+ * half is here, because HTML drag and drop is the web's: react-native-web forwards none of it, and
+ * a device has no pointer to drag with.
+ */
+export const Move: Story = {
+  args: { label: "Notes", entries: MOVABLE },
+  render: () => (
+    <div className="compiled-root bg-background p-6" style={{ width: 300 }}>
+      <MovableTree />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const root = rootOf(canvasElement, ".compiled-root");
+    const canvas = within(root);
+    const tree = canvas.getByRole("list", { name: "Notes" });
+    const row = (name: string) => canvas.getByRole("button", { name });
+    const item = (name: string) => {
+      const found = row(name).closest<HTMLElement>(SLOT("file-tree-item"));
+      if (!found) throw new Error(`${name} should sit in an item`);
+      return found;
+    };
+    slowMove.calls.mockClear();
+
+    // Every row of the tree can be picked up; a pinned one cannot.
+    await expect(row("inbox.md")).toHaveAttribute("draggable", "true");
+    await expect(row("ops")).toHaveAttribute("draggable", "true");
+    await expect(row("README.md")).not.toHaveAttribute("draggable");
+
+    // The drag carries the path, so a link's row is not dragged as only its URL.
+    const refused = await drag(row("inbox.md"));
+    await expect(refused.dataTransfer.getData("text/plain")).toBe("inbox.md");
+
+    // Refused: where it already is, a pinned row, and the folder `canMove` says no to.
+    for (const target of [tree, row("README.md"), row("archive")]) {
+      await expect((await refused.over(target)).defaultPrevented).toBe(false);
+    }
+    await expect(isTinted(tree)).toBe(false);
+    await expect(isTinted(item("archive"))).toBe(false);
+    await refused.drop(row("archive"));
+    await refused.end();
+
+    // Refused: a folder onto itself, or into what is under it.
+    const folder = await drag(row("db"));
+    await expect((await folder.over(row("db"))).defaultPrevented).toBe(false);
+    await expect((await folder.over(row("pg.md"))).defaultPrevented).toBe(false);
+    await folder.drop(row("pg.md"));
+    await folder.end();
+    await expect(slowMove.calls).not.toHaveBeenCalled();
+
+    // A file's row counts as the folder it is in, and that folder is what is tinted.
+    const move = await drag(row("deploy.md"));
+    await expect((await move.over(row("pg.md"))).defaultPrevented).toBe(true);
+    await waitFor(() => expect(isTinted(item("db"))).toBe(true));
+    await expect(isTinted(item("ops"))).toBe(false);
+
+    // A shut folder under the pointer opens after a moment, so the drop can go deeper.
+    await expect(row("old")).toHaveAttribute("aria-expanded", "false");
+    await expect((await move.over(row("old"))).defaultPrevented).toBe(true);
+    await waitFor(() => expect(row("old")).toHaveAttribute("aria-expanded", "true"));
+    await waitFor(() => expect(isTinted(item("old"))).toBe(true));
+    await expect(isTinted(item("db"))).toBe(false);
+
+    await move.drop(row("schema.md"));
+    await expect(slowMove.calls).toHaveBeenCalledTimes(1);
+    await expect(slowMove.calls).toHaveBeenLastCalledWith({
+      from: "ops/deploy.md",
+      into: "db/old",
+    });
+
+    // While the move is pending the row waits where it was, muted, and the tint is gone.
+    const waiting = row("deploy.md").closest<HTMLElement>(SLOT("file-tree-row"));
+    if (!waiting) throw new Error("the file should sit in a row");
+    await waitFor(() => expect(getComputedStyle(waiting).opacity).toBe("0.5"));
+    await expect(isTinted(item("old"))).toBe(false);
+    await expect(item("ops").contains(row("deploy.md"))).toBe(true);
+
+    slowMove.settle("resolve");
+    await waitFor(() => expect(item("old").contains(row("deploy.md"))).toBe(true));
+    const landed = row("deploy.md").closest<HTMLElement>(SLOT("file-tree-row"));
+    await expect(landed && getComputedStyle(landed).opacity).toBe("1");
+
+    // The tree's own blank space is the top level, and its path is empty.
+    const up = await drag(row("deploy.md"));
+    await expect((await up.over(tree)).defaultPrevented).toBe(true);
+    await waitFor(() => expect(isTinted(tree)).toBe(true));
+    await up.drop(tree);
+    await expect(slowMove.calls).toHaveBeenLastCalledWith({ from: "db/old/deploy.md", into: "" });
+    slowMove.settle("resolve");
+    await waitFor(() => expect(item("old").contains(row("deploy.md"))).toBe(false));
+    await expect(slowMove.calls).toHaveBeenCalledTimes(2);
   },
 };

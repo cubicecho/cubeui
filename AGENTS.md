@@ -487,6 +487,10 @@ Recorded so the next pass does not re-derive them:
   one source for both halves. A file's row is a link (`linkSlot`) or a button (`onSelect`), row
   actions are siblings of it and hidden only where a pointer can hover, folders fold, and it is
   a list of lists rather than a `role="tree"`, which would promise arrow keys on two platforms.
+  A row is dragged onto a folder (#263) and the tree only says so: `onMove(from, into)`, with
+  `canMove` to refuse a target. The drag is HTML's, so it is the web half with a pointer; the
+  keyboard, a touch screen and a native build move a row through the app's own "Move to…"
+  action, which is why `onMove` is never the only way in.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
   `CardLayout` already has the slot. `EmptyState` did ship later, in `@cubeui/page`, and `empty`
   is now shadcn's parts on both halves drawn the same way — `EmptyState` is built on them.
