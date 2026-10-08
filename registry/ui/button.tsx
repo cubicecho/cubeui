@@ -263,6 +263,10 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
       );
     }
 
+    // A DOM element takes the press as a click; a router's link is a component and takes `onPress`.
+    // Handed `onPress`, a bare `<a>` drops it. Compiled, both arms are `onClick`, which is right there.
+    const isDomLink = typeof linkSlot.type === "string";
+
     return (
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
       // one child. Inside, the provider was the child: `Slot` merged the classes and
@@ -277,7 +281,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           {...({
             ...props,
             ...busy,
-            onPress,
+            ...(isDomLink ? { onClick: onPress } : { onPress }),
             disabled,
           } as unknown as React.HTMLAttributes<HTMLElement>)}
           ref={ref as unknown as React.Ref<HTMLElement>}

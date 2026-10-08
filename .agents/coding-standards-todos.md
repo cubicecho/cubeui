@@ -46,8 +46,8 @@ with them.
 | R11 | Refactor [sweep] · low value | Names the 191 conditions in the registry that test a comparison or an `&&`/`||` inline, where they do not already read as English. (unverified: the count includes ones that do) | P1. Large diff across files apps diff on update. | — | open |
 | T1 | Test [readability] · low value | Replaces the 297 type assertions in stories (50 in `as-child-trigger.stories.tsx`) with typed queries or a small helper. | P17, in test code. | — | open |
 | R12 | Refactor [sweep] | Rewrites the `!` on a plain identifier that the lint plugin cannot see in `scripts/` (`if (!classes)` in `passes/elements.mjs` is one). (unverified count) | Finishes P20 in scripts, as R3 did in the registry. | — | open |
-| R13 | Refactor [simplify] | Splits `transformElement` in `scripts/rn2web/passes/elements.mjs`, which is most of that file's 559 lines. | The pass R10 left largest. | — | open |
-| B2 | Question | The story run logs `Unknown event handler property onPress`: some story or component hands `onPress` to a DOM element. Which one is not traced. | A press handler that the web silently drops. | — | open |
+| R13 | Refactor [simplify] | Splits `transformElement` in `scripts/rn2web/passes/elements.mjs`, which is about 205 of that file's 559 lines. | The pass R10 left largest. | — | open |
+| B2 | Bug | A `Button` with a DOM element as its `linkSlot` handed it `onPress` on the react-native-web half, which React drops: the press never ran, and the story run logged `Unknown event handler property onPress`. Fixed: a DOM link takes the press as `onClick`. `button-as-child.stories.tsx` pins it. | A press handler the web silently dropped. | — | done |
 
 ## Conventions
 
