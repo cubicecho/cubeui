@@ -1,7 +1,7 @@
 /**
- * The web copy button: the same `Button` and the same tick, with the browser's
- * clipboard as the writer. `copy-button.tsx` is the native counterpart and
- * `copy-button-base.ts` holds what they share.
+ * The web copy button: the browser's clipboard as the writer, handed to the same
+ * `copy-button-view.tsx` the native half uses. `copy-button.tsx` is that
+ * counterpart and `copy-button-base.ts` holds the timing.
  *
  * Hand-written rather than compiled because the native half's clipboard is
  * `expo-clipboard`, which the compiler has no DOM translation for — and a DOM app
@@ -12,9 +12,8 @@
  * the old hidden-textarea `execCommand("copy")`, which still works there and is
  * what kanban_server's settings page carried for exactly that case.
  */
-import { Button } from "@/components/ui/button";
-import { type CopyButtonProps, useCopy } from "@/components/ui/copy-button-base";
-import { Check, Copy } from "@/components/ui/icons";
+import type { CopyButtonProps } from "@/components/ui/copy-button-base";
+import { CopyButtonView } from "@/components/ui/copy-button-view";
 
 export type { CopyButtonProps };
 
@@ -37,26 +36,6 @@ async function write(text: string) {
   }
 }
 
-export function CopyButton({
-  value,
-  label = "Copy",
-  variant = "outline",
-  size = "icon-sm",
-  onCopied,
-  onError,
-  className,
-}: CopyButtonProps) {
-  const { copied, copy } = useCopy(write, { value, onCopied, onError });
-
-  return (
-    <Button
-      data-slot="copy-button"
-      variant={variant}
-      size={size}
-      aria-label={copied ? "Copied" : label}
-      className={className}
-      onPress={() => void copy()}
-      iconSlot={copied ? <Check aria-hidden /> : <Copy aria-hidden />}
-    />
-  );
+export function CopyButton(props: CopyButtonProps) {
+  return <CopyButtonView write={write} {...props} />;
 }
