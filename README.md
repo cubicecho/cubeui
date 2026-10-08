@@ -724,7 +724,8 @@ react-native-web anywhere in the output. **Every file has a web half — 35 gene
 hand-written** (16 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
 from `registry.json` and `registry.web-only.json` in the same run, publishes **all 78 items**, plus
 the 8 story items. `scripts/rn2web/` is about 2100 lines, of which
-`tables.mjs` is all of the judgement and `compile.mjs` is the ts-morph that applies it.
+`tables.mjs` is all of the judgement and `compile.mjs`, with one module per pass in `passes/`, is the
+ts-morph that applies it.
 
 The stories from Stage 0 now render the **generated** files rather than hand-compiled stand-ins, so
 the spike's assertions became the compiler's regression test without anything being rewritten.
