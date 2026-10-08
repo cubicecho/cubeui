@@ -42,7 +42,7 @@ with them.
 | D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | partly done |
 | R10 | Refactor [simplify] | Splits `scripts/rn2web/compile.mjs` (1,026 lines) into one module per pass, along the five numbered divider comments it already has, and removes the 15 dividers. | P5: a file that needs dividers is doing several jobs. It is the third most-changed code file. | — | done |
 | A1 | API change | Moves the registry's seven timing and threshold constants (`COPIED_MS`, `SEARCH_DEBOUNCE_MS`, `VISIBLE_MS`, `SPRING_OPEN_MS`, `SPIN_DURATION`, `PULSE_DURATION`, the accent lightness bounds) into one defaults module. Every item that reads one gains a file dependency. | P22: one place answers "what can be tuned". | — | open |
-| A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — | open |
+| A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — |done |
 | R11 | Refactor [sweep] · low value | Names the 191 conditions in the registry that test a comparison or an `&&`/`||` inline, where they do not already read as English. (unverified: the count includes ones that do) | P1. Large diff across files apps diff on update. | — | open |
 | T1 | Test [readability] · low value | Replaces the 297 type assertions in stories (50 in `as-child-trigger.stories.tsx`) with typed queries or a small helper. | P17, in test code. | — | open |
 
@@ -211,6 +211,9 @@ helper's doc block now says so; the code is unchanged.
 ### A2 — units in `SPIN_DURATION` and `PULSE_DURATION`
 
 `registry/ui/spinner-base.ts:20`, `registry/ui/skeleton-base.ts:13`.
+
+**Done:** now `SPIN_DURATION_MS` and `PULSE_DURATION_MS`. No story, script or skill page named
+either, so only an app that imported one has anything to change.
 
 ---
 
