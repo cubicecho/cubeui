@@ -27,6 +27,7 @@ import {
 import { Check, ChevronsUpDown, Plus, X } from "./icons";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
+/** One choice in a `MultiSelect`. */
 export type MultiSelectOption = {
   value: string;
   /** What is read, searched and shown on the chip. A string, because all three need one. */

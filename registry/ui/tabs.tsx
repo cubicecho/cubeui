@@ -34,6 +34,7 @@ type TabsState = { value: string; setValue: (value: string) => void };
 
 const TabsContext = createContext<TabsState>({ value: "", setValue: () => {} });
 
+/** The root of a set of tabs: it holds which one is active. */
 function Tabs({ value: controlled, onValueChange, defaultValue, className, children }: TabsProps) {
   const [uncontrolled, setUncontrolled] = useState(defaultValue ?? "");
   const value = controlled ?? uncontrolled;
@@ -56,6 +57,7 @@ type Span = { x: number; width: number };
 /** How a trigger tells its list where the selected tab is, so the list can bring it into view. */
 const TabsListContext = createContext<(tab: Span) => void>(() => {});
 
+/** The row of tab buttons. */
 function TabsList({
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
@@ -152,6 +154,7 @@ function label(children: ReactNode, className: string): ReactNode[] {
   return parts;
 }
 
+/** One tab's button, which shows the pane with the same `value`. */
 function TabsTrigger({
   value,
   disabled = false,
@@ -206,6 +209,7 @@ function TabsTrigger({
   );
 }
 
+/** One tab's pane, rendered while its tab is active. */
 function TabsContent({ value, className, children }: TabsContentProps) {
   const tabs = useContext(TabsContext);
   if (tabs.value !== value) {

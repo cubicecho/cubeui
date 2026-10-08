@@ -142,6 +142,7 @@ const CommandContext = createContext<CommandState>({
 
 const CommandGroupContext = createContext<string | undefined>(undefined);
 
+/** The root of a filtered list: it holds the search text and decides which items match. */
 function Command({
   label,
   filter = matchesEveryWord,
@@ -160,6 +161,7 @@ function Command({
   );
 }
 
+/** A `Command` inside a dialog: a command palette. */
 function CommandDialog({
   title = COMMAND_DIALOG_TITLE,
   description = COMMAND_DIALOG_DESCRIPTION,
@@ -187,6 +189,7 @@ function CommandDialog({
   );
 }
 
+/** The search box that filters the list. */
 function CommandInput({
   value,
   onValueChange,
@@ -227,6 +230,7 @@ function CommandInput({
   );
 }
 
+/** The scrolling list of groups and items. */
 function CommandList({ label = COMMAND_LIST_LABEL, className, children }: CommandListProps) {
   return (
     <ScrollView
@@ -244,6 +248,7 @@ function CommandList({ label = COMMAND_LIST_LABEL, className, children }: Comman
   );
 }
 
+/** What is shown when no item matches the search. */
 function CommandEmpty({ className, children }: CommandEmptyProps) {
   const { store } = useContext(CommandContext);
   const matching = useSyncExternalStore(store.subscribe, store.matching, store.matching);
@@ -261,6 +266,7 @@ function CommandEmpty({ className, children }: CommandEmptyProps) {
   );
 }
 
+/** A set of items under a heading, hidden when none of them matches. */
 function CommandGroup({ heading, forceMount = false, className, children }: CommandGroupProps) {
   const { store } = useContext(CommandContext);
   const id = useId();
@@ -289,6 +295,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
   );
 }
 
+/** A rule between groups. */
 function CommandSeparator({ alwaysRender = false, className }: CommandSeparatorProps) {
   const { search } = useContext(CommandContext);
   if (search !== "" && alwaysRender === false) {
@@ -297,6 +304,7 @@ function CommandSeparator({ alwaysRender = false, className }: CommandSeparatorP
   return <View aria-hidden className={cn("-mx-1 h-px bg-foreground/10", className)} />;
 }
 
+/** One row that can be chosen, filtered by its `value` and its text. */
 function CommandItem({
   value,
   keywords,
@@ -360,6 +368,7 @@ function CommandItem({
   );
 }
 
+/** The keyboard shortcut shown at the far end of an item. */
 function CommandShortcut({ className, children }: CommandShortcutProps) {
   return (
     <Text className={cn("ml-auto text-xs tracking-widest text-foreground/60", className)}>

@@ -41,6 +41,7 @@ import type { TextareaProps } from "@/components/ui/textarea-base";
 import { messageOf } from "@/lib/error-message";
 import { cn, type SlotNode } from "@/lib/utils";
 
+/** TanStack Form's contexts, which the bound fields read their field and form from. */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 
@@ -174,11 +175,13 @@ function FieldControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
   );
 }
 
+/** The field's help text, carrying the id the control's `aria-describedby` points at. */
 function FieldDescription({ ...props }: React.ComponentProps<typeof FieldDescriptionPrimitive>) {
   const { descriptionId } = useFieldComponentContext();
   return <FieldDescriptionPrimitive id={descriptionId} {...props} />;
 }
 
+/** The field's error message, drawn only while there is one. */
 function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitive>) {
   const { error, messageId } = useFieldComponentContext();
   if (!error) {
@@ -457,6 +460,7 @@ function SelectControl({ options, placeholder, disabled, ...wired }: SelectContr
   );
 }
 
+/** A select bound to a form field holding one of the options' values. */
 function SelectField(props: SelectFieldProps) {
   const [fieldProps, control] = splitProps(props);
   return <FieldWrapper {...fieldProps} controlSlot={<SelectControl {...control} />} />;

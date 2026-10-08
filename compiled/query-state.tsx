@@ -79,6 +79,7 @@ const settles = (value: unknown): value is PromiseLike<unknown> =>
   value !== null &&
   typeof (value as { then?: unknown }).then === "function";
 
+/** Draws a query's error, loading or empty state, and `contentSlot` once there are rows. */
 export function QueryState({
   query,
   what,

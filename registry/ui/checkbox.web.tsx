@@ -35,6 +35,7 @@ export type CheckboxProps = Omit<
   accessibilityLabel?: string | undefined;
 };
 
+/** A box that is checked, unchecked or indeterminate. */
 function Checkbox({
   className,
   accessibilityLabel,

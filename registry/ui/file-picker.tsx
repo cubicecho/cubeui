@@ -28,6 +28,7 @@ import { Upload } from "@/components/ui/icons";
 
 const UNAVAILABLE = "Picking a file is only available on the web app.";
 
+/** The device's stand-in for the drop zone: it says picking a file is only available on the web. */
 export function FilePicker({ label }: FilePickerProps) {
   return (
     <View className="w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-foreground/15 px-6 py-12">
@@ -38,6 +39,7 @@ export function FilePicker({ label }: FilePickerProps) {
   );
 }
 
+/** The device's stand-in for the picker button: drawn and named, and disabled. */
 export function FilePickerButton({
   label,
   iconSlot = <Upload />,

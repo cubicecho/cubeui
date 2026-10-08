@@ -24,6 +24,7 @@ import {
 import { Search } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
+/** The root of a filtered list: it holds the search text and decides which items match. */
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {
   return (
     <CommandPrimitive
@@ -37,6 +38,7 @@ function Command({ className, ...props }: React.ComponentProps<typeof CommandPri
   );
 }
 
+/** A `Command` inside a dialog: a command palette. */
 function CommandDialog({
   title = COMMAND_DIALOG_TITLE,
   description = COMMAND_DIALOG_DESCRIPTION,
@@ -68,6 +70,7 @@ function CommandDialog({
   );
 }
 
+/** The search box that filters the list. */
 function CommandInput({
   className,
   ...props
@@ -87,6 +90,7 @@ function CommandInput({
   );
 }
 
+/** The scrolling list of groups and items. */
 function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
   return (
     <CommandPrimitive.List
@@ -97,6 +101,7 @@ function CommandList({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
+/** What is shown when no item matches the search. */
 function CommandEmpty({ ...props }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
   return (
     <CommandPrimitive.Empty
@@ -107,6 +112,7 @@ function CommandEmpty({ ...props }: React.ComponentProps<typeof CommandPrimitive
   );
 }
 
+/** A set of items under a heading, hidden when none of them matches. */
 function CommandGroup({
   className,
   ...props
@@ -123,6 +129,7 @@ function CommandGroup({
   );
 }
 
+/** A rule between groups. */
 function CommandSeparator({
   className,
   ...props
@@ -139,6 +146,7 @@ function CommandSeparator({
   );
 }
 
+/** One row that can be chosen, filtered by its `value` and its text. */
 function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
@@ -152,6 +160,7 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   );
 }
 
+/** The keyboard shortcut shown at the far end of an item. */
 function CommandShortcut({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span

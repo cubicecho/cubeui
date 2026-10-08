@@ -69,6 +69,7 @@ type ActionButtonProps = Omit<ComponentProps<typeof Button>, "aria-label"> & {
   "aria-describedby"?: string | undefined;
 };
 
+/** A named button with a tooltip, whose `hint` can still be read while it is disabled. */
 export function ActionButton({
   label,
   hint,

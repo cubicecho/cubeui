@@ -53,6 +53,7 @@ export async function downloadUrl(url: string, filename: string): Promise<void> 
   link.remove();
 }
 
+/** An icon button that saves a file, and shows that it is waiting while the file is fetched. */
 export function DownloadButton({
   source,
   href,

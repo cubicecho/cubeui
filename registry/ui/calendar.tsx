@@ -127,6 +127,7 @@ function nextRange(day: Date, current: DateRange | undefined): DateRange {
   return { from: current.from, to: day };
 }
 
+/** A month grid for picking one day or a range of days. */
 export function Calendar(props: CalendarProps) {
   const {
     disabled,

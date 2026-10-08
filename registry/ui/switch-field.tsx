@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/switch-field-base";
 import { cn } from "@/lib/utils";
 
+/** A switch with its caption on one row, where pressing the caption toggles it. */
 export function SwitchField({
   id,
   label,

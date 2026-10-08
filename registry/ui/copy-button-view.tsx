@@ -13,6 +13,7 @@ type CopyButtonViewProps = CopyButtonProps & {
   write: (text: string) => Promise<void>;
 };
 
+/** The copy button, taking the platform's clipboard as `write`. */
 export function CopyButtonView({
   write,
   value,

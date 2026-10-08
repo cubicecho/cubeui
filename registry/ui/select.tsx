@@ -48,6 +48,7 @@ const SelectContext = createContext<SelectState>({
   setOpen: () => {},
 });
 
+/** The root of a select: it holds the chosen value and the open state. */
 function Select({
   value: valueProp,
   defaultValue = "",
@@ -82,6 +83,7 @@ function Select({
   );
 }
 
+/** The button that shows the chosen value and opens the options. */
 function SelectTrigger({ className, onBlur, disabled, children, ...aria }: SelectTriggerProps) {
   const select = useContext(SelectContext);
   const isDisabled = disabled ?? select.disabled;
@@ -121,6 +123,7 @@ function SelectValue({ placeholder, children }: SelectValueProps) {
   );
 }
 
+/** The list of options. */
 function SelectContent({ className, children }: SelectContentProps) {
   const { open, setOpen } = useContext(SelectContext);
   return (
@@ -146,6 +149,7 @@ function SelectContent({ className, children }: SelectContentProps) {
   );
 }
 
+/** One option. */
 function SelectItem({ value, disabled = false, className, children }: SelectItemProps) {
   const select = useContext(SelectContext);
   const selected = select.value === value;
@@ -188,10 +192,12 @@ function SelectGroup({ children }: SelectGroupProps) {
   return <View role="group">{children}</View>;
 }
 
+/** The heading over a group of options. */
 function SelectLabel({ className, children }: SelectLabelProps) {
   return <Text className={cn(SELECT_LABEL_CLASS, className)}>{children}</Text>;
 }
 
+/** A rule between groups of options. */
 function SelectSeparator({ className }: SelectSeparatorProps) {
   return <View role="separator" className={cn(SELECT_SEPARATOR_CLASS, className)} />;
 }

@@ -51,6 +51,7 @@ function TooltipProvider({ children }: TooltipProviderProps) {
   return children;
 }
 
+/** The root of a tooltip: it holds the open state. */
 function Tooltip({ children }: TooltipProps) {
   const [open, setOpen] = useState(false);
   return (
@@ -60,6 +61,7 @@ function Tooltip({ children }: TooltipProps) {
   );
 }
 
+/** The element the tooltip describes: hovered or focused on the web, long-pressed on device. */
 function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
   const { setOpen } = useContext(TooltipContext);
   const show = () => setOpen(true);
@@ -78,6 +80,7 @@ function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
 /** How long the bubble stays up before dismissing itself. */
 const VISIBLE_MS = 2500;
 
+/** The tooltip's bubble and its text. */
 function TooltipContent({ side = "top", className, children }: TooltipContentProps) {
   const { open, setOpen } = useContext(TooltipContext);
 

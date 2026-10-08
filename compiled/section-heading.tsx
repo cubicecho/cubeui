@@ -28,7 +28,7 @@ type SectionHeadingProps = {
   children: ReactNode;
 };
 
-// A small muted heading above a section of content.
+/** A small muted heading above a section of content. */
 export function SectionHeading({
   variant = "default",
   level,

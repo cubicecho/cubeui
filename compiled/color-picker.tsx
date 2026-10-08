@@ -160,6 +160,7 @@ type ColorPickerProps = {
   "aria-required"?: boolean | "true" | "false" | undefined;
 };
 
+/** A row of swatches and a hex field for choosing a colour. */
 export function ColorPicker({
   value,
   onChange,

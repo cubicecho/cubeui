@@ -19,6 +19,12 @@ export const THEME_PREFERENCES: readonly ThemePreference[] = ["light", "dark", "
  */
 export const THEME_STORAGE_KEY = "cubeui-theme";
 
+/**
+ * Whether a stored value is one of the three theme preferences.
+ *
+ * @param value - What was read back from storage.
+ * @returns Whether it is `light`, `dark` or `system`.
+ */
 export function isThemePreference(value: unknown): value is ThemePreference {
   return value === "light" || value === "dark" || value === "system";
 }
@@ -54,6 +60,12 @@ export const PALETTE_STORAGE_KEY = "cubeui-palette";
  */
 export const DARK_ONLY_PALETTES: readonly PalettePreference[] = ["monokai"];
 
+/**
+ * Whether a stored value names a palette this registry ships.
+ *
+ * @param value - What was read back from storage.
+ * @returns Whether it is one of `PALETTE_PREFERENCES`.
+ */
 export function isPalettePreference(value: unknown): value is PalettePreference {
   return PALETTE_PREFERENCES.includes(value as PalettePreference);
 }
@@ -85,6 +97,7 @@ export function legacyMigrations(
   ].filter((migration) => migration.from.length > 0);
 }
 
+/** What the theme and palette hooks are told about storage. */
 export type ThemePreferenceOptions = {
   /**
    * Device only: where the choice persists between launches. Without one, a choice lasts until

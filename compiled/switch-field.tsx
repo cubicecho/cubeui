@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "./label";
 import { Switch } from "./switch";
 
+/** A switch with its caption on one row, where pressing the caption toggles it. */
 export function SwitchField({
   id,
   label,

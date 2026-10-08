@@ -114,6 +114,7 @@ export async function downloadUrl(
   });
 }
 
+/** An icon button that saves a file, and shows that it is waiting while the file is fetched. */
 export function DownloadButton({
   source,
   href,

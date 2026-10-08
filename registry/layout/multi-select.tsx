@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { readableTextColor } from "@/lib/readable-text-color";
 import { cn } from "@/lib/utils";
 
+/** One choice in a `MultiSelect`. */
 export type MultiSelectOption = {
   value: string;
   /** What is read, searched and shown on the chip. A string, because all three need one. */

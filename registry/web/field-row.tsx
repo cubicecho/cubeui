@@ -69,6 +69,7 @@ function fieldsOf(content: ReactNode): Array<{ key: string; node: ReactNode }> {
   }));
 }
 
+/** A row of form fields that wraps a field to the next line rather than squeezing it. */
 export function FieldRow({ contentSlot, perRow = 2, className, cellClassName }: FieldRowProps) {
   return (
     <div data-slot="field-row" className={cn("flex flex-wrap gap-4", className)}>

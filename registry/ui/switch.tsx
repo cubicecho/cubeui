@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/switch-base";
 import { cn } from "@/lib/utils";
 
+/** A control that is on or off. */
 function Switch({
   checked: checkedProp,
   defaultChecked = false,

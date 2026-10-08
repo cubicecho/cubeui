@@ -36,6 +36,7 @@ export type PasswordInputProps = Omit<InputProps, "type" | "trailingSlot"> & {
   revealable?: boolean | undefined;
 };
 
+/** A password box with a button that shows and hides what was typed. */
 export function PasswordInput({
   showLabel = "Show password",
   hideLabel = "Hide password",

@@ -88,6 +88,7 @@ function rawMessage(error: unknown): string | undefined {
   return undefined;
 }
 
+/** The whole-screen message shown when the tree below a route has thrown. */
 export function RouteError({
   error,
   reset,

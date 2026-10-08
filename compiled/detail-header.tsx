@@ -57,6 +57,10 @@ type DetailHeaderProps = {
   actionsSlot?: SlotNode;
 };
 
+/**
+ * The header row of a detail view: back button, optional colour dot, title, badge, subtitle and
+ * actions.
+ */
 export function DetailHeader({
   onBack,
   backLabel,

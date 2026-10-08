@@ -101,6 +101,7 @@ type RadioGroupProps = {
   "aria-required"?: boolean | undefined;
 };
 
+/** A set of options of which one is chosen, with one tab stop and arrow keys. */
 function RadioGroup({
   value: valueProp,
   defaultValue,
@@ -284,6 +285,7 @@ type RadioGroupItemProps = {
   "aria-describedby"?: string | undefined;
 };
 
+/** One option in a `RadioGroup`. */
 function RadioGroupItem({
   value,
   label,

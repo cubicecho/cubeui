@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "./select";
 
+/** One choice in an `OptionSelect`. */
 export type SelectOption = {
   label: ReactNode;
   value: string;

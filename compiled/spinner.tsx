@@ -28,6 +28,7 @@ import { LoaderCircle } from "./icons";
 
 export type { SpinnerProps };
 
+/** A turning glyph that says something is loading. */
 export function Spinner({ label = "Loading", className }: SpinnerProps) {
   return (
     <LoaderCircle

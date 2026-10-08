@@ -75,6 +75,9 @@ const PRESSABLE =
  */
 const SLOT = "block";
 
+/**
+ * One number on a card: a label, the figure and a hint, pressable as a filter when given `onPress`.
+ */
 export function StatTile({
   label,
   value,

@@ -29,6 +29,7 @@ const VIEWS = [
   { value: "preview", label: "Preview" },
 ] as const;
 
+/** Which panes the editor shows: the source, the preview, or both. */
 export type MarkdownEditorView = (typeof VIEWS)[number]["value"];
 
 const isView = (value: string): value is MarkdownEditorView =>

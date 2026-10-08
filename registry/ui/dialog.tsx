@@ -57,6 +57,7 @@ const DialogEscapeContext = createContext<{ current: ((event: Event) => void) | 
  */
 const DialogCloseContext = createContext<() => void>(() => {});
 
+/** The root of a dialog: it holds the open state. */
 function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogProps) {
   // Uncontrolled state kept unconditionally — hooks cannot be conditional — and read only when
   // the caller passed no `open`, the same arrangement as `popover.tsx`.
@@ -157,6 +158,7 @@ function DialogOverlay({ className }: DialogOverlayProps) {
   return <View pointerEvents="none" className={cn("absolute inset-0 bg-overlay/60", className)} />;
 }
 
+/** The dialog's card. */
 function DialogContent({
   className,
   showCloseButton = true,
@@ -219,10 +221,12 @@ function DialogContent({
 // `space-y-*` and `space-x-*` are child-combinator utilities nativewind does
 // not implement; `gap` is the cross-platform equivalent and behaves the same
 // for these two rows.
+/** The block holding the title and the description. */
 function DialogHeader({ className, children }: DialogSectionProps) {
   return <View className={cn("gap-1.5", className)}>{children}</View>;
 }
 
+/** The row of buttons at the bottom of the dialog. */
 function DialogFooter({ className, showCloseButton = false, children }: DialogFooterProps) {
   return (
     <View className={cn("flex-row justify-end gap-2", className)}>
@@ -236,6 +240,7 @@ function DialogFooter({ className, showCloseButton = false, children }: DialogFo
   );
 }
 
+/** The dialog's title, and its accessible name. */
 function DialogTitle({ className, children }: DialogSectionProps) {
   return (
     <Text
@@ -249,6 +254,7 @@ function DialogTitle({ className, children }: DialogSectionProps) {
   );
 }
 
+/** The sentence under the title, read as the dialog's description. */
 function DialogDescription({ className, children }: DialogSectionProps) {
   return <Text className={cn("text-sm text-foreground/60", className)}>{children}</Text>;
 }

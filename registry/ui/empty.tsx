@@ -22,6 +22,7 @@ type TextProps = Omit<React.ComponentProps<typeof Text>, "className"> & {
   className?: string | undefined;
 };
 
+/** The root of an empty state: a centred column. */
 const Empty = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
   ({ className, ...props }, ref) => (
     <View
@@ -37,6 +38,7 @@ const Empty = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
 );
 Empty.displayName = "Empty";
 
+/** The block holding the media, the title and the description. */
 const EmptyHeader = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
   ({ className, ...props }, ref) => (
     <View ref={ref} testID="empty-header" className={cn("items-center", className)} {...props} />
@@ -44,6 +46,7 @@ const EmptyHeader = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
 );
 EmptyHeader.displayName = "EmptyHeader";
 
+/** How `EmptyMedia` is drawn: as given, or as an icon in a muted bubble. */
 export type EmptyMediaVariant = "default" | "icon";
 
 /** `icon` is the muted bubble `EmptyState` draws; `default` is a bare box for an avatar or image. */
@@ -57,6 +60,7 @@ type EmptyMediaProps = ViewProps & {
   variant?: EmptyMediaVariant | null | undefined;
 };
 
+/** The icon or image above the title. */
 const EmptyMedia = React.forwardRef<React.ElementRef<typeof View>, EmptyMediaProps>(
   ({ className, variant, children, ...props }, ref) => {
     const box = cn(
@@ -82,6 +86,7 @@ const EmptyMedia = React.forwardRef<React.ElementRef<typeof View>, EmptyMediaPro
 );
 EmptyMedia.displayName = "EmptyMedia";
 
+/** What is missing, in a few words. */
 const EmptyTitle = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
   ({ className, ...props }, ref) => (
     <Text
@@ -94,6 +99,7 @@ const EmptyTitle = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
 );
 EmptyTitle.displayName = "EmptyTitle";
 
+/** The muted line under the title, saying what to do about it. */
 const EmptyDescription = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
   ({ className, ...props }, ref) => (
     <Text

@@ -31,6 +31,7 @@ const REMOVE_HIT_SLOP = { top: 8, bottom: 8, left: 6, right: 8 } as const;
 
 export type { BadgeProps, BadgeVariant };
 
+/** A small pill naming a kind or a state, or a dot of the same colour when it has no children. */
 export function Badge({
   variant = "default",
   backgroundColor,
