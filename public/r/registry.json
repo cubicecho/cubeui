@@ -85,6 +85,19 @@
       ]
     },
     {
+      "name": "form-binding",
+      "type": "registry:lib",
+      "title": "Form binding",
+      "description": "The types a control bound to a TanStack form field takes — the form, a checked field name, validators and listeners — and the one loosely typed view of `form.Field` that renders it. What the form items and RadioGroupField bind through.",
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
+      "files": [
+        {
+          "path": "registry/lib/form-binding.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -469,6 +482,7 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/field",
         "@cubeui/radio-group",
         "@cubeui/tokens"
@@ -1005,6 +1019,7 @@
         "@cubeui/button",
         "@cubeui/checkbox",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/field",
         "@cubeui/form-element",
         "@cubeui/input",
@@ -1421,6 +1436,7 @@
         "@cubeui/button",
         "@cubeui/checkbox",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/form-field",
         "@cubeui/input",
         "@cubeui/option-select",

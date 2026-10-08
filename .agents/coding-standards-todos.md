@@ -32,8 +32,8 @@ with them.
 | R3 | Refactor [sweep] | Rewrites the `!` on logic checks the plugin cannot see in the registry because the name has no `is`/`has` prefix (`!open`, `!disabled`, `!checked`, `!ok`): about 45 hits in about 30 files. | Finishes P20 in the files apps vendor; #286 only did what the plugin reports. | — | done |
 | R4 | Refactor [reuse] | Merges the three identical `messageOf(error)` helpers (native form, web form, radio group field) into one shared module. | Three copies of "what text does a validator's error show" that must change together. | B1 | done |
 | B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — |done |
-| R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — | open |
-| R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
+| R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — |done |
+| R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — |done |
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | done |
 | R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | done |
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
@@ -45,6 +45,9 @@ with them.
 | A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — |done |
 | R11 | Refactor [sweep] · low value | Names the 191 conditions in the registry that test a comparison or an `&&`/`||` inline, where they do not already read as English. (unverified: the count includes ones that do) | P1. Large diff across files apps diff on update. | — | open |
 | T1 | Test [readability] · low value | Replaces the 297 type assertions in stories (50 in `as-child-trigger.stories.tsx`) with typed queries or a small helper. | P17, in test code. | — | open |
+| R12 | Refactor [sweep] | Rewrites the `!` on a plain identifier that the lint plugin cannot see in `scripts/` (`if (!classes)` in `passes/elements.mjs` is one). (unverified count) | Finishes P20 in scripts, as R3 did in the registry. | — | open |
+| R13 | Refactor [simplify] | Splits `transformElement` in `scripts/rn2web/passes/elements.mjs`, which is most of that file's 559 lines. | The pass R10 left largest. | — | open |
+| B2 | Question | The story run logs `Unknown event handler property onPress`: some story or component hands `onPress` to a DOM element. Which one is not traced. | A press handler that the web silently drops. | — | open |
 
 ## Conventions
 
@@ -102,10 +105,19 @@ branch runs is a `B` item.
 `asyncDebounceMs` and `listeners`. Target: `FormBinding` exported from the form item and
 intersected. (unverified)
 
+**Done:** the types live in a new lib item, `form-binding`, which the native `form`, the web
+`app-form` and `radio-group-field` all depend on. The three had already drifted: the web's
+listeners took `onChangeDebounceMs` and `onBlurDebounceMs` and the other two did not. All three
+take the web's shape now.
+
 ### R6 [reuse] — one `FormBoundField`
 
 **File:** `registry/ui/form.tsx:755-781`, `registry/web/app-form.tsx:613-639`. Target: the
 wrapper in one module both read. (unverified)
+
+**Done, more narrowly:** the cast of `form.Field` is `fieldOf(form)` in `form-binding`, read by
+all three files. The fifteen lines of render prop round it stay in each, because each provides
+its own `fieldContext` and the web's props type differs.
 
 ### R7 [reuse] — one `CopyButton` component
 

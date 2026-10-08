@@ -18,7 +18,7 @@
  * `Pressable` is not a submit control. The date and colour fields are items of their own, and
  * `createAppForm` puts them on `field.*` beside these.
  */
-import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
+import type { DeepKeys } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import { Slot } from "radix-ui";
 import type { ComponentType, ReactNode } from "react";
@@ -27,6 +27,13 @@ import type { FormElementProps } from "@/components/ui/form-element-base";
 import type { InputProps } from "@/components/ui/input-base";
 import type { TextareaProps } from "@/components/ui/textarea-base";
 import { messageOf } from "@/lib/error-message";
+import {
+  type BindableForm,
+  type FormBinding,
+  fieldOf,
+  type NamesOfType,
+  type ValuesOf,
+} from "@/lib/form-binding";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { Checkbox } from "./checkbox";
@@ -643,66 +650,6 @@ function createAppForm<TFields extends Record<string, ComponentType<any>>>(field
 const { useAppForm, withForm } = createAppForm({});
 
 /**
- * What a bound field needs off a form, and nothing else — structural, so `bindToForm` works with
- * a plain `useForm` as well as with `useAppForm`.
- */
-type BindableForm = {
-  state: { values: unknown };
-  // Not `=> ReactNode`: TanStack types `Field` as a function component that may return a promise.
-  Field: (props: never) => ReactNode | Promise<ReactNode>;
-};
-
-type ValuesOf<TForm extends BindableForm> = TForm extends { state: { values: infer TValues } }
-  ? TValues
-  : never;
-
-type Validate<TValue> = (context: {
-  value: TValue;
-  fieldApi: AnyFieldApi;
-  signal: AbortSignal;
-}) => unknown;
-
-type Listen<TValue> = (context: { value: TValue; fieldApi: AnyFieldApi }) => void;
-
-/** The names of the fields holding a `TValue`, `null` allowed. See the web `app-form`. */
-type NamesOfType<TValues, TValue> = {
-  [TName in DeepKeys<TValues>]: NonNullable<DeepValue<TValues, TName>> extends TValue
-    ? TName
-    : never;
-}[DeepKeys<TValues>] &
-  DeepKeys<TValues>;
-
-type FormBinding<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>> = {
-  form: TForm;
-  /** A key of the form's values. Checked: `naem` is a type error, not a field that stays empty. */
-  name: TName;
-  validators?:
-    | Partial<
-        Record<
-          | "onMount"
-          | "onChange"
-          | "onChangeAsync"
-          | "onBlur"
-          | "onBlurAsync"
-          | "onSubmit"
-          | "onSubmitAsync",
-          Validate<DeepValue<ValuesOf<TForm>, TName>>
-        >
-      >
-    | undefined;
-  /** How long to wait before running the async validators, in milliseconds. */
-  asyncDebounceMs?: number | undefined;
-  listeners?:
-    | Partial<
-        Record<
-          "onMount" | "onUnmount" | "onChange" | "onBlur" | "onSubmit",
-          Listen<DeepValue<ValuesOf<TForm>, TName>>
-        >
-      >
-    | undefined;
-};
-
-/**
  * Writes the render prop once: a field component as one line, over a form and a name. The web
  * `app-form`'s, under the same name.
  *
@@ -728,15 +675,7 @@ function bindToForm<TProps extends object, TValue = unknown>(
     listeners,
     ...rest
   }: TProps & FormBinding<TForm, TName>) {
-    // The generic `Field` cannot be described without repeating the twenty-odd type parameters
-    // already correct on `form`. The cast is here, once, and `name` above is what it protects.
-    const Subscribe = form.Field as ComponentType<{
-      name: unknown;
-      validators?: unknown | undefined;
-      asyncDebounceMs?: number | undefined;
-      listeners?: unknown | undefined;
-      children: (field: AnyFieldApi) => ReactNode;
-    }>;
+    const Subscribe = fieldOf(form);
     return (
       <Subscribe
         name={name}

@@ -12,6 +12,7 @@
         "@cubeui/button",
         "@cubeui/checkbox",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/form-field",
         "@cubeui/input",
         "@cubeui/option-select",

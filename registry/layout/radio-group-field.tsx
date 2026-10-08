@@ -1,11 +1,18 @@
-import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
+import type { AnyFieldApi, DeepKeys } from "@tanstack/react-form";
 import { useStore } from "@tanstack/react-form";
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import * as React from "react";
 import { Text, View } from "react-native";
 import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { messageOf } from "@/lib/error-message";
+import {
+  type BindableForm,
+  type FormBinding,
+  fieldOf,
+  type NamesOfType,
+  type ValuesOf,
+} from "@/lib/form-binding";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** One choice. `description` is the line under it — what picking this one means. */
@@ -20,64 +27,10 @@ export type RadioOption = {
   disabled?: boolean | undefined;
 };
 
-/**
- * What the field needs off a form, and nothing else — structural, so a plain `useForm` binds as
- * well as the web registry's `useAppForm` does.
- */
-type BindableForm = {
-  state: { values: unknown };
-  // Not `=> ReactNode`: TanStack types `Field` as a function component that may return a promise.
-  Field: (props: never) => ReactNode | Promise<ReactNode>;
-};
-
-type ValuesOf<TForm extends BindableForm> = TForm extends { state: { values: infer TValues } }
-  ? TValues
-  : never;
-
-/** The fields of `TValues` holding a string — the only ones a radio group can write. */
-type StringNames<TValues> = {
-  [TName in DeepKeys<TValues>]: NonNullable<DeepValue<TValues, TName>> extends string
-    ? TName
-    : never;
-}[DeepKeys<TValues>] &
-  DeepKeys<TValues>;
-
-type Validate<TValue> = (context: {
-  value: TValue;
-  fieldApi: AnyFieldApi;
-  signal: AbortSignal;
-}) => unknown;
-type Listen<TValue> = (context: { value: TValue; fieldApi: AnyFieldApi }) => void;
-
-type RadioGroupFieldProps<TForm extends BindableForm, TName extends DeepKeys<ValuesOf<TForm>>> = {
-  form: TForm;
-  /** A string field of the form's values. Checked: `naem` is a type error, not an empty field. */
-  name: TName;
-  validators?:
-    | Partial<
-        Record<
-          | "onMount"
-          | "onChange"
-          | "onChangeAsync"
-          | "onBlur"
-          | "onBlurAsync"
-          | "onSubmit"
-          | "onSubmitAsync",
-          Validate<DeepValue<ValuesOf<TForm>, TName>>
-        >
-      >
-    | undefined;
-  /** How long to wait before running the async validators, in milliseconds. */
-  asyncDebounceMs?: number | undefined;
-  listeners?:
-    | Partial<
-        Record<
-          "onMount" | "onUnmount" | "onChange" | "onBlur" | "onSubmit",
-          Listen<DeepValue<ValuesOf<TForm>, TName>>
-        >
-      >
-    | undefined;
-
+type RadioGroupFieldProps<
+  TForm extends BindableForm,
+  TName extends DeepKeys<ValuesOf<TForm>>,
+> = FormBinding<TForm, TName> & {
   options: readonly RadioOption[];
   /** The group's name, drawn as a title and pointed at by `aria-labelledby`. */
   label?: ReactNode | undefined;
@@ -245,7 +198,7 @@ function RadioGroupFieldBody({
  */
 export function RadioGroupField<
   TForm extends BindableForm,
-  TName extends StringNames<ValuesOf<TForm>>,
+  TName extends NamesOfType<ValuesOf<TForm>, string>,
 >({
   form,
   name,
@@ -254,15 +207,7 @@ export function RadioGroupField<
   listeners,
   ...body
 }: RadioGroupFieldProps<TForm, TName>) {
-  // The generic `Field` cannot be described without repeating the twenty-odd type parameters
-  // already correct on `form`. The cast is here, once, and `name` above is what it protects.
-  const Subscribe = form.Field as ComponentType<{
-    name: unknown;
-    validators?: unknown | undefined;
-    asyncDebounceMs?: number | undefined;
-    listeners?: unknown | undefined;
-    children: (field: AnyFieldApi) => ReactNode;
-  }>;
+  const Subscribe = fieldOf(form);
 
   return (
     <Subscribe
