@@ -204,51 +204,15 @@ type FormFieldProps = {
 };
 
 /**
- * One form field: the label, the control it names, a description, and the error.
+ * One form field: the label, the control it names, a description, and the error. It composes
+ * shadcn's `Field` parts and adds the wiring: a generated id, the label pointed at the control,
+ * and an `aria-describedby` reaching whichever of the description and the error is on screen.
  *
- * The spacing, the typography and the two arrangements are shadcn's `Field` — this composes
- * `Field`, `FieldLabel`, `FieldContent`, `FieldDescription` and `FieldError` rather than drawing
- * a second set of them, so a project that already styles `[data-slot=field-label]` styles this,
- * and the message rail here is the one shadcn's own forms use.
- *
- * **What it adds is the wiring, which is the part that was actually duplicated.** `Field` places
- * a label and a control next to each other; it does not introduce them. The `htmlFor`/`id` pair
- * is still hand-assigned at every call site, and it drifts, or it is dropped once a placeholder
- * is standing in for the label; the error is still a node beside the input that nothing points
- * at, so a screen reader reaches the field, says "Email, edit text", and never mentions that it
- * was rejected; `aria-invalid` is set on some inputs and not others, which shows, because the
- * shadcn primitives draw their red ring from that attribute and from nothing else.
- *
- * So this shell generates an id, points the label at the control, and gives the control an
- * `aria-describedby` reaching whichever of the description and the error are on screen at the
- * time. It also adds the two things `Field` has no opinion about: a `loading` skeleton the height
- * of the control it stands in for, and a `required` marker that is decoration to the eye and
- * `aria-required` to everything else.
- *
- * **A description behind a popover is still a description.** `descriptionPlacement="popover"`
- * moves the sentence out of the layout and into a button beside the label, and the trap it walks
- * into is the one every hand-written help icon walks into: Radix unmounts popover content when it
- * closes, so a description that exists only inside the popover is text a sighted user can open
- * and a screen reader can never reach — the control announces its name and stops. So the text is
- * always rendered, into an `sr-only` span carrying `descriptionId`, and the popover holds a
- * visible copy. `aria-describedby` points at the same node in both placements, which is what
- * makes the choice purely a layout one.
- *
- * **A group of controls is still one field.** `asGroup` covers the controls that are not one
- * element — a radio group, a swatch grid, a segmented control. HTML will not let a `<label>` name
- * any of them, so the default wiring produces a `for` that resolves to nothing and does so
- * silently; on, the label becomes a `FieldTitle` and the group is named by `aria-labelledby`
- * instead. Nothing else about the field moves, which is the point: the same label row, the same
- * asterisk, the same description and error rail, and the same `error` node.
- *
- * It stays presentational, and that is load-bearing. Every project installing this runs TanStack
- * Form, but the binding belongs one layer up — `auto-cal`'s `InputField`, `TextAreaField` and
- * `SelectField` each read `useFieldContext()`, work out whether the field has been touched yet,
- * and hand this a string. Keeping that layer thin is only possible because this one takes `error`
- * as a node and never asks where it came from; a field that read the form store itself would have
- * to answer "touched or submitted?" for every call site at once, and that answer differs per
- * form. (`FieldError` also takes an `errors` array; this shell takes the node, because a node is
- * what the layer above already has.)
+ * `descriptionPlacement="popover"` still renders the text into an always-mounted `sr-only` span,
+ * because Radix unmounts popover content when it closes. `asGroup` is for a control that is not
+ * one element (a radio group, a swatch grid): the label becomes a `FieldTitle` and the group is
+ * named by `aria-labelledby`. The field takes `error` as a node and never reads a form store, so
+ * the binding to TanStack Form stays one layer up.
  */
 export function FormField({
   controlSlot,

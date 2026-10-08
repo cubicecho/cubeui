@@ -1,42 +1,12 @@
 /**
- * A small pill stating what something is or what state it is in — and, with no
- * label, the dot that stands for the same thing in a row too tight for words.
- * `badge.web.tsx` is the web counterpart and `badge-base.ts` holds the contract
- * and the class maps they share.
+ * A small pill stating what something is or what state it is in, and with no children the dot
+ * that stands for the same thing in a row too tight for words. `badge.web.tsx` is the web
+ * counterpart and `badge-base.ts` holds the contract and the class maps they share.
  *
- * This is the merge of two vocabularies. It keeps shadcn's variant names with
- * shadcn's meanings, so a DOM call site ports over unchanged and
- * `variant="secondary"` still means what it meant there. It adds `positive` and
- * `warning`, which the shadcn token set has no answer for at all: that set
- * carries exactly one semantic colour, `destructive`. The two additions are
- * tokens of cubeui's own, `positive` and `warning`, each with its `-foreground`,
- * so a palette can recolour them the way it recolours `destructive`.
- *
- * Their values are Tailwind's 700s and not the friendlier 500s or 600s because white
- * on `green-600` is 3.22:1 and white on `amber-500` is 2.13:1 — both short of
- * the 4.5:1 that 12px text needs, and both caught by the axe run behind
- * `stories/accessible-state.stories.tsx` rather than by eye. The 700s clear it
- * at 4.95 and 5.03, which puts them beside `destructive`'s own 4.77. Brightening
- * either one back is what that story exists to stop.
- *
- * **No children collapses the pill into a dot.** Same variant, same meaning,
- * no room needed — a list row that cannot spare the width for "Overdue" shows
- * the amber dot instead, and both come from one prop. This does not overlap
- * `color-dot`: that one takes a literal colour string for a category whose hue
- * is user-chosen data, and this one takes a semantic variant. Same pixels,
- * different input.
- *
- * Colour is split across the container and the `<Text>` for the usual reason:
- * native does not inherit it. So each string or number among the children is
- * wrapped in its own `<Text>` carrying the label class, and an element — an
- * icon — is rendered as it is. shadcn's `asChild` is web only; see `button.tsx`'s
- * header for why it goes the other way round on native.
- *
- * `onRemove` adds a trailing ✕ in its own `Pressable`, so a removable tag is not
- * a second pill the caller draws around this one. The ✕ is the badge's icon
- * size, which is shorter than the label's line, and `hitSlop` is what makes it
- * a reasonable target — padding would make the pill taller. Its colour is the
- * label's, resolved the same way: `textColor`, else the variant's ink.
+ * The variants are shadcn's, with shadcn's meanings, plus `positive` and `warning`, which are
+ * tokens of cubeui's own. Their fills are Tailwind's 700s because white text on a lighter shade is
+ * under 4.5:1. Each string child is wrapped in a `Text` carrying the label colour, since native
+ * does not inherit it. `onRemove` adds a trailing ✕ in its own `Pressable`.
  */
 import { Children } from "react";
 import { Pressable, Text, View } from "react-native";

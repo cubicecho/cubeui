@@ -9,53 +9,13 @@
  */
 
 /**
- * A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action —
- * "this key will not be shown again", "the embedder fell back to hashing", "the last run failed".
- * One source for both platforms; `rn2web` compiles it for the DOM.
+ * A callout: a tinted, bordered box with an icon, a title, a line under it and an optional action.
+ * The parts are props (`iconSlot`, `title`, `description`, `actionSlot`), and shadcn's compound
+ * form with `AlertTitle` and `AlertDescription` works too, so a DOM call site ports unchanged.
  *
- * It is here because nine projects drew it by hand, thirteen times, and no two agreed: an
- * `amber-500/50` border in one, `amber-200` in the next, `amber-400` in a third; `role="alert"`,
- * `role="status"`, `role="note"` or nothing; and the React Native copies needing `dark:` twins for
- * every colour because they tinted with the palette's 50s and 950s. None of them was shadcn's
- * `Alert`, so taking the name costs no call site anything.
- *
- * The parts are props, as everywhere in this registry: `iconSlot`, `title`, `description`,
- * `actionSlot`. A callout is one self-closing element whose props read as its parts.
- *
- * **shadcn's compound form works too**, so a DOM call site ports unchanged:
- * `<Alert><Terminal /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
- * Native has no `has-[>svg]` to find the icon among the children, so `Alert` sorts them itself:
- * an `AlertTitle` or `AlertDescription` goes into the text column, and anything else — the bare
- * icon shadcn puts first — into the icon's box, where it is sized and inked like `iconSlot`. Given
- * children, the variant's own glyph is not drawn; pass `iconSlot` beside them to have one anyway.
- * The variant reaches the two parts through a context, so `AlertDescription` takes its ink the way
- * `description` does.
- *
- * **The tint is the only thing the variant colours besides the icon.** The title and the line
- * under it are `text-foreground` on every tinted variant, because coloured text on a 10% tint of
- * the same colour is under 4.5:1 — `text-negative` on `bg-negative/10` is about 4.1, and the
- * muted grey the hand-written copies used under their titles is about 4.2 on the amber. The icon
- * carries the hue, and it is a graphic, so it needs 3:1 against the tint on both themes.
- * Only `default`, which sits on `bg-secondary`, keeps the muted line.
- *
- * `info` and `warning` are tokens of cubeui's own, since the shadcn token set has one semantic
- * colour, `destructive`. One shade gives the tint, the border and the icon, so it is one whose
- * icon clears 3:1 on its own tint: `amber-700` does in light and dark, and `info` is `sky-700` on
- * a light page and `sky-500` on a dark one, since it is also a fill that white text sits on.
- * `info` draws no glyph of its own. It is a colour, not a kind of message.
- *
- * **The role is chosen by the variant, and only `destructive` is an `alert`.** `role="alert"` is
- * an assertive live region: a screen reader interrupts whatever it is saying to read it, and some
- * read it on page load. That is right for "saving failed" and wrong for "store this token
- * securely", which is most of what a callout says. So `destructive` is `alert`, and `default`,
- * `info` and `warning` are `status` — polite: read when it appears or changes, after the reader
- * finishes the sentence it is on. shadcn puts `role="alert"` on every variant; the copies here
- * that did the same were the embedder banners, which are exactly the static notice it is too loud
- * for.
- *
- * Native inherits nothing, so every `Text` names its colour and the border names its own, and the
- * default icon's ink reaches it through `IconClassContext`. On the web the icon's size comes from
- * `[&_svg]` on its box and its colour from `currentColor`, the way `Button` does it.
+ * The variant colours only the tint, the border and the icon. The text stays `text-foreground`,
+ * because coloured text on a 10% tint of the same colour is under 4.5:1. Only `destructive` is
+ * `role="alert"`, which interrupts a screen reader; the other variants are `status`.
  */
 import { Children, createContext, isValidElement, type ReactNode, useContext } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";

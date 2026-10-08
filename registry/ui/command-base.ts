@@ -1,22 +1,12 @@
 /**
  * The contract `command.tsx` (native) and `command.web.tsx` (cmdk) both implement. Its own module
- * for the usual reason: Metro resolves `./command` to `command.web.tsx` on web, so the web file
- * cannot import shared types from `./command` without importing itself.
+ * because Metro resolves `./command` to `command.web.tsx` on web.
  *
- * This is the surface both halves honour — the props cubeui's own `MultiSelect` and shadcn's
- * command-palette examples reach for. The web half widens every part to cmdk's own props on top of
- * it, so a DOM call site written against shadcn's `command` compiles unchanged. What cmdk takes
- * beyond this list is web only, and the native half does not accept it:
- *
- * - **The highlight.** cmdk keeps one item highlighted and moves it with the arrow keys; `value`,
- *   `onValueChange`, `defaultValue`, `loop`, `vimBindings` and `disablePointerSelection` on
- *   `Command` all steer it. A touch screen has no highlight — an item is chosen by pressing it —
- *   so there is nothing on native for them to steer.
- * - **The ranking.** cmdk's default filter is a fuzzy scorer, and it re-sorts the list by score.
- *   The native default is {@link matchesEveryWord}, and the list stays in the order it was
- *   written. A caller who passes `filter` gets the same answer on both halves; a caller who
- *   does not gets the same set of rows, give or take cmdk's fuzziness, in a different order.
- * - **`CommandLoading`**, `CommandGroup`'s `value`, and `Command`'s `asChild`.
+ * The web half widens every part to cmdk's own props, and what cmdk takes beyond this contract is
+ * web only: the highlight and the props that steer it, `CommandLoading`, `CommandGroup`'s `value`
+ * and `Command`'s `asChild`. The default filter differs too: cmdk's is a fuzzy scorer that
+ * re-sorts the list, and the native one is {@link matchesEveryWord}, which keeps the written
+ * order. A caller who passes `filter` gets the same answer on both halves.
  */
 import { Children, isValidElement, type ReactNode } from "react";
 import type { DialogProps } from "@/components/ui/dialog-base";

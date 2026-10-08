@@ -37,7 +37,7 @@ with them.
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | done |
 | R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | done |
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
-| D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | open |
+| D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | partly done |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
 | D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | open |
 | R10 | Refactor [simplify] | Splits `scripts/rn2web/compile.mjs` (1,026 lines) into one module per pass, along the five numbered divider comments it already has, and removes the 15 dividers. | P5: a file that needs dividers is doing several jobs. It is the third most-changed code file. | — | done |
@@ -161,6 +161,12 @@ byte-for-byte what it was. `elements.mjs` is 559 lines, most of it `transformEle
 `action-button.tsx:1` (48), `split-layout.tsx:191` (33), `alert.tsx:1` and `icons.tsx:1`
 (31), `badge.tsx:1` (22). Scripts 42 in 14 files, stories 42 in 32. `AGENTS.md` asks that
 comments say why and "what went wrong without the line"; it sets no length.
+
+**Partly done:** the 41 registry blocks over ten sentences are now five to nine each, 1305 lines
+down to about 430. What went was the history (which apps wrote it by hand, and how the copies
+disagreed) and the argued rationale; what stayed is the decision and the one reason that stops a
+reader undoing it. Still open: the 202 registry blocks of five to ten sentences, and `scripts/`
+and `stories/`.
 
 ### D2 [sweep] — body comments over two lines
 

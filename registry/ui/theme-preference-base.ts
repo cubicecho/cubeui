@@ -108,25 +108,15 @@ export type PalettePreferenceState = readonly [
 ];
 
 /**
- * The web's first paint, before React mounts: the same rule `useThemePreference` applies, as a
- * self-contained script for an inline `<script>` in the page's `<head>`. Render it with
- * `dangerouslySetInnerHTML` where the head is React (Expo's `+html.tsx`, a Next layout); paste the
- * copy in the skill's `controls.md` where it is a static `index.html`. A unit test holds that copy
- * to this string.
+ * The web's first paint, before React mounts: the rule `useThemePreference` applies, as a
+ * self-contained script for an inline `<script>` in the page's `<head>`. A static `index.html`
+ * pastes the copy in the skill's `controls.md`, which a unit test holds to this string.
  *
- * `dark` goes on `<html>` for Dark, and for System while the device is dark; `light` goes on it for
- * Light only. A dark-only palette is `dark` whatever the theme, and never `light`. A palette other
- * than the default is `data-palette` on `<html>`, which both stylesheets key its colours off. `dist/tokens.native.css` (Expo web) reads both over its `prefers-color-scheme` block;
- * `tokens.web.css` (the DOM registry) has no media query and reads `.dark` alone, which is why
- * System still sets `dark` on a dark device rather than leaving it to a query that stylesheet does
- * not have.
- *
- * Written in ES5 and wrapped in `try`, because it runs before anything else on the page and a
- * browser with storage switched off throws on `localStorage` itself.
- *
- * `legacyKeys` makes it migrate first — the same copy `migrateThemePreference` does, here because
- * this runs before the bundle and the first paint after an upgrade is the one that would flash.
- * Without them the script is `THEME_PRE_PAINT_SCRIPT`, byte for byte.
+ * `dark` goes on `<html>` for Dark, for System on a dark device and for a dark-only palette,
+ * because `tokens.web.css` has no media query and reads `.dark` alone. A palette other than the
+ * default is `data-palette`. The script is ES5 in a `try`, since a browser with storage switched
+ * off throws on `localStorage`. `legacyKeys` makes it migrate first, as
+ * `migrateThemePreference` does.
  */
 export function themePrePaintScript({
   legacyKeys,

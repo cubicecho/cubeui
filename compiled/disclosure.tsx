@@ -58,32 +58,14 @@ function asText(node: ReactNode, className: string, testID: string) {
 }
 
 /**
- * A titled part of a screen whose body shows and hides — "Show completed (3)" under a list, "Raw
- * output" over a payload nobody reads in passing. One source for both platforms.
+ * A titled part of a screen whose body shows and hides: "Show completed (3)" under a list. The
+ * look is a muted `text-sm` line with the chevron before it; `titleClassName` makes the title the
+ * foreground where the disclosure is a section's heading.
  *
- * It is here because fourteen places in eight projects wrote it by hand, three ways: a chevron
- * `<button>` with a rotate class (mcp-router, three times), a bare `<details>` (task_server,
- * kanban, zeromem), and a ghost `Button` whose label flips between Show and Hide (telos, auto-cal,
- * min-agent on device). `<details>` has no React Native counterpart, so the native copies each
- * rebuilt it from `useState`, and none of the three shapes agreed on where an action goes.
- *
- * What it guarantees is `DisclosureRow`'s list, because they are the parts hand-written
- * disclosures get wrong:
- *
- * - **The whole header is one button** — a `<button>` on the web, `role="button"` on device —
- *   so it is reached by Tab and toggled by Enter and Space, not a 16-pixel chevron with a handler.
- * - `aria-expanded` on that button, so the state is announced rather than only drawn; and on the
- *   web `aria-controls` naming the body, while the body is there to name.
- * - The chevron turns off the same boolean, so there is one source of truth for open.
- * - **`actionSlot` sits outside the button.** A button in a button is invalid, and the nested one's
- *   click toggles the section on its way up.
- *
- * The look is the compact one, since that is what most of the copies are: a muted `text-sm`
- * line with the chevron before it, and the body under it with no inset. `titleClassName` is how a
- * caller makes the title the foreground where the disclosure is the section's heading.
- *
- * Open is the shell's own interaction, so it may hold it (AGENTS.md rule 5): uncontrolled with
- * `defaultOpen`, controlled with `open`, and `onOpenChange` heard either way. The two never mirror.
+ * The whole header is one button carrying `aria-expanded`, and the chevron turns off the same
+ * boolean. `actionSlot` sits outside that button, because a button in a button is invalid. Open
+ * is uncontrolled with `defaultOpen` or controlled with `open`, and `onOpenChange` is heard
+ * either way.
  */
 export function Disclosure({
   title,

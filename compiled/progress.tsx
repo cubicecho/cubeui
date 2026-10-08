@@ -9,27 +9,13 @@
  */
 
 /**
- * A horizontal bar showing how much of something is done — an upload, a re-embed, a context
- * window filling up. One source for both platforms; `rn2web` compiles it for the DOM.
+ * A horizontal bar showing how much of something is done. `value` means what shadcn's means, a
+ * number from 0 to `max` (100 unless said otherwise), and it is clamped before it is drawn or
+ * announced.
  *
- * It is here because six projects drew it by hand, eight times, and one of them used shadcn's
- * `Progress`. Of the seven hand-written ones exactly one — zeromem's re-embed bar — said what it
- * was to a screen reader; the rest were two coloured boxes, a width and silence.
- *
- * **`value` means what shadcn's means**: a number from 0 to `max`, and `max` is 100 unless you
- * say otherwise, so `<Progress value={job.progress * 100} />` ports unchanged. It is clamped to
- * `[0, max]` before it is drawn or announced, because a byte count that overshoots its total by
- * one chunk is ordinary and a bar at 104% is not.
- *
- * **No `value` is not an animation.** Radix's root reads a missing value as indeterminate, and so
- * does this: the bar is drawn empty and `aria-valuenow` is left off, which is what ARIA says an
- * indeterminate progress bar is. Nothing moves, because a sliding stripe is a keyframe the device
- * has no class for — a wait with no known end wants a spinner.
- *
- * The indicator's width is a style, not a class: it is the one value here that is really dynamic,
- * and a class built from a number is a class Tailwind never generates (conventions §3). `ViewProps`
- * pass through to the root, so a shadcn call site's `aria-label` still names it; `label` is the
- * same thing in the set's own word.
+ * With no `value` the bar is indeterminate: drawn empty, with `aria-valuenow` left off and nothing
+ * animated. The indicator's width is a style, since a class built from a number is one Tailwind
+ * never generates. `label` names the bar, as an `aria-label` does.
  */
 import type * as React from "react";
 import { cn } from "@/lib/utils";

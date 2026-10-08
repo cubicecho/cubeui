@@ -9,28 +9,14 @@
  */
 
 /**
- * Bound form fields — the glue between TanStack Form and this registry's inputs.
+ * Bound form fields: the glue between TanStack Form and this registry's inputs. Each one reads
+ * its state from form context, so the label, control and error wiring is done once here.
+ * `ui/field` is the unbound chrome underneath, for a control this file does not cover.
  *
- * Every component here reads its state from form context rather than taking it
- * as a prop, so a field is one line at the call site and the label / control /
- * error wiring (`htmlFor`, `aria-describedby`, `aria-invalid`) is done once here
- * instead of by hand at each field. `ui/field` is the unbound chrome underneath;
- * use that directly for a control this file does not cover.
- *
- * The parts that are not just a port of the web original:
- *
- * - `FieldRow` replaces `grid grid-cols-2`. Yoga has no grid.
- * - `InputField` parses its own number, because `valueAsNumber` is DOM-only.
- * - `SubmitButton` calls `handleSubmit()` rather than being a submit control,
- *   because a `Pressable` is not one. See `form-element.web.tsx` for the other
- *   half of that split.
- *
- * What it shares with the web `app-form` is the shape a form is written in:
- * `useAppForm` with these fields on `field.*`, and `useFieldError`, `splitProps`
- * and `bindToForm` for a field this file does not ship. The date and colour
- * fields are `@cubeui/date-time-field` and `@cubeui/color-picker-field`, in
- * their own items for the weight of what they import — the split the web half
- * makes — and `createAppForm` puts them on `field.*` beside these.
+ * `FieldRow` stands in for a grid, which Yoga does not have. `InputField` parses its own number,
+ * because `valueAsNumber` is DOM-only. `SubmitButton` calls `handleSubmit()`, because a
+ * `Pressable` is not a submit control. The date and colour fields are items of their own, and
+ * `createAppForm` puts them on `field.*` beside these.
  */
 import type { AnyFieldApi, DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";

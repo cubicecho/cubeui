@@ -1,28 +1,11 @@
 /**
- * shadcn's `Item` parts on React Native: `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`,
- * `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup` and `ItemSeparator`,
- * under shadcn's names and with its `variant` and `size`. `item.web.tsx` is the web counterpart
- * and `item-base.ts` holds the classes the two share, so a row composed from these parts in an
- * Expo app is the row a DOM app draws from the same call site.
+ * shadcn's `Item` parts on React Native, under shadcn's names and with its `variant` and `size`.
+ * `item.web.tsx` is the web counterpart and `item-base.ts` holds the classes they share.
  *
- * The parts are the regions `ListItem` places, named the other way round: `ItemMedia` is its
- * `leadingSlot`, `ItemContent` its middle, `ItemTitle` and `ItemDescription` its title and the line
- * under it, `ItemActions` its `actionSlot`. `ListItem` is the row with those decisions made — one
- * line of title, the pressed area in the middle only. These are for a row it does not fit: a header
- * line, a footer that opens, a title with a badge beside it. It is what `DisclosureRow` is made of.
- *
- * What differs on a device, none of it a call-site change:
- *
- * - A string passed to a part is wrapped in a `Text` for you — a bare string in a `View` throws
- *   there — and that `Text` carries the part's type and ink, because nothing inherits on native.
- *   An element you pass (a `Badge`, an icon) is placed as it is.
- * - `ItemMedia` does not size what is in it: there is no `[&_svg]` selector. Pass an icon at
- *   `size-4`, an image at `size-full`. Nor does it move to the top of a row with a description,
- *   which shadcn does with `:has()`; it stays centred, and `className="self-start"` lifts it.
- * - `asChild` is radix's `Slot`, as `Button`'s is: `<Item asChild><Pressable onPress={open}>…`
- *   makes the whole row the pressable. On the web it is shadcn's, onto an `<a>` or a `<button>`.
- * - `ItemSeparator` is a hairline `View`; it takes `orientation` and `decorative` so a shadcn call
- *   site still typechecks, and draws a vertical rule for `orientation="vertical"`.
+ * These are for a row `ListItem` does not fit: a header line, a footer that opens, a title with a
+ * badge beside it. A string passed to a part is wrapped in a `Text`, since a bare string in a
+ * `View` throws on device. `ItemMedia` does not size what is in it, as there is no `[&_svg]`
+ * selector: pass an icon at `size-4`.
  */
 import { Slot } from "radix-ui";
 import * as React from "react";

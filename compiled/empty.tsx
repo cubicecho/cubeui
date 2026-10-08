@@ -9,30 +9,13 @@
  */
 
 /**
- * shadcn's `Empty` parts on both platforms, drawn as cubeui's empty state — see `ui/button.tsx`
- * for the conversion rules.
+ * shadcn's `Empty` parts on both platforms, under shadcn's names and nesting, so a DOM call site
+ * ports unchanged. The drawing is `EmptyState`'s, which is built on these parts, so the compound
+ * form and `<EmptyState />` give one empty state; pass a `className` for shadcn's look.
  *
- * The names and the nesting are shadcn's, so a DOM call site ports unchanged:
- * `<Empty><EmptyHeader><EmptyMedia variant="icon"><Inbox /></EmptyMedia><EmptyTitle>…</EmptyTitle>
- * <EmptyDescription>…</EmptyDescription></EmptyHeader><EmptyContent>…</EmptyContent></Empty>`.
- * The drawing is not. It is `EmptyState`'s — the muted bubble, a `text-sm` title, `py-10` — because
- * `EmptyState` is built on these parts, and a project writing the compound form and a project
- * writing `<EmptyState icon={Inbox} … />` should get one empty state, not two that drift. What that
- * costs a shadcn call site is shadcn's look: the `text-lg` title, the `p-6 md:p-12`, the square
- * `size-10` icon tile, `flex-1` on the root and `max-w-sm` on the header. Pass a `className` for any
- * of them. `rounded-lg border-dashed` are kept, so the common `className="border"` still draws
- * shadcn's dashed outline.
- *
- * The spacing lives on the root's `gap-3` and on `EmptyMedia`'s `mb-3`, not on the header, so the
- * media reads the same whether it sits inside `EmptyHeader` (shadcn's examples) or beside it.
- *
- * `EmptyTitle` and `EmptyDescription` are `<Text>`, so a bare string inside them is safe on
- * device. The title is plain text; pass `role="heading"` and an `aria-level` when the empty state
- * *is* the screen, which is what `EmptyState`'s `level` does.
- *
- * Native inherits nothing, so the icon bubble publishes its ink and size through
- * `IconClassContext`; on the web the `<svg>` takes `currentColor` from the bubble and its size from
- * the `[&_svg]` class, the way `Alert` does it.
+ * `EmptyTitle` and `EmptyDescription` are `Text`, so a bare string inside them is safe on device.
+ * The title is plain text: pass `role="heading"` and an `aria-level` when the empty state is the
+ * screen. The icon bubble publishes its ink and size through `IconClassContext`.
  */
 
 import * as React from "react";
