@@ -31,7 +31,7 @@ with them.
 | R2 | Refactor [sweep] | Holds `stories/` to the braces and negation rules (185 unbraced bodies, 10 negations), leaving bare numbers allowed there as in any test. | Stories are what an author copies from when writing a new one; the whole repo then lints one way. | — | done |
 | R3 | Refactor [sweep] | Rewrites the `!` on logic checks the plugin cannot see in the registry because the name has no `is`/`has` prefix (`!open`, `!disabled`, `!checked`, `!ok`): about 45 hits in about 30 files. | Finishes P20 in the files apps vendor; #286 only did what the plugin reports. | — | done |
 | R4 | Refactor [reuse] | Merges the three identical `messageOf(error)` helpers (native form, web form, radio group field) into one shared module. | Three copies of "what text does a validator's error show" that must change together. | B1 | done |
-| B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — | open |
+| B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — |done |
 | R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — | open |
 | R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | done |
@@ -39,7 +39,7 @@ with them.
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | partly done |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
-| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — |partly done |
+| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | partly done |
 | R10 | Refactor [simplify] | Splits `scripts/rn2web/compile.mjs` (1,026 lines) into one module per pass, along the five numbered divider comments it already has, and removes the 15 dividers. | P5: a file that needs dividers is doing several jobs. It is the third most-changed code file. | — | done |
 | A1 | API change | Moves the registry's seven timing and threshold constants (`COPIED_MS`, `SEARCH_DEBOUNCE_MS`, `VISIBLE_MS`, `SPRING_OPEN_MS`, `SPIN_DURATION`, `PULSE_DURATION`, the accent lightness bounds) into one defaults module. Every item that reads one gains a file dependency. | P22: one place answers "what can be tuned". | — | open |
 | A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — | open |
@@ -193,6 +193,10 @@ parts, which the scan did not count.
 
 **File:** `registry/layout/query-state.tsx:52-66` against the three in R4. Is the
 difference intended?
+
+**Done:** intended. `QueryError` reads `messageOf(error) || FALLBACK`, so the empty string is
+what lets "The server did not answer." show where a form would print the raw value. The
+helper's doc block now says so; the code is unchanged.
 
 ---
 
