@@ -4,7 +4,7 @@
   "title": "Markdown",
   "description": "A Markdown string rendered from the theme's tokens and the registry's own primitives: a fenced block is a CodeBlock, a table the Table, a rule a Separator, a task item a Checkbox. GitHub-flavoured, raw HTML never rendered, URLs filtered. Optional wikilinks, and a resolveLink for links between an app's documents with the pending and broken looks built in. Web-only: no React Native half.",
   "dependencies": [
-    "lucide-react@^1.34.0",
+    "lucide-react@^1.41.0",
     "react-markdown@^10.1.0",
     "remark-gfm@^4.0.1"
   ],
