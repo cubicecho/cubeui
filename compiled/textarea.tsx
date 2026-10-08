@@ -59,6 +59,7 @@ export type TextareaProps = Omit<ComponentPropsWithoutRef<"textarea">, "classNam
     ref?: Ref<HTMLTextAreaElement> | Ref<TextareaHandle> | undefined;
   };
 
+/** A multi-line text box. */
 function Textarea({
   onChange,
   onChangeText,

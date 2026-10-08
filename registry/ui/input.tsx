@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
 
+/** A one-line text box, with optional slots at its start and end. */
 function Input({
   className,
   type = "text",

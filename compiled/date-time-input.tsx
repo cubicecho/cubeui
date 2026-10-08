@@ -95,6 +95,7 @@ export type DateTimeInputProps = DateTimeInputSharedProps &
       }
   );
 
+/** A date picked from a calendar with a time beside it, or a date alone with `mode="date"`. */
 export function DateTimeInput(props: DateTimeInputProps) {
   const {
     mode = "datetime",

@@ -51,6 +51,7 @@ export type ToggleChipProps = Omit<
   children: React.ReactNode;
 };
 
+/** A small pill that is selected or not: a filter chip, a day-of-week toggle. */
 const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
   (
     {

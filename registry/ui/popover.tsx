@@ -36,6 +36,7 @@ const PopoverContext = createContext<PopoverState>({
   setOpen: () => {},
 });
 
+/** The root of a popover: it holds the open state. */
 function Popover({ open, onOpenChange, defaultOpen = false, children }: PopoverProps) {
   // Uncontrolled state kept unconditionally — hooks cannot be conditional — and
   // read only when the caller passed no `open`.
@@ -52,6 +53,7 @@ function Popover({ open, onOpenChange, defaultOpen = false, children }: PopoverP
   );
 }
 
+/** The element that opens the popover. */
 function PopoverTrigger({ asChild, children }: PopoverTriggerProps) {
   const { setOpen } = useContext(PopoverContext);
   if (asChild && isValidElement(children)) {
@@ -67,6 +69,7 @@ function PopoverTrigger({ asChild, children }: PopoverTriggerProps) {
   );
 }
 
+/** The popover's card. */
 function PopoverContent({ className, children }: PopoverContentProps) {
   const { open, setOpen } = useContext(PopoverContext);
   return (
@@ -88,6 +91,7 @@ function PopoverContent({ className, children }: PopoverContentProps) {
   );
 }
 
+/** An element that closes the popover when pressed. */
 function PopoverClose({ asChild, className, children }: PopoverCloseProps) {
   const { setOpen } = useContext(PopoverContext);
   if (asChild && isValidElement(children)) {
@@ -108,14 +112,17 @@ function PopoverAnchor({ children }: PopoverAnchorProps) {
   return <>{children}</>;
 }
 
+/** The block holding the popover's title and description. */
 function PopoverHeader({ className, children }: PopoverSectionProps) {
   return <View className={cn("gap-1", className)}>{children}</View>;
 }
 
+/** The popover's title. */
 function PopoverTitle({ className, children }: PopoverSectionProps) {
   return <Text className={cn("text-sm font-medium text-foreground", className)}>{children}</Text>;
 }
 
+/** The muted line under the popover's title. */
 function PopoverDescription({ className, children }: PopoverSectionProps) {
   return <Text className={cn("text-sm text-foreground/60", className)}>{children}</Text>;
 }

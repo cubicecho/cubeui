@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
 
+/** The root of a set of tabs: it holds which one is active. */
 function Tabs({
   value,
   onValueChange,
@@ -64,6 +65,7 @@ function reveal(list: HTMLElement) {
   }
 }
 
+/** The row of tab buttons. */
 function TabsList({
   className,
   ref,
@@ -109,6 +111,7 @@ function TabsList({
   );
 }
 
+/** One tab's button, which shows the pane with the same `value`. */
 function TabsTrigger({
   className,
   disabled,
@@ -137,6 +140,7 @@ function TabsTrigger({
   );
 }
 
+/** One tab's pane, rendered while its tab is active. */
 function TabsContent({
   className,
   ...props

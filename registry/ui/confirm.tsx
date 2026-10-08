@@ -21,6 +21,7 @@ import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
+/** What a `confirm()` call asks: its wording, and whether a name must be typed. */
 export type ConfirmOptions = {
   title: string;
   description: string;
@@ -40,6 +41,7 @@ type Confirm = (options: ConfirmOptions) => Promise<boolean>;
 
 const ConfirmContext = createContext<Confirm | null>(null);
 
+/** Mounts the one dialog `useConfirm` raises. Put it once, near the root. */
 export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState<ConfirmOptions | null>(null);
   // Held in a ref rather than state: settling it is not a render, and a second

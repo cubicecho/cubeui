@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
+/** One choice in an `OptionSelect`. */
 export type SelectOption = {
   label: ReactNode;
   value: string;

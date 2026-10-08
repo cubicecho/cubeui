@@ -32,6 +32,7 @@ const PULSE_EASING = Easing.bezier(PULSE_EASE_IN, 0, PULSE_EASE_OUT, 1);
 
 const PulsingView = Animated.createAnimatedComponent(View);
 
+/** A pulsing block standing in for content that has not arrived. */
 function Skeleton({ className, style, ...props }: SkeletonProps) {
   const opacity = useRef(new Animated.Value(1)).current;
 

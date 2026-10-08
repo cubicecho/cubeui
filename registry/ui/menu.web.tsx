@@ -54,6 +54,7 @@ const MenuContext = createContext<MenuState>({
   skipReturnRef: { current: false },
 });
 
+/** The root of a menu of actions: it holds the open state. */
 function Menu({
   open,
   onOpenChange,
@@ -79,6 +80,7 @@ function Menu({
   );
 }
 
+/** The element that opens the menu. */
 function MenuTrigger({
   asChild,
   ...props
@@ -86,6 +88,7 @@ function MenuTrigger({
   return <MenuPrimitive.Trigger data-slot="menu-trigger" asChild={asChild ?? false} {...props} />;
 }
 
+/** The menu's list of rows. */
 function MenuContent({
   className,
   align = "center",
@@ -120,6 +123,7 @@ function MenuContent({
   );
 }
 
+/** One action in the menu, which closes it when chosen. */
 function MenuItem({
   iconSlot,
   label,
@@ -190,6 +194,7 @@ function MenuItem({
   );
 }
 
+/** A rule between groups of rows. */
 function MenuSeparator({
   className,
   ...props
@@ -232,6 +237,7 @@ function ToggleRowBody({
 
 const TOGGLE_ROW_CLASS = cn(MENU_ITEM_CLASS, MENU_ITEM_WEB_CLASS, "text-foreground focus:bg-hover");
 
+/** A row that is checked or not, and toggles when chosen. */
 function MenuCheckboxItem({
   iconSlot,
   label,
@@ -266,6 +272,7 @@ function MenuCheckboxItem({
   );
 }
 
+/** A set of `MenuRadioItem`s of which one is chosen. */
 function MenuRadioGroup({
   value,
   onValueChange,

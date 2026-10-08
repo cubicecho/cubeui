@@ -43,6 +43,7 @@ import { Input, type InputHandle, type InputProps } from "./input";
 export type SearchInputProps = Omit<InputProps, "type" | "leadingSlot" | "trailingSlot"> &
   SearchInputOwnProps;
 
+/** A search box with a leading icon and a button that clears it. */
 export function SearchInput({
   label,
   clearLabel = SEARCH_CLEAR_LABEL,

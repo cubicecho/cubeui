@@ -51,6 +51,7 @@ function MultiSelectFieldControl(control: Omit<MultiSelectFieldProps, keyof Fiel
   );
 }
 
+/** A `MultiSelect` bound to a form field holding a list of values. */
 export function MultiSelectField(props: MultiSelectFieldProps) {
   const [fieldProps, control] = splitProps(props);
   return (

@@ -13,6 +13,7 @@ import { CHECKBOX_CLASS, type CheckboxProps } from "@/components/ui/checkbox-bas
 import { Check } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
+/** A box that is checked or not. */
 function Checkbox({
   checked: checkedProp,
   defaultChecked = false,

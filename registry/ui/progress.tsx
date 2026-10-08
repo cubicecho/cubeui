@@ -38,6 +38,7 @@ export type ProgressProps = ViewProps & {
 const DEFAULT_MAX = 100;
 const PERCENT = 100;
 
+/** A horizontal bar showing how much of something is done. */
 export function Progress({
   value,
   max = DEFAULT_MAX,

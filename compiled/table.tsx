@@ -51,6 +51,7 @@ function useOverflowsX() {
   return [ref, overflows] as const;
 }
 
+/** A table inside a container that scrolls sideways when it is too wide. */
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   const [ref, overflows] = useOverflowsX();
   return (
@@ -72,6 +73,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
 // Every border below names `border-foreground/10` beside its width. Upstream leans on the app's base
 // layer to colour a bare `border-b`, and the cubeui stylesheet sets no such rule, so without it
 // the rules between rows are `currentColor` — black lines in a light theme.
+/** The table's header row group. */
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <InTableHeader.Provider value={true}>
@@ -84,6 +86,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   );
 }
 
+/** The table's body row group. */
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return (
     <tbody
@@ -94,6 +97,7 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   );
 }
 
+/** The table's footer row group, for totals. */
 function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   return (
     <tfoot
@@ -107,6 +111,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
+/** One row. */
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
@@ -120,6 +125,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   );
 }
 
+/** A header cell, scoped to its column in the header and to its row in the body. */
 function TableHead({ className, scope, ...props }: React.ComponentProps<"th">) {
   const inHeader = React.useContext(InTableHeader);
   return (
@@ -135,6 +141,7 @@ function TableHead({ className, scope, ...props }: React.ComponentProps<"th">) {
   );
 }
 
+/** A data cell. */
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
@@ -148,6 +155,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   );
 }
 
+/** The table's caption, which is also its accessible name. */
 function TableCaption({ className, ...props }: React.ComponentProps<"caption">) {
   return (
     <caption

@@ -46,6 +46,7 @@ import { X } from "./icons";
 
 export type { BadgeProps, BadgeVariant };
 
+/** A small pill naming a kind or a state, or a dot of the same colour when it has no children. */
 export function Badge({
   variant = "default",
   backgroundColor,

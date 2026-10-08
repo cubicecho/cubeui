@@ -54,6 +54,7 @@ function withText(children: React.ReactNode, className: string) {
   );
 }
 
+/** A list of items. */
 function ItemGroup({ className, ...props }: ViewProps) {
   return <View testID="item-group" className={cn("flex-col", className)} {...props} />;
 }
@@ -67,6 +68,7 @@ type ItemSeparatorProps = Omit<ViewProps, "children"> & {
   decorative?: boolean | undefined;
 };
 
+/** A rule between two items. */
 function ItemSeparator({
   className,
   orientation = "horizontal",
@@ -102,6 +104,7 @@ type ItemProps = ViewProps & {
   selected?: boolean | undefined;
 };
 
+/** One row: media, content and actions side by side. */
 function Item({
   className,
   variant = "default",
@@ -124,6 +127,7 @@ function Item({
 
 type ItemMediaProps = ViewProps & { variant?: ItemMediaVariant | null | undefined };
 
+/** The icon or image at the start of an item. */
 function ItemMedia({ className, variant = "default", ...props }: ItemMediaProps) {
   return (
     <View
@@ -134,6 +138,7 @@ function ItemMedia({ className, variant = "default", ...props }: ItemMediaProps)
   );
 }
 
+/** The middle of an item, holding its title and description. */
 function ItemContent({ className, children, ...props }: ViewProps) {
   return (
     <View testID="item-content" className={cn(ITEM_CONTENT_CLASS, className)} {...props}>
@@ -154,12 +159,14 @@ function ItemTitle({ className, children, ...props }: ViewProps) {
   );
 }
 
+/** The muted line under the item's title. */
 function ItemDescription({ className, ...props }: TextProps) {
   return (
     <Text testID="item-description" className={cn(ITEM_DESCRIPTION_CLASS, className)} {...props} />
   );
 }
 
+/** The buttons at the far end of an item. */
 function ItemActions({ className, children, ...props }: ViewProps) {
   return (
     <View testID="item-actions" className={cn(ITEM_ACTIONS_CLASS, className)} {...props}>
@@ -168,6 +175,7 @@ function ItemActions({ className, children, ...props }: ViewProps) {
   );
 }
 
+/** A full-width line above the item's row. */
 function ItemHeader({ className, children, ...props }: ViewProps) {
   return (
     <View testID="item-header" className={cn("w-full", ITEM_HEADER_CLASS, className)} {...props}>
@@ -176,6 +184,7 @@ function ItemHeader({ className, children, ...props }: ViewProps) {
   );
 }
 
+/** A full-width line below the item's row. */
 function ItemFooter({ className, children, ...props }: ViewProps) {
   return (
     <View testID="item-footer" className={cn("w-full", ITEM_FOOTER_CLASS, className)} {...props}>

@@ -22,6 +22,10 @@ type DetailPageProps<T> = {
   contentSlot: (entity: T) => SlotNode;
 };
 
+/**
+ * A `Page` that shows loading or not-found until the entity is there, then hands it to
+ * `contentSlot`.
+ */
 export function DetailPage<T>({
   entity,
   loading,

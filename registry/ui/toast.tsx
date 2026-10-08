@@ -15,6 +15,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import type { ViewStyle } from "react-native";
 import { Platform, Pressable, Text, View } from "react-native";
 
+/** What kind of message a toast is, which picks its colour and how long it stays. */
 export type ToastTone = "error" | "warning" | "positive" | "info";
 
 type Toast = { id: number; message: string; tone: ToastTone };
@@ -64,6 +65,7 @@ const VIEWPORT_STYLE = Platform.select({
   },
 }) as ViewStyle;
 
+/** Holds the toasts and draws them over the app. Put it once, near the root. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(0);

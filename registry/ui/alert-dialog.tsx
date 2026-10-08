@@ -37,9 +37,13 @@ type ButtonProps = ComponentProps<typeof Button>;
  * its trigger among its children by type — it has to render while the `Modal` is shut — and a
  * wrapper would be a different type and never appear.
  */
+/** The root of a dialog that must be answered: it holds the open state. */
 const AlertDialog = Dialog;
+/** The element that opens the alert dialog. */
 const AlertDialogTrigger = DialogTrigger;
+/** Where the alert dialog is mounted, outside the tree that opened it. */
 const AlertDialogPortal = DialogPortal;
+/** The dimmed backdrop behind the alert dialog. */
 const AlertDialogOverlay = DialogOverlay;
 
 const CONTENT_SIZES = { default: "max-w-lg", sm: "max-w-xs" } as const;
@@ -47,6 +51,7 @@ const CONTENT_SIZES = { default: "max-w-lg", sm: "max-w-xs" } as const;
 /** A press beside the card is not an answer. */
 const holdOpen = (event: Event) => event.preventDefault();
 
+/** The alert dialog's card, with `role="alertdialog"`. */
 function AlertDialogContent({
   className,
   size = "default",
@@ -71,18 +76,22 @@ function AlertDialogContent({
 
 type SectionProps = { className?: string | undefined; children?: ReactNode };
 
+/** The block holding the title and the description. */
 function AlertDialogHeader({ className, children }: SectionProps) {
   return <DialogHeader className={className}>{children}</DialogHeader>;
 }
 
+/** The row holding the cancel and the action buttons. */
 function AlertDialogFooter({ className, children }: SectionProps) {
   return <DialogFooter className={className}>{children}</DialogFooter>;
 }
 
+/** The question the alert dialog asks, and its accessible name. */
 function AlertDialogTitle({ className, children }: SectionProps) {
   return <DialogTitle className={className}>{children}</DialogTitle>;
 }
 
+/** The sentence under the title, read as the dialog's description. */
 function AlertDialogDescription({ className, children }: SectionProps) {
   return <DialogDescription className={className}>{children}</DialogDescription>;
 }
@@ -128,6 +137,7 @@ function ClosingButton({
  */
 type ActionProps = Omit<ButtonProps, "content"> & { children?: ReactNode };
 
+/** The button that confirms, and closes the dialog. */
 function AlertDialogAction({
   variant = "default",
   size = "default",
@@ -142,6 +152,7 @@ function AlertDialogAction({
   );
 }
 
+/** The button that declines, and closes the dialog. */
 function AlertDialogCancel({
   variant = "outline",
   size = "default",

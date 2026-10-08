@@ -17,6 +17,7 @@ import type { ReactNode } from "react";
 import { Platform, ScrollView, Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
+/** Monospaced text inline in a sentence. */
 export function Code({
   className,
   children,

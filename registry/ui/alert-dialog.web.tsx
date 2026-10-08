@@ -5,20 +5,24 @@ import type * as React from "react";
 import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+/** The root of a dialog that must be answered: it holds the open state. */
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }
 
+/** The element that opens the alert dialog. */
 function AlertDialogTrigger({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
   return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />;
 }
 
+/** Where the alert dialog is mounted, outside the tree that opened it. */
 function AlertDialogPortal({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
   return <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />;
 }
 
+/** The dimmed backdrop behind the alert dialog. */
 function AlertDialogOverlay({
   className,
   ...props
@@ -35,6 +39,7 @@ function AlertDialogOverlay({
   );
 }
 
+/** The alert dialog's card, with `role="alertdialog"`. */
 function AlertDialogContent({
   className,
   size = "default",
@@ -58,6 +63,7 @@ function AlertDialogContent({
   );
 }
 
+/** The block holding the title and the description. */
 function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -71,6 +77,7 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">)
   );
 }
 
+/** The row holding the cancel and the action buttons. */
 function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -84,6 +91,7 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">)
   );
 }
 
+/** The question the alert dialog asks, and its accessible name. */
 function AlertDialogTitle({
   className,
   ...props
@@ -100,6 +108,7 @@ function AlertDialogTitle({
   );
 }
 
+/** The sentence under the title, read as the dialog's description. */
 function AlertDialogDescription({
   className,
   ...props
@@ -113,6 +122,7 @@ function AlertDialogDescription({
   );
 }
 
+/** An icon or image above the title. */
 function AlertDialogMedia({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -136,6 +146,7 @@ function AlertDialogMedia({ className, ...props }: React.ComponentProps<"div">) 
  */
 type NativePress = { onPress?: React.MouseEventHandler<HTMLButtonElement> | undefined };
 
+/** The button that confirms, and closes the dialog. */
 function AlertDialogAction({
   className,
   variant = "default",
@@ -155,6 +166,7 @@ function AlertDialogAction({
   );
 }
 
+/** The button that declines, and closes the dialog. */
 function AlertDialogCancel({
   className,
   variant = "outline",

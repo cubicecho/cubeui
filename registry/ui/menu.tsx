@@ -75,6 +75,7 @@ function returnFocus(node: View | null) {
   }
 }
 
+/** The root of a menu of actions: it holds the open state. */
 function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) {
   // Uncontrolled state kept unconditionally and read only when the caller passed no `open`, the
   // same arrangement as `popover.tsx`.
@@ -111,6 +112,7 @@ function Menu({ open, onOpenChange, defaultOpen = false, children }: MenuProps) 
   );
 }
 
+/** The element that opens the menu. */
 function MenuTrigger({ asChild, children }: MenuTriggerProps) {
   const { open, setOpen, triggerRef } = useContext(MenuContext);
   if (asChild && isValidElement(children)) {
@@ -144,6 +146,7 @@ function MenuTrigger({ asChild, children }: MenuTriggerProps) {
   );
 }
 
+/** The menu's list of rows. */
 function MenuContent({ className, "aria-label": ariaLabel, children }: MenuContentProps) {
   return (
     <PopoverContent className={cn(MENU_CONTENT_CLASS, "w-64", className)}>
@@ -154,6 +157,7 @@ function MenuContent({ className, "aria-label": ariaLabel, children }: MenuConte
   );
 }
 
+/** One action in the menu, which closes it when chosen. */
 function MenuItem({
   iconSlot,
   label,
@@ -207,6 +211,7 @@ function MenuItem({
     : row;
 }
 
+/** A rule between groups of rows. */
 function MenuSeparator({ className }: MenuSeparatorProps) {
   return <View role="separator" className={cn(MENU_SEPARATOR_CLASS, className)} />;
 }
@@ -289,6 +294,7 @@ type RadioGroupState = Pick<MenuRadioGroupProps, "value" | "onValueChange">;
 
 const RadioGroupContext = createContext<RadioGroupState | null>(null);
 
+/** A set of `MenuRadioItem`s of which one is chosen. */
 function MenuRadioGroup({
   value,
   onValueChange,

@@ -42,6 +42,10 @@ type PageProps = {
   width?: "narrow";
 };
 
+/**
+ * The page shell a route wraps its content in: a padded, centred column that scrolls unless told
+ * not to.
+ */
 export function Page({ className, contentSlot, fill = false, scroll = true, width }: PageProps) {
   const content = cn("container mx-auto px-4 py-6", width === "narrow" && "max-w-2xl", className);
   const outer = fill ? "h-full min-h-0" : "flex-1";

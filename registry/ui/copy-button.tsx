@@ -24,6 +24,7 @@ async function write(text: string) {
   }
 }
 
+/** An icon button that copies `value` to the clipboard and shows a tick for a moment. */
 export function CopyButton(props: CopyButtonProps) {
   return <CopyButtonView write={write} {...props} />;
 }

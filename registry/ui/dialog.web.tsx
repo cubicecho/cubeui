@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 /** The shared contract, widened to what the radix part (or element) underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
 
+/** The root of a dialog: it holds the open state. */
 function Dialog({
   open,
   onOpenChange,
@@ -49,6 +50,7 @@ function Dialog({
   );
 }
 
+/** The element that opens the dialog. */
 function DialogTrigger({
   asChild,
   ...props
@@ -58,12 +60,14 @@ function DialogTrigger({
   );
 }
 
+/** Where the dialog is mounted, outside the tree that opened it. */
 function DialogPortal(
   props: Wide<DialogPortalProps, React.ComponentProps<typeof DialogPrimitive.Portal>>,
 ) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
+/** An element that closes the dialog when pressed. */
 function DialogClose({
   asChild,
   className,
@@ -79,6 +83,7 @@ function DialogClose({
   );
 }
 
+/** The dimmed backdrop behind the dialog. */
 function DialogOverlay({
   className,
   ...props
@@ -95,6 +100,7 @@ function DialogOverlay({
   );
 }
 
+/** The dialog's card. */
 function DialogContent({
   className,
   showCloseButton = true,
@@ -137,6 +143,7 @@ function DialogContent({
   );
 }
 
+/** The block holding the title and the description. */
 function DialogHeader({
   className,
   ...props
@@ -150,6 +157,7 @@ function DialogHeader({
   );
 }
 
+/** The row of buttons at the bottom of the dialog. */
 function DialogFooter({
   className,
   showCloseButton = false,
@@ -172,6 +180,7 @@ function DialogFooter({
   );
 }
 
+/** The dialog's title, and its accessible name. */
 function DialogTitle({
   className,
   ...props
@@ -185,6 +194,7 @@ function DialogTitle({
   );
 }
 
+/** The sentence under the title, read as the dialog's description. */
 function DialogDescription({
   className,
   ...props

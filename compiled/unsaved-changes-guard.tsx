@@ -37,6 +37,7 @@ type UnsavedChangesGuardOptions = {
   blocker?: NavigationBlocker | undefined;
 };
 
+/** What `useUnsavedChangesGuard` returns: the question's state and its two answers. */
 export type UnsavedChangesGuard = {
   /**
    * Runs `go` now if nothing would be lost, and after *Discard* if something would. For the

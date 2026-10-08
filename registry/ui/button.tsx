@@ -17,6 +17,7 @@ import { IconClassContext } from "@/components/ui/icons-base";
 import { Spinner } from "@/components/ui/spinner";
 import { cn, type SlotNode } from "@/lib/utils";
 
+/** The button's container classes for each `variant` and `size`. */
 const buttonVariants = cva(
   "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
@@ -176,6 +177,7 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
   return both as Press;
 }
 
+/** A button made of `iconSlot`, `content` and `trailingSlot`, with a `loading` state. */
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
   (
     {

@@ -78,6 +78,7 @@ function SegmentedFieldControl({
   );
 }
 
+/** A `SegmentedGroup` bound to a form field holding one of a few strings. */
 export function SegmentedField(props: SegmentedFieldProps) {
   const [fieldProps, control] = splitProps(props);
   return (

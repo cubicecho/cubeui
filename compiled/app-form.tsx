@@ -23,6 +23,7 @@ import { OptionSelect } from "./option-select";
 import { Switch } from "./switch";
 import { Textarea } from "./textarea";
 
+/** TanStack Form's contexts, which the bound fields read their field and form from. */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 

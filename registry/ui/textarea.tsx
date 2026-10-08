@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/textarea-base";
 import { cn } from "@/lib/utils";
 
+/** A multi-line text box. */
 function Textarea({
   value,
   defaultValue,

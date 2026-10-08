@@ -157,6 +157,7 @@ function useFilePick({ onPick, onPickMany, accept, multiple, read, directory }: 
   return { trigger, input, dragging };
 }
 
+/** A drop zone that picks a file and hands its contents to the caller. */
 export function FilePicker({ label, hint, ...options }: FilePickerProps) {
   const { trigger, input, dragging } = useFilePick(options);
 
@@ -180,6 +181,7 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
   );
 }
 
+/** A button that picks a file and hands its contents to the caller. */
 export function FilePickerButton({
   label,
   iconSlot = <Upload />,

@@ -39,7 +39,7 @@ with them.
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | partly done |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
-| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | open |
+| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — |partly done |
 | R10 | Refactor [simplify] | Splits `scripts/rn2web/compile.mjs` (1,026 lines) into one module per pass, along the five numbered divider comments it already has, and removes the 15 dividers. | P5: a file that needs dividers is doing several jobs. It is the third most-changed code file. | — | done |
 | A1 | API change | Moves the registry's seven timing and threshold constants (`COPIED_MS`, `SEARCH_DEBOUNCE_MS`, `VISIBLE_MS`, `SPRING_OPEN_MS`, `SPIN_DURATION`, `PULSE_DURATION`, the accent lightness bounds) into one defaults module. Every item that reads one gains a file dependency. | P22: one place answers "what can be tuned". | — | open |
 | A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — | open |
@@ -177,6 +177,13 @@ and `stories/`.
 **Hits:** (unverified) about 44 exported functions, 118 exported types, 23 exported
 constants; about 150 internal functions, most of them the parts of the shadcn-compatible
 primitives (`DialogHeader`, `SelectItem`, …). `icons.tsx` (47) is excluded.
+
+**Partly done:** a syntax-tree scan put the exported count at 390, not 185: 205 functions, 97
+types and 88 constants in 120 files. 259 of them now have a summary, the same line on both
+halves of a platform pair, and `cn`, `isThemePreference` and `isPalettePreference` have
+`@param` and `@returns` as well. Left out on purpose: the 47 icons in `icons.tsx` and the 83
+`*Props` types, whose names say all a summary would. Still open: the internal functions and
+parts, which the scan did not count.
 
 ---
 
