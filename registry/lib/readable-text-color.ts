@@ -89,25 +89,15 @@ function contrast(a: number, b: number): number {
 }
 
 /**
- * Ink for text sitting *on* a colour the user chose — a calendar event, a tag, a selected chip,
- * the tick on a picked swatch.
- *
- * Those places hardcode white, and white is right for about half of any palette: white on
- * `#f59e0b` is 2.2:1 and on `#14b8a6` is 2.5:1, both well under AA. Legibility cannot be baked
- * into a variant when the backdrop is a value out of the database, so it is computed per colour.
+ * Ink for text sitting on a colour the user chose: a calendar event, a tag, a selected chip.
+ * The dark ink or the light one, whichever has the higher contrast ratio against the backdrop.
  *
  * Returns `undefined` for anything that is not a hex colour, so a caller falls back to the
- * inherited foreground rather than painting black onto a value it failed to read. That is the
- * contract worth keeping: the failure is visible, and it is visible in the right direction.
+ * inherited foreground rather than painting black onto a value it failed to read.
  *
  * ```tsx
  * <span style={{ background: tag.color, color: readableTextColor(tag.color) }}>{tag.name}</span>
  * ```
- *
- * Two projects wrote this independently and arrived at the same algorithm by two routes — one
- * comparing luminance against `0.179`, one comparing the two contrast ratios. They agree exactly,
- * because `0.179` *is* the crossover: `Math.sqrt(1.05 * 0.05) - 0.05`. The ratio comparison is
- * what is written here, because it needs no constant to be believed.
  */
 export function readableTextColor(
   color: string | null | undefined,

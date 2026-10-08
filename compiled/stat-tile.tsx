@@ -9,31 +9,12 @@
  */
 
 /**
- * One number on a card: a label, the figure under it, and a line under that — "Turns · 1,204",
- * "Tracked · 6h 12m · over 7 days". A row of them is the top of every dashboard and status page
- * here. One source for both platforms; `rn2web` compiles it for the DOM.
+ * One number on a card: a label, the figure under it, and a line under that. The parts are
+ * `PropertyRow`'s words: `label`, `value`, `hint`, with `iconSlot` before the label.
  *
- * It is here because the same card was written ten times across seven projects, and no two agreed:
- * mcp-zeromem has it twice (`StatCard` on the overview, `Stat` over the health charts) at two value
- * sizes, eunomia's `StatTiles` uppercases its label and zeromem's does not, auto-cal's `ScoreCard`
- * is the native one, and telos and ethos draw the label-over-figure pair with no card at all. The
- * other half of the evidence is the *filter* tile: kanban_server's status page and task_server's
- * both draw a `<button aria-pressed>` of a count and a label, highlighted when
- * its heap is the one shown below — the same tile, pressable.
- *
- * So the one thing it adds to a card is that press, and it is `Card`'s own: given `onPress`, the
- * card is a `Pressable` (a `<button>` in the DOM), reached by Tab and pressed by Enter and Space.
- * Given `selected` beside it, the tile is a toggle — `aria-pressed` on the web, `selected` in the
- * device's accessibility state — and draws itself the way the two status pages did. `selected`
- * without `onPress` is ignored: `aria-pressed` on something that cannot be pressed is markup axe
- * rejects, and a highlight nothing can change is decoration the caller can put in `className`.
- *
- * The parts reuse `PropertyRow`'s words, because they are the same parts: `label` is what the
- * figure is called, `value` the figure, `hint` the line read after it. `iconSlot` sits before the
- * label, as it sits before a title everywhere else.
- *
- * Native inherits nothing, so every `Text` names its colour, and the icon takes its size and ink
- * through `IconClassContext`; on the web the icon is sized from its box with `[&_svg]`.
+ * Given `onPress` the card is a button, and with `selected` beside it a toggle carrying
+ * `aria-pressed`: a filter tile. `selected` without `onPress` is ignored, because `aria-pressed`
+ * on something that cannot be pressed is markup axe rejects.
  */
 import type { ReactNode } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";

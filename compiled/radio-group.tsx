@@ -9,41 +9,14 @@
  */
 
 /**
- * A radio group built from `Pressable`s — one source for both platforms, compiled to the web item.
+ * A radio group built from `Pressable`s, in three presentations: `row` (circle, label and
+ * description), `card` (a bordered tile, icon over label) and `segmented` (an input-height frame
+ * of equal segments).
  *
- * It replaced shadcn's radix primitive, which was web-only, and a React Native app without it
- * spelled the whole contract out by hand: `role="radiogroup"` / `role="radio"` + `aria-checked`,
- * one tab stop, arrow keys through an untyped `onKeyDown` spread and a
- * `document.getElementById(…).focus()`, a `title` through another. That is roughly fifty lines of
- * a component that is the same fifty lines in every app, and every copy is one forgotten
- * `preventDefault` away from arrows that scroll the page instead.
- *
- * What it does, so a caller does none of it:
- *
- * - **One tab stop.** The checked option, or the first enabled one when nothing is checked. Every
- *   other option is `tabIndex={-1}`, which is the ARIA radio group pattern: Tab enters the group
- *   and Tab leaves it.
- * - **Arrow keys move focus and select.** Down/Right is the next enabled option, Up/Left the
- *   previous, Home and End the ends, wrapping unless `loop={false}`. Moving *is* choosing in a
- *   radio group; a group where arrows only move focus is a listbox with the wrong role.
- * - **The order is the page's.** Options register themselves, and on the web they are sorted by
- *   document position, so an option rendered conditionally in the middle is not treated as last.
- *
- * The keyboard is web-only. A phone has no arrow keys, and a screen reader on device moves through
- * the options itself; the handler and the roving `tabIndex` are behind `Platform.OS === "web"` so
- * Android's own focus order is left alone.
- *
- * Three presentations. `row` is the circle, a label and an optional description beside it — the
- * web item's shape. `card` is a bordered tile, icon over label, `flex-1` across a row, for a
- * handful of choices that read better as pictures (light / dark / system). `segmented` is the
- * `SegmentedGroup` look, an input-height frame of equal segments across the container's width,
- * for the same choices where there is no room for tiles: a sidebar footer, a header bar. A
- * segment can be an icon alone, named by its `aria-label`; it is still a radio in a radiogroup,
- * with the same tab stop and arrow keys, which is the difference from `SegmentedGroup`'s toggle
- * buttons.
- *
- * `RadioGroupItem` with no `label` is the bare circle, as shadcn's was, so a caller that pairs it
- * with its own `<Label htmlFor>` keeps working.
+ * The group is one tab stop, on the checked option or the first enabled one. Arrow keys, Home and
+ * End move focus and select, in document order, wrapping unless `loop={false}`. The keyboard is
+ * web-only, so a screen reader on device keeps its own focus order. `RadioGroupItem` with no
+ * `label` is the bare circle, for a caller that pairs it with its own `<Label htmlFor>`.
  */
 import type { ReactNode } from "react";
 import * as React from "react";

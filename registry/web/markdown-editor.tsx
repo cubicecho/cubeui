@@ -58,30 +58,13 @@ export type MarkdownEditorProps = Omit<
 
 /**
  * A Markdown source and its rendering: a textarea, a `Markdown` preview, and a toggle between
- * edit, split and preview.
+ * edit, split and preview. Nothing in the preview is editable; the source is always the textarea.
  *
- * It is an editor in the plain sense — a field you type in, with what you typed drawn beside it.
- * Nothing in the preview is editable, and nothing turns into a field when it is clicked: the
- * source is always the textarea, and the textarea is always a textarea.
- *
- * - **The value is the caller's** (`value`, `onValueChange`). Saving, a dirty flag, a debounce
- *   and autosave are the screen's, as they are for every other control.
- * - **The view is the caller's or the component's.** `view` with `onViewChange` holds it outside;
- *   without them it starts at `defaultView` and is held here. It is the one piece of state this
- *   holds, and it is a display preference, not data.
- * - **The rest of the props are the textarea's** — `id`, `placeholder`, `disabled`, `aria-label`,
- *   `aria-invalid`, `name`, `onBlur` — so it is a `FormField`'s `controlSlot` like any other.
- *
- * **On a narrow screen `split` is one pane, the source.** Below `lg` there is no room to read two
- * columns, and stacking them puts the preview a screen away from the line being typed; the toggle
- * is still there, and Preview shows the other half. The panes are a `SplitLayout`, so the
- * breakpoint is the one every other split turns at.
- *
- * The textarea stays mounted in all three views — in `preview` it is hidden, not removed — so
- * its undo history, its selection and its scroll position survive a look at the preview.
- *
- * The preview is the plain `Markdown`. An app whose documents need its own links or plugins
- * renders its own `Markdown` beside a `Textarea`; this is the editor for Markdown as written.
+ * The value is the caller's (`value`, `onValueChange`), and the rest of the props are the
+ * textarea's, so it is a `FormField`'s `controlSlot` like any other. The view is held here from
+ * `defaultView`, or outside with `view` and `onViewChange`. Below `lg`, `split` shows the source
+ * alone. The textarea stays mounted in all three views, so its undo history and selection survive
+ * a look at the preview.
  */
 export function MarkdownEditor({
   value,

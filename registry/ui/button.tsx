@@ -1,32 +1,12 @@
 /**
- * One button for both platforms, and the file every other converted primitive
- * is modelled on. Its header is the conversion rules written out.
+ * One button for both platforms, built on `Pressable`, and the file every other converted
+ * primitive is modelled on.
  *
- * Built on `Pressable` rather than `<button>`: nativewind emits real CSS for
- * `className` on web, so the same file styles a DOM node there and a native
- * view on device. Three things had to change to make that work:
- *
- * - `onClick` → `onPress`.
- * - Text colour cannot be inherited on native, so the variants split into
- *   container classes and text classes. A string `content` is wrapped in a
- *   `<Text>` automatically; elements (icons) pass through untouched, and the
- *   container keeps its `text-*` class so web icons still inherit `currentColor`.
- * - There is no `asChild`. A button that navigates takes the link as `linkSlot` (see
- *   the prop below).
- *
- * **It takes no `children`.** What is inside a button is an icon, a label and
- * sometimes something at the far end, in that order, so those are the props:
- * `iconSlot`, `content`, `trailingSlot`. That is what lets `loading` put a spinner where
- * the icon was and swap the label without the caller rebuilding the inside, and
- * it is the one place this file is *not* shadcn's: `<Button>Save</Button>` is
- * `<Button content="Save" />` here.
- *
- * On device `type` means nothing — a Pressable is not a form control, so a submit
- * button calls the form's submit handler on press. The compiled web half is a real
- * `<button>` and takes the rest of `<button>`'s props — `type="submit"`, `onClick`,
- * `form`, `aria-*`, `data-*`. Its sizes and variants are a superset of shadcn's,
- * `xs` and the `icon-*` ladder included, so
- * `buttonVariants({ variant: "ghost", size: "icon-sm" })` ports as is.
+ * It takes no `children`: the inside is `iconSlot`, `content` and `trailingSlot`, which is what
+ * lets `loading` swap the icon for a spinner. A string `content` is wrapped in a `Text`, because
+ * text colour is not inherited on native. There is no `asChild`; a button that navigates takes
+ * the link as `linkSlot`. The compiled web half is a real `<button>` with the rest of its props,
+ * and its sizes and variants are a superset of shadcn's.
  */
 
 import { cva, type VariantProps } from "class-variance-authority";

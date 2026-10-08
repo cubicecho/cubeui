@@ -1,24 +1,11 @@
 /**
- * A one-pixel rule between groups: shadcn's `Separator`, on both halves. `rn2web` compiles the web
- * half from this file; it is no longer Radix's, because all Radix added was the role and the
- * `data-orientation`, and both are written here.
+ * A one-pixel rule between groups: shadcn's `Separator`, on both halves. It is `decorative` by
+ * default and hidden from assistive tech; `decorative={false}` makes it a `role="separator"`, for
+ * a rule that is the only thing marking a boundary.
  *
- * **`decorative` is shadcn's, and its default.** A rule that only divides what is visibly divided
- * already says nothing to a screen reader, so it is hidden from assistive tech on both platforms
- * (`aria-hidden`, which React Native reads as `accessibilityElementsHidden` and
- * `importantForAccessibility="no-hide-descendants"`). `decorative={false}` makes it a
- * `role="separator"` — the one to use when the rule is the only thing marking a boundary, as
- * between two lists in a menu.
- *
- * The size is a plain class per orientation, not Radix's `data-[orientation=…]:h-px` variants.
- * react-native-web does not forward a `data-*` prop, so under an Expo web build those variants
- * would match nothing and the rule would have no size. The compiled half still carries
- * `data-orientation`, so a shadcn call site's `data-[orientation=vertical]:h-4` keeps working, and a plain
- * `h-4` now wins over the default where shadcn's variant used to outrank it.
- *
- * Vertical is `self-stretch` on device rather than `h-full`: a percentage of a row whose height
- * is its content is nothing in Yoga, and the rule would be zero tall. On the web it stays shadcn's
- * `h-full`, which a flex row that stretches its children already resolves.
+ * The size is a plain class per orientation, because react-native-web does not forward the
+ * `data-orientation` a variant would match. Vertical is `self-stretch` on device rather than
+ * `h-full`: a percentage of a row whose height is its content is zero in Yoga.
  */
 import type * as React from "react";
 import { Platform, View } from "react-native";

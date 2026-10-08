@@ -117,29 +117,12 @@ function bodyLink(link: ReactElement, selected: boolean, body: ReactNode) {
 
 /**
  * One row of a list: something at the start, a title with a line under it, small facts and
- * buttons at the far end, and optionally the whole middle pressable. One source for both
- * platforms.
+ * buttons at the far end. It draws no surface; the list, card or section around it owns the
+ * border.
  *
- * It is here because six web apps and five Expo apps wrote this row by hand — philotes'
- * `PersonRow`, telos' `TodoRow`, min-agent's settings rows, mcp-router's `ServerRow` — and
- * `@cubeui/item`, the shadcn primitive that covers it on the web, has no React Native half. The
- * copies agree on the shape (`gap-3`, `px-3 py-2.5`, a `text-sm font-medium` title over an
- * `text-xs` muted line) and disagree on the part that matters: where the press goes.
- *
- * **The pressed area is the middle, and only the middle.** A row that opens *and* has buttons is
- * the common case, and the hand-written answer was either a button wrapping buttons (invalid
- * HTML, and every inner click also opens the row) or a stretched overlay whose inner controls
- * need `pointer-events` juggling on two platforms. So the row is three siblings — `leadingSlot`,
- * the pressable middle, `actionSlot` — and each control is reached, pressed and announced on its
- * own. On the web the middle is a real `<button>`, named by the text inside it.
- *
- * **A row that goes somewhere is a link, not a press that navigates.** `href` or `linkSlot` makes
- * the middle an `<a>` on the web and `role="link"` on device, so it opens in a new tab, shows its
- * URL on hover, and a screen reader hears a link. `onPress` alone stays a button, for a row that
- * opens something on the page it is on.
- *
- * No surface: a row lives in a list, a card or a section, and that owns the border. Pass
- * `className="rounded-lg border border-foreground/10 bg-secondary"` for the telos look.
+ * The pressed area is the middle and only the middle, so the row is three siblings
+ * (`leadingSlot`, the middle, `actionSlot`) and no button wraps another. `href` or `linkSlot`
+ * makes the middle a link, and `onPress` alone keeps it a button.
  */
 export function ListItem({
   title,

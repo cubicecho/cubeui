@@ -1,67 +1,16 @@
 /**
- * The icon set, native implementation. `icons.web.tsx` is its web counterpart
- * and `icons-base.ts` holds what they share.
+ * The icon set, native implementation. `icons.web.tsx` is its web counterpart and
+ * `icons-base.ts` holds what they share.
  *
- * Every icon is imported from `lucide-react-native/icons/<name>` rather than the
- * package barrel: the barrel re-exports 1600-odd separate modules and Metro does
- * not tree-shake, so a barrel import pulls the entire set into the bundle.
+ * Each icon is imported from `lucide-react-native/icons/<name>`, because Metro does not tree-shake
+ * the package barrel. `cssInterop` teaches each one `className`, and its colour is resolved
+ * eagerly since a device has no `currentColor`: `text-foreground`, then `IconClassContext`, then
+ * the call site's own `text-*`.
  *
- * Two things happen to each icon on the way out:
- *
- * - `cssInterop` teaches it `className`. `h-4 w-4` and `text-*` are lifted out of
- *   the resolved style and handed to the icon as `width` / `height` / `color`
- *   props, which is what lucide reads; everything else (margins, opacity) stays
- *   on `style`, which `Svg` accepts.
- * - The colour is resolved eagerly, because there is no `currentColor` to inherit
- *   off device. `text-foreground` is the floor, `IconClassContext` overrides it
- *   for containers that set their own colour, and the call site's own `text-*`
- *   overrides both.
- *
- * This is the set the registry's own components need, plus a short tail that no
- * component here uses and every app does: `Play`, `Pause`, `Square`, `Sun`,
- * `Moon` and `Monitor` — transport controls and a theme toggle. They are the names a consumer
- * reached for first and had to go around this module for, and an icon imported
- * straight from `lucide-react-native` is one that missed `cssInterop`, so
- * `className` does nothing to it and the sizing and colour have to be written
- * as props. A barrel that is only what this registry happens to need is a barrel
- * people route around; these six are the cheapest way to find out that is what
- * was happening.
- *
- * And seven that two apps had each wrapped for themselves with `icon` (#210):
- * `FileText`, `Folder`, `KeyRound`, `Lock`, `Plug`, `Tag` and `Ellipsis`. A
- * glyph wrapped in one app is what `icon` is for; the same line in a second
- * app's `app-icons.tsx` is the duplication this module exists to remove, so
- * that is the bar for the next one.
- *
- * And five more that an app wrapped for a file manager's rows (#232): `FilePen`
- * and `FolderPen` for a rename, `ArrowDownWideNarrow` for a sort menu, `UserRound`
- * for a thing only a person may touch, and `Library` for a collection.
- *
- * And `File` (#226), which two apps wrapped for the rows of a file tree and
- * `FileTree` now draws itself: a file that is not known to be text.
- *
- * A glyph an app needs and this set does not ship belongs in the app's own
- * file, wrapped with the exported `icon` (below), rather than in this one:
- * the next `shadcn add` of this item overwrites whatever was added here.
- *
- * That is the settled answer and not a stopgap (#251). A barrel generated from
- * the names an app imports, a lazy `<Icon name>`, an item per glyph and a
- * web-only re-export of all of lucide were each weighed against it; every one
- * trades a one-line `icon(...)` in the app for a build step, an async paint, a
- * thousand items or two halves that export different names, and none keeps a
- * glyph out of a device bundle that the line would have put there. On the web
- * an app needs no line at all: a glyph from `lucide-react` is already what
- * `icon` would hand back.
- *
- * Adding to this set is for the registry itself, and it goes in **both files**:
- * the web counterpart must export the same names, and TypeScript will not tell
- * you it does not, because it only ever resolves the native file. `npm run
- * registry:check` is what catches a name that exists on one platform only.
- *
- * Names are lucide's canonical ones. Several are reachable under legacy aliases
- * (`AlertCircle`, `CheckCircle2`, `Loader2`, `Wand2`); those are deprecated
- * upstream, so importing through this module is also what keeps the next lucide
- * bump from being a rename sweep.
+ * A glyph an app needs and this set lacks is wrapped in the app with the exported `icon`, since
+ * the next `shadcn add` overwrites this file. A name added here goes in both files: TypeScript
+ * resolves only the native one, and `npm run registry:check` is what catches a name on one
+ * platform only. Names are lucide's canonical ones, not its deprecated aliases.
  */
 
 import type { LucideIcon, LucideProps } from "lucide-react-native";

@@ -1,21 +1,12 @@
 /**
- * The theme preference on device. `theme-preference.web.tsx` is the web half — Metro picks it for
- * an Expo app's web build — and `theme-preference-base.ts` holds what the two share.
+ * The theme preference on device. `theme-preference.web.tsx` is the web half and
+ * `theme-preference-base.ts` holds what the two share.
  *
- * Applying the choice is `Appearance.setColorScheme`: the native tokens follow the system
- * appearance through `prefers-color-scheme`, and that call is what moves it for this app.
- * `"unspecified"` hands it back to the system, which then follows the device by itself — so, unlike
- * the web, System needs no listener here.
- *
- * A palette is the other half, and the appearance knows nothing of it: `PaletteProvider` at the
- * app's root puts its colours over the stylesheet's through NativeWind's `VariableContextProvider`.
- * A dark-only palette also sets the appearance to dark, so `useColorScheme()` and a `dark:` class
- * agree with what is painted.
- *
- * Storing it is the app's: `storage` is an adapter over whatever the app already persists with, so
- * the item depends on no storage package. The read is asynchronous, so the stored choice lands a
- * moment after the first render — while the splash screen is still up, in an app that holds it
- * until its own state is loaded.
+ * Applying the choice is `Appearance.setColorScheme`, and `"unspecified"` hands it back to the
+ * system, so System needs no listener here. A palette is `PaletteProvider` at the app's root, and
+ * a dark-only one also sets the appearance to dark. `storage` is an adapter over whatever the app
+ * persists with; its read is asynchronous, so the stored choice lands just after the first
+ * render.
  */
 
 import { VariableContextProvider } from "nativewind";

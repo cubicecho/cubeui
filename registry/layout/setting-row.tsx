@@ -35,32 +35,12 @@ type SettingRowProps = {
 
 /**
  * One row of a settings page: the title and a line on what it does at the start, the control that
- * changes it at the end. One source for both platforms.
+ * changes it at the end. It frames any control; a lone boolean with its caption is `SwitchField`.
  *
- * It is here because five projects wrote the same row by hand — skills-manager's `ToggleRow`,
- * philotes' dark-mode row, engrafo's theme row, mcp-router's workspace switch and zeromem's three
- * maintenance rows — with a `justify-between` in most and a different answer in each to "what
- * happens when it does not fit".
- *
- * **It wraps rather than breaking at a width.** The text has a floor (`min-w-48`) and the control
- * does not shrink, so the control sits beside the text while both fit and drops under it, at the
- * start, when they do not. That is `DescriptionList`'s rule, and for the same reason: it follows
- * the width the row is actually given — a card, a prose column, one pane of a split — where a
- * viewport breakpoint follows the window and stacks nothing in a narrow pane on a wide screen. It
- * also keeps a switch beside its title on a phone, which is where settings apps put it, while a
- * select or a wide button goes under. Plain flex-wrap, so Yoga does the same on device.
- *
- * **The title names the control when the caller lets it.** The row cannot reach inside a node it
- * was handed, so `actionSlot` may be a function, and it is given the title's id to point
- * `aria-labelledby` at — a stable `useId`, on the title as `id` (a `nativeID` on device). That is
- * the one hookup that works on both halves: a `<label htmlFor>` cannot name a `role="switch"`
- * `Pressable` on device, and it would rename a button whose own text is its name. A caller who
- * wants neither passes a node.
- *
- * Not `SwitchField`: that is a lone boolean with its caption beside it, and stays that. This is
- * the row that frames any control — a select, a button, an input, or a switch with a description.
- *
- * No state, no data, no `children`.
+ * The row wraps rather than breaking at a width: the control sits beside the text while both fit
+ * and drops under it when they do not, by the width the row is given. `actionSlot` may be a
+ * function, which is handed the title's id to point `aria-labelledby` at. A `<label htmlFor>`
+ * cannot name a `role="switch"` `Pressable` on device.
  */
 export function SettingRow({
   title,

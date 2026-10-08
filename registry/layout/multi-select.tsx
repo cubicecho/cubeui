@@ -305,27 +305,13 @@ function OptionRow({
 }
 
 /**
- * A combobox that selects more than one thing.
+ * A combobox that selects more than one thing: a `Popover` over a `Command` on both halves. On
+ * the web that is radix over cmdk, which owns the keyboard; on device it is a centred sheet whose
+ * rows are pressed.
  *
- * There are three of these across these projects and none of them is the same shape. One is a
- * `Popover` over a `Command` with search and a create row; one is a hand-rolled `div` with an
- * outside-click `useEffect`, no portal, no keyboard navigation, and `aria-haspopup="listbox"` on
- * a button with no listbox anywhere beneath it; the third is a stack of checkboxes. The middle
- * one is the one that matters, because it looks like a combobox and is not operable as one — it
- * cannot be opened, moved through or chosen from without a mouse.
- *
- * So this is the first shape, kept: a real `Popover` over a `Command`, on both halves. On the web
- * that is radix (portalled, focus-trapped, closes on Escape and on outside click without anyone
- * writing the listener) over cmdk, which owns the roving focus and the typeahead. On device it is
- * the native popover's centred sheet over the native command list, where a row is chosen by
- * pressing it.
- *
- * **Clearing is in the footer, not on the trigger.** The obvious place for an `X` is inside the
- * trigger, and the trigger is a `<button>` — a button inside a button is not valid HTML and the
- * inner one is unreachable by keyboard in every browser. So on the web the chips have no remove
- * buttons and the footer holds the one Clear. On device a `Pressable` inside a `Pressable` is
- * fine — the inner one takes the touch — so there each chip is a removable `Badge` as well, for
- * the thumb; the sheet's rows and its Clear are still the way a screen reader does it.
+ * Clearing is in the footer and not on the trigger, because the trigger is a `<button>` and a
+ * button inside a button is invalid and unreachable by keyboard. On device each chip is also a
+ * removable `Badge`, since a `Pressable` inside a `Pressable` takes the touch.
  */
 export function MultiSelect({
   options,
