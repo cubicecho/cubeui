@@ -291,7 +291,7 @@ const DEPENDENCIES: MultiSelectOption[] = [
  *
  * Greyed out on its own reads as a bug in the picker. The reason is knowable when the options are
  * built and unreachable by the time somebody wonders — and it cannot be a tooltip, because a
- * disabled row fires no hover, which is the same trap `ActionButton` was written for.
+ * disabled row fires no hover, which is the same trap `Button`'s `hint` was written for.
  */
 export const ADisabledOptionCanSayWhy: Story = {
   args: { options: DEPENDENCIES },
@@ -316,7 +316,7 @@ export const ADisabledOptionCanSayWhy: Story = {
  * Rendered inside the row, the hint would otherwise be swept into the accessible name by the
  * contents — so the option would announce as "Deploy Waiting on this would close a loop…" and
  * then read the same sentence again as its description. `aria-label` pins the name to the label
- * and `aria-describedby` carries the reason, which is `ActionButton`'s arrangement exactly.
+ * and `aria-describedby` carries the reason, which is `Button`'s arrangement exactly.
  */
 export const TheHintIsADescriptionNotAName: Story = {
   args: { options: DEPENDENCIES },
@@ -333,7 +333,7 @@ export const TheHintIsADescriptionNotAName: Story = {
     expect(hint).toHaveAttribute("data-slot", "multi-select-option-hint");
 
     // An option with nothing to explain points at nothing, so it is not described by an empty
-    // node — the same rule `ActionButton` follows for a missing hint.
+    // node — the same rule `Button` follows for a missing hint.
     expect(screen.getByRole("option", { name: "Ship the API" })).not.toHaveAttribute(
       "aria-describedby",
     );

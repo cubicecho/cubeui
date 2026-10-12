@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FormField } from "@/components/form-field";
 import type { SelectEntry, SelectOption, SelectSeparatorEntry } from "@/components/option-select";
 import { OptionSelect } from "@/components/option-select";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonPropsWithout } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -355,10 +355,7 @@ function BoundSwitchField(props: SwitchFieldProps) {
   );
 }
 
-type SubmitButtonProps = Omit<
-  ComponentProps<typeof Button>,
-  "type" | "loading" | "loadingLabel"
-> & {
+type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel"> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
   pendingLabel?: string | undefined;
 };

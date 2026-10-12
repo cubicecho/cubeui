@@ -125,7 +125,7 @@ field — because data that has not arrived is not data that came back empty or 
 
 | Word | Means |
 | --- | --- |
-| `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
+| `aria-label` | On a `Button` or `ConfirmButton` in an `icon*` size, the required accessible name. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
 | `leadingSlot` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `iconSlot` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
 | `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `actionSlot` would read as a second button in the row. It takes a string as well as an element — a shortcut is words, and the row draws them — so it keeps the bare name. |
@@ -230,7 +230,7 @@ Notes on why the layering is where it is:
   name: on the web the row is named by the text inside it, which a clipped label joins, but on
   device a pressable is one element named by an `accessibilityLabel` string, and a node's text
   cannot be read back out into one. Its fields are `label` and `iconSlot` with their usual meanings —
-  the label is what is read, as on `ActionButton`, and the icon is sized and coloured by the row.
+  the label is what is read, and the icon is sized and coloured by the row.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 - **`labelHideBelow` is that prefix at work, on the group and not the pill.** `Sidebar` already
@@ -239,7 +239,7 @@ Notes on why the layering is where it is:
   one value `hideBelow` does not have, for a row that is icons at every width. It is on
   `SegmentedGroup` because a row where one pill has dropped its label and the next has not is a
   mistake no call site wants, and a prop on each pill would make it expressible. The label stays
-  required: hidden, it is the pill's name, which is what `ActionButton`'s `label` already means.
+  required: hidden, it is the pill's name, as an icon `Button`'s `aria-label` is.
 
 ## 3. Variants are literal class maps
 

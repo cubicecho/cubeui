@@ -17,14 +17,21 @@
  * text colour is not inherited on native. There is no `asChild`; a button that navigates takes
  * the link as `linkSlot`. The compiled web half is a real `<button>` with the rest of its props,
  * and its sizes and variants are a superset of shadcn's.
+ *
+ * An `icon*` size has to be given an `aria-label`. A `hint` is the button's tooltip, the only
+ * one it draws, and is read after the name: on the web from an always-mounted `sr-only` text
+ * the button points at, because Radix unmounts a closed tooltip, and on device as the
+ * accessibility hint. With a `hint`, `disabled` is `aria-disabled`, so the reason can be reached.
  */
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot } from "radix-ui";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
+import type { TooltipSide } from "@/components/ui/tooltip-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Spinner } from "./spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 /** The button's container classes for each `variant` and `size`. */
 const buttonVariants = cva(
@@ -113,7 +120,8 @@ const buttonTextVariants = cva("font-medium", {
   defaultVariants: { variant: "default", size: "default" },
 });
 
-export type ButtonProps = Omit<
+/** The button itself, before the name rule and the tooltip are added to it. */
+type ButtonBodyProps = Omit<
   React.ComponentPropsWithoutRef<"button">,
   // `content` is also an HTML attribute (RDFa's), a string, which the compiled half would
   // otherwise intersect with the label's type.
@@ -129,10 +137,7 @@ export type ButtonProps = Omit<
      * a select's trigger passes the chosen value's own `<Text>`.
      */
     content?: React.ReactNode;
-    /**
-     * Before the label, or alone in an `icon*` size — where the button needs an `aria-label`,
-     * which `ActionButton` makes a required prop.
-     */
+    /** Before the label, or alone in an `icon*` size, where `aria-label` is required. */
     iconSlot?: SlotNode;
     /** The far end, after the label: a trigger's chevron, a count. */
     trailingSlot?: SlotNode;
@@ -154,6 +159,60 @@ export type ButtonProps = Omit<
     /** The label while `loading`: "Saving…". Without one the label stays as it was. */
     loadingLabel?: string | undefined;
   };
+
+type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>["size"]>;
+
+/** The sizes that draw an icon and no label. */
+type IconSize = Extract<ButtonSize, `icon${string}`>;
+
+/**
+ * The accessible name, which an `icon*` size cannot go without.
+ *
+ * An icon alone is announced as "button". A `title` is a hover hint and not a name, so the type
+ * asks for `aria-label`, because a type is checked and a review is not.
+ */
+type IconButtonName = { size: IconSize; "aria-label": string };
+
+/** A button with a label is named by it, and may be given another name. */
+type TextButtonName = {
+  size?: Exclude<ButtonSize, IconSize> | null | undefined;
+  "aria-label"?: string | undefined;
+};
+
+type ButtonHint = {
+  /**
+   * Why it is unavailable, or what it will do: the tooltip, and read after the name whether or
+   * not the tooltip is open. On device only a string is read; a node is shown and not read.
+   *
+   * With a `hint`, `disabled` keeps the button's focus, hover and tooltip and refuses the press,
+   * since a truly disabled button could not be asked why.
+   */
+  hint?: React.ReactNode | undefined;
+  /**
+   * Off, the button keeps its `hint` as its description and drops the tooltip. A tooltip is
+   * only ever drawn for a `hint`.
+   *
+   * @defaultValue true
+   */
+  tooltip?: boolean | undefined;
+  /** Which edge of the button the tooltip sits on. */
+  side?: TooltipSide | undefined;
+  /**
+   * More ids to describe the button with, kept ahead of the hint's own. Web only: a device
+   * describes a control with its accessibility hint, which is what `hint` becomes there.
+   */
+  "aria-describedby"?: string | undefined;
+};
+
+type ButtonSharedProps = Omit<ButtonBodyProps, "size" | "aria-label"> & ButtonHint;
+
+export type ButtonProps = ButtonSharedProps & (IconButtonName | TextButtonName);
+
+/** `Omit` over each arm of a union, where the plain one would merge the arms into one. */
+type OmitEach<Props, Key extends PropertyKey> = Props extends unknown ? Omit<Props, Key> : never;
+
+/** {@link ButtonProps} less some keys, with an `icon*` size still tied to its `aria-label`. */
+export type ButtonPropsWithout<Key extends PropertyKey> = OmitEach<ButtonProps, Key>;
 
 /**
  * The `onClick` a radix trigger merges onto its child through `Slot` — `<PopoverTrigger asChild>`
@@ -186,8 +245,8 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
   return both as Press;
 }
 
-/** A button made of `iconSlot`, `content` and `trailingSlot`, with a `loading` state. */
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+/** The pressable itself: `Button` without its tooltip and its `hint`. */
+const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
   (
     {
       className,
@@ -283,6 +342,127 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {React.cloneElement(linkSlot, undefined, leading, labelled, trailingSlot)}
         </Slot.Root>
       </IconClassContext.Provider>
+    );
+  },
+);
+ButtonBody.displayName = "ButtonBody";
+
+/** Hands `node` to a ref of either kind. */
+function assignRef<Node>(ref: React.ForwardedRef<Node>, node: Node | null) {
+  if (typeof ref === "function") {
+    ref(node);
+    return;
+  }
+  if (ref) {
+    ref.current = node;
+  }
+}
+
+type ButtonRef = React.RefAttributes<HTMLButtonElement>;
+
+/**
+ * `Button`'s two signatures: the one a call is checked against, then the one
+ * `ComponentProps<typeof Button>` reads, which is always the last.
+ *
+ * The second is the props without the `icon*` sizes. Read as the union, Storybook's `StoryObj`
+ * intersects the two arms into `never`; a wrapper that takes an `icon*` size uses
+ * {@link ButtonProps}.
+ */
+type ButtonComponent = {
+  (props: ButtonProps & ButtonRef): React.ReactNode;
+  (props: ButtonSharedProps & TextButtonName & ButtonRef): React.ReactNode;
+  displayName?: string | undefined;
+};
+
+/**
+ * A button made of `iconSlot`, `content` and `trailingSlot`, with a `loading` state and a `hint`
+ * that is its tooltip and can still be read while it is disabled.
+ */
+const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      hint,
+      tooltip = true,
+      side = "top",
+      disabled,
+      className,
+      onClick: onPress,
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
+    const hintId = React.useId();
+    const hasHint = Boolean(hint);
+    // Only with a hint: with nothing to read, a disabled button is better off out of the tab order.
+    const refuses = hasHint && Boolean(disabled);
+
+    const node = React.useRef<HTMLButtonElement | null>(null);
+    const setNode = React.useCallback(
+      (next: HTMLButtonElement | null) => {
+        node.current = next;
+        assignRef(ref, next);
+      },
+      [ref],
+    );
+    // Under Expo web react-native-web's `Pressable` writes its own `aria-disabled` over the one it
+    // is handed, so the refusal was not announced there. It is put on the element instead.
+    React.useEffect(() => {
+      if (refuses === false) {
+        return;
+      }
+      const element = node.current as unknown as Element | null;
+      element?.setAttribute("aria-disabled", "true");
+      return () => element?.removeAttribute("aria-disabled");
+    }, [refuses]);
+
+    // Only pointed at when there is a hint: with none the tooltip repeats the name, and describing
+    // the button with its own name has it read as "Delete workspace, Delete workspace".
+    const describedBy = hasHint
+      ? [ariaDescribedBy, hintId].filter(Boolean).join(" ")
+      : ariaDescribedBy;
+
+    const button = (
+      <ButtonBody
+        aria-describedby={describedBy}
+        {...props}
+        ref={setNode}
+        // Not `disabled`: on the web the attribute is what removes the hover and the tab stop, and
+        // on device the prop is what swallows the long press, and with them the explanation.
+        disabled={refuses ? false : disabled}
+        {...(refuses ? { "aria-disabled": true } : {})}
+        // `opacity-50` is what `disabled` would have drawn.
+        className={cn(refuses && "opacity-50", className)}
+        onClick={refuses ? (event) => event.preventDefault() : onPress}
+      />
+    );
+
+    // Outside the button: `aria-label` already overrides its content for the name. Web only,
+    // where `aria-describedby` is how it is read; the device has the accessibility hint.
+    const description = hasHint ? (
+      <span id={hintId} className="cube-rn-text sr-only text-foreground">
+        {hint}
+      </span>
+    ) : null;
+
+    // `tooltip={false}` drops the tooltip, not the explanation: the description stays.
+    if (tooltip === false || hasHint === false) {
+      return (
+        <>
+          {button}
+          {description}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent side={side}>{hint}</TooltipContent>
+        </Tooltip>
+        {description}
+      </>
     );
   },
 );

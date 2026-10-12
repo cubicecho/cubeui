@@ -105,9 +105,8 @@ const toolbarDescription = "Files live under the skill's folder; you can also ed
  */
 function WideActionSections({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
   const buttons = toolbarLabels.map((label) => (
-    <Button key={label} variant="outline" size="sm" content={label} />
+    <HalfButton half={half} key={label} variant="outline" size="sm" content={label} />
   ));
   const row =
     half === "native" ? (
@@ -185,13 +184,12 @@ export const WideActionNarrow: Story = {
 /** One half's phone-width section with a single small button as its `actionSlot`. */
 function SmallActionSection({ half }: { half: "native" | "compiled" }) {
   const Section = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
   return (
     <div data-testid={`${half}-small`} style={{ width: 390 }}>
       <Section
         title="Files"
         description={toolbarDescription}
-        actionSlot={<Button variant="outline" size="sm" content="Export" />}
+        actionSlot={<HalfButton half={half} variant="outline" size="sm" content="Export" />}
         contentSlot={body}
       />
     </div>
@@ -232,3 +230,22 @@ export const SmallActionStaysBeside: Story = {
     }
   },
 };
+
+/**
+ * One half's `Button`. A component picked by a ternary would be a union of the two halves'
+ * `Button`s, and each has two call signatures, which TypeScript cannot call through a union.
+ */
+function HalfButton({
+  half,
+  ...props
+}: {
+  half: "native" | "compiled";
+  variant?: "outline";
+  size?: "sm";
+  content: string;
+}) {
+  if (half === "native") {
+    return <NativeButton {...props} />;
+  }
+  return <CompiledButton {...props} />;
+}

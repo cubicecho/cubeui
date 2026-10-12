@@ -2,12 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
-import { ActionButton } from "../../registry/layout/action-button";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
-import { DetailHeader, EditButton } from "../../registry/layout/detail-header";
+import { DetailHeader } from "../../registry/layout/detail-header";
 import { DetailPage } from "../../registry/layout/detail-page";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
@@ -681,7 +680,7 @@ const navLink = "rounded-md px-3 py-1.5 text-muted-foreground text-sm";
 const sections: GallerySection[] = [
   {
     title: "Buttons",
-    items: ["button", "action-button", "confirm-button"],
+    items: ["button", "confirm-button"],
     description:
       "Every variant, then every size. The confirm button opens its question when pressed.",
     content: (
@@ -714,15 +713,15 @@ const sections: GallerySection[] = [
           <Button size="icon-lg" variant="outline" aria-label="Add, large" iconSlot={<Plus />} />
         </Row>
         <Row>
-          <ActionButton
-            label="Download report"
+          <Button
+            aria-label="Download report"
+            hint="Saves it to this device"
             variant="outline"
             size="icon"
             onPress={noop}
             iconSlot={<Download />}
           />
           <ConfirmButton
-            label="Delete project"
             variant="destructive-outline"
             title="Delete this project?"
             description="Its tasks go with it."
@@ -1061,7 +1060,15 @@ const sections: GallerySection[] = [
           title="Quarterly review"
           subtitle="Due on Friday"
           badgeSlot={<Badge variant="positive" label="On track" />}
-          actionsSlot={<EditButton onPress={noop} />}
+          actionsSlot={
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={noop}
+              iconSlot={<Pencil />}
+              content="Edit"
+            />
+          }
         />
       </Stack>
     ),

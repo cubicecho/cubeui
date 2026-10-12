@@ -13,9 +13,9 @@
  * Before reaching for this, check `ConfirmDialog`, `confirm()` and `ConfirmButton`, which are
  * this dialog assembled for a destructive question and are what a new call site wants.
  */
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { View } from "react-native";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps, type ButtonPropsWithout } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -29,8 +29,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-
-type ButtonProps = ComponentProps<typeof Button>;
 
 /*
  * The root and the trigger are the native `Dialog`'s own, not wrappers round them: `Dialog` finds
@@ -135,34 +133,22 @@ function ClosingButton({
  * `Button`'s props, and the label as `children` — shadcn's shape for these two, which the web half
  * keeps, so a call site reads the same on both.
  */
-type ActionProps = Omit<ButtonProps, "content"> & { children?: ReactNode };
+type ActionProps = ButtonPropsWithout<"content"> & { children?: ReactNode };
 
 /** The button that confirms, and closes the dialog. */
-function AlertDialogAction({
-  variant = "default",
-  size = "default",
-  onPress,
-  children,
-  ...props
-}: ActionProps) {
+function AlertDialogAction({ variant = "default", onPress, children, ...props }: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
+      <ClosingButton variant={variant} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }
 
 /** The button that declines, and closes the dialog. */
-function AlertDialogCancel({
-  variant = "outline",
-  size = "default",
-  onPress,
-  children,
-  ...props
-}: ActionProps) {
+function AlertDialogCancel({ variant = "outline", onPress, children, ...props }: ActionProps) {
   return (
     <DialogClose asChild>
-      <ClosingButton variant={variant} size={size} onAct={onPress} {...props} content={children} />
+      <ClosingButton variant={variant} onAct={onPress} {...props} content={children} />
     </DialogClose>
   );
 }

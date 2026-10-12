@@ -171,7 +171,7 @@ It is not a page.
 
   ```tsx
   <PageHeader breadcrumbsSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
-    title={workspace?.name} actionSlot={<EditButton />} />
+    title={workspace?.name} actionSlot={<Button content="Edit" />} />
   ```
 
 - **The rule under the header is not a prop.** It is drawn when there is no `contentSlot` and not
@@ -472,7 +472,7 @@ is the copy this replaces.
   fit in, so pass a long count already capped (`"99+"`). The status's `iconSlot` is not drawn here.
 - **It binds to a router as the row does**: `createLink(BarNavItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
-- **It is always a link.** A button in the bar is an `ActionButton` in `actionSlot`.
+- **It is always a link.** A button in the bar is an icon `Button` in `actionSlot`.
 - **Size the list to the bar.** Each item is 32px and the `navSlot` neither scrolls nor wraps; a phone
   fits about five beside a brand mark and two actions. An app with more places than that picks the
   ones the bar shows.
@@ -1012,7 +1012,7 @@ Two shells for the shape every list route is: a ladder of states, then rows.
     title={role.name}
     meta={<span className="text-foreground/60 text-xs">{role.lanes} lanes</span>}
     description={role.prompt}
-    actionSlot={<ActionButton label="Delete" … />}
+    actionSlot={<Button aria-label="Delete" size="icon" … />}
     contentSlot={<RolePrompt role={role} />}
   />
 ))}
@@ -1145,7 +1145,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `actionSlot` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  outline `Button`s (or `ActionButton`s); the row adds the gap.
+  outline `Button`s; the row adds the gap.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an

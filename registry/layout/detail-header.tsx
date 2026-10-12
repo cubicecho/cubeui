@@ -10,21 +10,8 @@ import type { ReactNode } from "react";
 import { Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { ColorDot } from "@/components/ui/color-dot";
-import { ArrowLeft, Pencil } from "@/components/ui/icons";
+import { ArrowLeft } from "@/components/ui/icons";
 import type { SlotNode } from "@/lib/utils";
-
-/** The outline "Edit" action a detail header usually carries. */
-export function EditButton({ onPress, label = "Edit" }: { onPress: () => void; label?: string }) {
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      onPress={onPress}
-      iconSlot={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
-      content={label}
-    />
-  );
-}
 
 type DetailHeaderProps = {
   onBack: () => void;

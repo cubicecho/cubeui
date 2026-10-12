@@ -35,7 +35,7 @@ import {
   type ValuesOf,
 } from "@/lib/form-binding";
 import { cn, type SlotNode } from "@/lib/utils";
-import { Button } from "./button";
+import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
 import {
   FieldContent,
@@ -560,7 +560,7 @@ type SubmitButtonProps = {
    * `disabled={false}` never enables an invalid form.
    */
   disabled?: boolean | undefined;
-} & Omit<React.ComponentProps<typeof Button>, "disabled" | "content" | "loading" | "loadingLabel">;
+} & ButtonPropsWithout<"disabled" | "content" | "loading" | "loadingLabel">;
 
 /**
  * The submit control: reads `canSubmit` / `isSubmitting` from form context, so

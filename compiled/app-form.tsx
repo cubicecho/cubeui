@@ -21,7 +21,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
-import { Button } from "./button";
+import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
 import { FormField } from "./form-field";
 import { Input } from "./input";
@@ -366,10 +366,7 @@ function BoundSwitchField(props: SwitchFieldProps) {
   );
 }
 
-type SubmitButtonProps = Omit<
-  ComponentProps<typeof Button>,
-  "type" | "loading" | "loadingLabel"
-> & {
+type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel"> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
   pendingLabel?: string | undefined;
 };

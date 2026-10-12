@@ -739,7 +739,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
  *
  * `label` is required, because it is the link's only name and its tooltip. The count is a badge on
  * the icon and a `status` is a dot, and both are in the name: "Skills, MCP on, 12". It is always a
- * link; the bar's buttons are `ActionButton`s in `actionSlot`.
+ * link; the bar's buttons are icon `Button`s in `actionSlot`.
  */
 const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {

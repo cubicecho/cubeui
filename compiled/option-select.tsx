@@ -12,7 +12,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { useId, useMemo, useState } from "react";
 import { matchesEveryWord } from "@/components/ui/command-base";
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
+import { Button, type ButtonProps } from "./button";
 import {
   Command,
   CommandEmpty,
@@ -75,7 +75,7 @@ export type SelectSeparatorEntry = { separator: true };
  * from an `sr-only` live region beside the control instead, always mounted — a live region added
  * to the document in the same breath as its text is announced unreliably or not at all, and the
  * whole case here is that the menu opens *before* the list exists. Same argument as
- * `ActionButton`'s `hint`.
+ * `Button`'s `hint`.
  *
  * `className` because the two of these are rarely the same colour — a wait is muted and a
  * failure is not.
@@ -238,7 +238,7 @@ type SearchableMenuProps = Pick<
   blocks: SelectBlock[];
   chosen: SelectOption | undefined;
   /** The field wiring, for the trigger. */
-  trigger: Omit<ComponentProps<typeof Button>, "children">;
+  trigger: ButtonProps;
 };
 
 /**
@@ -449,7 +449,7 @@ export function OptionSelect({
           emptyMessage={emptyMessage}
           // The select trigger's props are the button's on the web and a subset of them on
           // device, so they are the same wiring on a different element.
-          trigger={props as Omit<ComponentProps<typeof Button>, "children">}
+          trigger={props as ButtonProps}
         />
         {announcer}
       </>
