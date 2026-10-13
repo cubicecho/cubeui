@@ -144,11 +144,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour. An `icon*` size requires an `aria-label`; a `hint` is its tooltip, and with one, `disabled` is `aria-disabled`, so the reason is still reachable.",
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ],
+      "dependencies": ["@radix-ui/react-slot@^1.5.0", "class-variance-authority@^0.7.1"],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
@@ -997,11 +993,7 @@
       "type": "registry:ui",
       "title": "Form",
       "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
-      "dependencies": [
-        "@tanstack/react-form@^1.33.5",
-        "@types/react-dom@~19.2.0",
-        "radix-ui@^1.6.7"
-      ],
+      "dependencies": ["@radix-ui/react-slot@^1.5.0", "@tanstack/react-form@^1.33.5"],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
