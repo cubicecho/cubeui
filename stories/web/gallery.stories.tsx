@@ -244,6 +244,8 @@ const NOT_SHOWN: Record<string, string> = {
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
   "error-message": "A function; the form fields read their error text with it.",
+  "description-hint":
+    'The button behind `descriptionPlacement="popover"`; the fields, cards, sections and rows draw it.',
   "form-binding": "Types and one function; the form fields are bound to a form through them.",
   tree: "`buildTree`, a function; the file tree is drawn from what it returns.",
   "unsaved-changes-guard":
