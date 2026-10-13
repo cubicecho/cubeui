@@ -52,6 +52,7 @@ export {
   ChevronUp,
   CircleAlert,
   CircleCheck,
+  CircleQuestionMark,
   Clock,
   Copy,
   Download,

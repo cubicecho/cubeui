@@ -37,6 +37,32 @@ function LaneForm({ options = DESTINATIONS }: { options?: readonly SelectEntry[]
   );
 }
 
+function OwnerForm() {
+  const form = useAppForm({ defaultValues: { owner: null as string | null } });
+
+  return (
+    <form className="grid w-[360px] gap-4">
+      <SelectField
+        form={form}
+        name="owner"
+        label="Owner"
+        options={[
+          { value: "ada", label: "Ada Lovelace" },
+          { value: "grace", label: "Grace Hopper" },
+        ]}
+        clearable
+        emptyLabel="Nobody"
+        validators={{
+          onChange: ({ value }) => (value === null ? "Someone has to own it" : undefined),
+        }}
+      />
+      <form.Subscribe selector={(state) => state.values.owner}>
+        {(owner) => <output aria-label="Stored owner">{JSON.stringify(owner)}</output>}
+      </form.Subscribe>
+    </form>
+  );
+}
+
 const meta = {
   title: "Forms/SelectField",
   component: LaneForm,
@@ -158,5 +184,43 @@ export const AFlatListIsStillFlat: Story = {
       expect(within(list).queryAllByRole("group", { name: /./ })).toHaveLength(0);
       expect(within(list).getAllByRole("option")).toHaveLength(2);
     });
+  },
+};
+
+/**
+ * `clearable` puts a row for "nothing" first, saying `emptyLabel`. A field holding `null` opens
+ * on it, and going back to it writes `null`: no stand-in value reaches the store.
+ */
+export const NothingIsARowOfItsOwn: Story = {
+  render: () => <OwnerForm />,
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByLabelText(/^Owner/);
+    const stored = canvas.getByLabelText("Stored owner");
+    expect(trigger).toHaveTextContent("Nobody");
+    expect(stored).toHaveTextContent("null");
+
+    await inTheList(trigger, (list) => {
+      expect(within(list).getAllByRole("option")[0]).toHaveTextContent("Nobody");
+    });
+
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("option", { name: "Ada Lovelace" }));
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).toBeNull();
+    });
+    expect(stored).toHaveTextContent('"ada"');
+
+    await userEvent.click(trigger);
+    await userEvent.click(await screen.findByRole("option", { name: "Nobody" }));
+    await waitFor(() => {
+      expect(screen.queryByRole("listbox")).toBeNull();
+    });
+    expect(stored).toHaveTextContent("null");
+    expect(trigger).toHaveTextContent("Nobody");
+
+    trigger.focus();
+    await userEvent.tab();
+    expect(await canvas.findByRole("alert")).toHaveTextContent("Someone has to own it");
+    expect(trigger).toHaveAttribute("aria-invalid", "true");
   },
 };

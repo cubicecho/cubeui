@@ -1,7 +1,7 @@
-import type { DeepKeys } from "@tanstack/react-form";
+import type { DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormField } from "@/components/form-field";
 import type { SelectEntry, SelectOption, SelectSeparatorEntry } from "@/components/option-select";
 import { OptionSelect } from "@/components/option-select";
@@ -18,6 +18,8 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
+import { numberText, parseNumber } from "@/lib/number-draft";
+import { menuValueOf, storedValueOf, withEmptyOption } from "@/lib/select-options";
 
 /** TanStack Form's contexts, which the bound fields read their field and form from. */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -38,6 +40,8 @@ export type FieldProps = Omit<ComponentProps<typeof FormField>, "controlSlot" | 
 const FIELD_KEYS = new Set<string>([
   "label",
   "description",
+  "descriptionPlacement",
+  "descriptionIconSlot",
   "required",
   "action",
   "loading",
@@ -119,22 +123,6 @@ function BoundInputField(props: InputFieldProps) {
   );
 }
 
-/**
- * What a number input's box says, as a number — or nothing, for empty and for the half-typed
- * states a person passes through on the way to one.
- *
- * `""`, `"-"` and `"1e"` are all "not a number yet", not zero: coercing them would make the
- * store say `0` while the box says `-`, and a required-field validator pass on an empty box.
- */
-function parseNumber(text: string): number | null {
-  const trimmed = text.trim();
-  if (trimmed === "") {
-    return null;
-  }
-  const parsed = Number(trimmed);
-  return Number.isNaN(parsed) ? null : parsed;
-}
-
 type NumberFieldProps = FieldProps &
   Omit<
     ComponentProps<typeof Input>,
@@ -162,10 +150,6 @@ function BoundNumberField(props: NumberFieldProps) {
   const [draft, setDraft] = useState<string | undefined>(undefined);
 
   const stored = field.state.value ?? null;
-  // `String`, not the raw number: the DOM `<input>` this was written against took either, and
-  // `TextInput` takes only a string — so the registry's `Input` does too, on both platforms.
-  const storedText = stored === null ? "" : String(stored);
-  const value = draft !== undefined && parseNumber(draft) === stored ? draft : storedText;
 
   return (
     <FormField
@@ -178,7 +162,7 @@ function BoundNumberField(props: NumberFieldProps) {
           inputMode="decimal"
           {...input}
           type="number"
-          value={value}
+          value={numberText(draft, stored)}
           onBlur={() => {
             // The draft has served its purpose once focus leaves: `1.` should settle to `1`.
             setDraft(undefined);
@@ -254,6 +238,17 @@ type SelectFieldProps = FieldProps & {
    * this component exists to end.
    */
   onOpenChange?: ((open: boolean) => void) | undefined;
+  /**
+   * Adds a first row for "nothing", which writes `null`. The field then holds `string | null`,
+   * and reads `null`, `undefined` and `""` as that row.
+   */
+  clearable?: boolean | undefined;
+  /**
+   * What the row for "nothing" says. Read only when `clearable`.
+   *
+   * @defaultValue `"None"`
+   */
+  emptyLabel?: string | undefined;
 };
 
 /**
@@ -270,10 +265,16 @@ function BoundSelectField({
   searchable,
   searchPlaceholder,
   onOpenChange,
+  clearable = false,
+  emptyLabel = "None",
   ...rest
 }: SelectFieldProps) {
-  const field = useFieldContext<string>();
+  const field = useFieldContext<string | null>();
   const error = useFieldError();
+  const entries = useMemo(
+    () => (clearable ? withEmptyOption(options, emptyLabel) : options),
+    [options, clearable, emptyLabel],
+  );
 
   return (
     <FormField
@@ -282,9 +283,9 @@ function BoundSelectField({
       controlSlot={(wired) => (
         <OptionSelect
           {...wired}
-          options={options}
-          value={field.state.value ?? ""}
-          onValueChange={field.handleChange}
+          options={entries}
+          value={clearable ? menuValueOf(field.state.value) : (field.state.value ?? "")}
+          onValueChange={(next) => field.handleChange(clearable ? storedValueOf(next) : next)}
           onBlur={field.handleBlur}
           placeholder={placeholder}
           searchable={searchable}
@@ -517,7 +518,7 @@ export function bindToForm<TProps extends object, TValue = unknown>(
  * <InputField form={form} name="title" label="Title" required />
  * ```
  *
- * `type="number"` writes a number back to the store, not a numeric string. `name` is checked
+ * It writes a string whatever its `type`: a number is {@link NumberField}. `name` is checked
  * against the form's values, so a renamed field breaks the build rather than going quiet.
  */
 export const InputField = bindToForm<InputFieldProps, string>(BoundInputField, "InputField");
@@ -540,8 +541,29 @@ export const TextareaField = bindToForm<TextareaFieldProps, string>(
   "TextareaField",
 );
 
-/** A select, as one line. Takes its choices as `options`, not as children. */
-export const SelectField = bindToForm<SelectFieldProps, string>(BoundSelectField, "SelectField");
+/**
+ * Lets `clearable` through only over a field that can hold the `null` it writes. A field typed
+ * `string` would be handed a value its schema never listed, and find out at the server.
+ */
+type ClearableOver<TValues, TName extends DeepKeys<TValues>> =
+  null extends DeepValue<TValues, TName> ? boolean | undefined : false | undefined;
+
+/**
+ * A select, as one line. Takes its choices as `options`, not as children.
+ *
+ * ```tsx
+ * <SelectField form={form} name="owner" label="Owner" options={PEOPLE} clearable emptyLabel="Nobody" />
+ * ```
+ *
+ * `clearable` is a type error unless the field named can hold `null`.
+ */
+export const SelectField = bindToForm<SelectFieldProps, string>(
+  BoundSelectField,
+  "SelectField",
+) as <TForm extends BindableForm, TName extends NamesOfType<ValuesOf<TForm>, string>>(
+  props: Omit<ControlPropsOf<SelectFieldProps>, "clearable"> &
+    FormBinding<TForm, TName> & { clearable?: ClearableOver<ValuesOf<TForm>, TName> },
+) => ReactNode;
 
 /** A checkbox and its caption, as one line. Horizontal, because a 16px box is not a row. */
 export const CheckboxField = bindToForm<CheckboxFieldProps, boolean>(

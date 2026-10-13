@@ -151,15 +151,45 @@ export const TheColourFieldIsARealControl: Story = {
   },
 };
 
-/** The reveal reaches the input the label points at, not the wrapper that positions the eye. */
+/**
+ * The reveal reaches the input the label points at, not the wrapper that positions the eye. Its
+ * button is named from the field's label, which is not "password" here.
+ */
 export const ThePasswordFieldReveals: Story = {
   play: async ({ canvas }) => {
     const box = canvas.getByLabelText("Share token");
     await userEvent.type(box, "s3cret");
     expect(box).toHaveAttribute("type", "password");
+    expect(canvas.queryByRole("button", { name: "Show password" })).toBeNull();
 
-    await userEvent.click(canvas.getByRole("button", { name: "Show password" }));
+    await userEvent.click(canvas.getByRole("button", { name: "Show Share token" }));
     expect(box).toHaveAttribute("type", "text");
+    await userEvent.click(canvas.getByRole("button", { name: "Hide Share token" }));
+    expect(box).toHaveAttribute("type", "password");
+  },
+};
+
+function NamedRevealForm() {
+  const form = useAppForm({ defaultValues: { token: "s3cret" }, onSubmit: () => {} });
+  return (
+    <PasswordField
+      form={form}
+      name="token"
+      label="Share token"
+      showLabel="Reveal"
+      hideLabel="Conceal"
+    />
+  );
+}
+
+/** A caller's `showLabel` and `hideLabel` are used as given, whatever the label says. */
+export const ThePasswordFieldKeepsItsOwnRevealNames: Story = {
+  render: () => <NamedRevealForm />,
+  play: async ({ canvas }) => {
+    expect(canvas.queryByRole("button", { name: "Show Share token" })).toBeNull();
+    await userEvent.click(canvas.getByRole("button", { name: "Reveal" }));
+    expect(canvas.getByLabelText("Share token")).toHaveAttribute("type", "text");
+    expect(canvas.getByRole("button", { name: "Conceal" })).toBeVisible();
   },
 };
 

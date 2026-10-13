@@ -234,6 +234,11 @@ and the web `FormField`'s `controlSlot`.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
+- **`clearable`** — the control can be put back to holding nothing. A button that empties it on
+  `MultiSelect`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and
+  `OptionSelectField` a first row for "nothing", which writes `null`.
+- **`emptyLabel`** — what a `clearable` select's row for "nothing" says, and so what its trigger
+  reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice.
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
   `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
@@ -353,6 +358,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
 | Several of a list, bound to a form field | `MultiSelectField` | `@cubeui/multi-select-form-field` |
+| One of a long, fetched or annotated list, bound to a form field — searchable, and `clearable` for a choice that may be left unmade | `OptionSelectField` | `@cubeui/option-select-field` |
 | One of a few short choices as pills, bound to a form field | `SegmentedField` | `@cubeui/segmented-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |

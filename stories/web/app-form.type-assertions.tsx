@@ -17,7 +17,14 @@ import {
 
 export function AppFormTypeAssertions() {
   const form = useAppForm({
-    defaultValues: { title: "", count: 0, live: false, kind: "a", nested: { deep: "" } },
+    defaultValues: {
+      title: "",
+      count: 0,
+      live: false,
+      kind: "a",
+      owner: null as string | null,
+      nested: { deep: "" },
+    },
     onSubmit: ({ value }) => console.log(value),
   });
 
@@ -61,6 +68,17 @@ export function AppFormTypeAssertions() {
       <NumberField form={form} name="title" label="Wrong type" />
       {/* @ts-expect-error a boolean field is not a select either */}
       <SelectField form={form} name="live" label="Wrong type" options={[]} />
+      <SelectField
+        form={form}
+        name="owner"
+        label="Owner"
+        options={[]}
+        clearable
+        emptyLabel="Nobody"
+      />
+      <SelectField form={form} name="kind" label="Kind" options={[]} clearable={false} />
+      {/* @ts-expect-error `kind` is a plain string, which cannot hold the `null` clearing writes */}
+      <SelectField form={form} name="kind" label="Kind" options={[]} clearable />
       {/* @ts-expect-error loadingClassName is a field prop; nonsense is not */}
       <InputField form={form} name="title" nonsenseProp="x" />
     </>
