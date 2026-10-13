@@ -1439,6 +1439,10 @@ gets right:
 `revealable={false}` drops the toggle for a field that should never be shown. `className` is the
 field's and `wrapperClassName` the box around the field and its eye. `leadingSlot` still takes an icon.
 
+In a form it is `PasswordField`, on `field.*` natively and from `@cubeui/password-field` on the
+web. Both name the toggle from the field's `label` — "Show API key" — and take `showLabel` and
+`hideLabel` to say something else. See [forms.md](forms.md).
+
 ## Theme
 
 ```tsx

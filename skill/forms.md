@@ -60,6 +60,9 @@ Each one takes everything `FormField` takes — `label`, `description`, `require
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
 `validators`, `listeners` and `asyncDebounceMs`, in one flat list.
 
+`PasswordField` names its reveal button from a string `label`: `label="API key"` gives "Show API
+key" and "Hide API key". Pass `showLabel` and `hideLabel` for other words.
+
 `RadioGroupField` is the exception to "everything `FormField` takes": it is not built on
 `FormField`, because it has a React Native half and `FormField` does not. It takes `label`,
 `description`, `required`, `actionSlot`, `loading` and the `*ClassName` props (`labelClassName`,
