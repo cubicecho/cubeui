@@ -486,6 +486,11 @@ Recorded so the next pass does not re-derive them:
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
   so the row that opens is on both halves too.
+  The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
+  its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
+  `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of
+  `contentSlot` itself, as `CardGrid` does, and has no empty or loading state: `QueryState` sits
+  above it.
 - **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
   and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.
   Settled: `buildTree` is `registry/lib/tree.ts` and the look is `registry/layout/file-tree.tsx`,

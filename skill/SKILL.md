@@ -53,7 +53,7 @@ the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `ListItem`, `FileTree`, `StatTile`
+`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -90,6 +90,7 @@ at the end.
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout.md](layout.md#stat-tiles) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
+| The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout.md](layout.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout.md](layout.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout.md](layout.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout.md](layout.md#empty-states) |
@@ -384,6 +385,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
+| The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout.md](layout.md#list) | `List` | `@cubeui/list` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout.md](layout.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |

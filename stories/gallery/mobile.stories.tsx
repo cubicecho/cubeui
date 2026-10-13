@@ -13,6 +13,7 @@ import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
+import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
 import { MultiSelect } from "../../registry/layout/multi-select";
 import { OptionSelect } from "../../registry/layout/option-select";
@@ -894,7 +895,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "List rows",
-    items: ["item", "list-item"],
+    items: ["item", "list", "list-item"],
     content: (
       <Stack>
         <ItemGroup>
@@ -917,13 +918,20 @@ const sections: GallerySection[] = [
             </ItemContent>
           </Item>
         </ItemGroup>
-        <ListItem
-          title="Dana Whitfield"
-          description="Owner"
-          leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
-          meta="2 projects"
+        <List
+          label="Members"
+          contentSlot={
+            <>
+              <ListItem
+                title="Dana Whitfield"
+                description="Owner"
+                leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
+                meta="2 projects"
+              />
+              <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
+            </>
+          }
         />
-        <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
       </Stack>
     ),
   },

@@ -592,6 +592,19 @@
       ]
     },
     {
+      "name": "list",
+      "type": "registry:component",
+      "title": "List",
+      "description": "The list a row sits in: a `<ul>` (list and listitem roles on device) that wraps each element of `contentSlot` in its own cell, with a `label` for its accessible name, a rule between rows (`divided`, on by default) and the padding around each row. Holds `ListItem`s, `DisclosureRow`s or rows of your own.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "tree",
       "type": "registry:lib",
       "title": "buildTree",
