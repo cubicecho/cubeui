@@ -173,7 +173,8 @@ and the web `FormField`'s `controlSlot`.
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the
   sidebar's, by prefix. A prop that belongs to a slot wears the slot's name, so it needs no word of
-  its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place.
+  its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place;
+  `barPosition="bottom"` puts that bar's `navSlot` along the bottom of the page.
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
   `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
   so there pass what the sidebar's header shows.
