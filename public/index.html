@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 107 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 107 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  91 on both platforms · 15 web-only · 0 native-only.
+  92 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -430,6 +430,11 @@
           <th scope="row"><code>@cubeui/layout</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>Every cubeui layout shell in one install.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/list</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>The list a row sits in: a `&lt;ul&gt;` (list and listitem roles on device) that wraps each element of `contentSlot` in its own cell, with a `label` for its accessible name, a rule between rows (`divided`, on by default) and the padding around each row. Holds `ListItem`s, `DisclosureRow`s or rows of your own.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/list-item</code></th>

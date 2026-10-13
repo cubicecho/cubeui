@@ -1015,11 +1015,13 @@ import { formatCount, formatDuration } from "@/lib/format";
 
 ## List pages
 
-Two shells for the shape every list route is: a ladder of states, then rows.
+The shells for the shape every list route is: a ladder of states, then a list of rows.
 
 ```tsx
 <QueryState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
-{shown.map((role) => (
+<List
+  label="Roles"
+  contentSlot={shown.map((role) => (
   <DisclosureRow
     key={role.id}
     open={open === role.id}
@@ -1031,7 +1033,8 @@ Two shells for the shape every list route is: a ladder of states, then rows.
     actionSlot={<Button aria-label="Delete" size="icon" … />}
     contentSlot={<RolePrompt role={role} />}
   />
-))}
+  ))}
+/>
 ```
 
 ### QueryState
@@ -1132,23 +1135,58 @@ and which one is a question of **where the list is**, not how much there is to s
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
+### List
+
+The list rows sit in: the `<ul>`, the rule between rows and the padding around each, so a page
+writes none of the three. One source for both platforms: `@cubeui/list`.
+
+```tsx
+<List
+  label="People"
+  contentSlot={people.map((p) => (
+    <ListItem key={p.id} title={p.name} description={p.email} />
+  ))}
+/>
+```
+
+- **Each element of `contentSlot` is one row**, and the list writes the `<li>` around it. An array
+  or a fragment is opened first, so `rows.map(...)` beside a fixed last row is that many rows. Give
+  each row its `key` as you would in any `map`. Do **not** write `<li>` or `role="listitem"`
+  yourself.
+- On the web it is a real `<ul>` of `<li>`s; on a device `role="list"` and `role="listitem"`, so a
+  screen reader says "list, 4 items" and "2 of 4" on both.
+- `label` is the list's accessible name, in the reader's words ("Workspaces"). Leave it out when a
+  heading right above already says it.
+- `divided` draws a `border-foreground/10` rule over every row but the first. It is on unless you
+  pass `divided={false}`, for rows that are cards of their own.
+- The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
+  row, or `divide-y` on a parent.
+- It takes any row: `ListItem`, `DisclosureRow`, composed `Item` parts, a row of your own.
+- **No `emptySlot` and no `loading`.** Those rungs are `QueryState`'s, drawn above the list. With no
+  rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items".
+- It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in
+  `className`.
+
 ### ListItem
 
 One row of a list — an avatar or a checkbox, a name over a line, a date and a few buttons at the
 far end — optionally pressable. One source for both platforms: `@cubeui/list-item`.
 
 ```tsx
-{people.map((p) => (
-  <ListItem
-    key={p.id}
-    leadingSlot={<Avatar person={p} />}
-    title={`${p.firstName} ${p.lastName}`}
-    description={p.email}
-    meta={relativeTime(p.lastContactedAt)}
-    linkSlot={<Link href={`/persons/${p.id}`} />}
-    actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
-  />
-))}
+<List
+  label="People"
+  contentSlot={people.map((p) => (
+    <ListItem
+      key={p.id}
+      leadingSlot={<Avatar person={p} />}
+      title={`${p.firstName} ${p.lastName}`}
+      description={p.email}
+      meta={relativeTime(p.lastContactedAt)}
+      linkSlot={<Link href={`/persons/${p.id}`} />}
+      actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
+    />
+  ))}
+/>
 ```
 
 - `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
@@ -1178,7 +1216,8 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
   grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
-  `Section`, a `CardLayout` `contentSlot` or a `<ul>` of your own; for a bordered card per row pass
+  `List` (above), which is the `<ul>`, the rule and the row padding; for a bordered card per row pass
+  `divided={false}` to the list and give each row
   `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a whole row that is one link, actions and all — compose shadcn's `Item` parts

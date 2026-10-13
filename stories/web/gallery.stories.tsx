@@ -25,6 +25,7 @@ import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
 import { HeaderContentFooter } from "@/components/header-content-footer";
+import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
@@ -1295,21 +1296,27 @@ function Sections() {
 
 function ListItems() {
   return (
-    <div className="flex max-w-xl flex-col">
-      <ListItem
-        leadingSlot={<Folder className="size-4" />}
-        title="Design system"
-        description="14 notes"
-        meta="2 days ago"
-        onClick={noop}
-      />
-      <ListItem
-        leadingSlot={<FileText className="size-4" />}
-        title="Release checklist"
-        description="A row that is not pressable"
-        actionSlot={<Button size="sm" variant="outline" content="Open" />}
-      />
-    </div>
+    <List
+      label="Notebooks"
+      className="max-w-xl"
+      contentSlot={
+        <>
+          <ListItem
+            leadingSlot={<Folder className="size-4" />}
+            title="Design system"
+            description="14 notes"
+            meta="2 days ago"
+            onClick={noop}
+          />
+          <ListItem
+            leadingSlot={<FileText className="size-4" />}
+            title="Release checklist"
+            description="A row that is not pressable"
+            actionSlot={<Button size="sm" variant="outline" content="Open" />}
+          />
+        </>
+      }
+    />
   );
 }
 
@@ -1702,7 +1709,7 @@ const sections: GallerySection[] = [
     items: ["section", "section-heading"],
     content: <Sections />,
   },
-  { title: "List item", items: ["list-item"], content: <ListItems /> },
+  { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
     title: "Disclosure and disclosure row",
