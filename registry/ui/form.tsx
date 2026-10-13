@@ -5,8 +5,9 @@
  *
  * `FieldRow` stands in for a grid, which Yoga does not have. `NumberField` keeps what is typed as
  * a draft, because a `TextInput` redrawn from the stored number loses a decimal point as it is
- * typed. `SubmitButton` calls `handleSubmit()`, because a `Pressable` is not a submit control. The date and colour fields are items of their own, and
- * `createAppForm` puts them on `field.*` beside these.
+ * typed. `SubmitButton` calls `handleSubmit()`, because a `Pressable` is not a submit control. The
+ * date and colour fields are items of their own, and `createAppForm` puts them on `field.*` beside
+ * these.
  */
 import type { DeepKeys } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
