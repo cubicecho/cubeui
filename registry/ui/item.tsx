@@ -7,7 +7,7 @@
  * `View` throws on device. `ItemMedia` does not size what is in it, as there is no `[&_svg]`
  * selector: pass an icon at `size-4`.
  */
-import { Slot } from "radix-ui";
+import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 import { Text, View } from "react-native";
 import {
@@ -115,11 +115,11 @@ function Item({
 }: ItemProps) {
   const classes = cn(itemVariants({ variant, size }), selected && ITEM_SELECTED_CLASS, className);
   if (asChild) {
-    // `Slot.Root` is typed for the DOM, but it renders nothing of its own — it clones the caller's
+    // `Slot` is typed for the DOM, but it renders nothing of its own — it clones the caller's
     // one child with these props merged in — so the cast is the honest way to say neither side's
     // typing describes it (`Button` does the same).
     return (
-      <Slot.Root className={classes} {...(props as unknown as React.HTMLAttributes<HTMLElement>)} />
+      <Slot className={classes} {...(props as unknown as React.HTMLAttributes<HTMLElement>)} />
     );
   }
   return <View testID="item" className={classes} {...props} />;

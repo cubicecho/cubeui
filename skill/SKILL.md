@@ -53,7 +53,7 @@ the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `ListItem`, `FileTree`, `StatTile`
+`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -90,6 +90,7 @@ at the end.
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout.md](layout.md#stat-tiles) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
+| The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout.md](layout.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout.md](layout.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout.md](layout.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout.md](layout.md#empty-states) |
@@ -234,6 +235,11 @@ and the web `FormField`'s `controlSlot`.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
+- **`clearable`** — the control can be put back to holding nothing. A button that empties it on
+  `MultiSelect`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and
+  `OptionSelectField` a first row for "nothing", which writes `null`.
+- **`emptyLabel`** — what a `clearable` select's row for "nothing" says, and so what its trigger
+  reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice.
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
   `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
@@ -353,6 +359,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
 | Several of a list, bound to a form field | `MultiSelectField` | `@cubeui/multi-select-form-field` |
+| One of a long, fetched or annotated list, bound to a form field — searchable, and `clearable` for a choice that may be left unmade | `OptionSelectField` | `@cubeui/option-select-field` |
 | One of a few short choices as pills, bound to a form field | `SegmentedField` | `@cubeui/segmented-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
@@ -385,6 +392,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
+| The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout.md](layout.md#list) | `List` | `@cubeui/list` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout.md](layout.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |

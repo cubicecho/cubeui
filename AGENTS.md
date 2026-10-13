@@ -272,7 +272,10 @@ Still unsettled: the open decisions at the end of the README, and the open quest
   `tsconfig.json` is React Native, `tsconfig.web.json` is `compiled/`, `registry/web/` and
   `stories/web/`
 - **React 19**; **React Native** with **NativeWind 5** on the native side; **Tailwind v4**,
-  **radix-ui** (the unified package) and **lucide-react** on the web side
+  **radix-ui** (the unified package) and **lucide-react** on the web side. A file a device
+  bundles (`registry/ui/*.tsx` with no `.web.tsx` beside it taking its place) never imports the
+  unified package: Metro does not drop what is unused, so one import of it ships every primitive
+  and `react-dom`. The one primitive those files need is `Slot`, from `@radix-ui/react-slot`
 - **shadcn** CLI for `build`
 - **Biome** for lint and format
 - **Storybook** (on Vite) for the stories and, through vitest, the tests
@@ -310,10 +313,11 @@ duplication. Do not add a prop, a branch or a doc sentence accommodating another
 The binding lives in two places, one per tier:
 
 - **`registry/ui/form.tsx`** (`@cubeui/form`) is the universal one: `Form`, `useAppForm`,
-  `InputField` and the rest, written in React Native and compiled like any primitive.
+  `InputField`, `NumberField`, `PasswordField` and the rest, written in React Native and compiled like any
+  primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
-  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx` and `segmented-field.tsx`
-  join the same way. `registry/layout/radio-group-field.tsx`
+  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx`,
+  `option-select-field.tsx` and `segmented-field.tsx` join the same way. `registry/layout/radio-group-field.tsx`
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
   `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `CheckboxField`,
@@ -321,6 +325,11 @@ The binding lives in two places, one per tier:
   `@cubeui/multi-select-field`, `@cubeui/date-field`, `@cubeui/color-field` and
   `@cubeui/password-field` are the same layer in their own files, for the weight of what they
   import, and `@cubeui/form-set` installs all of them.
+
+`NumberField` is on both, with one contract: it writes `number | null`, empty is `null`, and the
+text being typed is a draft that `registry/lib/number-draft.ts` reads for both files. Do not
+store `Number(text)` per keystroke in a new field: on device the box is redrawn from the store,
+and `1.` loses its point before the next digit.
 
 Those three are the only files in the registry that import `@tanstack/react-form`. A web-only
 field `app-form.tsx` does not hold is still bound through it: `bindToForm`, `splitProps` and
@@ -408,6 +417,12 @@ real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
+The story tests open a Chromium, and two of them on one machine kill each other: the run ends
+with "Browser connection was closed". Where more than one checkout shares the machine, every
+`npm test`, `npm run check` and `npm run install-test` takes the same lock
+(`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
+directory, so the tools here never find a second copy of the project.
+
 ## Keep the skill in sync
 
 [`skill/SKILL.md`](skill/SKILL.md) is how an agent in a *consuming* project learns these
@@ -486,6 +501,11 @@ Recorded so the next pass does not re-derive them:
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
   so the row that opens is on both halves too.
+  The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
+  its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
+  `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of
+  `contentSlot` itself, as `CardGrid` does, and has no empty or loading state: `QueryState` sits
+  above it.
 - **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
   and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.
   Settled: `buildTree` is `registry/lib/tree.ts` and the look is `registry/layout/file-tree.tsx`,
