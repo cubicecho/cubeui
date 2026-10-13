@@ -14,6 +14,7 @@ import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
+import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
 import { CardGrid, EmptyState, Page } from "../../registry/layout/page";
 import { PageHeader } from "../../registry/layout/page-header";
@@ -213,6 +214,8 @@ const NOT_SHOWN: Record<string, string> = {
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
+  "description-hint":
+    'The button and pane behind `descriptionPlacement="popover"`. Drawn by the fields, cards, sections and rows that take it.',
   "form-binding": "The types a field bound to a form takes, and one function. Not a component.",
   "number-draft": "Two functions NumberField reads the text being typed with. Not a component.",
   "select-options":
@@ -914,7 +917,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "List rows",
-    items: ["item", "list-item"],
+    items: ["item", "list", "list-item"],
     content: (
       <Stack>
         <ItemGroup>
@@ -937,13 +940,20 @@ const sections: GallerySection[] = [
             </ItemContent>
           </Item>
         </ItemGroup>
-        <ListItem
-          title="Dana Whitfield"
-          description="Owner"
-          leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
-          meta="2 projects"
+        <List
+          label="Members"
+          contentSlot={
+            <>
+              <ListItem
+                title="Dana Whitfield"
+                description="Owner"
+                leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
+                meta="2 projects"
+              />
+              <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
+            </>
+          }
         />
-        <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
       </Stack>
     ),
   },

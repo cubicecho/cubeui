@@ -27,6 +27,7 @@ import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
 import { HeaderContentFooter } from "@/components/header-content-footer";
+import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
@@ -243,6 +244,8 @@ const NOT_SHOWN: Record<string, string> = {
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
   "error-message": "A function; the form fields read their error text with it.",
+  "description-hint":
+    'The button behind `descriptionPlacement="popover"`; the fields, cards, sections and rows draw it.',
   "form-binding": "Types and one function; the form fields are bound to a form through them.",
   "number-draft": "Two functions; NumberField reads the text being typed with them.",
   "select-options": "Types and functions; the selects read their options list through them.",
@@ -1289,21 +1292,27 @@ function Sections() {
 
 function ListItems() {
   return (
-    <div className="flex max-w-xl flex-col">
-      <ListItem
-        leadingSlot={<Folder className="size-4" />}
-        title="Design system"
-        description="14 notes"
-        meta="2 days ago"
-        onClick={noop}
-      />
-      <ListItem
-        leadingSlot={<FileText className="size-4" />}
-        title="Release checklist"
-        description="A row that is not pressable"
-        actionSlot={<Button size="sm" variant="outline" content="Open" />}
-      />
-    </div>
+    <List
+      label="Notebooks"
+      className="max-w-xl"
+      contentSlot={
+        <>
+          <ListItem
+            leadingSlot={<Folder className="size-4" />}
+            title="Design system"
+            description="14 notes"
+            meta="2 days ago"
+            onClick={noop}
+          />
+          <ListItem
+            leadingSlot={<FileText className="size-4" />}
+            title="Release checklist"
+            description="A row that is not pressable"
+            actionSlot={<Button size="sm" variant="outline" content="Open" />}
+          />
+        </>
+      }
+    />
   );
 }
 
@@ -1682,7 +1691,7 @@ const sections: GallerySection[] = [
     items: ["section", "section-heading"],
     content: <Sections />,
   },
-  { title: "List item", items: ["list-item"], content: <ListItems /> },
+  { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
     title: "Disclosure and disclosure row",

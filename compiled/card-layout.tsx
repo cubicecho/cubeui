@@ -24,6 +24,11 @@ import type { ReactNode } from "react";
 import { Children } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
+import {
+  DescriptionHint,
+  DescriptionHintText,
+  type DescriptionPlacement,
+} from "./description-hint";
 
 export type CardLayoutProps = {
   /** The body. */
@@ -41,6 +46,16 @@ export type CardLayoutProps = {
   level?: 1 | 2 | 3 | undefined;
   /** One line on what the card holds, or what changing it costs. */
   description?: ReactNode | undefined;
+  /**
+   * Where the description is drawn. `inline` (the default) puts it under the title; `popover`
+   * puts it behind a small button after the title, named "About <title>", and on the web a screen
+   * reader still reads it under the title. It stays inline on a card with no title, which has nothing to put
+   * the button beside, and on a card with no body and no footer, where the description is all
+   * the card says.
+   */
+  descriptionPlacement?: DescriptionPlacement | undefined;
+  /** The `popover` button's glyph. A question mark by default. */
+  descriptionIconSlot?: SlotNode | undefined;
   /**
    * Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device
    * an icon cannot be sized from outside it, so pass it at the size you want.
@@ -143,6 +158,8 @@ export function CardLayout({
   title,
   level = 3,
   description,
+  descriptionPlacement = "inline",
+  descriptionIconSlot,
   iconSlot,
   actionSlot,
   emptySlot,
@@ -164,6 +181,13 @@ export function CardLayout({
   const hasText = Boolean(title || description);
   const hasHeader = Boolean(hasText || actionSlot);
   const hasFooter = Boolean(footerSlot || footerActionsSlot);
+
+  // A card that is only its title and description keeps the description: folded, it would be a
+  // heading on an empty card.
+  const folded =
+    Boolean(title && description) &&
+    descriptionPlacement === "popover" &&
+    Boolean(body || hasFooter);
 
   return (
     <Card data-slot="card-layout" className={className}>
@@ -192,9 +216,23 @@ export function CardLayout({
                   >
                     {title}
                   </CardTitle>
+                  {folded ? (
+                    <DescriptionHint
+                      data-slot="card-layout-description-trigger"
+                      label={title}
+                      fallbackName="About this card"
+                      description={description}
+                      iconSlot={descriptionIconSlot}
+                    />
+                  ) : null}
                 </div>
               ) : null}
-              {description ? <CardDescription>{description}</CardDescription> : null}
+              {/* Read where the inline line would be. A card is not a landmark or a control, so
+                  there is nothing for an `aria-describedby` to hang on. */}
+              {folded ? <DescriptionHintText>{description}</DescriptionHintText> : null}
+              {description && folded === false ? (
+                <CardDescription>{description}</CardDescription>
+              ) : null}
             </div>
           ) : null}
           {actionSlot ? (

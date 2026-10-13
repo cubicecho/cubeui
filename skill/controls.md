@@ -24,7 +24,8 @@ The set, on both halves — check it before wrapping a glyph in the app:
   `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
   `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
-- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
+- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `CircleQuestionMark`
+  (the button a folded description sits behind), `LoaderCircle`
 - **Files and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and `FolderPen` (rename
   or move a file, a folder)
 - **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`, `UserRound`
@@ -799,6 +800,31 @@ or a `useState` screen; inside a TanStack form use `SelectField` and never wire 
 **It is not shadcn's `Select`.** The primitive at `@/components/ui/select` takes children; this
 takes `options`. Nor is it shadcn's own `combobox` item, which installs to
 `components/ui/combobox`: this one is at `components/combobox`.
+
+The two can be installed side by side, since they are different files, but then an editor offers
+two `Combobox`es to import. Theirs is a set of parts over `@base-ui/react` (`ComboboxInput`,
+`ComboboxContent`, `ComboboxItem`…) and takes children; ours takes `options`. An app that wants
+only this one does not install theirs, and can have the linter refuse the import, in its
+`biome.json`:
+
+```json
+{
+  "linter": {
+    "rules": {
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "@/components/ui/combobox": "Use Combobox from @/components/combobox."
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 - **On both halves.** Same import, `@/components/combobox`, on both.
 - **Single and not `searchable`, the menu is the plain `Select` listbox**: radix's listbox under

@@ -311,6 +311,7 @@ type SidebarLayoutNarrow =
       navLabel?: never;
       status?: never;
       actionSlot?: never;
+      barPosition?: never;
     }
   | ({
       /**
@@ -343,6 +344,15 @@ type SidebarLayoutNarrow =
       status?: ReactNode | undefined;
       /** The bar's far end: the theme switch, sign out — the rail's footer, in one row. */
       actionSlot?: SlotNode | undefined;
+      /**
+       * Where the `navSlot` is drawn under the breakpoint. `top`, the default, is in the bar with
+       * the rest. `bottom` is a bar of its own under the page, the places spread across it, which
+       * is where a phone's thumb is and where Android and iOS apps put them. The brand, the
+       * `status` and the `actionSlot` stay in the bar at the top.
+       *
+       * The bottom safe-area inset is the app's, as the top one is.
+       */
+      barPosition?: "top" | "bottom" | undefined;
     } & SidebarLayoutNav);
 
 type SidebarLayoutProps = {
@@ -366,6 +376,8 @@ type SidebarLayoutProps = {
   sidebarClassName?: string | undefined;
   /** On the bar, when `sidebarHideBelow` draws one. */
   headerClassName?: string | undefined;
+  /** On the bar along the bottom, when `barPosition="bottom"` draws one. */
+  bottomBarClassName?: string | undefined;
 } & SidebarLayoutNarrow;
 
 /**
@@ -377,6 +389,9 @@ type SidebarLayoutProps = {
  * bar holding the brand, the `navSlot` and the `actionSlot` is drawn over the page, both from the
  * one breakpoint. `status` is the bar's one line of words and the part that yields, so an action
  * is never pushed off the edge. Which of the two is drawn is a media query, not state.
+ *
+ * `barPosition="bottom"` moves the `navSlot` out of that bar into one along the bottom of the
+ * page, still the one navigation landmark named by `navLabel`.
  */
 export function SidebarLayout({
   contentSlot,
@@ -391,69 +406,93 @@ export function SidebarLayout({
   navLabel,
   status,
   actionSlot,
+  barPosition = "top",
   className,
   contentClassName,
   sidebarClassName,
   headerClassName,
+  bottomBarClassName,
 }: SidebarLayoutProps) {
+  const navAtBottom = barPosition === "bottom";
+  const topNavSlot = navAtBottom ? undefined : navSlot;
   // Rule 5 — the bar, and the column it sits in, are drawn only when there is something in the
   // bar. Without one the content pane holds the caller's node exactly as it always has.
   const main =
     sidebarHideBelow && (brandSlot || navSlot || status || actionSlot) ? (
       <View testID="sidebar-layout-main" className={COLUMN}>
-        <View
-          role="banner"
-          testID="sidebar-layout-header"
-          className={cn(
-            "min-h-14 shrink-0 flex-row items-center gap-2 border-foreground/10 border-b bg-background px-4 py-2",
-            HEADER_HIDE_FROM[sidebarHideBelow],
-            headerClassName,
-          )}
-        >
-          {brandSlot ? (
-            <View
-              testID="sidebar-layout-brand"
-              className="min-w-0 shrink-0 flex-row items-center gap-2"
-            >
-              {brandSlot}
-            </View>
-          ) : null}
-          {navSlot ? (
-            <View
-              role="navigation"
-              aria-label={navLabel}
-              testID="sidebar-layout-nav"
-              className="min-w-0 flex-row items-center gap-1"
-            >
-              {navSlot}
-            </View>
-          ) : null}
-          {status ? (
-            // `flex-1` is a zero basis: the status asks for no width of its own and is handed
-            // what the others leave, which is what makes it the one that gives way. Everything
-            // else in the bar is `shrink-0` or a view, which does not shrink either.
-            <View testID="sidebar-layout-status" className="min-w-0 flex-1 overflow-hidden">
-              {typeof status === "string" || typeof status === "number" ? (
-                <Text className="truncate text-right text-foreground/60 text-sm">{status}</Text>
-              ) : (
-                status
-              )}
-            </View>
-          ) : null}
-          {actionSlot ? (
-            // `ml-auto` rather than a spacer, so the action keeps the far end with no `navSlot`
-            // before it.
-            <View
-              testID="sidebar-layout-action"
-              className="ml-auto shrink-0 flex-row items-center gap-1"
-            >
-              {actionSlot}
-            </View>
-          ) : null}
-        </View>
+        {/* Rule 5 again: with the places along the bottom and nothing else given, there is no
+            bar at the top to draw. */}
+        {brandSlot || topNavSlot || status || actionSlot ? (
+          <View
+            role="banner"
+            testID="sidebar-layout-header"
+            className={cn(
+              "min-h-14 shrink-0 flex-row items-center gap-2 border-foreground/10 border-b bg-background px-4 py-2",
+              HEADER_HIDE_FROM[sidebarHideBelow],
+              headerClassName,
+            )}
+          >
+            {brandSlot ? (
+              <View
+                testID="sidebar-layout-brand"
+                className="min-w-0 shrink-0 flex-row items-center gap-2"
+              >
+                {brandSlot}
+              </View>
+            ) : null}
+            {topNavSlot ? (
+              <View
+                role="navigation"
+                aria-label={navLabel}
+                testID="sidebar-layout-nav"
+                className="min-w-0 flex-row items-center gap-1"
+              >
+                {topNavSlot}
+              </View>
+            ) : null}
+            {status ? (
+              // `flex-1` is a zero basis: the status asks for no width of its own and is handed
+              // what the others leave, which is what makes it the one that gives way. Everything
+              // else in the bar is `shrink-0` or a view, which does not shrink either.
+              <View testID="sidebar-layout-status" className="min-w-0 flex-1 overflow-hidden">
+                {typeof status === "string" || typeof status === "number" ? (
+                  <Text className="truncate text-right text-foreground/60 text-sm">{status}</Text>
+                ) : (
+                  status
+                )}
+              </View>
+            ) : null}
+            {actionSlot ? (
+              // `ml-auto` rather than a spacer, so the action keeps the far end with no `navSlot`
+              // before it.
+              <View
+                testID="sidebar-layout-action"
+                className="ml-auto shrink-0 flex-row items-center gap-1"
+              >
+                {actionSlot}
+              </View>
+            ) : null}
+          </View>
+        ) : null}
         <View testID="sidebar-layout-content" className={BELOW_HEADER}>
           {contentSlot}
         </View>
+        {navAtBottom && navSlot ? (
+          // The landmark is the bar itself: there is nothing else in it to tell apart from the
+          // places. `justify-around` spreads them over the width, each with the same room.
+          <View
+            role="navigation"
+            aria-label={navLabel}
+            testID="sidebar-layout-bottom-bar"
+            className={cn(
+              "min-h-14 shrink-0 flex-row items-center justify-around gap-1 border-foreground/10 border-t bg-background px-4 py-2",
+              HEADER_HIDE_FROM[sidebarHideBelow],
+              bottomBarClassName,
+            )}
+          >
+            {navSlot}
+          </View>
+        ) : null}
       </View>
     ) : (
       contentSlot

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 102 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 104 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 102 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 104 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  88 on both platforms · 14 web-only · 0 native-only.
+  90 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -199,7 +199,7 @@
         <tr>
           <th scope="row"><code>@cubeui/card-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.</td>
+          <td>A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. `descriptionPlacement="popover"` folds the description behind a button after the title.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/centered-layout</code></th>
@@ -307,6 +307,11 @@
           <td>A date popover and a time field that commit one Date back — or, with `clearable mode="date"`, an optional date only.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/description-hint</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A description folded behind a small button beside its title: the button and pane, both named `About &lt;label&gt;`, and the off-screen copy `aria-describedby` still reaches on the web. What `descriptionPlacement="popover"` draws on the bound fields, `CardLayout`, `Section` and `SettingRow`.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/description-list</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `&lt;dl&gt;` of `&lt;dt&gt;`/`&lt;dd&gt;` groups on the web, `role="list"` on device; `layout="inline"` puts labels beside values and wraps to stacked when narrow.</td>
@@ -379,7 +384,7 @@
         <tr>
           <th scope="row"><code>@cubeui/form</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.</td>
+          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest. Every bound field takes `descriptionPlacement="popover"`, which folds the description behind a button beside the label.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/form-binding</code></th>
@@ -435,6 +440,11 @@
           <th scope="row"><code>@cubeui/layout</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>Every cubeui layout shell in one install.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/list</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>The list a row sits in: a `&lt;ul&gt;` (list and listitem roles on device) that wraps each element of `contentSlot` in its own cell, with a `label` for its accessible name, a rule between rows (`divided`, on by default) and the padding around each row. Holds `ListItem`s, `DisclosureRow`s or rows of your own.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/list-item</code></th>
@@ -539,7 +549,7 @@
         <tr>
           <th scope="row"><code>@cubeui/section</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.</td>
+          <td>A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement="popover"` folds the description behind a button beside the title.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/section-heading</code></th>
@@ -574,7 +584,7 @@
         <tr>
           <th scope="row"><code>@cubeui/setting-row</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.</td>
+          <td>One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`. `descriptionPlacement="popover"` folds the description behind a button beside the title.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/sidebar</code></th>
@@ -594,7 +604,7 @@
         <tr>
           <th scope="row"><code>@cubeui/split-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen.</td>
+          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition="bottom".</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/stat-tile</code></th>

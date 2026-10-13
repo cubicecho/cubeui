@@ -39,6 +39,16 @@ export function SidebarLayoutTypeAssertions() {
       <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" stackBelow="lg" />
       {/* @ts-expect-error with the rail gone, a rule would be a line down the edge of the screen */}
       <Native contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" divider="line" />
+      <Native
+        contentSlot={node}
+        sidebarSlot={node}
+        sidebarHideBelow="md"
+        barPosition="bottom"
+        navSlot={node}
+        navLabel="Main"
+      />
+      {/* @ts-expect-error where the bar goes needs a bar, and so a breakpoint */}
+      <Native contentSlot={node} sidebarSlot={node} barPosition="bottom" />
 
       <Compiled
         contentSlot={node}
@@ -55,6 +65,8 @@ export function SidebarLayoutTypeAssertions() {
       <Compiled contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" navSlot={node} />
       {/* @ts-expect-error a label with no navigation to name */}
       <Compiled contentSlot={node} sidebarSlot={node} sidebarHideBelow="md" navLabel="Main" />
+      {/* @ts-expect-error where the bar goes needs a bar, and so a breakpoint */}
+      <Compiled contentSlot={node} sidebarSlot={node} barPosition="bottom" />
     </>
   );
 }

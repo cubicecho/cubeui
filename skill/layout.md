@@ -507,6 +507,33 @@ there pushes the buttons off the screen.
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
 - `headerClassName` is on the bar. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
   `sidebarHideBelow` still hides the rail and draws nothing in its place.
+- **`barPosition="bottom"` draws the places along the bottom**, where a phone's thumb is and where
+  Android and iOS apps put them. The `navSlot` leaves the top bar for a bar of its own under
+  `contentSlot`: that bar is the `<nav>` named by `navLabel`, the same `BarNavItem`s spread evenly
+  across it, and each still `aria-current` on its own page. `brandSlot`, `status` and `actionSlot`
+  stay in the bar at the top; with none of them, no top bar is drawn. The default is `"top"`, and
+  from `sidebarHideBelow` up neither bar is drawn either way.
+
+  ```tsx
+  <SidebarLayout
+    sidebarHideBelow="md"
+    barPosition="bottom"
+    brandSlot={<Brand />}
+    navSlot={places}
+    navLabel="Main"
+    actionSlot={<ThemeButton />}
+    sidebarSlot={<AppSidebar />}
+    contentSlot={<Outlet />}
+  />
+  ```
+
+  - **The bottom safe-area inset is the app's**, as the top one is: wrap the app in
+    `react-native-safe-area-context`'s `<SafeAreaView edges={["top", "bottom"]}>`, and the bar sits
+    above the home indicator. The layout adds no dependency to measure insets.
+    `bottomBarClassName` is on the bottom bar itself (its fill, its border, its padding).
+  - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
+    page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
+  - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
 
 `Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
 in a `SidebarLayout`. Do not write `hidden md:flex` in `className` for either: that works only
@@ -608,6 +635,14 @@ The title is the same size at every level; the rank says where the card sits, no
 
 The title is `text-base` on both halves, never larger than the page's own title.
 `titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
+
+`descriptionPlacement="popover"` takes the description out from under the title and puts it behind
+a small button after the title, named "About <title>" — for a page of cards whose descriptions
+are each a paragraph. `descriptionIconSlot` is the button's glyph, a question mark by default. On
+the web a screen reader still reads the sentence under the title. It stays inline on a card with
+no `title`, and on a card with no body and no footer, where the description is all the card says —
+so pass the prop on every card of a page and leave that case alone. `Section`, `SettingRow` and the
+form fields take the same two props. Do not wrap the title in a `Popover` of your own.
 
 The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
@@ -794,6 +829,10 @@ A heading over a group of fields or rows, inside a page or a card.
   background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
   the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
+- `descriptionPlacement="popover"` puts the description behind a small button beside the title,
+  named "About <title>", with `descriptionIconSlot` for its glyph. The heading keeps its name and
+  rank, and on the web the region is still described by the sentence. A section with no `title`
+  keeps its description inline.
 - The heading row **wraps**. An `actionSlot` sits at the far end while the title and description have
   room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
@@ -939,6 +978,10 @@ that changes it at the end.
   `aria-describedby={descriptionId}`. iOS does not read `aria-labelledby`, so a native call site
   that must be named on an iPhone passes `accessibilityLabel` as well. A **button** is a plain node:
   its own text is its name, and pointing it at the title would rename it.
+- `descriptionPlacement="popover"` puts the description behind a small button beside the title,
+  named "About <title>", with `descriptionIconSlot` for its glyph. `descriptionId` is handed to
+  `actionSlot` either way and on the web still resolves, so keep the `aria-describedby`. A row
+  with no `title` keeps its description inline.
 - It **wraps rather than breaking at a width**: the control sits beside the text while both fit
   and drops under it, at the start, when they do not — following the width the row is given, not
   the window. A switch stays beside its title on a phone; a select or a wide button goes under.
@@ -999,11 +1042,13 @@ import { formatCount, formatDuration } from "@/lib/format";
 
 ## List pages
 
-Two shells for the shape every list route is: a ladder of states, then rows.
+The shells for the shape every list route is: a ladder of states, then a list of rows.
 
 ```tsx
 <QueryState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
-{shown.map((role) => (
+<List
+  label="Roles"
+  contentSlot={shown.map((role) => (
   <DisclosureRow
     key={role.id}
     open={open === role.id}
@@ -1015,7 +1060,8 @@ Two shells for the shape every list route is: a ladder of states, then rows.
     actionSlot={<Button aria-label="Delete" size="icon" … />}
     contentSlot={<RolePrompt role={role} />}
   />
-))}
+  ))}
+/>
 ```
 
 ### QueryState
@@ -1116,23 +1162,58 @@ and which one is a question of **where the list is**, not how much there is to s
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
+### List
+
+The list rows sit in: the `<ul>`, the rule between rows and the padding around each, so a page
+writes none of the three. One source for both platforms: `@cubeui/list`.
+
+```tsx
+<List
+  label="People"
+  contentSlot={people.map((p) => (
+    <ListItem key={p.id} title={p.name} description={p.email} />
+  ))}
+/>
+```
+
+- **Each element of `contentSlot` is one row**, and the list writes the `<li>` around it. An array
+  or a fragment is opened first, so `rows.map(...)` beside a fixed last row is that many rows. Give
+  each row its `key` as you would in any `map`. Do **not** write `<li>` or `role="listitem"`
+  yourself.
+- On the web it is a real `<ul>` of `<li>`s; on a device `role="list"` and `role="listitem"`, so a
+  screen reader says "list, 4 items" and "2 of 4" on both.
+- `label` is the list's accessible name, in the reader's words ("Workspaces"). Leave it out when a
+  heading right above already says it.
+- `divided` draws a `border-foreground/10` rule over every row but the first. It is on unless you
+  pass `divided={false}`, for rows that are cards of their own.
+- The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
+  row, or `divide-y` on a parent.
+- It takes any row: `ListItem`, `DisclosureRow`, composed `Item` parts, a row of your own.
+- **No `emptySlot` and no `loading`.** Those rungs are `QueryState`'s, drawn above the list. With no
+  rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items".
+- It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in
+  `className`.
+
 ### ListItem
 
 One row of a list — an avatar or a checkbox, a name over a line, a date and a few buttons at the
 far end — optionally pressable. One source for both platforms: `@cubeui/list-item`.
 
 ```tsx
-{people.map((p) => (
-  <ListItem
-    key={p.id}
-    leadingSlot={<Avatar person={p} />}
-    title={`${p.firstName} ${p.lastName}`}
-    description={p.email}
-    meta={relativeTime(p.lastContactedAt)}
-    linkSlot={<Link href={`/persons/${p.id}`} />}
-    actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
-  />
-))}
+<List
+  label="People"
+  contentSlot={people.map((p) => (
+    <ListItem
+      key={p.id}
+      leadingSlot={<Avatar person={p} />}
+      title={`${p.firstName} ${p.lastName}`}
+      description={p.email}
+      meta={relativeTime(p.lastContactedAt)}
+      linkSlot={<Link href={`/persons/${p.id}`} />}
+      actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
+    />
+  ))}
+/>
 ```
 
 - `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
@@ -1162,7 +1243,8 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
   grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
-  `Section`, a `CardLayout` `contentSlot` or a `<ul>` of your own; for a bordered card per row pass
+  `List` (above), which is the `<ul>`, the rule and the row padding; for a bordered card per row pass
+  `divided={false}` to the list and give each row
   `className="rounded-lg border border-foreground/10 bg-secondary"`.
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a whole row that is one link, actions and all — compose shadcn's `Item` parts

@@ -418,6 +418,24 @@
       ]
     },
     {
+      "name": "description-hint",
+      "type": "registry:ui",
+      "title": "Description Hint",
+      "description": "A description folded behind a small button beside its title: the button and pane, both named `About <label>`, and the off-screen copy `aria-describedby` still reaches on the web. What `descriptionPlacement=\"popover\"` draws on the bound fields, `CardLayout`, `Section` and `SettingRow`.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/popover"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/description-hint.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "menu",
       "type": "registry:ui",
       "title": "Menu",
@@ -640,8 +658,8 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint"],
       "files": [
         {
           "path": "registry/layout/section.tsx",
@@ -658,6 +676,19 @@
       "files": [
         {
           "path": "registry/layout/list-item.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "type": "registry:component",
+      "title": "List",
+      "description": "The list a row sits in: a `<ul>` (list and listitem roles on device) that wraps each element of `contentSlot` in its own cell, with a `label` for its accessible name, a rule between rows (`divided`, on by default) and the padding around each row. Holds `ListItem`s, `DisclosureRow`s or rows of your own.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/list.tsx",
           "type": "registry:component"
         }
       ]
@@ -730,8 +761,8 @@
       "name": "setting-row",
       "type": "registry:component",
       "title": "Setting Row",
-      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/field"],
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/description-hint"],
       "files": [
         {
           "path": "registry/layout/setting-row.tsx",
@@ -1100,7 +1131,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest. Every bound field takes `descriptionPlacement=\"popover\"`, which folds the description behind a button beside the label.",
       "dependencies": ["@radix-ui/react-slot@^1.5.0", "@tanstack/react-form@^1.33.5"],
       "registryDependencies": [
         "@cubeui/utils",
@@ -1117,7 +1148,8 @@
         "@cubeui/select",
         "@cubeui/select-options",
         "@cubeui/switch",
-        "@cubeui/textarea"
+        "@cubeui/textarea",
+        "@cubeui/description-hint"
       ],
       "files": [
         {
@@ -1407,7 +1439,7 @@
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen.",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -1452,8 +1484,8 @@
       "name": "card-layout",
       "type": "registry:component",
       "title": "Card Layout",
-      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/utils"],
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. `descriptionPlacement=\"popover\"` folds the description behind a button after the title.",
+      "registryDependencies": ["@cubeui/card", "@cubeui/utils", "@cubeui/description-hint"],
       "files": [
         {
           "path": "registry/layout/card-layout.tsx",

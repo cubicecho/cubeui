@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
+import {
+  DescriptionHint,
+  DescriptionHintText,
+  type DescriptionPlacement,
+} from "@/components/ui/description-hint";
 import { cn, type SlotNode } from "@/lib/utils";
 
 type SectionProps = {
@@ -10,6 +15,15 @@ type SectionProps = {
   title?: ReactNode | undefined;
   /** One line under the title, in sentence case, on what the group is for. */
   description?: ReactNode | undefined;
+  /**
+   * Where the description is drawn. `inline` (the default) puts it under the title; `popover`
+   * puts it behind a small button beside the title, named "About <title>", and on the web the
+   * section is still described by it. A section with no title has nothing to put the button
+   * beside, so its description stays inline.
+   */
+  descriptionPlacement?: DescriptionPlacement | undefined;
+  /** The `popover` button's glyph. A question mark by default. */
+  descriptionIconSlot?: SlotNode | undefined;
   /** The heading row's far end: an add button, a count, a switch that disables the group. */
   actionSlot?: SlotNode | undefined;
   /** A hairline under the heading. Off by default; on, the group reads as one block. */
@@ -69,6 +83,8 @@ export function Section({
   contentSlot,
   title,
   description,
+  descriptionPlacement = "inline",
+  descriptionIconSlot,
   actionSlot,
   divider = false,
   level = 2,
@@ -78,6 +94,24 @@ export function Section({
   contentClassName,
 }: SectionProps) {
   const titleId = React.useId();
+  const descriptionId = React.useId();
+  const folded = Boolean(title && description) && descriptionPlacement === "popover";
+  const titleNode = title ? (
+    // web: biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
+    <Text
+      testID="section-title"
+      nativeID={titleId}
+      role="heading"
+      aria-level={level}
+      className={cn(
+        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wider",
+        folded && "min-w-0 shrink",
+        titleClassName,
+      )}
+    >
+      {title}
+    </Text>
+  ) : null;
   const hasText = Boolean(title || description);
   const hasHeading = Boolean(hasText || actionSlot);
 
@@ -86,6 +120,7 @@ export function Section({
       webAs="section"
       testID="section"
       {...(title ? { "aria-labelledby": titleId } : {})}
+      {...(folded ? { "aria-describedby": descriptionId } : {})}
       className={cn(
         "min-w-0 gap-3",
         surface === "card" &&
@@ -105,22 +140,25 @@ export function Section({
         >
           {hasText ? (
             <View className={TEXT}>
-              {title ? (
-                // web: biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-                <Text
-                  testID="section-title"
-                  nativeID={titleId}
-                  role="heading"
-                  aria-level={level}
-                  className={cn(
-                    "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wider",
-                    titleClassName,
-                  )}
-                >
-                  {title}
-                </Text>
+              {folded ? (
+                // Beside the heading and not inside it: a heading is a `Text`.
+                <View testID="section-title-row" className="min-w-0 flex-row items-center gap-2">
+                  {titleNode}
+                  <DescriptionHint
+                    testID="section-description-trigger"
+                    label={title}
+                    fallbackName="About this section"
+                    description={description}
+                    iconSlot={descriptionIconSlot}
+                  />
+                </View>
+              ) : (
+                titleNode
+              )}
+              {folded ? (
+                <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
               ) : null}
-              {description ? (
+              {description && folded === false ? (
                 <Text
                   webAs="p"
                   testID="section-description"
