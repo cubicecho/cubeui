@@ -414,6 +414,12 @@ real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
+The story tests open a Chromium, and two of them on one machine kill each other: the run ends
+with "Browser connection was closed". Where more than one checkout shares the machine, every
+`npm test`, `npm run check` and `npm run install-test` takes the same lock
+(`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
+directory, so the tools here never find a second copy of the project.
+
 ## Keep the skill in sync
 
 [`skill/SKILL.md`](skill/SKILL.md) is how an agent in a *consuming* project learns these
