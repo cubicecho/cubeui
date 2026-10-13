@@ -566,6 +566,7 @@ function ProjectForm() {
       name: "Quarterly review",
       notes: "",
       budget: 1200 as number | null,
+      shareToken: "tok_4f9a2c",
       visibility: "team",
       priority: "normal",
       owner: "grace",
@@ -586,6 +587,9 @@ function ProjectForm() {
         </form.AppField>
         <form.AppField name="budget">
           {(field) => <field.NumberField label="Budget" description="In pounds." />}
+        </form.AppField>
+        <form.AppField name="shareToken">
+          {(field) => <field.PasswordField label="Share token" />}
         </form.AppField>
         <RadioGroupField
           form={form}
