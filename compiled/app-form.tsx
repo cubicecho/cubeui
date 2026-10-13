@@ -21,6 +21,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
+import { numberText, parseNumber } from "@/lib/number-draft";
 import { menuValueOf, storedValueOf, withEmptyOption } from "@/lib/select-options";
 import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
@@ -131,22 +132,6 @@ function BoundInputField(props: InputFieldProps) {
   );
 }
 
-/**
- * What a number input's box says, as a number — or nothing, for empty and for the half-typed
- * states a person passes through on the way to one.
- *
- * `""`, `"-"` and `"1e"` are all "not a number yet", not zero: coercing them would make the
- * store say `0` while the box says `-`, and a required-field validator pass on an empty box.
- */
-function parseNumber(text: string): number | null {
-  const trimmed = text.trim();
-  if (trimmed === "") {
-    return null;
-  }
-  const parsed = Number(trimmed);
-  return Number.isNaN(parsed) ? null : parsed;
-}
-
 type NumberFieldProps = FieldProps &
   Omit<
     ComponentProps<typeof Input>,
@@ -174,10 +159,6 @@ function BoundNumberField(props: NumberFieldProps) {
   const [draft, setDraft] = useState<string | undefined>(undefined);
 
   const stored = field.state.value ?? null;
-  // `String`, not the raw number: the DOM `<input>` this was written against took either, and
-  // `TextInput` takes only a string — so the registry's `Input` does too, on both platforms.
-  const storedText = stored === null ? "" : String(stored);
-  const value = draft !== undefined && parseNumber(draft) === stored ? draft : storedText;
 
   return (
     <FormField
@@ -190,7 +171,7 @@ function BoundNumberField(props: NumberFieldProps) {
           inputMode="decimal"
           {...input}
           type="number"
-          value={value}
+          value={numberText(draft, stored)}
           onBlur={() => {
             // The draft has served its purpose once focus leaves: `1.` should settle to `1`.
             setDraft(undefined);
@@ -546,7 +527,7 @@ export function bindToForm<TProps extends object, TValue = unknown>(
  * <InputField form={form} name="title" label="Title" required />
  * ```
  *
- * `type="number"` writes a number back to the store, not a numeric string. `name` is checked
+ * It writes a string whatever its `type`: a number is {@link NumberField}. `name` is checked
  * against the form's values, so a renamed field breaks the build rather than going quiet.
  */
 export const InputField = bindToForm<InputFieldProps, string>(BoundInputField, "InputField");

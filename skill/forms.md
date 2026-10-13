@@ -595,6 +595,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | Field | Writes | Comes from |
 | --- | --- | --- |
 | `InputField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
+| `NumberField` | `number \| null` | `@cubeui/form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
@@ -603,7 +604,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
-`useAppForm` from `@cubeui/form` has the first five. `DateTimeField` and `ColorField` are their
+`useAppForm` from `@cubeui/form` has the first six. `DateTimeField` and `ColorField` are their
 own items for the weight of the calendar and the picker, as on the web; add them with
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
@@ -637,6 +638,24 @@ Every bound field takes `label`, `description`, `required`, `orientation`, `asGr
 `emptyLabel`. Its `options` are the web `SelectField`'s: an option's `group` is a heading over
 it and `{ separator: true }` is a rule, so one list serves both halves. Only a `{ note }` row
 needs `OptionSelectField`.
+
+**A number is `NumberField`, not `InputField type="number"`.** It takes `Input`'s props and
+writes `number | null`: an empty box is `null`, never `0`, and so is a lone `-` or `1e` while it
+is being typed. The text settles to the stored number on blur. Do not parse the text yourself in
+an `onChangeText`: on device the box is redrawn from the store on every key, so `0.` becomes `0`
+and `4.05` cannot be typed. It raises the decimal keypad; pass `inputMode` for another.
+
+```tsx
+<form.AppField
+  name="amount"
+  validators={{ onChange: ({ value }) => (value === null ? "Amount is required" : undefined) }}
+>
+  {(field) => <field.NumberField label="Amount" required />}
+</form.AppField>
+```
+
+`field.InputField type="number"` still works and is the same field. `min` and `max` only
+constrain the web's box, so check the range in a validator.
 
 How each is named:
 
