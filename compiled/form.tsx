@@ -18,9 +18,10 @@
  * `Pressable` is not a submit control. The date and colour fields are items of their own, and
  * `createAppForm` puts them on `field.*` beside these.
  */
+
+import { Slot } from "@radix-ui/react-slot";
 import type { DeepKeys } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
-import { Slot } from "radix-ui";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
 import type { FormElementProps } from "@/components/ui/form-element-base";
@@ -170,12 +171,12 @@ function FieldLabel({ ...props }: React.ComponentProps<typeof Label>) {
  * radix's `Slot` is used on both platforms. It only clones its child with merged
  * props; there is no DOM in it, so it works under React Native unchanged.
  */
-function FieldControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
+function FieldControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { controlId, labelId, descriptionId, messageId, hasError, asGroup } =
     useFieldComponentContext();
   const describedBy = [descriptionId, hasError ? messageId : null].filter(Boolean).join(" ");
   return (
-    <Slot.Root
+    <Slot
       id={controlId}
       aria-labelledby={asGroup ? labelId : undefined}
       aria-describedby={describedBy || undefined}
