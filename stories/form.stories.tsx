@@ -19,6 +19,7 @@ import {
 } from "../registry/ui/form";
 import { MultiSelectField as NativeMultiSelectField } from "../registry/ui/multi-select-form-field";
 import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
+import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -311,6 +312,108 @@ export const SelectKeepsAValueAheadOfItsOption: Story = {
       await userEvent.click(half.getByRole("button", { name: "Refetch" }));
       await waitFor(() => expect(half.getByLabelText("Type")).toHaveTextContent("Mentor"));
       await expect(stored).toHaveTextContent("mentor");
+    }
+  },
+};
+
+const DESTINATIONS = [
+  { label: "Stay here", value: "stay" },
+  { label: "Review", value: "review", group: "Lanes" },
+  { label: "Done", value: "done", group: "Lanes" },
+  { separator: true as const },
+  { label: "Archive it", value: "archive", group: "Off the board" },
+];
+
+function DestinationForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { destination: "stay", type: "friend" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="destination">
+          {(field) => <field.SelectField label="On success" options={DESTINATIONS} />}
+        </form.AppField>
+        <form.AppField name="type">
+          {(field) => <field.SelectField label="Type" options={TYPES} />}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${values.destination} for a ${values.type}`}</output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/** The rule a separator draws, found by the last class of the one constant both halves apply. */
+const RULE = `[class~="${SELECT_SEPARATOR_CLASS.split(" ").pop()}"]`;
+
+/** A row in the open menu: radix's `option`, the device sheet's `menuitem`. */
+const ROW = '[role="option"], [role="menuitem"]';
+
+/**
+ * The row with these words in the open menu. Looked for by its role because radix also keeps the
+ * options in a hidden native `<select>` inside the form, where the same words are found twice.
+ */
+function rowOf(body: HTMLElement, words: string): HTMLElement {
+  const row = within(body)
+    .getAllByText(words)
+    .find((element) => element.closest(ROW));
+  if (row === undefined) {
+    throw new Error(`no row says "${words}"`);
+  }
+  return row;
+}
+
+/** The options drawn under the heading with these words, read off the open menu. */
+function optionsUnder(body: HTMLElement, heading: string): string {
+  return within(body).getByText(heading).closest('[role="group"]')?.textContent ?? "";
+}
+
+/**
+ * `SelectField` takes the list the web one takes (#323): an option's `group` is a heading over it
+ * and `{ separator: true }` is a rule, so a grouped choice is not bound by hand. A flat list is
+ * the list it was, with no heading and no rule.
+ */
+export const SelectDrawsGroupsAndSeparators: Story = {
+  render: () => (
+    <SideBySide
+      native={<DestinationForm kit={NATIVE} />}
+      compiled={<DestinationForm kit={COMPILED} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { body } = canvasElement.ownerDocument;
+    const page = within(body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+      const trigger = half.getByLabelText("On success");
+      await expect(trigger).toHaveTextContent("Stay here");
+
+      // The list is in a portal, outside the half.
+      await userEvent.click(trigger);
+      await page.findByText("Lanes");
+      await expect(optionsUnder(body, "Lanes")).toBe("LanesReviewDone");
+      await expect(optionsUnder(body, "Off the board")).toBe("Off the boardArchive it");
+      await expect(body.querySelectorAll(RULE)).toHaveLength(1);
+
+      await userEvent.click(rowOf(body, "Archive it"));
+      await waitFor(() => expect(stored).toHaveTextContent("archive for a friend"));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(trigger).toHaveTextContent("Archive it");
+
+      await userEvent.click(half.getByLabelText("Type"));
+      await waitFor(() => rowOf(body, "Colleague"));
+      const colleague = rowOf(body, "Colleague");
+      await expect(body.querySelectorAll(RULE)).toHaveLength(0);
+      await expect(colleague.closest('[role="group"]')?.textContent).toBe("FriendColleague");
+      await userEvent.click(colleague);
+      await waitFor(() => expect(stored).toHaveTextContent("archive for a colleague"));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
     }
   },
 };

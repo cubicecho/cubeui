@@ -34,6 +34,13 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
+import {
+  blocksOf,
+  isNote,
+  isSeparator,
+  type SelectOption,
+  type SelectSeparatorEntry,
+} from "@/lib/select-options";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
@@ -47,7 +54,16 @@ import {
 import { FormElement } from "./form-element";
 import { Input } from "./input";
 import type { Label } from "./label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 import { Switch } from "./switch";
 import { Textarea } from "./textarea";
 
@@ -426,13 +442,16 @@ function TextAreaField(props: TextAreaFieldProps) {
   );
 }
 
-type SelectOption = {
-  label: string;
-  value: string;
-};
+/** What the list of a `SelectField` holds: the options, and the rules between them. */
+type SelectFieldEntry = SelectOption | SelectSeparatorEntry;
 
 type SelectFieldProps = BoundFieldProps & {
-  options: readonly SelectOption[];
+  /**
+   * The choices, in the order they are drawn. An option's `group` puts it under that heading, and
+   * `{ separator: true }` rules a line across the list: the list the web `SelectField` takes,
+   * minus its notes, which need `OptionSelectField`.
+   */
+  options: readonly SelectFieldEntry[];
   placeholder?: string;
   /** The trigger will not open: a list with nothing in it yet, a choice another field decides. */
   disabled?: boolean | undefined;
@@ -448,6 +467,10 @@ type SelectControlProps = Pick<SelectFieldProps, "options" | "placeholder" | "di
  */
 function SelectControl({ options, placeholder, disabled, ...wired }: SelectControlProps) {
   const field = useFieldContext<string>();
+  const blocks = React.useMemo(() => blocksOf(options), [options]);
+  const chosen = options.find(
+    (entry): entry is SelectOption => "value" in entry && entry.value === field.state.value,
+  );
   return (
     <Select
       value={field.state.value}
@@ -455,16 +478,30 @@ function SelectControl({ options, placeholder, disabled, ...wired }: SelectContr
       disabled={disabled}
     >
       <SelectTrigger {...wired} onBlur={field.handleBlur}>
-        <SelectValue placeholder={placeholder}>
-          {options.find((option) => option.value === field.state.value)?.label}
-        </SelectValue>
+        <SelectValue placeholder={placeholder}>{chosen?.label}</SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {options.map(({ label: optionLabel, value }) => (
-          <SelectItem key={value} value={value}>
-            {optionLabel}
-          </SelectItem>
-        ))}
+        {blocks.map((block, index) => {
+          if (isSeparator(block)) {
+            // biome-ignore lint/suspicious/noArrayIndexKey: a rule has no identity of its own
+            return <SelectSeparator key={`block-${index}`} />;
+          }
+          // The list's type holds no note, so this only tells the compiler what is left.
+          if (isNote(block)) {
+            return null;
+          }
+          return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: nor does a repeated heading
+            <SelectGroup key={`block-${index}`}>
+              {block.group ? <SelectLabel>{block.group}</SelectLabel> : null}
+              {block.options.map((option) => (
+                <SelectItem key={option.value} value={option.value} className={option.className}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          );
+        })}
       </SelectContent>
     </Select>
   );
@@ -695,7 +732,7 @@ function bindToForm<TProps extends object, TValue = unknown>(
   return FormBoundField;
 }
 
-export type { BoundFieldProps as FieldProps };
+export type { BoundFieldProps as FieldProps, SelectFieldEntry, SelectOption, SelectSeparatorEntry };
 export {
   bindToForm,
   CheckboxField,

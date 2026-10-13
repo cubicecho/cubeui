@@ -1021,6 +1021,7 @@
         "@cubeui/input",
         "@cubeui/label",
         "@cubeui/select",
+        "@cubeui/select-options",
         "@cubeui/switch",
         "@cubeui/textarea",
         "@cubeui/tokens"
