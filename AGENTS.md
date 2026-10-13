@@ -272,7 +272,10 @@ Still unsettled: the open decisions at the end of the README, and the open quest
   `tsconfig.json` is React Native, `tsconfig.web.json` is `compiled/`, `registry/web/` and
   `stories/web/`
 - **React 19**; **React Native** with **NativeWind 5** on the native side; **Tailwind v4**,
-  **radix-ui** (the unified package) and **lucide-react** on the web side
+  **radix-ui** (the unified package) and **lucide-react** on the web side. A file a device
+  bundles (`registry/ui/*.tsx` with no `.web.tsx` beside it taking its place) never imports the
+  unified package: Metro does not drop what is unused, so one import of it ships every primitive
+  and `react-dom`. The one primitive those files need is `Slot`, from `@radix-ui/react-slot`
 - **shadcn** CLI for `build`
 - **Biome** for lint and format
 - **Storybook** (on Vite) for the stories and, through vitest, the tests

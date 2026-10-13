@@ -14,8 +14,8 @@
  * accessibility hint. With a `hint`, `disabled` is `aria-disabled`, so the reason can be reached.
  */
 
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -331,11 +331,11 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
       // one child. Inside, the provider was the child: `Slot` merged the classes and
       // the press onto it, it dropped them, and the caller's `<a>` rendered unstyled (#156).
       <IconClassContext.Provider value={labelClass}>
-        {/* `Slot.Root` is declared over `HTMLAttributes<HTMLElement>` because radix ships
+        {/* `Slot` is declared over `HTMLAttributes<HTMLElement>` because radix ships
             for the DOM, but it renders nothing itself — it clones its child with these
             props merged in. The element that receives them is the caller's, so the DOM
             typing describes neither side, and the cast is the honest way to say so. */}
-        <Slot.Root
+        <Slot
           className={styling}
           {...({
             ...props,
@@ -346,7 +346,7 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
           ref={ref as unknown as React.Ref<HTMLElement>}
         >
           {React.cloneElement(linkSlot, undefined, leading, labelled, trailingSlot)}
-        </Slot.Root>
+        </Slot>
       </IconClassContext.Provider>
     );
   },
