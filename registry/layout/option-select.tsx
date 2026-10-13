@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps } from "react";
 import { useId, useMemo, useState } from "react";
 import { Platform, Text, View } from "react-native";
 import { Button, type ButtonProps } from "@/components/ui/button";
@@ -24,110 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  blocksOf,
+  isNote,
+  isSeparator,
+  type SelectBlock,
+  type SelectEntry,
+  type SelectNoteEntry,
+  type SelectOption,
+  type SelectSeparatorEntry,
+} from "@/lib/select-options";
 import { cn } from "@/lib/utils";
-
-/** One choice in an `OptionSelect`. */
-export type SelectOption = {
-  label: ReactNode;
-  value: string;
-  /**
-   * The heading this option is drawn under. Options sharing one are drawn together beneath it,
-   * in the order they were given rather than sorted — a board's lanes are ordered, and
-   * alphabetical would be wrong.
-   */
-  group?: string | undefined;
-  /**
-   * The row's class, on the `SelectItem` itself. The only way in before this was to wrap the
-   * label, which styles the text and leaves the row's padding, tick and highlight in the body
-   * face — and model ids, SHA prefixes and file paths are `font-mono` because they are
-   * identifiers. `llama3.1:8b` beside `gpt-4o-mini` in prose is a list of sentences.
-   */
-  className?: string | undefined;
-  /**
-   * Extra words a `searchable` select matches — a synonym, an old name, a provider. A label that
-   * is not a string cannot be searched, so an option with one is found by these and its `value`.
-   */
-  keywords?: string[] | undefined;
-};
-
-/** A rule across the list. An entry that is not an option, so it has no `value`. */
-export type SelectSeparatorEntry = { separator: true };
-
-/**
- * A row that says something about the list rather than offering a choice: *Loading…*, or why
- * the fetch failed.
- *
- * **It is not a disabled option.** That is the workaround every hand-written version reaches for,
- * and it is a row the keyboard still walks onto and a reader still hears as a choice — one they
- * are told they may not have — when it was never a choice at all.
- *
- * So the row itself is `aria-hidden`, because a listbox may own only options and groups and axe
- * is right to say so; it is radix's own reason for hiding its separator. The words are announced
- * from an `sr-only` live region beside the control instead, always mounted — a live region added
- * to the document in the same breath as its text is announced unreliably or not at all, and the
- * whole case here is that the menu opens *before* the list exists. Same argument as
- * `Button`'s `hint`.
- *
- * `className` because the two of these are rarely the same colour — a wait is muted and a
- * failure is not.
- */
-export type SelectNoteEntry = { note: ReactNode; className?: string | undefined };
-
-/**
- * What `options` holds: the options, and the rules between them.
- *
- * A list of peers is still a list of peers — nothing here is written until an option is not one.
- * The case that asked for it: a picker answering "where does this card go when it passes" with
- * *stay here*, then the other lanes, then *archive it*, which is not a lane at all. Without a
- * rule the last row sits flush against the lane names and reads as one of them, and the
- * workaround is a sentence doing a divider's job — `"Archive it — off the board"`.
- *
- * A note is the same argument for a row that is not a choice: once `{ separator: true }` proved
- * the list can hold an entry that is not an option, a menu that is still loading has somewhere
- * to say so.
- */
-export type SelectEntry = SelectOption | SelectSeparatorEntry | SelectNoteEntry;
-
-/** Generic over the entry, so the same test sorts a raw list and the blocks built from one. */
-function isSeparator<T extends object>(entry: T): entry is T & SelectSeparatorEntry {
-  return "separator" in entry;
-}
-
-/** The same, for the other entry that is not an option. */
-function isNote<T extends object>(entry: T): entry is T & SelectNoteEntry {
-  return "note" in entry;
-}
-
-type SelectBlock =
-  | SelectSeparatorEntry
-  | SelectNoteEntry
-  | { group?: string | undefined; options: SelectOption[] };
-
-/**
- * The flat list, as the runs Radix draws: a rule and a note are each their own block, and
- * consecutive options sharing a `group` are one.
- *
- * Walked rather than bucketed, because the order is the caller's and a group that reappears
- * later is a caller who meant it. Options with no `group` are a block with no heading, which is
- * every list that has not asked for one.
- */
-function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
-  const blocks: SelectBlock[] = [];
-  for (const entry of entries) {
-    if (isSeparator(entry) || isNote(entry)) {
-      blocks.push(entry);
-      continue;
-    }
-    const last = blocks.at(-1);
-    // `"options" in last` rather than two negations: it is the shape being asked for.
-    if (last && "options" in last && last.group === entry.group) {
-      last.options.push(entry);
-    } else {
-      blocks.push({ group: entry.group, options: [entry] });
-    }
-  }
-  return blocks;
-}
 
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = Platform.select({
@@ -500,3 +407,7 @@ export function OptionSelect({
     </SelectRoot>
   );
 }
+
+// Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on
+// install and leaves re-export declarations alone. See AGENTS.md.
+export type { SelectEntry, SelectNoteEntry, SelectOption, SelectSeparatorEntry };

@@ -110,6 +110,18 @@
       ]
     },
     {
+      "name": "select-options",
+      "type": "registry:lib",
+      "title": "Select options",
+      "description": "What a select's options list holds — options, a group heading on each, separators and notes — and the walk that turns the list into the runs a menu draws. What OptionSelect and the form's SelectField read one list through. Not a component.",
+      "files": [
+        {
+          "path": "registry/lib/select-options.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -541,6 +553,7 @@
         "@cubeui/icons",
         "@cubeui/popover",
         "@cubeui/select",
+        "@cubeui/select-options",
         "@cubeui/utils",
         "@cubeui/tokens"
       ],
@@ -1022,6 +1035,7 @@
         "@cubeui/number-draft",
         "@cubeui/password-input",
         "@cubeui/select",
+        "@cubeui/select-options",
         "@cubeui/switch",
         "@cubeui/textarea",
         "@cubeui/tokens"
@@ -1163,6 +1177,19 @@
       "files": [
         {
           "path": "compiled/multi-select-form-field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "option-select-field",
+      "type": "registry:ui",
+      "title": "Option Select Field",
+      "description": "`OptionSelect` bound to a string form field, for `createAppForm` or inside `form.AppField`: the select with a search box, a list that fills when it opens, or a note in it. `OptionSelectField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.",
+      "registryDependencies": ["@cubeui/option-select", "@cubeui/select-options", "@cubeui/form"],
+      "files": [
+        {
+          "path": "compiled/option-select-field.tsx",
           "type": "registry:ui"
         }
       ]

@@ -9,6 +9,7 @@ import {
   createAppForm as compiledCreateAppForm,
 } from "../compiled/form";
 import { MultiSelectField as CompiledMultiSelectField } from "../compiled/multi-select-form-field";
+import { OptionSelectField as CompiledOptionSelectField } from "../compiled/option-select-field";
 import { SegmentedField as CompiledSegmentedField } from "../compiled/segmented-field";
 import { ColorField as NativeColorField } from "../registry/ui/color-picker-field";
 import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-field";
@@ -18,7 +19,9 @@ import {
   createAppForm as nativeCreateAppForm,
 } from "../registry/ui/form";
 import { MultiSelectField as NativeMultiSelectField } from "../registry/ui/multi-select-form-field";
+import { OptionSelectField as NativeOptionSelectField } from "../registry/ui/option-select-field";
 import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
+import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -37,12 +40,14 @@ const native = nativeCreateAppForm({
   DateTimeField: NativeDateTimeField,
   ColorField: NativeColorField,
   MultiSelectField: NativeMultiSelectField,
+  OptionSelectField: NativeOptionSelectField,
   SegmentedField: NativeSegmentedField,
 });
 const compiled = compiledCreateAppForm({
   DateTimeField: CompiledDateTimeField,
   ColorField: CompiledColorField,
   MultiSelectField: CompiledMultiSelectField,
+  OptionSelectField: CompiledOptionSelectField,
   SegmentedField: CompiledSegmentedField,
 });
 
@@ -311,6 +316,302 @@ export const SelectKeepsAValueAheadOfItsOption: Story = {
       await userEvent.click(half.getByRole("button", { name: "Refetch" }));
       await waitFor(() => expect(half.getByLabelText("Type")).toHaveTextContent("Mentor"));
       await expect(stored).toHaveTextContent("mentor");
+    }
+  },
+};
+
+const DESTINATIONS = [
+  { label: "Stay here", value: "stay" },
+  { label: "Review", value: "review", group: "Lanes" },
+  { label: "Done", value: "done", group: "Lanes" },
+  { separator: true as const },
+  { label: "Archive it", value: "archive", group: "Off the board" },
+];
+
+function DestinationForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { destination: "stay", type: "friend" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="destination">
+          {(field) => <field.SelectField label="On success" options={DESTINATIONS} />}
+        </form.AppField>
+        <form.AppField name="type">
+          {(field) => <field.SelectField label="Type" options={TYPES} />}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${values.destination} for a ${values.type}`}</output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/** The rule a separator draws, found by the last class of the one constant both halves apply. */
+const RULE = `[class~="${SELECT_SEPARATOR_CLASS.split(" ").pop()}"]`;
+
+/** A row in the open menu: radix's `option`, the device sheet's `menuitem`. */
+const ROW = '[role="option"], [role="menuitem"]';
+
+/**
+ * The row with these words in the open menu. Looked for by its role because radix also keeps the
+ * options in a hidden native `<select>` inside the form, where the same words are found twice.
+ */
+function rowOf(body: HTMLElement, words: string): HTMLElement {
+  const row = within(body)
+    .getAllByText(words)
+    .find((element) => element.closest(ROW));
+  if (row === undefined) {
+    throw new Error(`no row says "${words}"`);
+  }
+  return row;
+}
+
+/** The options drawn under the heading with these words, read off the open menu. */
+function optionsUnder(body: HTMLElement, heading: string): string {
+  return within(body).getByText(heading).closest('[role="group"]')?.textContent ?? "";
+}
+
+/**
+ * `SelectField` takes the list the web one takes (#323): an option's `group` is a heading over it
+ * and `{ separator: true }` is a rule, so a grouped choice is not bound by hand. A flat list is
+ * the list it was, with no heading and no rule.
+ */
+export const SelectDrawsGroupsAndSeparators: Story = {
+  render: () => (
+    <SideBySide
+      native={<DestinationForm kit={NATIVE} />}
+      compiled={<DestinationForm kit={COMPILED} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const { body } = canvasElement.ownerDocument;
+    const page = within(body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+      const trigger = half.getByLabelText("On success");
+      await expect(trigger).toHaveTextContent("Stay here");
+
+      // The list is in a portal, outside the half.
+      await userEvent.click(trigger);
+      await page.findByText("Lanes");
+      await expect(optionsUnder(body, "Lanes")).toBe("LanesReviewDone");
+      await expect(optionsUnder(body, "Off the board")).toBe("Off the boardArchive it");
+      await expect(body.querySelectorAll(RULE)).toHaveLength(1);
+
+      await userEvent.click(rowOf(body, "Archive it"));
+      await waitFor(() => expect(stored).toHaveTextContent("archive for a friend"));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(trigger).toHaveTextContent("Archive it");
+
+      await userEvent.click(half.getByLabelText("Type"));
+      await waitFor(() => rowOf(body, "Colleague"));
+      const colleague = rowOf(body, "Colleague");
+      await expect(body.querySelectorAll(RULE)).toHaveLength(0);
+      await expect(colleague.closest('[role="group"]')?.textContent).toBe("FriendColleague");
+      await userEvent.click(colleague);
+      await waitFor(() => expect(stored).toHaveTextContent("archive for a colleague"));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+    }
+  },
+};
+
+const MODELS = [
+  { label: "gpt-4o-mini", value: "gpt-4o-mini", group: "Hosted" },
+  { label: "claude-haiku", value: "claude-haiku", group: "Hosted" },
+  { label: "llama3.1:8b", value: "llama3.1:8b", group: "Local", keywords: ["ollama"] },
+  { label: "qwen2.5:7b", value: "qwen2.5:7b", group: "Local", keywords: ["ollama"] },
+];
+
+function ModelForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const [opened, setOpened] = useState(0);
+  const form = useAppForm({
+    defaultValues: { model: "" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="model"
+          validators={{
+            onChange: ({ value }) =>
+              value === "claude-haiku" ? "That model is not installed" : undefined,
+          }}
+        >
+          {(field) => (
+            <field.OptionSelectField
+              label="Model"
+              description="What answers the run."
+              options={MODELS}
+              placeholder="Choose a model"
+              searchable
+              onOpenChange={(open) => {
+                if (open) {
+                  setOpened((count) => count + 1);
+                }
+              }}
+            />
+          )}
+        </form.AppField>
+        <form.Subscribe
+          selector={(state) => [state.values.model, state.fieldMeta.model?.isTouched] as const}
+        >
+          {([model, isTouched]) => (
+            <output aria-label="Stored model">
+              {`${model === "" ? "nothing" : model}, ${isTouched ? "touched" : "untouched"}, opened ${opened}`}
+            </output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `OptionSelectField` (#323): the select with a search box, bound. Typing narrows the list,
+ * choosing writes the field and marks it touched, the menu opening is reported, and the field's
+ * error is drawn under it.
+ */
+export const OptionSelectSearchesAndPicks: Story = {
+  render: () => (
+    <SideBySide native={<ModelForm kit={NATIVE} />} compiled={<ModelForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored model");
+      await expect(stored).toHaveTextContent("nothing, untouched, opened 0");
+      // Named by its label, which is the wiring landing on the trigger.
+      const trigger = half.getByRole("combobox", { name: "Model" });
+      await expect(trigger).toHaveTextContent("Choose a model");
+
+      await userEvent.click(trigger);
+      const search = await page.findByPlaceholderText("Search…");
+      await expect(stored).toHaveTextContent("nothing, untouched, opened 1");
+      await userEvent.type(search, "ollama 8b");
+      await waitFor(() => expect(page.getAllByRole("option")).toHaveLength(1));
+      await userEvent.click(page.getByRole("option", { name: "llama3.1:8b" }));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(stored).toHaveTextContent("llama3.1:8b, touched, opened 1");
+      await expect(trigger).toHaveTextContent("llama3.1:8b");
+
+      await userEvent.click(trigger);
+      await userEvent.click(await page.findByRole("option", { name: "claude-haiku" }));
+      await waitFor(() =>
+        expect(half.getByRole("alert")).toHaveTextContent("That model is not installed"),
+      );
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(trigger).toHaveAttribute("aria-invalid", "true");
+    }
+  },
+};
+
+const PEOPLE = [
+  { label: "Ada Lovelace", value: "ada" },
+  { label: "Grace Hopper", value: "grace" },
+];
+
+function PeopleForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { owner: null as string | null, reviewer: null as string | null },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="owner"
+          validators={{
+            onChange: ({ value }) => (value === null ? "Someone has to own it" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.SelectField label="Owner" options={PEOPLE} clearable emptyLabel="Nobody" />
+          )}
+        </form.AppField>
+        <form.AppField
+          name="reviewer"
+          validators={{
+            onChange: ({ value }) => (value === null ? "Someone has to review it" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.OptionSelectField
+              label="Reviewer"
+              options={PEOPLE}
+              searchable
+              clearable
+              emptyLabel="No reviewer"
+            />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => <output aria-label="Stored people">{JSON.stringify(values)}</output>}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `clearable` (#323): a first row for "nothing", saying `emptyLabel`. A field holding `null`
+ * opens on that row, choosing it again writes `null` back, and no value stands in for it where a
+ * caller can see: the store only ever holds an option's value or `null`.
+ */
+export const SelectClearsToNull: Story = {
+  render: () => (
+    <SideBySide native={<PeopleForm kit={NATIVE} />} compiled={<PeopleForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const { body } = canvasElement.ownerDocument;
+    const page = within(body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored people");
+      await expect(stored).toHaveTextContent('{"owner":null,"reviewer":null}');
+
+      const owner = half.getByLabelText("Owner");
+      await expect(owner).toHaveTextContent("Nobody");
+      await userEvent.click(owner);
+      await waitFor(() => rowOf(body, "Ada Lovelace"));
+      await userEvent.click(rowOf(body, "Ada Lovelace"));
+      await waitFor(() => expect(stored).toHaveTextContent('"owner":"ada"'));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(owner).toHaveTextContent("Ada Lovelace");
+
+      await userEvent.click(owner);
+      await waitFor(() => rowOf(body, "Nobody"));
+      await userEvent.click(rowOf(body, "Nobody"));
+      await waitFor(() => expect(stored).toHaveTextContent('"owner":null'));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(owner).toHaveTextContent("Nobody");
+      // Leaving the trigger is what marks a select touched, and so what lets its error show.
+      owner.focus();
+      await userEvent.tab();
+      await waitFor(() => expect(half.getByText("Someone has to own it")).toBeVisible());
+
+      const reviewer = half.getByRole("combobox", { name: "Reviewer" });
+      await expect(reviewer).toHaveTextContent("No reviewer");
+      await userEvent.click(reviewer);
+      await userEvent.click(await page.findByRole("option", { name: "Grace Hopper" }));
+      await waitFor(() => expect(stored).toHaveTextContent('"reviewer":"grace"'));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(reviewer).toHaveTextContent("Grace Hopper");
+
+      await userEvent.click(reviewer);
+      await userEvent.click(await page.findByRole("option", { name: "No reviewer" }));
+      await waitFor(() => expect(stored).toHaveTextContent('"reviewer":null'));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(reviewer).toHaveTextContent("No reviewer");
+      await waitFor(() => expect(half.getByText("Someone has to review it")).toBeVisible());
     }
   },
 };
