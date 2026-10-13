@@ -9,7 +9,6 @@
     "@cubeui/date-field",
     "@cubeui/field-row",
     "@cubeui/form-field",
-    "@cubeui/multi-select-field",
     "@cubeui/password-field",
     "@cubeui/radio-group-field"
   ],

@@ -9,8 +9,7 @@
     "@cubeui/copy-button",
     "@cubeui/date-picker",
     "@cubeui/menu",
-    "@cubeui/multi-select",
-    "@cubeui/option-select",
+    "@cubeui/combobox",
     "@cubeui/password-input"
   ],
   "files": [],

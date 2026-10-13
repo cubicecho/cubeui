@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -200,7 +200,7 @@ and the web `FormField`'s `controlSlot`.
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
-  and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
+  and so does `Combobox`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
 - **`defaultOpen`** — where it starts, when the thing holds its own open state: `Disclosure`, and
   the `Dialog`, `Popover` and `Menu` primitives. Pass it instead of `open`, never beside it.
@@ -236,8 +236,8 @@ and the web `FormField`'s `controlSlot`.
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
 - **`clearable`** — the control can be put back to holding nothing. A button that empties it on
-  `MultiSelect`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and
-  `OptionSelectField` a first row for "nothing", which writes `null`.
+  `Combobox multiple`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and a
+  single `ComboboxField` a first row for "nothing", which writes `null`.
 - **`emptyLabel`** — what a `clearable` select's row for "nothing" says, and so what its trigger
   reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice.
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
@@ -315,7 +315,7 @@ and `InlineNumberEdit`; they were removed, and nothing replaces them.
   row, a pencil icon `Button`, or the row itself, with the value in a bound field and Save /
   Cancel — see [forms.md](forms.md#forms-in-dialogs).
 - **A settings page** is a form with its fields showing, or a `SettingRow` whose `actionSlot` is a
-  real control — a `Switch`, an `OptionSelect` — that is always drawn as one.
+  real control — a `Switch`, a `Combobox` — that is always drawn as one.
 - **An "Add lane" box** that appears at the end of a list is a field, not an edit: it holds
   nothing until typed into, and Enter adds it.
 
@@ -358,13 +358,13 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
-| Several of a list, bound to a form field | `MultiSelectField` | `@cubeui/multi-select-form-field` |
-| One of a long, fetched or annotated list, bound to a form field — searchable, and `clearable` for a choice that may be left unmade | `OptionSelectField` | `@cubeui/option-select-field` |
+| Several of a list, bound to a form field | `ComboboxField multiple` | `@cubeui/combobox-field` |
+| One of a long, fetched or annotated list, bound to a form field — searchable, and `clearable` for a choice that may be left unmade | `ComboboxField` | `@cubeui/combobox-field` |
 | One of a few short choices as pills, bound to a form field | `SegmentedField` | `@cubeui/segmented-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
-| One value from a longer list, in a sheet — options as an array, with groups, rules and notes — see [controls.md](controls.md#option-select) | `OptionSelect` | `@cubeui/option-select` |
+| One value from a longer list, in a sheet — options as an array, with groups, rules and notes — see [controls.md](controls.md#combobox) | `Combobox` | `@cubeui/combobox` |
 | The app's light / dark / system setting and its palette, stored and applied — see [controls.md](controls.md#theme) | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` | `@cubeui/theme-picker` |
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A date and a time as one `Date`, or an optional date only (`clearable mode="date"`) — see [controls.md](controls.md#date-and-date-range) | `DateTimeInput` | `@cubeui/date-time-input` |
@@ -373,7 +373,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A count, a file size, a duration, a date or "3 days ago" as text, and a row of them joined with ` · ` — see [controls.md](controls.md#numbers-sizes-and-dates-as-text) | `formatCount`, `formatBytes`, `formatDuration`, `formatDate`, `formatDateTime`, `formatAgo`, `joinStats` | `@cubeui/format` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leadingSlot`, `Input trailingSlot` | `@cubeui/input` |
-| A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#multi-select) | `MultiSelect` | `@cubeui/multi-select` |
+| A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#several-at-once) | `Combobox multiple` | `@cubeui/combobox` |
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
 | A search box over rows that filter as you type, each chosen by a press — see [controls.md](controls.md#command) | `Command` and its parts | `@cubeui/command` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |

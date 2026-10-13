@@ -132,7 +132,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `trailingSlot` | The same place where it takes elements only. On `Input` it is the far end of the field, inside it, and holds one icon-sized control, a clear button. On `Button` it is the far end of the button, after its `content`: a trigger's chevron. On `TabsTrigger` it is the far end of the tab: a dot, a count in a `Badge`. |
 | `linkSlot` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. On `Button` it is the same element, which the button is drawn *as* on the web and inside on a device — what shadcn's `asChild` was for. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
-| `clearable` | The control can be put back to holding nothing. A button that empties it on `MultiSelect`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and `OptionSelectField` a first row for "nothing", which writes `null`. |
+| `clearable` | The control can be put back to holding nothing. A button that empties it on `Combobox multiple`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and a single `ComboboxField` a first row for "nothing", which writes `null`. |
 | `emptyLabel` | What a `clearable` select's row for "nothing" says, and so what its trigger reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
 | `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
@@ -325,14 +325,14 @@ state lives in the shell instead of the primitive. A caller who passes `open` st
 still hears every change. The two never mirror.
 
 **A control is not a shell, and this rule is about shells.** `ColorPicker` holds a half-typed hex,
-`PasswordInput` holds whether the value is showing, `MultiSelect` holds its search term — and each
+`PasswordInput` holds whether the value is showing, `Combobox` holds its search term — and each
 of those is state that belongs to the widget, not to the screen. The line is whether the state
 outlives the interaction: a draft the control throws away on blur is the control's, and a value
 anything else in the app can read is the caller's. The value itself is always `value` and
 `onValueChange`, never held inside; the two never mirror.
 
 Delegation is the same here as it is above, and a control that wraps a primitive has to be told
-so: `OptionSelect` passes `open`/`onOpenChange` through to its `Select` because a menu whose list is
+so: `Combobox` passes `open`/`onOpenChange` through to its `Select` because a menu whose list is
 fetched has nowhere else to learn that it opened. It shipped without them and the one picker in
 task-server whose options come from the server stayed hand-assembled — a control that swallows
 the primitive's own state is a control the fetching call site cannot use, and the fix is to pass
@@ -386,7 +386,7 @@ to the primitive on install. It resolved — to the wrong file — and failed on
 files from the cause. The argument for shipping it as `Select` was that a reader disambiguates
 by import path, which is true and beside the point: the CLI rewrites the import path. Renaming
 the item in `registry.json` is not enough either; the file is what is matched. `npm run
-registry:check` now fails on it, and the component is `OptionSelect`.
+registry:check` now fails on it, and the component was renamed; it is `Combobox` now.
 
 Words for slots the set does not have yet — a toolbar, a status bar, an aside — get decided when
 the component that needs one arrives. Adding a word is a decision about the whole set (rule 2),

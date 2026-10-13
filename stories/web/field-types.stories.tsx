@@ -1,9 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { InputField, NumberField, SelectField, useAppForm } from "@/components/app-form";
+import {
+  ComboboxField,
+  InputField,
+  NumberField,
+  SelectField,
+  useAppForm,
+} from "@/components/app-form";
 import { DateField, DateRangeField } from "@/components/date-field";
 import type { DateRange } from "@/components/date-picker";
-import { MultiSelectField } from "@/components/multi-select-field";
 import { Button } from "@/components/ui/button";
 
 const LISTS = [
@@ -73,7 +78,14 @@ function TaskForm({
         }}
       />
       <SelectField form={form} name="list" label="List" options={LISTS} loading={loading} />
-      <MultiSelectField form={form} name="tags" label="Tags" options={TAGS} loading={loading} />
+      <ComboboxField
+        multiple
+        form={form}
+        name="tags"
+        label="Tags"
+        options={TAGS}
+        loading={loading}
+      />
       <DateField form={form} name="dueAt" label="Due" showTime loading={loading} />
       <DateRangeField form={form} name="window" label="Window" loading={loading} />
 
@@ -123,7 +135,7 @@ export const EveryFieldIsLabelled: Story = {
 export const ThePopoverFieldsAreRealControls: Story = {
   args: {},
   play: async ({ canvas }) => {
-    expect(canvas.getByLabelText(/^Tags/)).toHaveAttribute("data-slot", "multi-select-trigger");
+    expect(canvas.getByLabelText(/^Tags/)).toHaveAttribute("data-slot", "combobox-trigger");
     expect(canvas.getByLabelText(/^Due/)).toHaveAttribute("data-slot", "date-picker-trigger");
     expect(canvas.getByLabelText(/^Window/)).toHaveAttribute("data-slot", "date-picker-trigger");
   },

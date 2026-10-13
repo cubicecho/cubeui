@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentProps } from "react";
-import { useState } from "react";
+import { type ComponentType, useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { OptionSelect, type SelectEntry } from "../compiled/option-select";
-import { OptionSelect as Native } from "../registry/layout/option-select";
+import { Combobox, type ComboboxSingleProps, type SelectEntry } from "../compiled/combobox";
+import { Combobox as Native, type SelectOption } from "../registry/layout/combobox";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
 
@@ -61,7 +60,7 @@ function Fetched() {
 
   return (
     <div className="w-[320px]">
-      <OptionSelect
+      <Combobox
         aria-label="Model"
         placeholder="Choose a model"
         options={options}
@@ -88,7 +87,7 @@ function Harness({
   options = DESTINATIONS,
   initial = "",
   ...props
-}: Partial<ComponentProps<typeof OptionSelect>> & {
+}: Partial<ComboboxSingleProps> & {
   options?: readonly SelectEntry[];
   initial?: string;
 }) {
@@ -96,7 +95,7 @@ function Harness({
 
   return (
     <div className="w-[320px]">
-      <OptionSelect
+      <Combobox
         aria-label="On success"
         placeholder="Pick one"
         {...props}
@@ -112,7 +111,7 @@ function Harness({
 }
 
 const meta = {
-  title: "RN Parity/OptionSelect",
+  title: "RN Parity/Combobox",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;
@@ -177,7 +176,7 @@ export const ItIsAControlWithAValue: Story = {
 };
 
 /**
- * The detail every hand-written select field gets wrong. `OptionSelect`'s radix root renders no
+ * The detail every hand-written select field gets wrong. The listbox's radix root renders no
  * DOM, so an `id` or an `aria-invalid` put on it goes nowhere at all — silently, because nothing
  * errors and the attribute simply is not in the document. They belong on the trigger, and this
  * takes the rest of a `<button>`'s props there.
@@ -430,13 +429,13 @@ export const BothHalves: Story = {
       }
       compiled={
         <div className="flex w-[280px] flex-col gap-2">
-          <OptionSelect
+          <Combobox
             aria-label="Compiled, chosen"
             options={DESTINATIONS}
             value="qa"
             onValueChange={() => {}}
           />
-          <OptionSelect
+          <Combobox
             aria-label="Compiled, empty"
             placeholder="Pick one"
             options={[...LISTS, { note: "Still loading…" }]}
@@ -471,7 +470,7 @@ const TAGS: readonly SelectEntry[] = [
 
 function Searchable({ half }: { half: "native" | "compiled" }) {
   const [value, setValue] = useState("");
-  const Select = half === "native" ? Native : OptionSelect;
+  const Select = half === "native" ? Native : Combobox;
   return (
     <div className="flex w-[280px] flex-col gap-2">
       <Select
@@ -532,6 +531,134 @@ export const SearchableList: Story = {
       await expect(screen.queryByPlaceholderText("Search…")).not.toBeInTheDocument();
       await userEvent.keyboard("{Escape}");
       await waitFor(() => expect(screen.queryByRole("option")).not.toBeInTheDocument());
+    }
+  },
+};
+
+/** Labels on a task: several at once, coloured, grouped, and one of them retired. */
+const LABELS: SelectOption[] = [
+  { value: "backend", label: "Backend infrastructure", group: "Area" },
+  { value: "frontend", label: "Frontend", group: "Area" },
+  { value: "work", label: "Work", color: "#1d4ed8", group: "Kind" },
+  { value: "urgent", label: "Urgent", color: "#dc2626", group: "Kind", meta: "3" },
+  {
+    value: "someday",
+    label: "Someday",
+    disabled: true,
+    group: "Kind",
+    hint: "Retired: nothing new is filed as someday",
+  },
+];
+
+type Picker = ComponentType<{
+  multiple: true;
+  options: readonly SelectOption[];
+  value: readonly string[];
+  onValueChange: (value: string[]) => void;
+  onCreateOption?: ((name: string) => void) | undefined;
+  "aria-label"?: string | undefined;
+}>;
+
+function MultipleHarness({ Picker, name }: { Picker: Picker; name: string }) {
+  const [value, setValue] = useState<string[]>(["work"]);
+  const [extra, setExtra] = useState<SelectOption[]>([]);
+  return (
+    <div className="w-80">
+      <Picker
+        multiple
+        aria-label={name}
+        options={[...LABELS, ...extra]}
+        value={value}
+        onValueChange={setValue}
+        onCreateOption={(label) => {
+          const created = { value: label.toLowerCase(), label };
+          setExtra((all) => [...all, created]);
+          setValue((all) => [...all, created.value]);
+        }}
+      />
+    </div>
+  );
+}
+
+/**
+ * `multiple` on both web halves: the React Native source under react-native-web on the left —
+ * which is what an Expo web app runs, over the web halves of `popover` and `command` — and the
+ * compiled DOM on the right. The behaviour the web tier's own stories hold it to is in
+ * `stories/web/combobox.stories.tsx`, against the compiled file a DOM app installs; this one is
+ * that the React Native source opens, filters, chooses, creates and clears the same way.
+ *
+ * On device the popover is the native sheet and the command list the native one, which a story in
+ * a browser cannot reach; `command.stories.tsx` holds that list to the same filter.
+ */
+export const MultipleOnBothHalves: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={<MultipleHarness Picker={Native as Picker} name="Native tags" />}
+      compiled={<MultipleHarness Picker={Combobox as Picker} name="Compiled tags" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    for (const name of ["Native tags", "Compiled tags"]) {
+      const trigger = canvas.getByRole("combobox", { name });
+
+      await step(`${name}: the trigger shows the chosen chip and no button inside it`, async () => {
+        await expect(trigger).toHaveTextContent("Work");
+        await expect(trigger.querySelectorAll("button")).toHaveLength(0);
+      });
+
+      await step(`${name}: pressing the trigger opens the list, grouped`, async () => {
+        await userEvent.click(trigger);
+        await screen.findByRole("listbox");
+        await waitFor(() => expect(trigger).toHaveAttribute("aria-expanded", "true"));
+        await expect(screen.getByRole("option", { name: "Work" })).toHaveAttribute(
+          "aria-checked",
+          "true",
+        );
+        await waitFor(() => expect(screen.getByText("Area")).toBeVisible());
+      });
+
+      await step(`${name}: a disabled row says why, as a description`, async () => {
+        const someday = screen.getByRole("option", { name: "Someday" });
+        const hint = document.getElementById(someday.getAttribute("aria-describedby") ?? "");
+        // `testID` is `data-slot` once compiled and `data-testid` under react-native-web.
+        await expect(hint?.getAttribute("data-slot") ?? hint?.getAttribute("data-testid")).toBe(
+          "combobox-option-hint",
+        );
+        await expect(hint).toHaveTextContent(/Retired/);
+      });
+
+      await step(`${name}: choosing adds a chip, and every word filters`, async () => {
+        await userEvent.click(screen.getByRole("option", { name: "Frontend" }));
+        await waitFor(() => expect(trigger).toHaveTextContent("Frontend"));
+
+        await userEvent.type(screen.getByLabelText("Search"), "infra back");
+        await waitFor(() =>
+          expect(
+            screen
+              .getAllByRole("option")
+              .filter((row) => /^Add /.test(row.textContent ?? "") === false),
+          ).toHaveLength(1),
+        );
+        await expect(screen.getByRole("option", { name: /Backend/ })).toBeVisible();
+      });
+
+      await step(`${name}: a new name is offered and created`, async () => {
+        const search = screen.getByLabelText("Search");
+        await userEvent.clear(search);
+        await userEvent.type(search, "Roadmap");
+        await userEvent.click(await screen.findByRole("option", { name: /Add .Roadmap./ }));
+        await waitFor(() => expect(trigger).toHaveTextContent("Roadmap"));
+      });
+
+      await step(`${name}: Clear empties it, and Escape closes`, async () => {
+        await userEvent.click(screen.getByRole("button", { name: "Clear" }));
+        await waitFor(() => expect(trigger).toHaveTextContent("Select…"));
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+      });
     }
   },
 };
