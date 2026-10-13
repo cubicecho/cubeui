@@ -13,10 +13,11 @@
  * its state from form context, so the label, control and error wiring is done once here.
  * `ui/field` is the unbound chrome underneath, for a control this file does not cover.
  *
- * `FieldRow` stands in for a grid, which Yoga does not have. `InputField` parses its own number,
- * because `valueAsNumber` is DOM-only. `SubmitButton` calls `handleSubmit()`, because a
- * `Pressable` is not a submit control. The date and colour fields are items of their own, and
- * `createAppForm` puts them on `field.*` beside these.
+ * `FieldRow` stands in for a grid, which Yoga does not have. `NumberField` keeps what is typed as
+ * a draft, because a `TextInput` redrawn from the stored number loses a decimal point as it is
+ * typed. `SubmitButton` calls `handleSubmit()`, because a `Pressable` is not a submit control. The
+ * date and colour fields are items of their own, and `createAppForm` puts them on `field.*` beside
+ * these.
  */
 import type { DeepKeys } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
@@ -34,6 +35,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
+import { numberText, parseNumber } from "@/lib/number-draft";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
@@ -371,13 +373,12 @@ function FieldWrapper({
 type InputFieldProps = BoundFieldProps &
   Omit<InputProps, "value" | "onChangeText" | "onBlur" | keyof BoundFieldProps>;
 
-/** A text box and the field around it. `className` is the field's, as on every bound field. */
-function InputField(props: InputFieldProps) {
+/** The text box behind `InputField`, for every `type` but `number`. */
+function TextField(props: InputFieldProps) {
   const [fieldProps, input] = splitProps(props);
-  // The stored value is whatever the schema says — string, number or null — and
-  // this component is generic over all of them, so there is nothing narrower to
-  // write here. Both edges are handled explicitly: `String(… ?? "")` going in,
-  // and the `type === "number"` branch coming out.
+  // The stored value is whatever the schema says, a string or null, and this component is
+  // generic over both, so there is nothing narrower to write here. `String(… ?? "")` is the
+  // one edge: a `TextInput` takes only a string.
   // biome-ignore lint/suspicious/noExplicitAny: see above
   const field = useFieldContext<any>();
 
@@ -389,18 +390,67 @@ function InputField(props: InputFieldProps) {
           {...input}
           value={String(field.state.value ?? "")}
           onBlur={field.handleBlur}
+          onChangeText={(text) => field.handleChange(text)}
+        />
+      }
+    />
+  );
+}
+
+type NumberFieldProps = BoundFieldProps &
+  Omit<
+    InputProps,
+    "value" | "defaultValue" | "onChangeText" | "onBlur" | "type" | keyof BoundFieldProps
+  >;
+
+/**
+ * A number box whose field holds `number | null`: empty is `null`, not `0`.
+ *
+ * What was typed is kept as a draft and drawn while it still means the stored number, so `1.`
+ * survives to take its next digit. A lone `-` or `1e` stores `null` and stays in the box. On blur
+ * the text settles to the stored number.
+ */
+function NumberField(props: NumberFieldProps) {
+  const [fieldProps, input] = splitProps(props);
+  const field = useFieldContext<number | null>();
+  const [draft, setDraft] = React.useState<string | undefined>(undefined);
+  const stored = field.state.value ?? null;
+
+  return (
+    <FieldWrapper
+      {...fieldProps}
+      controlSlot={
+        <Input
+          // `type="number"` alone raises the digits-only keypad on a phone, which has no point.
+          inputMode="decimal"
+          {...input}
+          type="number"
+          value={numberText(draft, stored)}
+          onBlur={() => {
+            setDraft(undefined);
+            field.handleBlur();
+          }}
           onChangeText={(text) => {
-            if (input.type === "number") {
-              // `valueAsNumber` is DOM-only; parse the text so native agrees.
-              field.handleChange(text === "" ? null : Number(text));
-            } else {
-              field.handleChange(text);
-            }
+            setDraft(text);
+            field.handleChange(parseNumber(text));
           }}
         />
       }
     />
   );
+}
+
+/**
+ * A text box and the field around it. `className` is the field's, as on every bound field.
+ *
+ * `type="number"` is {@link NumberField}, so a call site written before that field existed keeps
+ * storing `number | null`. New code names `NumberField`.
+ */
+function InputField(props: InputFieldProps) {
+  if (props.type === "number") {
+    return <NumberField {...props} />;
+  }
+  return <TextField {...props} />;
 }
 
 type TextAreaFieldProps = BoundFieldProps &
@@ -607,6 +657,7 @@ function SubmitButton({
  */
 const FIELD_COMPONENTS = {
   InputField,
+  NumberField,
   TextAreaField,
   TextareaField: TextAreaField,
   SelectField,
@@ -709,6 +760,7 @@ export {
   FieldWrapper,
   Form,
   InputField,
+  NumberField,
   SelectField,
   SubmitButton,
   SwitchField,
