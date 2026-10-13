@@ -313,10 +313,11 @@ duplication. Do not add a prop, a branch or a doc sentence accommodating another
 The binding lives in two places, one per tier:
 
 - **`registry/ui/form.tsx`** (`@cubeui/form`) is the universal one: `Form`, `useAppForm`,
-  `InputField` and the rest, written in React Native and compiled like any primitive.
+  `InputField`, `NumberField`, `PasswordField` and the rest, written in React Native and compiled like any
+  primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
-  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx` and `segmented-field.tsx`
-  join the same way. `registry/layout/radio-group-field.tsx`
+  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx`,
+  `option-select-field.tsx` and `segmented-field.tsx` join the same way. `registry/layout/radio-group-field.tsx`
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
   `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `CheckboxField`,
@@ -324,6 +325,11 @@ The binding lives in two places, one per tier:
   `@cubeui/multi-select-field`, `@cubeui/date-field`, `@cubeui/color-field` and
   `@cubeui/password-field` are the same layer in their own files, for the weight of what they
   import, and `@cubeui/form-set` installs all of them.
+
+`NumberField` is on both, with one contract: it writes `number | null`, empty is `null`, and the
+text being typed is a draft that `registry/lib/number-draft.ts` reads for both files. Do not
+store `Number(text)` per keystroke in a new field: on device the box is redrawn from the store,
+and `1.` loses its point before the next digit.
 
 Those three are the only files in the registry that import `@tanstack/react-form`. A web-only
 field `app-form.tsx` does not hold is still bound through it: `bindToForm`, `splitProps` and
@@ -410,6 +416,12 @@ network, so it is not in `check`.
 real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`) that
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
+
+The story tests open a Chromium, and two of them on one machine kill each other: the run ends
+with "Browser connection was closed". Where more than one checkout shares the machine, every
+`npm test`, `npm run check` and `npm run install-test` takes the same lock
+(`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
+directory, so the tools here never find a second copy of the project.
 
 ## Keep the skill in sync
 

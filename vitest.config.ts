@@ -21,6 +21,14 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
+          // Worker threads, not child processes: these files are pure functions with no native
+          // module or `process` state to keep apart, and a thread starts faster and holds less
+          // memory than a fork. The storybook project below takes no `pool`: a browser project
+          // always runs in vitest's own browser pool.
+          pool: "threads",
+          // Before the browser, not beside it: vitest refuses two projects with different worker
+          // counts in one group, and the stories below run on one worker.
+          sequence: { groupOrder: 0 },
           include: ["registry/**/*.test.ts", "registry/**/*.test.tsx"],
         },
       },
@@ -55,6 +63,11 @@ export default defineConfig({
           // through and the run dies with "browser connection was closed" on whichever file lost
           // the race.
           fileParallelism: false,
+          // One page for the whole run. Isolated, every story file opens a fresh iframe and loads
+          // the preview and the pre-bundled dependencies again, which is most of the run's time
+          // and the memory Chromium is killed for on a busy machine.
+          isolate: false,
+          sequence: { groupOrder: 1 },
           // A real browser, not jsdom. What these stories claim — that a compiled `<div>` lays out
           // the way the `<View>` it came from does, and that axe agrees about the semantics — is
           // computed style and accessibility tree, neither of which a simulated DOM has.
