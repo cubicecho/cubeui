@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "option-select-field",
+  "title": "Option Select Field",
+  "description": "`OptionSelect` bound to a string form field, for `createAppForm` or inside `form.AppField`: the select with a search box, a list that fills when it opens, or a note in it. `OptionSelectField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.",
+  "registryDependencies": [
+    "@cubeui/option-select",
+    "@cubeui/select-options",
+    "@cubeui/form"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/option-select-field.tsx",
+      "content": "/**\n * `OptionSelect`, bound to a form field holding one of the options' values.\n *\n * For the choice `SelectField` cannot draw: a list long enough to need `searchable`, one that\n * fills when it opens (`onOpenChange`), or one with a note in it. Its own item rather than more\n * props on `SelectField`, so a form of plain inputs does not pull in the popover and the command\n * list. That is the split `multi-select-form-field` makes.\n *\n * The field is `asGroup`: the search menu's trigger is a pressable and not a form control, which\n * a label's `htmlFor` cannot name on device, so it points back at the label by `aria-labelledby`.\n *\n * ```tsx\n * <form.AppField name=\"model\">\n *   {() => <OptionSelectField label=\"Model\" options={models} searchable />}\n * </form.AppField>\n * ```\n *\n * Or on `field.*`, with `createAppForm({ OptionSelectField })`.\n */\nimport type { ComponentProps } from \"react\";\nimport { OptionSelect } from \"@/components/option-select\";\nimport { type FieldProps, FieldWrapper, splitProps, useFieldContext } from \"@/components/ui/form\";\nimport type {\n  SelectEntry,\n  SelectNoteEntry,\n  SelectOption,\n  SelectSeparatorEntry,\n} from \"@/lib/select-options\";\n\ntype OptionSelectFieldProps = FieldProps &\n  Omit<\n    ComponentProps<typeof OptionSelect>,\n    | \"id\"\n    | \"value\"\n    | \"onValueChange\"\n    | \"onBlur\"\n    | \"className\"\n    | \"aria-describedby\"\n    | \"aria-invalid\"\n    | \"aria-required\"\n  > & {\n    /** The trigger's class. `className` is the field's, as on every bound field. */\n    triggerClassName?: string | undefined;\n  };\n\n/** The control, as one element for `FieldControl` to hand the `id` and the `aria-*` props to. */\nfunction OptionSelectFieldControl({\n  triggerClassName,\n  ...control\n}: Omit<OptionSelectFieldProps, keyof FieldProps>) {\n  const field = useFieldContext<string | null>();\n  return (\n    <OptionSelect\n      {...control}\n      className={triggerClassName}\n      value={field.state.value ?? \"\"}\n      onValueChange={(next) => {\n        field.handleChange(next);\n        // A popover control has no blur that means \"done with this field\": focus goes into the\n        // menu and comes back. Choosing is the interaction, so choosing marks it touched.\n        field.handleBlur();\n      }}\n    />\n  );\n}\n\n/** An `OptionSelect` bound to a form field holding one of the options' values. */\nexport function OptionSelectField(props: OptionSelectFieldProps) {\n  const [fieldProps, control] = splitProps(props);\n  return (\n    <FieldWrapper asGroup {...fieldProps} controlSlot={<OptionSelectFieldControl {...control} />} />\n  );\n}\n\nexport type {\n  OptionSelectFieldProps,\n  SelectEntry,\n  SelectNoteEntry,\n  SelectOption,\n  SelectSeparatorEntry,\n};\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

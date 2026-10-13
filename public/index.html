@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 103 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 104 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 103 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 104 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  88 on both platforms · 15 web-only · 0 native-only.
+  89 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -470,6 +470,11 @@
           <th scope="row"><code>@cubeui/option-select</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/option-select-field</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>`OptionSelect` bound to a string form field, for `createAppForm` or inside `form.AppField`: the select with a search box, a list that fills when it opens, or a note in it. `OptionSelectField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page</code></th>

@@ -9,6 +9,7 @@ import {
   createAppForm as compiledCreateAppForm,
 } from "../compiled/form";
 import { MultiSelectField as CompiledMultiSelectField } from "../compiled/multi-select-form-field";
+import { OptionSelectField as CompiledOptionSelectField } from "../compiled/option-select-field";
 import { SegmentedField as CompiledSegmentedField } from "../compiled/segmented-field";
 import { ColorField as NativeColorField } from "../registry/ui/color-picker-field";
 import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-field";
@@ -18,6 +19,7 @@ import {
   createAppForm as nativeCreateAppForm,
 } from "../registry/ui/form";
 import { MultiSelectField as NativeMultiSelectField } from "../registry/ui/multi-select-form-field";
+import { OptionSelectField as NativeOptionSelectField } from "../registry/ui/option-select-field";
 import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
@@ -38,12 +40,14 @@ const native = nativeCreateAppForm({
   DateTimeField: NativeDateTimeField,
   ColorField: NativeColorField,
   MultiSelectField: NativeMultiSelectField,
+  OptionSelectField: NativeOptionSelectField,
   SegmentedField: NativeSegmentedField,
 });
 const compiled = compiledCreateAppForm({
   DateTimeField: CompiledDateTimeField,
   ColorField: CompiledColorField,
   MultiSelectField: CompiledMultiSelectField,
+  OptionSelectField: CompiledOptionSelectField,
   SegmentedField: CompiledSegmentedField,
 });
 
@@ -414,6 +418,98 @@ export const SelectDrawsGroupsAndSeparators: Story = {
       await userEvent.click(colleague);
       await waitFor(() => expect(stored).toHaveTextContent("archive for a colleague"));
       await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+    }
+  },
+};
+
+const MODELS = [
+  { label: "gpt-4o-mini", value: "gpt-4o-mini", group: "Hosted" },
+  { label: "claude-haiku", value: "claude-haiku", group: "Hosted" },
+  { label: "llama3.1:8b", value: "llama3.1:8b", group: "Local", keywords: ["ollama"] },
+  { label: "qwen2.5:7b", value: "qwen2.5:7b", group: "Local", keywords: ["ollama"] },
+];
+
+function ModelForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const [opened, setOpened] = useState(0);
+  const form = useAppForm({
+    defaultValues: { model: "" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="model"
+          validators={{
+            onChange: ({ value }) =>
+              value === "claude-haiku" ? "That model is not installed" : undefined,
+          }}
+        >
+          {(field) => (
+            <field.OptionSelectField
+              label="Model"
+              description="What answers the run."
+              options={MODELS}
+              placeholder="Choose a model"
+              searchable
+              onOpenChange={(open) => {
+                if (open) {
+                  setOpened((count) => count + 1);
+                }
+              }}
+            />
+          )}
+        </form.AppField>
+        <form.Subscribe
+          selector={(state) => [state.values.model, state.fieldMeta.model?.isTouched] as const}
+        >
+          {([model, isTouched]) => (
+            <output aria-label="Stored model">
+              {`${model === "" ? "nothing" : model}, ${isTouched ? "touched" : "untouched"}, opened ${opened}`}
+            </output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `OptionSelectField` (#323): the select with a search box, bound. Typing narrows the list,
+ * choosing writes the field and marks it touched, the menu opening is reported, and the field's
+ * error is drawn under it.
+ */
+export const OptionSelectSearchesAndPicks: Story = {
+  render: () => (
+    <SideBySide native={<ModelForm kit={NATIVE} />} compiled={<ModelForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored model");
+      await expect(stored).toHaveTextContent("nothing, untouched, opened 0");
+      // Named by its label, which is the wiring landing on the trigger.
+      const trigger = half.getByRole("combobox", { name: "Model" });
+      await expect(trigger).toHaveTextContent("Choose a model");
+
+      await userEvent.click(trigger);
+      const search = await page.findByPlaceholderText("Search…");
+      await expect(stored).toHaveTextContent("nothing, untouched, opened 1");
+      await userEvent.type(search, "ollama 8b");
+      await waitFor(() => expect(page.getAllByRole("option")).toHaveLength(1));
+      await userEvent.click(page.getByRole("option", { name: "llama3.1:8b" }));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(stored).toHaveTextContent("llama3.1:8b, touched, opened 1");
+      await expect(trigger).toHaveTextContent("llama3.1:8b");
+
+      await userEvent.click(trigger);
+      await userEvent.click(await page.findByRole("option", { name: "claude-haiku" }));
+      await waitFor(() =>
+        expect(half.getByRole("alert")).toHaveTextContent("That model is not installed"),
+      );
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(trigger).toHaveAttribute("aria-invalid", "true");
     }
   },
 };

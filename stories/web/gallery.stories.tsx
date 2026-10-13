@@ -160,6 +160,7 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { MultiSelectField as HookMultiSelectField } from "@/components/ui/multi-select-form-field";
+import { OptionSelectField } from "@/components/ui/option-select-field";
 import {
   Popover,
   PopoverClose,
@@ -1177,8 +1178,15 @@ const { useAppForm: useHookForm } = createAppForm({
   DateTimeField,
   ColorField: HookColorField,
   MultiSelectField: HookMultiSelectField,
+  OptionSelectField,
   SegmentedField,
 });
+
+const HOOK_OWNERS = [
+  { value: "ada", label: "Ada Lovelace", group: "Design" },
+  { value: "grace", label: "Grace Hopper", group: "Engineering" },
+  { value: "linus", label: "Linus Torvalds", group: "Engineering" },
+];
 
 const HOOK_PRIORITIES = [
   { value: "low", label: "Low" },
@@ -1200,6 +1208,7 @@ function HookFormSample() {
       due: new Date(2026, 8, 15) as Date | null,
       color: "#1d4ed8",
       priority: "normal",
+      owner: "grace",
       tags: ["home"] as string[],
     },
     onSubmit: noop,
@@ -1223,6 +1232,11 @@ function HookFormSample() {
           </form.AppField>
           <form.AppField name="priority">
             {(field) => <field.SegmentedField label="Priority" options={HOOK_PRIORITIES} />}
+          </form.AppField>
+          <form.AppField name="owner">
+            {(field) => (
+              <field.OptionSelectField label="Task owner" options={HOOK_OWNERS} searchable />
+            )}
           </form.AppField>
           <form.AppField name="tags">
             {(field) => <field.MultiSelectField label="Task tags" options={HOOK_TAGS} />}
@@ -1672,6 +1686,7 @@ const sections: GallerySection[] = [
       "color-picker-field",
       "segmented-field",
       "multi-select-form-field",
+      "option-select-field",
     ],
     description: "The hook both platforms share, with its fields on `field.*`.",
     content: <HookFormSample />,
