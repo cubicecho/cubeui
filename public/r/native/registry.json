@@ -104,6 +104,18 @@
       ]
     },
     {
+      "name": "select-options",
+      "type": "registry:lib",
+      "title": "Select options",
+      "description": "What a select's options list holds — options, a group heading on each, separators and notes — and the walk that turns the list into the runs a menu draws. What OptionSelect and the form's SelectField read one list through. Not a component.",
+      "files": [
+        {
+          "path": "registry/lib/select-options.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -595,6 +607,7 @@
         "@cubeui/icons",
         "@cubeui/popover",
         "@cubeui/select",
+        "@cubeui/select-options",
         "@cubeui/utils"
       ],
       "files": [
