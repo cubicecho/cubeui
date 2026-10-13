@@ -14,6 +14,11 @@ import { Slot } from "radix-ui";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
 import { Text, View } from "react-native";
+import {
+  PasswordInput,
+  type PasswordInputProps,
+  revealLabelsFor,
+} from "@/components/password-input";
 import { Button, type ButtonPropsWithout } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -423,6 +428,35 @@ function TextAreaField(props: TextAreaFieldProps) {
   );
 }
 
+type PasswordFieldProps = BoundFieldProps &
+  Omit<PasswordInputProps, "value" | "onChangeText" | "onBlur" | keyof BoundFieldProps>;
+
+/**
+ * A password box with its reveal button, and the field around it. Not `InputField` with
+ * `type="password"`, which has no button. A string `label` names the button too: "Show API key".
+ */
+function PasswordField(props: PasswordFieldProps) {
+  const [fieldProps, input] = splitProps(props);
+  const field = useFieldContext<string | null>();
+  const revealLabels = revealLabelsFor(fieldProps.label);
+
+  return (
+    <FieldWrapper
+      {...fieldProps}
+      controlSlot={
+        <PasswordInput
+          {...input}
+          showLabel={input.showLabel ?? revealLabels.showLabel}
+          hideLabel={input.hideLabel ?? revealLabels.hideLabel}
+          value={field.state.value ?? ""}
+          onBlur={field.handleBlur}
+          onChangeText={(text) => field.handleChange(text)}
+        />
+      }
+    />
+  );
+}
+
 type SelectOption = {
   label: string;
   value: string;
@@ -606,6 +640,7 @@ const FIELD_COMPONENTS = {
   InputField,
   TextAreaField,
   TextareaField: TextAreaField,
+  PasswordField,
   SelectField,
   CheckboxField,
   SwitchField,
@@ -706,6 +741,7 @@ export {
   FieldWrapper,
   Form,
   InputField,
+  PasswordField,
   SelectField,
   SubmitButton,
   SwitchField,

@@ -576,7 +576,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 
 | Field | Writes | Comes from |
 | --- | --- | --- |
-| `InputField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
+| `InputField`, `PasswordField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
@@ -584,7 +584,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
-`useAppForm` from `@cubeui/form` has the first five. `DateTimeField` and `ColorField` are their
+`useAppForm` from `@cubeui/form` has the first six. `DateTimeField` and `ColorField` are their
 own items for the weight of the calendar and the picker, as on the web; add them with
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
@@ -611,6 +611,10 @@ How each is named:
   label cannot name, so it takes `aria-labelledby` the label's id.
 - **`MultiSelectField`, `SegmentedField`** are `asGroup`: the trigger and the pills' row are
   `aria-labelledby` the label.
+- **`PasswordField`** is `PasswordInput` in the field, with its props (`autoComplete`,
+  `revealable`, `leadingSlot`). The label names the box, and a string `label` names the reveal
+  button too: `label="API key"` gives "Show API key" and "Hide API key". `showLabel` and
+  `hideLabel` replace them. It is not `InputField type="password"`, which has no button.
 - **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
   has no `htmlFor`.
 - **`SelectField`**: the `id` and the `aria-*` wiring go on the trigger, not on the `Select` root,

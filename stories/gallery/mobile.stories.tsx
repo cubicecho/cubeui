@@ -555,6 +555,7 @@ function ProjectForm() {
     defaultValues: {
       name: "Quarterly review",
       notes: "",
+      shareToken: "tok_4f9a2c",
       visibility: "team",
       priority: "normal",
       tags: ["planning"] as string[],
@@ -571,6 +572,9 @@ function ProjectForm() {
         <form.AppField name="name">{(field) => <field.InputField label="Name" />}</form.AppField>
         <form.AppField name="notes">
           {(field) => <field.TextAreaField label="Notes" />}
+        </form.AppField>
+        <form.AppField name="shareToken">
+          {(field) => <field.PasswordField label="Share token" />}
         </form.AppField>
         <RadioGroupField
           form={form}
