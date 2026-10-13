@@ -215,6 +215,8 @@ const NOT_SHOWN: Record<string, string> = {
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
+  "description-hint":
+    'The button and pane behind `descriptionPlacement="popover"`. Drawn by the fields, cards, sections and rows that take it.',
   "form-binding": "The types a field bound to a form takes, and one function. Not a component.",
   "number-draft": "Two functions NumberField reads the text being typed with. Not a component.",
   "select-options":

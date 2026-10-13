@@ -51,6 +51,11 @@ import { cn, type SlotNode } from "@/lib/utils";
 import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
 import {
+  DescriptionHint,
+  DescriptionHintText,
+  type DescriptionPlacement,
+} from "./description-hint";
+import {
   FieldContent,
   FieldDescription as FieldDescriptionPrimitive,
   FieldError as FieldErrorPrimitive,
@@ -214,6 +219,12 @@ function FieldDescription({ ...props }: React.ComponentProps<typeof FieldDescrip
   return <FieldDescriptionPrimitive id={descriptionId} {...props} />;
 }
 
+/** The description behind a popover, kept where `aria-describedby` can still reach it. */
+function FieldDescriptionText({ children }: { children: ReactNode }) {
+  const { descriptionId } = useFieldComponentContext();
+  return <DescriptionHintText id={descriptionId}>{children}</DescriptionHintText>;
+}
+
 /** The field's error message, drawn only while there is one. */
 function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitive>) {
   const { error, messageId } = useFieldComponentContext();
@@ -288,6 +299,15 @@ type BoundFieldProps = {
   label: ReactNode;
   /** A line under the control — what to put in it, or what changing it costs. */
   description?: ReactNode | undefined;
+  /**
+   * Where the description is drawn. `inline` (the default) puts it under the control; `popover`
+   * puts it behind a small button beside the label, named "About <label>". For a description that
+   * is a paragraph off a schema: one press away rather than stacked down the form. On the web the
+   * control is described by it either way.
+   */
+  descriptionPlacement?: DescriptionPlacement | undefined;
+  /** The `popover` button's glyph. A question mark by default. */
+  descriptionIconSlot?: SlotNode | undefined;
   /** Draws the asterisk and sets `aria-required` on the control. */
   required?: boolean | undefined;
   /** `horizontal` puts the control first and the label beside it: a checkbox, a switch. */
@@ -304,6 +324,8 @@ type BoundFieldProps = {
 const FIELD_KEYS = new Set<string>([
   "label",
   "description",
+  "descriptionPlacement",
+  "descriptionIconSlot",
   "required",
   "orientation",
   "asGroup",
@@ -342,6 +364,8 @@ function FieldWrapper({
   label,
   controlSlot,
   description,
+  descriptionPlacement = "inline",
+  descriptionIconSlot,
   required = false,
   orientation = "vertical",
   asGroup,
@@ -350,8 +374,9 @@ function FieldWrapper({
   descriptionClassName,
   errorClassName,
 }: FieldWrapperProps) {
-  const title = (
-    <FieldLabel className={labelClassName}>
+  const folded = Boolean(description) && descriptionPlacement === "popover";
+  const labelNode = (
+    <FieldLabel className={cn(folded && "min-w-0 shrink", labelClassName)}>
       {label}
       {required ? (
         // Decoration: the name stays "Email", not "Email star". `aria-required` says it instead.
@@ -361,12 +386,29 @@ function FieldWrapper({
       ) : null}
     </FieldLabel>
   );
+  // Beside the label and not inside it: the label is a `Text`, a button in a `Text` is not
+  // something the device lays out, and on the web it would be a button inside a `<label>`.
+  const title = folded ? (
+    <div data-slot="field-label-row" className="cube-rn-view min-w-0 flex-row items-center gap-2">
+      {labelNode}
+      <DescriptionHint
+        data-slot="field-description-trigger"
+        label={label}
+        fallbackName="About this field"
+        description={description}
+        iconSlot={descriptionIconSlot}
+      />
+    </div>
+  ) : (
+    labelNode
+  );
   const wired = <FieldControl aria-required={required || undefined}>{controlSlot}</FieldControl>;
   const rest = (
     <>
-      {description ? (
+      {description && folded === false ? (
         <FieldDescription className={descriptionClassName}>{description}</FieldDescription>
       ) : null}
+      {folded ? <FieldDescriptionText>{description}</FieldDescriptionText> : null}
       <FieldError className={errorClassName} />
     </>
   );

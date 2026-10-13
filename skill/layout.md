@@ -609,6 +609,14 @@ The title is the same size at every level; the rank says where the card sits, no
 The title is `text-base` on both halves, never larger than the page's own title.
 `titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
 
+`descriptionPlacement="popover"` takes the description out from under the title and puts it behind
+a small button after the title, named "About <title>" — for a page of cards whose descriptions
+are each a paragraph. `descriptionIconSlot` is the button's glyph, a question mark by default. On
+the web a screen reader still reads the sentence under the title. It stays inline on a card with
+no `title`, and on a card with no body and no footer, where the description is all the card says —
+so pass the prop on every card of a page and leave that case alone. `Section`, `SettingRow` and the
+form fields take the same two props. Do not wrap the title in a `Popover` of your own.
+
 The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under
@@ -794,6 +802,10 @@ A heading over a group of fields or rows, inside a page or a card.
   background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
   the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
+- `descriptionPlacement="popover"` puts the description behind a small button beside the title,
+  named "About <title>", with `descriptionIconSlot` for its glyph. The heading keeps its name and
+  rank, and on the web the region is still described by the sentence. A section with no `title`
+  keeps its description inline.
 - The heading row **wraps**. An `actionSlot` sits at the far end while the title and description have
   room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
@@ -939,6 +951,10 @@ that changes it at the end.
   `aria-describedby={descriptionId}`. iOS does not read `aria-labelledby`, so a native call site
   that must be named on an iPhone passes `accessibilityLabel` as well. A **button** is a plain node:
   its own text is its name, and pointing it at the title would rename it.
+- `descriptionPlacement="popover"` puts the description behind a small button beside the title,
+  named "About <title>", with `descriptionIconSlot` for its glyph. `descriptionId` is handed to
+  `actionSlot` either way and on the web still resolves, so keep the `aria-describedby`. A row
+  with no `title` keeps its description inline.
 - It **wraps rather than breaking at a width**: the control sits beside the text while both fit
   and drops under it, at the start, when they do not — following the width the row is given, not
   the window. A switch stays beside its title on a phone; a select or a wide button goes under.

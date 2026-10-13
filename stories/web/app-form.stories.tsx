@@ -388,3 +388,39 @@ export const OrNameTheFormItSubmits: Story = {
     await waitFor(() => expect(args.onSubmit).toHaveBeenCalledTimes(2));
   },
 };
+
+function DescribedForm() {
+  const form = useAppForm({ defaultValues: { title: "" }, onSubmit: () => {} });
+  return (
+    <form className="grid w-[520px] gap-4">
+      <InputField
+        form={form}
+        name="title"
+        label="Title"
+        description="What needs to be done, in a few words."
+        descriptionPlacement="popover"
+      />
+    </form>
+  );
+}
+
+/**
+ * A bound field takes `descriptionPlacement` and hands it to the field, not to the control. The
+ * two description props were missing from the list that splits them, so the placement reached
+ * the `<input>` as an attribute and the description stayed inline.
+ */
+export const ADescriptionCanGoBehindAPopover: Story = {
+  render: () => <DescribedForm />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const box = canvas.getByRole("textbox", { name: "Title" });
+    expect(box).not.toHaveAttribute("descriptionplacement");
+    expect(box).toHaveAccessibleDescription("What needs to be done, in a few words.");
+
+    await userEvent.click(canvas.getByRole("button", { name: "About Title" }));
+    const pane = await screen.findByRole("dialog", { name: "About Title" });
+    await waitFor(() => expect(pane).toBeVisible());
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  },
+};

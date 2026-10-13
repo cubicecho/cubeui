@@ -313,6 +313,22 @@ sentences that mean the same thing are two sentences that drift.
 `ticks` is backticks and nothing else, it leaves a string with none alone, and an unpaired one
 stays the character it is. Anything more is a markdown renderer and belongs behind a library.
 
+A schema writes a paragraph per field, and fifteen paragraphs down a form bury it.
+**`descriptionPlacement="popover"` puts the sentence behind a small button beside the label**,
+named "About <label>" (and "About this field" when the label is not a string):
+
+```tsx
+<FormField label="Tool discovery" description={…} descriptionPlacement="popover" … />
+<field.InputField label="Display name" description={…} descriptionPlacement="popover" />
+```
+
+`FormField`, the web bound fields and the native ones (`FieldWrapper`, every field on `field.*`)
+all take it, with `descriptionIconSlot` for another glyph than the question mark. On the web the
+control is still described by the sentence with the pane shut: it stays on the page, off screen,
+for `aria-describedby`. `CardLayout`, `Section` and `SettingRow` take the same two props — see
+[layout.md](layout.md#cards). Do not build this at the call site with a `Popover` and an icon
+button: the button ends up inside the label, and the control loses its description.
+
 ### Checkboxes and switches
 
 ```tsx
@@ -634,8 +650,10 @@ marks the field touched, since a popover has no blur that means "done". Do not w
 </form.AppField>
 ```
 
-Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
-`*ClassName` props, plus the control's own. `className` is the field's, not the control's.
+Every bound field takes `label`, `description`, `descriptionPlacement`, `descriptionIconSlot`,
+`required`, `orientation`, `asGroup` and the `*ClassName` props, plus the control's own.
+`descriptionPlacement="popover"` folds the description behind a button beside the label, as on
+the web — see [A description that came out of a schema](#a-description-that-came-out-of-a-schema). `className` is the field's, not the control's.
 `DateTimeField` passes `mode`, `clearable` and `placeholder` through. `SelectField` takes
 `options`, `placeholder`, `disabled` — a list with nothing in it yet — and `clearable` with
 `emptyLabel`. Its `options` are the web `SelectField`'s: an option's `group` is a heading over

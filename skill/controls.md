@@ -24,7 +24,8 @@ The set, on both halves — check it before wrapping a glyph in the app:
   `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
   `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
-- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
+- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `CircleQuestionMark`
+  (the button a folded description sits behind), `LoaderCircle`
 - **Files and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and `FolderPen` (rename
   or move a file, a folder)
 - **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`, `UserRound`

@@ -374,6 +374,25 @@
       ]
     },
     {
+      "name": "description-hint",
+      "type": "registry:ui",
+      "title": "Description Hint",
+      "description": "A description folded behind a small button beside its title: the button and pane, both named `About <label>`, and the off-screen copy `aria-describedby` still reaches on the web. What `descriptionPlacement=\"popover\"` draws on the bound fields, `CardLayout`, `Section` and `SettingRow`.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/description-hint.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "menu",
       "type": "registry:ui",
       "title": "Menu",
@@ -590,8 +609,8 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/section.tsx",
@@ -680,8 +699,13 @@
       "name": "setting-row",
       "type": "registry:component",
       "title": "Setting Row",
-      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/tokens"],
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/field",
+        "@cubeui/description-hint",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/setting-row.tsx",
@@ -1012,7 +1036,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest. Every bound field takes `descriptionPlacement=\"popover\"`, which folds the description behind a button beside the label.",
       "dependencies": ["@radix-ui/react-slot@^1.5.0", "@tanstack/react-form@^1.33.5"],
       "registryDependencies": [
         "@cubeui/utils",
@@ -1030,6 +1054,7 @@
         "@cubeui/select-options",
         "@cubeui/switch",
         "@cubeui/textarea",
+        "@cubeui/description-hint",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1402,8 +1427,13 @@
       "name": "card-layout",
       "type": "registry:component",
       "title": "Card Layout",
-      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/utils", "@cubeui/tokens"],
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. `descriptionPlacement=\"popover\"` folds the description behind a button after the title.",
+      "registryDependencies": [
+        "@cubeui/card",
+        "@cubeui/utils",
+        "@cubeui/description-hint",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/card-layout.tsx",

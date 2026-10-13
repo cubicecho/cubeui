@@ -40,6 +40,8 @@ export type FieldProps = Omit<ComponentProps<typeof FormField>, "controlSlot" | 
 const FIELD_KEYS = new Set<string>([
   "label",
   "description",
+  "descriptionPlacement",
+  "descriptionIconSlot",
   "required",
   "action",
   "loading",
