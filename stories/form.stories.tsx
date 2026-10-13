@@ -514,6 +514,108 @@ export const OptionSelectSearchesAndPicks: Story = {
   },
 };
 
+const PEOPLE = [
+  { label: "Ada Lovelace", value: "ada" },
+  { label: "Grace Hopper", value: "grace" },
+];
+
+function PeopleForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { owner: null as string | null, reviewer: null as string | null },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="owner"
+          validators={{
+            onChange: ({ value }) => (value === null ? "Someone has to own it" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.SelectField label="Owner" options={PEOPLE} clearable emptyLabel="Nobody" />
+          )}
+        </form.AppField>
+        <form.AppField
+          name="reviewer"
+          validators={{
+            onChange: ({ value }) => (value === null ? "Someone has to review it" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.OptionSelectField
+              label="Reviewer"
+              options={PEOPLE}
+              searchable
+              clearable
+              emptyLabel="No reviewer"
+            />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => <output aria-label="Stored people">{JSON.stringify(values)}</output>}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `clearable` (#323): a first row for "nothing", saying `emptyLabel`. A field holding `null`
+ * opens on that row, choosing it again writes `null` back, and no value stands in for it where a
+ * caller can see: the store only ever holds an option's value or `null`.
+ */
+export const SelectClearsToNull: Story = {
+  render: () => (
+    <SideBySide native={<PeopleForm kit={NATIVE} />} compiled={<PeopleForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const { body } = canvasElement.ownerDocument;
+    const page = within(body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored people");
+      await expect(stored).toHaveTextContent('{"owner":null,"reviewer":null}');
+
+      const owner = half.getByLabelText("Owner");
+      await expect(owner).toHaveTextContent("Nobody");
+      await userEvent.click(owner);
+      await waitFor(() => rowOf(body, "Ada Lovelace"));
+      await userEvent.click(rowOf(body, "Ada Lovelace"));
+      await waitFor(() => expect(stored).toHaveTextContent('"owner":"ada"'));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(owner).toHaveTextContent("Ada Lovelace");
+
+      await userEvent.click(owner);
+      await waitFor(() => rowOf(body, "Nobody"));
+      await userEvent.click(rowOf(body, "Nobody"));
+      await waitFor(() => expect(stored).toHaveTextContent('"owner":null'));
+      await waitFor(() => expect(body.querySelector(ROW)).toBeNull());
+      await expect(owner).toHaveTextContent("Nobody");
+      // Leaving the trigger is what marks a select touched, and so what lets its error show.
+      owner.focus();
+      await userEvent.tab();
+      await waitFor(() => expect(half.getByText("Someone has to own it")).toBeVisible());
+
+      const reviewer = half.getByRole("combobox", { name: "Reviewer" });
+      await expect(reviewer).toHaveTextContent("No reviewer");
+      await userEvent.click(reviewer);
+      await userEvent.click(await page.findByRole("option", { name: "Grace Hopper" }));
+      await waitFor(() => expect(stored).toHaveTextContent('"reviewer":"grace"'));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(reviewer).toHaveTextContent("Grace Hopper");
+
+      await userEvent.click(reviewer);
+      await userEvent.click(await page.findByRole("option", { name: "No reviewer" }));
+      await waitFor(() => expect(stored).toHaveTextContent('"reviewer":null'));
+      await waitFor(() => expect(page.queryByRole("option")).toBeNull());
+      await expect(reviewer).toHaveTextContent("No reviewer");
+      await waitFor(() => expect(half.getByText("Someone has to review it")).toBeVisible());
+    }
+  },
+};
+
 const LABELS = [
   { value: "family", label: "Family" },
   { value: "work", label: "Work" },

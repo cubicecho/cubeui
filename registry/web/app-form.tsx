@@ -1,7 +1,7 @@
-import type { DeepKeys } from "@tanstack/react-form";
+import type { DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormField } from "@/components/form-field";
 import type { SelectEntry, SelectOption, SelectSeparatorEntry } from "@/components/option-select";
 import { OptionSelect } from "@/components/option-select";
@@ -18,6 +18,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
+import { menuValueOf, storedValueOf, withEmptyOption } from "@/lib/select-options";
 
 /** TanStack Form's contexts, which the bound fields read their field and form from. */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -254,6 +255,17 @@ type SelectFieldProps = FieldProps & {
    * this component exists to end.
    */
   onOpenChange?: ((open: boolean) => void) | undefined;
+  /**
+   * Adds a first row for "nothing", which writes `null`. The field then holds `string | null`,
+   * and reads `null`, `undefined` and `""` as that row.
+   */
+  clearable?: boolean | undefined;
+  /**
+   * What the row for "nothing" says. Read only when `clearable`.
+   *
+   * @defaultValue `"None"`
+   */
+  emptyLabel?: string | undefined;
 };
 
 /**
@@ -270,10 +282,16 @@ function BoundSelectField({
   searchable,
   searchPlaceholder,
   onOpenChange,
+  clearable = false,
+  emptyLabel = "None",
   ...rest
 }: SelectFieldProps) {
-  const field = useFieldContext<string>();
+  const field = useFieldContext<string | null>();
   const error = useFieldError();
+  const entries = useMemo(
+    () => (clearable ? withEmptyOption(options, emptyLabel) : options),
+    [options, clearable, emptyLabel],
+  );
 
   return (
     <FormField
@@ -282,9 +300,9 @@ function BoundSelectField({
       controlSlot={(wired) => (
         <OptionSelect
           {...wired}
-          options={options}
-          value={field.state.value ?? ""}
-          onValueChange={field.handleChange}
+          options={entries}
+          value={clearable ? menuValueOf(field.state.value) : (field.state.value ?? "")}
+          onValueChange={(next) => field.handleChange(clearable ? storedValueOf(next) : next)}
           onBlur={field.handleBlur}
           placeholder={placeholder}
           searchable={searchable}
@@ -540,8 +558,29 @@ export const TextareaField = bindToForm<TextareaFieldProps, string>(
   "TextareaField",
 );
 
-/** A select, as one line. Takes its choices as `options`, not as children. */
-export const SelectField = bindToForm<SelectFieldProps, string>(BoundSelectField, "SelectField");
+/**
+ * Lets `clearable` through only over a field that can hold the `null` it writes. A field typed
+ * `string` would be handed a value its schema never listed, and find out at the server.
+ */
+type ClearableOver<TValues, TName extends DeepKeys<TValues>> =
+  null extends DeepValue<TValues, TName> ? boolean | undefined : false | undefined;
+
+/**
+ * A select, as one line. Takes its choices as `options`, not as children.
+ *
+ * ```tsx
+ * <SelectField form={form} name="owner" label="Owner" options={PEOPLE} clearable emptyLabel="Nobody" />
+ * ```
+ *
+ * `clearable` is a type error unless the field named can hold `null`.
+ */
+export const SelectField = bindToForm<SelectFieldProps, string>(
+  BoundSelectField,
+  "SelectField",
+) as <TForm extends BindableForm, TName extends NamesOfType<ValuesOf<TForm>, string>>(
+  props: Omit<ControlPropsOf<SelectFieldProps>, "clearable"> &
+    FormBinding<TForm, TName> & { clearable?: ClearableOver<ValuesOf<TForm>, TName> },
+) => ReactNode;
 
 /** A checkbox and its caption, as one line. Horizontal, because a 16px box is not a row. */
 export const CheckboxField = bindToForm<CheckboxFieldProps, boolean>(

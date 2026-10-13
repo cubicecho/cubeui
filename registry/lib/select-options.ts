@@ -123,3 +123,45 @@ export function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
   }
   return blocks;
 }
+
+/**
+ * What the row for "nothing" carries inside a menu. A menu's rows are told apart by a string, and
+ * radix refuses an item whose value is `""`, so the row needs one of its own. It stays in this
+ * file: a field translates on the way in and on the way out, and a caller only ever sees `null`.
+ */
+const UNSET = "__cubeui_unset__";
+
+/**
+ * Puts the row for "nothing" at the top of a list.
+ *
+ * @typeParam T - The list's entries, so a list without notes stays one.
+ * @param options - The caller's list.
+ * @param emptyLabel - What that row says, and so what the trigger reads while nothing is chosen.
+ * @returns The list with the row ahead of it, in a run of its own unless the list opens ungrouped.
+ */
+export function withEmptyOption<T extends SelectEntry>(
+  options: readonly T[],
+  emptyLabel: string,
+): readonly (T | SelectOption)[] {
+  return [{ label: emptyLabel, value: UNSET }, ...options];
+}
+
+/**
+ * The stored value, as the menu of a clearable select holds it.
+ *
+ * @param value - What the field holds.
+ * @returns The row to mark chosen: the one for "nothing" for `null`, `undefined` and `""`.
+ */
+export function menuValueOf(value: string | null | undefined): string {
+  return value === null || value === undefined || value === "" ? UNSET : value;
+}
+
+/**
+ * The row a clearable select's menu reported, as the value to store.
+ *
+ * @param menuValue - The value of the row chosen.
+ * @returns `null` for the row for "nothing", and the option's own value for the rest.
+ */
+export function storedValueOf(menuValue: string): string | null {
+  return menuValue === UNSET ? null : menuValue;
+}

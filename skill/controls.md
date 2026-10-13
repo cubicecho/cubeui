@@ -853,7 +853,9 @@ plain listbox.
 - The searchable menu is a popover over a `Command`, the shape `MultiSelect` is, so it installs
   `button`, `command` and `popover` beside `select`. Groups, separators, notes, `open` and
   `onOpenChange` behave the same in both.
-- In a form: `<field.SelectField searchable options={…} />`.
+- In a form: `<field.SelectField searchable options={…} />` on `@cubeui/app-form`, and
+  `<field.OptionSelectField searchable options={…} />` from `@cubeui/option-select-field` on
+  `@cubeui/form`. See [forms.md](forms.md#on-react-native).
 
 ### A menu that fills when it opens
 
@@ -887,7 +889,10 @@ const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, 
   control — unreachable, and read out when it appears, which is the case exactly, since the menu
   opens before the list exists.
 - `SelectField` takes `onOpenChange` too, so a fetched list inside a form does not have to drop
-  to `FormField`'s function form to get one word through.
+  to `FormField`'s function form to get one word through. On `@cubeui/form` that is
+  `OptionSelectField`.
+- `OptionSelect` has no row for "nothing". In a form, `clearable` on the field adds one and
+  writes `null`; outside a form, put the row in `options` and name its value yourself.
 
 ## Command
 

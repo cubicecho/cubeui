@@ -38,8 +38,11 @@ import {
   blocksOf,
   isNote,
   isSeparator,
+  menuValueOf,
   type SelectOption,
   type SelectSeparatorEntry,
+  storedValueOf,
+  withEmptyOption,
 } from "@/lib/select-options";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Button, type ButtonPropsWithout } from "./button";
@@ -455,9 +458,23 @@ type SelectFieldProps = BoundFieldProps & {
   placeholder?: string;
   /** The trigger will not open: a list with nothing in it yet, a choice another field decides. */
   disabled?: boolean | undefined;
+  /**
+   * Adds a first row for "nothing", which writes `null`. The field then holds `string | null`,
+   * and reads `null`, `undefined` and `""` as that row.
+   */
+  clearable?: boolean | undefined;
+  /**
+   * What the row for "nothing" says. Read only when `clearable`.
+   *
+   * @defaultValue `"None"`
+   */
+  emptyLabel?: string | undefined;
 };
 
-type SelectControlProps = Pick<SelectFieldProps, "options" | "placeholder" | "disabled"> &
+type SelectControlProps = Pick<
+  SelectFieldProps,
+  "options" | "placeholder" | "disabled" | "clearable" | "emptyLabel"
+> &
   Omit<React.ComponentProps<typeof SelectTrigger>, "children" | "onBlur" | "disabled">;
 
 /**
@@ -465,16 +482,28 @@ type SelectControlProps = Pick<SelectFieldProps, "options" | "placeholder" | "di
  * root renders no element on either platform: handed the `id` and the `aria-*` props it drops
  * them, leaving a trigger the label does not name and an error message nothing points at.
  */
-function SelectControl({ options, placeholder, disabled, ...wired }: SelectControlProps) {
-  const field = useFieldContext<string>();
-  const blocks = React.useMemo(() => blocksOf(options), [options]);
-  const chosen = options.find(
-    (entry): entry is SelectOption => "value" in entry && entry.value === field.state.value,
+function SelectControl({
+  options,
+  placeholder,
+  disabled,
+  clearable = false,
+  emptyLabel = "None",
+  ...wired
+}: SelectControlProps) {
+  const field = useFieldContext<string | null>();
+  const entries = React.useMemo(
+    () => (clearable ? withEmptyOption(options, emptyLabel) : options),
+    [options, clearable, emptyLabel],
+  );
+  const blocks = React.useMemo(() => blocksOf(entries), [entries]);
+  const value = clearable ? menuValueOf(field.state.value) : (field.state.value ?? "");
+  const chosen = entries.find(
+    (entry): entry is SelectOption => "value" in entry && entry.value === value,
   );
   return (
     <Select
-      value={field.state.value}
-      onValueChange={(v) => field.handleChange(v)}
+      value={value}
+      onValueChange={(next) => field.handleChange(clearable ? storedValueOf(next) : next)}
       disabled={disabled}
     >
       <SelectTrigger {...wired} onBlur={field.handleBlur}>

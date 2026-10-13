@@ -47,7 +47,7 @@ The bound fields:
 | `InputField` | `string` | `@cubeui/app-form` |
 | `NumberField` | `number \| null` | `@cubeui/app-form` |
 | `TextareaField` | `string` | `@cubeui/app-form` |
-| `SelectField` | `string` | `@cubeui/app-form` |
+| `SelectField` | `string`, or `string \| null` with `clearable` | `@cubeui/app-form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/app-form` |
 | `MultiSelectField` | `string[]` | `@cubeui/multi-select-field` |
 | `DateField` | `Date \| null` | `@cubeui/date-field` |
@@ -133,6 +133,24 @@ Groups are drawn in the order given, not sorted — a board's lanes are ordered 
 would be wrong. A flat `{ value, label }[]` still draws flat, so nothing is written until an
 option is not a peer. Do not put the distinction in the label instead: `"Archive it — off the
 board"` is a sentence doing a divider's job, and it does not survive a long list.
+
+**A choice that may be left unmade takes `clearable`.** It adds a first row for "nothing",
+saying `emptyLabel` (`"None"` by default), and choosing that row writes `null`:
+
+```tsx
+const form = useAppForm({ defaultValues: { ownerId: null as string | null } });
+
+<SelectField form={form} name="ownerId" label="Owner" options={PEOPLE} clearable emptyLabel="Nobody" />
+```
+
+- The field holds `string | null`. `clearable` over a field typed plain `string` is a type error
+  on the one-line form; `field.SelectField` inside `form.AppField` cannot check it, so type the
+  default value as above there too.
+- `null`, `undefined` and `""` all read as the empty row, and the trigger then says `emptyLabel`,
+  not `placeholder`.
+- Do not add a `{ value: "__none__", label: "None" }` option and translate it in `onSubmit`. That
+  is what `clearable` replaces: no stand-in value reaches the store or a validator.
+- The same two props are on the native `SelectField` and on `OptionSelectField`.
 
 **A field that has to *do* something on change takes `listeners`.** Same place as `validators`,
 same shape — `onChange`, `onBlur`, `onMount`, `onUnmount`, `onSubmit`, and the two `*DebounceMs`
@@ -581,6 +599,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
 | `MultiSelectField` | `string[]` | `@cubeui/multi-select-form-field` |
+| `OptionSelectField` | `string`, or `string \| null` with `clearable` | `@cubeui/option-select-field` |
 | `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
@@ -589,19 +608,35 @@ own items for the weight of the calendar and the picker, as on the web; add them
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
 
-`MultiSelectField` and `SegmentedField` join the same way —
-`createAppForm({ MultiSelectField, SegmentedField })` — and replace a `FieldWrapper` around a bare
-`MultiSelect` or `SegmentedGroup`. `MultiSelectField` takes `options` and the rest of
+`MultiSelectField`, `OptionSelectField` and `SegmentedField` join the same way —
+`createAppForm({ MultiSelectField, OptionSelectField, SegmentedField })` — and replace a
+`FieldWrapper` around a bare `MultiSelect`, `OptionSelect` or `SegmentedGroup`. `MultiSelectField` takes `options` and the rest of
 `MultiSelect`'s props (`onCreateOption`, `clearable`, `searchable`). `SegmentedField` takes
 `options` of `{ value, label, iconSlot?, disabled? }` and draws the pills itself, plus `variant`,
 `labelHideBelow` and `disabled`. It is for two to five short choices; more is a `SelectField`,
 and choices that each need a sentence are a `RadioGroupField`. The item is
 `multi-select-form-field` because `multi-select-field` is the web one.
 
+`OptionSelectField` is the select `SelectField` cannot draw: a list long enough to need
+`searchable`, one fetched when it opens (`onOpenChange`), or one with a `{ note }` row. It takes
+`OptionSelect`'s props (`options`, `placeholder`, `disabled`, `searchable`, `searchPlaceholder`,
+`onOpenChange`, `contentClassName`), with the trigger's class as `triggerClassName`. Choosing
+marks the field touched, since a popover has no blur that means "done". Do not wrap a bare
+`OptionSelect` in `form.Field` by hand.
+
+```tsx
+<form.AppField name="model">
+  {(field) => <field.OptionSelectField label="Model" options={MODELS} searchable />}
+</form.AppField>
+```
+
 Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
 `*ClassName` props, plus the control's own. `className` is the field's, not the control's.
 `DateTimeField` passes `mode`, `clearable` and `placeholder` through. `SelectField` takes
-`options`, `placeholder` and `disabled` — a list with nothing in it yet.
+`options`, `placeholder`, `disabled` — a list with nothing in it yet — and `clearable` with
+`emptyLabel`. Its `options` are the web `SelectField`'s: an option's `group` is a heading over
+it and `{ separator: true }` is a rule, so one list serves both halves. Only a `{ note }` row
+needs `OptionSelectField`.
 
 How each is named:
 
@@ -609,8 +644,8 @@ How each is named:
   date text — "Due September 15th, 2026". The time box is "Due time".
 - **`ColorField`**: the label is `htmlFor` the hex box; the swatch row is a `radiogroup`, which a
   label cannot name, so it takes `aria-labelledby` the label's id.
-- **`MultiSelectField`, `SegmentedField`** are `asGroup`: the trigger and the pills' row are
-  `aria-labelledby` the label.
+- **`MultiSelectField`, `OptionSelectField`, `SegmentedField`** are `asGroup`: the trigger and
+  the pills' row are `aria-labelledby` the label.
 - **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
   has no `htmlFor`.
 - **`SelectField`**: the `id` and the `aria-*` wiring go on the trigger, not on the `Select` root,

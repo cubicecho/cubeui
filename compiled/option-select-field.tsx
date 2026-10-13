@@ -27,12 +27,15 @@
  *
  * Or on `field.*`, with `createAppForm({ OptionSelectField })`.
  */
-import type { ComponentProps } from "react";
-import type {
-  SelectEntry,
-  SelectNoteEntry,
-  SelectOption,
-  SelectSeparatorEntry,
+import { type ComponentProps, useMemo } from "react";
+import {
+  menuValueOf,
+  type SelectEntry,
+  type SelectNoteEntry,
+  type SelectOption,
+  type SelectSeparatorEntry,
+  storedValueOf,
+  withEmptyOption,
 } from "@/lib/select-options";
 import { type FieldProps, FieldWrapper, splitProps, useFieldContext } from "./form";
 import { OptionSelect } from "./option-select";
@@ -51,21 +54,40 @@ type OptionSelectFieldProps = FieldProps &
   > & {
     /** The trigger's class. `className` is the field's, as on every bound field. */
     triggerClassName?: string | undefined;
+    /**
+     * Adds a first row for "nothing", which writes `null`. The field then holds `string | null`,
+     * and reads `null`, `undefined` and `""` as that row.
+     */
+    clearable?: boolean | undefined;
+    /**
+     * What the row for "nothing" says. Read only when `clearable`.
+     *
+     * @defaultValue `"None"`
+     */
+    emptyLabel?: string | undefined;
   };
 
 /** The control, as one element for `FieldControl` to hand the `id` and the `aria-*` props to. */
 function OptionSelectFieldControl({
   triggerClassName,
+  options,
+  clearable = false,
+  emptyLabel = "None",
   ...control
 }: Omit<OptionSelectFieldProps, keyof FieldProps>) {
   const field = useFieldContext<string | null>();
+  const entries = useMemo(
+    () => (clearable ? withEmptyOption(options, emptyLabel) : options),
+    [options, clearable, emptyLabel],
+  );
   return (
     <OptionSelect
       {...control}
+      options={entries}
       className={triggerClassName}
-      value={field.state.value ?? ""}
+      value={clearable ? menuValueOf(field.state.value) : (field.state.value ?? "")}
       onValueChange={(next) => {
-        field.handleChange(next);
+        field.handleChange(clearable ? storedValueOf(next) : next);
         // A popover control has no blur that means "done with this field": focus goes into the
         // menu and comes back. Choosing is the interaction, so choosing marks it touched.
         field.handleBlur();
