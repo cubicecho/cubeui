@@ -2,24 +2,22 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ColorField as CompiledColorField } from "../compiled/color-picker-field";
+import { ComboboxField as CompiledComboboxField } from "../compiled/combobox-field";
 import { DateTimeField as CompiledDateTimeField } from "../compiled/date-time-field";
 import {
   FieldRow as CompiledFieldRow,
   Form as CompiledForm,
   createAppForm as compiledCreateAppForm,
 } from "../compiled/form";
-import { MultiSelectField as CompiledMultiSelectField } from "../compiled/multi-select-form-field";
-import { OptionSelectField as CompiledOptionSelectField } from "../compiled/option-select-field";
 import { SegmentedField as CompiledSegmentedField } from "../compiled/segmented-field";
 import { ColorField as NativeColorField } from "../registry/ui/color-picker-field";
+import { ComboboxField as NativeComboboxField } from "../registry/ui/combobox-field";
 import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-field";
 import {
   FieldRow as NativeFieldRow,
   Form as NativeForm,
   createAppForm as nativeCreateAppForm,
 } from "../registry/ui/form";
-import { MultiSelectField as NativeMultiSelectField } from "../registry/ui/multi-select-form-field";
-import { OptionSelectField as NativeOptionSelectField } from "../registry/ui/option-select-field";
 import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
@@ -39,15 +37,13 @@ const SWATCHES = ["#ef4444", "#22c55e", "#3b82f6"];
 const native = nativeCreateAppForm({
   DateTimeField: NativeDateTimeField,
   ColorField: NativeColorField,
-  MultiSelectField: NativeMultiSelectField,
-  OptionSelectField: NativeOptionSelectField,
+  ComboboxField: NativeComboboxField,
   SegmentedField: NativeSegmentedField,
 });
 const compiled = compiledCreateAppForm({
   DateTimeField: CompiledDateTimeField,
   ColorField: CompiledColorField,
-  MultiSelectField: CompiledMultiSelectField,
-  OptionSelectField: CompiledOptionSelectField,
+  ComboboxField: CompiledComboboxField,
   SegmentedField: CompiledSegmentedField,
 });
 
@@ -447,7 +443,7 @@ function ModelForm({ kit }: { kit: Kit }) {
           }}
         >
           {(field) => (
-            <field.OptionSelectField
+            <field.ComboboxField
               label="Model"
               description="What answers the run."
               options={MODELS}
@@ -476,11 +472,11 @@ function ModelForm({ kit }: { kit: Kit }) {
 }
 
 /**
- * `OptionSelectField` (#323): the select with a search box, bound. Typing narrows the list,
+ * `ComboboxField` (#323): the select with a search box, bound. Typing narrows the list,
  * choosing writes the field and marks it touched, the menu opening is reported, and the field's
  * error is drawn under it.
  */
-export const OptionSelectSearchesAndPicks: Story = {
+export const ComboboxSearchesAndPicks: Story = {
   render: () => (
     <SideBySide native={<ModelForm kit={NATIVE} />} compiled={<ModelForm kit={COMPILED} />} />
   ),
@@ -545,7 +541,7 @@ function PeopleForm({ kit }: { kit: Kit }) {
           }}
         >
           {(field) => (
-            <field.OptionSelectField
+            <field.ComboboxField
               label="Reviewer"
               options={PEOPLE}
               searchable
@@ -637,7 +633,7 @@ function InteractionForm({ kit }: { kit: Kit }) {
     <form.AppForm>
       <Form className="flex flex-col gap-4">
         <form.AppField name="labelIds">
-          {(field) => <field.MultiSelectField label="Labels" options={LABELS} />}
+          {(field) => <field.ComboboxField multiple label="Labels" options={LABELS} />}
         </form.AppField>
         <form.AppField
           name="channel"
@@ -661,10 +657,10 @@ function InteractionForm({ kit }: { kit: Kit }) {
 
 /**
  * The two bound fields a form used to wire by hand (#279), passed to `createAppForm` as
- * `DateTimeField` is: a `MultiSelect` over a list of strings and a `SegmentedGroup` over one. Each
+ * `DateTimeField` is: a `Combobox multiple` over a list of strings and a `SegmentedGroup` over one. Each
  * is named by its label, writes the field, and shows the field's error.
  */
-export const MultiSelectAndSegmented: Story = {
+export const MultipleComboboxAndSegmented: Story = {
   render: () => (
     <SideBySide
       native={<InteractionForm kit={NATIVE} />}

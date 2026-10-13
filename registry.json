@@ -119,7 +119,7 @@
       "name": "select-options",
       "type": "registry:lib",
       "title": "Select options",
-      "description": "What a select's options list holds — options, a group heading on each, separators and notes — and the walk that turns the list into the runs a menu draws. What OptionSelect and the form's SelectField read one list through. Not a component.",
+      "description": "What a select's options list holds — options, a group heading on each, separators and notes — and the walk that turns the list into the runs a menu draws. What Combobox and the form's SelectField read one list through, with the helpers for a held value no option covers and for a typed name worth creating. Not a component.",
       "files": [
         {
           "path": "registry/lib/select-options.ts",
@@ -447,7 +447,7 @@
       "name": "command",
       "type": "registry:ui",
       "title": "Command",
-      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props MultiSelect uses on both.",
+      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props Combobox uses on both.",
       "dependencies": ["cmdk@^1.1.1"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/dialog", "@cubeui/icons", "@cubeui/input"],
       "files": [
@@ -587,10 +587,10 @@
       ]
     },
     {
-      "name": "multi-select",
+      "name": "combobox",
       "type": "registry:component",
-      "title": "Multi Select",
-      "description": "A combobox that selects more than one thing, over Popover and Command: searchable on every word, with an optional create row and coloured chips. On the web radix and cmdk make it portalled and keyboard-operable; on device it opens the native sheet, and each chip is also removable with its ✕.",
+      "title": "Combobox",
+      "description": "A choice from a list of options, one value or several with `multiple`, with groups, separators and notes, and the id and aria props landing on the trigger. One value is radix's listbox on the web and the Select sheet on device; `searchable` and `multiple` draw a Popover over a Command, searchable on every word, with an optional create row and, for several, coloured chips.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/badge",
@@ -599,32 +599,13 @@
         "@cubeui/command",
         "@cubeui/icons",
         "@cubeui/popover",
-        "@cubeui/readable-text-color"
-      ],
-      "files": [
-        {
-          "path": "registry/layout/multi-select.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "option-select",
-      "type": "registry:component",
-      "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/command",
-        "@cubeui/icons",
-        "@cubeui/popover",
+        "@cubeui/readable-text-color",
         "@cubeui/select",
-        "@cubeui/select-options",
-        "@cubeui/utils"
+        "@cubeui/select-options"
       ],
       "files": [
         {
-          "path": "registry/layout/option-select.tsx",
+          "path": "registry/layout/combobox.tsx",
           "type": "registry:component"
         }
       ]
@@ -1274,27 +1255,14 @@
       ]
     },
     {
-      "name": "multi-select-form-field",
+      "name": "combobox-field",
       "type": "registry:ui",
-      "title": "Multi Select Form Field",
-      "description": "`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.",
-      "registryDependencies": ["@cubeui/multi-select", "@cubeui/form"],
+      "title": "Combobox Field",
+      "description": "`Combobox` bound to a form field, for `createAppForm` or inside `form.AppField`: a string field, or a `string[]` one with `multiple`. The choice with a search box, a list that fills when it opens, a note in it, or several values. `ComboboxField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.",
+      "registryDependencies": ["@cubeui/combobox", "@cubeui/select-options", "@cubeui/form"],
       "files": [
         {
-          "path": "registry/ui/multi-select-form-field.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "option-select-field",
-      "type": "registry:ui",
-      "title": "Option Select Field",
-      "description": "`OptionSelect` bound to a string form field, for `createAppForm` or inside `form.AppField`: the select with a search box, a list that fills when it opens, or a note in it. `OptionSelectField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.",
-      "registryDependencies": ["@cubeui/option-select", "@cubeui/select-options", "@cubeui/form"],
-      "files": [
-        {
-          "path": "registry/ui/option-select-field.tsx",
+          "path": "registry/ui/combobox-field.tsx",
           "type": "registry:ui"
         }
       ]

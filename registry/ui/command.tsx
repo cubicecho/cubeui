@@ -12,7 +12,7 @@
  * Each item decides for itself whether it matches, from the search in context, and reports the
  * answer upward. That is how `CommandEmpty` knows the list is empty and a `CommandGroup` knows to
  * hide its heading without either of them walking a tree they cannot see — an item is often
- * wrapped in the caller's own component, as `MultiSelect`'s rows are. An item that does not match
+ * wrapped in the caller's own component, as `Combobox`'s rows are. An item that does not match
  * stays mounted and draws nothing, so its answer is still there when the search changes back.
  */
 

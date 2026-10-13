@@ -49,7 +49,7 @@ The bound fields:
 | `TextareaField` | `string` | `@cubeui/app-form` |
 | `SelectField` | `string`, or `string \| null` with `clearable` | `@cubeui/app-form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/app-form` |
-| `MultiSelectField` | `string[]` | `@cubeui/multi-select-field` |
+| `ComboboxField` | `string`, or `string \| null` with `clearable`; `string[]` with `multiple` | `@cubeui/app-form` |
 | `DateField` | `Date \| null` | `@cubeui/date-field` |
 | `DateRangeField` | `DateRange \| null` | `@cubeui/date-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
@@ -106,7 +106,7 @@ an error message nothing points at. `SelectField` routes through `FormField`'s f
 wires the trigger. Use it rather than assembling `SelectTrigger` and `SelectContent` inside a
 `FormField`. The same is true of every picker here.
 
-Outside a form the answer is the control it renders — `OptionSelect` from `@cubeui/option-select`, in
+Outside a form the answer is the control it renders — `Combobox` from `@cubeui/combobox`, in
 [controls.md](controls.md), taking the same `options` array. Do not hand-write the primitives
 there either.
 
@@ -153,7 +153,7 @@ const form = useAppForm({ defaultValues: { ownerId: null as string | null } });
   not `placeholder`.
 - Do not add a `{ value: "__none__", label: "None" }` option and translate it in `onSubmit`. That
   is what `clearable` replaces: no stand-in value reaches the store or a validator.
-- The same two props are on the native `SelectField` and on `OptionSelectField`.
+- The same two props are on the native `SelectField` and on a single `ComboboxField`.
 
 **A field that has to *do* something on change takes `listeners`.** Same place as `validators`,
 same shape — `onChange`, `onBlur`, `onMount`, `onUnmount`, `onSubmit`, and the two `*DebounceMs`
@@ -362,9 +362,9 @@ element itself and needs none of this. An `Input` with a `leadingSlot` icon or a
 still one of them: its root becomes a box around the field, but `id` and every `aria-*` land on the
 field itself, where the label points.
 
-Every cubeui picker already knows where its own trigger is: `OptionSelect`, `MultiSelect` and
+Every cubeui picker already knows where its own trigger is: `Combobox` and
 `DatePicker` take the rest of a `<button>`'s props and put them there, so the function form
-spreads onto the control and stops — `controlSlot={(props) => <OptionSelect {...props} options={LISTS} … />}`.
+spreads onto the control and stops — `controlSlot={(props) => <Combobox {...props} options={LISTS} … />}`.
 `ColorPicker` has no trigger — it is the swatch row and the hex field, drawn inline — so it splits
 the same props: `id` goes to the hex field, and `aria-label`, `aria-labelledby`,
 `aria-describedby`, `aria-invalid` and `aria-required` go to the swatch row's `radiogroup`.
@@ -602,8 +602,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
-| `MultiSelectField` | `string[]` | `@cubeui/multi-select-form-field` |
-| `OptionSelectField` | `string`, or `string \| null` with `clearable` | `@cubeui/option-select-field` |
+| `ComboboxField` | `string`, or `string \| null` with `clearable`; `string[]` with `multiple` | `@cubeui/combobox-field` |
 | `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
@@ -612,27 +611,39 @@ own items for the weight of the calendar and the picker, as on the web; add them
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not
 `color-field` because that is the web item's name.
 
-`MultiSelectField`, `OptionSelectField` and `SegmentedField` join the same way —
-`createAppForm({ MultiSelectField, OptionSelectField, SegmentedField })` — and replace a
-`FieldWrapper` around a bare `MultiSelect`, `OptionSelect` or `SegmentedGroup`. `MultiSelectField` takes `options` and the rest of
-`MultiSelect`'s props (`onCreateOption`, `clearable`, `searchable`). `SegmentedField` takes
+`ComboboxField` and `SegmentedField` join the same way —
+`createAppForm({ ComboboxField, SegmentedField })` — and replace a `FieldWrapper` around a bare
+`Combobox` or `SegmentedGroup`. `SegmentedField` takes
 `options` of `{ value, label, iconSlot?, disabled? }` and draws the pills itself, plus `variant`,
 `labelHideBelow` and `disabled`. It is for two to five short choices; more is a `SelectField`,
-and choices that each need a sentence are a `RadioGroupField`. The item is
-`multi-select-form-field` because `multi-select-field` is the web one.
+and choices that each need a sentence are a `RadioGroupField`.
 
-`OptionSelectField` is the select `SelectField` cannot draw: a list long enough to need
-`searchable`, one fetched when it opens (`onOpenChange`), or one with a `{ note }` row. It takes
-`OptionSelect`'s props (`options`, `placeholder`, `disabled`, `searchable`, `searchPlaceholder`,
-`onOpenChange`, `contentClassName`), with the trigger's class as `triggerClassName`. Choosing
-marks the field touched, since a popover has no blur that means "done". Do not wrap a bare
-`OptionSelect` in `form.Field` by hand.
+`ComboboxField` is the select `SelectField` cannot draw: a list long enough to need
+`searchable`, one fetched when it opens (`onOpenChange`), one with a `{ note }` row, one that can
+create an option, or one that holds several. It takes `Combobox`'s props (`options`,
+`placeholder`, `disabled`, `searchable`, `searchPlaceholder`, `onOpenChange`, `onCreateOption`,
+`contentClassName`), with the trigger's class as `triggerClassName`. Choosing marks the field
+touched, since a popover has no blur that means "done". Do not wrap a bare `Combobox` in
+`form.Field` by hand.
 
 ```tsx
 <form.AppField name="model">
-  {(field) => <field.OptionSelectField label="Model" options={MODELS} searchable />}
+  {(field) => <field.ComboboxField label="Model" options={MODELS} searchable />}
+</form.AppField>
+<form.AppField name="labels">
+  {(field) => <field.ComboboxField multiple label="Labels" options={LABELS} />}
 </form.AppField>
 ```
+
+- Without `multiple` the field holds a `string`. `clearable` adds the row for "nothing" and
+  writes `null`, with `emptyLabel` as its text, exactly as on `SelectField`.
+- With `multiple` it holds a `string[]`, and takes `maxDisplay` and the control's own `clearable`
+  — there it is the Clear button under the list, on by default, and it writes `[]`.
+
+The web one-line form is the same field from `@cubeui/app-form`:
+`<ComboboxField form={form} name="labels" label="Labels" options={LABELS} multiple />`. The name
+is checked against the form: `multiple` takes only a field that holds a list of strings, and
+without it only one that holds a string.
 
 Every bound field takes `label`, `description`, `required`, `orientation`, `asGroup` and the
 `*ClassName` props, plus the control's own. `className` is the field's, not the control's.
@@ -640,7 +651,7 @@ Every bound field takes `label`, `description`, `required`, `orientation`, `asGr
 `options`, `placeholder`, `disabled` — a list with nothing in it yet — and `clearable` with
 `emptyLabel`. Its `options` are the web `SelectField`'s: an option's `group` is a heading over
 it and `{ separator: true }` is a rule, so one list serves both halves. Only a `{ note }` row
-needs `OptionSelectField`.
+needs `ComboboxField`.
 
 **A number is `NumberField`, not `InputField type="number"`.** It takes `Input`'s props and
 writes `number | null`: an empty box is `null`, never `0`, and so is a lone `-` or `1e` while it
@@ -666,7 +677,7 @@ How each is named:
   date text — "Due September 15th, 2026". The time box is "Due time".
 - **`ColorField`**: the label is `htmlFor` the hex box; the swatch row is a `radiogroup`, which a
   label cannot name, so it takes `aria-labelledby` the label's id.
-- **`MultiSelectField`, `OptionSelectField`, `SegmentedField`** are `asGroup`: the trigger and
+- **`ComboboxField`, `SegmentedField`** are `asGroup`: the trigger and
   the pills' row are `aria-labelledby` the label.
 - **`PasswordField`** is `PasswordInput` in the field, with its props (`autoComplete`,
   `revealable`, `leadingSlot`). The label names the box, and a string `label` names the reveal

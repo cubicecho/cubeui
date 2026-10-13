@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
+import { Combobox } from "../../registry/layout/combobox";
 import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
 import { DetailHeader } from "../../registry/layout/detail-header";
@@ -14,8 +15,6 @@ import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { ListItem } from "../../registry/layout/list-item";
-import { MultiSelect } from "../../registry/layout/multi-select";
-import { OptionSelect } from "../../registry/layout/option-select";
 import { CardGrid, EmptyState, Page } from "../../registry/layout/page";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
@@ -58,6 +57,7 @@ import { ColorBar } from "../../registry/ui/color-bar";
 import { ColorDot } from "../../registry/ui/color-dot";
 import { ColorPicker } from "../../registry/ui/color-picker";
 import { ColorField } from "../../registry/ui/color-picker-field";
+import { ComboboxField } from "../../registry/ui/combobox-field";
 import {
   CommandDialog,
   CommandEmpty,
@@ -130,8 +130,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "../../registry/ui/menu.tsx";
-import { MultiSelectField } from "../../registry/ui/multi-select-form-field";
-import { OptionSelectField } from "../../registry/ui/option-select-field";
 import { PasswordInput } from "../../registry/ui/password-input";
 import {
   Popover,
@@ -354,7 +352,7 @@ function Selects() {
           <SelectItem value="cherry">Cherry</SelectItem>
         </SelectContent>
       </Select>
-      <OptionSelect
+      <Combobox
         aria-label="Status"
         value={status}
         onValueChange={setStatus}
@@ -365,7 +363,8 @@ function Selects() {
           { value: "closed", label: "Closed" },
         ]}
       />
-      <MultiSelect
+      <Combobox
+        multiple
         aria-label="Labels"
         placeholder="Pick labels"
         options={LABEL_OPTIONS}
@@ -534,8 +533,7 @@ function ConfirmAndToast() {
 const { useAppForm } = createAppForm({
   DateTimeField,
   ColorField,
-  MultiSelectField,
-  OptionSelectField,
+  ComboboxField,
   SegmentedField,
 });
 
@@ -601,10 +599,10 @@ function ProjectForm() {
           {(field) => <field.SegmentedField label="Priority" options={PRIORITY_OPTIONS} />}
         </form.AppField>
         <form.AppField name="owner">
-          {(field) => <field.OptionSelectField label="Owner" options={OWNER_OPTIONS} searchable />}
+          {(field) => <field.ComboboxField label="Owner" options={OWNER_OPTIONS} searchable />}
         </form.AppField>
         <form.AppField name="tags">
-          {(field) => <field.MultiSelectField label="Tags" options={TAG_OPTIONS} />}
+          {(field) => <field.ComboboxField multiple label="Tags" options={TAG_OPTIONS} />}
         </form.AppField>
         <form.AppField name="pinned">
           {(field) => <field.CheckboxField label="Pin to the top" />}
@@ -992,7 +990,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Selects",
-    items: ["select", "option-select", "multi-select"],
+    items: ["select", "combobox"],
     description: "Each list opens from its trigger.",
     content: <Selects />,
   },
@@ -1035,8 +1033,7 @@ const sections: GallerySection[] = [
       "radio-group-field",
       "date-time-field",
       "color-picker-field",
-      "multi-select-form-field",
-      "option-select-field",
+      "combobox-field",
       "segmented-field",
     ],
     description: "One bound form, a field of each kind.",

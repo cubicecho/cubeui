@@ -1,14 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import {
-  isAddableOptionName,
-  MultiSelect,
-  type MultiSelectOption,
-  mergeMultiSelectOptions,
-} from "@/components/multi-select";
+import { Combobox, type ComboboxMultipleProps, type SelectOption } from "@/components/combobox";
+import { isAddableOptionName, withOrphanOptions } from "@/lib/select-options";
 
-const TAGS: MultiSelectOption[] = [
+const TAGS: SelectOption[] = [
   { value: "backend", label: "Backend infrastructure" },
   { value: "frontend", label: "Frontend" },
   { value: "work", label: "Work", color: "#1d4ed8" },
@@ -21,16 +17,17 @@ function Harness({
   options = TAGS,
   initial = [],
   ...props
-}: Partial<React.ComponentProps<typeof MultiSelect>> & {
-  options?: MultiSelectOption[];
+}: Partial<ComboboxMultipleProps> & {
+  options?: SelectOption[];
   initial?: string[];
 }) {
   const [value, setValue] = useState<string[]>(initial);
-  const [extra, setExtra] = useState<MultiSelectOption[]>([]);
+  const [extra, setExtra] = useState<SelectOption[]>([]);
 
   return (
     <div className="w-80">
-      <MultiSelect
+      <Combobox
+        multiple
         aria-label="Tags"
         {...props}
         options={[...options, ...extra]}
@@ -51,7 +48,7 @@ function Harness({
 }
 
 const meta = {
-  title: "Controls/MultiSelect",
+  title: "Controls/Combobox",
   component: Harness,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Harness>;
@@ -262,11 +259,11 @@ export const ColouredOptions: Story = {
 export const TheHelpersHoldUp: Story = {
   args: {},
   play: async () => {
-    expect(mergeMultiSelectOptions(TAGS, ["work", "nope"]).at(-1)).toEqual({
+    expect(withOrphanOptions(TAGS, ["work", "nope"]).at(-1)).toEqual({
       value: "nope",
       label: "nope",
     });
-    expect(mergeMultiSelectOptions(TAGS, ["work"])).toHaveLength(TAGS.length);
+    expect(withOrphanOptions(TAGS, ["work"])).toHaveLength(TAGS.length);
 
     expect(isAddableOptionName("Works", TAGS)).toBe(true);
     expect(isAddableOptionName(" WORKSHOP ", TAGS)).toBe(false);
@@ -274,7 +271,7 @@ export const TheHelpersHoldUp: Story = {
   },
 };
 
-const DEPENDENCIES: MultiSelectOption[] = [
+const DEPENDENCIES: SelectOption[] = [
   { value: "api", label: "Ship the API" },
   { value: "docs", label: "Write the docs" },
   {
@@ -330,7 +327,7 @@ export const TheHintIsADescriptionNotAName: Story = {
     expect(describedBy).toBeTruthy();
     const hint = document.getElementById(describedBy ?? "");
     expect(hint).toHaveTextContent(/would close a loop/);
-    expect(hint).toHaveAttribute("data-slot", "multi-select-option-hint");
+    expect(hint).toHaveAttribute("data-slot", "combobox-option-hint");
 
     // An option with nothing to explain points at nothing, so it is not described by an empty
     // node — the same rule `Button` follows for a missing hint.
@@ -358,7 +355,7 @@ function headingsIn(list: HTMLElement): (string | null)[] {
  * The lane is a heading and the status is a badge at the end of the row. Both used to be pushed
  * into `keywords`, so they could be searched for and could not be seen.
  */
-const BLOCKERS: MultiSelectOption[] = [
+const BLOCKERS: SelectOption[] = [
   { value: "key", label: "Rotate the signing key", group: "In progress", meta: "running" },
   { value: "billing", label: "Fix billing", group: "In progress", meta: "error" },
   { value: "docs", label: "Write the docs", group: "Review", meta: "idle" },
@@ -397,7 +394,7 @@ export const AStatusIsReadAfterTheName: Story = {
     const row = await screen.findByRole("option", { name: "Fix billing" });
 
     const meta = document.getElementById(row.getAttribute("aria-describedby") ?? "");
-    expect(meta).toHaveAttribute("data-slot", "multi-select-option-meta");
+    expect(meta).toHaveAttribute("data-slot", "combobox-option-meta");
     expect(meta).toHaveTextContent("error");
   },
 };
@@ -428,5 +425,59 @@ export const AnUngroupedListDrawsNoHeading: Story = {
     const list = await screen.findByRole("listbox");
 
     expect(headingsIn(list)).toHaveLength(0);
+  },
+};
+
+function SingleHarness() {
+  const [value, setValue] = useState("");
+  const [extra, setExtra] = useState<SelectOption[]>([]);
+
+  return (
+    <div className="w-80">
+      <Combobox
+        aria-label="List"
+        placeholder="Pick a list"
+        options={[...TAGS, ...extra]}
+        value={value}
+        onValueChange={setValue}
+        onCreateOption={(name) => {
+          const created = { value: name.toLowerCase(), label: name };
+          setExtra((all) => [...all, created]);
+          setValue(created.value);
+        }}
+      />
+      <p data-testid="value">{value === "" ? "—" : value}</p>
+    </div>
+  );
+}
+
+/**
+ * Without `multiple` it holds one string. Choosing a row closes the menu, a disabled row cannot be
+ * chosen, and `onCreateOption` draws the search menu — there is nowhere to type a new name in a
+ * plain listbox — and closes it once the name is made.
+ */
+export const SingleHoldsOneAndCanCreate: Story = {
+  args: {},
+  render: () => <SingleHarness />,
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "List" });
+    expect(trigger).toHaveTextContent("Pick a list");
+
+    await userEvent.click(trigger);
+    expect(await screen.findByRole("option", { name: "Someday" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await userEvent.click(screen.getByRole("option", { name: "Urgent" }));
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    expect(canvas.getByTestId("value")).toHaveTextContent("urgent");
+    expect(trigger).toHaveTextContent("Urgent");
+
+    await userEvent.click(trigger);
+    await userEvent.type(await screen.findByRole("combobox", { name: /Search/i }), "Roadmap");
+    await userEvent.click(await screen.findByRole("option", { name: /Add .Roadmap./ }));
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    expect(canvas.getByTestId("value")).toHaveTextContent("roadmap");
+    expect(trigger).toHaveTextContent("Roadmap");
   },
 };

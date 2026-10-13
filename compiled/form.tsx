@@ -532,7 +532,7 @@ type SelectFieldProps = BoundFieldProps & {
   /**
    * The choices, in the order they are drawn. An option's `group` puts it under that heading, and
    * `{ separator: true }` rules a line across the list: the list the web `SelectField` takes,
-   * minus its notes, which need `OptionSelectField`.
+   * minus its notes, which need `ComboboxField`.
    */
   options: readonly SelectFieldEntry[];
   placeholder?: string;

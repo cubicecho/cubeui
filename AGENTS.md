@@ -284,12 +284,13 @@ sanctioned exception is `@tanstack/react-form`, in the form items that bind to i
 
 `cmdk`, `date-fns` and `react-day-picker` do not count against that rule on the web: they are
 what `command` and `calendar` are written on, so they arrive with the primitive rather than
-because of a shell. They are still the reason `multi-select` and `date-picker` are separate
-registry items — a form of plain inputs installs `@cubeui/app-form` and pulls in none of them.
+because of a shell. `date-fns` and `react-day-picker` are still the reason `date-picker` is a
+separate registry item — a form of plain inputs installs `@cubeui/app-form` and pulls in neither.
+`cmdk` does arrive with it, through `combobox`, which `SelectField` renders.
 
 `react-markdown` and `remark-gfm` are the same case: `markdown` is written on them, and they are
 declared by that one item. `markdown` and `markdown-editor` are in no bundle for the same reason
-`multi-select` is its own item — nothing installs a Markdown parser except the app that asked for
+`date-picker` is its own item — nothing installs a Markdown parser except the app that asked for
 one. `markdown-code-editor` is the same again with CodeMirror (`@codemirror/*`, `@lezer/highlight`),
 and is a default export so an app can load it with `lazy()`.
 
@@ -313,13 +314,13 @@ The binding lives in two places, one per tier:
   `InputField`, `NumberField`, `PasswordField` and the rest, written in React Native and compiled like any
   primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
-  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx`,
-  `option-select-field.tsx` and `segmented-field.tsx` join the same way. `registry/layout/radio-group-field.tsx`
+  added to `field.*` with `createAppForm`; `combobox-field.tsx` and `segmented-field.tsx` join
+  the same way. `registry/layout/radio-group-field.tsx`
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
-  `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `CheckboxField`,
-  `SwitchField` and `SubmitButton`, each reading the store and handing `FormField` a string.
-  `@cubeui/multi-select-field`, `@cubeui/date-field`, `@cubeui/color-field` and
+  `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `ComboboxField`,
+  `CheckboxField`, `SwitchField` and `SubmitButton`, each reading the store and handing `FormField` a string.
+  `@cubeui/date-field`, `@cubeui/color-field` and
   `@cubeui/password-field` are the same layer in their own files, for the weight of what they
   import, and `@cubeui/form-set` installs all of them.
 

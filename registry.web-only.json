@@ -7,7 +7,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -16,7 +16,7 @@
         "@cubeui/form-field",
         "@cubeui/input",
         "@cubeui/number-draft",
-        "@cubeui/option-select",
+        "@cubeui/combobox",
         "@cubeui/switch",
         "@cubeui/textarea"
       ],
@@ -52,8 +52,7 @@
         "@cubeui/copy-button",
         "@cubeui/date-picker",
         "@cubeui/menu",
-        "@cubeui/multi-select",
-        "@cubeui/option-select",
+        "@cubeui/combobox",
         "@cubeui/password-input"
       ],
       "files": []
@@ -114,7 +113,6 @@
         "@cubeui/date-field",
         "@cubeui/field-row",
         "@cubeui/form-field",
-        "@cubeui/multi-select-field",
         "@cubeui/password-field",
         "@cubeui/radio-group-field"
       ],
@@ -203,19 +201,6 @@
       "files": [
         {
           "path": "registry/web/markdown-editor.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "multi-select-field",
-      "type": "registry:component",
-      "title": "Multi Select Field",
-      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings.",
-      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
-      "files": [
-        {
-          "path": "registry/web/multi-select-field.tsx",
           "type": "registry:component"
         }
       ]

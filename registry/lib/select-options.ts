@@ -1,7 +1,8 @@
 /**
  * What a select's `options` list holds, and the walk that turns it into the runs a menu draws.
- * `OptionSelect` and the native form's `SelectField` both read a list through this, so one
- * `options` array is the same list in a control and in a bound field, on both halves.
+ * `Combobox` and the native form's `SelectField` both read a list through this, so one `options`
+ * array is the same list in a control and in a bound field, on both halves, whether the control
+ * holds one value or several.
  */
 import type { ReactNode } from "react";
 
@@ -27,6 +28,31 @@ export type SelectOption = {
    * is not a string cannot be searched, so an option with one is found by these and its `value`.
    */
   keywords?: string[] | undefined;
+  /** The row cannot be chosen. Say why in `hint`: a greyed row on its own reads as a bug. */
+  disabled?: boolean | undefined;
+  /**
+   * A CSS colour: a dot on the row, and the fill of the chip in a `multiple` combobox. The text
+   * on the chip is chosen for contrast, not hardcoded. Read by `Combobox`'s search menu.
+   */
+  color?: string | undefined;
+  /**
+   * The end of the row: a status badge, a count, a date. Drawn beside the label, never on the
+   * chip. Read by `Combobox`'s search menu.
+   *
+   * A description rather than a name, so a row still announces as what it is called and the
+   * badge is read after it. `color` cannot do this job: it is the chip's colour, and pointing it
+   * at a status would mint a second colour vocabulary beside the app's own.
+   */
+  meta?: ReactNode | undefined;
+  /**
+   * Why this option is the way it is, most often why it is unavailable. Read by `Combobox`'s
+   * search menu.
+   *
+   * Drawn under the label and read after it, so it survives the case it is for: a `disabled` row
+   * fires no hover, so a tooltip on it is text nobody can reach. The reason is knowable when the
+   * options are built and unreachable by the time somebody wonders.
+   */
+  hint?: ReactNode | undefined;
 };
 
 /** A rule across the list. An entry that is not an option, so it has no `value`. */
@@ -122,6 +148,66 @@ export function blocksOf(entries: readonly SelectEntry[]): SelectBlock[] {
     }
   }
   return blocks;
+}
+
+/**
+ * An option as words: what a search matches, what a chip says, and what a typed name is compared
+ * with. A label that is a node has none, so its value stands in.
+ *
+ * @param option - The option.
+ * @returns The label when it is a string, and the value otherwise.
+ */
+export function optionText(option: SelectOption): string {
+  return typeof option.label === "string" ? option.label : option.value;
+}
+
+/**
+ * The list to draw, with an option synthesised for every held value nothing covers.
+ *
+ * @typeParam T - The list's entries.
+ * @param options - The caller's list.
+ * @param value - The values held.
+ * @returns The list, followed by one option per value it does not have, labelled with the value.
+ *
+ * @remarks
+ * A row loaded from the server holds ids; the options come from a query that may not have
+ * finished, may be paged, or may no longer contain a tag someone deleted. Without this the chip
+ * for that value is not drawn at all: invisible, still submitted, and unremovable.
+ */
+export function withOrphanOptions<T extends SelectEntry>(
+  options: readonly T[],
+  value: readonly string[],
+): (T | SelectOption)[] {
+  const known = new Set(
+    options.flatMap((entry) => ("value" in entry ? [(entry as SelectOption).value] : [])),
+  );
+  const orphans = value.filter((held) => known.has(held) === false);
+  return [...options, ...orphans.map((held) => ({ value: held, label: held }))];
+}
+
+/**
+ * Whether a typed name is worth offering to create.
+ *
+ * @param name - What was typed.
+ * @param options - The list it would be added to.
+ * @returns false for an empty name and for one an option already has.
+ *
+ * @remarks
+ * Exact match only, ignoring case and surrounding space. Not a substring test: "Work" must stay
+ * addable while "Workshop" exists.
+ */
+export function isAddableOptionName(name: string, options: readonly SelectEntry[]): boolean {
+  const folded = name.trim().toLocaleLowerCase();
+  if (folded === "") {
+    return false;
+  }
+  return options.every(
+    (entry) =>
+      "value" in entry === false ||
+      optionText(entry as SelectOption)
+        .trim()
+        .toLocaleLowerCase() !== folded,
+  );
 }
 
 /**

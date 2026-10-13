@@ -3,6 +3,7 @@ import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import {
   SwitchField as BoundSwitchField,
+  ComboboxField,
   InputField,
   NumberField,
   SelectField,
@@ -12,6 +13,7 @@ import {
 import { CardLayout } from "@/components/card-layout";
 import { CenteredLayout } from "@/components/centered-layout";
 import { ColorField } from "@/components/color-field";
+import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
@@ -28,9 +30,6 @@ import { HeaderContentFooter } from "@/components/header-content-footer";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { MultiSelect } from "@/components/multi-select";
-import { MultiSelectField } from "@/components/multi-select-field";
-import { OptionSelect } from "@/components/option-select";
 import { CardGrid, EmptyState, Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
@@ -76,6 +75,7 @@ import { ColorBar } from "@/components/ui/color-bar";
 import { ColorDot } from "@/components/ui/color-dot";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { ColorField as HookColorField } from "@/components/ui/color-picker-field";
+import { ComboboxField as HookComboboxField } from "@/components/ui/combobox-field";
 import {
   Command,
   CommandEmpty,
@@ -159,8 +159,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { MultiSelectField as HookMultiSelectField } from "@/components/ui/multi-select-form-field";
-import { OptionSelectField } from "@/components/ui/option-select-field";
 import {
   Popover,
   PopoverClose,
@@ -896,14 +894,15 @@ function Selects() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <OptionSelect
+          <Combobox
             aria-label="Priority"
             className="w-56"
             options={PRIORITIES}
             value={priority}
             onValueChange={setPriority}
           />
-          <MultiSelect
+          <Combobox
+            multiple
             aria-label="Tags"
             options={TAGS}
             value={tags}
@@ -1157,7 +1156,7 @@ function AppFormSample() {
       <BoundSwitchField form={form} name="notify" label="Notify the team" />
       <ColorField form={form} name="color" label="Colour" swatches={SWATCHES} />
       <DateField form={form} name="due" label="Due" clearable />
-      <MultiSelectField form={form} name="tags" label="Tags" options={TAGS} />
+      <ComboboxField multiple form={form} name="tags" label="Tags" options={TAGS} />
       <PasswordField form={form} name="password" label="Password" />
       <RadioGroupField
         form={form}
@@ -1178,8 +1177,7 @@ function AppFormSample() {
 const { useAppForm: useHookForm } = createAppForm({
   DateTimeField,
   ColorField: HookColorField,
-  MultiSelectField: HookMultiSelectField,
-  OptionSelectField,
+  ComboboxField: HookComboboxField,
   SegmentedField,
 });
 
@@ -1235,12 +1233,10 @@ function HookFormSample() {
             {(field) => <field.SegmentedField label="Priority" options={HOOK_PRIORITIES} />}
           </form.AppField>
           <form.AppField name="owner">
-            {(field) => (
-              <field.OptionSelectField label="Task owner" options={HOOK_OWNERS} searchable />
-            )}
+            {(field) => <field.ComboboxField label="Task owner" options={HOOK_OWNERS} searchable />}
           </form.AppField>
           <form.AppField name="tags">
-            {(field) => <field.MultiSelectField label="Task tags" options={HOOK_TAGS} />}
+            {(field) => <field.ComboboxField multiple label="Task tags" options={HOOK_TAGS} />}
           </form.AppField>
           <form.SubmitButton createLabel="Add the task" />
         </Form>
@@ -1626,7 +1622,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Select, option select, multi select",
-    items: ["select", "option-select", "multi-select"],
+    items: ["select", "combobox"],
     content: <Selects />,
   },
   {
@@ -1668,27 +1664,13 @@ const sections: GallerySection[] = [
   },
   {
     title: "App form and its bound fields",
-    items: [
-      "app-form",
-      "color-field",
-      "date-field",
-      "multi-select-field",
-      "password-field",
-      "radio-group-field",
-    ],
+    items: ["app-form", "color-field", "date-field", "password-field", "radio-group-field"],
     description: "The web tier's form hook: every field bound to the form by name.",
     content: <AppFormSample />,
   },
   {
     title: "Form",
-    items: [
-      "form",
-      "date-time-field",
-      "color-picker-field",
-      "segmented-field",
-      "multi-select-form-field",
-      "option-select-field",
-    ],
+    items: ["form", "date-time-field", "color-picker-field", "combobox-field", "segmented-field"],
     description: "The hook both platforms share, with its fields on `field.*`.",
     content: <HookFormSample />,
   },
