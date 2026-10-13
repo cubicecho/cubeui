@@ -98,6 +98,18 @@
       ]
     },
     {
+      "name": "number-draft",
+      "type": "registry:lib",
+      "title": "Number draft",
+      "description": "What a number box holds while it is typed in: `parseNumber`, which reads `\"\"`, `-` and `1e` as no number yet and never as `0` or `NaN`, and `numberText`, which draws the typed text while it still means the stored number. What the two form bindings' NumberField share.",
+      "files": [
+        {
+          "path": "registry/lib/number-draft.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -991,7 +1003,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
       "dependencies": [
         "@tanstack/react-form@^1.33.5",
         "@types/react-dom@~19.2.0",
@@ -1007,6 +1019,7 @@
         "@cubeui/form-element",
         "@cubeui/input",
         "@cubeui/label",
+        "@cubeui/number-draft",
         "@cubeui/select",
         "@cubeui/switch",
         "@cubeui/textarea",
@@ -1414,7 +1427,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -1422,6 +1435,7 @@
         "@cubeui/form-binding",
         "@cubeui/form-field",
         "@cubeui/input",
+        "@cubeui/number-draft",
         "@cubeui/option-select",
         "@cubeui/switch",
         "@cubeui/textarea"
