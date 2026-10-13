@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { Text } from "react-native";
 import { expect, fn, userEvent, within } from "storybook/test";
-import { ActionButton as CompiledAction } from "../compiled/action-button";
 import { Button as CompiledButton } from "../compiled/button";
 import {
   Folder as CompiledFolder,
@@ -18,7 +17,6 @@ import {
 } from "../compiled/sidebar";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
-import { ActionButton as NativeAction } from "../registry/layout/action-button";
 import {
   BarNavItem as NativeBarItem,
   SidebarNavItem as NativeNavItem,
@@ -321,8 +319,8 @@ export const BarFitsAPhone: Story = {
             actionSlot={
               <>
                 <NativeThemePicker variant="compact" aria-label="Native theme" />
-                <NativeAction
-                  label="Native refresh"
+                <NativeButton
+                  aria-label="Native refresh"
                   variant="outline"
                   size="icon-sm"
                   iconSlot={<NativeRefresh />}
@@ -358,8 +356,8 @@ export const BarFitsAPhone: Story = {
             actionSlot={
               <>
                 <CompiledThemePicker variant="compact" aria-label="Compiled theme" />
-                <CompiledAction
-                  label="Compiled refresh"
+                <CompiledButton
+                  aria-label="Compiled refresh"
                   variant="outline"
                   size="icon-sm"
                   iconSlot={<CompiledRefresh />}

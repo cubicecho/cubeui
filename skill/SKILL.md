@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -100,7 +100,7 @@ at the end.
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | A button, with a label, an icon, a link or a `loading` state | `Button` | [controls.md](controls.md#button) |
-| An icon-only button | `ActionButton` | [controls.md](controls.md) |
+| An icon-only button | `Button` in an `icon*` size, with `aria-label` | [controls.md](controls.md#icon-buttons) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
 | A button that saves a file — an export, a note, a report — and waits while it is fetched, or a URL the browser downloads itself (`href`) | `DownloadButton` | [controls.md](controls.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
@@ -221,8 +221,8 @@ and the web `FormField`'s `controlSlot`.
 
 **Controls add:**
 
-- **`label`** — on `ActionButton` and `ConfirmButton` it is required, and it is the accessible
-  name, not a caption.
+- **`aria-label`** — on a `Button` or `ConfirmButton` in an `icon*` size it is required: the
+  accessible name.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
 - **`leadingSlot`** — inside a field, at its start: an icon, the text padded past it. On `Input`.
   Pass a bare `<Search />`; the input sizes and mutes it, and it takes no press.
@@ -305,7 +305,7 @@ on a row that becomes a box on press, no commit on blur. The set used to ship `I
 and `InlineNumberEdit`; they were removed, and nothing replaces them.
 
 - **A rename or a one-value change** is a `DialogLayout` holding a form, opened from a Rename
-  row, a pencil `ActionButton`, or the row itself, with the value in a bound field and Save /
+  row, a pencil icon `Button`, or the row itself, with the value in a bound field and Save /
   Cancel — see [forms.md](forms.md#forms-in-dialogs).
 - **A settings page** is a form with its fields showing, or a `SettingRow` whose `actionSlot` is a
   real control — a `Switch`, an `OptionSelect` — that is always drawn as one.
@@ -338,7 +338,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout.md](layout.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record: its loading and not-found branches around the body | `DetailPage` | `@cubeui/detail-page` |
-| The header of that screen: a back button, the record's name, a badge, its actions. Its own item, so it is its own import (`@/components/detail-header`) | `DetailHeader`, `EditButton` | `@cubeui/detail-header` |
+| The header of that screen: a back button, the record's name, a badge, its actions. Its own item, so it is its own import (`@/components/detail-header`) | `DetailHeader` | `@cubeui/detail-header` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout.md](layout.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
@@ -369,7 +369,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
 | A search box over rows that filter as you type, each chosen by a press — see [controls.md](controls.md#command) | `Command` and its parts | `@cubeui/command` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
-| An icon-only button, with a tooltip on a long press and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `ActionButton` | `@cubeui/action-button` |
+| An icon-only button, with a `hint` tooltip and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `Button` in an `icon*` size | `@cubeui/button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls.md](controls.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
 | A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls.md](controls.md#download-button) | `DownloadButton` | `@cubeui/download-button` |

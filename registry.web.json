@@ -119,7 +119,7 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
+      "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour. An `icon*` size requires an `aria-label`; a `hint` is its tooltip, and with one, `disabled` is `aria-disabled`, so the reason is still reachable.",
       "dependencies": [
         "@types/react-dom@~19.2.0",
         "class-variance-authority@^0.7.1",
@@ -129,6 +129,7 @@
         "@cubeui/utils",
         "@cubeui/icons",
         "@cubeui/spinner",
+        "@cubeui/tooltip",
         "@cubeui/tokens"
       ],
       "files": [
@@ -681,29 +682,11 @@
       ]
     },
     {
-      "name": "action-button",
-      "type": "registry:component",
-      "title": "Action Button",
-      "description": "An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/tooltip",
-        "@cubeui/utils",
-        "@cubeui/tokens"
-      ],
-      "files": [
-        {
-          "path": "compiled/action-button.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "confirm-button",
       "type": "registry:component",
       "title": "Confirm Button",
-      "description": "A destructive button that asks first, with a required description of what is lost: an `ActionButton` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.",
-      "registryDependencies": ["@cubeui/action-button", "@cubeui/confirm-dialog"],
+      "description": "A destructive button that asks first, with a required description of what is lost: a `Button` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/confirm-dialog"],
       "files": [
         {
           "path": "compiled/confirm-button.tsx",
@@ -1470,7 +1453,6 @@
       "title": "Control Set",
       "description": "Every cubeui control in one install. Web-only: no React Native half.",
       "registryDependencies": [
-        "@cubeui/action-button",
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
         "@cubeui/copy-button",

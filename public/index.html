@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 103 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 102 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 103 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 102 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  88 on both platforms · 15 web-only · 0 native-only.
+  87 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -161,11 +161,6 @@
     <tr><th scope="col">Item</th><th scope="col">Platforms</th><th scope="col">What it is</th></tr>
   </thead>
   <tbody>
-        <tr>
-          <th scope="row"><code>@cubeui/action-button</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.</td>
-        </tr>
         <tr>
           <th scope="row"><code>@cubeui/alert</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
@@ -189,7 +184,7 @@
         <tr>
           <th scope="row"><code>@cubeui/button</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.</td>
+          <td>A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour. An `icon*` size requires an `aria-label`; a `hint` is its tooltip, and with one, `disabled` is `aria-disabled`, so the reason is still reachable.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/calendar</code></th>
@@ -264,7 +259,7 @@
         <tr>
           <th scope="row"><code>@cubeui/confirm-button</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A destructive button that asks first, with a required description of what is lost: an `ActionButton` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.</td>
+          <td>A destructive button that asks first, with a required description of what is lost: a `Button` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/confirm-dialog</code></th>

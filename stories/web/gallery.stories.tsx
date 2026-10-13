@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { ActionButton } from "@/components/action-button";
 import {
   SwitchField as BoundSwitchField,
   InputField,
@@ -17,7 +16,7 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
-import { DetailHeader, EditButton } from "@/components/detail-header";
+import { DetailHeader } from "@/components/detail-header";
 import { DetailPage } from "@/components/detail-page";
 import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
@@ -1017,7 +1016,7 @@ function Pickers() {
   );
 }
 
-function ActionButtons() {
+function IconButtons() {
   return (
     <TooltipProvider>
       <Row
@@ -1025,16 +1024,16 @@ function ActionButtons() {
           <>
             <CopyButton value="sk-live-1234" label="Copy the API key" />
             <DownloadButton source="# Notes" filename="notes.md" label="Download notes.md" />
-            <ActionButton label="Edit" variant="outline" size="icon" iconSlot={<Pencil />} />
-            <ActionButton
-              label="Refresh"
+            <Button aria-label="Edit" variant="outline" size="icon" iconSlot={<Pencil />} />
+            <Button
+              aria-label="Refresh"
               hint="Fetches the list again"
               variant="outline"
               size="icon"
               iconSlot={<RefreshCw />}
             />
             <ConfirmButton
-              label="Delete the lane"
+              aria-label="Delete the lane"
               variant="destructive-outline"
               size="sm"
               title="Delete this lane?"
@@ -1631,9 +1630,9 @@ const sections: GallerySection[] = [
     content: <Pickers />,
   },
   {
-    title: "Copy, download, action and confirm buttons",
-    items: ["copy-button", "download-button", "action-button", "confirm-button"],
-    content: <ActionButtons />,
+    title: "Copy, download, icon and confirm buttons",
+    items: ["copy-button", "download-button", "confirm-button"],
+    content: <IconButtons />,
   },
   { title: "Markdown", items: ["markdown"], content: <Markdown content={NOTES} /> },
   { title: "Markdown editor", items: ["markdown-editor"], content: <MarkdownEditing /> },
@@ -1813,7 +1812,15 @@ const sections: GallerySection[] = [
                     title={server.name}
                     subtitle={`${server.tools} tools over ${server.transport}`}
                     badgeSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionsSlot={<EditButton onClick={noop} label="Edit the server" />}
+                    actionsSlot={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={noop}
+                        iconSlot={<Pencil />}
+                        content="Edit the server"
+                      />
+                    }
                   />
                   <p className="text-foreground text-sm">The body of the detail page.</p>
                 </>

@@ -8,9 +8,9 @@
  * element map in `scripts/rn2web/tables.mjs` says what that became here.
  */
 
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useState } from "react";
-import { ActionButton } from "./action-button";
+import { Button, type ButtonPropsWithout } from "./button";
 import { ConfirmDialog } from "./confirm-dialog";
 
 /*
@@ -18,7 +18,7 @@ import { ConfirmDialog } from "./confirm-dialog";
  * key written as a string: `"onPress"` alone would leave the compiled half's `onClick` in the type,
  * accepted and then dropped. The press is what opens the question, so neither half takes one.
  */
-type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onPress" | "onClick"> & {
+type ConfirmButtonProps = ButtonPropsWithout<"onPress" | "onClick"> & {
   /** The question, as a heading. "Delete this workspace?" */
   title: ReactNode;
   /**
@@ -41,13 +41,13 @@ type ConfirmButtonProps = Omit<ComponentProps<typeof ActionButton>, "onPress" | 
 };
 
 /**
- * A button that asks first: an {@link ActionButton} that opens `ConfirmDialog`, the same card
+ * A button that asks first: a {@link Button} that opens `ConfirmDialog`, the same card
  * `confirm()` raises. Destructive only; a confirm that is not destructive is a question, and a
  * question is `DialogLayout`.
  *
  * `description` is required because it says what is lost, which is the sentence that gets skipped
  * when it is optional. The open state is held here rather than through `DialogTrigger asChild`,
- * since the trigger is already a `TooltipTrigger asChild` and two `Slot`s over one button fight
+ * since a button with a `hint` is already a `TooltipTrigger asChild` and two `Slot`s over one button fight
  * over the ref. `requireText` is the type-the-name mode, and the box empties each time the dialog
  * opens.
  */
@@ -65,7 +65,7 @@ export function ConfirmButton({
 
   return (
     <>
-      <ActionButton {...props} onClick={() => setOpen(true)} />
+      <Button {...props} onClick={() => setOpen(true)} />
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}

@@ -14,7 +14,7 @@ import { Slot } from "radix-ui";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
 import { Text, View } from "react-native";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonPropsWithout } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FieldContent,
@@ -557,7 +557,7 @@ type SubmitButtonProps = {
    * `disabled={false}` never enables an invalid form.
    */
   disabled?: boolean | undefined;
-} & Omit<React.ComponentProps<typeof Button>, "disabled" | "content" | "loading" | "loadingLabel">;
+} & ButtonPropsWithout<"disabled" | "content" | "loading" | "loadingLabel">;
 
 /**
  * The submit control: reads `canSubmit` / `isSubmitting` from form context, so

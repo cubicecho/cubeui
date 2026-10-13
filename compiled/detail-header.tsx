@@ -20,26 +20,7 @@ import type { ReactNode } from "react";
 import type { SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { ColorDot } from "./color-dot";
-import { ArrowLeft, Pencil } from "./icons";
-
-/** The outline "Edit" action a detail header usually carries. */
-export function EditButton({
-  onClick: onPress,
-  label = "Edit",
-}: {
-  onClick: () => void;
-  label?: string;
-}) {
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onPress}
-      iconSlot={<Pencil className="mr-1.5 h-3.5 w-3.5" />}
-      content={label}
-    />
-  );
-}
+import { ArrowLeft } from "./icons";
 
 type DetailHeaderProps = {
   onBack: () => void;

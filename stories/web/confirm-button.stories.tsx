@@ -8,7 +8,7 @@ const meta = {
   title: "Controls/ConfirmButton",
   component: ConfirmButton,
   args: {
-    label: "Delete lane",
+    "aria-label": "Delete lane",
     variant: "outline",
     size: "icon",
     iconSlot: <Trash2 />,
@@ -108,10 +108,10 @@ export const CancelDoesNothing: Story = {
 };
 
 /**
- * The trigger is an `ActionButton`, so it keeps its accessible name and its tooltip rather than
- * being swallowed by `AlertDialogTrigger asChild` — which is why this holds `open` itself.
+ * The trigger is a `Button`, so it keeps its accessible name and its `hint` tooltip rather than being
+ * swallowed by `AlertDialogTrigger asChild` — which is why this holds `open` itself.
  */
-export const TheTriggerIsStillAnActionButton: Story = {
+export const TheTriggerKeepsItsTooltip: Story = {
   args: { hint: "Deleting a lane deletes its cards" },
   play: async ({ canvas }) => {
     const button = canvas.getByRole("button", { name: "Delete lane" });
@@ -135,7 +135,7 @@ export const DisabledDoesNotAsk: Story = {
 /** `confirmLabel` is how the same dialog says Discard, Revoke or Remove. */
 export const NamingTheVerb: Story = {
   args: {
-    label: "Revoke key",
+    "aria-label": "Revoke key",
     title: "Revoke this API key?",
     description: "Anything using it stops working immediately, including the nightly sync.",
     confirmLabel: "Revoke",
@@ -149,7 +149,7 @@ export const NamingTheVerb: Story = {
 };
 
 /**
- * The trigger is an `ActionButton`, so it inherits its `type="button"` — a "Delete" that asks
+ * The trigger is a `Button`, so it inherits its `type="button"` — a "Delete" that asks
  * first no longer submits the form behind it while the question is still on screen.
  */
 export const ItDoesNotSubmitTheFormAroundIt: Story = {
@@ -176,7 +176,7 @@ export const ItDoesNotSubmitTheFormAroundIt: Story = {
 };
 
 const typeTheName = {
-  label: "Delete folder",
+  "aria-label": "Delete folder",
   title: "Delete this folder?",
   description: "Its notes go with it.",
   requireText: "work",

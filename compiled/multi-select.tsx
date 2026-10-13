@@ -64,7 +64,7 @@ export type MultiSelectOption = {
    * options are built and unreachable by the time somebody wonders — this is the one place to
    * put it.
    *
-   * Same argument as {@link ActionButton}'s `hint`, in a control that had not had it yet.
+   * Same argument as {@link Button}'s `hint`, in a control that had not had it yet.
    */
   hint?: ReactNode | undefined;
 };

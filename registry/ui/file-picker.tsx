@@ -18,8 +18,9 @@
  * the shape.
  *
  * `FilePickerButton` is the same placeholder as a `Button`: drawn with the look
- * it was given, named by `label`, and disabled, with the reason as its
- * accessibility hint. An icon-sized button has no room to say it on screen.
+ * it was given, named by `label`, and disabled, with the reason as its `hint`:
+ * read after the name and shown on a long press, since an icon-sized button has
+ * no room to say it on screen.
  */
 import { Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ export function FilePickerButton({
       className={className}
       disabled
       aria-label={label}
-      accessibilityHint={UNAVAILABLE}
+      hint={UNAVAILABLE}
       iconSlot={iconSlot}
       content={iconOnly ? null : label}
     />

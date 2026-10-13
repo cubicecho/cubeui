@@ -186,7 +186,7 @@ the far end, so those are the props:
 - **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
 - **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
-  is why an icon-only button is an `ActionButton` (below).
+  is why those sizes require `aria-label` (below).
 - **`trailingSlot`** is the far end: a trigger's chevron, a count.
 - **`linkSlot`** is the link the button is, as an element with no children: `<a href="…" />` or a
   router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
@@ -195,7 +195,7 @@ the far end, so those are the props:
 - **`loading`** is "pressed, and the work is still running": the button is disabled, `aria-busy`,
   and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
   swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
-  `ActionButton` and `ConfirmButton` take the same props; a form's submit is `form.SubmitButton`,
+  `ConfirmButton` takes the same props; a form's submit is `form.SubmitButton`,
   which sets `loading` from the form.
 - A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
   `<Button><Plus /> New</Button>` → `<Button iconSlot={<Plus />} content="New" />`. Everything else
@@ -204,68 +204,65 @@ the far end, so those are the props:
 
 ## Icon buttons
 
-**Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
+**An icon-only button is a `Button` in an `icon*` size, and it will not typecheck without a name.**
 
 ```tsx
-<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} iconSlot={<Trash2 />} />
+<Button aria-label="Delete workspace" variant="outline" size="icon" onClick={remove} iconSlot={<Trash2 />} />
 ```
 
-`label` is required and is the accessible name. `title` is not a name — it is a hint, it is not
-read in place of one, and it never appears on a touch device. Across these projects 78 of 134
-icon buttons announce as "button".
+`aria-label` is required in the `icon`, `icon-xs`, `icon-sm` and `icon-lg` sizes, and is the
+accessible name. `title` is not a name — it is a hint, it is not read in place of one, and it
+never appears on a touch device. The name is not shown as a tooltip.
 
-**`disabled` here is not the HTML attribute.** It becomes `aria-disabled`, so the control keeps
-its focus ring, its hover and its tooltip and refuses the press in the handler. That is
-deliberate: `disabled:pointer-events-none` is why every `title="Empty the lane first"` in these
-apps was unreadable on exactly the control it was explaining. Pass `hint` with the reason:
+**`hint` is the button's tooltip, and the only one it draws**, on any button, icon or text. No
+`hint`, no tooltip. The accessible name stays what it was, and the hint is read after it whether
+or not the tooltip is open — it is also an always-mounted `sr-only` node, because a tooltip's
+text is in the DOM only while it is showing. Pass `tooltip={false}` to keep the description and
+drop the tooltip, and `side` to move it.
+
+**`disabled` with a `hint` is not the HTML attribute.** It becomes `aria-disabled`, so the control
+keeps its focus ring, its hover and its tooltip and refuses the press in the handler. That is
+deliberate: `disabled:pointer-events-none` is why a `title="Empty the lane first"` is unreadable
+on exactly the control it is explaining. Pass `hint` with the reason:
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} iconSlot={<Trash2 />} />
+<Button aria-label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} size="icon" iconSlot={<Trash2 />} />
 ```
 
-`hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
-hint is read after it whether or not the tooltip is open — it is also an always-mounted
-`sr-only` span, because a tooltip's text is in the DOM only while it is showing. Pass
-`tooltip={false}` for a row that already explains itself, and `side` to move the tooltip.
+With no `hint` there is no reason to keep reachable, and `disabled` is the real attribute.
 
-**A root `TooltipProvider` does not reach these buttons.** `ActionButton` renders its own, and
-a nested provider replaces the one above it rather than merging with it — so an app with
-`<TooltipProvider delayDuration={300}>` at its root gets 300ms everywhere except here, where
-the tooltip opens the instant the pointer crosses. Pass `delayDuration` (and
-`skipDelayDuration`, which is what makes a toolbar of them feel like one control) to match it.
-Radix offers no way to read the outer provider, so the number has to be said twice; a project
-that minds should say it once in a wrapper.
+**The tooltip's delay is the app's.** With a `TooltipProvider` above it — the one an app puts at
+its root — the button's tooltip uses that provider's `delayDuration` and `skipDelayDuration`.
+With none above it, it brings its own and opens at once, so a `Button` never throws for want of
+a provider.
 
-**Both of these are `type="button"`, so neither submits the form it sits in.** You do not need
-to write it at the call site, and you should not go back to a bare `<Button>` to avoid it. A
-`<button>` with no type is a submit button, which is why an icon button beside a field used to
-save the form as well as do its own job — and why Enter in that field pressed the trash, since
-implicit submission goes to the first submit button in tree order and never through a click.
-A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+**It is `type="button"`, so it does not submit the form it sits in.** You do not need to write it
+at the call site. A `<button>` with no type is a submit button, which is why an icon button
+beside a field would save the form as well as do its own job — and why Enter in that field would
+press the trash, since implicit submission goes to the first submit button in tree order and
+never through a click. A form's real submit is `SubmitButton`. If you want one of these to
+submit, say `type="submit"`.
 
-**`@cubeui/action-button` is on both halves**, with the same props and the one conversion every
-pressable has: `onPress` on a device, `onClick` on the web.
+**It is the same on both halves**, with the one conversion every pressable has: `onPress` on a
+device, `onClick` on the web.
 
 ```tsx
-<ActionButton
-  label="Delete lane"
+<Button
+  aria-label="Delete lane"
   hint="Empty the lane first"
   disabled={cards.length > 0}
+  size="icon"
   onPress={remove}
   iconSlot={<Trash2 />}
 />
 ```
 
-- On device the tooltip opens on a **long press**, and a `disabled` one still hears it — that is
-  the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver announce the
-  button as unavailable.
-- A string `hint` is the button's accessibility hint, read after `label`. A `hint` that is a node
+- On device the tooltip opens on a **long press**, and a `disabled` one with a `hint` still hears
+  it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
+  announce the button as unavailable.
+- A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
-- `delayDuration`, `skipDelayDuration`, `type` and `aria-describedby` are web only. A device has
-  no hover to delay and no form to submit.
-- Under react-native-web (an Expo app's web build) `Pressable` overwrites `aria-disabled` with its
-  own `disabled`, so there a disabled `ActionButton` refuses the press and reads its hint but is
-  not announced as unavailable. The compiled web half, which a DOM app installs, is not affected.
+- `type` and `aria-describedby` are web only. A device has no form to submit.
 
 ## Copy button
 
@@ -307,8 +304,7 @@ an `absolute` corner over it.
   that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
   the native item installs; a DOM app installs nothing extra.
 - It is `type="button"` on the web, so it never submits the form it sits in.
-- Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
-  always set, which are the two things `ActionButton` exists to guarantee.
+- It has no tooltip: the glyph is the universal one and the name is always set.
 
 ## Download button
 
@@ -628,14 +624,14 @@ server in it*. If you cannot write that sentence, the confirm is probably not wa
 is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
-Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
+Everything `Button` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
 **`@cubeui/confirm-button` is on both halves**, with the same props. The press opens the question,
 so it takes neither `onPress` nor `onClick`; `onConfirm` is the one that acts. The dialog is
 `ConfirmDialog`, the one `confirm()` raises, so the three draw the same card: an `alertdialog`
 with Cancel first and the destructive verb last, no corner close, and a press beside it that does
-not answer it. On device the back button is Cancel, and the trigger's tooltip is `ActionButton`'s
+not answer it. On device the back button is Cancel, and the trigger's tooltip is `Button`'s
 long press.
 
 ### Type the name to confirm
@@ -690,8 +686,8 @@ on both platforms:
 </Menu>
 ```
 
-- **An icon-only trigger** is an `ActionButton` on the web (see [Icon buttons](#icon-buttons)) and
-  a `Button` with an `aria-label` on device, both under `MenuTrigger asChild`.
+- **An icon-only trigger** is an icon `Button` with an `aria-label` (see
+  [Icon buttons](#icon-buttons)) under `MenuTrigger asChild`.
 - **The menu closes itself when a row is chosen.** Do not hold `open` to close it from
   `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
@@ -957,7 +953,7 @@ at `components/multi-select`, over `Popover`, `Command` and `Badge`.
   under the label and read after it, never as part of the name. A disabled row fires no hover,
   so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
   picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
-  Same argument as `ActionButton`'s `hint`.
+  Same argument as `Button`'s `hint`.
 - **`meta` on an option is the end of the row** — a status badge, a count, a date. Read after the
   name, never as part of it, and never on the chip: the chip is the label and stays a string. Do
   not reach for `color` for this. That is the chip's colour, and pointing it at a status mints a

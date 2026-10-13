@@ -170,7 +170,7 @@ byte-for-byte what it was. `elements.mjs` is 559 lines, most of it `transformEle
 ### D1 [sweep] — doc blocks over four sentences
 
 **Hits:** registry 205 in 112 files (5 sentences: 60, 6: 40, 7–10: 64, over 10: 41). Worst:
-`action-button.tsx:1` (48), `split-layout.tsx:191` (33), `alert.tsx:1` and `icons.tsx:1`
+`split-layout.tsx:191` (33), `alert.tsx:1` and `icons.tsx:1`
 (31), `badge.tsx:1` (22). Scripts 42 in 14 files, stories 42 in 32. `AGENTS.md` asks that
 comments say why and "what went wrong without the line"; it sets no length.
 
