@@ -49,6 +49,7 @@ import {
 import { FormElement } from "./form-element";
 import { Input } from "./input";
 import type { Label } from "./label";
+import { PasswordInput, type PasswordInputProps, revealLabelsFor } from "./password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 import { Switch } from "./switch";
 import { Textarea } from "./textarea";
@@ -476,6 +477,35 @@ function TextAreaField(props: TextAreaFieldProps) {
   );
 }
 
+type PasswordFieldProps = BoundFieldProps &
+  Omit<PasswordInputProps, "value" | "onChangeText" | "onBlur" | keyof BoundFieldProps>;
+
+/**
+ * A password box with its reveal button, and the field around it. Not `InputField` with
+ * `type="password"`, which has no button. A string `label` names the button too: "Show API key".
+ */
+function PasswordField(props: PasswordFieldProps) {
+  const [fieldProps, input] = splitProps(props);
+  const field = useFieldContext<string | null>();
+  const revealLabels = revealLabelsFor(fieldProps.label);
+
+  return (
+    <FieldWrapper
+      {...fieldProps}
+      controlSlot={
+        <PasswordInput
+          {...input}
+          showLabel={input.showLabel ?? revealLabels.showLabel}
+          hideLabel={input.hideLabel ?? revealLabels.hideLabel}
+          value={field.state.value ?? ""}
+          onBlur={field.handleBlur}
+          onChangeText={(text) => field.handleChange(text)}
+        />
+      }
+    />
+  );
+}
+
 type SelectOption = {
   label: string;
   value: string;
@@ -660,6 +690,7 @@ const FIELD_COMPONENTS = {
   NumberField,
   TextAreaField,
   TextareaField: TextAreaField,
+  PasswordField,
   SelectField,
   CheckboxField,
   SwitchField,
@@ -761,6 +792,7 @@ export {
   Form,
   InputField,
   NumberField,
+  PasswordField,
   SelectField,
   SubmitButton,
   SwitchField,

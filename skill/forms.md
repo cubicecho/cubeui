@@ -60,6 +60,9 @@ Each one takes everything `FormField` takes — `label`, `description`, `require
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
 `validators`, `listeners` and `asyncDebounceMs`, in one flat list.
 
+`PasswordField` names its reveal button from a string `label`: `label="API key"` gives "Show API
+key" and "Hide API key". Pass `showLabel` and `hideLabel` for other words.
+
 `RadioGroupField` is the exception to "everything `FormField` takes": it is not built on
 `FormField`, because it has a React Native half and `FormField` does not. It takes `label`,
 `description`, `required`, `actionSlot`, `loading` and the `*ClassName` props (`labelClassName`,
@@ -576,7 +579,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 
 | Field | Writes | Comes from |
 | --- | --- | --- |
-| `InputField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
+| `InputField`, `PasswordField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
 | `NumberField` | `number \| null` | `@cubeui/form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
@@ -630,6 +633,10 @@ How each is named:
   label cannot name, so it takes `aria-labelledby` the label's id.
 - **`MultiSelectField`, `SegmentedField`** are `asGroup`: the trigger and the pills' row are
   `aria-labelledby` the label.
+- **`PasswordField`** is `PasswordInput` in the field, with its props (`autoComplete`,
+  `revealable`, `leadingSlot`). The label names the box, and a string `label` names the reveal
+  button too: `label="API key"` gives "Show API key" and "Hide API key". `showLabel` and
+  `hideLabel` replace them. It is not `InputField type="password"`, which has no button.
 - **`CheckboxField`, `SwitchField`**: `label` is also the control's `accessibilityLabel`. Device
   has no `htmlFor`.
 - **`SelectField`**: the `id` and the `aria-*` wiring go on the trigger, not on the `Select` root,

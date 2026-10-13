@@ -504,3 +504,110 @@ export const ANumberCanBeTyped: Story = {
     }
   },
 };
+
+function SecretsForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { apiKey: "", token: "s3cret" },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="apiKey"
+          validators={{
+            onChange: ({ value }) => (value.length < 4 ? "At least 4 characters" : undefined),
+          }}
+        >
+          {(field) => (
+            <field.PasswordField label="API key" description="From your account page." required />
+          )}
+        </form.AppField>
+        <form.AppField name="token">
+          {(field) => (
+            <field.PasswordField label="Share token" showLabel="Reveal" hideLabel="Conceal" />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${values.apiKey} and ${values.token}`}</output>
+          )}
+        </form.Subscribe>
+        <form.SubmitButton createLabel="Save" />
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `PasswordField` on `field.*` (#322): the label names the box, typing writes the field, and the
+ * reveal button is named from the label, because most secrets in a form are not passwords.
+ */
+export const PasswordFieldBindsAndReveals: Story = {
+  render: () => (
+    <SideBySide native={<SecretsForm kit={NATIVE} />} compiled={<SecretsForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      // A masked box has no role, so it is found by its label: the wiring reached the input.
+      const apiKey = half.getByLabelText(/^API key/);
+      await expect(apiKey).toHaveAttribute("type", "password");
+      await expect(apiKey).toHaveAccessibleDescription("From your account page.");
+      await expect(apiKey).toHaveAttribute("aria-required", "true");
+
+      await userEvent.type(apiKey, "abcd1234");
+      await expect(half.getByLabelText("Stored")).toHaveTextContent("abcd1234 and s3cret");
+
+      await userEvent.click(half.getByRole("button", { name: "Show API key" }));
+      await expect(apiKey).toHaveAttribute("type", "text");
+      await expect(apiKey).toHaveValue("abcd1234");
+      await userEvent.click(half.getByRole("button", { name: "Hide API key" }));
+      await expect(apiKey).toHaveAttribute("type", "password");
+      await expect(half.getByRole("button", { name: "Show API key" })).toBeInTheDocument();
+    }
+  },
+};
+
+/** A caller's `showLabel` and `hideLabel` are used as given, whatever the label says. */
+export const PasswordFieldKeepsItsOwnRevealNames: Story = {
+  render: () => (
+    <SideBySide native={<SecretsForm kit={NATIVE} />} compiled={<SecretsForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const token = half.getByLabelText("Share token");
+      await expect(half.queryByRole("button", { name: "Show Share token" })).toBeNull();
+
+      await userEvent.click(half.getByRole("button", { name: "Reveal" }));
+      await expect(token).toHaveAttribute("type", "text");
+      await userEvent.click(half.getByRole("button", { name: "Conceal" }));
+      await expect(token).toHaveAttribute("type", "password");
+    }
+  },
+};
+
+/** A failed validator is an alert, `aria-invalid` on the box, and the box described by it. */
+export const PasswordFieldShowsItsError: Story = {
+  render: () => (
+    <SideBySide native={<SecretsForm kit={NATIVE} />} compiled={<SecretsForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const apiKey = half.getByLabelText(/^API key/);
+      await expect(half.queryByRole("alert")).toBeNull();
+
+      await userEvent.type(apiKey, "ab");
+      await userEvent.tab();
+      await waitFor(() =>
+        expect(half.getByRole("alert")).toHaveTextContent("At least 4 characters"),
+      );
+      await expect(apiKey).toHaveAttribute("aria-invalid", "true");
+      await expect(apiKey).toHaveAccessibleDescription(/At least 4 characters/);
+
+      await userEvent.type(apiKey, "cd");
+      await waitFor(() => expect(half.queryByRole("alert")).toBeNull());
+      await expect(apiKey).not.toHaveAttribute("aria-invalid", "true");
+    }
+  },
+};

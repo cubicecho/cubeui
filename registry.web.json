@@ -1003,7 +1003,7 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
       "dependencies": [
         "@tanstack/react-form@^1.33.5",
         "@types/react-dom@~19.2.0",
@@ -1020,6 +1020,7 @@
         "@cubeui/input",
         "@cubeui/label",
         "@cubeui/number-draft",
+        "@cubeui/password-input",
         "@cubeui/select",
         "@cubeui/switch",
         "@cubeui/textarea",

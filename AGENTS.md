@@ -310,7 +310,7 @@ duplication. Do not add a prop, a branch or a doc sentence accommodating another
 The binding lives in two places, one per tier:
 
 - **`registry/ui/form.tsx`** (`@cubeui/form`) is the universal one: `Form`, `useAppForm`,
-  `InputField`, `NumberField` and the rest, written in React Native and compiled like any
+  `InputField`, `NumberField`, `PasswordField` and the rest, written in React Native and compiled like any
   primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
   added to `field.*` with `createAppForm`; `multi-select-form-field.tsx` and `segmented-field.tsx`
