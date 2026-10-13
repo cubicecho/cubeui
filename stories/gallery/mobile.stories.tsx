@@ -131,6 +131,7 @@ import {
   MenuTrigger,
 } from "../../registry/ui/menu.tsx";
 import { MultiSelectField } from "../../registry/ui/multi-select-form-field";
+import { OptionSelectField } from "../../registry/ui/option-select-field";
 import { PasswordInput } from "../../registry/ui/password-input";
 import {
   Popover,
@@ -217,6 +218,9 @@ const NOT_SHOWN: Record<string, string> = {
   "description-hint":
     'The button and pane behind `descriptionPlacement="popover"`. Drawn by the fields, cards, sections and rows that take it.',
   "form-binding": "The types a field bound to a form takes, and one function. Not a component.",
+  "number-draft": "Two functions NumberField reads the text being typed with. Not a component.",
+  "select-options":
+    "The types a select's options list holds, and the walk into groups. Not a component.",
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
@@ -533,9 +537,15 @@ const { useAppForm } = createAppForm({
   DateTimeField,
   ColorField,
   MultiSelectField,
+  OptionSelectField,
   SegmentedField,
 });
 
+const OWNER_OPTIONS = [
+  { value: "ada", label: "Ada Lovelace", group: "Design" },
+  { value: "grace", label: "Grace Hopper", group: "Engineering" },
+  { value: "linus", label: "Linus Torvalds", group: "Engineering" },
+];
 const PRIORITY_OPTIONS = [
   { value: "low", label: "Low" },
   { value: "normal", label: "Normal" },
@@ -557,8 +567,11 @@ function ProjectForm() {
     defaultValues: {
       name: "Quarterly review",
       notes: "",
+      budget: 1200 as number | null,
+      shareToken: "tok_4f9a2c",
       visibility: "team",
       priority: "normal",
+      owner: "grace",
       tags: ["planning"] as string[],
       pinned: false,
       notify: true,
@@ -574,6 +587,12 @@ function ProjectForm() {
         <form.AppField name="notes">
           {(field) => <field.TextAreaField label="Notes" />}
         </form.AppField>
+        <form.AppField name="budget">
+          {(field) => <field.NumberField label="Budget" description="In pounds." />}
+        </form.AppField>
+        <form.AppField name="shareToken">
+          {(field) => <field.PasswordField label="Share token" />}
+        </form.AppField>
         <RadioGroupField
           form={form}
           name="visibility"
@@ -582,6 +601,9 @@ function ProjectForm() {
         />
         <form.AppField name="priority">
           {(field) => <field.SegmentedField label="Priority" options={PRIORITY_OPTIONS} />}
+        </form.AppField>
+        <form.AppField name="owner">
+          {(field) => <field.OptionSelectField label="Owner" options={OWNER_OPTIONS} searchable />}
         </form.AppField>
         <form.AppField name="tags">
           {(field) => <field.MultiSelectField label="Tags" options={TAG_OPTIONS} />}
@@ -1016,6 +1038,7 @@ const sections: GallerySection[] = [
       "date-time-field",
       "color-picker-field",
       "multi-select-form-field",
+      "option-select-field",
       "segmented-field",
     ],
     description: "One bound form, a field of each kind.",
