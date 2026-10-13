@@ -507,6 +507,33 @@ there pushes the buttons off the screen.
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
 - `headerClassName` is on the bar. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
   `sidebarHideBelow` still hides the rail and draws nothing in its place.
+- **`barPosition="bottom"` draws the places along the bottom**, where a phone's thumb is and where
+  Android and iOS apps put them. The `navSlot` leaves the top bar for a bar of its own under
+  `contentSlot`: that bar is the `<nav>` named by `navLabel`, the same `BarNavItem`s spread evenly
+  across it, and each still `aria-current` on its own page. `brandSlot`, `status` and `actionSlot`
+  stay in the bar at the top; with none of them, no top bar is drawn. The default is `"top"`, and
+  from `sidebarHideBelow` up neither bar is drawn either way.
+
+  ```tsx
+  <SidebarLayout
+    sidebarHideBelow="md"
+    barPosition="bottom"
+    brandSlot={<Brand />}
+    navSlot={places}
+    navLabel="Main"
+    actionSlot={<ThemeButton />}
+    sidebarSlot={<AppSidebar />}
+    contentSlot={<Outlet />}
+  />
+  ```
+
+  - **The bottom safe-area inset is the app's**, as the top one is: wrap the app in
+    `react-native-safe-area-context`'s `<SafeAreaView edges={["top", "bottom"]}>`, and the bar sits
+    above the home indicator. The layout adds no dependency to measure insets.
+    `bottomBarClassName` is on the bottom bar itself (its fill, its border, its padding).
+  - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
+    page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
+  - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
 
 `Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
 in a `SidebarLayout`. Do not write `hidden md:flex` in `className` for either: that works only
