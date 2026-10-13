@@ -215,6 +215,7 @@ const NOT_SHOWN: Record<string, string> = {
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
   "form-binding": "The types a field bound to a form takes, and one function. Not a component.",
+  "number-draft": "Two functions NumberField reads the text being typed with. Not a component.",
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
@@ -555,6 +556,7 @@ function ProjectForm() {
     defaultValues: {
       name: "Quarterly review",
       notes: "",
+      budget: 1200 as number | null,
       shareToken: "tok_4f9a2c",
       visibility: "team",
       priority: "normal",
@@ -572,6 +574,9 @@ function ProjectForm() {
         <form.AppField name="name">{(field) => <field.InputField label="Name" />}</form.AppField>
         <form.AppField name="notes">
           {(field) => <field.TextAreaField label="Notes" />}
+        </form.AppField>
+        <form.AppField name="budget">
+          {(field) => <field.NumberField label="Budget" description="In pounds." />}
         </form.AppField>
         <form.AppField name="shareToken">
           {(field) => <field.PasswordField label="Share token" />}

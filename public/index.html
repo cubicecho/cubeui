@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 102 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 103 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 102 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 103 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  87 on both platforms · 15 web-only · 0 native-only.
+  88 on both platforms · 15 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -174,7 +174,7 @@
         <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
+          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/badge</code></th>
@@ -369,7 +369,7 @@
         <tr>
           <th scope="row"><code>@cubeui/form</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.</td>
+          <td>Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/form-binding</code></th>
@@ -465,6 +465,11 @@
           <th scope="row"><code>@cubeui/multi-select-form-field</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/number-draft</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>What a number box holds while it is typed in: `parseNumber`, which reads `""`, `-` and `1e` as no number yet and never as `0` or `NaN`, and `numberText`, which draws the typed text while it still means the stored number. What the two form bindings' NumberField share.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/option-select</code></th>

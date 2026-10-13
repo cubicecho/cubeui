@@ -398,6 +398,113 @@ export const MultiSelectAndSegmented: Story = {
   },
 };
 
+/** The field itself, and `InputField type="number"`, which is the same field under its old name. */
+const NUMBER_BOXES = ["Amount", "Legacy"];
+
+function AmountForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { amount: null as number | null, legacy: null as number | null },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField
+          name="amount"
+          validators={{
+            // `value` is `number | null`: a lone `-` is nothing yet, so it is not "too low".
+            onChange: ({ value }) => (value !== null && value < -10 ? "Too low" : undefined),
+          }}
+        >
+          {(field) => <field.NumberField label="Amount" description="In pounds." required />}
+        </form.AppField>
+        <form.AppField name="legacy">
+          {(field) => <field.InputField label="Legacy" type="number" />}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            // `String`, not JSON: JSON writes `NaN` as `null`, the value it must not be taken for.
+            <output aria-label="Stored">
+              {`${String(values.amount)} and ${String(values.legacy)}`}
+            </output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * What a number box shows. Both halves draw a DOM `type="number"` here, which reports a number
+ * still being typed (`1.`, `-`, `1e`) as `""` whatever it draws, so only a finished one is read.
+ */
+async function expectDrawn(box: HTMLElement, text: string) {
+  const finished = Number.isNaN(Number(text)) === false && text.endsWith(".") === false;
+  if (finished) {
+    await expect((box as HTMLInputElement).value).toBe(text);
+  }
+}
+
+/**
+ * A number can be typed (#321), into `NumberField` and into `InputField type="number"`, which is
+ * the same field. Each step checks what is drawn and what the form holds: never `NaN`, and `null`
+ * for an empty box. The device's text box, where the point was lost, is pinned in
+ * `registry/lib/number-draft.test.ts`, because both halves here are the DOM input.
+ */
+export const ANumberCanBeTyped: Story = {
+  render: () => (
+    <SideBySide native={<AmountForm kit={NATIVE} />} compiled={<AmountForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+      for (const name of NUMBER_BOXES) {
+        // A pattern, because a required field's label carries its mark.
+        const box = half.getByLabelText(new RegExp(`^${name}`));
+        const holds = async (value: string) => {
+          const [amount, legacy] = (stored.textContent ?? "").split(" and ");
+          await expect(name === "Amount" ? amount : legacy).toBe(value);
+        };
+        const typed = async (keys: string, drawn: string, value: string) => {
+          await userEvent.type(box, keys);
+          await expectDrawn(box, drawn);
+          await holds(value);
+        };
+
+        await typed("0", "0", "0");
+        await typed(".", "0.", "0");
+        await typed("5", "0.5", "0.5");
+        await userEvent.clear(box);
+        await holds("null");
+
+        await typed("4.05", "4.05", "4.05");
+        await userEvent.clear(box);
+
+        await typed("1.", "1.", "1");
+        await typed("5", "1.5", "1.5");
+        await userEvent.clear(box);
+
+        // Not a number yet, so nothing is stored, and the text is left for the next key.
+        await typed("-", "-", "null");
+        await typed("3", "-3", "-3");
+        await userEvent.clear(box);
+
+        // The test driver writes `100` into the box for `1e2`, so only the store is read there.
+        await typed("1e", "1e", "null");
+        await userEvent.type(box, "2");
+        await holds("100");
+
+        // Leaving the box settles the text to the stored number.
+        await userEvent.tab();
+        await expect((box as HTMLInputElement).value).toBe("100");
+        await userEvent.clear(box);
+        await holds("null");
+      }
+    }
+  },
+};
+
 function SecretsForm({ kit }: { kit: Kit }) {
   const { useAppForm, Form } = kit;
   const form = useAppForm({

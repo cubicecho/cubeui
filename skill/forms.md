@@ -580,6 +580,7 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | Field | Writes | Comes from |
 | --- | --- | --- |
 | `InputField`, `PasswordField`, `TextAreaField` (`TextareaField`), `SelectField` | `string` | `@cubeui/form` |
+| `NumberField` | `number \| null` | `@cubeui/form` |
 | `CheckboxField`, `SwitchField` | `boolean` | `@cubeui/form` |
 | `DateTimeField` | `Date \| null` | `@cubeui/date-time-field` |
 | `ColorField` | `string` | `@cubeui/color-picker-field` |
@@ -605,6 +606,24 @@ Every bound field takes `label`, `description`, `required`, `orientation`, `asGr
 `*ClassName` props, plus the control's own. `className` is the field's, not the control's.
 `DateTimeField` passes `mode`, `clearable` and `placeholder` through. `SelectField` takes
 `options`, `placeholder` and `disabled` — a list with nothing in it yet.
+
+**A number is `NumberField`, not `InputField type="number"`.** It takes `Input`'s props and
+writes `number | null`: an empty box is `null`, never `0`, and so is a lone `-` or `1e` while it
+is being typed. The text settles to the stored number on blur. Do not parse the text yourself in
+an `onChangeText`: on device the box is redrawn from the store on every key, so `0.` becomes `0`
+and `4.05` cannot be typed. It raises the decimal keypad; pass `inputMode` for another.
+
+```tsx
+<form.AppField
+  name="amount"
+  validators={{ onChange: ({ value }) => (value === null ? "Amount is required" : undefined) }}
+>
+  {(field) => <field.NumberField label="Amount" required />}
+</form.AppField>
+```
+
+`field.InputField type="number"` still works and is the same field. `min` and `max` only
+constrain the web's box, so check the range in a validator.
 
 How each is named:
 
