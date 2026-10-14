@@ -98,6 +98,10 @@ export type TextareaProps = {
   className?: string | undefined;
   /** Web only: ties the control to its `<label>`. */
   id?: string | undefined;
+  /** What says more about the field — its hint, its error — by id. Web only, as on `Input`. */
+  "aria-describedby"?: string | undefined;
+  /** The value was refused. Drawn as a red border on both halves; announced on the web. */
+  "aria-invalid"?: boolean | "true" | "false" | undefined;
   ref?: Ref<TextareaHandle> | undefined;
 };
 

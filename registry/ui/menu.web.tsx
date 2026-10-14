@@ -143,7 +143,7 @@ function MenuItem({
       {iconSlot}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
-        <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
+        <span className={MENU_TRAILING_CLASS}>{trailing}</span>
       ) : (
         trailing
       )}
@@ -222,7 +222,7 @@ function ToggleRowBody({
       {iconSlot}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
-        <span className={cn(MENU_TRAILING_CLASS, "tracking-widest")}>{trailing}</span>
+        <span className={MENU_TRAILING_CLASS}>{trailing}</span>
       ) : (
         trailing
       )}

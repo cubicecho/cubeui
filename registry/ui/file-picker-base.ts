@@ -150,3 +150,13 @@ export function acceptsFile(accept: string | undefined, file: { name: string; ty
     return type === token;
   });
 }
+
+/** The drop zone's box. The web half swaps its edge for `border-active` while a file is dragged over it. */
+export const FILE_PICKER_ZONE_CLASS =
+  "w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed border-foreground/50 px-6 py-12";
+/** The upload icon in the drop zone. */
+export const FILE_PICKER_ICON_CLASS = "h-8 w-8 text-foreground/60";
+/** The drop zone's label. */
+export const FILE_PICKER_TITLE_CLASS = "text-center text-sm font-semibold text-foreground";
+/** The line under the label. */
+export const FILE_PICKER_HINT_CLASS = "text-center text-xs text-foreground/60";

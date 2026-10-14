@@ -24,7 +24,7 @@ import {
   type TextareaProps,
   type TextareaSelection,
 } from "@/components/ui/textarea-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
 
 /** A multi-line text box. */
 function Textarea({
@@ -45,6 +45,8 @@ function Textarea({
   autoFocus,
   className,
   id,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   ref,
 }: TextareaProps) {
   const inner = useRef<TextInput>(null);
@@ -87,6 +89,10 @@ function Textarea({
       {...(autoFocus !== undefined ? { autoFocus } : {})}
       onKeyPress={(event) => {
         onKeyPress?.(event);
+        // A caller's own handler that took the key keeps it, as on the web.
+        if (event.isDefaultPrevented()) {
+          return;
+        }
         if (event.nativeEvent.key === "Escape") {
           onEscape?.();
         }
@@ -104,11 +110,24 @@ function Textarea({
       {...(maxLength !== undefined ? { maxLength } : {})}
       editable={!disabled}
       id={id}
+      // What react-native has no prop for, in the spelling react-native-web reads, as on `Input`.
+      {...(Platform.OS === "web"
+        ? {
+            ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
+            ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+          }
+        : {})}
       {...(grows && Platform.OS !== "web"
         ? { style: { minHeight: rowsHeight(minRows), maxHeight: rowsHeight(maxRows) } }
         : {})}
       // `min-h-0` lets go of the class's 80px floor, which is four lines a composer starts without.
-      className={cn(TEXTAREA_CLASS, grows && "min-h-0", disabled && "opacity-50", className)}
+      className={cn(
+        TEXTAREA_CLASS,
+        grows && "min-h-0",
+        isInvalid(ariaInvalid) && FIELD_INVALID_CLASS,
+        disabled && "opacity-50",
+        className,
+      )}
     />
   );
 }

@@ -1,6 +1,6 @@
 /**
  * The native tooltip: long-press the trigger and the bubble appears above it
- * until the next press or a few seconds pass.
+ * for a few seconds.
  *
  * Hover does not exist on a touch screen, so radix's trigger has no direct
  * equivalent — but dropping the content entirely would lose the only place
@@ -66,8 +66,13 @@ function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
   const { setOpen } = useContext(TooltipContext);
   const show = () => setOpen(true);
   if (asChild && isValidElement(children)) {
-    return cloneElement(children as ReactElement<{ onLongPress?: () => void }>, {
-      onLongPress: show,
+    // The child's own long press still runs: the tooltip is added to it, not swapped in for it.
+    const child = children as ReactElement<{ onLongPress?: (() => void) | undefined }>;
+    return cloneElement(child, {
+      onLongPress: () => {
+        child.props.onLongPress?.();
+        show();
+      },
     });
   }
   return (
@@ -97,6 +102,7 @@ function TooltipContent({ side = "top", className, children }: TooltipContentPro
   }
   return (
     <View
+      role="tooltip"
       className={cn("absolute z-50", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}
       pointerEvents="none"
     >

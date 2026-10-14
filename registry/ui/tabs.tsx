@@ -215,7 +215,11 @@ function TabsContent({ value, className, children }: TabsContentProps) {
   if (tabs.value !== value) {
     return null;
   }
-  return <View className={cn("mt-2", className)}>{children}</View>;
+  return (
+    <View role="tabpanel" className={cn("mt-2", className)}>
+      {children}
+    </View>
+  );
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };

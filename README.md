@@ -720,10 +720,10 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 35 generated, 36
-hand-written** (16 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
-from `registry.json` and `registry.web-only.json` in the same run, publishes **all 78 items**, plus
-the 8 story items. `scripts/rn2web/` is about 2100 lines, of which
+react-native-web anywhere in the output. **Every file has a web half — 57 generated, 36
+hand-written** (26 `.web.tsx` halves and the 10 web-only files) — and `registry.web.json`, derived
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 104 items**, plus
+the 8 story items. `scripts/rn2web/` is about 2700 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs`, with one module per pass in `passes/`, is the
 ts-morph that applies it.
 

@@ -38,7 +38,7 @@ import {
   type InputType,
   NATIVE_INPUT_MODE,
 } from "@/components/ui/input-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
 
 /** A one-line text box, with optional slots at its start and end. */
 function Input({
@@ -83,8 +83,12 @@ function Input({
       onChangeText={onChangeText}
       onBlur={onBlur}
       onSubmitEditing={onSubmitEditing}
-      onKeyPress={(event: InputKeyPressEvent) => {
+      onKeyPress={(event) => {
         onKeyPress?.(event);
+        // A caller's own handler that took the key keeps it, as on the web.
+        if (event.isDefaultPrevented()) {
+          return;
+        }
         if (event.nativeEvent.key === "Escape") {
           onEscape?.();
         }
@@ -116,6 +120,7 @@ function Input({
         INPUT_CLASS,
         leadingSlot != null && INPUT_LEADING_PAD_CLASS,
         trailingSlot != null && INPUT_TRAILING_PAD_CLASS,
+        isInvalid(ariaInvalid) && FIELD_INVALID_CLASS,
         disabled && "opacity-50",
         className,
       )}

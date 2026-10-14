@@ -19,6 +19,10 @@
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
 import {
   acceptsFile,
+  FILE_PICKER_HINT_CLASS,
+  FILE_PICKER_ICON_CLASS,
+  FILE_PICKER_TITLE_CLASS,
+  FILE_PICKER_ZONE_CLASS,
   type FilePickerButtonProps,
   type FilePickerProps,
   type PickedFile,
@@ -176,15 +180,14 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
       <button
         {...trigger}
         className={cn(
-          "flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors",
-          dragging
-            ? "border-active bg-active/40"
-            : "border-foreground/50 hover:border-foreground/60",
+          FILE_PICKER_ZONE_CLASS,
+          "flex text-center transition-colors focus-visible:bg-hover focus-visible:outline-none",
+          dragging ? "border-active bg-active/40" : "hover:border-foreground/60",
         )}
       >
-        <Upload className="h-8 w-8 text-foreground/60" />
-        <span className="cube-rn-text font-semibold text-sm">{label}</span>
-        {hint ? <span className="cube-rn-text text-xs text-foreground/60">{hint}</span> : null}
+        <Upload className={FILE_PICKER_ICON_CLASS} />
+        <span className={cn("cube-rn-text", FILE_PICKER_TITLE_CLASS)}>{label}</span>
+        {hint ? <span className={cn("cube-rn-text", FILE_PICKER_HINT_CLASS)}>{hint}</span> : null}
       </button>
       {input}
     </>
