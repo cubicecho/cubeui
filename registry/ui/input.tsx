@@ -23,6 +23,7 @@ import { useImperativeHandle, useRef } from "react";
 import { Platform, TextInput, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import {
+  FIELD_INVALID_CLASS,
   INPUT_CLASS,
   INPUT_LEADING_CLASS,
   INPUT_LEADING_PAD_CLASS,
@@ -36,6 +37,7 @@ import {
   type InputKeyPressHandler,
   type InputProps,
   type InputType,
+  isInvalid,
   NATIVE_INPUT_MODE,
 } from "@/components/ui/input-base";
 import { cn } from "@/lib/utils";
@@ -83,8 +85,12 @@ function Input({
       onChangeText={onChangeText}
       onBlur={onBlur}
       onSubmitEditing={onSubmitEditing}
-      onKeyPress={(event: InputKeyPressEvent) => {
+      onKeyPress={(event) => {
         onKeyPress?.(event);
+        // A caller's own handler that took the key keeps it, as on the web.
+        if (event.isDefaultPrevented()) {
+          return;
+        }
         if (event.nativeEvent.key === "Escape") {
           onEscape?.();
         }
@@ -116,6 +122,7 @@ function Input({
         INPUT_CLASS,
         leadingSlot != null && INPUT_LEADING_PAD_CLASS,
         trailingSlot != null && INPUT_TRAILING_PAD_CLASS,
+        isInvalid(ariaInvalid) && FIELD_INVALID_CLASS,
         disabled && "opacity-50",
         className,
       )}

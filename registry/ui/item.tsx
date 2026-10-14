@@ -78,7 +78,9 @@ function ItemSeparator({
   return (
     <View
       testID="item-separator"
-      {...(decorative ? { "aria-hidden": true } : { role: "separator" as const })}
+      {...(decorative
+        ? { "aria-hidden": true }
+        : { role: "separator" as const, "aria-orientation": orientation })}
       className={cn(
         ITEM_SEPARATOR_CLASS,
         orientation === "vertical" ? "h-full w-px" : "h-px w-full",

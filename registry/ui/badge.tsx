@@ -24,6 +24,7 @@ import {
   badgeVariants,
 } from "@/components/ui/badge-base";
 import { X } from "@/components/ui/icons";
+import { IconClassContext } from "@/components/ui/icons-base";
 import { cn } from "@/lib/utils";
 
 /** A 12px glyph grown to about 28 by 28 of touch, without growing the pill. */
@@ -59,17 +60,24 @@ export function Badge({
       // the same split `color-dot` makes, for the same reason.
       {...(shape === "dot" ? dotName : {})}
     >
-      {shape === "pill"
-        ? Children.map(children, (child) =>
-            typeof child === "string" || typeof child === "number" ? (
-              <Text className={textClass} {...(textColor ? { style: { color: textColor } } : {})}>
-                {child}
-              </Text>
-            ) : (
-              child
-            ),
-          )
-        : null}
+      {/* An icon passed as a child takes the badge's ink at the web's `[&>svg]:size-3`. */}
+      <IconClassContext.Provider value={cn("size-3", textClass)}>
+        {shape === "pill"
+          ? Children.map(children, (child) =>
+              typeof child === "string" || typeof child === "number" ? (
+                <Text
+                  numberOfLines={1}
+                  className={textClass}
+                  {...(textColor ? { style: { color: textColor } } : {})}
+                >
+                  {child}
+                </Text>
+              ) : (
+                child
+              ),
+            )
+          : null}
+      </IconClassContext.Provider>
       {shape === "pill" && onRemove ? (
         <Pressable
           onPress={onRemove}

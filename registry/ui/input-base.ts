@@ -238,6 +238,18 @@ export const INPUT_LEADING_PAD_CLASS = "pl-9";
 /** The text's padding before a trailing slot, so it never runs under the icon. */
 export const INPUT_TRAILING_PAD_CLASS = "pr-9";
 
+/**
+ * A field whose value was refused, on device: the web halves draw the same thing from the
+ * `aria-invalid` attribute (`aria-invalid:border-negative`), which React Native has no variant
+ * for. Focus still wins while the value is being fixed.
+ */
+export const FIELD_INVALID_CLASS = "border-negative focus:border-active";
+
+/** Whether an `aria-invalid` value says the field is invalid. */
+export function isInvalid(value: boolean | "true" | "false" | undefined): boolean {
+  return value === true || value === "true";
+}
+
 /** The input's box: border, background, height and type. */
 export const INPUT_CLASS =
   "border-foreground/50 bg-background text-foreground placeholder:text-foreground/60 focus:border-active flex h-10 w-full rounded-md border px-3 py-2 text-sm focus:outline-none";

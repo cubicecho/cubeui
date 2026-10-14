@@ -88,7 +88,7 @@ export const MENU_ITEM_CLASS = "w-full flex-row items-center gap-2 rounded-sm px
 /** The type of a menu row's label. */
 export const MENU_ITEM_TEXT_CLASS = "flex-1 text-sm";
 /** What sits at the far end of a menu row, such as a shortcut. */
-export const MENU_TRAILING_CLASS = "ml-auto text-xs text-foreground/60";
+export const MENU_TRAILING_CLASS = "ml-auto text-xs tracking-widest text-foreground/60";
 /** The rule between groups of menu rows. */
 export const MENU_SEPARATOR_CLASS = "-mx-1 my-1 h-px bg-foreground/10";
 
