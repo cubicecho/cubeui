@@ -470,6 +470,13 @@ function BoundSwitchField(props: SwitchFieldProps) {
 type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel"> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
   pendingLabel?: string | undefined;
+  /**
+   * Disabled while every value is still its default, for an edit form whose Save means nothing
+   * until something changes. Read from the store's `isDefaultValue`, not `isDirty`, so a value
+   * typed and typed back disables it again. Off by default: a create form, or one replaying what
+   * is already in the box, is right to submit untouched.
+   */
+  requireChanges?: boolean | undefined;
 };
 
 /**
@@ -481,10 +488,10 @@ type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel">
  *
  * `disabled` is a third reason, not a replacement for the two: it is OR-ed in, so a caller can
  * only ever *tighten* the guard. The reasons the store cannot know are real ones — a mutation in
- * flight on the other half of the screen, a settings form that is valid but unchanged — and
- * without a way to say them the whole component gets dropped for a hand-written
- * `<Button type="submit">` that re-derives `canSubmit` and `isSubmitting`, which is the
- * duplication this exists to remove.
+ * flight on the other half of the screen — and without a way to say them the whole component gets
+ * dropped for a hand-written `<Button type="submit">` that re-derives `canSubmit` and
+ * `isSubmitting`, which is the duplication this exists to remove. A form that is valid but
+ * unchanged is a reason the store does know, and `requireChanges` says it.
  *
  * Inside a `<form>`, or naming one with `form="…"`, it is a submit control and the form's own
  * `onSubmit` runs. With no form to submit — a dialog's `footerActionsSlot`, a card's footer —
@@ -495,12 +502,14 @@ export function SubmitButton({
   content = "Save",
   pendingLabel = "Saving…",
   disabled,
+  requireChanges = false,
   onClick,
   ...props
 }: SubmitButtonProps) {
   const form = useFormContext();
   const canSubmit = useStore(form.store, (state) => state.canSubmit);
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
+  const untouched = useStore(form.store, (state) => state.isDefaultValue);
 
   // Ahead of the spread as well as OR-ed, so that neither a caller nor a future prop can put a
   // `disabled={false}` back over the store's answer.
@@ -515,7 +524,7 @@ export function SubmitButton({
           form.handleSubmit();
         }
       }}
-      disabled={disabled || canSubmit === false}
+      disabled={disabled || canSubmit === false || (requireChanges && untouched)}
       loading={isSubmitting}
       loadingLabel={pendingLabel}
       content={content}

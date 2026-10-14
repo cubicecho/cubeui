@@ -740,10 +740,17 @@ type SubmitButtonProps = {
   iconSlot?: SlotNode;
   /**
    * A third reason not to submit, OR-ed with `!canSubmit` and `isSubmitting` — a mutation in
-   * flight elsewhere, a form that is valid but unchanged. It only ever tightens the guard:
-   * `disabled={false}` never enables an invalid form.
+   * flight elsewhere. It only ever tightens the guard: `disabled={false}` never enables an invalid
+   * form. A form that is valid but unchanged is `requireChanges`.
    */
   disabled?: boolean | undefined;
+  /**
+   * Disabled while every value is still its default, for an edit form whose Save means nothing
+   * until something changes. Read from the store's `isDefaultValue`, not `isDirty`, so a value
+   * typed and typed back disables it again. Off by default: a create form, or one replaying what
+   * is already in the box, is right to submit untouched.
+   */
+  requireChanges?: boolean | undefined;
 } & ButtonPropsWithout<"disabled" | "content" | "loading" | "loadingLabel">;
 
 /**
@@ -758,11 +765,13 @@ function SubmitButton({
   savingLabel = "Saving…",
   iconSlot,
   disabled,
+  requireChanges = false,
   ...props
 }: SubmitButtonProps) {
   const form = useFormContext();
   const canSubmit = useStore(form.store, (s) => s.canSubmit);
   const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
+  const untouched = useStore(form.store, (s) => s.isDefaultValue);
 
   // A `Pressable` is not a form control, so it never raises the DOM submit event
   // `<Form>` listens for — it has to call `handleSubmit` itself. Enter inside a
@@ -776,7 +785,7 @@ function SubmitButton({
         form.handleSubmit();
       }}
       {...props}
-      disabled={disabled === true || canSubmit === false}
+      disabled={disabled === true || canSubmit === false || (requireChanges && untouched)}
       loading={isSubmitting}
       loadingLabel={savingLabel}
       iconSlot={iconSlot}

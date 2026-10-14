@@ -92,9 +92,14 @@ If you find yourself writing one of those, you are rebuilding the layer.
 
 **A third reason not to submit goes on `SubmitButton`'s own `disabled`.** It is OR-ed with the
 two the store knows, so it only ever tightens — `disabled={false}` says the caller has no
-objection, not that an invalid form may go. Use it for what the store cannot see: a mutation in
-flight elsewhere on the screen, a settings form that is valid but unchanged. Do not drop back to
-a hand-written `<Button type="submit">` to get it.
+objection, not that an invalid form may go. Use it for what the store cannot see, such as a
+mutation in flight elsewhere on the screen. Do not drop back to a hand-written
+`<Button type="submit">` to get it.
+
+**An edit form whose Save means nothing until something changes takes `requireChanges`.** It
+keeps the submit disabled while every value is still its default. It reads the store's
+`isDefaultValue`, not `isDirty`, so a value typed and typed back disables it again. Leave it off
+for a create form, which is right to submit untouched.
 
 **Errors wait.** A message appears once the field has been touched or the form has been submitted
 at least once, never before, so a form does not open covered in red. That rule lives in one hook
@@ -517,7 +522,7 @@ children and closed without asking, and it was removed. An app that vendored it 
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
       <form.AppForm>
-        <form.SubmitButton content={isEdit ? "Save changes" : "Create"} />
+        <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
       </form.AppForm>
     </>
   )}
