@@ -35,7 +35,7 @@ import {
   POPOVER_HEADER_CLASS,
   POPOVER_TITLE_CLASS,
 } from "@/components/ui/popover-base";
-import { cn } from "@/lib/utils";
+import { bridgePress, cn } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part (or element) underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -64,10 +64,13 @@ function Popover({
 /** The element that opens the popover. */
 function PopoverTrigger({
   asChild,
+  children,
   ...props
 }: Wide<PopoverTriggerProps, React.ComponentProps<typeof PopoverPrimitive.Trigger>>) {
   return (
-    <PopoverPrimitive.Trigger data-slot="popover-trigger" asChild={asChild ?? false} {...props} />
+    <PopoverPrimitive.Trigger data-slot="popover-trigger" asChild={asChild ?? false} {...props}>
+      {asChild ? bridgePress(children) : children}
+    </PopoverPrimitive.Trigger>
   );
 }
 
@@ -109,6 +112,7 @@ function PopoverAnchor({
 function PopoverClose({
   asChild,
   className,
+  children,
   ...props
 }: Wide<PopoverCloseProps, React.ComponentProps<typeof PopoverPrimitive.Close>>) {
   return (
@@ -117,7 +121,9 @@ function PopoverClose({
       asChild={asChild ?? false}
       {...(className === undefined ? {} : { className })}
       {...props}
-    />
+    >
+      {asChild ? bridgePress(children) : children}
+    </PopoverPrimitive.Close>
   );
 }
 
