@@ -13,7 +13,6 @@
 import { createContext, useContext, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { Check, ChevronDown } from "@/components/ui/icons";
-import { FIELD_INVALID_CLASS, isInvalid } from "@/components/ui/input-base";
 import {
   SELECT_CONTENT_CLASS,
   SELECT_ICON_CLASS,
@@ -34,7 +33,7 @@ import {
   type SelectTriggerProps,
   type SelectValueProps,
 } from "@/components/ui/select-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
 
 type SelectState = {
   disabled: boolean;

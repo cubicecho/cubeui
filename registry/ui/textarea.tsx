@@ -12,7 +12,6 @@
 
 import { useImperativeHandle, useLayoutEffect, useRef } from "react";
 import { Platform, TextInput } from "react-native";
-import { FIELD_INVALID_CLASS, isInvalid } from "@/components/ui/input-base";
 import {
   fitRows,
   type GrowingBox,
@@ -25,7 +24,7 @@ import {
   type TextareaProps,
   type TextareaSelection,
 } from "@/components/ui/textarea-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
 
 /** A multi-line text box. */
 function Textarea({

@@ -23,7 +23,6 @@ import { useImperativeHandle, useRef } from "react";
 import { Platform, TextInput, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import {
-  FIELD_INVALID_CLASS,
   INPUT_CLASS,
   INPUT_LEADING_CLASS,
   INPUT_LEADING_PAD_CLASS,
@@ -37,10 +36,9 @@ import {
   type InputKeyPressHandler,
   type InputProps,
   type InputType,
-  isInvalid,
   NATIVE_INPUT_MODE,
 } from "@/components/ui/input-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
 
 /** A one-line text box, with optional slots at its start and end. */
 function Input({
