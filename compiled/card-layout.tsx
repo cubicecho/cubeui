@@ -92,7 +92,7 @@ export type CardLayoutProps = {
 const ICON = "[&_svg]:size-4";
 
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("h-4 rounded-md bg-hover", "animate-pulse");
+const BAR = cn("h-4 rounded-md bg-foreground/10", "animate-pulse");
 
 /**
  * The header, as a row that wraps: the title and description in one column, the action after it.

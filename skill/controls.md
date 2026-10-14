@@ -1423,7 +1423,7 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 </View>
 ```
 
-`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-hover` block that pulses
+`@cubeui/skeleton`, on both halves: shadcn's placeholder, a rounded `bg-foreground/10` block that pulses
 while what it stands in for loads. `className` is its size.
 
 - It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
