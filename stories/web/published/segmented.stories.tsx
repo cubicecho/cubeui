@@ -22,7 +22,7 @@ function Row() {
           </SegmentedButton>
         ))}
       </SegmentedGroup>
-      <p id="segmented-view-heading" className="text-sm font-medium">
+      <p id="segmented-view-heading" className="text-sm font-semibold">
         View
       </p>
       <SegmentedGroup

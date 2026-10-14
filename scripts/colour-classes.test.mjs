@@ -77,8 +77,8 @@ test("only a colour that is neither a token nor a colourless keyword is reported
 });
 
 test("an opacity that is not one of the steps is reported", () => {
-  const source = `const c = "bg-primary/10 hover:bg-primary/90 bg-primary/5 focus:ring-ring/50 text-sm/6";`;
-  assert.deepEqual(unresolvedColours(source, tokens), ["bg-primary/5", "ring-ring/50"]);
+  const source = `const c = "bg-primary/10 hover:bg-primary/90 bg-primary/5 focus:ring-ring/15 text-sm/6";`;
+  assert.deepEqual(unresolvedColours(source, tokens), ["bg-primary/5", "ring-ring/15"]);
 });
 
 test("tokens are what the stylesheet's @theme block names", () => {

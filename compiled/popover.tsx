@@ -133,7 +133,7 @@ function PopoverTitle({
   className,
   ...props
 }: Wide<PopoverSectionProps, React.ComponentProps<"div">>) {
-  return <div data-slot="popover-title" className={cn("font-medium", className)} {...props} />;
+  return <div data-slot="popover-title" className={cn("font-semibold", className)} {...props} />;
 }
 
 /** The muted line under the popover's title. */

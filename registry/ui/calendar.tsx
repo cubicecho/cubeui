@@ -165,7 +165,7 @@ export function Calendar(props: CalendarProps) {
         >
           <ChevronLeft className="h-4 w-4 text-foreground" />
         </Pressable>
-        <Text className="text-sm font-medium text-foreground">
+        <Text className="text-sm font-semibold text-foreground">
           {months.length === 1
             ? format(month, "MMMM yyyy")
             : `${format(month, "MMM yyyy")} – ${format(months[months.length - 1] ?? month, "MMM yyyy")}`}
@@ -182,7 +182,7 @@ export function Calendar(props: CalendarProps) {
       {months.map((shown) => (
         <View key={shown.toISOString()}>
           {months.length > 1 ? (
-            <Text className="mb-1 text-center text-xs font-medium text-foreground">
+            <Text className="mb-1 text-center text-xs font-semibold text-foreground">
               {format(shown, "MMMM yyyy")}
             </Text>
           ) : null}

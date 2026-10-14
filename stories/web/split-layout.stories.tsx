@@ -18,7 +18,7 @@ type SidebarStory = StoryObj<typeof SidebarLayout>;
 
 const Surface = ({ label, tall = false }: { label: string; tall?: boolean }) => (
   <div className={`rounded border bg-secondary p-4 text-sm ${tall ? "h-64" : ""}`}>
-    <p className="font-medium">{label}</p>
+    <p className="font-semibold">{label}</p>
     <p className="mt-1 text-foreground/60">Placeholder surface.</p>
   </div>
 );

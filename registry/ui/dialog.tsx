@@ -204,13 +204,13 @@ function DialogContent({
         {children}
         {showCloseButton ? (
           <Pressable
-            className="absolute right-4 top-4 opacity-70"
+            className="absolute right-4 top-4"
             onPress={close}
             // The `role` is hand-written because a `<button>` has no native counterpart.
             role="button"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-foreground/60" />
           </Pressable>
         ) : null}
       </View>

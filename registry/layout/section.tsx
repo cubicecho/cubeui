@@ -104,7 +104,7 @@ export function Section({
       role="heading"
       aria-level={level}
       className={cn(
-        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wider",
+        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide",
         folded && "min-w-0 shrink",
         titleClassName,
       )}

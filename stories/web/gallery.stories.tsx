@@ -1751,7 +1751,7 @@ const sections: GallerySection[] = [
           <HeaderContentFooter
             className="h-full"
             headerSlot={
-              <p className="p-3 font-medium text-foreground text-sm">A header that stays</p>
+              <p className="p-3 font-semibold text-foreground text-sm">A header that stays</p>
             }
             contentSlot={<div className="px-3">{paragraphs(20)}</div>}
             footerSlot={<p className="p-3 text-muted-foreground text-sm">A footer that stays</p>}

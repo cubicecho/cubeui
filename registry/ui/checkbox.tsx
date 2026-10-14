@@ -39,7 +39,7 @@ function Checkbox({
       onBlur={onBlur}
       className={cn(
         CHECKBOX_CLASS,
-        checked ? "border-active bg-active" : "border-foreground/15 bg-background",
+        checked ? "border-active bg-active" : "border-foreground/50 bg-background",
         disabled && "opacity-50",
         className,
       )}

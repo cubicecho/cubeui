@@ -82,7 +82,7 @@ export type MenuSeparatorProps = {
 };
 
 /** The menu's box: its minimum width and padding. */
-export const MENU_CONTENT_CLASS = "min-w-[8rem] p-1";
+export const MENU_CONTENT_CLASS = "min-w-32 p-1";
 /** One menu row's layout. */
 export const MENU_ITEM_CLASS = "w-full flex-row items-center gap-2 rounded-sm px-2 py-1.5";
 /** The type of a menu row's label. */

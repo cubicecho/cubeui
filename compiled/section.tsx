@@ -114,7 +114,7 @@ export function Section({
       aria-level={level}
       className={cn(
         "cube-rn-text",
-        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wider",
+        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide",
         folded && "min-w-0 shrink",
         titleClassName,
       )}

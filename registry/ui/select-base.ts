@@ -91,7 +91,7 @@ export type SelectSeparatorProps = {
 
 /** The select trigger's box, which matches an input's. */
 export const SELECT_TRIGGER_CLASS =
-  "border-foreground/15 bg-background h-10 w-full flex-row items-center justify-between rounded-md border px-3 py-2";
+  "border-foreground/50 bg-background h-10 w-full flex-row items-center justify-between rounded-md border px-3 py-2";
 /** The type of the chosen value in the trigger. */
 export const SELECT_TRIGGER_TEXT_CLASS = "text-foreground text-sm";
 /** One option's row, with room at its start for the tick. */

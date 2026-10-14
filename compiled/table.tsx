@@ -103,7 +103,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
     <tfoot
       data-slot="table-footer"
       className={cn(
-        "border-foreground/10 border-t bg-foreground/10 font-medium [&>tr]:last:border-b-0",
+        "border-foreground/10 border-t bg-foreground/10 font-semibold [&>tr]:last:border-b-0",
         className,
       )}
       {...props}
@@ -133,7 +133,7 @@ function TableHead({ className, scope, ...props }: React.ComponentProps<"th">) {
       data-slot="table-head"
       scope={scope ?? (inHeader ? "col" : "row")}
       className={cn(
-        "h-10 whitespace-nowrap px-2 text-left align-middle font-medium text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "h-10 whitespace-nowrap px-2 text-left align-middle font-semibold text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className,
       )}
       {...props}

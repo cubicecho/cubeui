@@ -119,7 +119,7 @@ function PopoverHeader({ className, children }: PopoverSectionProps) {
 
 /** The popover's title. */
 function PopoverTitle({ className, children }: PopoverSectionProps) {
-  return <Text className={cn("text-sm font-medium text-foreground", className)}>{children}</Text>;
+  return <Text className={cn("text-sm font-semibold text-foreground", className)}>{children}</Text>;
 }
 
 /** The muted line under the popover's title. */

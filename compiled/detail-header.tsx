@@ -66,7 +66,9 @@ export function DetailHeader({
           {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}
           {/* `role`/`aria-level` because an `<h2>` has no native counterpart —
               and they are what a compiled web build reads to emit one. */}
-          <h2 className="cube-rn-text text-2xl font-bold text-foreground">{title}</h2>
+          <h2 className="cube-rn-text font-semibold text-foreground text-lg tracking-tight">
+            {title}
+          </h2>
           {badgeSlot}
         </div>
         {subtitle ? (

@@ -241,7 +241,7 @@ function CommandList({ label = COMMAND_LIST_LABEL, className, children }: Comman
       // word and drops one it does not know, so on device the rows sit in a plain `list`.
       role={Platform.OS === "web" ? ("listbox" as Role) : "list"}
       aria-label={label}
-      className={cn("max-h-[300px]", className)}
+      className={cn("max-h-72", className)}
     >
       {children}
     </ScrollView>
@@ -275,7 +275,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
   const hidden = forceMount === false && shown === 0;
   const title =
     typeof heading === "string" ? (
-      <Text className="px-2 py-1.5 text-xs font-medium text-foreground/60">{heading}</Text>
+      <Text className="px-2 py-1.5 text-xs font-semibold text-foreground/60">{heading}</Text>
     ) : (
       heading
     );

@@ -259,7 +259,7 @@ export function MarkdownCodeEditor({
       ref={host}
       data-slot="markdown-code-editor"
       className={cn(
-        "min-h-64 w-full min-w-0 overflow-hidden rounded-md border border-foreground/15 bg-background text-foreground focus-within:border-active",
+        "min-h-64 w-full min-w-0 overflow-hidden rounded-md border border-foreground/50 bg-background text-foreground focus-within:border-active",
         // The view fills the box, so a click below the last line still lands in the editor.
         "[&>.cm-editor]:h-full [&>.cm-editor]:min-h-[inherit]",
         className,

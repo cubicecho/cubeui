@@ -142,7 +142,7 @@ export const tokenNames = Object.keys(lightTokens);
 
 // The alphas the aliases lay `foreground` down at.
 const FAINT = 0.1;
-const INPUT_EDGE = 0.15;
+const INPUT_EDGE = 0.5;
 const QUIET_TEXT = 0.6;
 
 /**

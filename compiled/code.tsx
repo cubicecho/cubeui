@@ -38,7 +38,7 @@ export function Code({
     <span
       className={cn(
         "cube-rn-text",
-        "rounded bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
+        "rounded-sm bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
         className,
       )}
     >
