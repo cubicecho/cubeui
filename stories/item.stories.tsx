@@ -64,7 +64,7 @@ export const Outline: Story = {
         <div className="native-root" style={{ width: 360 }}>
           <Item variant="outline">
             <ItemMedia variant="icon">
-              <Text className="font-medium text-foreground text-xs">AL</Text>
+              <Text className="font-semibold text-foreground text-xs">AL</Text>
             </ItemMedia>
             <ItemContent>
               <ItemTitle>Ada Lovelace</ItemTitle>
@@ -80,7 +80,7 @@ export const Outline: Story = {
         <div className="compiled-root" style={{ width: 360 }}>
           <CompiledItem variant="outline">
             <CompiledItemMedia variant="icon">
-              <span className="font-medium text-foreground text-xs">AL</span>
+              <span className="font-semibold text-foreground text-xs">AL</span>
             </CompiledItemMedia>
             <CompiledItemContent>
               <CompiledItemTitle>Ada Lovelace</CompiledItemTitle>

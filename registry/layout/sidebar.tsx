@@ -454,9 +454,10 @@ function IconMarkers({
         // Hung off the item's top corner, in the 8px the icon leaves above it, so the count sits
         // over the glyph's corner rather than over the glyph — and by little enough that it never
         // reaches a neighbour's icon. The text is its own element because a badge's label is 12px
-        // on a 16px line, which is taller than that corner.
+        // on a 16px line, which is taller than that corner: here it is 12px on a 12px line, since a
+        // count is digits with nothing hanging below them, and 12px is the floor of the type scale.
         <Badge variant="secondary" className={cn("-right-1.5 -top-1.5 absolute px-1 py-0", ring)}>
-          <Text className="font-medium text-[10px] text-foreground leading-3 tabular-nums">
+          <Text className="font-semibold text-xs text-foreground leading-3 tabular-nums">
             {count}
           </Text>
         </Badge>
@@ -528,7 +529,7 @@ function SidebarNavItemBody({
           <Text
             testID="sidebar-nav-item-initial"
             aria-hidden
-            className={cn("font-medium text-sm", text)}
+            className={cn("font-semibold text-sm", text)}
           >
             {Array.from(label.trim())[0]?.toUpperCase()}
           </Text>
@@ -547,7 +548,7 @@ function SidebarNavItemBody({
       ) : null}
       <Text
         testID="sidebar-nav-item-label"
-        className={cn("min-w-0 flex-1 truncate text-sm", active && "font-medium", text)}
+        className={cn("min-w-0 flex-1 truncate text-sm", active && "font-semibold", text)}
       >
         {label}
       </Text>

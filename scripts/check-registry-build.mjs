@@ -1149,7 +1149,7 @@ if (uncoloured.length > 0) {
       "\nTailwind's palette (`bg-green-700`) are reported too: give the colour a token named for" +
       "\nwhat it means. So is one of shadcn's names (`bg-primary`, `border-border`): those are" +
       "\naliases for vendored components. And so is a token at an opacity that is not one of the" +
-      "\nsteps (10, 15, 40, 60, 90): `AGENTS.md` says what each is for. The tokens and what each" +
+      "\nsteps (10, 40, 50, 60, 90): `AGENTS.md` says what each is for. The tokens and what each" +
       "\nmeans are listed at the top of `tokens/palette.mjs`.",
   );
 }

@@ -221,7 +221,7 @@ function DomLabel({
   children?: ReactNode;
 }) {
   return (
-    <label id={id} htmlFor={htmlFor} className="text-sm font-medium">
+    <label id={id} htmlFor={htmlFor} className="text-sm font-semibold">
       {children}
     </label>
   );

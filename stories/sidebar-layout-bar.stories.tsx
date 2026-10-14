@@ -85,7 +85,7 @@ const STATUS = "3 of 5 servers running";
 function Phone({ width, name, children }: { width: number; name: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <p className="px-2 font-medium text-foreground/60 text-xs uppercase tracking-wide">
+      <p className="px-2 font-semibold text-foreground/60 text-xs uppercase tracking-wide">
         {name} · {width}px
       </p>
       <div

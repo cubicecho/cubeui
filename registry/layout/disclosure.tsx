@@ -117,7 +117,7 @@ export function Disclosure({
           <View className="min-w-0 flex-1 gap-0.5">
             {asText(
               title,
-              cn("font-medium text-foreground/60 text-sm", titleClassName),
+              cn("font-semibold text-foreground/60 text-sm", titleClassName),
               "disclosure-title",
             )}
             {description

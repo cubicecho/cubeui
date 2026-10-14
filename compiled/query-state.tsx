@@ -212,7 +212,7 @@ export function QueryError({
       >
         <div className="cube-rn-view min-w-0 flex-row items-center gap-1.5">
           <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-negative" aria-hidden />
-          <span className="cube-rn-text min-w-0 flex-1 font-medium text-negative text-xs">
+          <span className="cube-rn-text min-w-0 flex-1 font-semibold text-negative text-xs">
             Could not load {what}
           </span>
         </div>
@@ -245,7 +245,7 @@ export function QueryError({
           colour because native inherits none — the two standing conversion rules. */}
       <div className="cube-rn-view flex-row items-center gap-2">
         <TriangleAlert className="h-4 w-4 text-negative" aria-hidden />
-        <span className="cube-rn-text font-medium text-negative text-sm">
+        <span className="cube-rn-text font-semibold text-negative text-sm">
           Could not load {what}
         </span>
       </div>

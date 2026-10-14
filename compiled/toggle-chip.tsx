@@ -98,7 +98,7 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
         <span
           className={cn(
             "cube-rn-text",
-            "font-medium",
+            "font-semibold",
             size === "sm" ? "text-xs" : "text-sm",
             selected && !backgroundColor ? "text-active-foreground" : "text-foreground",
           )}

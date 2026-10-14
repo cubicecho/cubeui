@@ -24,12 +24,12 @@ const LONG = "Augusta Ada King, Countess of Lovelace, who wrote the first publis
 
 const nativeAvatar = (
   <View className="size-8 items-center justify-center rounded-full bg-foreground/10">
-    <Text className="font-medium text-foreground text-xs">AL</Text>
+    <Text className="font-semibold text-foreground text-xs">AL</Text>
   </View>
 );
 const compiledAvatar = (
   <div className="flex size-8 items-center justify-center rounded-full bg-foreground/10">
-    <span className="font-medium text-foreground text-xs">AL</span>
+    <span className="font-semibold text-foreground text-xs">AL</span>
   </div>
 );
 
@@ -184,7 +184,7 @@ export const LongTitle: Story = {
 
 const nativeTitle = (
   <View testID="composed-title" className="flex-row items-center gap-2">
-    <Text className="font-medium text-foreground text-sm">Ada Lovelace</Text>
+    <Text className="font-semibold text-foreground text-sm">Ada Lovelace</Text>
     <View testID="composed-badge" className="rounded-full bg-foreground/10 px-2 py-0.5">
       <Text className="text-foreground text-xs">Owner</Text>
     </View>
@@ -192,7 +192,7 @@ const nativeTitle = (
 );
 const compiledTitle = (
   <div data-testid="composed-title" className="flex flex-row items-center gap-2">
-    <span className="font-medium text-foreground text-sm">Ada Lovelace</span>
+    <span className="font-semibold text-foreground text-sm">Ada Lovelace</span>
     <div data-testid="composed-badge" className="rounded-full bg-foreground/10 px-2 py-0.5">
       <span className="text-foreground text-xs">Owner</span>
     </div>

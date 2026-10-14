@@ -72,8 +72,8 @@ const SIZED: Record<keyof typeof STACK_BELOW, Record<SplitWidth, string>> = {
   never: {
     auto: "grow-0",
     sm: "w-80 grow-0 shrink",
-    md: "w-[22rem] min-w-64 grow-0 shrink",
-    lg: "w-[28rem] min-w-72 grow-0 shrink",
+    md: "w-88 min-w-64 grow-0 shrink",
+    lg: "w-112 min-w-72 grow-0 shrink",
     fifth: "flex-1",
     "two-fifths": "flex-[2]",
     half: "flex-1",
@@ -82,8 +82,8 @@ const SIZED: Record<keyof typeof STACK_BELOW, Record<SplitWidth, string>> = {
   md: {
     auto: "md:grow-0",
     sm: "md:w-80 md:grow-0 md:shrink",
-    md: "md:w-[22rem] md:min-w-64 md:grow-0 md:shrink",
-    lg: "md:w-[28rem] md:min-w-72 md:grow-0 md:shrink",
+    md: "md:w-88 md:min-w-64 md:grow-0 md:shrink",
+    lg: "md:w-112 md:min-w-72 md:grow-0 md:shrink",
     fifth: "md:flex-1",
     "two-fifths": "md:flex-[2]",
     half: "md:flex-1",
@@ -92,8 +92,8 @@ const SIZED: Record<keyof typeof STACK_BELOW, Record<SplitWidth, string>> = {
   lg: {
     auto: "lg:grow-0",
     sm: "lg:w-80 lg:grow-0 lg:shrink",
-    md: "lg:w-[22rem] lg:min-w-64 lg:grow-0 lg:shrink",
-    lg: "lg:w-[28rem] lg:min-w-72 lg:grow-0 lg:shrink",
+    md: "lg:w-88 lg:min-w-64 lg:grow-0 lg:shrink",
+    lg: "lg:w-112 lg:min-w-72 lg:grow-0 lg:shrink",
     fifth: "lg:flex-1",
     "two-fifths": "lg:flex-[2]",
     half: "lg:flex-1",
@@ -102,8 +102,8 @@ const SIZED: Record<keyof typeof STACK_BELOW, Record<SplitWidth, string>> = {
   xl: {
     auto: "xl:grow-0",
     sm: "xl:w-80 xl:grow-0 xl:shrink",
-    md: "xl:w-[22rem] xl:min-w-64 xl:grow-0 xl:shrink",
-    lg: "xl:w-[28rem] xl:min-w-72 xl:grow-0 xl:shrink",
+    md: "xl:w-88 xl:min-w-64 xl:grow-0 xl:shrink",
+    lg: "xl:w-112 xl:min-w-72 xl:grow-0 xl:shrink",
     fifth: "xl:flex-1",
     "two-fifths": "xl:flex-[2]",
     half: "xl:flex-1",

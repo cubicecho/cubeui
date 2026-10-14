@@ -104,7 +104,7 @@ export function AlertTitle({ className, children }: AlertTitleProps) {
   return (
     <span
       data-slot="alert-title"
-      className={cn("cube-rn-text", "font-medium text-foreground text-sm", className)}
+      className={cn("cube-rn-text", "font-semibold text-foreground text-sm", className)}
     >
       {children}
     </span>

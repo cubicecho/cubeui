@@ -142,4 +142,4 @@ export function fitRows(box: GrowingBox, minRows: number, maxRows: number): void
  * `::placeholder` rule on web.
  */
 export const TEXTAREA_CLASS =
-  "border-foreground/15 bg-background text-foreground placeholder:text-foreground/60 focus:border-active min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus:outline-none";
+  "border-foreground/50 bg-background text-foreground placeholder:text-foreground/60 focus:border-active min-h-20 w-full rounded-md border px-3 py-2 text-sm focus:outline-none";

@@ -128,7 +128,7 @@ export function StatTile({
         ) : null}
         <Text
           testID="stat-tile-label"
-          className={cn("min-w-0 flex-1 truncate font-medium text-sm", ink)}
+          className={cn("min-w-0 flex-1 truncate font-semibold text-sm", ink)}
         >
           {label}
         </Text>

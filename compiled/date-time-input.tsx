@@ -240,7 +240,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           value={value ? format(value, "HH:mm") : ""}
           onChangeText={handleTimeChange}
           disabled={!value}
-          className="w-[120px]"
+          className="w-28"
         />
       ) : null}
     </div>

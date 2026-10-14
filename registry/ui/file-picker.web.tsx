@@ -166,14 +166,14 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
       <button
         {...trigger}
         className={cn(
-          "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+          "flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed px-6 py-12 text-center transition-colors",
           dragging
             ? "border-active bg-active/40"
-            : "border-foreground/15 hover:border-foreground/60",
+            : "border-foreground/50 hover:border-foreground/60",
         )}
       >
         <Upload className="h-8 w-8 text-foreground/60" />
-        <Text className="font-medium text-sm">{label}</Text>
+        <Text className="font-semibold text-sm">{label}</Text>
         {hint ? <Text className="text-xs text-foreground/60">{hint}</Text> : null}
       </button>
       {input}

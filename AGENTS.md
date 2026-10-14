@@ -171,8 +171,8 @@ component cannot invent a seventh:
 | Step | Is | Example |
 |---|---|---|
 | `/10` | A quiet fill, a tint, a border | `bg-foreground/10`, `bg-warning/10`, `border-foreground/10` |
-| `/15` | An input's border | `border-foreground/15` |
 | `/40` | The edge of a tint, an invalid ring, the tint of a chosen row | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
+| `/50` | A control's edge — an input, a select, a checkbox, an unchecked switch — 3:1 on every surface (WCAG 1.4.11), held by `palette-contrast.test.mjs` | `border-foreground/50`, `bg-foreground/50` |
 | `/60` | Secondary text, the scrim, a border under the pointer | `text-foreground/60`, `bg-overlay/60` |
 | `/90` | A fill under the pointer | `hover:bg-neutral/90` |
 | none | Everything else | `bg-neutral`, `border-active` |

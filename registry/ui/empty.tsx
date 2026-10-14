@@ -92,7 +92,7 @@ const EmptyTitle = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
     <Text
       ref={ref}
       testID="empty-title"
-      className={cn("font-medium text-sm text-foreground", className)}
+      className={cn("font-semibold text-sm text-foreground", className)}
       {...props}
     />
   ),

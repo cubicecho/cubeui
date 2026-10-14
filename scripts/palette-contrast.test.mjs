@@ -64,6 +64,24 @@ const sets = [
   ),
 ];
 
+/**
+ * A control's edge — `border-foreground/50` on an input, a checkbox, a radio, a select, and the
+ * unchecked switch's track — is what says a control is there, so it needs 3:1 against the surface
+ * it sits on (WCAG 1.4.11).
+ */
+const EDGE_ALPHA = 0.5;
+const EDGE_SURFACES = ["background", "secondary", "hover"];
+
+for (const [set, map] of sets) {
+  test(`${set}: a control's edge is 3:1 or better`, () => {
+    const short = EDGE_SURFACES.flatMap((surface) => {
+      const r = Math.round(ratio(map.foreground, map[surface], EDGE_ALPHA) * 100) / 100;
+      return r < 3 ? [`edge on ${surface}: ${r.toFixed(2)}:1, needs 3`] : [];
+    });
+    assert.deepEqual(short, []);
+  });
+}
+
 for (const [set, map] of sets) {
   test(`${set}: every text pair is 4.5:1 or better`, () => {
     const short = PAIRS.flatMap(([text, surface, alpha]) => {

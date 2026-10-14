@@ -52,7 +52,7 @@ const FLOW = "flex flex-col gap-3";
 const DOCUMENT = cn(
   FLOW,
   "min-w-0 text-sm leading-relaxed text-foreground wrap-anywhere",
-  "[&_a]:font-medium [&_a]:text-info [&_a]:underline [&_a]:underline-offset-4",
+  "[&_a]:font-semibold [&_a]:text-info [&_a]:underline [&_a]:underline-offset-4",
   "[&_img]:inline-block [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-md",
 );
 
@@ -386,7 +386,7 @@ function BrokenLink({ reason, children }: { reason: string | undefined; children
     <span
       data-slot="markdown-broken-link"
       title={reason}
-      className="font-medium text-negative underline decoration-dashed underline-offset-4"
+      className="font-semibold text-negative underline decoration-dashed underline-offset-4"
     >
       {children}
       <span className="sr-only"> (broken link)</span>
@@ -481,7 +481,7 @@ function ImagePlaceholder({
       {...(missing ? {} : { "aria-busy": "true" as const })}
       className={cn(
         "inline-flex max-w-full items-center gap-1.5 rounded-md border border-dashed px-2 py-0.5 align-middle text-xs",
-        missing ? "border-negative/40 text-negative" : "border-foreground/15 text-foreground/60",
+        missing ? "border-negative/40 text-negative" : "border-foreground/50 text-foreground/60",
       )}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />

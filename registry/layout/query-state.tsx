@@ -199,7 +199,7 @@ export function QueryError({
       <View role="alert" testID="query-error" className={cn("min-w-0 gap-1 px-2 py-1", className)}>
         <View className="min-w-0 flex-row items-center gap-1.5">
           <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-negative" aria-hidden />
-          <Text className="min-w-0 flex-1 font-medium text-negative text-xs">
+          <Text className="min-w-0 flex-1 font-semibold text-negative text-xs">
             Could not load {what}
           </Text>
         </View>
@@ -232,7 +232,7 @@ export function QueryError({
           colour because native inherits none — the two standing conversion rules. */}
       <View className="flex-row items-center gap-2">
         <TriangleAlert className="h-4 w-4 text-negative" aria-hidden />
-        <Text className="font-medium text-negative text-sm">Could not load {what}</Text>
+        <Text className="font-semibold text-negative text-sm">Could not load {what}</Text>
       </View>
       <Text className="text-foreground/60 text-sm">{reason}</Text>
       <View className="flex-row">

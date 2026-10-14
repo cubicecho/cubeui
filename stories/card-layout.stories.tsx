@@ -313,7 +313,7 @@ function HeaderlessCards({ half }: { half: "native" | "compiled" }) {
           contentSlot={
             <div
               data-testid={`${half}-body-content`}
-              className="h-10 border border-foreground/15"
+              className="h-10 border border-foreground/50"
             />
           }
         />
