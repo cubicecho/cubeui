@@ -40,26 +40,27 @@ export type FieldProps = Omit<ComponentProps<typeof FormField>, "controlSlot" | 
  * still have both halves typed. The alternative is nesting one of them under a prop of its own,
  * which reads worse at every call site to save this list.
  *
- * A key added to `FormField` and forgotten here lands on the control instead, where React will
- * say so: `loadingClassName` is not an attribute of `<input>`.
+ * Written as a record over `FieldProps` rather than a list, so a key added to `FormField` and
+ * not here, or one misspelt here, fails the typecheck instead of landing on the control.
  */
-const FIELD_KEYS = new Set<string>([
-  "label",
-  "description",
-  "descriptionPlacement",
-  "descriptionIconSlot",
-  "required",
-  "action",
-  "loading",
-  "htmlFor",
-  "asGroup",
-  "orientation",
-  "className",
-  "labelClassName",
-  "descriptionClassName",
-  "errorClassName",
-  "loadingClassName",
-]);
+const FIELD_KEY_RECORD: Record<keyof FieldProps, true> = {
+  label: true,
+  description: true,
+  descriptionPlacement: true,
+  descriptionIconSlot: true,
+  required: true,
+  actionSlot: true,
+  loading: true,
+  htmlFor: true,
+  asGroup: true,
+  orientation: true,
+  className: true,
+  labelClassName: true,
+  descriptionClassName: true,
+  errorClassName: true,
+  loadingClassName: true,
+};
+const FIELD_KEYS = new Set<string>(Object.keys(FIELD_KEY_RECORD));
 
 /**
  * Splits one flat prop list into the half `FormField` draws and the half the control takes.
