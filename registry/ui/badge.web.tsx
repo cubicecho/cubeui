@@ -26,6 +26,7 @@ import {
   badgeHasLabel,
   badgeIconClass,
   badgeRemoveLabel,
+  badgeSoftDotClass,
   badgeTextFallback,
   badgeTextVariants,
   badgeVariants,
@@ -59,9 +60,11 @@ export function Badge({
     ? ({ role: "img", "aria-label": label } as const)
     : ({ "aria-hidden": true } as const);
 
+  const softDot = shape === "pill" && !backgroundColor ? badgeSoftDotClass(variant) : null;
   const pill =
     shape === "pill" ? (
       <>
+        {softDot ? <span aria-hidden className={softDot} /> : null}
         {children}
         {onRemove ? (
           <button

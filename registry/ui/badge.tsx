@@ -19,6 +19,7 @@ import {
   badgeInkFallback,
   badgeInkVariants,
   badgeRemoveLabel,
+  badgeSoftDotClass,
   badgeTextFallback,
   badgeTextVariants,
   badgeVariants,
@@ -46,6 +47,8 @@ export function Badge({
   const shape = badgeHasLabel(children) ? "pill" : "dot";
   const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
   const inkClass = backgroundColor ? badgeInkFallback : badgeInkVariants({ variant });
+  // Not with `backgroundColor`: the caller's colour replaced the tint the dot belongs to.
+  const softDot = shape === "pill" && !backgroundColor ? badgeSoftDotClass(variant) : null;
   const dotName = label
     ? ({ role: "img", "aria-label": label } as const)
     : ({ "aria-hidden": true } as const);
@@ -60,6 +63,7 @@ export function Badge({
       // the same split `color-dot` makes, for the same reason.
       {...(shape === "dot" ? dotName : {})}
     >
+      {softDot ? <View aria-hidden className={softDot} /> : null}
       {/* An icon passed as a child takes the badge's ink at the web's `[&>svg]:size-3`. */}
       <IconClassContext.Provider value={cn("size-3", textClass)}>
         {shape === "pill"

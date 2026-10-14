@@ -1345,6 +1345,12 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   and three meanings of cubeui's own: `positive`, `warning` and `info`. There is no `success`: the
   word is `positive`, as on `Button` and in the tokens. A toast's tone is the same word:
   `toast("Saved", "positive")`, beside `error`, `warning` and `info`.
+- Each coloured meaning has a `-soft` form: `destructive-soft`, `positive-soft`, `warning-soft` and
+  `info-soft`. Use it for a badge that is not the main thing on its row, such as a status in a
+  long list, where a solid fill on every row drowns the titles. It is a tint and an edge in the
+  hue with a dot before the words, and the words stay the foreground, because the hue on its own
+  tint is under 4.5:1. Do not pass `text-negative` to "fix" that. With no children a soft badge is
+  the solid dot. `badgeVariants` gives the pill's classes but not the dot.
 - It draws a trailing ✕ in the label's colour — the variant's, or `textColor` — at the badge's
   icon size. Do not wrap the badge in a second pill with a `Pressable` beside it.
 - The ✕ is a button named `removeLabel`, default `Remove <text>`. On the web it is

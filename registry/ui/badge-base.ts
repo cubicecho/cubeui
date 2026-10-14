@@ -4,7 +4,9 @@
  *
  * The variant names are shadcn's six — `default`, `secondary`, `destructive`,
  * `outline`, `ghost`, `link` — with their meanings, plus `positive`, `warning` and `info`,
- * which shadcn's token set has no answer for and cubeui's has (see `badge.tsx`'s header).
+ * which shadcn's token set has no answer for and cubeui's has (see `badge.tsx`'s header). Each
+ * coloured meaning also has a `-soft` form — a tint, an edge and a dot in the hue, with the words in
+ * the foreground — for a badge that is not the main thing on its row.
  *
  * The web half also takes every `<span>` attribute (`style`, `title`, `onClick`,
  * `data-*`) and shadcn's `asChild`, so a DOM call site ports unchanged. Those
@@ -23,7 +25,35 @@ export type BadgeVariant =
   | "link"
   | "positive"
   | "warning"
-  | "info";
+  | "info"
+  | "destructive-soft"
+  | "positive-soft"
+  | "warning-soft"
+  | "info-soft";
+
+type SoftVariant = "destructive-soft" | "positive-soft" | "warning-soft" | "info-soft";
+
+/**
+ * The dot drawn before a soft badge's words, in the hue. The words themselves are the foreground,
+ * not the hue: `text-negative` on `bg-negative/10` is 3.99:1 in the default light palette, and
+ * positive and warning are under 4.5:1 too — the reason `Alert` keeps its text the foreground. So
+ * the hue is in the tint, the edge and this dot. A literal per hue, so Tailwind finds each class.
+ */
+const SOFT_DOT = {
+  "destructive-soft": "bg-negative",
+  "positive-soft": "bg-positive",
+  "warning-soft": "bg-warning",
+  "info-soft": "bg-info",
+} satisfies Record<SoftVariant, string>;
+
+function isSoft(variant: BadgeVariant | null | undefined): variant is SoftVariant {
+  return variant !== null && variant !== undefined && variant in SOFT_DOT;
+}
+
+/** The soft variants' dot class, `null` for every other variant. */
+export function badgeSoftDotClass(variant: BadgeVariant | null | undefined): string | null {
+  return isSoft(variant) ? `size-1.5 shrink-0 rounded-full ${SOFT_DOT[variant]}` : null;
+}
 
 export type BadgeProps = {
   variant?: BadgeVariant | undefined;
@@ -105,12 +135,24 @@ export const badgeContainerVariants = cva("shrink-0 rounded-full border border-t
       positive: "bg-positive",
       warning: "bg-warning",
       info: "bg-info",
+      "destructive-soft": "border-negative/40 bg-negative/10",
+      "positive-soft": "border-positive/40 bg-positive/10",
+      "warning-soft": "border-warning/40 bg-warning/10",
+      "info-soft": "border-info/40 bg-info/10",
     },
     shape: {
       pill: "flex-row items-center justify-center gap-1 px-2 py-0.5",
       dot: "h-2 w-2",
     },
   },
+  // A dot has no words to carry the hue, so a soft one is the solid colour: a tint 8px wide is
+  // not there.
+  compoundVariants: [
+    { variant: "destructive-soft", shape: "dot", className: "border-transparent bg-negative" },
+    { variant: "positive-soft", shape: "dot", className: "border-transparent bg-positive" },
+    { variant: "warning-soft", shape: "dot", className: "border-transparent bg-warning" },
+    { variant: "info-soft", shape: "dot", className: "border-transparent bg-info" },
+  ],
   defaultVariants: { variant: "default", shape: "pill" },
 });
 
@@ -125,6 +167,10 @@ const BADGE_INK = {
   positive: "text-positive-foreground",
   warning: "text-warning-foreground",
   info: "text-info-foreground",
+  "destructive-soft": "text-foreground",
+  "positive-soft": "text-foreground",
+  "warning-soft": "text-foreground",
+  "info-soft": "text-foreground",
 } satisfies Record<BadgeVariant, string>;
 
 /** The label's type and colour, per variant. */

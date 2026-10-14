@@ -82,3 +82,64 @@ export const Removable: Story = {
     await expect(height(compiledUrgent.parentElement)).toBe(height(compiledPlain));
   },
 };
+
+/** A token as the browser resolves it, so an assertion compares like with like. */
+function resolved(token: string, inside: Element) {
+  const probe = document.createElement("span");
+  probe.style.color = `var(--${token})`;
+  inside.appendChild(probe);
+  try {
+    return getComputedStyle(probe).color;
+  } finally {
+    probe.remove();
+  }
+}
+
+/**
+ * The `-soft` forms (#346): a tint, an edge and a dot in the hue, with the words in the
+ * foreground — the hue on its own tint is under 4.5:1 for three of the four in the default light
+ * palette. With no words, a soft badge is the solid dot, since a tint 8px wide is not there.
+ */
+export const Soft: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <Native variant="destructive-soft">Failed</Native>
+          <Native variant="positive-soft">Done</Native>
+          <Native variant="warning-soft">Stale</Native>
+          <Native variant="info-soft">Queued</Native>
+          <Native variant="destructive-soft" label="Failing" />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <Compiled variant="destructive-soft">Failed</Compiled>
+          <Compiled variant="positive-soft">Done</Compiled>
+          <Compiled variant="warning-soft">Stale</Compiled>
+          <Compiled variant="info-soft">Queued</Compiled>
+          <Compiled variant="destructive-soft" label="Failing" />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const sections = Array.from(canvasElement.querySelectorAll("section"));
+    await expect(sections).toHaveLength(2);
+    for (const half of sections) {
+      const scope = within(half);
+      const words = scope.getByText("Failed");
+      const negative = resolved("negative", half);
+      await expect(getComputedStyle(words).color).toBe(resolved("foreground", half));
+
+      // The pill is the word's box on the web and its parent on device.
+      const pill = words.closest("[data-slot='badge']") ?? (words.parentElement as HTMLElement);
+      await expect(getComputedStyle(pill).backgroundColor).not.toBe(negative);
+      const dot = pill.querySelector("[aria-hidden='true']") as HTMLElement;
+      await expect(getComputedStyle(dot).backgroundColor).toBe(negative);
+
+      const solid = scope.getByRole("img", { name: "Failing" });
+      await expect(getComputedStyle(solid).backgroundColor).toBe(negative);
+    }
+  },
+};
