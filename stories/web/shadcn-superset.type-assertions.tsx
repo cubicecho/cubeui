@@ -142,7 +142,7 @@ export function EmptyAssertions() {
   const root = useRef<HTMLDivElement>(null);
   return (
     <>
-      <Empty ref={root} className="border border-dashed py-10">
+      <Empty ref={root} className="py-10">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <CircleAlert aria-hidden />
