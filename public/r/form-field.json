@@ -4,7 +4,7 @@
   "title": "Form Field",
   "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it. Web-only: no React Native half.",
   "dependencies": [
-    "lucide-react@^1.34.0"
+    "lucide-react@^1.41.0"
   ],
   "registryDependencies": [
     "@cubeui/field",
