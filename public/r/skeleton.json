@@ -9,7 +9,7 @@
   "files": [
     {
       "path": "registry/ui/skeleton-base.ts",
-      "content": "/**\n * What `skeleton.tsx` (native) and `skeleton.web.tsx` (web) share. Its own module because Metro\n * resolves `./skeleton` to `skeleton.web.tsx` on web.\n */\n\n/** The block's look when the call site names only a size: shadcn's. */\nexport const skeletonClass = \"rounded-md bg-hover\";\n\n/**\n * One pulse, in ms, down to half opacity and back: Tailwind's `animate-pulse`, which the web half\n * uses, is `2s cubic-bezier(0.4, 0, 0.6, 1)` over exactly that.\n */\nexport const PULSE_DURATION = 2000;\n\n/** The opacity at the bottom of a pulse, `animate-pulse`'s `50%` keyframe. */\nexport const PULSE_LOW = 0.5;\n",
+      "content": "/**\n * What `skeleton.tsx` (native) and `skeleton.web.tsx` (web) share. Its own module because Metro\n * resolves `./skeleton` to `skeleton.web.tsx` on web.\n */\n\n/** The block's look when the call site names only a size: shadcn's. */\nexport const skeletonClass = \"rounded-md bg-hover\";\n\n/**\n * One pulse, down to half opacity and back: Tailwind's `animate-pulse`, which the web half\n * uses, is `2s cubic-bezier(0.4, 0, 0.6, 1)` over exactly that.\n */\nexport const PULSE_DURATION_MS = 2000;\n\n/** The opacity at the bottom of a pulse, `animate-pulse`'s `50%` keyframe. */\nexport const PULSE_LOW = 0.5;\n",
       "type": "registry:ui"
     },
     {

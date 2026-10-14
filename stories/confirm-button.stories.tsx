@@ -40,7 +40,7 @@ export const AsksBeforeItActs: Story = {
     <SideBySide
       native={
         <Native
-          label="Native delete lane"
+          aria-label="Native delete lane"
           {...lane}
           onConfirm={nativeConfirm}
           iconSlot={<NativeTrash />}
@@ -48,7 +48,7 @@ export const AsksBeforeItActs: Story = {
       }
       compiled={
         <Compiled
-          label="Compiled delete lane"
+          aria-label="Compiled delete lane"
           {...lane}
           onConfirm={compiledConfirm}
           iconSlot={<CompiledTrash />}
@@ -87,7 +87,7 @@ export const DisabledDoesNotAsk: Story = {
     <SideBySide
       native={
         <Native
-          label="Native delete lane"
+          aria-label="Native delete lane"
           hint="You cannot delete the last lane"
           disabled
           {...lane}
@@ -97,7 +97,7 @@ export const DisabledDoesNotAsk: Story = {
       }
       compiled={
         <Compiled
-          label="Compiled delete lane"
+          aria-label="Compiled delete lane"
           hint="You cannot delete the last lane"
           disabled
           {...lane}
@@ -130,7 +130,7 @@ export const TypeTheName: Story = {
     <SideBySide
       native={
         <Native
-          label="Native delete folder"
+          aria-label="Native delete folder"
           {...folder}
           onConfirm={nativeConfirm}
           iconSlot={<NativeTrash />}
@@ -138,7 +138,7 @@ export const TypeTheName: Story = {
       }
       compiled={
         <Compiled
-          label="Compiled delete folder"
+          aria-label="Compiled delete folder"
           {...folder}
           onConfirm={compiledConfirm}
           iconSlot={<CompiledTrash />}

@@ -24,7 +24,7 @@ import {
 import { SideBySide } from "./side-by-side";
 
 /**
- * The command list on both halves, with the props `MultiSelect` uses: a named search box, groups
+ * The command list on both halves, with the props `Combobox` uses: a named search box, groups
  * that hide their heading when nothing in them matches, `keywords`, an empty message, a
  * `forceMount` row that survives the filter, a controlled search, and `onSelect` handed the
  * item's value. The web half is cmdk; the native one is its own list, chosen by press.

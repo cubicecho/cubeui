@@ -34,7 +34,7 @@
   // `compiled/`, the web-only items in `registry/web`, the vendored upstream shadcn files —
   // is `tsconfig.web.json`'s, because `@/components/ui/button` has to mean the compiled web
   // half there and the React Native one here. Leaving `compiled/` in both was how
-  // `compiled/multi-select-field.tsx` came to be checked against a React Native `Badge`.
+  // the web multi-select field (since folded into `combobox`) came to be checked against a React Native `Badge`.
   // `stories/web` joins them: a story for a web-only item imports out of `compiled/`, and under
   // this project `@/components/ui/*` means the React Native half.
   "exclude": ["registry/web", "stories/web"],

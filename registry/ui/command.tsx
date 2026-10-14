@@ -12,7 +12,7 @@
  * Each item decides for itself whether it matches, from the search in context, and reports the
  * answer upward. That is how `CommandEmpty` knows the list is empty and a `CommandGroup` knows to
  * hide its heading without either of them walking a tree they cannot see — an item is often
- * wrapped in the caller's own component, as `MultiSelect`'s rows are. An item that does not match
+ * wrapped in the caller's own component, as `Combobox`'s rows are. An item that does not match
  * stays mounted and draws nothing, so its answer is still there when the search changes back.
  */
 
@@ -241,7 +241,7 @@ function CommandList({ label = COMMAND_LIST_LABEL, className, children }: Comman
       // word and drops one it does not know, so on device the rows sit in a plain `list`.
       role={Platform.OS === "web" ? ("listbox" as Role) : "list"}
       aria-label={label}
-      className={cn("max-h-[300px]", className)}
+      className={cn("max-h-72", className)}
     >
       {children}
     </ScrollView>
@@ -275,7 +275,7 @@ function CommandGroup({ heading, forceMount = false, className, children }: Comm
   const hidden = forceMount === false && shown === 0;
   const title =
     typeof heading === "string" ? (
-      <Text className="px-2 py-1.5 text-xs font-medium text-foreground/60">{heading}</Text>
+      <Text className="px-2 py-1.5 text-xs font-semibold text-foreground/60">{heading}</Text>
     ) : (
       heading
     );

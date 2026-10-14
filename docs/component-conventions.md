@@ -125,13 +125,15 @@ field — because data that has not arrived is not data that came back empty or 
 
 | Word | Means |
 | --- | --- |
-| `label` | On `ActionButton` and `ConfirmButton`, the required accessible name — not a caption. |
+| `aria-label` | On a `Button` or `ConfirmButton` in an `icon*` size, the required accessible name. |
 | `hint` | Why the control is unavailable, or what it will do. Read after the name. |
 | `leadingSlot` | Inside a field, at its start: an icon, with the text padded past it. On `Input`, where `iconSlot` would read as the title's icon — a field has no title — and where the hand-written version was always an absolute glyph and a guessed `pl-8`. |
 | `trailing` | The far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows, where `actionSlot` would read as a second button in the row. It takes a string as well as an element — a shortcut is words, and the row draws them — so it keeps the bare name. |
 | `trailingSlot` | The same place where it takes elements only. On `Input` it is the far end of the field, inside it, and holds one icon-sized control, a clear button. On `Button` it is the far end of the button, after its `content`: a trigger's chevron. On `TabsTrigger` it is the far end of the tab: a dot, a count in a `Badge`. |
 | `linkSlot` | The router's link as an element with no children, which the row is drawn inside. On `MenuItem`, where the inverted `<Link asChild>` nesting would hand radix a click the router has already cancelled, and the menu would stay open. On `Button` it is the same element, which the button is drawn *as* on the web and inside on a device — what shadcn's `asChild` was for. |
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
+| `clearable` | The control can be put back to holding nothing. A button that empties it on `Combobox multiple`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and a single `ComboboxField` a first row for "nothing", which writes `null`. |
+| `emptyLabel` | What a `clearable` select's row for "nothing" says, and so what its trigger reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice. |
 | `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
 | `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
 | `defaultView` | The view a control starts in when it holds its own, as `defaultOpen` is for a thing that opens. |
@@ -230,7 +232,7 @@ Notes on why the layering is where it is:
   name: on the web the row is named by the text inside it, which a clipped label joins, but on
   device a pressable is one element named by an `accessibilityLabel` string, and a node's text
   cannot be read back out into one. Its fields are `label` and `iconSlot` with their usual meanings —
-  the label is what is read, as on `ActionButton`, and the icon is sized and coloured by the row.
+  the label is what is read, and the icon is sized and coloured by the row.
 - **A prefix binds a word to a slot.** `sidebarWidth` is the sidebar's width and `contentClassName` is
   the body's class, so a new prop belonging to an existing slot needs no new word at all.
 - **`labelHideBelow` is that prefix at work, on the group and not the pill.** `Sidebar` already
@@ -239,7 +241,7 @@ Notes on why the layering is where it is:
   one value `hideBelow` does not have, for a row that is icons at every width. It is on
   `SegmentedGroup` because a row where one pill has dropped its label and the next has not is a
   mistake no call site wants, and a prop on each pill would make it expressible. The label stays
-  required: hidden, it is the pill's name, which is what `ActionButton`'s `label` already means.
+  required: hidden, it is the pill's name, as an icon `Button`'s `aria-label` is.
 
 ## 3. Variants are literal class maps
 
@@ -323,14 +325,14 @@ state lives in the shell instead of the primitive. A caller who passes `open` st
 still hears every change. The two never mirror.
 
 **A control is not a shell, and this rule is about shells.** `ColorPicker` holds a half-typed hex,
-`PasswordInput` holds whether the value is showing, `MultiSelect` holds its search term — and each
+`PasswordInput` holds whether the value is showing, `Combobox` holds its search term — and each
 of those is state that belongs to the widget, not to the screen. The line is whether the state
 outlives the interaction: a draft the control throws away on blur is the control's, and a value
 anything else in the app can read is the caller's. The value itself is always `value` and
 `onValueChange`, never held inside; the two never mirror.
 
 Delegation is the same here as it is above, and a control that wraps a primitive has to be told
-so: `OptionSelect` passes `open`/`onOpenChange` through to its `Select` because a menu whose list is
+so: `Combobox` passes `open`/`onOpenChange` through to its `Select` because a menu whose list is
 fetched has nowhere else to learn that it opened. It shipped without them and the one picker in
 task-server whose options come from the server stayed hand-assembled — a control that swallows
 the primitive's own state is a control the fetching call site cannot use, and the fix is to pass
@@ -384,7 +386,7 @@ to the primitive on install. It resolved — to the wrong file — and failed on
 files from the cause. The argument for shipping it as `Select` was that a reader disambiguates
 by import path, which is true and beside the point: the CLI rewrites the import path. Renaming
 the item in `registry.json` is not enough either; the file is what is matched. `npm run
-registry:check` now fails on it, and the component is `OptionSelect`.
+registry:check` now fails on it, and the component was renamed; it is `Combobox` now.
 
 Words for slots the set does not have yet — a toolbar, a status bar, an aside — get decided when
 the component that needs one arrives. Adding a word is a decision about the whole set (rule 2),

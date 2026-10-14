@@ -49,7 +49,7 @@ const THEMELESS = /^(transparent|current|inherit)$/;
  * these are the palette's other half: a seventh step is a colour no palette was checked against.
  * `AGENTS.md` says what each is for.
  */
-const OPACITY_STEPS = new Set(["10", "15", "40", "60", "90"]);
+const OPACITY_STEPS = new Set(["10", "40", "50", "60", "90"]);
 
 /** `hover:bg-neutral/90` -> `90`; null with no modifier. */
 function opacityOf(cls) {

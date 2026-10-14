@@ -94,7 +94,7 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
       {typeof children === "string" || typeof children === "number" ? (
         <Text
           className={cn(
-            "font-medium",
+            "font-semibold",
             size === "sm" ? "text-xs" : "text-sm",
             selected && !backgroundColor ? "text-active-foreground" : "text-foreground",
           )}

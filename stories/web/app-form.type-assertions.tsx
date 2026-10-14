@@ -8,6 +8,7 @@
  */
 
 import {
+  ComboboxField,
   InputField,
   NumberField,
   SelectField,
@@ -17,7 +18,15 @@ import {
 
 export function AppFormTypeAssertions() {
   const form = useAppForm({
-    defaultValues: { title: "", count: 0, live: false, kind: "a", nested: { deep: "" } },
+    defaultValues: {
+      title: "",
+      count: 0,
+      live: false,
+      kind: "a",
+      owner: null as string | null,
+      nested: { deep: "" },
+      tags: [] as string[],
+    },
     onSubmit: ({ value }) => console.log(value),
   });
 
@@ -61,6 +70,26 @@ export function AppFormTypeAssertions() {
       <NumberField form={form} name="title" label="Wrong type" />
       {/* @ts-expect-error a boolean field is not a select either */}
       <SelectField form={form} name="live" label="Wrong type" options={[]} />
+      <SelectField
+        form={form}
+        name="owner"
+        label="Owner"
+        options={[]}
+        clearable
+        emptyLabel="Nobody"
+      />
+      <SelectField form={form} name="kind" label="Kind" options={[]} clearable={false} />
+      {/* @ts-expect-error `kind` is a plain string, which cannot hold the `null` clearing writes */}
+      <SelectField form={form} name="kind" label="Kind" options={[]} clearable />
+      <ComboboxField form={form} name="kind" label="Kind" options={[]} searchable />
+      <ComboboxField form={form} name="owner" label="Owner" options={[]} clearable />
+      <ComboboxField multiple form={form} name="tags" label="Tags" options={[]} maxDisplay={2} />
+      {/* @ts-expect-error `multiple` holds a list, and `kind` is one string */}
+      <ComboboxField multiple form={form} name="kind" label="Kind" options={[]} />
+      {/* @ts-expect-error and without `multiple` it holds one string, which `tags` is not */}
+      <ComboboxField form={form} name="tags" label="Tags" options={[]} />
+      {/* @ts-expect-error `kind` cannot hold the `null` a cleared single combobox writes */}
+      <ComboboxField form={form} name="kind" label="Kind" options={[]} clearable />
       {/* @ts-expect-error loadingClassName is a field prop; nonsense is not */}
       <InputField form={form} name="title" nonsenseProp="x" />
     </>

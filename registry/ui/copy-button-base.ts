@@ -8,11 +8,8 @@
  * on device, `navigator.clipboard` in the browser — so each hands `useCopy` its
  * own writer and the timing lives here, once.
  */
-import type { ComponentProps } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Button } from "@/components/ui/button";
-
-type ButtonProps = ComponentProps<typeof Button>;
+import type { ButtonProps } from "@/components/ui/button";
 
 export type CopyButtonProps = {
   /** The text that goes on the clipboard. */

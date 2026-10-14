@@ -6,7 +6,7 @@ has a bound counterpart in [forms.md](forms.md) — reach for that inside a TanS
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
 **Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the option select, the theme picker, the copy button, the code block, the icon in an input, the search box, the progress bar, the multi-select, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
+colour display parts, the removable badge, the spinner, the alert, the menu, the combobox, the theme picker, the copy button, the code block, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
 component with no React Native half, so it does not install in an Expo project. `SKILL.md`'s last
 section is the native set.
 
@@ -24,7 +24,8 @@ The set, on both halves — check it before wrapping a glyph in the app:
   `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
   `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
-- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `LoaderCircle`
+- **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `CircleQuestionMark`
+  (the button a folded description sits behind), `LoaderCircle`
 - **Files and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and `FolderPen` (rename
   or move a file, a folder)
 - **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`, `UserRound`
@@ -186,7 +187,7 @@ the far end, so those are the props:
 - **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
 - **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
-  is why an icon-only button is an `ActionButton` (below).
+  is why those sizes require `aria-label` (below).
 - **`trailingSlot`** is the far end: a trigger's chevron, a count.
 - **`linkSlot`** is the link the button is, as an element with no children: `<a href="…" />` or a
   router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
@@ -195,7 +196,7 @@ the far end, so those are the props:
 - **`loading`** is "pressed, and the work is still running": the button is disabled, `aria-busy`,
   and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
   swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
-  `ActionButton` and `ConfirmButton` take the same props; a form's submit is `form.SubmitButton`,
+  `ConfirmButton` takes the same props; a form's submit is `form.SubmitButton`,
   which sets `loading` from the form.
 - A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
   `<Button><Plus /> New</Button>` → `<Button iconSlot={<Plus />} content="New" />`. Everything else
@@ -204,68 +205,65 @@ the far end, so those are the props:
 
 ## Icon buttons
 
-**Every icon-only button is an `ActionButton`.** Not a `Button` with an SVG in it.
+**An icon-only button is a `Button` in an `icon*` size, and it will not typecheck without a name.**
 
 ```tsx
-<ActionButton label="Delete workspace" variant="outline" size="icon" onClick={remove} iconSlot={<Trash2 />} />
+<Button aria-label="Delete workspace" variant="outline" size="icon" onClick={remove} iconSlot={<Trash2 />} />
 ```
 
-`label` is required and is the accessible name. `title` is not a name — it is a hint, it is not
-read in place of one, and it never appears on a touch device. Across these projects 78 of 134
-icon buttons announce as "button".
+`aria-label` is required in the `icon`, `icon-xs`, `icon-sm` and `icon-lg` sizes, and is the
+accessible name. `title` is not a name — it is a hint, it is not read in place of one, and it
+never appears on a touch device. The name is not shown as a tooltip.
 
-**`disabled` here is not the HTML attribute.** It becomes `aria-disabled`, so the control keeps
-its focus ring, its hover and its tooltip and refuses the press in the handler. That is
-deliberate: `disabled:pointer-events-none` is why every `title="Empty the lane first"` in these
-apps was unreadable on exactly the control it was explaining. Pass `hint` with the reason:
+**`hint` is the button's tooltip, and the only one it draws**, on any button, icon or text. No
+`hint`, no tooltip. The accessible name stays what it was, and the hint is read after it whether
+or not the tooltip is open — it is also an always-mounted `sr-only` node, because a tooltip's
+text is in the DOM only while it is showing. Pass `tooltip={false}` to keep the description and
+drop the tooltip, and `side` to move it.
+
+**`disabled` with a `hint` is not the HTML attribute.** It becomes `aria-disabled`, so the control
+keeps its focus ring, its hover and its tooltip and refuses the press in the handler. That is
+deliberate: `disabled:pointer-events-none` is why a `title="Empty the lane first"` is unreadable
+on exactly the control it is explaining. Pass `hint` with the reason:
 
 ```tsx
-<ActionButton label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} iconSlot={<Trash2 />} />
+<Button aria-label="Delete lane" hint="Empty the lane first" disabled={cards.length > 0} size="icon" iconSlot={<Trash2 />} />
 ```
 
-`hint` replaces `label` in the tooltip; the accessible name stays `label` either way, and the
-hint is read after it whether or not the tooltip is open — it is also an always-mounted
-`sr-only` span, because a tooltip's text is in the DOM only while it is showing. Pass
-`tooltip={false}` for a row that already explains itself, and `side` to move the tooltip.
+With no `hint` there is no reason to keep reachable, and `disabled` is the real attribute.
 
-**A root `TooltipProvider` does not reach these buttons.** `ActionButton` renders its own, and
-a nested provider replaces the one above it rather than merging with it — so an app with
-`<TooltipProvider delayDuration={300}>` at its root gets 300ms everywhere except here, where
-the tooltip opens the instant the pointer crosses. Pass `delayDuration` (and
-`skipDelayDuration`, which is what makes a toolbar of them feel like one control) to match it.
-Radix offers no way to read the outer provider, so the number has to be said twice; a project
-that minds should say it once in a wrapper.
+**The tooltip's delay is the app's.** With a `TooltipProvider` above it — the one an app puts at
+its root — the button's tooltip uses that provider's `delayDuration` and `skipDelayDuration`.
+With none above it, it brings its own and opens at once, so a `Button` never throws for want of
+a provider.
 
-**Both of these are `type="button"`, so neither submits the form it sits in.** You do not need
-to write it at the call site, and you should not go back to a bare `<Button>` to avoid it. A
-`<button>` with no type is a submit button, which is why an icon button beside a field used to
-save the form as well as do its own job — and why Enter in that field pressed the trash, since
-implicit submission goes to the first submit button in tree order and never through a click.
-A form's real submit is `SubmitButton`. If you want one of these to submit, say `type="submit"`.
+**It is `type="button"`, so it does not submit the form it sits in.** You do not need to write it
+at the call site. A `<button>` with no type is a submit button, which is why an icon button
+beside a field would save the form as well as do its own job — and why Enter in that field would
+press the trash, since implicit submission goes to the first submit button in tree order and
+never through a click. A form's real submit is `SubmitButton`. If you want one of these to
+submit, say `type="submit"`.
 
-**`@cubeui/action-button` is on both halves**, with the same props and the one conversion every
-pressable has: `onPress` on a device, `onClick` on the web.
+**It is the same on both halves**, with the one conversion every pressable has: `onPress` on a
+device, `onClick` on the web.
 
 ```tsx
-<ActionButton
-  label="Delete lane"
+<Button
+  aria-label="Delete lane"
   hint="Empty the lane first"
   disabled={cards.length > 0}
+  size="icon"
   onPress={remove}
   iconSlot={<Trash2 />}
 />
 ```
 
-- On device the tooltip opens on a **long press**, and a `disabled` one still hears it — that is
-  the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver announce the
-  button as unavailable.
-- A string `hint` is the button's accessibility hint, read after `label`. A `hint` that is a node
+- On device the tooltip opens on a **long press**, and a `disabled` one with a `hint` still hears
+  it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
+  announce the button as unavailable.
+- A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
-- `delayDuration`, `skipDelayDuration`, `type` and `aria-describedby` are web only. A device has
-  no hover to delay and no form to submit.
-- Under react-native-web (an Expo app's web build) `Pressable` overwrites `aria-disabled` with its
-  own `disabled`, so there a disabled `ActionButton` refuses the press and reads its hint but is
-  not announced as unavailable. The compiled web half, which a DOM app installs, is not affected.
+- `type` and `aria-describedby` are web only. A device has no form to submit.
 
 ## Copy button
 
@@ -307,8 +305,7 @@ an `absolute` corner over it.
   that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
   the native item installs; a DOM app installs nothing extra.
 - It is `type="button"` on the web, so it never submits the form it sits in.
-- Not an `ActionButton`, and it has no tooltip: the glyph is the universal one and the name is
-  always set, which are the two things `ActionButton` exists to guarantee.
+- It has no tooltip: the glyph is the universal one and the name is always set.
 
 ## Download button
 
@@ -628,14 +625,14 @@ server in it*. If you cannot write that sentence, the confirm is probably not wa
 is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
-Everything `ActionButton` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
+Everything `Button` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
 disabled `ConfirmButton` does not open the dialog.
 
 **`@cubeui/confirm-button` is on both halves**, with the same props. The press opens the question,
 so it takes neither `onPress` nor `onClick`; `onConfirm` is the one that acts. The dialog is
 `ConfirmDialog`, the one `confirm()` raises, so the three draw the same card: an `alertdialog`
 with Cancel first and the destructive verb last, no corner close, and a press beside it that does
-not answer it. On device the back button is Cancel, and the trigger's tooltip is `ActionButton`'s
+not answer it. On device the back button is Cancel, and the trigger's tooltip is `Button`'s
 long press.
 
 ### Type the name to confirm
@@ -690,8 +687,8 @@ on both platforms:
 </Menu>
 ```
 
-- **An icon-only trigger** is an `ActionButton` on the web (see [Icon buttons](#icon-buttons)) and
-  a `Button` with an `aria-label` on device, both under `MenuTrigger asChild`.
+- **An icon-only trigger** is an icon `Button` with an `aria-label` (see
+  [Icon buttons](#icon-buttons)) under `MenuTrigger asChild`.
 - **The menu closes itself when a row is chosen.** Do not hold `open` to close it from
   `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
@@ -781,34 +778,64 @@ on both platforms:
   every half, Expo web included — leave the popover uncontrolled. Do not hold `open` only so the
   button can `onPress={() => setOpen(!open)}`; the `Button` hands the trigger's click on from its
   own press. The same goes for `PopoverClose asChild` and `DialogClose asChild`.
-- A value chosen from a list is `Select` or `OptionSelect`, not a menu. `MenuRadioGroup` is for a
+- A value chosen from a list is `Select` or `Combobox`, not a menu. `MenuRadioGroup` is for a
   view setting that lives behind a menu button — a filter, a sort — not for a form's value.
 
-## Option select
+## Combobox
 
 ```tsx
-<OptionSelect options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
+<Combobox options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
+<Combobox multiple options={TAGS} value={tags} onValueChange={setTags} placeholder="No tags" />
 ```
 
-`options` is `{ value, label, group?, className? }[]`, plus `{ separator: true }` for a rule and
+One control for a value chosen from an array of options. Without `multiple` it holds one `string`;
+with it, a `string[]`, shown as chips on the trigger ([Several at once](#several-at-once)).
+
+`options` is `{ value, label, group?, keywords?, disabled?, hint?, meta?, color?, className? }[]`
+— one `SelectOption` type for both — plus `{ separator: true }` for a rule and
 `{ note }` for a row that is not a choice — the same array
 `SelectField` takes, because `SelectField` renders this. Reach for it in a filter bar, a toolbar,
 or a `useState` screen; inside a TanStack form use `SelectField` and never wire this by hand.
 
-**It is not shadcn's `Select`, and it is not called that.** The primitive at
-`@/components/ui/select` takes children; this takes `options`. It shipped as `Select` for one
-day and could not keep the name: the shadcn CLI resolves a cross-item import by the source
-file's basename, so two files called `select.tsx` in one install sent `app-form`'s import to the
-primitive and broke the install.
+**It is not shadcn's `Select`.** The primitive at `@/components/ui/select` takes children; this
+takes `options`. Nor is it shadcn's own `combobox` item, which installs to
+`components/ui/combobox`: this one is at `components/combobox`.
 
-- **On both halves.** Radix's listbox under the trigger on the web; the `Select` sheet on device,
-  in an Expo app, with the same `options`, groups, separators and notes. Same import,
-  `@/components/option-select`, on both.
+The two can be installed side by side, since they are different files, but then an editor offers
+two `Combobox`es to import. Theirs is a set of parts over `@base-ui/react` (`ComboboxInput`,
+`ComboboxContent`, `ComboboxItem`…) and takes children; ours takes `options`. An app that wants
+only this one does not install theirs, and can have the linter refuse the import, in its
+`biome.json`:
+
+```json
+{
+  "linter": {
+    "rules": {
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "@/components/ui/combobox": "Use Combobox from @/components/combobox."
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+- **On both halves.** Same import, `@/components/combobox`, on both.
+- **Single and not `searchable`, the menu is the plain `Select` listbox**: radix's listbox under
+  the trigger on the web, the `Select` sheet on device. With `searchable`, `onCreateOption` or
+  `multiple` it is a `Popover` over a `Command`. Groups, separators, notes, `open` and
+  `onOpenChange` behave the same in both, and the trigger is the same box.
 - The trigger is what carries the wiring. The `Select` root renders nothing, so an `id` or an
   `aria-invalid` put on it goes nowhere — this takes the rest of the trigger's props (every
   `<button>` prop on the web; `id`, the `aria-*` props and `onBlur` on device) and spreads them on
   the trigger, which is why it drops straight into `FormField`'s **function form**:
-  `controlSlot={(wired) => <OptionSelect {...wired} options={…} … />}`.
+  `controlSlot={(wired) => <Combobox {...wired} options={…} … />}`.
 - Full width by default, because a column of selects that each shrink to their longest option is
   ragged. Pass `className="w-40"` for a toolbar; the later width wins.
 - `contentClassName` is the dropdown's class. `className` is the trigger's, which is the control.
@@ -820,7 +847,7 @@ primitive and broke the install.
 An option that is not a peer of the others says so in the array rather than in its own label:
 
 ```tsx
-<OptionSelect
+<Combobox
   options={[
     { value: "stay", label: "Stay here" },
     ...lanes.map((lane) => ({ value: lane.id, label: lane.name, group: "Lanes" })),
@@ -841,7 +868,7 @@ wrong. A flat `{ value, label }[]` draws flat.
 plain listbox.
 
 ```tsx
-<OptionSelect
+<Combobox
   searchable
   searchPlaceholder="Find a model…"
   options={models.map((m) => ({ value: m.id, label: m.id, keywords: [m.provider] }))}
@@ -854,10 +881,12 @@ plain listbox.
   order. A `label` that is a node cannot be searched, so give that option `keywords`.
 - `searchPlaceholder`, `searchLabel` (the box's accessible name) and `emptyMessage` are read only
   when `searchable` is on.
-- The searchable menu is a popover over a `Command`, the shape `MultiSelect` is, so it installs
-  `button`, `command` and `popover` beside `select`. Groups, separators, notes, `open` and
-  `onOpenChange` behave the same in both.
-- In a form: `<field.SelectField searchable options={…} />`.
+- `searchable` is off by default without `multiple` and on by default with it.
+- `onCreateOption` offers to create what a search matches nothing for; given it, a single
+  combobox draws the search menu whether or not `searchable` is set. `createLabel` words the row.
+- In a form: `<field.SelectField searchable options={…} />` on `@cubeui/app-form`, and
+  `<field.ComboboxField searchable options={…} />` from `@cubeui/combobox-field` on
+  `@cubeui/form`. See [forms.md](forms.md#on-react-native).
 
 ### A menu that fills when it opens
 
@@ -869,7 +898,7 @@ the menu says it is still working.
 const [opened, setOpened] = useState(false);
 const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, enabled: opened });
 
-<OptionSelect
+<Combobox
   value={model}
   onValueChange={setModel}
   onOpenChange={setOpened}
@@ -891,12 +920,78 @@ const models = useQuery({ queryKey: ["models", endpoint], queryFn: fetchModels, 
   control — unreachable, and read out when it appears, which is the case exactly, since the menu
   opens before the list exists.
 - `SelectField` takes `onOpenChange` too, so a fetched list inside a form does not have to drop
-  to `FormField`'s function form to get one word through.
+  to `FormField`'s function form to get one word through. On `@cubeui/form` that is
+  `ComboboxField`.
+- A single `Combobox` has no row for "nothing". In a form, `clearable` on the field adds one and
+  writes `null`; outside a form, put the row in `options` and name its value yourself.
+
+### Several at once
+
+`multiple` makes it a tag picker: the trigger shows what is chosen as chips, and a searchable list
+is behind it, over `Popover`, `Command` and `Badge`.
+
+```tsx
+<Combobox
+  multiple
+  options={TAGS}
+  value={tags}
+  onValueChange={setTags}
+  placeholder="No tags"
+  onCreateOption={(name) => createTag(name)}
+/>
+```
+
+- `value` is `readonly string[]` and `onValueChange` is handed the next `string[]`. The two shapes
+  are one discriminated union on `multiple`, so a `string` value with `multiple` is a type error.
+- `searchable` is on by default and `keywords` widen what a search matches beyond the label.
+- `onCreateOption` offers to create what a search matches nothing for. Without it, a search that
+  matches nothing says `emptyMessage`. `isAddableOptionName` from `@/lib/select-options` is the
+  test the create row uses.
+- `clearable` (default `true`) is the Clear button under the list. It is on the `multiple` half
+  only.
+- `maxDisplay` caps the chips on the trigger and the rest become a count.
+- A held value no option covers is not drawn. `withOrphanOptions(options, value)` from
+  `@/lib/select-options` appends a row for each, labelled with the value.
+- `color` on an option draws a dot, and the tick on a chosen swatch picks its own contrast.
+- `hint`, `meta`, `disabled` and `color` are read by the searchable menu, single or multiple; the
+  plain listbox reads `disabled` and ignores the other three.
+- **`hint` on an option says why it is the way it is** — most often why it is `disabled`. Drawn
+  under the label and read after it, never as part of the name. A disabled row fires no hover,
+  so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
+  picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
+  Same argument as `Button`'s `hint`.
+- **`meta` on an option is the end of the row** — a status badge, a count, a date. Read after the
+  name, never as part of it, and never on the chip: the chip is the label and stays a string. Do
+  not reach for `color` for this. That is the chip's colour, and pointing it at a status mints a
+  second colour vocabulary beside the app's own.
+- **`group` on an option is a heading over the rows that share it.** Drawn in the order given,
+  not sorted — a board's lanes are ordered and alphabetical would be wrong. The heading is
+  searched along with the row, so typing a lane's name still finds the cards in it, and a group
+  whose rows are all filtered out hides itself.
+
+`label` is still the row, the chip and what the search matches, so anything that is not the name
+goes in one of those three rather than into the label. `"Fix billing (archived)"` is a row saying
+its status by having it typed into its name, and it says it on the chip too.
+
+Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
+inside a `FormField` — but pass them through the **function form** of `controlSlot`, since its root
+is a `Popover`. `ComboboxField` already does.
+
+- **On the web** the list is radix's popover over cmdk: portalled, the width of the trigger,
+  arrow keys and Enter, and the create row pinned to the bottom of a long list.
+- **On device** the trigger opens `Popover`'s native sheet over `Command`'s native list, and a
+  row is chosen by pressing it. Every chip on the trigger is also removable with its ✕ — a
+  `Badge` with `onRemove` — since there is no keyboard to reopen the list and untick it with.
+  The search matches every word on both halves (`matchesEveryWord`), so the same typing finds the
+  same rows.
+- In a form it is `ComboboxField multiple`: from `@cubeui/combobox-field` on `field.*` through
+  `createAppForm` — see [forms.md](forms.md#on-react-native) — and from `@cubeui/app-form` on the
+  web's one-line fields.
 
 ## Command
 
 A search box over a list of rows that filters as you type: shadcn's `Command` parts, on both
-halves, at `components/ui/command`. `MultiSelect` is built on it, and it is what to reach for when
+halves, at `components/ui/command`. `Combobox` is built on it, and it is what to reach for when
 a picker or a palette needs a list that is not a tag picker.
 
 ```tsx
@@ -932,59 +1027,6 @@ a picker or a palette needs a list that is not a tag picker.
   "Suggestions"). `forceMount` keeps a group or a row drawn through the filter — a "Create …" row.
 - `CommandDialog` is the palette in a `Dialog`, on both halves; `title` and `description` name it
   and are not drawn.
-
-## Multi-select
-
-A tag picker: a trigger showing what is chosen, a searchable list behind it. **On both halves**,
-at `components/multi-select`, over `Popover`, `Command` and `Badge`.
-
-```tsx
-<MultiSelect
-  options={TAGS}          // { value, label, keywords?, color?, disabled?, hint?, meta?, group? }[]
-  value={tags}
-  onValueChange={setTags}
-  placeholder="No tags"
-  onCreateOption={(name) => createTag(name)}
-/>
-```
-
-- `searchable` is on by default and `keywords` widen what a search matches beyond the label.
-- `onCreateOption` is what turns it into a combobox: given it, a search that matches nothing
-  offers to create. Without it, a search that matches nothing says `emptyMessage`.
-- `maxDisplay` caps the chips on the trigger and the rest become a count.
-- `color` on an option draws a dot, and the tick on a chosen swatch picks its own contrast.
-- **`hint` on an option says why it is the way it is** — most often why it is `disabled`. Drawn
-  under the label and read after it, never as part of the name. A disabled row fires no hover,
-  so a tooltip there is text nobody can reach, and greyed out on its own reads as a bug in the
-  picker: "waiting on this would close a loop", "already applied by a rule", "not on your plan".
-  Same argument as `ActionButton`'s `hint`.
-- **`meta` on an option is the end of the row** — a status badge, a count, a date. Read after the
-  name, never as part of it, and never on the chip: the chip is the label and stays a string. Do
-  not reach for `color` for this. That is the chip's colour, and pointing it at a status mints a
-  second colour vocabulary beside the app's own.
-- **`group` on an option is a heading over the rows that share it.** Drawn in the order given,
-  not sorted — a board's lanes are ordered and alphabetical would be wrong. The heading is
-  searched along with the row, so typing a lane's name still finds the cards in it, and a group
-  whose rows are all filtered out hides itself.
-
-`label` is still the row, the chip and what the search matches, so anything that is not the name
-goes in one of those three rather than into the label. `"Fix billing (archived)"` is a row saying
-its status by having it typed into its name, and it says it on the chip too.
-
-Its trigger is a real control that takes an `id` and the `aria-*` props, which is why it works
-inside a `FormField` — but pass them through the **function form** of `controlSlot`, since its root
-is a `Popover`. `MultiSelectField` already does.
-
-- **On the web** the list is radix's popover over cmdk: portalled, the width of the trigger,
-  arrow keys and Enter, and the create row pinned to the bottom of a long list.
-- **On device** the trigger opens `Popover`'s native sheet over `Command`'s native list, and a
-  row is chosen by pressing it. Every chip on the trigger is also removable with its ✕ — a
-  `Badge` with `onRemove` — since there is no keyboard to reopen the list and untick it with.
-  The search matches every word on both halves (`matchesEveryWord`), so the same typing finds the
-  same rows.
-- In a native form it is `MultiSelectField` from `@cubeui/multi-select-form-field`, on `field.*`
-  through `createAppForm` — see [forms.md](forms.md#on-react-native). The web `app-form`'s is
-  `@cubeui/multi-select-field`.
 
 ## Date and date range
 
@@ -1273,7 +1315,7 @@ in one wrapping row. There is no component for it — it is one `div`:
 ```tsx
 <div className="flex flex-wrap items-center gap-2">
   <SearchInput placeholder="Search runs" value={query} onChangeText={setQuery} wrapperClassName="w-64" />
-  <OptionSelect options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
+  <Combobox options={STATUSES} value={status} onValueChange={setStatus} className="w-40" />
   <Button variant="outline" onClick={reset} content="Reset" />
 </div>
 ```
@@ -1442,6 +1484,10 @@ gets right:
 
 `revealable={false}` drops the toggle for a field that should never be shown. `className` is the
 field's and `wrapperClassName` the box around the field and its eye. `leadingSlot` still takes an icon.
+
+In a form it is `PasswordField`, on `field.*` natively and from `@cubeui/password-field` on the
+web. Both name the toggle from the field's `label` — "Show API key" — and take `showLabel` and
+`hideLabel` to say something else. See [forms.md](forms.md).
 
 ## Theme
 

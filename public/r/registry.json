@@ -85,6 +85,43 @@
       ]
     },
     {
+      "name": "form-binding",
+      "type": "registry:lib",
+      "title": "Form binding",
+      "description": "The types a control bound to a TanStack form field takes — the form, a checked field name, validators and listeners — and the one loosely typed view of `form.Field` that renders it. What the form items and RadioGroupField bind through.",
+      "dependencies": ["@tanstack/react-form@^1.33.5"],
+      "files": [
+        {
+          "path": "registry/lib/form-binding.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "number-draft",
+      "type": "registry:lib",
+      "title": "Number draft",
+      "description": "What a number box holds while it is typed in: `parseNumber`, which reads `\"\"`, `-` and `1e` as no number yet and never as `0` or `NaN`, and `numberText`, which draws the typed text while it still means the stored number. What the two form bindings' NumberField share.",
+      "files": [
+        {
+          "path": "registry/lib/number-draft.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
+      "name": "select-options",
+      "type": "registry:lib",
+      "title": "Select options",
+      "description": "What a select's options list holds — options, a group heading on each, separators and notes — and the walk that turns the list into the runs a menu draws. What Combobox and the form's SelectField read one list through, with the helpers for a held value no option covers and for a typed name worth creating. Not a component.",
+      "files": [
+        {
+          "path": "registry/lib/select-options.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "icons",
       "type": "registry:ui",
       "title": "Icons",
@@ -106,16 +143,13 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour.",
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ],
+      "description": "A Pressable-backed button whose variants split into container and text halves, because native inherits no text colour. An `icon*` size requires an `aria-label`; a `hint` is its tooltip, and with one, `disabled` is `aria-disabled`, so the reason is still reachable.",
+      "dependencies": ["@radix-ui/react-slot@^1.5.0", "class-variance-authority@^0.7.1"],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
         "@cubeui/spinner",
+        "@cubeui/tooltip",
         "@cubeui/tokens"
       ],
       "files": [
@@ -340,6 +374,25 @@
       ]
     },
     {
+      "name": "description-hint",
+      "type": "registry:ui",
+      "title": "Description Hint",
+      "description": "A description folded behind a small button beside its title: the button and pane, both named `About <label>`, and the off-screen copy `aria-describedby` still reaches on the web. What `descriptionPlacement=\"popover\"` draws on the bound fields, `CardLayout`, `Section` and `SettingRow`.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/button",
+        "@cubeui/icons",
+        "@cubeui/popover",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/description-hint.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "menu",
       "type": "registry:ui",
       "title": "Menu",
@@ -361,7 +414,7 @@
       "name": "command",
       "type": "registry:ui",
       "title": "Command",
-      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props MultiSelect uses on both.",
+      "description": "A searchable list of choices: shadcn's Command parts over cmdk on web (arrow keys, Enter, fuzzy ranking); on device a search Input over pressable rows, filtered on every typed word, chosen by press. The same part names and the props Combobox uses on both.",
       "dependencies": ["cmdk@^1.1.1"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/dialog", "@cubeui/icons", "@cubeui/input"],
       "files": [
@@ -469,6 +522,7 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/field",
         "@cubeui/radio-group",
         "@cubeui/tokens"
@@ -481,10 +535,10 @@
       ]
     },
     {
-      "name": "multi-select",
+      "name": "combobox",
       "type": "registry:component",
-      "title": "Multi Select",
-      "description": "A combobox that selects more than one thing, over Popover and Command: searchable on every word, with an optional create row and coloured chips. On the web radix and cmdk make it portalled and keyboard-operable; on device it opens the native sheet, and each chip is also removable with its ✕.",
+      "title": "Combobox",
+      "description": "A choice from a list of options, one value or several with `multiple`, with groups, separators and notes, and the id and aria props landing on the trigger. One value is radix's listbox on the web and the Select sheet on device; `searchable` and `multiple` draw a Popover over a Command, searchable on every word, with an optional create row and, for several, coloured chips.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/badge",
@@ -494,32 +548,13 @@
         "@cubeui/icons",
         "@cubeui/popover",
         "@cubeui/readable-text-color",
-        "@cubeui/tokens"
-      ],
-      "files": [
-        {
-          "path": "compiled/multi-select.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "option-select",
-      "type": "registry:component",
-      "title": "OptionSelect",
-      "description": "A select taking its choices as options rather than seven primitives to assemble, with groups, separators and notes, and the id and aria props landing on the trigger. Radix's listbox on the web, the Select sheet on device; with searchable, a search box above the list in a popover.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/command",
-        "@cubeui/icons",
-        "@cubeui/popover",
         "@cubeui/select",
-        "@cubeui/utils",
+        "@cubeui/select-options",
         "@cubeui/tokens"
       ],
       "files": [
         {
-          "path": "compiled/option-select.tsx",
+          "path": "compiled/combobox.tsx",
           "type": "registry:component"
         }
       ]
@@ -554,8 +589,8 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/section.tsx",
@@ -572,6 +607,19 @@
       "files": [
         {
           "path": "compiled/list-item.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "type": "registry:component",
+      "title": "List",
+      "description": "The list a row sits in: a `<ul>` (list and listitem roles on device) that wraps each element of `contentSlot` in its own cell, with a `label` for its accessible name, a rule between rows (`divided`, on by default) and the padding around each row. Holds `ListItem`s, `DisclosureRow`s or rows of your own.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/list.tsx",
           "type": "registry:component"
         }
       ]
@@ -644,8 +692,13 @@
       "name": "setting-row",
       "type": "registry:component",
       "title": "Setting Row",
-      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/field", "@cubeui/tokens"],
+      "description": "One row of a settings page: a `title` and `description` at the start, the control that changes it in `actionSlot` at the end, dropping under the text when the row is too narrow for both. `actionSlot` may be a function handed the title's id, so a switch or select is named by the title through `aria-labelledby`. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/field",
+        "@cubeui/description-hint",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/setting-row.tsx",
@@ -667,29 +720,11 @@
       ]
     },
     {
-      "name": "action-button",
-      "type": "registry:component",
-      "title": "Action Button",
-      "description": "An icon button with a required accessible name (`label`), and a tooltip that survives being disabled: `disabled` is `aria-disabled`, so the `hint` saying why is still reachable. `onClick` on the web, `onPress` on device, where the tooltip opens on a long press.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/tooltip",
-        "@cubeui/utils",
-        "@cubeui/tokens"
-      ],
-      "files": [
-        {
-          "path": "compiled/action-button.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "confirm-button",
       "type": "registry:component",
       "title": "Confirm Button",
-      "description": "A destructive button that asks first, with a required description of what is lost: an `ActionButton` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.",
-      "registryDependencies": ["@cubeui/action-button", "@cubeui/confirm-dialog"],
+      "description": "A destructive button that asks first, with a required description of what is lost: a `Button` that opens `ConfirmDialog`, with `requireText` to ask for the name before a big delete.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/confirm-dialog"],
       "files": [
         {
           "path": "compiled/confirm-button.tsx",
@@ -994,24 +1029,25 @@
       "name": "form",
       "type": "registry:ui",
       "title": "Form",
-      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest.",
-      "dependencies": [
-        "@tanstack/react-form@^1.33.5",
-        "@types/react-dom@~19.2.0",
-        "radix-ui@^1.6.7"
-      ],
+      "description": "Fields bound to TanStack Form: label, control and error wired once, for both platforms. `useAppForm`, the text, number, password, select, checkbox and switch fields, `SubmitButton`, and `bindToForm` for the rest. Every bound field takes `descriptionPlacement=\"popover\"`, which folds the description behind a button beside the label.",
+      "dependencies": ["@radix-ui/react-slot@^1.5.0", "@tanstack/react-form@^1.33.5"],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
         "@cubeui/checkbox",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/field",
         "@cubeui/form-element",
         "@cubeui/input",
         "@cubeui/label",
+        "@cubeui/number-draft",
+        "@cubeui/password-input",
         "@cubeui/select",
+        "@cubeui/select-options",
         "@cubeui/switch",
         "@cubeui/textarea",
+        "@cubeui/description-hint",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1143,14 +1179,14 @@
       ]
     },
     {
-      "name": "multi-select-form-field",
+      "name": "combobox-field",
       "type": "registry:ui",
-      "title": "Multi Select Form Field",
-      "description": "`MultiSelect` bound to a `string[]` form field, for `createAppForm` or inside `form.AppField`. `MultiSelectField`, under an item name that does not collide with the web-only `multi-select-field`.",
-      "registryDependencies": ["@cubeui/multi-select", "@cubeui/form"],
+      "title": "Combobox Field",
+      "description": "`Combobox` bound to a form field, for `createAppForm` or inside `form.AppField`: a string field, or a `string[]` one with `multiple`. The choice with a search box, a list that fills when it opens, a note in it, or several values. `ComboboxField`, kept out of `form` so a form of plain inputs does not install the popover and the command list.",
+      "registryDependencies": ["@cubeui/combobox", "@cubeui/select-options", "@cubeui/form"],
       "files": [
         {
-          "path": "compiled/multi-select-form-field.tsx",
+          "path": "compiled/combobox-field.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1325,7 +1361,7 @@
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen.",
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
@@ -1371,8 +1407,13 @@
       "name": "card-layout",
       "type": "registry:component",
       "title": "Card Layout",
-      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/utils", "@cubeui/tokens"],
+      "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. `descriptionPlacement=\"popover\"` folds the description behind a button after the title.",
+      "registryDependencies": [
+        "@cubeui/card",
+        "@cubeui/utils",
+        "@cubeui/description-hint",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/card-layout.tsx",
@@ -1416,14 +1457,16 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, TextareaField, SelectField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
         "@cubeui/error-message",
+        "@cubeui/form-binding",
         "@cubeui/form-field",
         "@cubeui/input",
-        "@cubeui/option-select",
+        "@cubeui/number-draft",
+        "@cubeui/combobox",
         "@cubeui/switch",
         "@cubeui/textarea"
       ],
@@ -1454,14 +1497,12 @@
       "title": "Control Set",
       "description": "Every cubeui control in one install. Web-only: no React Native half.",
       "registryDependencies": [
-        "@cubeui/action-button",
         "@cubeui/color-picker",
         "@cubeui/confirm-button",
         "@cubeui/copy-button",
         "@cubeui/date-picker",
         "@cubeui/menu",
-        "@cubeui/multi-select",
-        "@cubeui/option-select",
+        "@cubeui/combobox",
         "@cubeui/password-input"
       ],
       "files": []
@@ -1522,7 +1563,6 @@
         "@cubeui/date-field",
         "@cubeui/field-row",
         "@cubeui/form-field",
-        "@cubeui/multi-select-field",
         "@cubeui/password-field",
         "@cubeui/radio-group-field"
       ],
@@ -1611,19 +1651,6 @@
       "files": [
         {
           "path": "compiled/markdown-editor.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "multi-select-field",
-      "type": "registry:component",
-      "title": "Multi Select Field",
-      "description": "The multi-select as one line of a form, over a field the compiler checked holds a list of strings. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/multi-select"],
-      "files": [
-        {
-          "path": "compiled/multi-select-field.tsx",
           "type": "registry:component"
         }
       ]

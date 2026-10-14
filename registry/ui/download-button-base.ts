@@ -7,11 +7,8 @@
  * sheet or a folder on device — so each hands `useDownload` its own writer and the pending state
  * lives here, once.
  */
-import type { ComponentProps } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Button } from "@/components/ui/button";
-
-type ButtonProps = ComponentProps<typeof Button>;
+import type { ButtonProps } from "@/components/ui/button";
 
 /** What a file is made of: bytes, or text. */
 export type DownloadContent = Blob | string;

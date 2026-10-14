@@ -10,6 +10,10 @@ import { Text } from "react-native";
 import { buttonTextVariants, buttonVariants } from "@/components/ui/button";
 import {
   acceptsFile,
+  FILE_PICKER_HINT_CLASS,
+  FILE_PICKER_ICON_CLASS,
+  FILE_PICKER_TITLE_CLASS,
+  FILE_PICKER_ZONE_CLASS,
   type FilePickerButtonProps,
   type FilePickerProps,
   type PickedFile,
@@ -166,15 +170,14 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
       <button
         {...trigger}
         className={cn(
-          "flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
-          dragging
-            ? "border-active bg-active/40"
-            : "border-foreground/15 hover:border-foreground/60",
+          FILE_PICKER_ZONE_CLASS,
+          "flex text-center transition-colors focus-visible:bg-hover focus-visible:outline-none",
+          dragging ? "border-active bg-active/40" : "hover:border-foreground/60",
         )}
       >
-        <Upload className="h-8 w-8 text-foreground/60" />
-        <Text className="font-medium text-sm">{label}</Text>
-        {hint ? <Text className="text-xs text-foreground/60">{hint}</Text> : null}
+        <Upload className={FILE_PICKER_ICON_CLASS} />
+        <Text className={FILE_PICKER_TITLE_CLASS}>{label}</Text>
+        {hint ? <Text className={FILE_PICKER_HINT_CLASS}>{hint}</Text> : null}
       </button>
       {input}
     </>

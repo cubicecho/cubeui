@@ -8,11 +8,11 @@
  * they fail if a type is widened to `any` and the positive lines pass for the wrong reason.
  *
  * Covered: alert (every part), empty (every part), input, textarea, checkbox, switch, select (every part), field (every part) and
- * `OptionSelect`'s `<button>` trigger props.
+ * `Combobox`'s `<button>` trigger props.
  */
 
 import { useRef } from "react";
-import { OptionSelect } from "@/components/option-select";
+import { Combobox } from "@/components/combobox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -232,9 +232,9 @@ export function FieldAssertions() {
   );
 }
 
-export function OptionSelectAssertions() {
+export function ComboboxAssertions() {
   return (
-    <OptionSelect
+    <Combobox
       options={[{ label: "One", value: "1" }]}
       value="1"
       onValueChange={() => {}}

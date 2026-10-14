@@ -67,7 +67,7 @@ export function DisclosureRow({
         {...(Platform.OS === "web" && isOpen ? { "aria-controls": contentId } : {})}
         onPress={() => onOpenChange(!open)}
         className={cn(
-          "min-w-0 flex-1 flex-row items-start gap-2 rounded",
+          "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
           Platform.select({
             web: "text-left focus-visible:bg-hover focus-visible:outline-none",
             default: undefined,
@@ -88,7 +88,7 @@ export function DisclosureRow({
             <Text
               testID="disclosure-row-title"
               className={cn(
-                "min-w-0 shrink font-medium text-foreground text-sm leading-snug",
+                "min-w-0 shrink font-semibold text-foreground text-sm leading-snug",
                 // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
                 // what `line-clamp-1` becomes and what `truncate` does not.
                 Platform.select({ web: "truncate", default: "line-clamp-1" }),

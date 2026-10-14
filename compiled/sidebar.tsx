@@ -457,9 +457,10 @@ function IconMarkers({
         // Hung off the item's top corner, in the 8px the icon leaves above it, so the count sits
         // over the glyph's corner rather than over the glyph — and by little enough that it never
         // reaches a neighbour's icon. The text is its own element because a badge's label is 12px
-        // on a 16px line, which is taller than that corner.
+        // on a 16px line, which is taller than that corner: here it is 12px on a 12px line, since a
+        // count is digits with nothing hanging below them, and 12px is the floor of the type scale.
         <Badge variant="secondary" className={cn("-right-1.5 -top-1.5 absolute px-1 py-0", ring)}>
-          <span className="cube-rn-text font-medium text-[10px] text-foreground leading-3 tabular-nums">
+          <span className="cube-rn-text font-semibold text-xs text-foreground leading-3 tabular-nums">
             {count}
           </span>
         </Badge>
@@ -531,7 +532,7 @@ function SidebarNavItemBody({
           <span
             data-slot="sidebar-nav-item-initial"
             aria-hidden
-            className={cn("cube-rn-text", "font-medium text-sm", text)}
+            className={cn("cube-rn-text", "font-semibold text-sm", text)}
           >
             {Array.from(label.trim())[0]?.toUpperCase()}
           </span>
@@ -553,7 +554,7 @@ function SidebarNavItemBody({
         className={cn(
           "cube-rn-text",
           "min-w-0 flex-1 truncate text-sm",
-          active && "font-medium",
+          active && "font-semibold",
           text,
         )}
       >
@@ -743,7 +744,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
  *
  * `label` is required, because it is the link's only name and its tooltip. The count is a badge on
  * the icon and a `status` is a dot, and both are in the name: "Skills, MCP on, 12". It is always a
- * link; the bar's buttons are `ActionButton`s in `actionSlot`.
+ * link; the bar's buttons are icon `Button`s in `actionSlot`.
  */
 const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {

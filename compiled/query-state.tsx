@@ -57,7 +57,10 @@ type QueryLike = {
 /** What a failure says when neither the caller nor the error has anything to say. */
 const FALLBACK = "The server did not answer.";
 
-/** The error's own `message`, which is the transport's wording rather than the app's. */
+/**
+ * The error's own `message`, which is the transport's wording rather than the app's. Empty when it
+ * has none, so the caller's `|| FALLBACK` speaks; the forms' `messageOf` prints the value instead.
+ */
 function messageOf(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -209,7 +212,7 @@ export function QueryError({
       >
         <div className="cube-rn-view min-w-0 flex-row items-center gap-1.5">
           <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-negative" aria-hidden />
-          <span className="cube-rn-text min-w-0 flex-1 font-medium text-negative text-xs">
+          <span className="cube-rn-text min-w-0 flex-1 font-semibold text-negative text-xs">
             Could not load {what}
           </span>
         </div>
@@ -242,7 +245,7 @@ export function QueryError({
           colour because native inherits none — the two standing conversion rules. */}
       <div className="cube-rn-view flex-row items-center gap-2">
         <TriangleAlert className="h-4 w-4 text-negative" aria-hidden />
-        <span className="cube-rn-text font-medium text-negative text-sm">
+        <span className="cube-rn-text font-semibold text-negative text-sm">
           Could not load {what}
         </span>
       </div>

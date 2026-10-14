@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentType, ReactElement, ReactNode } from "react";
-import { expect, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Button as Compiled } from "../compiled/button";
 import { Button as Native } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
@@ -101,5 +101,45 @@ export const OverALink: Story = {
   play: async ({ canvasElement }) => {
     await linksLookLikeButtons(canvasElement, "Native");
     await linksLookLikeButtons(canvasElement, "Compiled");
+  },
+};
+
+// The press also stops the placeholder `href` from moving the page.
+const stay = (event?: { preventDefault?: () => void }) => event?.preventDefault?.();
+const pressed = { Native: fn(stay), Compiled: fn(stay) };
+
+/**
+ * A link button's press runs when the link is a DOM element. The native half handed a bare `<a>`
+ * an `onPress`, which React drops with a warning, so the press never ran. The compiled half's
+ * prop is `onClick`, as every compiled press is.
+ */
+export const PressReachesADomLink: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
+          linkSlot={<a href="#" />}
+          onPress={pressed.Native}
+          content="Native pressed link"
+        />
+      }
+      compiled={
+        <Compiled
+          // biome-ignore lint/a11y/useValidAnchor: the href is a placeholder for a route
+          linkSlot={<a href="#" />}
+          onClick={pressed.Compiled}
+          content="Compiled pressed link"
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native", "Compiled"] as const) {
+      pressed[name].mockClear();
+      await userEvent.click(canvas.getByRole("link", { name: `${name} pressed link` }));
+      await expect(pressed[name]).toHaveBeenCalledTimes(1);
+    }
   },
 };

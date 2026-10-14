@@ -109,7 +109,6 @@ const actionLabels = ["Copy MCP config", "Rename", "Delete"] as const;
 /** Three buttons in `footerActionsSlot`, in a card as narrow as a phone. */
 function NarrowCard({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
   return (
     <div data-testid={`${half}-frame`} style={{ width: 320 }}>
       <Card
@@ -122,7 +121,7 @@ function NarrowCard({ half }: { half: "native" | "compiled" }) {
           )
         }
         footerActionsSlot={actionLabels.map((label) => (
-          <Button key={label} variant="outline" size="sm" content={label} />
+          <HalfButton half={half} key={label} variant="outline" size="sm" content={label} />
         ))}
       />
     </div>
@@ -174,15 +173,14 @@ const headerWidths = [280, 390, 640] as const;
 /** A file path as the title and two controls as the `actionSlot`, at one width. */
 function LongTitleCard({ half, width }: { half: "native" | "compiled"; width: number }) {
   const Card = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
   return (
     <div data-testid={`${half}-${width}`} style={{ width }}>
       <Card
         title={longTitle}
         actionSlot={
           <>
-            <Button variant="outline" content="Preview" />
-            <Button content="Save" />
+            <HalfButton half={half} variant="outline" content="Preview" />
+            <HalfButton half={half} content="Save" />
           </>
         }
       />
@@ -249,8 +247,7 @@ export const LongTitleWithAction: Story = {
 /** One small button as the `actionSlot`, at a phone's width, with and without a description. */
 function SmallActionCards({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
-  const add = <Button variant="outline" size="sm" content="Add" />;
+  const add = <HalfButton half={half} variant="outline" size="sm" content="Add" />;
   return (
     <div style={{ width: 390 }} className="flex flex-col gap-4">
       <div data-testid={`${half}-described`}>
@@ -309,7 +306,6 @@ export const SmallActionStaysInCorner: Story = {
 
 function HeaderlessCards({ half }: { half: "native" | "compiled" }) {
   const Card = half === "native" ? Native : Compiled;
-  const Button = half === "native" ? NativeButton : CompiledButton;
   return (
     <div className="grid gap-4">
       <div data-testid={`${half}-body`}>
@@ -317,13 +313,13 @@ function HeaderlessCards({ half }: { half: "native" | "compiled" }) {
           contentSlot={
             <div
               data-testid={`${half}-body-content`}
-              className="h-10 border border-foreground/15"
+              className="h-10 border border-foreground/50"
             />
           }
         />
       </div>
       <div data-testid={`${half}-footer`}>
-        <Card footerActionsSlot={<Button content="Save" />} />
+        <Card footerActionsSlot={<HalfButton half={half} content="Save" />} />
       </div>
     </div>
   );
@@ -367,3 +363,22 @@ export const Headerless: Story = {
     }
   },
 };
+
+/**
+ * One half's `Button`. A component picked by a ternary would be a union of the two halves'
+ * `Button`s, and each has two call signatures, which TypeScript cannot call through a union.
+ */
+function HalfButton({
+  half,
+  ...props
+}: {
+  half: "native" | "compiled";
+  variant?: "outline";
+  size?: "sm";
+  content: string;
+}) {
+  if (half === "native") {
+    return <NativeButton {...props} />;
+  }
+  return <CompiledButton {...props} />;
+}

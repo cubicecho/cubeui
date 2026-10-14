@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, OptionSelect, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, MultiSelect, ActionButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Page, DetailPage, Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -53,7 +53,7 @@ the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `ListItem`, `FileTree`, `StatTile`
+`CenteredLayout`, `DialogLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -90,6 +90,7 @@ at the end.
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout.md](layout.md#description-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout.md](layout.md#stat-tiles) |
 | A list page's failed / loading / empty rungs | `QueryState` | [layout.md](layout.md) |
+| The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout.md](layout.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout.md](layout.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout.md](layout.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout.md](layout.md#empty-states) |
@@ -100,7 +101,7 @@ at the end.
 | A label, a control, a hint under it, and an error | `FormField` | [forms.md](forms.md) |
 | Two or three fields that belong on one line | `FieldRow` | [forms.md](forms.md) |
 | A button, with a label, an icon, a link or a `loading` state | `Button` | [controls.md](controls.md#button) |
-| An icon-only button | `ActionButton` | [controls.md](controls.md) |
+| An icon-only button | `Button` in an `icon*` size, with `aria-label` | [controls.md](controls.md#icon-buttons) |
 | A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls.md](controls.md#copy-button) |
 | A button that saves a file — an export, a note, a report — and waits while it is fetched, or a URL the browser downloads itself (`href`) | `DownloadButton` | [controls.md](controls.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls.md](controls.md#code-block) |
@@ -172,7 +173,8 @@ and the web `FormField`'s `controlSlot`.
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the
   sidebar's, by prefix. A prop that belongs to a slot wears the slot's name, so it needs no word of
-  its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place.
+  its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place;
+  `barPosition="bottom"` puts that bar's `navSlot` along the bottom of the page.
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
   `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
   so there pass what the sidebar's header shows.
@@ -198,7 +200,7 @@ and the web `FormField`'s `controlSlot`.
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
-  and so does `OptionSelect`, whose menu is often filled *by* the opening. Pass `onOpenChange`
+  and so does `Combobox`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
 - **`defaultOpen`** — where it starts, when the thing holds its own open state: `Disclosure`, and
   the `Dialog`, `Popover` and `Menu` primitives. Pass it instead of `open`, never beside it.
@@ -221,8 +223,8 @@ and the web `FormField`'s `controlSlot`.
 
 **Controls add:**
 
-- **`label`** — on `ActionButton` and `ConfirmButton` it is required, and it is the accessible
-  name, not a caption.
+- **`aria-label`** — on a `Button` or `ConfirmButton` in an `icon*` size it is required: the
+  accessible name.
 - **`hint`** — why the control is unavailable, or what it will do. Read after the name.
 - **`leadingSlot`** — inside a field, at its start: an icon, the text padded past it. On `Input`.
   Pass a bare `<Search />`; the input sizes and mutes it, and it takes no press.
@@ -233,6 +235,11 @@ and the web `FormField`'s `controlSlot`.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.
+- **`clearable`** — the control can be put back to holding nothing. A button that empties it on
+  `Combobox multiple`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and a
+  single `ComboboxField` a first row for "nothing", which writes `null`.
+- **`emptyLabel`** — what a `clearable` select's row for "nothing" says, and so what its trigger
+  reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice.
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
   `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
@@ -305,10 +312,10 @@ on a row that becomes a box on press, no commit on blur. The set used to ship `I
 and `InlineNumberEdit`; they were removed, and nothing replaces them.
 
 - **A rename or a one-value change** is a `DialogLayout` holding a form, opened from a Rename
-  row, a pencil `ActionButton`, or the row itself, with the value in a bound field and Save /
+  row, a pencil icon `Button`, or the row itself, with the value in a bound field and Save /
   Cancel — see [forms.md](forms.md#forms-in-dialogs).
 - **A settings page** is a form with its fields showing, or a `SettingRow` whose `actionSlot` is a
-  real control — a `Switch`, an `OptionSelect` — that is always drawn as one.
+  real control — a `Switch`, a `Combobox` — that is always drawn as one.
 - **An "Add lane" box** that appears at the end of a list is a field, not an edit: it holds
   nothing until typed into, and Enter adds it.
 
@@ -338,7 +345,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout.md](layout.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record: its loading and not-found branches around the body | `DetailPage` | `@cubeui/detail-page` |
-| The header of that screen: a back button, the record's name, a badge, its actions. Its own item, so it is its own import (`@/components/detail-header`) | `DetailHeader`, `EditButton` | `@cubeui/detail-header` |
+| The header of that screen: a back button, the record's name, a badge, its actions. Its own item, so it is its own import (`@/components/detail-header`) | `DetailHeader` | `@cubeui/detail-header` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout.md](layout.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
@@ -351,12 +358,13 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |
-| Several of a list, bound to a form field | `MultiSelectField` | `@cubeui/multi-select-form-field` |
+| Several of a list, bound to a form field | `ComboboxField multiple` | `@cubeui/combobox-field` |
+| One of a long, fetched or annotated list, bound to a form field — searchable, and `clearable` for a choice that may be left unmade | `ComboboxField` | `@cubeui/combobox-field` |
 | One of a few short choices as pills, bound to a form field | `SegmentedField` | `@cubeui/segmented-field` |
 | A label, a control, a hint under it, and an error | `Field` and its parts | `@cubeui/field` |
 | A row of pills that switches a view or a period — see [controls.md](controls.md#segmented-control) | `SegmentedGroup`, `SegmentedButton` | `@cubeui/segmented` |
 | Three or four exclusive choices, all on screen (a visibility, a plan) | `RadioGroup`, `RadioGroupItem` | `@cubeui/radio-group` |
-| One value from a longer list, in a sheet — options as an array, with groups, rules and notes — see [controls.md](controls.md#option-select) | `OptionSelect` | `@cubeui/option-select` |
+| One value from a longer list, in a sheet — options as an array, with groups, rules and notes — see [controls.md](controls.md#combobox) | `Combobox` | `@cubeui/combobox` |
 | The app's light / dark / system setting and its palette, stored and applied — see [controls.md](controls.md#theme) | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` | `@cubeui/theme-picker` |
 | The same, bound to a form field | `RadioGroupField` | `@cubeui/radio-group-field` |
 | A date and a time as one `Date`, or an optional date only (`clearable mode="date"`) — see [controls.md](controls.md#date-and-date-range) | `DateTimeInput` | `@cubeui/date-time-input` |
@@ -365,11 +373,11 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A colour-coded thing — see [controls.md](controls.md#colour) | `ColorDot`, `Card accentColor`, `readableTextColor` | `@cubeui/color-dot`, `@cubeui/card`, `@cubeui/readable-text-color` |
 | A count, a file size, a duration, a date or "3 days ago" as text, and a row of them joined with ` · ` — see [controls.md](controls.md#numbers-sizes-and-dates-as-text) | `formatCount`, `formatBytes`, `formatDuration`, `formatDate`, `formatDateTime`, `formatAgo`, `joinStats` | `@cubeui/format` |
 | A text field with an icon inside it — see [controls.md](controls.md#an-icon-in-an-input) | `Input leadingSlot`, `Input trailingSlot` | `@cubeui/input` |
-| A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#multi-select) | `MultiSelect` | `@cubeui/multi-select` |
+| A tag picker: chips on a trigger, a searchable list in a sheet, each chip removable — see [controls.md](controls.md#several-at-once) | `Combobox multiple` | `@cubeui/combobox` |
 | A search or filter box — see [controls.md](controls.md#search) | `SearchInput` | `@cubeui/search-input` |
 | A search box over rows that filter as you type, each chosen by a press — see [controls.md](controls.md#command) | `Command` and its parts | `@cubeui/command` |
 | A tag or filter chip the user can take off — see [controls.md](controls.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
-| An icon-only button, with a tooltip on a long press and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `ActionButton` | `@cubeui/action-button` |
+| An icon-only button, with a `hint` tooltip and a reason that survives `disabled` — see [controls.md](controls.md#icon-buttons) | `Button` in an `icon*` size | `@cubeui/button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls.md](controls.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls.md](controls.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
 | A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls.md](controls.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
@@ -384,6 +392,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls.md](controls.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls.md](controls.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls.md](controls.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
+| The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout.md](layout.md#list) | `List` | `@cubeui/list` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout.md](layout.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout.md](layout.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |

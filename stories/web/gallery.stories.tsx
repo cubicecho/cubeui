@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
-import { ActionButton } from "@/components/action-button";
 import {
   SwitchField as BoundSwitchField,
+  ComboboxField,
   InputField,
   NumberField,
   SelectField,
@@ -13,11 +13,12 @@ import {
 import { CardLayout } from "@/components/card-layout";
 import { CenteredLayout } from "@/components/centered-layout";
 import { ColorField } from "@/components/color-field";
+import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
-import { DetailHeader, EditButton } from "@/components/detail-header";
+import { DetailHeader } from "@/components/detail-header";
 import { DetailPage } from "@/components/detail-page";
 import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
@@ -26,12 +27,10 @@ import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
 import { HeaderContentFooter } from "@/components/header-content-footer";
+import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { MultiSelect } from "@/components/multi-select";
-import { MultiSelectField } from "@/components/multi-select-field";
-import { OptionSelect } from "@/components/option-select";
 import { CardGrid, EmptyState, Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
@@ -77,6 +76,7 @@ import { ColorBar } from "@/components/ui/color-bar";
 import { ColorDot } from "@/components/ui/color-dot";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { ColorField as HookColorField } from "@/components/ui/color-picker-field";
+import { ComboboxField as HookComboboxField } from "@/components/ui/combobox-field";
 import {
   Command,
   CommandEmpty,
@@ -160,7 +160,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { MultiSelectField as HookMultiSelectField } from "@/components/ui/multi-select-form-field";
 import {
   Popover,
   PopoverClose,
@@ -245,6 +244,11 @@ const NOT_SHOWN: Record<string, string> = {
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
   "error-message": "A function; the form fields read their error text with it.",
+  "description-hint":
+    'The button behind `descriptionPlacement="popover"`; the fields, cards, sections and rows draw it.',
+  "form-binding": "Types and one function; the form fields are bound to a form through them.",
+  "number-draft": "Two functions; NumberField reads the text being typed with them.",
+  "select-options": "Types and functions; the selects read their options list through them.",
   tree: "`buildTree`, a function; the file tree is drawn from what it returns.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
@@ -893,14 +897,15 @@ function Selects() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <OptionSelect
+          <Combobox
             aria-label="Priority"
             className="w-56"
             options={PRIORITIES}
             value={priority}
             onValueChange={setPriority}
           />
-          <MultiSelect
+          <Combobox
+            multiple
             aria-label="Tags"
             options={TAGS}
             value={tags}
@@ -1016,7 +1021,7 @@ function Pickers() {
   );
 }
 
-function ActionButtons() {
+function IconButtons() {
   return (
     <TooltipProvider>
       <Row
@@ -1024,16 +1029,16 @@ function ActionButtons() {
           <>
             <CopyButton value="sk-live-1234" label="Copy the API key" />
             <DownloadButton source="# Notes" filename="notes.md" label="Download notes.md" />
-            <ActionButton label="Edit" variant="outline" size="icon" iconSlot={<Pencil />} />
-            <ActionButton
-              label="Refresh"
+            <Button aria-label="Edit" variant="outline" size="icon" iconSlot={<Pencil />} />
+            <Button
+              aria-label="Refresh"
               hint="Fetches the list again"
               variant="outline"
               size="icon"
               iconSlot={<RefreshCw />}
             />
             <ConfirmButton
-              label="Delete the lane"
+              aria-label="Delete the lane"
               variant="destructive-outline"
               size="sm"
               title="Delete this lane?"
@@ -1154,7 +1159,7 @@ function AppFormSample() {
       <BoundSwitchField form={form} name="notify" label="Notify the team" />
       <ColorField form={form} name="color" label="Colour" swatches={SWATCHES} />
       <DateField form={form} name="due" label="Due" clearable />
-      <MultiSelectField form={form} name="tags" label="Tags" options={TAGS} />
+      <ComboboxField multiple form={form} name="tags" label="Tags" options={TAGS} />
       <PasswordField form={form} name="password" label="Password" />
       <RadioGroupField
         form={form}
@@ -1175,9 +1180,15 @@ function AppFormSample() {
 const { useAppForm: useHookForm } = createAppForm({
   DateTimeField,
   ColorField: HookColorField,
-  MultiSelectField: HookMultiSelectField,
+  ComboboxField: HookComboboxField,
   SegmentedField,
 });
+
+const HOOK_OWNERS = [
+  { value: "ada", label: "Ada Lovelace", group: "Design" },
+  { value: "grace", label: "Grace Hopper", group: "Engineering" },
+  { value: "linus", label: "Linus Torvalds", group: "Engineering" },
+];
 
 const HOOK_PRIORITIES = [
   { value: "low", label: "Low" },
@@ -1199,6 +1210,7 @@ function HookFormSample() {
       due: new Date(2026, 8, 15) as Date | null,
       color: "#1d4ed8",
       priority: "normal",
+      owner: "grace",
       tags: ["home"] as string[],
     },
     onSubmit: noop,
@@ -1223,8 +1235,11 @@ function HookFormSample() {
           <form.AppField name="priority">
             {(field) => <field.SegmentedField label="Priority" options={HOOK_PRIORITIES} />}
           </form.AppField>
+          <form.AppField name="owner">
+            {(field) => <field.ComboboxField label="Task owner" options={HOOK_OWNERS} searchable />}
+          </form.AppField>
           <form.AppField name="tags">
-            {(field) => <field.MultiSelectField label="Task tags" options={HOOK_TAGS} />}
+            {(field) => <field.ComboboxField multiple label="Task tags" options={HOOK_TAGS} />}
           </form.AppField>
           <form.SubmitButton createLabel="Add the task" />
         </Form>
@@ -1277,21 +1292,27 @@ function Sections() {
 
 function ListItems() {
   return (
-    <div className="flex max-w-xl flex-col">
-      <ListItem
-        leadingSlot={<Folder className="size-4" />}
-        title="Design system"
-        description="14 notes"
-        meta="2 days ago"
-        onClick={noop}
-      />
-      <ListItem
-        leadingSlot={<FileText className="size-4" />}
-        title="Release checklist"
-        description="A row that is not pressable"
-        actionSlot={<Button size="sm" variant="outline" content="Open" />}
-      />
-    </div>
+    <List
+      label="Notebooks"
+      className="max-w-xl"
+      contentSlot={
+        <>
+          <ListItem
+            leadingSlot={<Folder className="size-4" />}
+            title="Design system"
+            description="14 notes"
+            meta="2 days ago"
+            onClick={noop}
+          />
+          <ListItem
+            leadingSlot={<FileText className="size-4" />}
+            title="Release checklist"
+            description="A row that is not pressable"
+            actionSlot={<Button size="sm" variant="outline" content="Open" />}
+          />
+        </>
+      }
+    />
   );
 }
 
@@ -1610,7 +1631,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Select, option select, multi select",
-    items: ["select", "option-select", "multi-select"],
+    items: ["select", "combobox"],
     content: <Selects />,
   },
   {
@@ -1630,9 +1651,9 @@ const sections: GallerySection[] = [
     content: <Pickers />,
   },
   {
-    title: "Copy, download, action and confirm buttons",
-    items: ["copy-button", "download-button", "action-button", "confirm-button"],
-    content: <ActionButtons />,
+    title: "Copy, download, icon and confirm buttons",
+    items: ["copy-button", "download-button", "confirm-button"],
+    content: <IconButtons />,
   },
   { title: "Markdown", items: ["markdown"], content: <Markdown content={NOTES} /> },
   { title: "Markdown editor", items: ["markdown-editor"], content: <MarkdownEditing /> },
@@ -1652,26 +1673,13 @@ const sections: GallerySection[] = [
   },
   {
     title: "App form and its bound fields",
-    items: [
-      "app-form",
-      "color-field",
-      "date-field",
-      "multi-select-field",
-      "password-field",
-      "radio-group-field",
-    ],
+    items: ["app-form", "color-field", "date-field", "password-field", "radio-group-field"],
     description: "The web tier's form hook: every field bound to the form by name.",
     content: <AppFormSample />,
   },
   {
     title: "Form",
-    items: [
-      "form",
-      "date-time-field",
-      "color-picker-field",
-      "segmented-field",
-      "multi-select-form-field",
-    ],
+    items: ["form", "date-time-field", "color-picker-field", "combobox-field", "segmented-field"],
     description: "The hook both platforms share, with its fields on `field.*`.",
     content: <HookFormSample />,
   },
@@ -1683,7 +1691,7 @@ const sections: GallerySection[] = [
     items: ["section", "section-heading"],
     content: <Sections />,
   },
-  { title: "List item", items: ["list-item"], content: <ListItems /> },
+  { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
     title: "Disclosure and disclosure row",
@@ -1743,7 +1751,7 @@ const sections: GallerySection[] = [
           <HeaderContentFooter
             className="h-full"
             headerSlot={
-              <p className="p-3 font-medium text-foreground text-sm">A header that stays</p>
+              <p className="p-3 font-semibold text-foreground text-sm">A header that stays</p>
             }
             contentSlot={<div className="px-3">{paragraphs(20)}</div>}
             footerSlot={<p className="p-3 text-muted-foreground text-sm">A footer that stays</p>}
@@ -1812,7 +1820,15 @@ const sections: GallerySection[] = [
                     title={server.name}
                     subtitle={`${server.tools} tools over ${server.transport}`}
                     badgeSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionsSlot={<EditButton onClick={noop} label="Edit the server" />}
+                    actionsSlot={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={noop}
+                        iconSlot={<Pencil />}
+                        content="Edit the server"
+                      />
+                    }
                   />
                   <p className="text-foreground text-sm">The body of the detail page.</p>
                 </>

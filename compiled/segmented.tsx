@@ -39,7 +39,7 @@ import { cn, type SlotNode } from "@/lib/utils";
  */
 export function segmentedItemClass(active: boolean, className?: string) {
   return cn(
-    "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+    "rounded-md px-3 py-1.5 text-sm font-semibold transition-colors",
     active
       ? "bg-active text-active-foreground"
       : "text-foreground/60 hover:bg-hover hover:text-foreground",
@@ -55,7 +55,7 @@ export function segmentedItemClass(active: boolean, className?: string) {
  */
 export function segmentedTextClass(active: boolean, className?: string) {
   return cn(
-    "text-sm font-medium",
+    "text-sm font-semibold",
     active ? "text-active-foreground" : "text-foreground/60",
     className,
   );
@@ -103,7 +103,7 @@ const SegmentedGroupContext = React.createContext<SegmentedGroupContextValue | n
  * page with nothing round them, for a toolbar or a nav bar.
  */
 const SEGMENTED_GROUP_VARIANTS = {
-  framed: "h-10 rounded-md border border-foreground/15 bg-background p-1",
+  framed: "h-10 rounded-md border border-foreground/50 bg-background p-1",
   plain: "",
 } as const;
 

@@ -112,7 +112,7 @@ const EmptyTitle = React.forwardRef<HTMLSpanElement, TextProps>(({ className, ..
   <span
     ref={ref as React.Ref<HTMLSpanElement>}
     data-slot="empty-title"
-    className={cn("cube-rn-text", "font-medium text-sm text-foreground", className)}
+    className={cn("cube-rn-text", "font-semibold text-sm text-foreground", className)}
     {...(props as React.ComponentPropsWithoutRef<"span">)}
   />
 ));

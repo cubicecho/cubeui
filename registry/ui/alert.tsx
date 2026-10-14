@@ -93,7 +93,7 @@ function defaultIcon(variant: AlertVariant): ReactNode {
 /** shadcn's `AlertTitle`: the title, for the compound form. */
 export function AlertTitle({ className, children }: AlertTitleProps) {
   return (
-    <Text testID="alert-title" className={cn("font-medium text-foreground text-sm", className)}>
+    <Text testID="alert-title" className={cn("font-semibold text-foreground text-sm", className)}>
       {children}
     </Text>
   );

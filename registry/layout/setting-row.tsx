@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { View } from "react-native";
+import {
+  DescriptionHint,
+  DescriptionHintText,
+  type DescriptionPlacement,
+} from "@/components/ui/description-hint";
 import { FieldDescription, FieldTitle } from "@/components/ui/field";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -20,6 +25,15 @@ type SettingRowProps = {
   title?: ReactNode | undefined;
   /** One line under the title on what the setting does, or what pressing the button costs. */
   description?: ReactNode | undefined;
+  /**
+   * Where the description is drawn. `inline` (the default) puts it under the title; `popover`
+   * puts it behind a small button beside the title, named "About <title>". `descriptionId` is
+   * handed to `actionSlot` either way, and on the web still resolves to the text. A row with no
+   * title has nothing to put the button beside, so its description stays inline.
+   */
+  descriptionPlacement?: DescriptionPlacement | undefined;
+  /** The `popover` button's glyph. A question mark by default. */
+  descriptionIconSlot?: SlotNode | undefined;
   /**
    * The control, at the row's far end: a switch, a select, a button, an input. A function is
    * handed the ids of the title and description so the control can be named by the title:
@@ -45,6 +59,8 @@ type SettingRowProps = {
 export function SettingRow({
   title,
   description,
+  descriptionPlacement = "inline",
+  descriptionIconSlot,
   actionSlot,
   className,
   titleClassName,
@@ -54,6 +70,16 @@ export function SettingRow({
   const uid = React.useId();
   const titleId = title ? `${uid}-title` : undefined;
   const descriptionId = description ? `${uid}-description` : undefined;
+  const folded = Boolean(title && description) && descriptionPlacement === "popover";
+  const titleNode = title ? (
+    <FieldTitle
+      testID="setting-row-title"
+      id={titleId}
+      className={cn(folded && "min-w-0 shrink", titleClassName)}
+    >
+      {title}
+    </FieldTitle>
+  ) : null;
   const control =
     typeof actionSlot === "function" ? actionSlot({ titleId, descriptionId }) : actionSlot;
 
@@ -67,12 +93,25 @@ export function SettingRow({
     >
       {title || description ? (
         <View testID="setting-row-text" className="min-w-48 flex-1 gap-0.5">
-          {title ? (
-            <FieldTitle testID="setting-row-title" id={titleId} className={titleClassName}>
-              {title}
-            </FieldTitle>
+          {folded ? (
+            // Beside the title and not inside it: the title is a `Text`.
+            <View testID="setting-row-title-row" className="min-w-0 flex-row items-center gap-2">
+              {titleNode}
+              <DescriptionHint
+                testID="setting-row-description-trigger"
+                label={title}
+                fallbackName="About this setting"
+                description={description}
+                iconSlot={descriptionIconSlot}
+              />
+            </View>
+          ) : (
+            titleNode
+          )}
+          {folded ? (
+            <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
           ) : null}
-          {description ? (
+          {description && folded === false ? (
             <FieldDescription
               testID="setting-row-description"
               id={descriptionId}

@@ -26,9 +26,9 @@ export function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagn
 
     /*
      * `@/components/x` is a sibling too when `x` is compiled: a `registry:component` — a layout,
-     * `action-button` — imports another by that alias. Left alone it typechecked against the
+     * `confirm-button` — imports another by that alias. Left alone it typechecked against the
      * React Native half from a side-by-side story, which passed only while the two halves' props
-     * happened to agree; `confirm-button` hands `ActionButton` an `onClick`, and they do not. A
+     * happened to agree; the compiled `confirm-button` hands `Button` an `onClick`, and they do not. A
      * name that is not compiled here is a web-only item, which has no other half to reach, so it
      * is left for the CLI rather than refused.
      */

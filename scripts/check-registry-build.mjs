@@ -4,7 +4,7 @@
 //
 // The shadcn CLI resolves a cross-item import by the source file's *basename*, not by the item
 // name. In cubeui this showed up as `control/select.tsx` importing alongside the vendored `select`
-// primitive: the consumer ended up with `import { OptionSelect } from "@/components/ui/select"` —
+// primitive: the consumer ended up with `import { Select } from "@/components/ui/select"` —
 // a path that resolves, to the wrong file, failing three files from the cause. Renaming only the
 // item does not help; the file is what the CLI matches on.
 //
@@ -946,7 +946,6 @@ const WEB_ONLY = {
   "markdown-code-editor":
     "CodeMirror, which edits a contenteditable DOM node; a device's editor is a `TextInput`",
   "markdown-editor": "a preview beside a textarea, and the preview is `markdown`",
-  "multi-select-field": "a bound field of `app-form`; to merge into `form`",
   "password-field": "a bound field of `app-form`; to merge into `form`",
   table: "React Native has no table element; on device the rows are `ListItem`s",
 };
@@ -1150,7 +1149,7 @@ if (uncoloured.length > 0) {
       "\nTailwind's palette (`bg-green-700`) are reported too: give the colour a token named for" +
       "\nwhat it means. So is one of shadcn's names (`bg-primary`, `border-border`): those are" +
       "\naliases for vendored components. And so is a token at an opacity that is not one of the" +
-      "\nsteps (10, 15, 40, 60, 90): `AGENTS.md` says what each is for. The tokens and what each" +
+      "\nsteps (10, 40, 50, 60, 90): `AGENTS.md` says what each is for. The tokens and what each" +
       "\nmeans are listed at the top of `tokens/palette.mjs`.",
   );
 }

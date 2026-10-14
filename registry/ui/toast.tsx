@@ -132,7 +132,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 accessibilityLabel="Dismiss"
                 className="shrink-0"
               >
-                <Text className={`text-sm font-medium ${TONE_TEXT_CLASS[toast.tone]}`}>×</Text>
+                <Text className={`text-sm font-semibold ${TONE_TEXT_CLASS[toast.tone]}`}>×</Text>
               </Pressable>
             </View>
           ))}

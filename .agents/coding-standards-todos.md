@@ -31,20 +31,23 @@ with them.
 | R2 | Refactor [sweep] | Holds `stories/` to the braces and negation rules (185 unbraced bodies, 10 negations), leaving bare numbers allowed there as in any test. | Stories are what an author copies from when writing a new one; the whole repo then lints one way. | — | done |
 | R3 | Refactor [sweep] | Rewrites the `!` on logic checks the plugin cannot see in the registry because the name has no `is`/`has` prefix (`!open`, `!disabled`, `!checked`, `!ok`): about 45 hits in about 30 files. | Finishes P20 in the files apps vendor; #286 only did what the plugin reports. | — | done |
 | R4 | Refactor [reuse] | Merges the three identical `messageOf(error)` helpers (native form, web form, radio group field) into one shared module. | Three copies of "what text does a validator's error show" that must change together. | B1 | done |
-| B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — | open |
-| R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — | open |
-| R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — | open |
+| B1 | Question | `QueryState`'s `messageOf` is a near copy that answers differently: a non-string `message` and any other value give `""`, where the form copies give `String(error)`. Is that intended? | Decides whether R4 merges three copies or four. | — |done |
+| R5 | Refactor [reuse] | Gives the form-binding props type one declaration: `RadioGroupFieldProps` repeats 27 lines of `FormBinding` from the native form. (unverified that the item can import it) | A validator or listener kind added to one is silently missing from the other. | — |done |
+| R6 | Refactor [reuse] | Gives the bound-field wrapper one body: the 27-line `FormBoundField` in the native form and in the web `app-form` are the same, cast and comment included. (unverified that the two tiers can share a module) | The one place the form's generic `Field` is cast exists twice. | — |done |
 | R7 | Refactor [reuse] | Moves the `CopyButton` component into one place, leaving only `write(text)` split by platform; today both halves carry the same 20-line component. | A prop added to one half and not the other is a native/web drift nothing checks. | — | done |
 | R8 | Refactor [readability] | Reads the 12 `as unknown as` casts in the registry and replaces the type-level ones (the two `rest as unknown as TProps`, the focus and document-position probes) with a guard or a typed helper; the React Native to DOM bridges stay, each with its reason. (unverified which are fixable) | These are the casts that switch checking off altogether (P17, worst first). | — | done |
 | R9 | Refactor [readability] | Turns the 12 nested ternaries in the registry into an `if` block or a small named function. | P15: a ternary inside a ternary is always an `if`. | — | done |
 | D1 | Docs [sweep] | Shortens doc blocks over four sentences: 205 in the registry (112 files), 42 in scripts, 42 in stories. 50 of the registry's run past ten sentences, the longest 48. | P19. Much of the length is history ("what went wrong before"), which belongs to the commit. | — | partly done |
 | D2 | Docs [sweep] | Shortens `//` comments inside bodies that run past two lines: 95 in the registry, 32 in scripts, 17 in stories. | P19. | — | open |
-| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — |partly done |
+| D3 | Docs [sweep] | Adds the missing doc blocks in the registry: about 44 exported functions, 118 exported types and 23 exported constants have none, plus about 150 internal functions and component parts. (unverified, counted by pattern) | P4. The exported ones are what an app's editor shows on hover. | — | partly done |
 | R10 | Refactor [simplify] | Splits `scripts/rn2web/compile.mjs` (1,026 lines) into one module per pass, along the five numbered divider comments it already has, and removes the 15 dividers. | P5: a file that needs dividers is doing several jobs. It is the third most-changed code file. | — | done |
 | A1 | API change | Moves the registry's seven timing and threshold constants (`COPIED_MS`, `SEARCH_DEBOUNCE_MS`, `VISIBLE_MS`, `SPRING_OPEN_MS`, `SPIN_DURATION`, `PULSE_DURATION`, the accent lightness bounds) into one defaults module. Every item that reads one gains a file dependency. | P22: one place answers "what can be tuned". | — | open |
-| A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — | open |
+| A2 | API change | Renames the exported `SPIN_DURATION` and `PULSE_DURATION` so the unit is in the name (`…_MS`), as the other timing constants have it. Breaks an app that imports either. | P4: a number says its unit. | — |done |
 | R11 | Refactor [sweep] · low value | Names the 191 conditions in the registry that test a comparison or an `&&`/`||` inline, where they do not already read as English. (unverified: the count includes ones that do) | P1. Large diff across files apps diff on update. | — | open |
 | T1 | Test [readability] · low value | Replaces the 297 type assertions in stories (50 in `as-child-trigger.stories.tsx`) with typed queries or a small helper. | P17, in test code. | — | open |
+| R12 | Refactor [sweep] | Rewrites the `!` on a plain identifier that the lint plugin cannot see in `scripts/` (`if (!classes)` in `passes/elements.mjs` is one). (unverified count) | Finishes P20 in scripts, as R3 did in the registry. | — | open |
+| R13 | Refactor [simplify] | Splits `transformElement` in `scripts/rn2web/passes/elements.mjs`, which is about 205 of that file's 559 lines. | The pass R10 left largest. | — | open |
+| B2 | Bug | A `Button` with a DOM element as its `linkSlot` handed it `onPress` on the react-native-web half, which React drops: the press never ran, and the story run logged `Unknown event handler property onPress`. Fixed: a DOM link takes the press as `onClick`. `button-as-child.stories.tsx` pins it. | A press handler the web silently dropped. | — | done |
 
 ## Conventions
 
@@ -102,10 +105,19 @@ branch runs is a `B` item.
 `asyncDebounceMs` and `listeners`. Target: `FormBinding` exported from the form item and
 intersected. (unverified)
 
+**Done:** the types live in a new lib item, `form-binding`, which the native `form`, the web
+`app-form` and `radio-group-field` all depend on. The three had already drifted: the web's
+listeners took `onChangeDebounceMs` and `onBlurDebounceMs` and the other two did not. All three
+take the web's shape now.
+
 ### R6 [reuse] — one `FormBoundField`
 
 **File:** `registry/ui/form.tsx:755-781`, `registry/web/app-form.tsx:613-639`. Target: the
 wrapper in one module both read. (unverified)
+
+**Done, more narrowly:** the cast of `form.Field` is `fieldOf(form)` in `form-binding`, read by
+all three files. The fifteen lines of render prop round it stay in each, because each provides
+its own `fieldContext` and the web's props type differs.
 
 ### R7 [reuse] — one `CopyButton` component
 
@@ -158,7 +170,7 @@ byte-for-byte what it was. `elements.mjs` is 559 lines, most of it `transformEle
 ### D1 [sweep] — doc blocks over four sentences
 
 **Hits:** registry 205 in 112 files (5 sentences: 60, 6: 40, 7–10: 64, over 10: 41). Worst:
-`action-button.tsx:1` (48), `split-layout.tsx:191` (33), `alert.tsx:1` and `icons.tsx:1`
+`split-layout.tsx:191` (33), `alert.tsx:1` and `icons.tsx:1`
 (31), `badge.tsx:1` (22). Scripts 42 in 14 files, stories 42 in 32. `AGENTS.md` asks that
 comments say why and "what went wrong without the line"; it sets no length.
 
@@ -194,6 +206,10 @@ parts, which the scan did not count.
 **File:** `registry/layout/query-state.tsx:52-66` against the three in R4. Is the
 difference intended?
 
+**Done:** intended. `QueryError` reads `messageOf(error) || FALLBACK`, so the empty string is
+what lets "The server did not answer." show where a form would print the raw value. The
+helper's doc block now says so; the code is unchanged.
+
 ---
 
 ## API changes (need a decision)
@@ -207,6 +223,9 @@ difference intended?
 ### A2 — units in `SPIN_DURATION` and `PULSE_DURATION`
 
 `registry/ui/spinner-base.ts:20`, `registry/ui/skeleton-base.ts:13`.
+
+**Done:** now `SPIN_DURATION_MS` and `PULSE_DURATION_MS`. No story, script or skill page named
+either, so only an app that imported one has anything to change.
 
 ---
 

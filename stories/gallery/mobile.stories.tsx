@@ -2,21 +2,20 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
-import { ActionButton } from "../../registry/layout/action-button";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
+import { Combobox } from "../../registry/layout/combobox";
 import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
-import { DetailHeader, EditButton } from "../../registry/layout/detail-header";
+import { DetailHeader } from "../../registry/layout/detail-header";
 import { DetailPage } from "../../registry/layout/detail-page";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
+import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
-import { MultiSelect } from "../../registry/layout/multi-select";
-import { OptionSelect } from "../../registry/layout/option-select";
 import { CardGrid, EmptyState, Page } from "../../registry/layout/page";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
@@ -59,6 +58,7 @@ import { ColorBar } from "../../registry/ui/color-bar";
 import { ColorDot } from "../../registry/ui/color-dot";
 import { ColorPicker } from "../../registry/ui/color-picker";
 import { ColorField } from "../../registry/ui/color-picker-field";
+import { ComboboxField } from "../../registry/ui/combobox-field";
 import {
   CommandDialog,
   CommandEmpty,
@@ -131,7 +131,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "../../registry/ui/menu.tsx";
-import { MultiSelectField } from "../../registry/ui/multi-select-form-field";
 import { PasswordInput } from "../../registry/ui/password-input";
 import {
   Popover,
@@ -215,6 +214,12 @@ const NOT_SHOWN: Record<string, string> = {
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
+  "description-hint":
+    'The button and pane behind `descriptionPlacement="popover"`. Drawn by the fields, cards, sections and rows that take it.',
+  "form-binding": "The types a field bound to a form takes, and one function. Not a component.",
+  "number-draft": "Two functions NumberField reads the text being typed with. Not a component.",
+  "select-options":
+    "The types a select's options list holds, and the walk into groups. Not a component.",
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
@@ -350,7 +355,7 @@ function Selects() {
           <SelectItem value="cherry">Cherry</SelectItem>
         </SelectContent>
       </Select>
-      <OptionSelect
+      <Combobox
         aria-label="Status"
         value={status}
         onValueChange={setStatus}
@@ -361,7 +366,8 @@ function Selects() {
           { value: "closed", label: "Closed" },
         ]}
       />
-      <MultiSelect
+      <Combobox
+        multiple
         aria-label="Labels"
         placeholder="Pick labels"
         options={LABEL_OPTIONS}
@@ -530,10 +536,15 @@ function ConfirmAndToast() {
 const { useAppForm } = createAppForm({
   DateTimeField,
   ColorField,
-  MultiSelectField,
+  ComboboxField,
   SegmentedField,
 });
 
+const OWNER_OPTIONS = [
+  { value: "ada", label: "Ada Lovelace", group: "Design" },
+  { value: "grace", label: "Grace Hopper", group: "Engineering" },
+  { value: "linus", label: "Linus Torvalds", group: "Engineering" },
+];
 const PRIORITY_OPTIONS = [
   { value: "low", label: "Low" },
   { value: "normal", label: "Normal" },
@@ -555,8 +566,11 @@ function ProjectForm() {
     defaultValues: {
       name: "Quarterly review",
       notes: "",
+      budget: 1200 as number | null,
+      shareToken: "tok_4f9a2c",
       visibility: "team",
       priority: "normal",
+      owner: "grace",
       tags: ["planning"] as string[],
       pinned: false,
       notify: true,
@@ -572,6 +586,12 @@ function ProjectForm() {
         <form.AppField name="notes">
           {(field) => <field.TextAreaField label="Notes" />}
         </form.AppField>
+        <form.AppField name="budget">
+          {(field) => <field.NumberField label="Budget" description="In pounds." />}
+        </form.AppField>
+        <form.AppField name="shareToken">
+          {(field) => <field.PasswordField label="Share token" />}
+        </form.AppField>
         <RadioGroupField
           form={form}
           name="visibility"
@@ -581,8 +601,11 @@ function ProjectForm() {
         <form.AppField name="priority">
           {(field) => <field.SegmentedField label="Priority" options={PRIORITY_OPTIONS} />}
         </form.AppField>
+        <form.AppField name="owner">
+          {(field) => <field.ComboboxField label="Owner" options={OWNER_OPTIONS} searchable />}
+        </form.AppField>
         <form.AppField name="tags">
-          {(field) => <field.MultiSelectField label="Tags" options={TAG_OPTIONS} />}
+          {(field) => <field.ComboboxField multiple label="Tags" options={TAG_OPTIONS} />}
         </form.AppField>
         <form.AppField name="pinned">
           {(field) => <field.CheckboxField label="Pin to the top" />}
@@ -680,7 +703,7 @@ const navLink = "rounded-md px-3 py-1.5 text-muted-foreground text-sm";
 const sections: GallerySection[] = [
   {
     title: "Buttons",
-    items: ["button", "action-button", "confirm-button"],
+    items: ["button", "confirm-button"],
     description:
       "Every variant, then every size. The confirm button opens its question when pressed.",
     content: (
@@ -713,15 +736,15 @@ const sections: GallerySection[] = [
           <Button size="icon-lg" variant="outline" aria-label="Add, large" iconSlot={<Plus />} />
         </Row>
         <Row>
-          <ActionButton
-            label="Download report"
+          <Button
+            aria-label="Download report"
+            hint="Saves it to this device"
             variant="outline"
             size="icon"
             onPress={noop}
             iconSlot={<Download />}
           />
           <ConfirmButton
-            label="Delete project"
             variant="destructive-outline"
             title="Delete this project?"
             description="Its tasks go with it."
@@ -894,7 +917,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "List rows",
-    items: ["item", "list-item"],
+    items: ["item", "list", "list-item"],
     content: (
       <Stack>
         <ItemGroup>
@@ -917,13 +940,20 @@ const sections: GallerySection[] = [
             </ItemContent>
           </Item>
         </ItemGroup>
-        <ListItem
-          title="Dana Whitfield"
-          description="Owner"
-          leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
-          meta="2 projects"
+        <List
+          label="Members"
+          contentSlot={
+            <>
+              <ListItem
+                title="Dana Whitfield"
+                description="Owner"
+                leadingSlot={<ColorDot color="#2563eb" label="Blue" />}
+                meta="2 projects"
+              />
+              <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
+            </>
+          }
         />
-        <ListItem title="Pressable row" description="Opens the member" onPress={noop} />
       </Stack>
     ),
   },
@@ -970,7 +1000,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Selects",
-    items: ["select", "option-select", "multi-select"],
+    items: ["select", "combobox"],
     description: "Each list opens from its trigger.",
     content: <Selects />,
   },
@@ -1013,7 +1043,7 @@ const sections: GallerySection[] = [
       "radio-group-field",
       "date-time-field",
       "color-picker-field",
-      "multi-select-form-field",
+      "combobox-field",
       "segmented-field",
     ],
     description: "One bound form, a field of each kind.",
@@ -1060,7 +1090,15 @@ const sections: GallerySection[] = [
           title="Quarterly review"
           subtitle="Due on Friday"
           badgeSlot={<Badge variant="positive" label="On track" />}
-          actionsSlot={<EditButton onPress={noop} />}
+          actionsSlot={
+            <Button
+              variant="outline"
+              size="sm"
+              onPress={noop}
+              iconSlot={<Pencil />}
+              content="Edit"
+            />
+          }
         />
       </Stack>
     ),

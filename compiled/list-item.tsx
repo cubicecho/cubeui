@@ -137,7 +137,7 @@ export function ListItem({
         {asText(
           title,
           cn(
-            "font-medium text-foreground text-sm",
+            "font-semibold text-foreground text-sm",
             // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
             // what `line-clamp-1` becomes and what `truncate` does not.
             "truncate",

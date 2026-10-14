@@ -95,14 +95,12 @@ Read this before adding anything:
    The line is *who owns the state*: state about the shell's own interaction is the shell's, and
    state about the app's data is the caller's. `DialogLayout` holds whether its discard question
    is up, and is *handed* `hasUnsavedChanges` rather than reading the form. See conventions §8.
-6. **Port the call sites.** A component landing here without at least one app updated to use it
-   is a component nobody has proven. Say which app, in the PR.
-7. **A component is a domain object; a layout places it.** A component names a thing in the app's
+6. **A component is a domain object; a layout places it.** A component names a thing in the app's
    domain — a Task, an Invoice, a ServerRow — and belongs in the app. A layout names an
    arrangement and knows nothing about what it arranges. That is the test for whether something
    belongs in this registry at all. It holds about nine times in ten; the controls are the
    standing exception. See conventions §12.
-8. **Names are plain English.** No vendor jargon, no house metaphors, no initialisms — a prop and
+7. **Names are plain English.** No vendor jargon, no house metaphors, no initialisms — a prop and
    a `data-slot` are both public API, and every rename of one has been breaking. `rail` was
    Material's, `dirty` is Formik's, `hcf-` was ours. Internal metaphors (*chassis*, *floors*,
    *rungs*) stay in this file and in source comments, never in a prop name. See conventions §11.
@@ -173,8 +171,8 @@ component cannot invent a seventh:
 | Step | Is | Example |
 |---|---|---|
 | `/10` | A quiet fill, a tint, a border | `bg-foreground/10`, `bg-warning/10`, `border-foreground/10` |
-| `/15` | An input's border | `border-foreground/15` |
 | `/40` | The edge of a tint, an invalid ring, the tint of a chosen row | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
+| `/50` | A control's edge — an input, a select, a checkbox, an unchecked switch — 3:1 on every surface (WCAG 1.4.11), held by `palette-contrast.test.mjs` | `border-foreground/50`, `bg-foreground/50` |
 | `/60` | Secondary text, the scrim, a border under the pointer | `text-foreground/60`, `bg-overlay/60` |
 | `/90` | A fill under the pointer | `hover:bg-neutral/90` |
 | none | Everything else | `bg-neutral`, `border-active` |
@@ -274,7 +272,10 @@ Still unsettled: the open decisions at the end of the README, and the open quest
   `tsconfig.json` is React Native, `tsconfig.web.json` is `compiled/`, `registry/web/` and
   `stories/web/`
 - **React 19**; **React Native** with **NativeWind 5** on the native side; **Tailwind v4**,
-  **radix-ui** (the unified package) and **lucide-react** on the web side
+  **radix-ui** (the unified package) and **lucide-react** on the web side. A file a device
+  bundles (`registry/ui/*.tsx` with no `.web.tsx` beside it taking its place) never imports the
+  unified package: Metro does not drop what is unused, so one import of it ships every primitive
+  and `react-dom`. The one primitive those files need is `Slot`, from `@radix-ui/react-slot`
 - **shadcn** CLI for `build`
 - **Biome** for lint and format
 - **Storybook** (on Vite) for the stories and, through vitest, the tests
@@ -286,12 +287,13 @@ sanctioned exception is `@tanstack/react-form`, in the form items that bind to i
 
 `cmdk`, `date-fns` and `react-day-picker` do not count against that rule on the web: they are
 what `command` and `calendar` are written on, so they arrive with the primitive rather than
-because of a shell. They are still the reason `multi-select` and `date-picker` are separate
-registry items — a form of plain inputs installs `@cubeui/app-form` and pulls in none of them.
+because of a shell. `date-fns` and `react-day-picker` are still the reason `date-picker` is a
+separate registry item — a form of plain inputs installs `@cubeui/app-form` and pulls in neither.
+`cmdk` does arrive with it, through `combobox`, which `SelectField` renders.
 
 `react-markdown` and `remark-gfm` are the same case: `markdown` is written on them, and they are
 declared by that one item. `markdown` and `markdown-editor` are in no bundle for the same reason
-`multi-select` is its own item — nothing installs a Markdown parser except the app that asked for
+`date-picker` is its own item — nothing installs a Markdown parser except the app that asked for
 one. `markdown-code-editor` is the same again with CodeMirror (`@codemirror/*`, `@lezer/highlight`),
 and is a default export so an app can load it with `lazy()`.
 
@@ -312,17 +314,23 @@ duplication. Do not add a prop, a branch or a doc sentence accommodating another
 The binding lives in two places, one per tier:
 
 - **`registry/ui/form.tsx`** (`@cubeui/form`) is the universal one: `Form`, `useAppForm`,
-  `InputField` and the rest, written in React Native and compiled like any primitive.
+  `InputField`, `NumberField`, `PasswordField` and the rest, written in React Native and compiled like any
+  primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
-  added to `field.*` with `createAppForm`; `multi-select-form-field.tsx` and `segmented-field.tsx`
-  join the same way. `registry/layout/radio-group-field.tsx`
+  added to `field.*` with `createAppForm`; `combobox-field.tsx` and `segmented-field.tsx` join
+  the same way. `registry/layout/radio-group-field.tsx`
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
-  `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `CheckboxField`,
-  `SwitchField` and `SubmitButton`, each reading the store and handing `FormField` a string.
-  `@cubeui/multi-select-field`, `@cubeui/date-field`, `@cubeui/color-field` and
+  `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `ComboboxField`,
+  `CheckboxField`, `SwitchField` and `SubmitButton`, each reading the store and handing `FormField` a string.
+  `@cubeui/date-field`, `@cubeui/color-field` and
   `@cubeui/password-field` are the same layer in their own files, for the weight of what they
   import, and `@cubeui/form-set` installs all of them.
+
+`NumberField` is on both, with one contract: it writes `number | null`, empty is `null`, and the
+text being typed is a draft that `registry/lib/number-draft.ts` reads for both files. Do not
+store `Number(text)` per keystroke in a new field: on device the box is redrawn from the store,
+and `1.` loses its point before the next digit.
 
 Those three are the only files in the registry that import `@tanstack/react-form`. A web-only
 field `app-form.tsx` does not hold is still bound through it: `bindToForm`, `splitProps` and
@@ -410,6 +418,12 @@ real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
+The story tests open a Chromium, and two of them on one machine kill each other: the run ends
+with "Browser connection was closed". Where more than one checkout shares the machine, every
+`npm test`, `npm run check` and `npm run install-test` takes the same lock
+(`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
+directory, so the tools here never find a second copy of the project.
+
 ## Keep the skill in sync
 
 [`skill/SKILL.md`](skill/SKILL.md) is how an agent in a *consuming* project learns these
@@ -488,6 +502,11 @@ Recorded so the next pass does not re-derive them:
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
   so the row that opens is on both halves too.
+  The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
+  its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
+  `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of
+  `contentSlot` itself, as `CardGrid` does, and has no empty or loading state: `QueryState` sits
+  above it.
 - **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
   and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.
   Settled: `buildTree` is `registry/lib/tree.ts` and the look is `registry/layout/file-tree.tsx`,

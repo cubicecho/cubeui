@@ -148,7 +148,7 @@ react-native-web's `pointer-events` rules on purpose (#134).
 
 **That is tested on Biome 2.5**, the version this repo lints with (`^2.5.11`), and a `biome-ignore`
 is written for what that version reports. An older Biome reports more: 2.4.6 also wants `<output>`
-for the `role="status"` that `query-state` and `option-select` write, and those lines carry no
+for the `role="status"` that `query-state` and `combobox` write, and those lines carry no
 ignore, because on 2.5 an ignore there would itself be reported as unused. So on 2.4.x the note
 above cannot be followed to a clean run, and the fix is to upgrade Biome.
 
@@ -454,11 +454,11 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message` |
+| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
 | platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
+| forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
 | docs | `skill` |
@@ -720,10 +720,10 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 35 generated, 36
-hand-written** (16 `.web.tsx` halves and the 20 web-only files) — and `registry.web.json`, derived
-from `registry.json` and `registry.web-only.json` in the same run, publishes **all 78 items**, plus
-the 8 story items. `scripts/rn2web/` is about 2100 lines, of which
+react-native-web anywhere in the output. **Every file has a web half — 57 generated, 36
+hand-written** (26 `.web.tsx` halves and the 10 web-only files) — and `registry.web.json`, derived
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 104 items**, plus
+the 8 story items. `scripts/rn2web/` is about 2700 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs`, with one module per pass in `passes/`, is the
 ts-morph that applies it.
 
@@ -991,7 +991,7 @@ The native halves still take the RN vocabulary and nothing else; a web half now 
 | `select` | every shadcn part — the scroll buttons included — with radix's props on each, `SelectTrigger`'s `size`; content defaults to `item-aligned`, as shadcn's does |
 | `field` | `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldError`'s `errors`, `orientation="responsive"`, and element props on every part (shared source, so on both halves) |
 | `label` | radix's `Label.Root` props, which `FieldLabel` inherits |
-| `option-select` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
+| `combobox` | every `<button>` prop on the trigger again, taken from `SelectTrigger`'s own props now that it is compiled from the React Native source |
 | `button` | shadcn's `xs`, `icon-xs`, `icon-sm`, `icon-lg` sizes (on both halves), and `style` — **but not its children or `asChild`**: the inside is `iconSlot`, `content` and `trailingSlot`, and a link is `linkSlot` (#243), so `<Button>Save</Button>` ports as `<Button content="Save" />` |
 | `dialog` | radix's props on every part; `DialogClose`, `DialogPortal`, `DialogOverlay` and `DialogFooter showCloseButton` (on both halves); `defaultOpen` |
 | `popover` | radix's props on every part; `PopoverAnchor`, `PopoverClose`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription` (on both halves) |
@@ -1195,7 +1195,7 @@ treats the empty array as unset and Vite's own default still applies.
 **platform, not by directory-under-test**, because `@/components/ui/button` has to mean the compiled
 web half in one and the React Native one in the other.
 
-Leaving `compiled/` in both is how `compiled/multi-select-field.tsx` came to be typechecked against a
+Leaving `compiled/` in both is how the web multi-select field (since folded into `combobox`) came to be typechecked against a
 React Native `Badge` — silently, for the whole of stage 3. `npx tsc --explainFiles` is what found it:
 `exclude` does not stop a file being pulled in by an import. The RN Parity stories need the same split
 at runtime, so `.storybook/main.ts` adds a second `vite-tsconfig-paths` naming `tsconfig.web.json` —
@@ -1314,7 +1314,7 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
 
    This entry began from a false premise. It said "cubeui's `badge` has not been ported yet", and
    cubeui has no `badge` to port: the only mention of the name in its whole `registry.json` is a
-   *bare* `"badge"` in `multi-select`'s dependencies, which resolves to upstream shadcn's registry
+   *bare* `"badge"` in the multi-select's dependencies (the item that is now `combobox`), which resolves to upstream shadcn's registry
    and not to cubeui. There was never a clash between the two repos to settle.
 
    The second argument against the name did not survive either. Taking `badge` collides with
@@ -1325,7 +1325,7 @@ stylesheet left to compare with. `tokens/palette.mjs` is the one source, and `to
 
    So the real question was vocabulary, and the fold is a strict superset. Upstream's four variant
    names keep upstream's meanings, which is what lets a DOM call site port unchanged and what makes
-   cubeui's `multi-select` — `variant="secondary"` plus a per-option colour — land here verbatim
+   cubeui's multi-select — `variant="secondary"` plus a per-option colour — land here verbatim
    when its turn comes. The old `tone` values map onto them without an orphan: `neutral` →
    `secondary`, `info` → `default`, `danger` → `destructive`, leaving `success` and `warning` as the
    only two additions.

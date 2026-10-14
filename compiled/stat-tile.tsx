@@ -141,7 +141,7 @@ export function StatTile({
         ) : null}
         <span
           data-slot="stat-tile-label"
-          className={cn("cube-rn-text", "min-w-0 flex-1 truncate font-medium text-sm", ink)}
+          className={cn("cube-rn-text", "min-w-0 flex-1 truncate font-semibold text-sm", ink)}
         >
           {label}
         </span>

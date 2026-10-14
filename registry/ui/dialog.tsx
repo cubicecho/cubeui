@@ -24,15 +24,16 @@ import {
 } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
-import type {
-  DialogCloseProps,
-  DialogContentProps,
-  DialogFooterProps,
-  DialogOverlayProps,
-  DialogPortalProps,
-  DialogProps,
-  DialogSectionProps,
-  DialogTriggerProps,
+import {
+  DIALOG_CONTENT_CLASS,
+  type DialogCloseProps,
+  type DialogContentProps,
+  type DialogFooterProps,
+  type DialogOverlayProps,
+  type DialogPortalProps,
+  type DialogProps,
+  type DialogSectionProps,
+  type DialogTriggerProps,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
@@ -107,18 +108,30 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
   );
 }
 
+type Pressed = ReactElement<{ onPress?: (() => void) | undefined }>;
+
+/** The child with `action` added to its own press rather than swapped in for it. */
+function addPress(child: Pressed, action: () => void) {
+  return cloneElement(child, {
+    onPress: () => {
+      child.props.onPress?.();
+      action();
+    },
+  });
+}
+
 /**
  * A trigger, so a dialog can own its own open state at the call site.
  *
  * On web this is radix's, which also wires `aria-haspopup` and returns focus. Here
  * it is the press that flips `Dialog`'s open flag — its own state, or the caller's
- * through `onOpenChange` — so the native trigger is the child's `onPress`, cloned.
+ * through `onOpenChange` — so the native trigger is added to the child's `onPress`, cloned.
  */
 function DialogTrigger({ asChild, children }: DialogTriggerProps) {
   const open = useContext(DialogOpenContext);
   const show = () => open(true);
   if (asChild && isValidElement(children)) {
-    return cloneElement(children as ReactElement<{ onPress?: () => void }>, { onPress: show });
+    return addPress(children as Pressed, show);
   }
   return (
     <Pressable onPress={show} role="button">
@@ -134,7 +147,7 @@ function DialogTrigger({ asChild, children }: DialogTriggerProps) {
 function DialogClose({ asChild, className, children }: DialogCloseProps) {
   const close = useContext(DialogCloseContext);
   if (asChild && isValidElement(children)) {
-    return cloneElement(children as ReactElement<{ onPress?: () => void }>, { onPress: close });
+    return addPress(children as Pressed, close);
   }
   return (
     // The `role` is hand-written because a `<button>` has no native counterpart.
@@ -195,22 +208,23 @@ function DialogContent({
         aria-label="Close"
       />
       <View
-        {...(role === undefined ? {} : { role })}
-        className={cn(
-          "w-full max-w-lg gap-4 rounded-lg border border-foreground/10 bg-background p-6",
-          className,
-        )}
+        // `dialog` unless the caller says `alertdialog`, as radix's content is.
+        role={role ?? "dialog"}
+        aria-modal
+        className={cn(DIALOG_CONTENT_CLASS, className)}
       >
         {children}
         {showCloseButton ? (
           <Pressable
-            className="absolute right-4 top-4 opacity-70"
+            className="absolute right-4 top-4"
             onPress={close}
+            // The icon is 16 points; this brings the target up to the 44 a finger needs.
+            hitSlop={14}
             // The `role` is hand-written because a `<button>` has no native counterpart.
             role="button"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-foreground/60" />
           </Pressable>
         ) : null}
       </View>

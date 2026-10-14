@@ -15,7 +15,7 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing } from "react-native";
 import { LoaderCircle } from "@/components/ui/icons";
-import { SPIN_DURATION, type SpinnerProps, spinnerClass } from "@/components/ui/spinner-base";
+import { SPIN_DURATION_MS, type SpinnerProps, spinnerClass } from "@/components/ui/spinner-base";
 import { cn } from "@/lib/utils";
 
 export type { SpinnerProps };
@@ -28,7 +28,7 @@ export function Spinner({ label = "Loading", className }: SpinnerProps) {
     const loop = Animated.loop(
       Animated.timing(turn, {
         toValue: 1,
-        duration: SPIN_DURATION,
+        duration: SPIN_DURATION_MS,
         easing: Easing.linear,
         useNativeDriver: true,
       }),

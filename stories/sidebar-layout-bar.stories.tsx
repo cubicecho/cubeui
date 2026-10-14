@@ -85,7 +85,7 @@ const STATUS = "3 of 5 servers running";
 function Phone({ width, name, children }: { width: number; name: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <p className="px-2 font-medium text-foreground/60 text-xs uppercase tracking-wide">
+      <p className="px-2 font-semibold text-foreground/60 text-xs uppercase tracking-wide">
         {name} · {width}px
       </p>
       <div
@@ -99,7 +99,7 @@ function Phone({ width, name, children }: { width: number; name: string; childre
   );
 }
 
-function Bars({ width }: { width: number }) {
+function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "top" | "bottom" }) {
   return (
     <div className="flex flex-col gap-6 bg-background py-4 text-foreground">
       <Phone width={width} name="react native">
@@ -109,6 +109,7 @@ function Bars({ width }: { width: number }) {
           sidebarWidth="auto"
           divider="none"
           sidebarHideBelow="md"
+          barPosition={barPosition}
           sidebarSlot={<NativeSidebar label="Native rail" contentSlot={null} />}
           brandSlot={<Text className="font-semibold text-base text-foreground">Router</Text>}
           navSlot={places.map((p) => (
@@ -150,6 +151,7 @@ function Bars({ width }: { width: number }) {
           sidebarWidth="auto"
           divider="none"
           sidebarHideBelow="md"
+          barPosition={barPosition}
           sidebarSlot={<CompiledSidebar label="Compiled rail" contentSlot={null} />}
           brandSlot={<span className="font-semibold text-base text-foreground">Router</span>}
           navSlot={places.map((p) => (
@@ -345,6 +347,95 @@ export const Phone320: Story = {
       await expect(canvas.getByRole("button", { name: `${half} settings` })).toBeVisible();
       await expect(canvas.getByRole("button", { name: `${half} theme` })).toBeVisible();
     }
+  },
+};
+
+/**
+ * `barPosition="bottom"`: the places leave the bar at the top for one of their own under the page,
+ * where a phone's thumb is. The brand, the status and the actions stay where they were.
+ */
+export const BottomBar: Story = {
+  render: () => <Bars width={390} barPosition="bottom" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(window.matchMedia("(min-width: 48rem)").matches).toBe(false);
+
+    const heights: number[] = [];
+    for (const [half, phoneName] of [
+      ["Native", "react native"],
+      ["Compiled", "compiled"],
+    ] as const) {
+      const phone = canvasElement.querySelector<HTMLElement>(`[data-phone="${phoneName}"]`);
+      if (phone === null) {
+        throw new Error(`the ${phoneName} half should render`);
+      }
+
+      // One navigation landmark, and it is the bar along the bottom, not a part of the top one.
+      const navs = within(phone).getAllByRole("navigation");
+      await expect(navs).toHaveLength(1);
+      const bar = canvas.getByRole("navigation", { name: `${half} main` });
+      await expect(navs[0]).toBe(bar);
+      await expect(slotOf(bar)).toBe("sidebar-layout-bottom-bar");
+
+      // The top bar keeps the brand, the status and the actions, in that order.
+      const header = within(phone).getByRole("banner");
+      await expect(Array.from(header.children).map(slotOf)).toEqual([
+        "sidebar-layout-brand",
+        "sidebar-layout-status",
+        "sidebar-layout-action",
+      ]);
+      await expect(within(header).getByText(STATUS)).toBeVisible();
+      await expect(canvas.getByRole("button", { name: `${half} settings` })).toBeVisible();
+
+      // Top bar, page, bottom bar: the bar is the full width, under the page, on the bottom edge.
+      const content = phone.querySelector<HTMLElement>(
+        '[data-testid="sidebar-layout-content"], [data-slot="sidebar-layout-content"]',
+      );
+      if (content === null) {
+        throw new Error("the page should be drawn between the bars");
+      }
+      const edge = bar.getBoundingClientRect();
+      const inner = phone.getBoundingClientRect();
+      await expect(edge.width).toBe(390);
+      await expect(header.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        content.getBoundingClientRect().top + 0.5,
+      );
+      await expect(edge.top).toBeGreaterThanOrEqual(content.getBoundingClientRect().bottom - 0.5);
+      await expect(edge.bottom).toBeCloseTo(inner.bottom - 1, 0);
+      heights.push(edge.height);
+
+      // The same four places, named and sized as they are at the top, with one current.
+      const links = within(bar).getAllByRole("link");
+      await expect(links).toHaveLength(4);
+      for (const [index, link] of links.entries()) {
+        await expect(link).toHaveAccessibleName(names[index] as string);
+        const box = link.getBoundingClientRect();
+        await expect([box.width, box.height]).toEqual([32, 32]);
+        await expect(box.left).toBeGreaterThanOrEqual(edge.left);
+        await expect(box.right).toBeLessThanOrEqual(edge.right);
+      }
+      const current = within(bar).getAllByRole("link", { current: "page" });
+      await expect(current).toHaveLength(1);
+      await expect(current[0]).toHaveAccessibleName("Search, 12");
+
+      // Spread over the width rather than bunched at the start: more than the top bar's 4px
+      // between two places, and as much room before the first as after the last.
+      const [first, second] = links.map((link) => link.getBoundingClientRect());
+      const last = links.at(-1)?.getBoundingClientRect();
+      if (!first || !second || !last) {
+        throw new Error("the bar should hold its places");
+      }
+      await expect(second.left - first.right).toBeGreaterThan(16);
+      await expect(first.left - edge.left).toBeCloseTo(edge.right - last.right, 0);
+
+      // Nothing in the bar is wider than it.
+      await expect(bar.scrollWidth).toBeLessThanOrEqual(bar.clientWidth);
+    }
+
+    // The same bar on both halves, and a page that does not scroll sideways under it.
+    await expect(heights[1]).toBe(heights[0]);
+    const page = canvasElement.ownerDocument.documentElement;
+    await expect(page.scrollWidth).toBeLessThanOrEqual(page.clientWidth);
   },
 };
 
