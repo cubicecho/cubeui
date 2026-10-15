@@ -22,6 +22,13 @@ import {
   PopoverContent as CompiledPopoverContent,
   PopoverTrigger as CompiledPopoverTrigger,
 } from "../compiled/popover";
+import {
+  AlertDialog as WebAlertDialog,
+  AlertDialogCancel as WebAlertDialogCancel,
+  AlertDialogContent as WebAlertDialogContent,
+  AlertDialogTitle as WebAlertDialogTitle,
+  AlertDialogTrigger as WebAlertDialogTrigger,
+} from "../registry/ui/alert-dialog";
 import { Button as NativeButton } from "../registry/ui/button";
 import {
   Dialog as WebDialog,
@@ -325,6 +332,17 @@ export const BarePressable: Story = {
           </WebDialogClose>
         </WebDialogContent>
       </WebDialog>
+      <WebAlertDialog>
+        <WebAlertDialogTrigger asChild>
+          <Pressable role="button" aria-label="Pressable delete">
+            <Text className="text-foreground">Delete</Text>
+          </Pressable>
+        </WebAlertDialogTrigger>
+        <WebAlertDialogContent aria-describedby={undefined}>
+          <WebAlertDialogTitle>Pressable delete dialog</WebAlertDialogTitle>
+          <WebAlertDialogCancel>Keep it</WebAlertDialogCancel>
+        </WebAlertDialogContent>
+      </WebAlertDialog>
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -348,5 +366,10 @@ export const BarePressable: Story = {
     const dialog = await body().findByRole("dialog", { name: "Pressable rename dialog" });
     await userEvent.click(within(dialog).getByRole("button", { name: "Pressable cancel" }));
     await waitFor(() => expect(body().queryByRole("dialog")).toBeNull());
+
+    await userEvent.click(canvas.getByRole("button", { name: "Pressable delete" }));
+    const alert = await body().findByRole("alertdialog", { name: "Pressable delete dialog" });
+    await userEvent.click(within(alert).getByRole("button", { name: "Keep it" }));
+    await waitFor(() => expect(body().queryByRole("alertdialog")).toBeNull());
   },
 };
