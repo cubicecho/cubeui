@@ -33,6 +33,8 @@ type TodoFormProps = {
   onSubmit?: (value: unknown) => void;
   /** A reason not to submit that the form store cannot know. See the stories at the bottom. */
   submitDisabled?: boolean;
+  /** Save waits for a change. See `RequireChanges`. */
+  requireChanges?: boolean;
 };
 
 /**
@@ -44,7 +46,7 @@ type TodoFormProps = {
  * say anything about the form. The render-prop version is still there for the fields that need
  * the `field` object; these six never did.
  */
-function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) {
+function TodoForm({ loading = false, onSubmit, submitDisabled, requireChanges }: TodoFormProps) {
   const form = useAppForm({
     defaultValues: {
       title: "",
@@ -142,7 +144,11 @@ function TodoForm({ loading = false, onSubmit, submitDisabled }: TodoFormProps) 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" content="Cancel" />
         <form.AppForm>
-          <form.SubmitButton disabled={submitDisabled} content="Create Todo" />
+          <form.SubmitButton
+            disabled={submitDisabled}
+            requireChanges={requireChanges}
+            content="Create Todo"
+          />
         </form.AppForm>
       </div>
     </form>
@@ -293,6 +299,27 @@ export const ItCannotBeUsedToEnableAnInvalidForm: Story = {
     });
 
     expect(submit).toBeDisabled();
+  },
+};
+
+/**
+ * `requireChanges` (#328): the reason an edit form's Save is disabled that the store *does* know.
+ * It reads `isDefaultValue` rather than `isDirty`, because `isDirty` stays true after a value is
+ * changed and changed back — and a Save that lights up for a form identical to the row it came
+ * from is the bug this is here to stop.
+ */
+export const RequireChanges: Story = {
+  args: { requireChanges: true },
+  play: async ({ canvas }) => {
+    const submit = canvas.getByRole("button", { name: "Create Todo" });
+    const schedule = canvas.getByRole("switch", { name: /Schedule it automatically/ });
+    expect(submit).toBeDisabled();
+
+    await userEvent.click(schedule);
+    await waitFor(() => expect(submit).toBeEnabled());
+
+    await userEvent.click(schedule);
+    await waitFor(() => expect(submit).toBeDisabled());
   },
 };
 

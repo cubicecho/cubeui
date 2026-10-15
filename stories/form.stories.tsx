@@ -49,7 +49,15 @@ const compiled = compiledCreateAppForm({
 
 type Kit = { useAppForm: typeof native.useAppForm; Form: typeof NativeForm };
 
-function TodoForm({ kit, blocked }: { kit: Kit; blocked?: boolean | undefined }) {
+function TodoForm({
+  kit,
+  blocked,
+  requireChanges,
+}: {
+  kit: Kit;
+  blocked?: boolean | undefined;
+  requireChanges?: boolean | undefined;
+}) {
   const { useAppForm, Form } = kit;
   const form = useAppForm({
     defaultValues: {
@@ -82,7 +90,7 @@ function TodoForm({ kit, blocked }: { kit: Kit; blocked?: boolean | undefined })
         <form.AppField name="color">
           {(field) => <field.ColorField label="Colour" swatches={SWATCHES} />}
         </form.AppField>
-        <form.SubmitButton createLabel="Save" disabled={blocked} />
+        <form.SubmitButton createLabel="Save" disabled={blocked} requireChanges={requireChanges} />
       </Form>
     </form.AppForm>
   );
@@ -175,6 +183,32 @@ export const DisabledFalseCannotEnable: Story = {
       await userEvent.click(half.getByRole("button", { name: "Save" }));
       await waitFor(() => expect(half.getByRole("alert")).toBeInTheDocument());
       await expect(half.getByRole("button", { name: "Save" })).toBeDisabled();
+    }
+  },
+};
+
+/**
+ * `requireChanges` (#328): Save waits for a change, and a change undone puts it back — the store's
+ * `isDefaultValue`, which `isDirty` is not.
+ */
+export const RequireChanges: Story = {
+  render: () => (
+    <SideBySide
+      native={<TodoForm kit={NATIVE} requireChanges />}
+      compiled={<TodoForm kit={COMPILED} requireChanges />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const save = half.getByRole("button", { name: "Save" });
+      const done = half.getByRole("checkbox", { name: "Done" });
+      await expect(save).toBeDisabled();
+
+      await userEvent.click(done);
+      await waitFor(() => expect(save).toBeEnabled());
+
+      await userEvent.click(done);
+      await waitFor(() => expect(save).toBeDisabled());
     }
   },
 };
