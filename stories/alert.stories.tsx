@@ -187,3 +187,68 @@ export const ShadcnParts: Story = {
     }
   },
 };
+
+const REASONS = ["The name is taken", "The model is not installed"];
+
+/**
+ * A description that is a list (#358). It is a block, so it must not sit in a `<span>`, which a
+ * `<ul>` inside makes invalid HTML; a bare-string description is still the text element it was.
+ */
+export const BlockDescription: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col gap-3">
+          <Native
+            variant="destructive"
+            title="Cannot be imported"
+            description={
+              <ul className="list-disc pl-4">
+                {REASONS.map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+            }
+          />
+          <Native title="Plain" description="Just a line." />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col gap-3">
+          <Compiled
+            variant="destructive"
+            title="Cannot be imported"
+            description={
+              <ul className="list-disc pl-4">
+                {REASONS.map((reason) => (
+                  <li key={reason}>{reason}</li>
+                ))}
+              </ul>
+            }
+          />
+          <Compiled title="Plain" description="Just a line." />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const lists = canvas.getAllByRole("list");
+    await expect(lists).toHaveLength(2);
+    for (const list of lists) {
+      // No inline element anywhere above the list, up to the alert.
+      let node = list.parentElement;
+      while (node && node.getAttribute("role") !== "alert") {
+        await expect(node.tagName).not.toBe("SPAN");
+        await expect(getComputedStyle(node).display).not.toBe("inline");
+        node = node.parentElement;
+      }
+      await expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+    }
+    const compiledPlain = canvas
+      .getAllByText("Just a line.")
+      .find((element) => element.getAttribute("data-slot") === "alert-description");
+    // The compiled half's string description is still its text element.
+    await expect(compiledPlain?.tagName).toBe("SPAN");
+  },
+};
