@@ -12,7 +12,7 @@
 import type { DeepKeys, DeepValue } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentProps, ComponentType, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { messageOf } from "@/lib/error-message";
 import {
   type BindableForm,
@@ -387,10 +387,40 @@ function BoundSingleComboboxField(props: SingleComboboxFieldProps) {
   );
 }
 
+/**
+ * A `freeText` menu's refusal, put on the field as its error while it stands and taken off after,
+ * so the field turns red and says why as it does for a validator's message. Only its own message
+ * is taken off: a validator's error that replaced it in the meantime stays.
+ */
+function useRefusalError(field: ReturnType<typeof useFieldContext<readonly string[] | null>>) {
+  const shown = useRef<string | undefined>(undefined);
+  return useCallback(
+    (message: string | undefined) => {
+      const standing = field.state.meta.errorMap.onChange;
+      if (message !== undefined) {
+        if (standing === message) {
+          return;
+        }
+        shown.current = message;
+        field.setMeta((prev) => ({
+          ...prev,
+          isTouched: true,
+          errorMap: { ...prev.errorMap, onChange: message },
+        }));
+      } else if (shown.current !== undefined && standing === shown.current) {
+        shown.current = undefined;
+        field.setErrorMap({ onChange: undefined });
+      }
+    },
+    [field],
+  );
+}
+
 function BoundMultipleComboboxField(props: MultipleComboboxFieldProps) {
   const [fieldProps, { multiple: _multiple, triggerClassName, ...control }] = splitProps(props);
   const field = useFieldContext<readonly string[] | null>();
   const error = useFieldError();
+  const onRefusalChange = useRefusalError(field);
 
   return (
     <FormField
@@ -399,6 +429,7 @@ function BoundMultipleComboboxField(props: MultipleComboboxFieldProps) {
       controlSlot={(wired) => (
         <Combobox
           {...control}
+          {...(control.freeText === true ? { onRefusalChange } : {})}
           {...wired}
           multiple
           className={triggerClassName}
