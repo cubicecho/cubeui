@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
-import { expect, fn, spyOn, userEvent, within } from "storybook/test";
+import { type ReactNode, useState } from "react";
+import { expect, fn, spyOn, userEvent, waitFor, within } from "storybook/test";
 import { CodeBlock as Compiled } from "../compiled/code";
 import { CopyButton as CompiledCopyButton } from "../compiled/copy-button";
 import { CodeBlock as Native } from "../registry/ui/code";
@@ -242,5 +242,65 @@ export const CopyableValue: Story = {
     // Four blocks — a value and a snippet, on two halves — and one look between them.
     await expect(looks).toHaveLength(4);
     await expect(new Set(looks).size).toBe(1);
+  },
+};
+
+/** A log that grows by a line on each press, as a run's output does. */
+function GrowingLog({ CodeBlock }: { CodeBlock: CodeBlockComponent }) {
+  const [lines, setLines] = useState(40);
+  const text = Array.from({ length: lines }, (_, i) => `step ${i + 1}: ok`).join("\n");
+  return (
+    <div className="flex flex-col gap-2">
+      <CodeBlock content={text} wrap maxHeight="sm" follow />
+      <button type="button" onClick={() => setLines((n) => n + 1)}>
+        Append
+      </button>
+    </div>
+  );
+}
+
+/** The distance from the bottom of what is shown to the end of the text. */
+function belowView(content: HTMLElement) {
+  return content.scrollHeight - content.scrollTop - content.clientHeight;
+}
+
+/**
+ * `follow` keeps a growing block at its end, but only while the reader is there (#367). Scrolled
+ * up, new lines leave them where they are and "Jump to latest" appears; pressing it goes back to
+ * the end and follows again. The text is not a live region.
+ */
+export const Follow: Story = {
+  render: () => both((CodeBlock) => <GrowingLog CodeBlock={CodeBlock} />),
+  play: async ({ canvasElement }) => {
+    for (const half of halvesOf(canvasElement)) {
+      const scope = within(half as HTMLElement);
+      const content = part(half, "code-block-content");
+      const append = scope.getByRole("button", { name: "Append" });
+      const jump = () => scope.queryByRole("button", { name: "Jump to latest" });
+
+      await expect(content).toHaveAttribute("aria-live", "off");
+
+      // It opens at the end, and stays there as lines arrive.
+      await waitFor(() => expect(belowView(content)).toBeLessThanOrEqual(4));
+      await userEvent.click(append);
+      await waitFor(() => expect(content.textContent).toContain("step 41: ok"));
+      await expect(belowView(content)).toBeLessThanOrEqual(4);
+      await expect(jump()).toBeNull();
+
+      // Scrolled up to read, the reader keeps their place, and is offered the way back.
+      content.scrollTop = 0;
+      await waitFor(() => expect(jump()).not.toBeNull());
+      await userEvent.click(append);
+      await waitFor(() => expect(content.textContent).toContain("step 42: ok"));
+      await expect(content.scrollTop).toBe(0);
+
+      // Jumping goes to the end, and the block follows again.
+      await userEvent.click(jump() as HTMLElement);
+      await waitFor(() => expect(belowView(content)).toBeLessThanOrEqual(4));
+      await waitFor(() => expect(jump()).toBeNull());
+      await userEvent.click(append);
+      await waitFor(() => expect(content.textContent).toContain("step 43: ok"));
+      await expect(belowView(content)).toBeLessThanOrEqual(4);
+    }
   },
 };

@@ -220,7 +220,7 @@
       "name": "code",
       "type": "registry:ui",
       "title": "Code",
-      "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, a wrap prop to wrap long lines instead of scrolling sideways, and a maxHeight that scrolls.",
+      "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, a wrap prop to wrap long lines instead of scrolling sideways, a maxHeight that scrolls, and follow to keep a growing log at its end.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
