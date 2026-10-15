@@ -220,7 +220,7 @@
       "name": "code",
       "type": "registry:ui",
       "title": "Code",
-      "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, a wrap prop to wrap long lines instead of scrolling sideways, and a maxHeight that scrolls.",
+      "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, an optional title (and language) in a header row, a wrap prop to wrap long lines instead of scrolling sideways, and a maxHeight that scrolls.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
@@ -840,8 +840,8 @@
       "name": "copy-button",
       "type": "registry:ui",
       "title": "Copy button",
-      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`) and then `Copied`.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/icons"],
+      "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`, or `Copy {title}` inside a titled CodeBlock) and then `Copied`.",
+      "registryDependencies": ["@cubeui/button", "@cubeui/code", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/ui/copy-button-base.ts",

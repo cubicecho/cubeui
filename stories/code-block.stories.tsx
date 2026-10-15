@@ -244,3 +244,67 @@ export const CopyableValue: Story = {
     await expect(new Set(looks).size).toBe(1);
   },
 };
+
+const MCP_JSON = `{
+  "mcpServers": {
+    "notes": { "type": "http", "url": "${ENDPOINT}" }
+  }
+}`;
+
+/**
+ * `title` labels the snippet in a header row of the block's own (#360): one box, the label and the
+ * language in its top row with the copy action beside them, and the copy button named for what it
+ * copies. A button given its own `label` keeps it.
+ */
+export const Titled: Story = {
+  render: () =>
+    both((CodeBlock, CopyButton) => (
+      <div className="flex flex-col gap-4">
+        <CodeBlock
+          title=".mcp.json"
+          language="json"
+          content={MCP_JSON}
+          actionSlot={<CopyButton value={MCP_JSON} />}
+        />
+        <CodeBlock
+          title="curl"
+          content={COMMAND}
+          actionSlot={<CopyButton value={COMMAND} label="Copy command" />}
+        />
+        <CodeBlock title="Output" content="ok" />
+      </div>
+    )),
+  play: async ({ canvasElement }) => {
+    for (const half of halvesOf(canvasElement)) {
+      const roots = Array.from(
+        half.querySelectorAll<HTMLElement>('[data-slot="code-block"], [data-testid="code-block"]'),
+      );
+      await expect(roots).toHaveLength(3);
+      const [json, curl, output] = roots as [HTMLElement, HTMLElement, HTMLElement];
+
+      // One box: the header is inside the block, above the text, and the action is in the header.
+      const header = part(json, "code-block-header");
+      const content = part(json, "code-block-content");
+      await expect(within(header).getByText(".mcp.json")).toBeVisible();
+      await expect(within(header).getByText("json")).toBeVisible();
+      await expect(header.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        content.getBoundingClientRect().top + 0.5,
+      );
+      await expect(within(header).getByRole("button")).toBeVisible();
+      await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");
+
+      // The copy button is named for what it copies, unless it was given a name.
+      await expect(within(json).getByRole("button", { name: "Copy .mcp.json" })).toBeVisible();
+      await expect(within(curl).getByRole("button", { name: "Copy command" })).toBeVisible();
+
+      // A header with no action is as tall as one with an icon button in it.
+      const tall = part(output, "code-block-header").getBoundingClientRect().height;
+      await expect(Math.abs(tall - header.getBoundingClientRect().height)).toBeLessThanOrEqual(1);
+
+      // The untitled blocks above are unchanged: they have no header.
+      await expect(
+        half.querySelectorAll('[data-slot="code-block-header"], [data-testid="code-block-header"]'),
+      ).toHaveLength(3);
+    }
+  },
+};

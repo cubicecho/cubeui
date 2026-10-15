@@ -17,7 +17,8 @@ export type CopyButtonProps = {
   /**
    * The accessible name before the press: say what is copied when the screen has more than one
    * thing that could be — "Copy endpoint URL". The default is `Copy`. For the moment after a
-   * press the name is `Copied`, whatever this says.
+   * press the name is `Copied`, whatever this says. Inside a `CodeBlock` with a `title`, the
+   * default is "Copy {title}".
    */
   label?: string | undefined;
   /** The button's variant. The default is `outline`. */

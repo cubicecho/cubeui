@@ -11,9 +11,12 @@
  * with four fills, a border on about half and three paddings. The two decisions
  * each of them also made by class — does a long line wrap or scroll, and how tall
  * may the block get — are props here.
+ *
+ * `title` labels a snippet the reader copies — ".mcp.json", "curl" — in a header row of the block's
+ * own, with the action beside it, instead of a heading each page puts above the box.
  */
 
-import type { ReactNode } from "react";
+import { createContext, type ReactNode } from "react";
 import { Platform, ScrollView, Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -44,8 +47,21 @@ const MAX_HEIGHTS = {
   lg: "max-h-96",
 } as const;
 
+/**
+ * The title of the `CodeBlock` around whatever reads it. `CopyButton` does: inside a titled block
+ * its default name is "Copy .mcp.json" rather than a bare "Copy", which on a page of snippets
+ * names nothing.
+ */
+export const CodeBlockTitleContext = createContext<string | undefined>(undefined);
+
 /** The block's type, which is `Code`'s: the two are one family and should not drift apart. */
 const TEXT = "font-mono text-xs text-foreground";
+
+/**
+ * One line, with an ellipsis: `truncate` on the web, `line-clamp-1` on device, which is what
+ * becomes `numberOfLines` there.
+ */
+const ONE_LINE = Platform.select({ web: "truncate", default: "line-clamp-1" });
 
 export type CodeBlockProps = {
   /**
@@ -73,6 +89,14 @@ export type CodeBlockProps = {
    * heights instead of a `max-h-*` each.
    */
   maxHeight?: keyof typeof MAX_HEIGHTS | undefined;
+  /**
+   * What the snippet is: a file name, a tool, a shell — ".mcp.json", "Claude Code", "curl". Drawn
+   * in a header row of its own, with the `actionSlot` beside it rather than beside the text, and
+   * it names a `CopyButton` inside the block "Copy {title}" unless that button has a `label`.
+   */
+  title?: string | undefined;
+  /** The snippet's language, drawn muted after the `title` — "json", "bash". Only with a title. */
+  language?: string | undefined;
   /** The block's root: its width, its margin. */
   className?: string | undefined;
 };
@@ -152,6 +176,7 @@ function CodeBlockText({ content, wrap, maxHeight }: CodeBlockTextProps) {
  *   it.
  * - `wrap` chooses between wrapping a long line and scrolling sideways (the default).
  * - `maxHeight` caps the block, which then scrolls inside itself.
+ * - `title` (and `language`) label the block in a header row, which then holds the action.
  *
  * A value to copy — an endpoint, a token, a command — is this with `wrap` and a `CopyButton`
  * as its `actionSlot`, not a second component: one line of text is a short block.
@@ -161,24 +186,57 @@ export function CodeBlock({
   actionSlot,
   wrap = false,
   maxHeight,
+  title,
+  language,
   className,
 }: CodeBlockProps) {
-  return (
-    <View
-      testID="code-block"
-      className={cn(
-        "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
-        className,
-      )}
-    >
-      <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} />
-      {actionSlot ? (
-        // `p-0.5` and not the text's `p-3`: an icon button is as tall as a line of text and its
-        // padding together, so a one-line block stays one line tall with the button in it.
-        <View testID="code-block-action" className="shrink-0 p-0.5">
-          {actionSlot}
-        </View>
-      ) : null}
+  const action = actionSlot ? (
+    // `p-0.5` and not the text's `p-3`: an icon button is as tall as a line of text and its
+    // padding together, so a one-line block stays one line tall with the button in it.
+    <View testID="code-block-action" className="shrink-0 p-0.5">
+      {actionSlot}
     </View>
+  ) : null;
+  const text = <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} />;
+
+  if (title === undefined) {
+    return (
+      <View
+        testID="code-block"
+        className={cn(
+          "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
+          className,
+        )}
+      >
+        {text}
+        {action}
+      </View>
+    );
+  }
+
+  return (
+    <CodeBlockTitleContext.Provider value={title}>
+      <View
+        testID="code-block"
+        className={cn("rounded-md border border-foreground/10 bg-foreground/10", className)}
+      >
+        <View
+          testID="code-block-header"
+          // As tall as the `icon-sm` button it may hold and that button's `p-0.5`, so a titled block
+          // with no action has the same header.
+          className="min-h-10 flex-row items-center gap-2 border-b border-foreground/10 pl-3"
+        >
+          <Text className={cn(ONE_LINE, "shrink text-xs font-medium text-foreground")}>
+            {title}
+          </Text>
+          {language === undefined ? null : (
+            <Text className="shrink-0 text-xs text-foreground/60">{language}</Text>
+          )}
+          <View className="flex-1" />
+          {action}
+        </View>
+        <View className="flex-row">{text}</View>
+      </View>
+    </CodeBlockTitleContext.Provider>
   );
 }
