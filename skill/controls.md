@@ -392,6 +392,15 @@ eleven screens and came out with four fills, a border on about half and three pa
 - **`maxHeight`** — `sm`, `md` or `lg` (ten, fifteen and twenty-four rem) — caps the block, which
   then scrolls inside itself. Left out, the block is as tall as its text. Do not pass a `max-h-*`
   in `className`: the scroller is inside the root, so the text would spill out of the box instead.
+- **`title`** labels a snippet the reader copies — `.mcp.json`, `Claude Code`, `curl` — in a header
+  row inside the block, and `language` (`json`, `bash`) is drawn muted after it. With a title the
+  `actionSlot` moves into that row, and a `CopyButton` there with no `label` is named
+  "Copy {title}". Do not put a heading of your own above the block for this. Without a title the
+  block is unchanged.
+
+  ```tsx
+  <CodeBlock title=".mcp.json" language="json" content={json} actionSlot={<CopyButton value={json} />} />
+  ```
 - `className` is the root's, for its width or margin. The fill, the border and the padding are
   the block's and are the same on every one; do not restate them.
 - On the web the text is a `<pre>`, and a block that can scroll is a tab stop so a keyboard can

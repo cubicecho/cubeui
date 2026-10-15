@@ -4,7 +4,9 @@
  * added here reaches both platforms, and the compiler turns this file into the
  * web one like any other.
  */
+import { useContext } from "react";
 import { Button } from "@/components/ui/button";
+import { CodeBlockTitleContext } from "@/components/ui/code";
 import { type CopyButtonProps, useCopy } from "@/components/ui/copy-button-base";
 import { Check, Copy } from "@/components/ui/icons";
 
@@ -17,7 +19,7 @@ type CopyButtonViewProps = CopyButtonProps & {
 export function CopyButtonView({
   write,
   value,
-  label = "Copy",
+  label,
   variant = "outline",
   size = "icon-sm",
   onCopied,
@@ -27,13 +29,16 @@ export function CopyButtonView({
   className,
 }: CopyButtonViewProps) {
   const { copied, copy } = useCopy(write, { value, onCopied, onError });
+  // Inside a titled `CodeBlock`, the block's title says what is copied.
+  const title = useContext(CodeBlockTitleContext);
+  const name = label ?? (title === undefined ? "Copy" : `Copy ${title}`);
 
   return (
     <Button
       data-slot="copy-button"
       variant={variant}
       size={size}
-      aria-label={copied ? "Copied" : label}
+      aria-label={copied ? "Copied" : name}
       className={className}
       disabled={disabled}
       hint={hint}
