@@ -101,6 +101,14 @@ export const Static: Story = {
     // A pixel of tolerance for sub-pixel rounding, not for a layout that nearly agrees.
     await expect(Math.abs(compiled.height - native.height)).toBeLessThanOrEqual(1);
     await expect(Math.abs(compiled.width - native.width)).toBeLessThanOrEqual(1);
+
+    // A card sits in the page's flow, so its border and fill set it apart and it draws no shadow:
+    // a shadow means something floats (#342).
+    for (const id of ["native-card", "compiled-card"]) {
+      const style = getComputedStyle(canvas.getByTestId(id));
+      await expect(style.boxShadow).toBe("none");
+      await expect(style.borderTopWidth).toBe("1px");
+    }
   },
 };
 
