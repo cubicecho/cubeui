@@ -4,12 +4,14 @@ import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Badge as CompiledBadge } from "../compiled/badge";
+import { PageLayout as CompiledPageLayout } from "../compiled/page-layout";
 import {
   Tabs as CompiledTabs,
   TabsContent as CompiledTabsContent,
   TabsList as CompiledTabsList,
   TabsTrigger as CompiledTabsTrigger,
 } from "../compiled/tabs";
+import { PageLayout } from "../registry/layout/page-layout";
 import { Badge } from "../registry/ui/badge.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
@@ -300,6 +302,166 @@ export const TrailingMark: Story = {
         afterLabel: dot.left > box.left + box.width / 2,
         inside: dot.right <= box.right && dot.top >= box.top && dot.bottom <= box.bottom,
       }).toEqual({ name, afterLabel: true, inside: true });
+    }
+  },
+};
+
+/** Where each link was followed to. The story holds the navigation back: the test runner is a page. */
+const followed: string[] = [];
+
+const ROUTES = [
+  { value: "general", label: "General" },
+  { value: "agents", label: "Agents" },
+  { value: "servers", label: "Servers" },
+];
+
+function RouteTabs({ half, kit }: { half: string; kit: "native" | "compiled" }) {
+  const [Root, List, Trigger, Content] =
+    kit === "native"
+      ? [Tabs, TabsList, TabsTrigger, TabsContent]
+      : [CompiledTabs, CompiledTabsList, CompiledTabsTrigger, CompiledTabsContent];
+  return (
+    <Root defaultValue="general">
+      <List aria-label={`${half} settings`}>
+        {ROUTES.map((route) => (
+          <Trigger
+            key={route.value}
+            value={route.value}
+            linkSlot={
+              <a
+                href={`#${half.toLowerCase()}-${route.value}`}
+                onClick={(event) => {
+                  followed.push(event.currentTarget.getAttribute("href") ?? "");
+                  event.preventDefault();
+                }}
+              />
+            }
+          >
+            {route.label}
+          </Trigger>
+        ))}
+      </List>
+      {ROUTES.map((route) => (
+        <Content key={route.value} value={route.value}>
+          <Text className="text-foreground">{`${half} ${route.label} page`}</Text>
+        </Content>
+      ))}
+    </Root>
+  );
+}
+
+/**
+ * `linkSlot` on a trigger (#365): a tab that is a route is drawn as the link, with an `href` to
+ * middle-click or open in a new tab, and keeps the tab's role, its selected state and its place in
+ * the tablist. A press follows the link and selects the tab.
+ */
+export const RouteTabsAreLinks: Story = {
+  render: () => (
+    <SideBySide
+      native={<RouteTabs half="Native" kit="native" />}
+      compiled={<RouteTabs half="Compiled" kit="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Compiled", "Native"]) {
+      await step(half, async () => {
+        const list = canvas.getByRole("tablist", { name: `${half} settings` });
+        const tabs = within(list);
+        const general = tabs.getByRole("tab", { name: "General" });
+        const agents = tabs.getByRole("tab", { name: "Agents" });
+
+        await expect(agents.tagName).toBe("A");
+        await expect(agents).toHaveAttribute("href", `#${half.toLowerCase()}-agents`);
+        await expect(agents).not.toHaveAttribute("type");
+        await expect(general).toHaveAttribute("aria-selected", "true");
+        await expect(agents).toHaveAttribute("aria-selected", "false");
+
+        followed.length = 0;
+        await userEvent.click(agents);
+        await waitFor(() => expect(agents).toHaveAttribute("aria-selected", "true"));
+        await expect(general).toHaveAttribute("aria-selected", "false");
+        // The press reached the link, which is what follows it.
+        await expect(followed).toEqual([`#${half.toLowerCase()}-agents`]);
+        await expect(canvas.getByText(`${half} Agents page`)).toBeVisible();
+      });
+    }
+  },
+};
+
+function TabbedPage({ half, kit }: { half: string; kit: "native" | "compiled" }) {
+  const [Root, List, Trigger, Content, Page] =
+    kit === "native"
+      ? [Tabs, TabsList, TabsTrigger, TabsContent, PageLayout]
+      : [
+          CompiledTabs,
+          CompiledTabsList,
+          CompiledTabsTrigger,
+          CompiledTabsContent,
+          CompiledPageLayout,
+        ];
+  return (
+    <div data-testid={`${half}-frame`} className="h-80 border border-foreground/10">
+      <Root defaultValue="general" className="h-full">
+        <Page
+          title={`${half} settings`}
+          headerContentSlot={
+            <List aria-label={`${half} sections`}>
+              <Trigger value="general">General</Trigger>
+              <Trigger value="agents">Agents</Trigger>
+            </List>
+          }
+          contentSlot={
+            <>
+              <Content value="general">
+                <Text className="text-foreground">{`${half} general body`}</Text>
+              </Content>
+              <Content value="agents">
+                <Text className="text-foreground">{`${half} agents body`}</Text>
+              </Content>
+            </>
+          }
+        />
+      </Root>
+    </div>
+  );
+}
+
+/**
+ * The tab list in a page's header and the panels in its body (#365), as one set of tabs: one `Tabs`
+ * root around the whole `PageLayout`, given `h-full` so the page still fills its frame. No
+ * `display: contents` wrapper.
+ */
+export const TabsAcrossAPage: Story = {
+  render: () => (
+    <SideBySide
+      native={<TabbedPage half="Native" kit="native" />}
+      compiled={<TabbedPage half="Compiled" kit="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Compiled", "Native"]) {
+      await step(half, async () => {
+        const frame = canvas.getByTestId(`${half}-frame`);
+        const root = frame.firstElementChild as HTMLElement;
+        const page = root.firstElementChild as HTMLElement;
+        // The page fills the frame, as it would without the root around it.
+        await expect(page.getBoundingClientRect().height).toBeCloseTo(
+          frame.getBoundingClientRect().height - 2,
+          0,
+        );
+
+        const tabs = within(canvas.getByRole("tablist", { name: `${half} sections` }));
+        await userEvent.click(tabs.getByRole("tab", { name: "Agents" }));
+        await expect(within(frame).getByText(`${half} agents body`)).toBeVisible();
+        await expect(within(frame).queryByText(`${half} general body`)).toBeNull();
+        if (half === "Compiled") {
+          // One root, so radix's ids pair the panel in the body with the tab in the header.
+          const panel = within(frame).getByRole("tabpanel");
+          await expect(panel).toHaveAccessibleName("Agents");
+        }
+      });
     }
   },
 };
