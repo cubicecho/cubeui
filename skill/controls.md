@@ -1396,6 +1396,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   a cron expression. Write `<Badge variant="outline" mono>{name}</Badge>`, not
   `className="font-mono font-normal"`: a class lands on the container, which on native does not
   reach the label's `Text`. It goes with any `variant` and with `onRemove`.
+- `pulse` breathes a dot for something live: `<Badge variant="positive" label="Live" pulse />`.
+  Do not hand-draw a `size-2 rounded-full animate-pulse` span. It pulses on device too (a CSS
+  keyframe does nothing there), stops under the system's reduced-motion setting on both halves,
+  and is ignored by a badge with children.
 
 ## Alert
 

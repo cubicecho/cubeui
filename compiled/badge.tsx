@@ -57,6 +57,7 @@ export function Badge({
   onRemove,
   removeLabel,
   mono = false,
+  pulse = false,
   asChild = false,
   style,
   children,
@@ -110,6 +111,8 @@ export function Badge({
         shape === "pill" &&
           (backgroundColor ? badgeTextFallback(mono) : badgeTextVariants({ variant, mono })),
         variant === "link" && "[a&]:hover:underline [a&]:focus-visible:underline",
+        // Tailwind's pulse is `BADGE_PULSE_MS` long and `BADGE_PULSE_LOW` faint, as on device.
+        pulse && shape === "dot" && "motion-safe:animate-pulse",
         className,
       )}
       style={{

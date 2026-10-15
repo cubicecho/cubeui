@@ -92,6 +92,11 @@ export type BadgeProps = {
    * `variant` stays free for colour.
    */
   mono?: boolean | undefined;
+  /**
+   * Pulses the dot, for something live: a run in progress, a connection that is up. The dot only;
+   * a badge with children ignores it. It stops for a reader who asked for reduced motion.
+   */
+  pulse?: boolean | undefined;
   /** The ✕'s accessible name. Defaults to `Remove <text>`, the badge's own text. */
   removeLabel?: string | undefined;
   /**
@@ -100,6 +105,10 @@ export type BadgeProps = {
    */
   children?: ReactNode;
 };
+
+/** One breath of `pulse`, and how faint the dot gets: Tailwind's `animate-pulse`. */
+export const BADGE_PULSE_MS = 2000;
+export const BADGE_PULSE_LOW = 0.5;
 
 /** Whether `children` holds anything to show, which is what decides pill or dot. */
 export function badgeHasLabel(children: ReactNode): boolean {
