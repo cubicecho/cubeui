@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "empty",
   "title": "Empty",
-  "description": "shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.",
+  "description": "shadcn's `Empty` parts on both halves: the muted icon bubble, the title, the line under it and what to do about it. The one-line shell built on them is `EmptyState`, in `@cubeui/empty-state`; write that in new code.",
   "registryDependencies": [
     "@cubeui/utils",
     "@cubeui/icons"

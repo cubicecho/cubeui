@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 104 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 105 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 104 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 105 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  90 on both platforms · 14 web-only · 0 native-only.
+  91 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -354,7 +354,12 @@
         <tr>
           <th scope="row"><code>@cubeui/empty</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.</td>
+          <td>shadcn's `Empty` parts on both halves: the muted icon bubble, the title, the line under it and what to do about it. The one-line shell built on them is `EmptyState`, in `@cubeui/empty-state`; write that in new code.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/empty-state</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>What an empty list says: the centred icon, title, description and action for a list that is the page, or at `compact` one muted line for a list inside a card, sidebar or popover. Built on `@cubeui/empty`'s parts.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/error-message</code></th>
@@ -479,7 +484,7 @@
         <tr>
           <th scope="row"><code>@cubeui/page</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The page shell, its header, the card grid and the empty state — the four pieces every route repeats.</td>
+          <td>The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page-header</code></th>

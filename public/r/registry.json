@@ -189,7 +189,7 @@
       "name": "empty",
       "type": "registry:ui",
       "title": "Empty",
-      "description": "shadcn's `Empty` parts on both halves, drawn as `EmptyState` is: the muted icon bubble, the title, the line under it and what to do about it. `EmptyState` is built on them.",
+      "description": "shadcn's `Empty` parts on both halves: the muted icon bubble, the title, the line under it and what to do about it. The one-line shell built on them is `EmptyState`, in `@cubeui/empty-state`; write that in new code.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
       "files": [
         {
@@ -1246,14 +1246,26 @@
       ]
     },
     {
+      "name": "empty-state",
+      "type": "registry:component",
+      "title": "Empty State",
+      "description": "What an empty list says: the centred icon, title, description and action for a list that is the page, or at `compact` one muted line for a list inside a card, sidebar or popover. Built on `@cubeui/empty`'s parts.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/empty", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/empty-state.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "page",
       "type": "registry:component",
       "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats.",
+      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.",
       "registryDependencies": [
         "@cubeui/utils",
-        "@cubeui/icons",
-        "@cubeui/empty",
+        "@cubeui/empty-state",
         "@cubeui/page-header",
         "@cubeui/tokens"
       ],

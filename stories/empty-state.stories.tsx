@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
+import { EmptyState as Compiled } from "../compiled/empty-state";
 import { Search as CompiledSearch } from "../compiled/icons";
-import { EmptyState as Compiled } from "../compiled/page";
-import { EmptyState as Native } from "../registry/layout/page";
+import { EmptyState as CompiledFromPage } from "../compiled/page";
+import { EmptyState as Native } from "../registry/layout/empty-state";
+import { EmptyState as NativeFromPage } from "../registry/layout/page";
 import { Button as NativeButton } from "../registry/ui/button";
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
@@ -36,6 +38,25 @@ function render(props: { level?: 1 | 2 | 3 }) {
     />
   );
 }
+
+/**
+ * `EmptyState` is its own item, `@cubeui/empty-state`, so an app installs it without the page
+ * shell (#356); `@cubeui/page` re-exports the same component, so its imports keep working.
+ */
+export const OwnItem: Story = {
+  args,
+  render: () => (
+    <SideBySide
+      native={<NativeFromPage icon={NativeSearch} title="From the page shell" />}
+      compiled={<CompiledFromPage icon={CompiledSearch} title="From the page shell" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    // Both page shells still hand out the empty state, drawn as the item draws it.
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByText("From the page shell")).toHaveLength(2);
+  },
+};
 
 /** No `level`: the title is text, not a heading, as it always was. */
 export const Default: Story = {

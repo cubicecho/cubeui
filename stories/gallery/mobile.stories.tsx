@@ -12,11 +12,12 @@ import { DetailPage } from "../../registry/layout/detail-page";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
+import { EmptyState } from "../../registry/layout/empty-state";
 import { FileTree } from "../../registry/layout/file-tree";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
-import { CardGrid, EmptyState, Page } from "../../registry/layout/page";
+import { CardGrid, Page } from "../../registry/layout/page";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
 import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
@@ -1128,7 +1129,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Page",
-    items: ["page"],
+    items: ["page", "empty-state"],
     description: "A scrolling screen: a header, a grid of cards, an empty state.",
     content: (
       <Screen>
