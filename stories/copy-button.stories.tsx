@@ -84,3 +84,54 @@ export const Default: Story = {
     }
   },
 };
+
+/**
+ * Off with a reason (#352): `disabled` with a `hint` keeps the button reachable (`aria-disabled`),
+ * says why, and a press writes nothing and calls neither callback.
+ */
+export const DisabledWithHint: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          value=""
+          label="Copy the URL"
+          disabled
+          hint="Give the webhook an id first"
+          onCopied={onCopied}
+          onError={onError}
+        />
+      }
+      compiled={
+        <Compiled
+          value=""
+          label="Copy the URL"
+          disabled
+          hint="Give the webhook an id first"
+          onCopied={onCopied}
+          onError={onError}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onCopied.mockClear();
+    onError.mockClear();
+    const writeText = spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
+    try {
+      const buttons = canvas.getAllByRole("button", { name: "Copy the URL" });
+      await expect(buttons).toHaveLength(2);
+      for (const button of buttons) {
+        await expect(button).toHaveAttribute("aria-disabled", "true");
+        await expect(button).toHaveAccessibleDescription("Give the webhook an id first");
+        await userEvent.click(button);
+      }
+      await expect(writeText).not.toHaveBeenCalled();
+      await expect(onCopied).not.toHaveBeenCalled();
+      await expect(onError).not.toHaveBeenCalled();
+    } finally {
+      writeText.mockRestore();
+    }
+  },
+};

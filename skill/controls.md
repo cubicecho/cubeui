@@ -305,7 +305,12 @@ an `absolute` corner over it.
   that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
   the native item installs; a DOM app installs nothing extra.
 - It is `type="button"` on the web, so it never submits the form it sits in.
-- It has no tooltip: the glyph is the universal one and the name is always set.
+- It has no tooltip unless given a `hint`: the glyph is the universal one and the name is always
+  set.
+- When there is nothing to copy yet, pass `disabled` and a `hint` saying why, as on `Button`:
+  `<CopyButton value={url} label="Copy the URL" disabled={!id} hint="Give the webhook an id first" />`.
+  With the hint it stays focusable (`aria-disabled`), and a press copies nothing and calls neither
+  callback. Do not draw a `Button` with the copy glyph in its place.
 
 ## Download button
 

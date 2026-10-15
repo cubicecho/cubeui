@@ -32,6 +32,16 @@ export type CopyButtonProps = {
    * the caller says so, since a shell holds no toasts.
    */
   onError?: ((error: unknown) => void) | undefined;
+  /**
+   * Off: a press copies nothing and calls neither `onCopied` nor `onError`. Say why with `hint`,
+   * as on `Button` — "Give the webhook an id first".
+   */
+  disabled?: boolean | undefined;
+  /**
+   * The button's tooltip, as on `Button`. With `disabled` it keeps the button focusable and
+   * hoverable (`aria-disabled`), so the reason it is off can still be read.
+   */
+  hint?: ButtonProps["hint"] | undefined;
   /** The button's class: its position, say `absolute top-2 right-2` over a snippet. */
   className?: string | undefined;
 };
