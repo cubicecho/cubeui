@@ -229,3 +229,89 @@ export const Slots: Story = {
     }
   },
 };
+
+const LONG_PREFIX = "https://tasks.example.com/webhooks/";
+
+function Addons({ Input, half }: { Input: typeof Native | typeof Compiled; half: string }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <Input aria-label={`${half} webhook`} prefixText={LONG_PREFIX} defaultValue="deploy" />
+      <Input aria-label={`${half} invalid`} prefixText="@" aria-invalid defaultValue="taken" />
+      <Input
+        aria-label={`${half} narrow`}
+        prefixText={LONG_PREFIX}
+        suffixText=".json"
+        wrapperClassName="w-56"
+      />
+    </div>
+  );
+}
+
+/**
+ * `prefixText` and `suffixText` (#364), on both halves: the fixed text sits inside the field's one
+ * border, the field draws none of its own, a press on the text puts the caret in the value, the
+ * focus and invalid colours go round the whole box, the text is read with the field, and a narrow
+ * box cuts the prefix from its start while the value keeps room.
+ */
+export const TextAddons: Story = {
+  render: () => (
+    <SideBySide
+      native={<Addons Input={Native} half="Native" />}
+      compiled={<Addons Input={Compiled} half="Compiled" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    for (const half of ["Compiled", "Native"]) {
+      await step(half, async () => {
+        const webhook = canvas.getByRole("textbox", { name: `${half} webhook` });
+        const box = webhook.parentElement;
+        const prefix = box?.querySelector<HTMLElement>("[id$='-prefix']");
+        if (!box || !prefix) {
+          throw new Error("the prefix should be drawn");
+        }
+
+        // One border, the box's: the field draws none, and the prefix is inside it, before it.
+        await expect(getComputedStyle(box).borderTopWidth).toBe("1px");
+        await expect(getComputedStyle(webhook).borderTopWidth).toBe("0px");
+        const outer = box.getBoundingClientRect();
+        const text = prefix.getBoundingClientRect();
+        await expect(text.left).toBeGreaterThan(outer.left);
+        await expect(text.right).toBeLessThanOrEqual(webhook.getBoundingClientRect().left + 1);
+
+        // Read with the field.
+        const described = (webhook.getAttribute("aria-describedby") ?? "")
+          .split(" ")
+          .map((id) => document.getElementById(id)?.textContent ?? "")
+          .join(" ");
+        await expect(described).toContain(LONG_PREFIX);
+
+        // A press on the prefix is a press in the field, and the box shows the focus.
+        const resting = getComputedStyle(box).borderTopColor;
+        await userEvent.click(prefix);
+        await expect(webhook).toHaveFocus();
+        await expect(getComputedStyle(box).borderTopColor).not.toBe(resting);
+        await userEvent.tab();
+
+        // The invalid colour goes round the box, not the field inside it.
+        const invalid = canvas.getByRole("textbox", { name: `${half} invalid` });
+        const invalidBox = invalid.parentElement as HTMLElement;
+        await expect(getComputedStyle(invalidBox).borderTopColor).not.toBe(resting);
+
+        // Narrow: the value keeps room, and the prefix is cut, from its start.
+        const narrow = canvas.getByRole("textbox", { name: `${half} narrow` });
+        await expect(narrow.getBoundingClientRect().width).toBeGreaterThanOrEqual(96);
+        const cut = (narrow.parentElement as HTMLElement).querySelectorAll<HTMLElement>(
+          "[id$='-prefix']",
+        )[0];
+        if (!cut) {
+          throw new Error("the narrow box should draw its prefix");
+        }
+        await expect(cut.scrollWidth).toBeGreaterThan(cut.clientWidth);
+        await expect(getComputedStyle(cut).direction).toBe("rtl");
+        await expect(narrow.parentElement).toHaveTextContent(".json");
+      });
+    }
+  },
+};

@@ -1249,6 +1249,27 @@ An icon inside a field is `Input`'s `leadingSlot`, on both halves. Do not wrap t
   the field, as before.
 - A search box is not this: it is `SearchInput`, below, which is this plus the name and the ✕.
 
+## Fixed text in an input
+
+A fixed part of the value — the URL an id is appended to, a domain, a unit — is `prefixText` or
+`suffixText`, on both halves. Do not draw a bordered div with a muted span and a borderless `Input`
+inside it: the focus ring and the invalid border then go round the value only, and the prefix is
+not read with the field.
+
+```tsx
+<Input aria-label="Webhook id" prefixText={`${origin}/webhooks/`} value={id} onChangeText={setId} />
+<Input aria-label="Timeout" suffixText="seconds" inputMode="numeric" value={t} onChangeText={setT} />
+```
+
+- The text is muted, in the row, inside the field's one border, and not editable. A press on it
+  puts the caret in the value. The border, the focus colour and the invalid colour go round the
+  whole box.
+- On a narrow screen the prefix gives way from its start (`…/webhooks/`), and the value keeps room
+  for a few characters. The suffix stays whole.
+- On the web the text is read with the field, after its own description.
+- It combines with `leadingSlot` and `trailingSlot`, which then sit in the row beside it.
+  `wrapperClassName` sizes the box. `InputField` passes both props through.
+
 ## An identifier in an input
 
 ```tsx
