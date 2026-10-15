@@ -33,7 +33,7 @@ const LOADING_BOX = {
  * What the shell wires onto the control, handed straight to the caller when `controlSlot` is a
  * function. The names are the DOM's, so the whole object spreads onto an element.
  */
-type ControlProps = {
+export type ControlProps = {
   id: string;
   /** Only ever set under {@link FormFieldProps.asGroup} — otherwise the `<label>` does this job. */
   "aria-labelledby": string | undefined;
@@ -50,7 +50,7 @@ type ControlProps = {
  * and its swatch row is a `radiogroup` that the label, being a `<label>`, cannot also name, so the
  * row points back at the label's `id` with `aria-labelledby`.
  */
-type FieldParts = {
+export type FieldParts = {
   /** The label's `id`, whenever there is a label; the `FieldTitle`'s under `asGroup`. */
   labelId: string | undefined;
 };
