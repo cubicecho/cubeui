@@ -1390,8 +1390,11 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   `info`, which is the blue and draws no icon it was not given. Pass a bare
   `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `iconSlot={null}`
   draws none.
-- `title` and `description` are nodes, so a link can sit inside the description. `actionSlot` is the
-  far end — one button that deals with it.
+- `title` and `description` are nodes, so a link can sit inside the description. A description
+  with loose text in it is a text element; one that is only elements, such as a `<ul>` of reasons
+  or a few paragraphs, is drawn in a block box instead, so the list is valid HTML. On device each
+  `Text` inside a block description takes its own ink. `actionSlot` is the far end — one button
+  that deals with it.
 - shadcn's compound form also works, so a port can leave its call sites alone:
   `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
   The icon child goes into the icon box (and replaces the default glyph); the parts go into the
