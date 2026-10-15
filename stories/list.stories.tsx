@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
-import { List as Compiled } from "../compiled/list";
+import { List as Compiled, ListRow as CompiledRow } from "../compiled/list";
 import { ListItem as CompiledItem } from "../compiled/list-item";
-import { List as Native } from "../registry/layout/list";
+import { List as Native, ListRow as NativeRow } from "../registry/layout/list";
 import { ListItem as NativeItem } from "../registry/layout/list-item";
 import { SideBySide } from "./side-by-side";
 
@@ -188,6 +188,95 @@ export const NoRows: Story = {
   play: async ({ canvasElement }) => {
     for (const root of halves(canvasElement)) {
       await expect(within(root).queryByRole("list")).toBeNull();
+    }
+  },
+};
+
+/** A run's steps: a decision with its two arms under it, one arm with a step of its own. */
+const STEPS = [
+  { id: "fetch", name: "Fetch the branch", depth: 0 },
+  { id: "decide", name: "Tests pass?", depth: 0 },
+  { id: "yes", name: "Open the PR", depth: 1 },
+  { id: "label", name: "Label it", depth: 2 },
+  { id: "no", name: "Report the failure", depth: 1 },
+];
+
+function NestedSteps({
+  List,
+  Row,
+  Item,
+}: {
+  List: typeof Native;
+  Row: typeof NativeRow;
+  Item: typeof NativeItem;
+}) {
+  return (
+    <List
+      label="Steps"
+      contentSlot={
+        <>
+          {STEPS.map((s) => (
+            <Row key={s.id} depth={s.depth}>
+              <Item title={s.name} />
+            </Row>
+          ))}
+          <Item key="done" title="Done" />
+        </>
+      }
+    />
+  );
+}
+
+/**
+ * Rows that nest without being files (#368): each `ListRow` carries its `depth`, and the list
+ * indents it a step a level with a guide rule, and gives a screen reader the level. A row with no
+ * `ListRow` around it is a plain row.
+ */
+export const Nested: Story = {
+  args: { label: "Steps" },
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root w-80">
+          <NestedSteps List={Native} Row={NativeRow} Item={NativeItem} />
+        </div>
+      }
+      compiled={
+        <div className="compiled-root w-80">
+          <NestedSteps
+            List={Compiled as typeof Native}
+            Row={CompiledRow as typeof NativeRow}
+            Item={CompiledItem as typeof NativeItem}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const root of halves(canvasElement)) {
+      const rows = within(within(root).getByRole("list", { name: "Steps" })).getAllByRole(
+        "listitem",
+      );
+      await expect(rows.map((row) => row.getAttribute("aria-level"))).toEqual([
+        "1",
+        "1",
+        "2",
+        "3",
+        "2",
+        null,
+      ]);
+      const left = within(root).getByRole("list", { name: "Steps" }).getBoundingClientRect().left;
+      const starts = rows.map((row) => row.getBoundingClientRect().left - left);
+      await expect(starts).toEqual([0, 0, 16, 32, 16, 0]);
+      await expect(rows.map((row) => getComputedStyle(row).borderLeftWidth)).toEqual([
+        "0px",
+        "0px",
+        "2px",
+        "2px",
+        "2px",
+        "0px",
+      ]);
+      await expect(within(root).getByText("Label it")).toBeVisible();
     }
   },
 };

@@ -1189,6 +1189,26 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
 - The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
   row, or `divide-y` on a parent.
 - It takes any row: `ListItem`, `DisclosureRow`, composed `Item` parts, a row of your own.
+- **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
+  exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
+  steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge
+  of every nested row, and puts `aria-level` (`depth + 1`) on its item, so a screen reader hears the
+  nesting:
+
+  ```tsx
+  <List
+    label="Steps"
+    contentSlot={steps.map((s) => (
+      <ListRow key={s.id} depth={s.depth}>
+        <ListItem title={s.name} />
+      </ListRow>
+    ))}
+  />
+  ```
+
+  Do **not** write `marginLeft`, `pl-…` or `border-l` on a row yourself. It is still a list, not
+  `role="tree"`: nothing here opens, closes or takes arrow keys, which is what a tree promises. A
+  tree of paths is `FileTree`. A row with no `ListRow` around it is a plain row with no level.
 - **No `emptySlot` and no `loading`.** Those rungs are `QueryState`'s, drawn above the list. With no
   rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items".
 - It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in
