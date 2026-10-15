@@ -401,6 +401,15 @@ eleven screens and came out with four fills, a border on about half and three pa
   ```tsx
   <CodeBlock title=".mcp.json" language="json" content={json} actionSlot={<CopyButton value={json} />} />
   ```
+- **`follow`** keeps a growing `content` — a live log, a run's output — at its last line, with
+  `maxHeight` so the block scrolls. It follows only while the reader is at the end: scrolled up,
+  they keep their place and a "Jump to latest" button appears until they are back. Do not write a
+  `useEffect` that sets `scrollTop = scrollHeight` on every change; that yanks a reader who
+  scrolled up to read. The text is `aria-live="off"`.
+
+  ```tsx
+  <CodeBlock content={output} wrap maxHeight="lg" follow />
+  ```
 - `className` is the root's, for its width or margin. The fill, the border and the padding are
   the block's and are the same on every one; do not restate them.
 - On the web the text is a `<pre>`, and a block that can scroll is a tab stop so a keyboard can

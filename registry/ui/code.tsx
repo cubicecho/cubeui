@@ -14,10 +14,14 @@
  *
  * `title` labels a snippet the reader copies — ".mcp.json", "curl" — in a header row of the block's
  * own, with the action beside it, instead of a heading each page puts above the box.
+ *
+ * `follow` keeps a growing log at its last line the way a terminal does: only while the reader is
+ * there. Scrolled up to read something, they keep their place, and a "Jump to latest" brings them
+ * back.
  */
 
-import { createContext, type ReactNode } from "react";
-import { Platform, ScrollView, Text, View } from "react-native";
+import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** Monospaced text inline in a sentence. */
@@ -97,11 +101,56 @@ export type CodeBlockProps = {
   title?: string | undefined;
   /** The snippet's language, drawn muted after the `title` — "json", "bash". Only with a title. */
   language?: string | undefined;
+  /**
+   * Keep the end of a growing `content` in view — a live log, a run's output. Meaningful with
+   * `maxHeight`, since only a capped block scrolls. It follows while the reader is at the end, lets
+   * go once they scroll up, and shows "Jump to latest" until they are back. The text is never a
+   * live region: a log read aloud line by line drowns out everything else.
+   */
+  follow?: boolean | undefined;
   /** The block's root: its width, its margin. */
   className?: string | undefined;
 };
 
-type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight">;
+/** How close to the end, in pixels, still counts as at it: a fractional `scrollTop` is common. */
+const END_SLACK = 4;
+
+/** The part of the web's scrolling `<div>` that following reads and moves. */
+type WebScroller = {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
+  scrollTo: (options: { top: number; behavior: "smooth" | "instant" }) => void;
+};
+
+/** The part of a DOM scroll event following reads. */
+type WebScrollEvent = { currentTarget: Omit<WebScroller, "scrollTo"> };
+
+/**
+ * Moves a scroller to its end. Statements, for the reason {@link CodeBlockText} is: the compiler
+ * keeps the web arm and drops the `ScrollView` call under it.
+ */
+function toEnd(scroller: unknown, animated: boolean) {
+  if (Platform.OS === "web") {
+    const box = scroller as WebScroller;
+    box.scrollTo({ top: box.scrollHeight, behavior: animated ? "smooth" : "instant" });
+    return;
+  }
+  (scroller as ScrollView).scrollToEnd({ animated });
+}
+
+/** What {@link CodeBlockText} needs to follow: where its scroller is and whether it is at the end. */
+type Following = {
+  scroller: { current: unknown };
+  /** Called on every scroll with whether the reader is now at the end. */
+  onAtEnd: (atEnd: boolean) => void;
+  /** Called on device when the text grows, which is when a follower moves to the new end. */
+  onGrow: () => void;
+};
+
+type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight"> & {
+  following?: Following | undefined;
+};
 
 /**
  * The scrolling text. The one part the platforms draw with different elements.
@@ -114,7 +163,7 @@ type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight">
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`,
  * keeps the first arm, and drops the `ScrollView`s below it as unreachable.
  */
-function CodeBlockText({ content, wrap, maxHeight }: CodeBlockTextProps) {
+function CodeBlockText({ content, wrap, maxHeight, following }: CodeBlockTextProps) {
   const height = maxHeight ? MAX_HEIGHTS[maxHeight] : undefined;
 
   if (Platform.OS === "web") {
@@ -126,6 +175,18 @@ function CodeBlockText({ content, wrap, maxHeight }: CodeBlockTextProps) {
         // cap cannot scroll, so it takes no tab stop — which is what keeps a one-line value
         // beside its copy button from being two stops.
         tabIndex={wrap && !maxHeight ? undefined : 0}
+        // A view's own props have no scroll event (on device a view does not scroll), so the
+        // listener and the ref go on as a spread, untyped. The element under it is a `<div>`.
+        {...(following
+          ? {
+              ref: (node: unknown) => {
+                following.scroller.current = node;
+              },
+              "aria-live": "off" as const,
+              onScroll: ({ currentTarget: box }: WebScrollEvent) =>
+                following.onAtEnd(box.scrollHeight - box.scrollTop - box.clientHeight <= END_SLACK),
+            }
+          : {})}
         className={cn("min-w-0 flex-1 overflow-auto p-3", height)}
       >
         <Text
@@ -149,6 +210,30 @@ function CodeBlockText({ content, wrap, maxHeight }: CodeBlockTextProps) {
       // Android hands a vertical drag to the outermost scroller unless the inner one asks, and a
       // capped block is nearly always inside a screen that scrolls.
       nestedScrollEnabled
+      {...(following
+        ? {
+            ref: (node: ScrollView | null) => {
+              following.scroller.current = node;
+            },
+            "aria-live": "off" as const,
+            // One report a frame. Left at its default, iOS reports once per gesture.
+            scrollEventThrottle: 16,
+            // The event's shape written out: the compiler has no DOM name for a native event type.
+            onScroll: ({
+              nativeEvent: e,
+            }: {
+              nativeEvent: {
+                contentOffset: { y: number };
+                contentSize: { height: number };
+                layoutMeasurement: { height: number };
+              };
+            }) =>
+              following.onAtEnd(
+                e.contentSize.height - e.contentOffset.y - e.layoutMeasurement.height <= END_SLACK,
+              ),
+            onContentSizeChange: following.onGrow,
+          }
+        : {})}
       className={cn("min-w-0 flex-1", height)}
       // Unwrapped, the padding is the sideways scroller's, so it travels with the end of the line.
       contentContainerClassName={wrap ? "p-3" : ""}
@@ -177,6 +262,7 @@ function CodeBlockText({ content, wrap, maxHeight }: CodeBlockTextProps) {
  * - `wrap` chooses between wrapping a long line and scrolling sideways (the default).
  * - `maxHeight` caps the block, which then scrolls inside itself.
  * - `title` (and `language`) label the block in a header row, which then holds the action.
+ * - `follow` keeps a growing block at its end while the reader is there.
  *
  * A value to copy — an endpoint, a token, a command — is this with `wrap` and a `CopyButton`
  * as its `actionSlot`, not a second component: one line of text is a short block.
@@ -188,8 +274,34 @@ export function CodeBlock({
   maxHeight,
   title,
   language,
+  follow = false,
   className,
 }: CodeBlockProps) {
+  const scroller = useRef<unknown>(null);
+  // Whether the reader is at the end, which is whether the block follows. It starts there.
+  const [atEnd, setAtEnd] = useState(true);
+
+  // On the web new text is laid out by the time this runs, so the end is where it now is. On
+  // device the content size is not known yet; `onContentSizeChange` does it there.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: new `content` is when to follow.
+  useLayoutEffect(() => {
+    if (Platform.OS === "web" && follow && atEnd && scroller.current) {
+      toEnd(scroller.current, false);
+    }
+  }, [content, follow, atEnd]);
+
+  const following: Following | undefined = follow
+    ? {
+        scroller,
+        onAtEnd: setAtEnd,
+        onGrow: () => {
+          if (atEnd && scroller.current) {
+            toEnd(scroller.current, false);
+          }
+        },
+      }
+    : undefined;
+
   const action = actionSlot ? (
     // `p-0.5` and not the text's `p-3`: an icon button is as tall as a line of text and its
     // padding together, so a one-line block stays one line tall with the button in it.
@@ -197,7 +309,25 @@ export function CodeBlock({
       {actionSlot}
     </View>
   ) : null;
-  const text = <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} />;
+  const text = (
+    <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} following={following} />
+  );
+  const jump =
+    follow && atEnd === false ? (
+      <Pressable
+        testID="code-block-jump"
+        role="button"
+        onPress={() => {
+          setAtEnd(true);
+          if (scroller.current) {
+            toEnd(scroller.current, true);
+          }
+        }}
+        className="absolute right-2 bottom-2 rounded-md border border-foreground/10 bg-background px-2 py-1 shadow-sm"
+      >
+        <Text className="text-xs text-foreground">Jump to latest</Text>
+      </Pressable>
+    ) : null;
 
   if (title === undefined) {
     return (
@@ -205,11 +335,13 @@ export function CodeBlock({
         testID="code-block"
         className={cn(
           "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
+          follow && "relative",
           className,
         )}
       >
         {text}
         {action}
+        {jump}
       </View>
     );
   }
@@ -235,7 +367,11 @@ export function CodeBlock({
           <View className="flex-1" />
           {action}
         </View>
-        <View className="flex-row">{text}</View>
+        {/* The jump sits over the text, not over the header. */}
+        <View className={cn("flex-row", follow && "relative")}>
+          {text}
+          {jump}
+        </View>
       </View>
     </CodeBlockTitleContext.Provider>
   );
