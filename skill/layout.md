@@ -62,6 +62,11 @@ widths, and two apps that had each extracted a `Page` component still disagreed 
 `wide` boolean meant. If none of the three is right, the page wants `HeaderContentFooter`
 directly — not a fourth name.
 
+The body is spaced already: `gap-4 py-4` on every width, so the first block sits 16px under the
+header and the blocks a page stacks sit 16px apart. Do not add `contentClassName="gap-4 py-4"` or
+wrap `contentSlot` in a `<div className="space-y-4 py-4">`. `contentClassName` is merged after it,
+so a page whose rows run flush to the rule passes `py-0` (or `gap-0`) and changes only that half.
+
 `headerContentSlot` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
 
