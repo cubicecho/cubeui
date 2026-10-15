@@ -121,6 +121,7 @@ at the end.
 | How much of something is done: an upload, a re-embed, a context window filling | `Progress` | [controls.md](controls.md#progress) |
 | A colour-coded thing: a swatch, a card's accent stripe, legible text on a chip | `ColorDot`, `Card accentColor`, `readableTextColor` | [controls.md](controls.md#colour) |
 | A text field with an icon inside it at the start, or an icon button at the end | `Input leadingSlot`, `Input trailingSlot` | [controls.md](controls.md#an-icon-in-an-input) |
+| A fixed part of a field's value: a URL prefix, a domain, a unit | `Input prefixText`, `Input suffixText` | [controls.md](controls.md#fixed-text-in-an-input) |
 | A search or filter box — named, with a ✕ that clears it — alone or in a filter bar | `SearchInput` | [controls.md](controls.md#search) |
 | A tag or filter chip with an ✕ that takes it off | `Badge onRemove` | [controls.md](controls.md#removable-badge) |
 | An upload of one file or several, dropped or picked — as text, as bytes (`read="bytes"`, for a `.zip` or an image), unread as a `Blob` with its `size` (`read="none"`, for a large upload), or a whole folder (`directory`) | `FilePicker` | [controls.md](controls.md#file-picker) |
