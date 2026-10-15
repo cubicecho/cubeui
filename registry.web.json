@@ -1540,7 +1540,7 @@
       "description": "One field: a label wired to its control, a description that sits inline or behind a help icon, an error the control is described by, and a skeleton the right height for what is loading. Presentational, so the TanStack binding sits on it rather than beside it. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/field",
-        "@cubeui/popover",
+        "@cubeui/description-hint",
         "@cubeui/skeleton",
         "@cubeui/utils"
       ],
@@ -1549,8 +1549,7 @@
           "path": "compiled/form-field.tsx",
           "type": "registry:component"
         }
-      ],
-      "dependencies": ["lucide-react@^1.41.0"]
+      ]
     },
     {
       "name": "form-set",

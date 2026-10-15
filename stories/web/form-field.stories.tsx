@@ -613,6 +613,11 @@ export const APopoverDescriptionIsStillAnnounced: Story = {
     // Closed, never opened, never hovered.
     expect(canvasElement.querySelector("[data-state=open]")).toBeNull();
     expect(control).toHaveAccessibleDescription(SCHEMA_DESCRIPTION);
+    // The shared item's copy, not one of the field's own (#338): the field, the cards, the
+    // sections and the rows draw one `DescriptionHint`, so they cannot drift apart again.
+    expect(canvasElement.querySelector("[data-slot=description-hint-text]")).toHaveTextContent(
+      SCHEMA_DESCRIPTION,
+    );
   },
 };
 
