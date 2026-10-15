@@ -654,7 +654,7 @@ and choices that each need a sentence are a `RadioGroupField`.
 `searchable`, one fetched when it opens (`onOpenChange`), one with a `{ note }` row, one that can
 create an option, or one that holds several. It takes `Combobox`'s props (`options`,
 `placeholder`, `disabled`, `searchable`, `searchPlaceholder`, `onOpenChange`, `onCreateOption`,
-`contentClassName`), with the trigger's class as `triggerClassName`. Choosing marks the field
+`freeText`, `createLabel`, `contentClassName`), with the trigger's class as `triggerClassName`. Choosing marks the field
 touched, since a popover has no blur that means "done". Do not wrap a bare `Combobox` in
 `form.Field` by hand.
 
@@ -671,6 +671,10 @@ touched, since a popover has no blur that means "done". Do not wrap a bare `Comb
   writes `null`, with `emptyLabel` as its text, exactly as on `SelectField`.
 - With `multiple` it holds a `string[]`, and takes `maxDisplay` and the control's own `clearable`
   — there it is the Clear button under the list, on by default, and it writes `[]`.
+- `freeText`, `createLabel` and `duplicateMessage` pass through to `Combobox`. Single, the field
+  holds whatever was typed. Multiple, each typed value is a chip, and a duplicate (ignoring case)
+  is the field's error until the search changes — marked touched so it shows, and cleared without
+  touching a validator's own message. Rules on the values themselves are still `validators`.
 
 The web one-line form is the same field from `@cubeui/app-form`:
 `<ComboboxField form={form} name="labels" label="Labels" options={LABELS} multiple />`. The name

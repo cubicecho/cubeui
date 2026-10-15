@@ -729,6 +729,100 @@ export const MultipleComboboxAndSegmented: Story = {
   },
 };
 
+const SUGGESTED_MODELS = [
+  { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+  { value: "llama3.1:8b", label: "llama3.1:8b" },
+];
+
+function FreeTextForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { model: "", cases: [] as string[] },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="model">
+          {(field) => <field.ComboboxField freeText label="Model" options={SUGGESTED_MODELS} />}
+        </form.AppField>
+        <form.AppField name="cases">
+          {(field) => (
+            <field.ComboboxField
+              freeText
+              multiple
+              label="Cases"
+              options={[]}
+              createLabel="Add case"
+            />
+          )}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${values.model} with ${values.cases.join("+")}`}</output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `freeText` (#363): the options are suggestions. One value takes a typed id that is not listed
+ * and the trigger shows it; several is a tag input that refuses a case-folded duplicate, saying
+ * so in the menu's status region and as the field's error until the search moves on.
+ */
+export const FreeTextComboboxField: Story = {
+  render: () => (
+    <SideBySide native={<FreeTextForm kit={NATIVE} />} compiled={<FreeTextForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+
+      const model = half.getByRole("combobox", { name: /Model/ });
+      await userEvent.click(model);
+      await userEvent.type(await page.findByLabelText("Search"), "my-own-model");
+      await userEvent.click(await page.findByRole("option", { name: /Use .my-own-model./ }));
+      await waitFor(() => expect(stored).toHaveTextContent("my-own-model with"));
+      await expect(model).toHaveTextContent("my-own-model");
+      // The closed menu hands focus back to its trigger as it leaves; opening the next one first
+      // has that focus land outside it and dismiss it.
+      await waitFor(() => expect(page.queryByLabelText("Search")).toBeNull());
+
+      const cases = half.getByRole("combobox", { name: /Cases/ });
+      await userEvent.click(cases);
+      const search = () => page.findByLabelText("Search");
+      await userEvent.type(await search(), "Yes");
+      await userEvent.click(await page.findByRole("option", { name: /Add case .Yes./ }));
+      await waitFor(() => expect(stored).toHaveTextContent("with Yes"));
+      await userEvent.type(await search(), "No");
+      // By the keyboard this time: the create row is the one highlighted.
+      await expect(await page.findByRole("option", { name: /Add case .No./ })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      await userEvent.keyboard("{Enter}");
+      await waitFor(() => expect(stored).toHaveTextContent("with Yes+No"));
+      await expect(cases).toHaveTextContent("Yes");
+
+      await userEvent.type(await search(), "YES");
+      // Read out from a status region beside the list, on both halves.
+      await expect(
+        await page.findByText("“YES” is already added.", { selector: "[role=status] *" }),
+      ).toBeVisible();
+      await expect(page.queryByRole("option", { name: /Add case/ })).toBeNull();
+      await waitFor(() => expect(half.getByRole("alert")).toHaveTextContent("already added"));
+      await expect(stored).toHaveTextContent("with Yes+No");
+
+      // Closing clears the search, and the refusal goes with it.
+      await userEvent.keyboard("{Escape}");
+      await waitFor(() => expect(half.queryByRole("alert")).toBeNull());
+    }
+  },
+};
+
 /** The field itself, and `InputField type="number"`, which is the same field under its old name. */
 const NUMBER_BOXES = ["Amount", "Legacy"];
 

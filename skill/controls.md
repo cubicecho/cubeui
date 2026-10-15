@@ -930,6 +930,11 @@ plain listbox.
 - `searchable` is off by default without `multiple` and on by default with it.
 - `onCreateOption` offers to create what a search matches nothing for; given it, a single
   combobox draws the search menu whether or not `searchable` is set. `createLabel` words the row.
+- **`freeText` takes what was typed as the value.** The create row ("Use “…”" by default,
+  `createLabel` to rename it) sets `value` to the text, and the trigger shows a held value no
+  option covers as its own text, ticked in the menu. The options become suggestions: a model id
+  from a list fetched when it opens, which the reader can still type past. `freeText` stands in for
+  `onCreateOption`; pass one or the other.
 - In a form: `<field.SelectField searchable options={…} />` on `@cubeui/app-form`, and
   `<field.ComboboxField searchable options={…} />` from `@cubeui/combobox-field` on
   `@cubeui/form`. See [forms.md](forms.md#on-react-native).
@@ -993,6 +998,12 @@ is behind it, over `Popover`, `Command` and `Badge`.
 - `onCreateOption` offers to create what a search matches nothing for. Without it, a search that
   matches nothing says `emptyMessage`. `isAddableOptionName` from `@/lib/select-options` is the
   test the create row uses.
+- **`freeText` with `multiple` is a tag input**: each typed value becomes a chip, with
+  `options={[]}` when there is nothing to suggest. A value already held, in any case, is refused —
+  no create row, and `duplicateMessage` (default `“text” is already added.`) is read out from a
+  `role="status"` region under the list. `onRefusalChange` is handed that message, and
+  `undefined` once the search changes or the menu closes; `ComboboxField` shows it as the field's
+  error.
 - `clearable` (default `true`) is the Clear button under the list. It is on the `multiple` half
   only.
 - `maxDisplay` caps the chips on the trigger and the rest become a count.

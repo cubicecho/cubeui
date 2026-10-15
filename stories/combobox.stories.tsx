@@ -662,3 +662,84 @@ export const MultipleOnBothHalves: Story = {
     }
   },
 };
+
+function FreeTextHarness({ Picker, name }: { Picker: typeof Native; name: string }) {
+  const [model, setModel] = useState("");
+  const [cases, setCases] = useState<string[]>([]);
+  const [refusal, setRefusal] = useState<string | undefined>(undefined);
+  return (
+    <div className="flex w-80 flex-col gap-2">
+      <Picker
+        freeText
+        aria-label={`${name} model`}
+        placeholder="Choose a model"
+        options={MODELS.map((id) => ({ value: id, label: id }))}
+        value={model}
+        onValueChange={setModel}
+      />
+      <Picker
+        freeText
+        multiple
+        aria-label={`${name} cases`}
+        options={[]}
+        value={cases}
+        onValueChange={setCases}
+        onRefusalChange={setRefusal}
+        createLabel="Add case"
+      />
+      <output aria-label={`${name} stored`}>{`${model} with ${cases.join("+")}`}</output>
+      <output aria-label={`${name} refusal`}>{refusal ?? ""}</output>
+    </div>
+  );
+}
+
+/**
+ * `freeText` (#363) on both halves: a typed model id that is not listed is held and shown, and a
+ * tag input takes each typed value as a chip and refuses one already held, ignoring case.
+ */
+export const FreeText: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={<FreeTextHarness Picker={Native} name="Native" />}
+      compiled={<FreeTextHarness Picker={Combobox as typeof Native} name="Compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const name of ["Native", "Compiled"]) {
+      const stored = canvas.getByLabelText(`${name} stored`);
+
+      const model = canvas.getByRole("combobox", { name: `${name} model` });
+      await userEvent.click(model);
+      await userEvent.type(await screen.findByLabelText("Search"), "my-own-model");
+      await userEvent.click(await screen.findByRole("option", { name: /Use .my-own-model./ }));
+      await waitFor(() => expect(stored).toHaveTextContent("my-own-model with"));
+      await expect(model).toHaveTextContent("my-own-model");
+      // The closed menu hands focus back to its trigger as it leaves; opening the next one first
+      // has that focus land outside it and dismiss it.
+      await waitFor(() => expect(screen.queryByLabelText("Search")).toBeNull());
+
+      const cases = canvas.getByRole("combobox", { name: `${name} cases` });
+      await userEvent.click(cases);
+      for (const typed of ["Yes", "No"]) {
+        await userEvent.type(await screen.findByLabelText("Search"), typed);
+        await userEvent.click(
+          await screen.findByRole("option", { name: new RegExp(`Add case .${typed}.`) }),
+        );
+      }
+      await waitFor(() => expect(stored).toHaveTextContent("with Yes+No"));
+
+      await userEvent.type(await screen.findByLabelText("Search"), "YES");
+      // Read out from a status region beside the list, on both halves.
+      await expect(
+        await screen.findByText("“YES” is already added.", { selector: "[role=status] *" }),
+      ).toBeVisible();
+      await expect(canvas.getByLabelText(`${name} refusal`)).toHaveTextContent("already added");
+      await expect(screen.queryByRole("option", { name: /Add case/ })).toBeNull();
+      await userEvent.keyboard("{Escape}");
+      await waitFor(() => expect(canvas.getByLabelText(`${name} refusal`)).toHaveTextContent(""));
+      await expect(stored).toHaveTextContent("with Yes+No");
+    }
+  },
+};
