@@ -22,6 +22,8 @@ export function CopyButtonView({
   size = "icon-sm",
   onCopied,
   onError,
+  disabled,
+  hint,
   className,
 }: CopyButtonViewProps) {
   const { copied, copy } = useCopy(write, { value, onCopied, onError });
@@ -33,7 +35,15 @@ export function CopyButtonView({
       size={size}
       aria-label={copied ? "Copied" : label}
       className={className}
-      onPress={() => void copy()}
+      disabled={disabled}
+      hint={hint}
+      onPress={() => {
+        // `Button` already refuses the press; this keeps a disabled copy from writing regardless.
+        if (disabled === true) {
+          return;
+        }
+        void copy();
+      }}
       iconSlot={copied ? <Check aria-hidden /> : <Copy aria-hidden />}
     />
   );
