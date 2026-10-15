@@ -18,6 +18,10 @@ export function EmptyStateTypeAssertions() {
       <Native compact={false} icon={NativeSearch} title="Nothing here" description="Yet." />
       <Native compact title="No labels yet." />
       <Native compact icon={NativeSearch} title="No labels yet." />
+      <Native iconSlot={<NativeSearch />} title="Nothing here" />
+      <Native compact iconSlot={<NativeSearch />} title="No labels yet." />
+      {/* @ts-expect-error the glyph is given once: the element, or the deprecated component */}
+      <Native icon={NativeSearch} iconSlot={<NativeSearch />} title="Nothing here" />
       {/* @ts-expect-error the default block draws its icon in a bubble, so it needs one */}
       <Native title="Nothing here" />
       {/* @ts-expect-error a line inside a region that has its heading is never a heading */}
@@ -27,6 +31,7 @@ export function EmptyStateTypeAssertions() {
 
       <Compiled icon={CompiledSearch} title="Project not found" level={1} />
       <Compiled compact title="No labels yet." />
+      <Compiled iconSlot={<CompiledSearch />} title="Nothing here" />
       {/* @ts-expect-error a line inside a region that has its heading is never a heading */}
       <Compiled compact title="No labels yet." level={2} />
       {/* @ts-expect-error the line is one line: the whole sentence goes in `title` */}
