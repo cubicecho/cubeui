@@ -148,6 +148,62 @@ export const Compact: Story = {
   },
 };
 
+/**
+ * `iconSlot` takes the glyph as an element, as every other shell does (#357), and draws exactly
+ * what the deprecated `icon` component does: the 24-pixel glyph in the bubble, and the 16-pixel
+ * one inline at `compact`.
+ */
+export const IconSlot: Story = {
+  args,
+  render: () => (
+    <SideBySide
+      native={
+        <>
+          <div data-testid="slot">
+            <Native iconSlot={<NativeSearch />} title="Slot" />
+          </div>
+          <div data-testid="component">
+            <Native icon={NativeSearch} title="Component" />
+          </div>
+          <Native compact iconSlot={<NativeSearch />} title="Slot line." />
+        </>
+      }
+      compiled={
+        <>
+          <div data-testid="slot">
+            <Compiled iconSlot={<CompiledSearch />} title="Slot" />
+          </div>
+          <div data-testid="component">
+            <Compiled icon={CompiledSearch} title="Component" />
+          </div>
+          <Compiled compact iconSlot={<CompiledSearch />} title="Slot line." />
+        </>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const box = (el: Element | null | undefined) => {
+      const rect = el?.getBoundingClientRect();
+      return rect ? [rect.width, rect.height] : [];
+    };
+    const slots = canvas.getAllByTestId("slot");
+    const components = canvas.getAllByTestId("component");
+    await expect(slots).toHaveLength(2);
+    for (const [index, slot] of slots.entries()) {
+      const svg = slot.querySelector("svg");
+      await expect(box(svg)).toEqual([24, 24]);
+      await expect(box(svg)).toEqual(box(components[index]?.querySelector("svg")));
+      await expect(getComputedStyle(svg as Element).color).toBe(
+        getComputedStyle(components[index]?.querySelector("svg") as Element).color,
+      );
+    }
+    for (const title of canvas.getAllByText("Slot line.")) {
+      await expect(box(title.parentElement?.querySelector("svg"))).toEqual([16, 16]);
+    }
+  },
+};
+
 /** `compact` with nothing but the words: the call sites that are a bare `<Text>` today. */
 export const CompactTextOnly: Story = {
   args: { compact: true, title: "No projects yet." },

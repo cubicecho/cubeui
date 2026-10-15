@@ -1107,7 +1107,7 @@ and which one is a question of **where the list is**, not how much there is to s
 ```tsx
 // The list is the page, or the page's main region: the centred block.
 <EmptyState
-  icon={Inbox}
+  iconSlot={<Inbox />}
   title="No agents yet"
   description="An agent runs the lanes you give it."
   actionSlot={<Button onPress={create} content="New agent" />}
@@ -1122,12 +1122,13 @@ and which one is a question of **where the list is**, not how much there is to s
 ```
 
 - **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `actionSlot`
-  under them, centred, with `py-10` around it. `icon` is required: it is a component
-  (`icon={Inbox}`), not an element, and the shell sizes it.
+  under them, centred, with `py-10` around it. The icon is required: an element in `iconSlot`
+  (`iconSlot={<Inbox />}`), as on every other shell, and the shell sizes and inks it. `icon`, a
+  component (`icon={Inbox}`), is the older spelling and is deprecated; pass one or the other.
 - **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
   empty state *is* the screen — a first run, a record not found, a dead link — so a screen reader
   has a heading to land on. Otherwise leave it off; the page already has its heading.
-- **`compact`** is one muted `text-sm` line: an optional small `icon` inline before the words, the
+- **`compact`** is one muted `text-sm` line: an optional small `iconSlot` inline before the words, the
   `title`, then the `actionSlot` on the same line (it wraps under on a narrow column). No bubble, no
   centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
   never a heading, so `level` is a **type error** with `compact`, and so is `description`: the

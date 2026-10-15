@@ -22,7 +22,7 @@
  * web layout centred, and a phone is narrower than the first breakpoint anyway.
  */
 import { Children, Fragment, isValidElement, type ReactElement, type ReactNode } from "react";
-import type { IconComponent } from "@/components/ui/icons-base";
+import { IconClassContext, type IconComponent } from "@/components/ui/icons-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
 import { PageHeader, type PageHeaderProps } from "./page-header";
@@ -118,13 +118,29 @@ function cells(slot: SlotNode, prefix = ""): { key: string; cell: ReactElement }
   });
 }
 
+/**
+ * The glyph, as an element, as every other shell takes it: `iconSlot={<Plug />}`. `icon`, the
+ * component, is the older spelling, kept for one minor; a call site passes one or the other.
+ */
+type EmptyStateIcon =
+  | {
+      iconSlot: SlotNode;
+      /** @deprecated Pass the element as `iconSlot={<Plug />}`. */
+      icon?: never;
+    }
+  | {
+      iconSlot?: never;
+      /** @deprecated Pass the element as `iconSlot={<Plug />}`. */
+      icon: IconComponent;
+    };
+
 type EmptyStateProps = {
   title: string;
   actionSlot?: SlotNode;
   /** The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. */
   className?: string | undefined;
 } & (
-  | {
+  | ({
       /**
        * The one muted line that stands in for a short list *inside* something else — a card, a
        * sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in
@@ -135,7 +151,6 @@ type EmptyStateProps = {
        * is.
        */
       compact?: false | undefined;
-      icon: IconComponent;
       description?: ReactNode;
       /**
        * Makes the title a heading of this rank. Leave it off for an empty list inside a page that
@@ -146,10 +161,12 @@ type EmptyStateProps = {
        * how it looks.
        */
       level?: 1 | 2 | 3 | undefined;
-    }
+    } & EmptyStateIcon)
   | {
       compact: true;
       /** Optional here: drawn inline before the text, at the text's size, with no bubble. */
+      iconSlot?: SlotNode;
+      /** @deprecated Pass the element as `iconSlot={<Plug />}`. */
       icon?: IconComponent | undefined;
       description?: never;
       level?: never;
@@ -173,6 +190,7 @@ type EmptyStateProps = {
  */
 export function EmptyState({
   icon: Icon,
+  iconSlot,
   title,
   description,
   actionSlot,
@@ -180,6 +198,7 @@ export function EmptyState({
   compact,
   className,
 }: EmptyStateProps) {
+  const glyph = iconSlot ?? (Icon ? <Icon /> : null);
   if (compact) {
     return (
       <div
@@ -189,7 +208,15 @@ export function EmptyState({
           className,
         )}
       >
-        {Icon ? <Icon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden /> : null}
+        {glyph == null ? null : (
+          // At the text's size and ink: the context on device, the descendant class on the web,
+          // where an icon takes `currentColor` and ignores the context.
+          <div aria-hidden className="cube-rn-view shrink-0 text-foreground/60 [&_svg]:size-4">
+            <IconClassContext.Provider value="h-4 w-4 text-foreground/60">
+              {glyph}
+            </IconClassContext.Provider>
+          </div>
+        )}
         <span className="cube-rn-text shrink text-sm text-foreground/60">{title}</span>
         {actionSlot}
       </div>
@@ -198,9 +225,7 @@ export function EmptyState({
   return (
     <Empty className={className}>
       <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Icon />
-        </EmptyMedia>
+        <EmptyMedia variant="icon">{glyph}</EmptyMedia>
         {level === undefined ? (
           <EmptyTitle>{title}</EmptyTitle>
         ) : (
