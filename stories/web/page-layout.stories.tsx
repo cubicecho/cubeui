@@ -188,10 +188,69 @@ export const BodyThatDoesNotScroll: Story = {
     expect(body.scrollHeight).toBe(body.clientHeight);
     expect(body).not.toHaveAttribute("tabindex");
 
-    // The page's own list scrolls, and the composer sits at the foot of the shell.
+    // The page's own list scrolls, and the composer sits at the foot of the shell, above the
+    // body's own 16px of bottom padding.
     expect(messages.scrollHeight).toBeGreaterThan(messages.clientHeight);
     expect(
-      Math.abs(composer.getBoundingClientRect().bottom - shell.getBoundingClientRect().bottom),
+      Math.abs(composer.getBoundingClientRect().bottom + 16 - shell.getBoundingClientRect().bottom),
     ).toBeLessThanOrEqual(1);
+  },
+};
+
+const Block = ({ name }: { name: string }) => (
+  <div data-testid="block" className="h-16 rounded-md border">
+    {name}
+  </div>
+);
+
+/**
+ * The body keeps 16px under the header's rule and 16px between the blocks a page stacks (#350),
+ * on every width: the header's own `py-4` is there whatever the column, so the room under it is too.
+ */
+export const BodyKeepsItsDistance: Story = {
+  args: {
+    title: "Settings",
+    width: "full",
+    contentSlot: (
+      <>
+        <Block name="Profile" />
+        <Block name="Billing" />
+        <Block name="Danger zone" />
+      </>
+    ),
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const header = canvasElement.querySelector(
+      "[data-slot=header-content-footer-header]",
+    ) as HTMLElement;
+    const [first, second] = canvas
+      .getAllByTestId("block")
+      .map((b) => b.getBoundingClientRect()) as [DOMRect, DOMRect];
+    expect(first.top - header.getBoundingClientRect().bottom).toBe(16);
+    expect(second.top - first.bottom).toBe(16);
+  },
+};
+
+/** A page that wants its rows flush says so, and its classes are merged after the default. */
+export const BodySpacingIsOverridable: Story = {
+  args: {
+    title: "Settings",
+    contentClassName: "gap-0 py-0",
+    contentSlot: (
+      <>
+        <Block name="Profile" />
+        <Block name="Billing" />
+      </>
+    ),
+  },
+  play: async ({ canvas, canvasElement }) => {
+    const header = canvasElement.querySelector(
+      "[data-slot=header-content-footer-header]",
+    ) as HTMLElement;
+    const [first, second] = canvas
+      .getAllByTestId("block")
+      .map((b) => b.getBoundingClientRect()) as [DOMRect, DOMRect];
+    expect(first.top - header.getBoundingClientRect().bottom).toBe(0);
+    expect(second.top - first.bottom).toBe(0);
   },
 };
