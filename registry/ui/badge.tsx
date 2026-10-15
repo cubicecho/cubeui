@@ -42,10 +42,13 @@ export function Badge({
   label,
   onRemove,
   removeLabel,
+  mono = false,
   children,
 }: BadgeProps) {
   const shape = badgeHasLabel(children) ? "pill" : "dot";
-  const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
+  const textClass = backgroundColor
+    ? badgeTextFallback(mono)
+    : badgeTextVariants({ variant, mono });
   const inkClass = backgroundColor ? badgeInkFallback : badgeInkVariants({ variant });
   // Not with `backgroundColor`: the caller's colour replaced the tint the dot belongs to.
   const softDot = shape === "pill" && !backgroundColor ? badgeSoftDotClass(variant) : null;

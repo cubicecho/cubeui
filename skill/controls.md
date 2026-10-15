@@ -1362,6 +1362,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+- `mono` sets the label in monospace at normal weight, for a machine string: a tool name, an id,
+  a cron expression. Write `<Badge variant="outline" mono>{name}</Badge>`, not
+  `className="font-mono font-normal"`: a class lands on the container, which on native does not
+  reach the label's `Text`. It goes with any `variant` and with `onRemove`.
 
 ## Alert
 
