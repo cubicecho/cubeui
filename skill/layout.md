@@ -65,6 +65,34 @@ directly — not a fourth name.
 `headerContentSlot` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
 
+Tabs whose list is in the header and whose panels are in the body are one set of tabs with one
+root around the whole page. Give the root `h-full`, so the page still fills what it is in:
+
+```tsx
+<Tabs value={tab} onValueChange={setTab} className="h-full">
+  <PageLayout
+    title="Settings"
+    headerContentSlot={
+      <TabsList aria-label="Settings">
+        <TabsTrigger value="general">General</TabsTrigger>
+        <TabsTrigger value="agents">Agents</TabsTrigger>
+      </TabsList>
+    }
+    contentSlot={
+      <>
+        <TabsContent value="general"><GeneralSettings /></TabsContent>
+        <TabsContent value="agents"><AgentSettings /></TabsContent>
+      </>
+    }
+  />
+</Tabs>
+```
+
+Not two `Tabs` roots sharing a `value`: each root names its own tabs and panels, so a panel in the
+body would no longer be named by its tab. Not a `className="contents"` wrapper either. For tabs
+that are routes, the triggers take `linkSlot` and the body is one `TabsContent` holding the route
+(see the tabs notes under [controls.md](controls.md#icons)).
+
 `scroll={false}` is for a page that fills the height and scrolls its own parts: a chat's message
 list over a pinned composer, a framed app, tab panels that each keep their place. The body is
 then the height left under the header, and `contentSlot` divides it (`h-full`, or `flex-1` on

@@ -7,16 +7,20 @@
  * do under radix without `forceMount`.
  */
 
+import { Slot } from "@radix-ui/react-slot";
 import {
   Children,
+  cloneElement,
   createContext,
+  type HTMLAttributes,
+  type ReactElement,
   type ReactNode,
   useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
 import {
   TABS_LIST_CLASS,
@@ -161,6 +165,7 @@ function TabsTrigger({
   className,
   children,
   trailingSlot,
+  linkSlot,
 }: TabsTriggerProps) {
   const tabs = useContext(TabsContext);
   const reveal = useContext(TabsListContext);
@@ -177,7 +182,49 @@ function TabsTrigger({
     }
   }, [active]);
 
-  return (
+  const styling = cn(
+    TABS_TRIGGER_CLASS,
+    active ? "bg-active" : "hover:bg-hover",
+    disabled && "opacity-50",
+    className,
+  );
+  // Text colour does not inherit on native, so the active/inactive split lands on each `<Text>`
+  // and, through the context, on each icon — the container's colour reaches neither.
+  const iconClass = cn("size-4 shrink-0", color);
+  const inside = (
+    <>
+      {label(children, cn(TABS_TRIGGER_TEXT_CLASS, color))}
+      {trailingSlot}
+    </>
+  );
+
+  if (linkSlot !== undefined && Platform.OS === "web") {
+    // Drawn as the link, as `Button`'s `linkSlot` is: a DOM `<a>` takes the press as a click, a
+    // router's link is a component and takes `onPress`.
+    const select = () => {
+      if (disabled === false) {
+        tabs.setValue(value);
+      }
+    };
+    return (
+      <IconClassContext.Provider value={iconClass}>
+        {/* `Slot` is typed for the DOM; the element that receives these is the caller's. */}
+        <Slot
+          {...({
+            role: "tab",
+            "aria-selected": active,
+            "aria-disabled": disabled,
+            className: cn("flex", styling),
+            ...(typeof linkSlot.type === "string" ? { onClick: select } : { onPress: select }),
+          } as unknown as HTMLAttributes<HTMLElement>)}
+        >
+          {cloneElement(linkSlot as ReactElement, undefined, inside)}
+        </Slot>
+      </IconClassContext.Provider>
+    );
+  }
+
+  const tab = (
     <Pressable
       role="tab"
       onLayout={(event) => {
@@ -191,22 +238,16 @@ function TabsTrigger({
       aria-disabled={disabled}
       disabled={disabled}
       onPress={() => tabs.setValue(value)}
-      className={cn(
-        TABS_TRIGGER_CLASS,
-        active ? "bg-active" : "hover:bg-hover",
-        disabled && "opacity-50",
-        className,
-      )}
+      className={styling}
     >
-      {/* Text colour does not inherit on native, so the active/inactive split
-          lands on each `<Text>` and, through the context, on each icon — the
-          container's colour reaches neither. */}
-      <IconClassContext.Provider value={cn("size-4 shrink-0", color)}>
-        {label(children, cn(TABS_TRIGGER_TEXT_CLASS, color))}
-        {trailingSlot}
-      </IconClassContext.Provider>
+      <IconClassContext.Provider value={iconClass}>{inside}</IconClassContext.Provider>
     </Pressable>
   );
+  if (linkSlot === undefined) {
+    return tab;
+  }
+  // On device the link wraps the tab: expo-router's takes its child with `asChild`.
+  return cloneElement(linkSlot as ReactElement<{ asChild?: boolean }>, { asChild: true }, tab);
 }
 
 /** One tab's pane, rendered while its tab is active. */

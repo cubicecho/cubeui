@@ -107,6 +107,29 @@ tab into view, at mount and whenever it changes, on both halves. Do not wrap `Ta
 horizontal `ScrollView` to fit a phone: the scroller would be outside the tablist, and a tab
 chosen by a link would stay off screen. Tabs that fit are centred in the list as before.
 
+A tab that is a route takes the link as `linkSlot`, as `Button` does: an element with no
+children. Do not navigate from `onValueChange` — such a tab has no `href`, so it cannot be
+middle-clicked, opened in a new tab or read as a link.
+
+```tsx
+<Tabs value={section}>
+  <TabsList aria-label="Settings">
+    <TabsTrigger value="general" linkSlot={<Link to="/settings" />}>General</TabsTrigger>
+    <TabsTrigger value="agents" linkSlot={<Link to="/settings/agents" />}>Agents</TabsTrigger>
+  </TabsList>
+  <TabsContent value={section}><Outlet /></TabsContent>
+</Tabs>
+```
+
+- On the web the tab is drawn *as* the link and keeps `role="tab"`, `aria-selected` and the
+  tablist's arrow keys. A press follows the link and selects the tab.
+- On device the link wraps the tab (expo-router's `Link` takes it `asChild`).
+- `value` comes from the route, so the page you are on is the selected tab. Leave
+  `onValueChange` off: the route is what changes it. One `TabsContent` whose `value` is the
+  current section holds the route's body, so the panel is named by its tab.
+- With the list in a page header, see [layout.md](layout.md#pages) for one root around the
+  page.
+
 ## Segmented control
 
 A row of three or four pills, one current, that switches a view or a period rather than opening a
