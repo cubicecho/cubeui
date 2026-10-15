@@ -28,6 +28,7 @@ export function SwitchField({
   checked,
   onCheckedChange,
   disabled,
+  hint,
   className,
   labelClassName,
 }: SwitchFieldProps) {
@@ -39,6 +40,7 @@ export function SwitchField({
         checked={checked}
         onCheckedChange={onCheckedChange}
         disabled={disabled}
+        hint={hint}
         // Device has no `htmlFor`, so the caption names the switch here.
         accessibilityLabel={label}
         aria-describedby={description ? descriptionId : undefined}

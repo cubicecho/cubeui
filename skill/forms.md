@@ -351,6 +351,12 @@ under the caption, wired with `aria-describedby` — and `disabled`, which is ho
 cannot be changed says why: `<SwitchField … disabled description="ocrmypdf is not installed." />`.
 Another control, or the switch at the far end of a row, is `SettingRow`.
 
+`Switch` and `SwitchField` take `hint`, the one tooltip, as `Button` does: shown on hover and focus
+(a long press on device) and the switch's description. With `disabled` it keeps the switch
+focusable (`aria-disabled`) and still refuses the press, so the reason can be hovered and tabbed
+to: `<Switch aria-label="Arm the trigger" disabled hint="Turn the task on first" … />`. Do not
+put the sentence in a `title`, which touch and keyboard never show.
+
 ### When the props belong on something nested
 
 A control whose root renders no DOM — shadcn's `Select` primitive, anything built on `Popover` —

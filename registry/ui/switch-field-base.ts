@@ -16,6 +16,11 @@ export type SwitchFieldProps = {
   onCheckedChange: (checked: boolean) => void;
   /** The switch cannot be changed, and the caption is muted. `description` is where to say why. */
   disabled?: boolean | undefined;
+  /**
+   * The switch's tooltip, as on `Switch` and `Button`. With `disabled` the switch stays focusable,
+   * so a reason given here can still be hovered and tabbed to.
+   */
+  hint?: string | undefined;
   className?: string | undefined;
   labelClassName?: string | undefined;
 };

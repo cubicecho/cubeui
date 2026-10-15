@@ -40,6 +40,7 @@ export function SwitchField({
   checked,
   onCheckedChange,
   disabled,
+  hint,
   className,
   labelClassName,
 }: SwitchFieldProps) {
@@ -61,10 +62,12 @@ export function SwitchField({
         checked={checked}
         onCheckedChange={onCheckedChange}
         disabled={disabled}
+        hint={hint}
         // The description sits inside the `<label>` so the whole row stays the hit target, and a
         // label names its control with everything in it. Naming the switch by the caption alone
         // keeps the description out of the name and leaves it to be the description.
-        aria-labelledby={description ? labelId : undefined}
+        // So is a hint: its text sits inside the `<label>` too, for the switch to be described by.
+        aria-labelledby={description || hint ? labelId : undefined}
         aria-describedby={description ? descriptionId : undefined}
       />
       {description ? (
@@ -77,7 +80,9 @@ export function SwitchField({
           </span>
         </span>
       ) : (
-        <span className={caption}>{label}</span>
+        <span id={labelId} className={caption}>
+          {label}
+        </span>
       )}
     </Label>
   );

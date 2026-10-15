@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
+import { Switch } from "../compiled/switch";
 import { SwitchField } from "../compiled/switch-field";
+import { Switch as NativeSwitch } from "../registry/ui/switch";
 import { SwitchField as NativeSwitchField } from "../registry/ui/switch-field";
 import { SideBySide } from "./side-by-side";
 
@@ -123,5 +125,83 @@ export const DisabledSaysWhy: Story = {
     }
     await expect(nativeChange).not.toHaveBeenCalled();
     await expect(compiledChange).not.toHaveBeenCalled();
+  },
+};
+
+const FIRST = "Turn the task on first";
+const hintChange = fn();
+
+/**
+ * `hint` (#359), as on `Button`: the one tooltip, and the switch's description. On a disabled
+ * switch it keeps the switch focusable (`aria-disabled`) so the reason can be hovered and tabbed
+ * to, and the press is still refused. A bare `Switch` and a `SwitchField`, on both halves.
+ */
+export const HintSaysWhy: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col items-start gap-6 p-6">
+          <NativeSwitch
+            accessibilityLabel="Arm the trigger"
+            checked={false}
+            onCheckedChange={hintChange}
+            disabled
+            hint={FIRST}
+          />
+          <NativeSwitchField
+            id="arm-native"
+            label="Arm on save"
+            checked={false}
+            onCheckedChange={hintChange}
+            disabled
+            hint={FIRST}
+          />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col items-start gap-6 p-6">
+          <Switch
+            aria-label="Arm the trigger"
+            checked={false}
+            onCheckedChange={hintChange}
+            disabled
+            hint={FIRST}
+          />
+          <SwitchField
+            id="arm-compiled"
+            label="Arm on save"
+            checked={false}
+            onCheckedChange={hintChange}
+            disabled
+            hint={FIRST}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    hintChange.mockClear();
+    const sections = Array.from(canvasElement.querySelectorAll("section"));
+    await expect(sections).toHaveLength(2);
+    for (const section of sections) {
+      const half = within(section);
+      for (const name of ["Arm the trigger", "Arm on save"]) {
+        // The hint describes it and is not folded into its name.
+        const control = half.getByRole("switch", { name });
+        await expect(control).toHaveAttribute("aria-disabled", "true");
+        await expect(control).toHaveAccessibleDescription(FIRST);
+        await expect(control).not.toBeDisabled();
+        control.focus();
+        await expect(document.activeElement).toBe(control);
+        await userEvent.click(control);
+        await expect(control.getAttribute("aria-checked")).toBe("false");
+      }
+      await userEvent.click(half.getByText("Arm on save"));
+      await userEvent.hover(half.getByRole("switch", { name: "Arm the trigger" }));
+      await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent(FIRST));
+      await userEvent.unhover(half.getByRole("switch", { name: "Arm the trigger" }));
+      await userEvent.keyboard("{Escape}");
+    }
+    await expect(hintChange).not.toHaveBeenCalled();
   },
 };
