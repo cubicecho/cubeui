@@ -41,10 +41,13 @@ export function Badge({
   label,
   onRemove,
   removeLabel,
+  mono = false,
   children,
 }: BadgeProps) {
   const shape = badgeHasLabel(children) ? "pill" : "dot";
-  const textClass = backgroundColor ? badgeTextFallback : badgeTextVariants({ variant });
+  const textClass = backgroundColor
+    ? badgeTextFallback(mono)
+    : badgeTextVariants({ variant, mono });
   const inkClass = backgroundColor ? badgeInkFallback : badgeInkVariants({ variant });
   const dotName = label
     ? ({ role: "img", "aria-label": label } as const)

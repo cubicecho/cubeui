@@ -15,6 +15,59 @@ type Story = StoryObj;
 
 const onRemove = fn();
 
+/**
+ * `mono` sets the label in monospace at normal weight on both halves, on the label itself so the
+ * native `Text` gets it, with any variant and beside the ✕ (#362).
+ */
+export const Mono: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <Native variant="outline" mono>
+            tool_name
+          </Native>
+          <Native variant="destructive" mono onRemove={() => {}}>
+            0 */5 * * *
+          </Native>
+          <Native backgroundColor="#1d4ed8" textColor="#ffffff" mono>
+            slug-id
+          </Native>
+          <Native>Plain</Native>
+        </div>
+      }
+      compiled={
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <Compiled variant="outline" mono>
+            tool_name
+          </Compiled>
+          <Compiled variant="destructive" mono onRemove={() => {}}>
+            0 */5 * * *
+          </Compiled>
+          <Compiled backgroundColor="#1d4ed8" textColor="#ffffff" mono>
+            slug-id
+          </Compiled>
+          <Compiled>Plain</Compiled>
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const text of ["tool_name", "0 */5 * * *", "slug-id"]) {
+      for (const el of canvas.getAllByText(text)) {
+        const style = getComputedStyle(el);
+        await expect(style.fontFamily).toMatch(/mono/i);
+        await expect(style.fontWeight).toBe("400");
+      }
+    }
+    for (const el of canvas.getAllByText("Plain")) {
+      await expect(getComputedStyle(el).fontFamily).not.toMatch(/mono/i);
+      await expect(getComputedStyle(el).fontWeight).toBe("600");
+    }
+  },
+};
+
 export const Removable: Story = {
   render: () => (
     <SideBySide

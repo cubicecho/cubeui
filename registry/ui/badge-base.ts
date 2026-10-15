@@ -56,6 +56,12 @@ export type BadgeProps = {
    * it, and by the web half's `asChild`, whose one child is the whole badge.
    */
   onRemove?: (() => void) | undefined;
+  /**
+   * Sets the label in monospace at normal weight, for a machine string: an id, a tool name, a cron
+   * expression. It is on the label's type, not the container, so it reaches the `Text` on native.
+   * `variant` stays free for colour.
+   */
+  mono?: boolean | undefined;
   /** The ✕'s accessible name. Defaults to `Remove <text>`, the badge's own text. */
   removeLabel?: string | undefined;
   /**
@@ -127,12 +133,13 @@ const BADGE_INK = {
   info: "text-info-foreground",
 } satisfies Record<BadgeVariant, string>;
 
-/** The label's type and colour, per variant. */
-export const badgeTextVariants = cva("text-xs font-semibold", {
+/** The label's type and colour, per variant, and set in monospace for `mono`. */
+export const badgeTextVariants = cva("text-xs", {
   variants: {
     variant: { ...BADGE_INK, link: "text-info underline-offset-4" },
+    mono: { false: "font-semibold", true: "font-mono font-normal" },
   },
-  defaultVariants: { variant: "default" },
+  defaultVariants: { variant: "default", mono: false },
 });
 
 /**
@@ -145,7 +152,11 @@ export const badgeInkVariants = cva("", {
 });
 
 /** The label's class when `backgroundColor` replaced the variant's own. */
-export const badgeTextFallback = "text-xs font-semibold text-foreground";
+export function badgeTextFallback(mono = false): string {
+  return mono
+    ? "text-xs font-mono font-normal text-foreground"
+    : "text-xs font-semibold text-foreground";
+}
 
 /** `badgeInkVariants`' counterpart, for when `backgroundColor` replaced the variant's own. */
 export const badgeInkFallback = "text-foreground";

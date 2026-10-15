@@ -44,6 +44,7 @@ export function Badge({
   label,
   onRemove,
   removeLabel,
+  mono = false,
   asChild = false,
   style,
   children,
@@ -92,7 +93,8 @@ export function Badge({
       className={cn(
         "inline-flex w-fit overflow-hidden whitespace-nowrap transition-colors focus-visible:outline-none [&>svg]:pointer-events-none [&>svg]:size-3",
         badgeContainerVariants({ variant, shape }),
-        shape === "pill" && (backgroundColor ? badgeTextFallback : badgeTextVariants({ variant })),
+        shape === "pill" &&
+          (backgroundColor ? badgeTextFallback(mono) : badgeTextVariants({ variant, mono })),
         variant === "link" && "[a&]:hover:underline [a&]:focus-visible:underline",
         className,
       )}
