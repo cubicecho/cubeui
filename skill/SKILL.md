@@ -352,9 +352,10 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout.md](layout.md#disclosure) | `Disclosure` | `@cubeui/disclosure` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout.md](layout.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | One figure on a card, or a pressable filter tile with a pressed state — see [layout.md](layout.md#stat-tiles) | `StatTile` | `@cubeui/stat-tile` |
-| A grid of cards, or the empty state under one | `CardGrid`, `EmptyState` | `@cubeui/page` |
-| A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/page` |
-| An empty list *inside* something — a card, a sidebar section, a popover: one muted line, optional small icon and action, never a heading — see [layout.md](layout.md#empty-states) | `EmptyState compact` | `@cubeui/page` |
+| A grid of cards | `CardGrid` | `@cubeui/page` |
+| What an empty list says (also re-exported by `@cubeui/page`) | `EmptyState` | `@cubeui/empty-state` |
+| A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/empty-state` |
+| An empty list *inside* something — a card, a sidebar section, a popover: one muted line, optional small icon and action, never a heading — see [layout.md](layout.md#empty-states) | `EmptyState compact` | `@cubeui/empty-state` |
 | A form of any size — see [forms.md](forms.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
 | A date or date and time, bound to a form field | `DateTimeField` | `@cubeui/date-time-field` |
 | A colour, bound to a form field | `ColorField` | `@cubeui/color-picker-field` |

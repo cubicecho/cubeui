@@ -1045,7 +1045,12 @@ import { formatCount, formatDuration } from "@/lib/format";
 The shells for the shape every list route is: a ladder of states, then a list of rows.
 
 ```tsx
-<QueryState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
+<QueryState
+  query={roles}
+  what="your roles"
+  count={shown.length}
+  emptySlot={<EmptyState icon={Users} title="No roles yet" description="A role is a prompt and its lanes." />}
+/>
 <List
   label="Roles"
   contentSlot={shown.map((role) => (
@@ -1066,6 +1071,8 @@ The shells for the shape every list route is: a ladder of states, then a list of
 
 ### QueryState
 
+- **`emptySlot` takes an `EmptyState`** (`@cubeui/empty-state`): the centred block when the list is
+  the page, `compact` when it sits inside a card. Not the `@cubeui/empty` parts assembled by hand.
 - The three rungs a list climbs before it is a list: the request **failed**, it has **not
   landed**, it landed **empty**. Once there are rows it renders `null`, so the page reads as the
   ladder and then the list rather than a nest of ternaries.
@@ -1101,7 +1108,8 @@ The shells for the shape every list route is: a ladder of states, then a list of
 
 ### Empty states
 
-`EmptyState` (`@cubeui/page`, on both halves) is what an empty list says. It comes in two shapes,
+`EmptyState` (`@cubeui/empty-state`, on both halves, and re-exported by `@cubeui/page`) is what an
+empty list says. Install `empty-state` for it; it does not need the page shell. It comes in two shapes,
 and which one is a question of **where the list is**, not how much there is to say:
 
 ```tsx
