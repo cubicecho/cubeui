@@ -1351,6 +1351,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+- `pulse` breathes a dot for something live: `<Badge variant="positive" label="Live" pulse />`.
+  Do not hand-draw a `size-2 rounded-full animate-pulse` span. It pulses on device too (a CSS
+  keyframe does nothing there), stops under the system's reduced-motion setting on both halves,
+  and is ignored by a badge with children.
 
 ## Alert
 

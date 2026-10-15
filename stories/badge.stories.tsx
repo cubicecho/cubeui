@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { Badge as Compiled } from "../compiled/badge";
 import { Badge as Native } from "../registry/ui/badge";
 import { SideBySide } from "./side-by-side";
@@ -14,6 +14,56 @@ export default meta;
 type Story = StoryObj;
 
 const onRemove = fn();
+
+/**
+ * `pulse` breathes a dot for something live (#366): an opacity loop on native, Tailwind's pulse
+ * behind `motion-safe:` on the web, so a reader who asked for reduced motion gets a still dot. A
+ * pill ignores it.
+ */
+export const Pulse: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-row items-center gap-2">
+          <Native variant="positive" label="Live" pulse />
+          <Native variant="secondary" label="Ended" />
+          <Native variant="positive" pulse>
+            Running
+          </Native>
+        </div>
+      }
+      compiled={
+        <div className="flex flex-row items-center gap-2">
+          <Compiled variant="positive" label="Live" pulse />
+          <Compiled variant="secondary" label="Ended" />
+          <Compiled variant="positive" pulse>
+            Running
+          </Compiled>
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const [nativeLive, compiledLive] = canvas.getAllByRole("img", { name: "Live" });
+    const [nativeEnded] = canvas.getAllByRole("img", { name: "Ended" });
+    const [, compiledRunning] = canvas.getAllByText("Running");
+    if (!nativeLive || !compiledLive || !nativeEnded || !compiledRunning) {
+      throw new Error("both halves should draw both dots and the pill");
+    }
+
+    // The web dot runs the keyframe only where motion is welcome, and the pill does not run it.
+    await expect(compiledLive.className).toContain("motion-safe:animate-pulse");
+    await expect(getComputedStyle(compiledLive).animationName).toBe("pulse");
+    await expect(getComputedStyle(compiledRunning).animationName).toBe("none");
+
+    // The device dot fades on its own loop; a dot without `pulse` stays put.
+    await waitFor(() => expect(Number(getComputedStyle(nativeLive).opacity)).toBeLessThan(0.9), {
+      timeout: 2000,
+    });
+    await expect(getComputedStyle(nativeEnded).opacity).toBe("1");
+  },
+};
 
 export const Removable: Story = {
   render: () => (
