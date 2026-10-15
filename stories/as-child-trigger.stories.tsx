@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentType, ReactNode } from "react";
-import { Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import {
@@ -22,6 +22,13 @@ import {
   PopoverContent as CompiledPopoverContent,
   PopoverTrigger as CompiledPopoverTrigger,
 } from "../compiled/popover";
+import {
+  AlertDialog as WebAlertDialog,
+  AlertDialogCancel as WebAlertDialogCancel,
+  AlertDialogContent as WebAlertDialogContent,
+  AlertDialogTitle as WebAlertDialogTitle,
+  AlertDialogTrigger as WebAlertDialogTrigger,
+} from "../registry/ui/alert-dialog";
 import { Button as NativeButton } from "../registry/ui/button";
 import {
   Dialog as WebDialog,
@@ -283,4 +290,86 @@ export const ExpoWeb: Story = {
 export const Compiled: Story = {
   render: () => <All parts={COMPILED} name="Compiled" />,
   play: ({ canvasElement }) => opensAndCloses(canvasElement, "Compiled"),
+};
+
+/**
+ * A bare React Native `Pressable` as the child, not a `Button` — issue #339. Under react-native-web
+ * a `Pressable` hands the DOM its own `onClick` and drops the one radix merged in, and unlike
+ * `Button` it has nothing that calls that one from its press. So the trigger bridges it: the
+ * merged click reaches the child through `onPress`, which the `Pressable` does call, from a click
+ * and from Enter or Space.
+ */
+export const BarePressable: Story = {
+  render: () => (
+    <div className="flex gap-3">
+      <WebPopover>
+        <WebPopoverTrigger asChild>
+          <Pressable role="button" aria-label="Pressable filters">
+            <Text className="text-foreground">Filters</Text>
+          </Pressable>
+        </WebPopoverTrigger>
+        <WebPopoverContent>
+          <Text className="text-foreground">Pressable pane</Text>
+          <WebPopoverClose asChild>
+            <Pressable role="button" aria-label="Pressable done">
+              <Text className="text-foreground">Done</Text>
+            </Pressable>
+          </WebPopoverClose>
+        </WebPopoverContent>
+      </WebPopover>
+      <WebDialog>
+        <WebDialogTrigger asChild>
+          <Pressable role="button" aria-label="Pressable rename">
+            <Text className="text-foreground">Rename</Text>
+          </Pressable>
+        </WebDialogTrigger>
+        <WebDialogContent aria-describedby={undefined}>
+          <WebDialogTitle>Pressable rename dialog</WebDialogTitle>
+          <WebDialogClose asChild>
+            <Pressable role="button" aria-label="Pressable cancel">
+              <Text className="text-foreground">Cancel</Text>
+            </Pressable>
+          </WebDialogClose>
+        </WebDialogContent>
+      </WebDialog>
+      <WebAlertDialog>
+        <WebAlertDialogTrigger asChild>
+          <Pressable role="button" aria-label="Pressable delete">
+            <Text className="text-foreground">Delete</Text>
+          </Pressable>
+        </WebAlertDialogTrigger>
+        <WebAlertDialogContent aria-describedby={undefined}>
+          <WebAlertDialogTitle>Pressable delete dialog</WebAlertDialogTitle>
+          <WebAlertDialogCancel>Keep it</WebAlertDialogCancel>
+        </WebAlertDialogContent>
+      </WebAlertDialog>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const filters = canvas.getByRole("button", { name: "Pressable filters" });
+    await userEvent.click(filters);
+    await waitFor(() => expect(body().getByText("Pressable pane")).toBeVisible());
+    // Opened once: a press that reached radix twice would toggle it shut again.
+    await expect(filters).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(body().getByRole("button", { name: "Pressable done" }));
+    await waitFor(() => expect(body().queryByText("Pressable pane")).toBeNull());
+
+    filters.focus();
+    await userEvent.keyboard("{Enter}");
+    await waitFor(() => expect(filters).toHaveAttribute("aria-expanded", "true"));
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(body().queryByText("Pressable pane")).toBeNull());
+
+    await userEvent.click(canvas.getByRole("button", { name: "Pressable rename" }));
+    const dialog = await body().findByRole("dialog", { name: "Pressable rename dialog" });
+    await userEvent.click(within(dialog).getByRole("button", { name: "Pressable cancel" }));
+    await waitFor(() => expect(body().queryByRole("dialog")).toBeNull());
+
+    await userEvent.click(canvas.getByRole("button", { name: "Pressable delete" }));
+    const alert = await body().findByRole("alertdialog", { name: "Pressable delete dialog" });
+    await userEvent.click(within(alert).getByRole("button", { name: "Keep it" }));
+    await waitFor(() => expect(body().queryByRole("alertdialog")).toBeNull());
+  },
 };

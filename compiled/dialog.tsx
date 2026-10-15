@@ -35,7 +35,7 @@ import type {
   DialogTriggerProps,
 } from "@/components/ui/dialog-base";
 import { DIALOG_CONTENT_CLASS } from "@/components/ui/dialog-base";
-import { cn } from "@/lib/utils";
+import { bridgePress, cn } from "@/lib/utils";
 import { Button } from "./button";
 import { X } from "./icons";
 
@@ -65,10 +65,13 @@ function Dialog({
 /** The element that opens the dialog. */
 function DialogTrigger({
   asChild,
+  children,
   ...props
 }: Wide<DialogTriggerProps, React.ComponentProps<typeof DialogPrimitive.Trigger>>) {
   return (
-    <DialogPrimitive.Trigger data-slot="dialog-trigger" asChild={asChild ?? false} {...props} />
+    <DialogPrimitive.Trigger data-slot="dialog-trigger" asChild={asChild ?? false} {...props}>
+      {asChild ? bridgePress(children) : children}
+    </DialogPrimitive.Trigger>
   );
 }
 
@@ -83,6 +86,7 @@ function DialogPortal(
 function DialogClose({
   asChild,
   className,
+  children,
   ...props
 }: Wide<DialogCloseProps, React.ComponentProps<typeof DialogPrimitive.Close>>) {
   return (
@@ -91,7 +95,9 @@ function DialogClose({
       asChild={asChild ?? false}
       {...(className === undefined ? {} : { className })}
       {...props}
-    />
+    >
+      {asChild ? bridgePress(children) : children}
+    </DialogPrimitive.Close>
   );
 }
 
