@@ -836,6 +836,66 @@ export const ANumberCanBeTyped: Story = {
   },
 };
 
+function CountForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { count: null as number | null, offset: null as number | null },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="count">
+          {(field) => <field.NumberField label="Count" integer />}
+        </form.AppField>
+        <form.AppField name="offset">
+          {(field) => <field.NumberField label="Offset" integer signed step={10} />}
+        </form.AppField>
+        <form.Subscribe selector={(state) => state.values}>
+          {(values) => (
+            <output aria-label="Stored">{`${String(values.count)} and ${String(values.offset)}`}</output>
+          )}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * `integer` takes whole numbers only (#333): the digits keypad, a step of 1 unless one is given,
+ * and a fraction stores `null` rather than a rounding. `signed` is a device keyboard's concern, so
+ * the DOM box never sees it as an attribute.
+ */
+export const WholeNumbers: Story = {
+  render: () => (
+    <SideBySide native={<CountForm kit={NATIVE} />} compiled={<CountForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves(canvasElement)) {
+      const stored = half.getByLabelText("Stored");
+      const count = half.getByLabelText("Count");
+      const offset = half.getByLabelText("Offset");
+
+      await expect(count).toHaveAttribute("inputmode", "numeric");
+      await expect(count).toHaveAttribute("step", "1");
+      await expect(offset).toHaveAttribute("step", "10");
+      await expect(offset).not.toHaveAttribute("signed");
+
+      await userEvent.type(count, "12");
+      await expect(stored).toHaveTextContent("12 and null");
+      await userEvent.clear(count);
+      // The driver writes a fraction straight into a DOM number box, so only the store is read.
+      await userEvent.type(count, "1.5");
+      await expect(stored).toHaveTextContent("null and null");
+      await userEvent.clear(count);
+
+      await userEvent.type(offset, "-40");
+      await expect(stored).toHaveTextContent("null and -40");
+      await userEvent.clear(offset);
+    }
+  },
+};
+
 function SecretsForm({ kit }: { kit: Kit }) {
   const { useAppForm, Form } = kit;
   const form = useAppForm({

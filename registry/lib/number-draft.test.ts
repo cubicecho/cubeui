@@ -55,6 +55,22 @@ describe("parseNumber", () => {
   });
 });
 
+describe("parseNumber, whole numbers only (#333)", () => {
+  it("reads a whole number, whichever way it is written", () => {
+    expect(parseNumber("42", true)).toBe(42);
+    expect(parseNumber("-4", true)).toBe(-4);
+    expect(parseNumber("1e3", true)).toBe(1000);
+    expect(parseNumber("3.", true)).toBe(3);
+    expect(parseNumber("3.0", true)).toBe(3);
+  });
+
+  it("refuses a fraction rather than rounding it", () => {
+    for (const text of ["1.5", "1e-3", "-0.25", "-", "1e", "Infinity"]) {
+      expect(parseNumber(text, true)).toBeNull();
+    }
+  });
+});
+
 describe("numberText", () => {
   it("draws the stored number when nothing is being typed", () => {
     expect(numberText(undefined, 25)).toBe("25");
@@ -71,6 +87,21 @@ describe("numberText", () => {
   it("drops a draft the stored number has moved away from", () => {
     expect(numberText("1.", 7)).toBe("7");
     expect(numberText("12", null)).toBe("");
+  });
+});
+
+describe("a whole number typed into a text box (#333)", () => {
+  it("keeps a fraction on screen while it stores nothing", () => {
+    let draft: string | undefined;
+    let stored: number | null = null;
+    for (const key of "1.5") {
+      draft = numberText(draft, stored, true) + key;
+      stored = parseNumber(draft, true);
+    }
+    expect({ drawn: numberText(draft, stored, true), stored }).toEqual({
+      drawn: "1.5",
+      stored: null,
+    });
   });
 });
 

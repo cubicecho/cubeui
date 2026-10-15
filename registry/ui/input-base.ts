@@ -163,6 +163,14 @@ export type InputProps = {
   /** Web only; the native keyboard has no equivalent constraint. */
   min?: number | undefined;
   max?: number | undefined;
+  /** Web only, as `min` and `max` are: what the spinners move by, and what the browser checks. */
+  step?: number | "any" | undefined;
+  /**
+   * A number keyboard with a minus key. Neither the `decimal` nor the `numeric` keypad on iOS has
+   * one, and no `inputMode` asks for it, so on iOS this raises the numbers-and-punctuation keyboard
+   * instead. Elsewhere it changes nothing: Android's number keyboards and the web's box take a minus.
+   */
+  signed?: boolean | undefined;
   disabled?: boolean | undefined;
   /**
    * Shown and focusable, but not editable: the value is on its way somewhere. Unlike `disabled` it

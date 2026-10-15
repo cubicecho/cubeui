@@ -106,6 +106,37 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function CountForm() {
+  const form = useAppForm({
+    defaultValues: { count: null as number | null },
+    onSubmit: () => {},
+  });
+  return (
+    <div className="grid w-[320px] gap-4">
+      <NumberField form={form} name="count" label="Count" integer />
+      <form.Subscribe selector={(state) => state.values.count}>
+        {(count) => <output aria-label="Stored">{String(count)}</output>}
+      </form.Subscribe>
+    </div>
+  );
+}
+
+/** `integer` (#333): the digits keypad, a step of 1, and a fraction stores `null`. */
+export const WholeNumbers: Story = {
+  args: {},
+  render: () => <CountForm />,
+  play: async ({ canvas }) => {
+    const count = canvas.getByLabelText("Count");
+    await expect(count).toHaveAttribute("inputmode", "numeric");
+    await expect(count).toHaveAttribute("step", "1");
+    await userEvent.type(count, "7");
+    await expect(canvas.getByLabelText("Stored")).toHaveTextContent("7");
+    await userEvent.clear(count);
+    await userEvent.type(count, "2.5");
+    await expect(canvas.getByLabelText("Stored")).toHaveTextContent("null");
+  },
+};
+
 /** The form as it opens: each field shows its default value. */
 export const Default: Story = {
   args: {},
