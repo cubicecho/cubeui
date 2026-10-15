@@ -386,6 +386,11 @@ the same props: `id` goes to the hex field, and `aria-label`, `aria-labelledby`,
 `aria-describedby`, `aria-invalid` and `aria-required` go to the swatch row's `radiogroup`.
 The primitive version above is what that saves.
 
+The props are `ControlProps` and the second argument is `FieldParts` (the label's `labelId`), both
+exported from `@/components/form-field`. A helper that takes the wiring on, such as a row of inputs
+where one carries the field's id and error, types its prop with them rather than a copy of its own:
+`import type { ControlProps } from "@/components/form-field"`.
+
 `htmlFor` is **not** the answer here, even though it looks like it: it points the label at the
 trigger and leaves the description and the error describing nothing. Use `htmlFor` only when you
 own the id for a separate reason.
