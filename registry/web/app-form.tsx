@@ -134,7 +134,13 @@ type NumberFieldProps = FieldProps &
   Omit<
     ComponentProps<typeof Input>,
     "id" | "value" | "defaultValue" | "onChange" | "onChangeText" | "onBlur" | "type"
-  >;
+  > & {
+    /**
+     * Whole numbers only: the digits keypad on device, a step of 1 on the web, and a fraction such
+     * as `1.5` stores `null` (as a half-typed `-` does) for a validator to report, not a rounding.
+     */
+    integer?: boolean | undefined;
+  };
 
 /**
  * A number input whose store stays numeric.
@@ -150,7 +156,7 @@ type NumberFieldProps = FieldProps &
  * is kept as a draft and shown while it still *means* the stored number; anything that replaces
  * the value from outside wins, because then it no longer does.
  */
-function BoundNumberField(props: NumberFieldProps) {
+function BoundNumberField({ integer = false, ...props }: NumberFieldProps) {
   const [fieldProps, input] = splitProps(props);
   const field = useFieldContext<number | null>();
   const error = useFieldError();
@@ -166,10 +172,11 @@ function BoundNumberField(props: NumberFieldProps) {
         <Input
           // `inputMode` is what gets a phone keypad; `type` is what gets the spinners and the
           // browser's own numeric parsing. They are not the same knob and both are wanted.
-          inputMode="decimal"
+          inputMode={integer ? "numeric" : "decimal"}
+          {...(integer ? { step: 1 } : {})}
           {...input}
           type="number"
-          value={numberText(draft, stored)}
+          value={numberText(draft, stored, integer)}
           onBlur={() => {
             // The draft has served its purpose once focus leaves: `1.` should settle to `1`.
             setDraft(undefined);
@@ -177,7 +184,7 @@ function BoundNumberField(props: NumberFieldProps) {
           }}
           onChangeText={(text) => {
             setDraft(text);
-            field.handleChange(parseNumber(text));
+            field.handleChange(parseNumber(text, integer));
           }}
         />
       }

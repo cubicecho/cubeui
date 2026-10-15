@@ -45,6 +45,7 @@ function Input({
   className,
   type = "text",
   inputMode,
+  signed,
   value,
   defaultValue,
   onChangeText,
@@ -111,7 +112,11 @@ function Input({
             ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
           }
         : {})}
-      inputMode={inputMode ?? NATIVE_INPUT_MODE[type] ?? "text"}
+      // `inputMode` wins over `keyboardType` when both are set, so a signed box on iOS sets only the
+      // one that has a minus key.
+      {...(signed === true && Platform.OS === "ios"
+        ? { keyboardType: "numbers-and-punctuation" as const }
+        : { inputMode: inputMode ?? NATIVE_INPUT_MODE[type] ?? "text" })}
       secureTextEntry={type === "password"}
       // What a DOM `type="search"` is without being told, so a screen reader on device says
       // "search field" too.

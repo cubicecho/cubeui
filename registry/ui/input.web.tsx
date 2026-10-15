@@ -67,6 +67,7 @@ export type InputProps = Omit<
     | "onBlur"
     | "min"
     | "max"
+    | "step"
     | "inputMode"
     | "value"
     | "defaultValue"
@@ -99,6 +100,8 @@ function Input({
   trailingSlot,
   wrapperClassName,
   ref,
+  // A device keyboard's concern: a DOM number box already takes a minus.
+  signed: _signed,
   ...props
 }: InputProps) {
   const corrects = typeof autoCorrect === "string" ? autoCorrect === "on" : autoCorrect;

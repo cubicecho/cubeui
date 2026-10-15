@@ -464,16 +464,22 @@ type NumberFieldProps = BoundFieldProps &
   Omit<
     InputProps,
     "value" | "defaultValue" | "onChangeText" | "onBlur" | "type" | keyof BoundFieldProps
-  >;
+  > & {
+    /**
+     * Whole numbers only: the digits keypad on device, a step of 1 on the web, and a fraction such
+     * as `1.5` stores `null` (as a half-typed `-` does) for a validator to report, not a rounding.
+     */
+    integer?: boolean | undefined;
+  };
 
 /**
  * A number box whose field holds `number | null`: empty is `null`, not `0`.
  *
  * What was typed is kept as a draft and drawn while it still means the stored number, so `1.`
  * survives to take its next digit. A lone `-` or `1e` stores `null` and stays in the box. On blur
- * the text settles to the stored number.
+ * the text settles to the stored number. `signed` gets iOS a keyboard with a minus key.
  */
-function NumberField(props: NumberFieldProps) {
+function NumberField({ integer = false, ...props }: NumberFieldProps) {
   const [fieldProps, input] = splitProps(props);
   const field = useFieldContext<number | null>();
   const [draft, setDraft] = React.useState<string | undefined>(undefined);
@@ -485,17 +491,18 @@ function NumberField(props: NumberFieldProps) {
       controlSlot={
         <Input
           // `type="number"` alone raises the digits-only keypad on a phone, which has no point.
-          inputMode="decimal"
+          inputMode={integer ? "numeric" : "decimal"}
+          {...(integer ? { step: 1 } : {})}
           {...input}
           type="number"
-          value={numberText(draft, stored)}
+          value={numberText(draft, stored, integer)}
           onBlur={() => {
             setDraft(undefined);
             field.handleBlur();
           }}
           onChangeText={(text) => {
             setDraft(text);
-            field.handleChange(parseNumber(text));
+            field.handleChange(parseNumber(text, integer));
           }}
         />
       }

@@ -686,8 +686,18 @@ and `4.05` cannot be typed. It raises the decimal keypad; pass `inputMode` for a
 </form.AppField>
 ```
 
-`field.InputField type="number"` still works and is the same field. `min` and `max` only
+`field.InputField type="number"` still works and is the same field. `min`, `max` and `step` only
 constrain the web's box, so check the range in a validator.
+
+`integer` takes whole numbers: the digits keypad on device, `step` 1 on the web unless you pass
+one, and a fraction such as `1.5` stores `null` (it is not rounded), so a required validator
+reports it. Neither iOS number keypad has a minus key; pass `signed` for a field that takes
+negatives, and iOS raises the numbers-and-punctuation keyboard instead. The same three props are
+on the web `NumberField` in `@cubeui/app-form`.
+
+```tsx
+{(field) => <field.NumberField label="Offset" integer signed />}
+```
 
 How each is named:
 
