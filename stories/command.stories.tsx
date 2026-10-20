@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import {
+  CommandDialog as CompiledDialog,
   CommandEmpty as CompiledEmpty,
   CommandGroup as CompiledGroup,
   CommandInput as CompiledInput,
@@ -142,6 +143,14 @@ export const Default: Story = {
         await expect(half.querySelector(".h-px")).not.toBeNull();
       });
 
+      // The compiled row has a fixed height for the box to fit; the native row grows to it.
+      const row = box().closest("[data-slot=command-input-wrapper]");
+      if (row !== null) {
+        await step(`${name}: the search box sits inside its row`, async () => {
+          await expect(inside(box(), row)).toBe(true);
+        });
+      }
+
       await step(
         `${name}: typing filters rows, hides an empty group and the separator`,
         async () => {
@@ -177,5 +186,50 @@ export const Default: Story = {
         },
       );
     }
+  },
+};
+
+/** Whether `inner`'s box lies inside `outer`'s, to the pixel. */
+const inside = (inner: Element, outer: Element) => {
+  const a = inner.getBoundingClientRect();
+  const b = outer.getBoundingClientRect();
+  return a.top >= b.top && a.bottom <= b.bottom && a.left >= b.left && a.right <= b.right;
+};
+
+/**
+ * The palette as an app opens it from a shortcut: `CommandDialog`, whose card has no padding, so
+ * the search row and the rule under it run edge to edge. Web only, because two open dialogs side
+ * by side would sit on each other; the native half's row is held by `Default`.
+ *
+ * The input used to stand 4px taller than its row, so the rule cut across the box. An app that
+ * put `Command` in a padded `Dialog` and cleared its fill saw that rule float under the title.
+ */
+export const InADialog: Story = {
+  render: () => (
+    <CompiledDialog open title="Find a todo" description="By title or description.">
+      <CompiledInput placeholder="Search todos" />
+      <CompiledList>
+        <CompiledEmpty>Nothing matches.</CompiledEmpty>
+        <CompiledItem>Write the release notes</CompiledItem>
+        <CompiledItem>Book the venue</CompiledItem>
+      </CompiledList>
+    </CompiledDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = await body.findByRole("dialog", { name: "Find a todo" });
+    const box = within(dialog).getByRole("combobox");
+    const row = box.closest("[data-slot=command-input-wrapper]");
+    await expect(row).not.toBeNull();
+    if (row === null) {
+      return;
+    }
+    // Measured once the card has finished zooming in; mid-animation every box is scaled.
+    await waitFor(() => expect(dialog.getAnimations().length).toBe(0));
+    await expect(inside(box, row)).toBe(true);
+    const card = dialog.getBoundingClientRect();
+    const edge = row.getBoundingClientRect();
+    await expect(edge.left).toBe(card.left + dialog.clientLeft);
+    await expect(edge.right).toBe(card.right - dialog.clientLeft);
   },
 };

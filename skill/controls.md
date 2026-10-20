@@ -1084,6 +1084,17 @@ a picker or a palette needs a list that is not a tag picker.
   "Suggestions"). `forceMount` keeps a group or a row drawn through the filter — a "Create …" row.
 - `CommandDialog` is the palette in a `Dialog`, on both halves; `title` and `description` name it
   and are not drawn.
+- **A search dialog is `CommandDialog`** — a ⌘K palette, "Find a todo", "Jump to project". Put
+  what the title would have said in `title` (read out) and the hint in the input's `placeholder`.
+  Do **not** build one as `Command` inside your own `Dialog` or `DialogLayout`: their card is
+  padded, and `CommandInput` is not a field with a box of its own but a row across the top of the
+  `Command`, ruled off from the list. In a padded card that rule stops short of the edges and
+  floats under the title. `CommandDialog` draws the card with no padding so the row runs edge to
+  edge.
+- **Do not clear `Command`'s fill** (`className="bg-transparent"`). Its `bg-secondary` is what
+  makes the input row and the list read as one panel wherever it is not the whole surface — on a
+  page, in a card. With the fill gone only the rule is left. Do not restyle `CommandInput`'s
+  height or border either; if it looks wrong, the `Command` is in the wrong container.
 
 ## Date and date range
 

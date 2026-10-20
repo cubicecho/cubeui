@@ -67,7 +67,7 @@ function CommandDialog({
         className={cn("overflow-hidden p-0", className)}
         showCloseButton={showCloseButton}
       >
-        <Command className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-foreground/60 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+        <Command className="**:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-foreground/60 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}
         </Command>
       </DialogContent>
@@ -75,18 +75,28 @@ function CommandDialog({
   );
 }
 
-/** The search box that filters the list. */
+/**
+ * The search box that filters the list: a row across the top of the `Command`, ruled off from
+ * the list under it. It is not a field with a border of its own, so it reads right only when the
+ * `Command` is the surface — in a popover, in `CommandDialog`, or on its own `bg-secondary`.
+ */
 function CommandInput({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div data-slot="command-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
+    // The input fills the row rather than carrying a height of its own. shadcn's `h-10` input in
+    // an `h-9` row stood 4px proud of it, so the rule under the row cut across the box. The rule
+    // names its colour because an Expo web app runs this file too, and nothing there sets one.
+    <div
+      data-slot="command-input-wrapper"
+      className="flex h-9 items-center gap-2 border-b border-foreground/10 px-3"
+    >
       <Search className="size-4 shrink-0 text-foreground/60" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
-          "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden placeholder:text-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-full w-full rounded-md bg-transparent text-sm outline-hidden placeholder:text-foreground/60 disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
