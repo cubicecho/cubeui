@@ -1083,7 +1083,9 @@ a picker or a palette needs a list that is not a tag picker.
 - `label` on `Command` names the search box, `label` on `CommandList` the list (default
   "Suggestions"). `forceMount` keeps a group or a row drawn through the filter — a "Create …" row.
 - `CommandDialog` is the palette in a `Dialog`, on both halves; `title` and `description` name it
-  and are not drawn.
+  and are not drawn. It takes `Command`'s `label`, `filter` and `shouldFilter` and hands them to
+  the list inside, so a palette over results a server already matched passes
+  `shouldFilter={false}`.
 - **A search dialog is `CommandDialog`** — a ⌘K palette, "Find a todo", "Jump to project". Put
   what the title would have said in `title` (read out) and the hint in the input's `placeholder`.
   Do **not** build one as `Command` inside your own `Dialog` or `DialogLayout`: their card is

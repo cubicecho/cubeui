@@ -206,7 +206,13 @@ const inside = (inner: Element, outer: Element) => {
  */
 export const InADialog: Story = {
   render: () => (
-    <CompiledDialog open title="Find a todo" description="By title or description.">
+    <CompiledDialog
+      open
+      title="Find a todo"
+      description="By title or description."
+      label="Search todos"
+      shouldFilter={false}
+    >
       <CompiledInput placeholder="Search todos" />
       <CompiledList>
         <CompiledEmpty>Nothing matches.</CompiledEmpty>
@@ -218,7 +224,7 @@ export const InADialog: Story = {
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
     const dialog = await body.findByRole("dialog", { name: "Find a todo" });
-    const box = within(dialog).getByRole("combobox");
+    const box = within(dialog).getByRole("combobox", { name: "Search todos" });
     const row = box.closest("[data-slot=command-input-wrapper]");
     await expect(row).not.toBeNull();
     if (row === null) {
@@ -231,5 +237,9 @@ export const InADialog: Story = {
     const edge = row.getBoundingClientRect();
     await expect(edge.left).toBe(card.left + dialog.clientLeft);
     await expect(edge.right).toBe(card.right - dialog.clientLeft);
+
+    // `shouldFilter` reaches the list: a server-matched list is drawn as it came back.
+    await userEvent.type(box, "zzz");
+    await expect(within(dialog).getByText("Book the venue")).toBeVisible();
   },
 };
