@@ -1241,7 +1241,7 @@
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
-        "@cubeui/card",
+        "@cubeui/alert",
         "@cubeui/icons",
         "@cubeui/tokens"
       ],
