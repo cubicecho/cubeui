@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 
 import { StickyHeaderContentFooter } from "@/components/header-content-footer";
 import { SidebarLayout, SplitLayout, type SplitWidth } from "@/components/split-layout";
@@ -463,5 +463,62 @@ export const StacksWhenNarrow: SidebarStory = {
     expect(ruleBox.height).toBeCloseTo(1, 0);
     expect(ruleBox.width).toBeCloseTo(sidebarBox.width, 0);
     expect(ruleBox.top).toBeGreaterThanOrEqual(sidebarBox.bottom - 0.5);
+  },
+};
+
+const Pane = ({ title }: { title: string }) => (
+  <StickyHeaderContentFooter
+    headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">{title}</div>}
+    contentSlot={
+      <ul className="divide-y">
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+          <li key={n} className="px-4 py-3 text-sm">
+            {title} {n}
+          </li>
+        ))}
+      </ul>
+    }
+  />
+);
+
+/**
+ * Stacked on a phone, two `StickyHeaderContentFooter` panes are taller than the screen together.
+ * The split scrolls them as one column, so the last row of the second pane can be reached; side
+ * by side, from `lg` up, each pane scrolls inside itself and the split has nothing to scroll.
+ */
+export const StackedScrolls: Story = {
+  globals: { viewport: { value: "mobile2", isRotated: false } },
+  render: () => (
+    <div className="h-[480px] w-full border">
+      <SplitLayout
+        className="h-full"
+        divider="line"
+        firstSlot={<Pane title="Message" />}
+        secondSlot={<Pane title="Reply" />}
+      />
+    </div>
+  ),
+  args: { firstSlot: null },
+  play: async ({ canvasElement, canvas }) => {
+    await expect(window.matchMedia("(min-width: 64rem)").matches).toBe(false);
+    const root = canvasElement.querySelector<HTMLElement>("[data-slot=split-layout]");
+    expect(root).not.toBeNull();
+    if (!root) {
+      return;
+    }
+    // The split keeps the height it was given, and the stack inside it is taller.
+    expect(root.getBoundingClientRect().height).toBeCloseTo(
+      root.parentElement?.clientHeight ?? 0,
+      0,
+    );
+    expect(root.scrollHeight).toBeGreaterThan(root.clientHeight);
+
+    root.scrollTop = root.scrollHeight;
+    const last = canvas.getByText("Reply 20");
+    await waitFor(() =>
+      expect(last.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        root.getBoundingClientRect().bottom + 1,
+      ),
+    );
   },
 };

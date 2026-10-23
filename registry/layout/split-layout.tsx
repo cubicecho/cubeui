@@ -8,7 +8,7 @@
  * width scale and the `data-slot`s are unchanged.
  */
 import { createContext, type ReactNode } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -132,6 +132,23 @@ const DIVIDER_AT: Record<keyof typeof STACK_BELOW, string> = {
   xl: "h-px w-full xl:h-auto xl:w-px",
 };
 
+/**
+ * The panes' row inside the scroller a stacking split is drawn in. Stacked, it is as tall as the
+ * two panes one after the other and the scroller moves it — two `StickyHeaderContentFooter`s are
+ * two screens of chrome, and a column that only grows is a phone screen nothing reaches the bottom
+ * of. From the breakpoint up it is exactly the scroller's height, so the panes side by side share
+ * the height the split was given and each scrolls inside itself, as before. `grow` fills a
+ * scroller taller than the stack.
+ *
+ * `h-full` rather than a shrink: a scroller hands its content as much height as it asks for, on
+ * device as on the web, so only a height said outright bounds it.
+ */
+const FILL_FROM = {
+  md: "grow md:h-full",
+  lg: "grow lg:h-full",
+  xl: "grow xl:h-full",
+} as const;
+
 /** What sits between the panes. A rule is drawn flush; space is drawn with nothing in it. */
 const DIVIDERS = { space: "gap-4", line: "gap-0", none: "gap-0" } as const;
 
@@ -220,11 +237,8 @@ export function SplitLayout({
   const sized = SIZED[stackBelow][width];
   const rest = REST[stackBelow][width === "fifth" || width === "two-fifths" ? width : "other"];
 
-  return (
-    <View
-      testID="split-layout"
-      className={cn("min-h-0 min-w-0", STACK_BELOW[stackBelow], DIVIDERS[divider], className)}
-    >
+  const panes = (
+    <>
       <View
         testID="split-layout-first"
         className={cn(PANE, secondWidth ? rest : sized, firstClassName)}
@@ -246,7 +260,35 @@ export function SplitLayout({
       >
         {secondSlot}
       </View>
-    </View>
+    </>
+  );
+
+  if (stackBelow === "never") {
+    return (
+      <View
+        testID="split-layout"
+        className={cn("min-h-0 min-w-0", STACK_BELOW.never, DIVIDERS[divider], className)}
+      >
+        {panes}
+      </View>
+    );
+  }
+
+  // A split that stacks is drawn in a scroller, on both platforms, so the stack can be scrolled
+  // when it is taller than the split — see FILL_FROM. Side by side it has nothing to scroll.
+  return (
+    <ScrollView
+      testID="split-layout"
+      className={cn("min-h-0 min-w-0", className)}
+      contentContainerClassName={cn(
+        "min-w-0",
+        STACK_BELOW[stackBelow],
+        FILL_FROM[stackBelow],
+        DIVIDERS[divider],
+      )}
+    >
+      {panes}
+    </ScrollView>
   );
 }
 

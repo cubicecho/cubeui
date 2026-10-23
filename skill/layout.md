@@ -280,6 +280,10 @@ the slots is spelled the same on each.
   has room for one pane after the other even when it has none for two abreast. Do not add
   `hidden md:block` to fight it; a navigation rail that should go rather than stack is
   `sidebarHideBelow` (see [Sidebar](#on-a-phone-a-bar-instead-of-the-rail)).
+  Stacked, the split scrolls the two panes as one column — a `ScrollView` on device, a scrolling
+  `<div>` on the web — so two `StickyHeaderContentFooter` panes taller than the screen together
+  can still be read to the end. Give the split a height (`className="h-full"`, `flex-1`) and it
+  keeps it at every width; do not cap it with `lg:h-full` to dodge the overflow.
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
   hairline between them — the app shell), or `none` (flush, nothing drawn). Do not draw the rule
   yourself with a `border-r` on the sidebar: that is a line between the panes only until the layout
