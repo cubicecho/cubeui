@@ -28,6 +28,8 @@ import {
   DIALOG_CONTENT_CLASS,
   DIALOG_DESCRIPTION_CLASS,
   DIALOG_DISMISS_CLASS,
+  DIALOG_FOOTER_CLASS,
+  DIALOG_HEADER_CLASS,
   DIALOG_TITLE_CLASS,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
@@ -167,7 +169,7 @@ function DialogHeader({
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1 text-center sm:text-left", className)}
+      className={cn("flex", DIALOG_HEADER_CLASS, className)}
       {...props}
     />
   );
@@ -183,7 +185,7 @@ function DialogFooter({
   return (
     <div
       data-slot="dialog-footer"
-      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      className={cn("flex", DIALOG_FOOTER_CLASS, className)}
       {...props}
     >
       {children}

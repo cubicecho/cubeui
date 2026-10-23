@@ -105,5 +105,14 @@ export const DIALOG_TITLE_CLASS =
 export const DIALOG_DISMISS_CLASS =
   "absolute right-3 top-3 rounded-sm p-1 text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground active:bg-hover focus:outline-none";
 
+/** The title and description, left-aligned on both platforms (the web half adds `flex`). */
+export const DIALOG_HEADER_CLASS = "flex-col gap-1";
+
+/**
+ * The buttons: a right-aligned row, and below `sm` a stack of full-width buttons with the last
+ * (the main answer) on top — the same on both platforms (the web half adds `flex`).
+ */
+export const DIALOG_FOOTER_CLASS = "flex-col-reverse gap-2 sm:flex-row sm:justify-end";
+
 /** The sentence under the title, on both platforms and in `alert-dialog`. */
 export const DIALOG_DESCRIPTION_CLASS = "text-sm text-foreground/60";

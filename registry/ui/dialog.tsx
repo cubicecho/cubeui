@@ -28,6 +28,8 @@ import {
   DIALOG_CONTENT_CLASS,
   DIALOG_DESCRIPTION_CLASS,
   DIALOG_DISMISS_CLASS,
+  DIALOG_FOOTER_CLASS,
+  DIALOG_HEADER_CLASS,
   DIALOG_TITLE_CLASS,
   type DialogCloseProps,
   type DialogContentProps,
@@ -241,13 +243,13 @@ function DialogContent({
 // for these two rows.
 /** The block holding the title and the description. */
 function DialogHeader({ className, children }: DialogSectionProps) {
-  return <View className={cn("gap-1", className)}>{children}</View>;
+  return <View className={cn(DIALOG_HEADER_CLASS, className)}>{children}</View>;
 }
 
 /** The row of buttons at the bottom of the dialog. */
 function DialogFooter({ className, showCloseButton = false, children }: DialogFooterProps) {
   return (
-    <View className={cn("flex-row justify-end gap-2", className)}>
+    <View className={cn(DIALOG_FOOTER_CLASS, className)}>
       {children}
       {showCloseButton ? (
         <DialogClose asChild>
