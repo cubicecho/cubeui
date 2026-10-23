@@ -90,9 +90,10 @@ jobs:
 
       # The same check `pages.yml` makes for the links on the landing page, here so a PR that
       # renames a gallery story finds out before the deploy does.
-      - name: The gallery stories the landing page links to were built
+      - name: The gallery and example stories the landing page links to were built
         run: |
-          for id in gallery-web--everything gallery-mobile--everything; do
+          for id in gallery-web--everything gallery-mobile--everything \
+            $(grep -o 'examples-[a-z]*-[a-z-]*--[a-z-]*' scripts/build-page.mjs | sort -u); do
             if ! grep -q "\"$id\"" storybook-static/index.json; then
               echo "::error::the landing page links to '$id', which is not in the built Storybook"
               exit 1
