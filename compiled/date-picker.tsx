@@ -103,11 +103,19 @@ type PickerTriggerProps = PickerAria & {
   empty: boolean;
   disabled?: boolean | undefined;
   className?: string | undefined;
+  /** An id for the value's own text, for an `aria-labelledby` that names the trigger by it. */
+  valueId?: string | undefined;
   children: ReactNode;
 };
 
-function PickerTrigger({
+/**
+ * The field-looking button a picker opens from: the value (or the placeholder) in normal weight on
+ * one line, the calendar icon trailing. Exported for `DateTimeInput`, so the two date triggers are
+ * one control and not two that drift.
+ */
+export function PickerTrigger({
   empty,
+  valueId,
   disabled,
   className,
   children,
@@ -139,6 +147,7 @@ function PickerTrigger({
           // The colour is on the words, not the button: native has no colour inheritance, so the
           // placeholder's muted class has to be on the `Text` itself.
           <span
+            id={valueId}
             className={cn(
               "cube-rn-text",
               "min-w-0 flex-1 text-left text-sm font-normal",

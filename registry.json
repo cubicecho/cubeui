@@ -1209,7 +1209,8 @@
         "@cubeui/calendar",
         "@cubeui/icons",
         "@cubeui/input",
-        "@cubeui/popover"
+        "@cubeui/popover",
+        "@cubeui/date-picker"
       ],
       "files": [
         {

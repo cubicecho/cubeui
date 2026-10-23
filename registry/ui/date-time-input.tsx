@@ -18,12 +18,13 @@
  */
 import { format } from "date-fns";
 import { useId, useState } from "react";
-import { Platform, Text, View } from "react-native";
-import { Button, buttonTextVariants } from "@/components/ui/button";
+import { View } from "react-native";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, X } from "@/components/ui/icons";
+import { PickerTrigger } from "@/components/ui/date-picker";
+import { X } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type DateTimeInputSharedProps = {
@@ -160,43 +161,24 @@ export function DateTimeInput(props: DateTimeInputProps) {
   return (
     <View className={cn("flex-row items-center gap-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            id={id}
-            // A name on a button replaces its contents, so a bare "Due" would drop the date —
-            // the part of the field that changes. Both are in the name instead: an `aria-label`
-            // is composed with the value text, which iOS reads too, and a reference is followed
-            // by one to the value text below. `htmlFor` alone cannot do this — see the skill.
-            aria-label={ariaLabel ? `${ariaLabel}, ${valueText}` : undefined}
-            aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${valueId}` : undefined}
-            // What react-native has no prop for, in the spelling the web reads — the same
-            // arrangement as `ColorPicker`'s swatch row. A bound field's hint and error reach
-            // the trigger this way.
-            {...(Platform.OS === "web"
-              ? {
-                  ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
-                  ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
-                  ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
-                }
-              : {})}
-            className="flex-1 justify-start text-left font-normal"
-            iconSlot={<CalendarIcon className="mr-2 h-4 w-4" />}
-            content={
-              // Its own `Text` in both states, for the id a reference points at; and because
-              // native has no colour inheritance, the placeholder's muted class has to be on
-              // the words themselves.
-              <Text
-                nativeID={valueId}
-                className={
-                  value ? buttonTextVariants({ variant: "outline" }) : "text-sm text-foreground/60"
-                }
-              >
-                {valueText}
-              </Text>
-            }
-          />
-        </PopoverTrigger>
+        {/* DatePicker's own trigger: the value in normal weight on one line, the icon trailing. */}
+        <PickerTrigger
+          id={id}
+          empty={!value}
+          valueId={valueId}
+          // A name on a button replaces its contents, so a bare "Due" would drop the date — the
+          // part of the field that changes. Both are in the name instead: an `aria-label` is
+          // composed with the value text, which iOS reads too, and a reference is followed by one
+          // to the value text. `htmlFor` alone cannot do this — see the skill.
+          aria-label={ariaLabel ? `${ariaLabel}, ${valueText}` : undefined}
+          aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${valueId}` : undefined}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          aria-required={ariaRequired}
+          className="flex-1"
+        >
+          {valueText}
+        </PickerTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             selected={value ?? undefined}

@@ -1101,6 +1101,7 @@
         "@cubeui/icons",
         "@cubeui/input",
         "@cubeui/popover",
+        "@cubeui/date-picker",
         "@cubeui/tokens"
       ],
       "files": [
