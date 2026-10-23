@@ -233,10 +233,14 @@ function FieldError({ ...props }: React.ComponentProps<typeof FieldErrorPrimitiv
   );
 }
 
-/** The floor a cell holds: what makes the row wrap instead of squeezing. */
-const CELL_FLOOR = {
-  2: "min-w-[45%]",
-  3: "min-w-[30%]",
+/**
+ * A cell's size: what makes the row wrap instead of squeezing. The percentage basis caps how many
+ * share a line, and the fixed floor wraps it by real width, so two fields stack on a phone. The
+ * same map as the web `FieldRow`'s.
+ */
+const CELL_SIZE = {
+  2: "grow basis-2/5 min-w-48",
+  3: "grow basis-1/4 min-w-40",
 } as const;
 
 type FieldRowProps = {
@@ -246,7 +250,7 @@ type FieldRowProps = {
    */
   contentSlot?: ReactNode;
   /** How many fit on a line before the row wraps. */
-  perRow?: keyof typeof CELL_FLOOR | undefined;
+  perRow?: keyof typeof CELL_SIZE | undefined;
   className?: string | undefined;
   cellClassName?: string | undefined;
 };
@@ -278,7 +282,7 @@ function FieldRow({ contentSlot, perRow = 2, className, cellClassName }: FieldRo
   return (
     <View className={cn("flex-row flex-wrap gap-4", className)}>
       {fieldsOf(contentSlot).map(({ key, node }) => (
-        <View key={key} className={cn("flex-1", CELL_FLOOR[perRow], cellClassName)}>
+        <View key={key} className={cn(CELL_SIZE[perRow], cellClassName)}>
           {node}
         </View>
       ))}
