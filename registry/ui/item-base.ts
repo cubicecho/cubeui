@@ -60,7 +60,8 @@ export const itemMediaVariants = cva("shrink-0 flex-row items-center justify-cen
   variants: {
     variant: {
       default: "bg-transparent",
-      icon: "size-8 rounded-sm border border-foreground/10 bg-foreground/10",
+      // The fill alone, as EmptyMedia's tile: a ring on top of it was a second edge on one boundary.
+      icon: "size-8 rounded-sm bg-foreground/10",
       image: "size-10 overflow-hidden rounded-sm",
     },
   },
