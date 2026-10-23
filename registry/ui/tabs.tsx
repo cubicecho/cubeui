@@ -171,7 +171,11 @@ function TabsTrigger({
   const reveal = useContext(TabsListContext);
   const span = useRef<Span | undefined>(undefined);
   const active = tabs.value === value;
-  const color = active ? "text-active-foreground" : "text-foreground/60";
+  // A quiet tab lifts to full ink under the pointer, as the web half's does; the colour is on each
+  // `Text`, which only the pressable's `group` reaches. Web only: a device has no pointer.
+  const color = active
+    ? "text-active-foreground"
+    : cn("text-foreground/60", Platform.select({ web: "group-hover:text-foreground", default: "" }));
 
   // Chosen from somewhere other than a press — a link, the caller's own state — the tab may be
   // off the end of the row. `reveal` is the list's, new every render, and not what this follows.
@@ -184,7 +188,7 @@ function TabsTrigger({
 
   const styling = cn(
     TABS_TRIGGER_CLASS,
-    active ? "bg-active" : "hover:bg-hover",
+    active ? "bg-active" : "group hover:bg-hover",
     disabled && "opacity-50",
     className,
   );
