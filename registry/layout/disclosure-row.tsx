@@ -119,7 +119,8 @@ export function DisclosureRow({
         <ItemFooter
           nativeID={contentId}
           className={cn(
-            "min-w-0 flex-col items-stretch gap-2 border-foreground/10 border-t pt-3",
+            // No rule: the row's own outline and the gap already set the opened body apart.
+            "min-w-0 flex-col items-stretch gap-2 pt-3",
             contentClassName,
           )}
         >
