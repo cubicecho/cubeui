@@ -93,7 +93,16 @@ export const DIALOG_CONTENT_CLASS =
  * on the web the card is portalled out of the themed tree, and a title that inherited its colour
  * there was the browser's black on a dark card.
  */
-export const DIALOG_TITLE_CLASS = "text-lg font-semibold leading-none tracking-tight text-foreground";
+export const DIALOG_TITLE_CLASS =
+  "text-lg font-semibold leading-none tracking-tight text-foreground";
+
+/**
+ * The ✕ in the card's corner, on both platforms. `p-1` makes it a 24px target on the web rather
+ * than the bare 16px icon, and `right-3 top-3` with it keeps the icon where it was. Under the
+ * pointer, the keyboard and a finger it looks the same: hovered.
+ */
+export const DIALOG_DISMISS_CLASS =
+  "absolute right-3 top-3 rounded-sm p-1 text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground active:bg-hover focus:outline-none";
 
 /** The sentence under the title, on both platforms and in `alert-dialog`. */
 export const DIALOG_DESCRIPTION_CLASS = "text-sm text-foreground/60";

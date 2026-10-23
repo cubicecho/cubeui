@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import {
   DIALOG_CONTENT_CLASS,
   DIALOG_DESCRIPTION_CLASS,
+  DIALOG_DISMISS_CLASS,
   DIALOG_TITLE_CLASS,
   type DialogCloseProps,
   type DialogContentProps,
@@ -218,14 +219,15 @@ function DialogContent({
         {children}
         {showCloseButton ? (
           <Pressable
-            className="absolute right-4 top-4"
+            className={DIALOG_DISMISS_CLASS}
             onPress={close}
-            // The icon is 16 points; this brings the target up to the 44 a finger needs.
-            hitSlop={14}
+            // 24 points with its padding; this brings the target up to the 44 a finger needs.
+            hitSlop={10}
             // The `role` is hand-written because a `<button>` has no native counterpart.
             role="button"
             aria-label="Close"
           >
+            {/* Ink on the icon too: colour does not inherit on a device. */}
             <X className="h-4 w-4 text-foreground/60" />
           </Pressable>
         ) : null}

@@ -27,6 +27,7 @@ import type {
 import {
   DIALOG_CONTENT_CLASS,
   DIALOG_DESCRIPTION_CLASS,
+  DIALOG_DISMISS_CLASS,
   DIALOG_TITLE_CLASS,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
@@ -147,7 +148,7 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute right-4 top-4 rounded-sm text-foreground/60 transition-colors hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground focus:outline-none disabled:pointer-events-none"
+            className={cn(DIALOG_DISMISS_CLASS, "transition-colors disabled:pointer-events-none")}
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
