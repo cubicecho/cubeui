@@ -54,7 +54,7 @@ The bound fields:
 | `DateRangeField` | `DateRange \| null` | `@cubeui/date-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 | `ColorField` | `string` | `@cubeui/color-field` |
-| `PasswordField` | `string` | `@cubeui/password-field` |
+| `PasswordField` | `string` | `@cubeui/app-form` (also `@cubeui/password-field`, the old path) |
 
 Each one takes everything `FormField` takes — `label`, `description`, `required`, `actionSlot`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
@@ -183,6 +183,30 @@ for it, filling a description from a template, clearing the fields the other tra
 The guard is yours, and it is the part worth writing: a listener that overwrites what somebody
 already chose is the form arguing back. Check `form.state.fieldMeta.<name>?.isTouched`, or the
 value itself, before you write to a sibling.
+
+**A field checked against another takes `onChangeListenTo`.** It goes in `validators`, beside
+`onChange`, and names the fields whose change runs this field's `onChange` again — so a
+"Password, again" is marked as differing the moment the first password changes, not only when it
+is typed in itself. `onBlurListenTo` is the same for `onBlur`. Read the other value off
+`fieldApi.form`:
+
+```tsx
+<PasswordField form={form} name="password" label="Password" autoComplete="new-password" />
+<PasswordField
+  form={form}
+  name="again"
+  label="Password, again"
+  autoComplete="new-password"
+  validators={{
+    onChangeListenTo: ["password"],
+    onChange: ({ value, fieldApi }) =>
+      value === fieldApi.form.getFieldValue("password") ? undefined : "The passwords differ",
+  }}
+/>
+```
+
+`PasswordField` is on `field.*` too (`<field.PasswordField label="Password" />`), with the other
+light fields.
 
 ### When you need the `field` object
 

@@ -336,10 +336,10 @@ The binding lives in two places, one per tier:
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
   `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `ComboboxField`,
-  `CheckboxField`, `SwitchField` and `SubmitButton`, each reading the store and handing `FormField` a string.
-  `@cubeui/date-field`, `@cubeui/color-field` and
-  `@cubeui/password-field` are the same layer in their own files, for the weight of what they
-  import, and `@cubeui/form-set` installs all of them.
+  `CheckboxField`, `SwitchField`, `PasswordField` and `SubmitButton`, each reading the store and
+  handing `FormField` a string. `@cubeui/date-field` and `@cubeui/color-field` are the same layer
+  in their own files, for the weight of what they import; `@cubeui/password-field` is the old
+  import path of `PasswordField`, kept working, and `@cubeui/form-set` installs all of them.
 
 `NumberField` is on both, with one contract: it writes `number | null`, empty is `null`, and the
 text being typed is a draft that `registry/lib/number-draft.ts` reads for both files. Do not

@@ -223,3 +223,46 @@ export const Loading: Story = {
     expect(canvas.queryByRole("radiogroup")).toBeNull();
   },
 };
+
+function NewPasswordForm() {
+  const form = useAppForm({
+    defaultValues: { password: "", again: "" },
+    onSubmit: () => {},
+  });
+  return (
+    <form className="grid w-[320px] gap-4">
+      <PasswordField form={form} name="password" label="Password" autoComplete="new-password" />
+      <form.AppField
+        name="again"
+        validators={{
+          onChangeListenTo: ["password"],
+          onChange: ({ value, fieldApi }) =>
+            value === fieldApi.form.getFieldValue("password") ? undefined : "The passwords differ",
+        }}
+      >
+        {(field) => <field.PasswordField label="Password, again" autoComplete="new-password" />}
+      </form.AppField>
+    </form>
+  );
+}
+
+/**
+ * "Password, again": `field.PasswordField` on the form's own fields, and `onChangeListenTo`, so a
+ * change to the first password checks the second again instead of leaving it marked as matching.
+ */
+export const ConfirmPassword: Story = {
+  args: {},
+  render: () => <NewPasswordForm />,
+  play: async ({ canvas }) => {
+    const password = canvas.getByLabelText("Password");
+    const again = canvas.getByLabelText("Password, again");
+    await userEvent.type(password, "hunter22");
+    await userEvent.type(again, "hunter22");
+    await userEvent.tab();
+    await expect(canvas.queryByText("The passwords differ")).toBeNull();
+
+    await userEvent.type(password, "!");
+    await expect(await canvas.findByText("The passwords differ")).toBeVisible();
+    await expect(again).toHaveAttribute("aria-invalid", "true");
+  },
+};
