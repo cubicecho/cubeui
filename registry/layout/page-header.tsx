@@ -285,10 +285,12 @@ export function PageHeader({
           rowFloor,
         )}
       >
-        {/* `basis-64` is the threshold, and the only number here that is a judgement rather than
-            a measurement: the title keeps at least 16rem or the action wraps under it. `min-w-0`
-            is what then lets the block shrink below its longest word. */}
-        <View testID="page-header-titles" className="min-w-0 flex-1 basis-64 flex-col gap-1">
+        {/* `basis-40` is the threshold, and the only number here that is a judgement rather than
+            a measurement: the title keeps at least 10rem or the action wraps under it. At 16rem
+            any action wider than about 70px dropped under even a one-word title on a phone; 10rem
+            is the floor CardLayout's header already uses. `min-w-0` is what then lets the block
+            shrink below its longest word. */}
+        <View testID="page-header-titles" className="min-w-0 flex-1 basis-40 flex-col gap-1">
           <View className="min-w-0 flex-row items-center gap-2">
             {iconSlot ? (
               // Sized here on the web rather than by the caller, so an icon passed as `<Users />`
