@@ -334,7 +334,8 @@ export function CodeBlock({
       <View
         testID="code-block"
         className={cn(
-          "flex-row items-start rounded-md border border-foreground/10 bg-foreground/10",
+          // The tint is the boundary; a border on top of it only darkened the edge.
+          "flex-row items-start rounded-md bg-foreground/10",
           follow && "relative",
           className,
         )}
@@ -350,7 +351,7 @@ export function CodeBlock({
     <CodeBlockTitleContext.Provider value={title}>
       <View
         testID="code-block"
-        className={cn("rounded-md border border-foreground/10 bg-foreground/10", className)}
+        className={cn("rounded-md bg-foreground/10", className)}
       >
         <View
           testID="code-block-header"
@@ -358,7 +359,7 @@ export function CodeBlock({
           // with no action has the same header.
           className="min-h-10 flex-row items-center gap-2 border-b border-foreground/10 pl-3"
         >
-          <Text className={cn(ONE_LINE, "shrink text-xs font-medium text-foreground")}>
+          <Text className={cn(ONE_LINE, "shrink text-xs font-semibold text-foreground")}>
             {title}
           </Text>
           {language === undefined ? null : (
