@@ -76,11 +76,7 @@ export function FieldRow({ contentSlot, perRow = 2, className, cellClassName }: 
   return (
     <div data-slot="field-row" className={cn("flex flex-wrap gap-4", className)}>
       {fieldsOf(contentSlot).map(({ key, node }) => (
-        <div
-          key={key}
-          data-slot="field-row-cell"
-          className={cn(CELL_SIZE[perRow], cellClassName)}
-        >
+        <div key={key} data-slot="field-row-cell" className={cn(CELL_SIZE[perRow], cellClassName)}>
           {node}
         </div>
       ))}

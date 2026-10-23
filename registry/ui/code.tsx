@@ -349,10 +349,7 @@ export function CodeBlock({
 
   return (
     <CodeBlockTitleContext.Provider value={title}>
-      <View
-        testID="code-block"
-        className={cn("rounded-md bg-foreground/10", className)}
-      >
+      <View testID="code-block" className={cn("rounded-md bg-foreground/10", className)}>
         <View
           testID="code-block-header"
           // As tall as the `icon-sm` button it may hold and that button's `p-0.5`, so a titled block

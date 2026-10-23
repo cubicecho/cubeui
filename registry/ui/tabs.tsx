@@ -175,7 +175,10 @@ function TabsTrigger({
   // `Text`, which only the pressable's `group` reaches. Web only: a device has no pointer.
   const color = active
     ? "text-active-foreground"
-    : cn("text-foreground/60", Platform.select({ web: "group-hover:text-foreground", default: "" }));
+    : cn(
+        "text-foreground/60",
+        Platform.select({ web: "group-hover:text-foreground", default: "" }),
+      );
 
   // Chosen from somewhere other than a press — a link, the caller's own state — the tab may be
   // off the end of the row. `reveal` is the list's, new every render, and not what this follows.

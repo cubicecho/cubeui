@@ -476,7 +476,9 @@ function SearchMenu({
             className,
           )}
           content={triggerSlot}
-          trailingSlot={<ChevronsUpDown className="size-4 shrink-0 text-foreground/60" aria-hidden />}
+          trailingSlot={
+            <ChevronsUpDown className="size-4 shrink-0 text-foreground/60" aria-hidden />
+          }
         />
       </PopoverTrigger>
       <PopoverContent

@@ -39,17 +39,35 @@ const PAIRS = [
   ...FILLS.flatMap((fill) => [
     [`${fill}-foreground`, fill],
     // `hover:bg-neutral/90` and the rest: the fill under the pointer, and a focused one.
-    ...SURFACES.map((surface) => [`${fill}-foreground`, [[surface, 1], [fill, 0.9]]]),
+    ...SURFACES.map((surface) => [
+      `${fill}-foreground`,
+      [
+        [surface, 1],
+        [fill, 0.9],
+      ],
+    ]),
   ]),
   ...INKS.flatMap((ink) => SURFACES.map((surface) => [ink, surface])),
   // An outline button under the pointer, and a highlighted destructive menu row: the colour as
   // text on its own `/10` tint.
   ...["positive", "warning", "info", "negative"].flatMap((ink) =>
-    SURFACES.map((surface) => [ink, [[surface, 1], [ink, 0.1]]]),
+    SURFACES.map((surface) => [
+      ink,
+      [
+        [surface, 1],
+        [ink, 0.1],
+      ],
+    ]),
   ),
   // A chosen row's text, on `bg-active/40`. Its secondary text turns `foreground` when chosen,
   // because `/60` does not clear 4.5:1 there.
-  ...SURFACES.map((surface) => ["foreground", [[surface, 1], ["active", 0.4]]]),
+  ...SURFACES.map((surface) => [
+    "foreground",
+    [
+      [surface, 1],
+      ["active", 0.4],
+    ],
+  ]),
 ];
 
 /**
@@ -147,7 +165,10 @@ const STATE_APART = 1.3;
 for (const [set, map] of sets) {
   test(`${set}: a chosen row is apart from a hovered one`, () => {
     const close = SURFACES.flatMap((surface) => {
-      const chosen = surfaceRgb(map, [[surface, 1], ["active", 0.4]]);
+      const chosen = surfaceRgb(map, [
+        [surface, 1],
+        ["active", 0.4],
+      ]);
       const hovered = toRgb(map.hover);
       const [hi, lo] = [luminance(chosen), luminance(hovered)].sort((x, y) => y - x);
       const r = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
