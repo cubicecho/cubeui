@@ -278,8 +278,10 @@ export function PageHeader({
         testID="page-header-title-row"
         // `content-center`: a wrapping row packs its lines at the start on device and under
         // react-native-web, so the floor was left as an empty band under a lone title (#248).
+        // `items-start`: the action lines up with the title, as CardLayout's does, rather than
+        // floating between the title and the description under it.
         className={cn(
-          "flex-row flex-wrap content-center items-center justify-between gap-x-4 gap-y-2",
+          "flex-row flex-wrap content-center items-start justify-between gap-x-4 gap-y-2",
           rowFloor,
         )}
       >
