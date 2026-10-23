@@ -105,7 +105,9 @@ export function Section({
       role="heading"
       aria-level={level}
       className={cn(
-        "truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide",
+        // An overline in full ink: grey, it was outranked by the larger grey description under it.
+        // Weight, caps and ink lead; the size stays small.
+        "truncate font-semibold text-foreground text-xs uppercase tracking-wide",
         folded && "min-w-0 shrink",
         titleClassName,
       )}
