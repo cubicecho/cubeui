@@ -81,7 +81,8 @@ const NO_PATHS: ReadonlySet<string> = new Set();
 const SPRING_OPEN_MS = 600;
 
 /** The folder a drop would land in, and what is under it. */
-const DROP_TARGET_CLASS = "rounded-md bg-active/10";
+// The chosen-row tint: a drop target is chosen, as the file picker's zone is under a drag.
+const DROP_TARGET_CLASS = "rounded-md bg-active/40";
 
 /** A string on its own is a crash on device, so a string `meta` gets a `Text` around it. */
 function asText(node: ReactNode, className: string) {
@@ -262,7 +263,14 @@ export function FileTree<T extends TreeEntry>({
   const renderRow = (node: TreeNode<T>, depth: number, isFile: boolean, isPinned = false) => {
     const isSelected = isFile && selected === node.path;
     const ink = isSelected ? "text-active-foreground" : "text-foreground";
-    const muted = isSelected ? "text-active-foreground" : "text-foreground/60";
+    // Inside the folder a drag is over, the row sits on the drop tint, where /60 is under 4.5:1.
+    const inDrop =
+      dropInto !== null &&
+      (dropInto === "" || node.path === dropInto || node.path.startsWith(`${dropInto}/`));
+    let muted = inDrop ? "text-foreground" : "text-foreground/60";
+    if (isSelected) {
+      muted = "text-active-foreground";
+    }
     const indent = { paddingLeft: depth * INDENT + EDGE };
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);

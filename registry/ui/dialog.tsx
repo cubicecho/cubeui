@@ -241,7 +241,7 @@ function DialogContent({
 // for these two rows.
 /** The block holding the title and the description. */
 function DialogHeader({ className, children }: DialogSectionProps) {
-  return <View className={cn("gap-1.5", className)}>{children}</View>;
+  return <View className={cn("gap-1", className)}>{children}</View>;
 }
 
 /** The row of buttons at the bottom of the dialog. */

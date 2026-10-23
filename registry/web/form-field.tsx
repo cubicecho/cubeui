@@ -458,12 +458,11 @@ export function ticks(text: string): ReactNode {
 
     // No background. `code` in shadcn's docs is `bg-foreground/10`, and this lands inside a
     // `text-foreground/60` description — muted on muted is 4.34:1, under the 4.5 a body-size
-    // string needs. Monospace at a hair under the surrounding size says the same thing and stays
-    // readable. The size is there because a monospace face at `1em` reads larger than the sans
-    // beside it.
+    // string needs. Monospace a step under the surrounding size says the same thing and stays
+    // readable: a monospace face at the same size reads larger than the sans beside it.
     return (
       // biome-ignore lint/suspicious/noArrayIndexKey: a span of a split string has no identity but its position
-      <code key={index} className="font-mono text-[0.9em]">
+      <code key={index} className="font-mono text-xs">
         {part}
       </code>
     );
