@@ -42,7 +42,10 @@ export type MenuContentProps = {
 };
 
 export type MenuItemProps = {
-  /** An icon from `@cubeui/icons`. It takes the row's colour — `text-negative` on a destructive row. */
+  /**
+   * An icon from `@cubeui/icons`. Drawn quieter than the label, at `/60` as Command's row icons are,
+   * so the words lead; on a destructive row it is `text-negative` with the label.
+   */
   iconSlot?: SlotNode;
   /** The row's text, and what typeahead matches on the web. */
   label: string;
