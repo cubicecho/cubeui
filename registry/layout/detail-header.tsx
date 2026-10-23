@@ -44,7 +44,8 @@ export function DetailHeader({
   actionsSlot,
 }: DetailHeaderProps) {
   return (
-    <View className="flex-row items-center gap-3">
+    // Wraps rather than pushing the actions off a phone; `min-w-0` lets the title column shrink.
+    <View className="flex-row flex-wrap items-center gap-x-3 gap-y-2">
       <Button
         variant="outline"
         size="icon"
@@ -52,21 +53,22 @@ export function DetailHeader({
         aria-label={backLabel}
         iconSlot={<ArrowLeft className="h-4 w-4" />}
       />
-      <View className="flex-1">
-        <View className="flex-row items-center gap-2">
+      <View className="min-w-0 flex-1 gap-1">
+        <View className="min-w-0 flex-row items-center gap-2">
           {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}
-          {/* `role`/`aria-level` because an `<h2>` has no native counterpart —
-              and they are what a compiled web build reads to emit one. */}
+          {/* `role`/`aria-level` because an `<h1>` has no native counterpart — and they are what
+              a compiled web build reads to emit one. The page's own name, so the page title's
+              rank and size: PageHeader level 1's text-xl. */}
           <Text
             role="heading"
-            aria-level={2}
-            className="font-semibold text-foreground text-lg tracking-tight"
+            aria-level={1}
+            className="min-w-0 shrink font-semibold text-foreground text-xl tracking-tight"
           >
             {title}
           </Text>
           {badgeSlot}
         </View>
-        {subtitle ? <Text className="mt-0.5 text-sm text-foreground/60">{subtitle}</Text> : null}
+        {subtitle ? <Text className="text-sm text-foreground/60">{subtitle}</Text> : null}
       </View>
       {actionsSlot}
     </View>
