@@ -1528,10 +1528,10 @@
       "title": "Dialog Layout",
       "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
       "registryDependencies": [
-        "@cubeui/button",
         "@cubeui/dialog",
         "@cubeui/header-content-footer",
-        "@cubeui/utils"
+        "@cubeui/utils",
+        "@cubeui/confirm-dialog"
       ],
       "files": [
         {
