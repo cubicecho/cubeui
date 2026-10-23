@@ -355,7 +355,7 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout.md](layout.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A detail screen for one record: its loading and not-found branches around the body | `DetailPage` | `@cubeui/detail-page` |
-| The header of that screen: a back button, the record's name, a badge, its actions. Its own item, so it is its own import (`@/components/detail-header`) | `DetailHeader` | `@cubeui/detail-header` |
+| The header of that screen: a back button, the record's name (`title`, a heading `level` 1–3, 1 by default), a `description` under it, `badgesSlot` and `actionSlot`. Its own item, so it is its own import (`@/components/detail-header`). `subtitle`, `badgeSlot` and `actionsSlot` are the old names, deprecated | `DetailHeader` | `@cubeui/detail-header` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout.md](layout.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |

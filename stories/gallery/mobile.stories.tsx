@@ -1095,9 +1095,9 @@ const sections: GallerySection[] = [
           color="#16a34a"
           colorLabel="Green"
           title="Quarterly review"
-          subtitle="Due on Friday"
-          badgeSlot={<Badge variant="positive">On track</Badge>}
-          actionsSlot={
+          description="Due on Friday"
+          badgesSlot={<Badge variant="positive">On track</Badge>}
+          actionSlot={
             <Button
               variant="outline"
               size="sm"

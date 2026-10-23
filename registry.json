@@ -1411,7 +1411,7 @@
       "type": "registry:component",
       "title": "Detail Header",
       "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
-      "registryDependencies": ["@cubeui/button", "@cubeui/color-dot", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/button", "@cubeui/color-dot", "@cubeui/icons", "@cubeui/utils"],
       "files": [
         {
           "path": "registry/layout/detail-header.tsx",

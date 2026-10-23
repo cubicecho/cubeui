@@ -1823,9 +1823,9 @@ const sections: GallerySection[] = [
                     color="#1d4ed8"
                     colorLabel="Blue"
                     title={server.name}
-                    subtitle={`${server.tools} tools over ${server.transport}`}
-                    badgeSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionsSlot={
+                    description={`${server.tools} tools over ${server.transport}`}
+                    badgesSlot={<Badge variant="secondary">{server.status}</Badge>}
+                    actionSlot={
                       <Button
                         variant="outline"
                         size="sm"
