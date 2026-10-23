@@ -165,9 +165,11 @@ export function PickerTrigger({
  * then had to render an empty `<div className="h-4 w-4" />` in its place to stop the label
  * shifting, which is the tell that the control was fighting its own markup.
  */
-function ClearRow({ onClear }: { onClear: () => void }) {
+export function ClearRow({ onClear }: { onClear: () => void }) {
+  // Inset as the calendar above it is (12px), not 4px from the pane's edge. Exported for
+  // DateTimeInput, so the two pickers share one Clear row.
   return (
-    <View className="flex-row justify-end border-t border-foreground/10 p-1">
+    <View className="flex-row justify-end border-t border-foreground/10 px-3 py-2">
       <Button
         variant="outline"
         size="sm"

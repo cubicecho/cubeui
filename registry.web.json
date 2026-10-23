@@ -1102,9 +1102,7 @@
       "dependencies": ["date-fns@^4.4.0"],
       "registryDependencies": [
         "@cubeui/utils",
-        "@cubeui/button",
         "@cubeui/calendar",
-        "@cubeui/icons",
         "@cubeui/input",
         "@cubeui/popover",
         "@cubeui/date-picker",

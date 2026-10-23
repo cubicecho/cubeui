@@ -19,10 +19,8 @@
 import { format } from "date-fns";
 import { useId, useState } from "react";
 import { View } from "react-native";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { PickerTrigger } from "@/components/ui/date-picker";
-import { X } from "@/components/ui/icons";
+import { ClearRow, PickerTrigger } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -188,17 +186,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           {/* In the popover, not an X inside the trigger: the trigger is a button,
               and a button inside a button is invalid HTML that no keyboard reaches.
               `DatePicker` puts its Clear in the same place. */}
-          {props.clearable && value ? (
-            <View className="flex-row justify-end border-t border-foreground/10 p-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onPress={handleClear}
-                iconSlot={<X className="h-4 w-4" />}
-                content="Clear"
-              />
-            </View>
-          ) : null}
+          {props.clearable && value ? <ClearRow onClear={handleClear} /> : null}
         </PopoverContent>
       </Popover>
       {withTime ? (
