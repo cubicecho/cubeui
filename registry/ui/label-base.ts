@@ -30,4 +30,4 @@ export type LabelProps = {
  * touching.
  */
 export const LABEL_CLASS =
-  "text-foreground text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-70";
+  "text-foreground text-sm font-semibold peer-disabled:cursor-not-allowed peer-disabled:opacity-50";

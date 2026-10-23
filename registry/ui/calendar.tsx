@@ -168,7 +168,7 @@ export function Calendar(props: CalendarProps) {
           onPress={() => setMonth(addMonths(month, -1))}
           disabled={canGoBack === false}
           aria-label="Previous month"
-          className={cn("p-1", canGoBack === false && "opacity-30")}
+          className={cn("p-1", canGoBack === false && "opacity-50")}
         >
           <ChevronLeft className="h-4 w-4 text-foreground" />
         </Pressable>
@@ -232,7 +232,7 @@ export function Calendar(props: CalendarProps) {
                     // The inside is chosen, so it is the chosen-row tint, not the hover grey.
                     place.middle ? "bg-active/40" : "rounded-md",
                     place.edge && "bg-active",
-                    off && "opacity-30",
+                    off && "opacity-50",
                   )}
                   // Seven per row, and `flex-wrap` needs a width it can measure.
                   // A `w-[14.2857%]` class would round to the same place; the style

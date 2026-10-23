@@ -65,7 +65,8 @@ const ROW_CLASS = cn(
   "min-h-8 min-w-0 flex-1 flex-row items-center gap-2 rounded-md py-1.5 pr-2",
   Platform.select({
     web: "text-left focus-visible:outline-none",
-    default: "active:opacity-70",
+    // Pressed looks hovered, as a menu's or a command's row does: not a fade, which reads disabled.
+    default: "active:bg-hover",
   }),
 );
 
