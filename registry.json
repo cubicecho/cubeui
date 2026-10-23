@@ -1364,7 +1364,12 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/empty-state", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/empty-state",
+        "@cubeui/page-header",
+        "@cubeui/header-content-footer"
+      ],
       "files": [
         {
           "path": "registry/layout/page.tsx",

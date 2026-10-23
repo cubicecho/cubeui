@@ -1274,6 +1274,7 @@
         "@cubeui/utils",
         "@cubeui/empty-state",
         "@cubeui/page-header",
+        "@cubeui/header-content-footer",
         "@cubeui/tokens"
       ],
       "files": [
