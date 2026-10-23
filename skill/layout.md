@@ -657,6 +657,11 @@ second wrapper around a sidebar.
 empty data, so write the `map` plainly and let the shell handle the nothing case. Do not write
 `{items.length === 0 ? <Empty /> : items.map(…)}`.
 
+Empty means no element (`[]`, `null`, `false`), or a `List` with no rows —
+`contentSlot={<List contentSlot={items.map(…)} />}` reaches `emptySlot` too, on both halves. Any
+other element is drawn as it is, even one that renders nothing, so a body wrapped in a `View` or a
+component of your own decides the empty case itself.
+
 What goes in `emptySlot` inside a card is one muted line, `<EmptyState compact … />` — see
 [Empty states](#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
@@ -1277,7 +1282,8 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   `role="tree"`: nothing here opens, closes or takes arrow keys, which is what a tree promises. A
   tree of paths is `FileTree`. A row with no `ListRow` around it is a plain row with no level.
 - **No `emptySlot` and no `loading`.** Those rungs are `QueryState`'s, drawn above the list. With no
-  rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items".
+  rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items" — and a
+  `CardLayout` whose `contentSlot` is that list shows its `emptySlot`.
 - It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in
   `className`.
 

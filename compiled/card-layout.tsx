@@ -21,7 +21,7 @@
  * - the skeleton's bars are spaced with `gap`, not `space-y`, which NativeWind does not have.
  */
 import type { ReactNode } from "react";
-import { Children } from "react";
+import { Children, isValidElement } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import {
@@ -29,6 +29,7 @@ import {
   DescriptionHintText,
   type DescriptionPlacement,
 } from "./description-hint";
+import { hasRows, List } from "./list";
 
 export type CardLayoutProps = {
   /** The body. */
@@ -63,7 +64,11 @@ export type CardLayoutProps = {
   iconSlot?: SlotNode | undefined;
   /** The header's far end: an add button, a menu, a switch. */
   actionSlot?: SlotNode | undefined;
-  /** Shown instead of `contentSlot` when there is nothing in it — an empty list, no results. */
+  /**
+   * Shown instead of `contentSlot` when there is nothing in it: no element (`[]`, `null`, `false`),
+   * or a `List` with no rows. A body of any other element is drawn as it is, even one that turns
+   * out to render nothing — pass `emptySlot` the case, or decide it yourself.
+   */
   emptySlot?: SlotNode | undefined;
   /**
    * Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not
@@ -139,6 +144,28 @@ const HEADER_ACTION = cn(
 const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
 
 /**
+ * Whether a body holds nothing to draw: no element at all, or one `List` with no rows.
+ *
+ * Elements rather than a truth test: `{items.map(…)}` on an empty array is an empty array, not
+ * null, and it is the shape a card is nearly always handed. A `List` is the one element looked
+ * into, because it is the other shape a card is handed — `<List contentSlot={items.map(…)} />` —
+ * and it draws nothing when it has no rows. Anything else is taken to draw something.
+ */
+function isEmptyBody(slot: SlotNode): boolean {
+  const parts = Children.toArray(slot).filter((part) => isValidElement(part));
+  if (parts.length === 0) {
+    return true;
+  }
+  const [only] = parts;
+  return (
+    parts.length === 1 &&
+    isValidElement<{ contentSlot?: SlotNode }>(only) &&
+    only.type === List &&
+    hasRows(only.props.contentSlot) === false
+  );
+}
+
+/**
  * A card with its slots already placed.
  *
  * The shape is the one every card in these apps arrives at on its own — an icon and a title, a
@@ -172,9 +199,7 @@ export function CardLayout({
   contentClassName,
   footerClassName,
 }: CardLayoutProps) {
-  // `Children.count` rather than a truth test: `{items.map(…)}` on an empty array is an empty
-  // array, not null, and it is the shape a card is nearly always handed.
-  const isEmpty = Children.count(contentSlot) === 0;
+  const isEmpty = isEmptyBody(contentSlot);
   const settled = isEmpty && emptySlot ? emptySlot : contentSlot;
   const body = loading ? <CardLayoutSkeleton /> : settled;
 

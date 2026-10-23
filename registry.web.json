@@ -1437,6 +1437,7 @@
         "@cubeui/card",
         "@cubeui/utils",
         "@cubeui/description-hint",
+        "@cubeui/list",
         "@cubeui/tokens"
       ],
       "files": [

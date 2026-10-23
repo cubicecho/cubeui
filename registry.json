@@ -1510,7 +1510,12 @@
       "type": "registry:component",
       "title": "Card Layout",
       "description": "A card with its slots already placed: icon, title, description, header action, body, and a footer split between prose and buttons. `descriptionPlacement=\"popover\"` folds the description behind a button after the title.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/utils", "@cubeui/description-hint"],
+      "registryDependencies": [
+        "@cubeui/card",
+        "@cubeui/utils",
+        "@cubeui/description-hint",
+        "@cubeui/list"
+      ],
       "files": [
         {
           "path": "registry/layout/card-layout.tsx",
