@@ -226,3 +226,33 @@ export const Loading: Story = {
     expect(canvasElement.textContent).toContain("Window");
   },
 };
+
+function RequiredDateForm() {
+  const form = useAppForm({
+    defaultValues: { dueAt: null as Date | null, window: null as DateRange | null },
+    onSubmit: () => {},
+  });
+  return (
+    <div className="grid w-[320px] gap-4">
+      <DateField form={form} name="dueAt" label="Due" required description="The day it is owed." />
+      <DateRangeField form={form} name="window" label="Window" required />
+    </div>
+  );
+}
+
+/**
+ * `required` on a picker: a `<button>` may not carry `aria-required` (axe's `aria-allowed-attr`),
+ * so the trigger is described as required instead, beside the field's own description.
+ */
+export const RequiredDate: Story = {
+  args: {},
+  render: () => <RequiredDateForm />,
+  play: async ({ canvas }) => {
+    const due = canvas.getByRole("button", { name: /Due/ });
+    await expect(due).not.toHaveAttribute("aria-required");
+    await expect(due).toHaveAccessibleDescription("The day it is owed. Required");
+    const window = canvas.getByRole("button", { name: /Window/ });
+    await expect(window).not.toHaveAttribute("aria-required");
+    await expect(window).toHaveAccessibleDescription("Required");
+  },
+};
