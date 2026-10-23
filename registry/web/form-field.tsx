@@ -297,11 +297,11 @@ export function FormField({
   );
 
   // One child, so `FieldLabel`'s own `gap-2` — which is there for icons — is not spent between a
-  // word and its asterisk.
+  // word and its asterisk. `ml-1` is a space's width, the gap native's `" *"` leaves.
   const labelText = required ? (
     <span className="min-w-0">
       {label}
-      <span data-slot="form-field-required" aria-hidden="true" className="ml-0.5 text-negative">
+      <span data-slot="form-field-required" aria-hidden="true" className="ml-1 text-negative">
         *
       </span>
     </span>
