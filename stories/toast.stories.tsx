@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import { ToastProvider as CompiledProvider, useToast as useCompiledToast } from "../compiled/toast";
 import { ToastProvider as NativeProvider, useToast as useNativeToast } from "../registry/ui/toast";
 
@@ -69,5 +70,40 @@ export const NotAButton: Story = {
     await expect(getComputedStyle(dismiss).color).not.toBe("rgb(0, 0, 0)");
     await userEvent.click(dismiss);
     await waitFor(() => expect(canvas.queryByRole("alert")).toBeNull());
+  },
+};
+
+/**
+ * On a phone with `SidebarLayout`'s `barPosition="bottom"`, a toast sits above the bar rather than
+ * over the places in it: the layout says it draws the bar, and the toasts rise by its height under
+ * the bar's breakpoint.
+ */
+export const AboveBottomBar: Story = {
+  parameters: { layout: "fullscreen" },
+  globals: { viewport: { value: "mobile2", isRotated: false } },
+  render: () => (
+    <CompiledProvider>
+      <div className="h-screen">
+        <CompiledLayout
+          className="h-full"
+          sidebarHideBelow="md"
+          barPosition="bottom"
+          navLabel="Main"
+          navSlot={<span className="text-sm">Places</span>}
+          sidebarSlot={<span>Rail</span>}
+          contentSlot={<Raise useToast={useCompiledToast} label="Save" />}
+        />
+      </div>
+    </CompiledProvider>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(window.matchMedia("(min-width: 48rem)").matches).toBe(false);
+    const bar = canvasElement.querySelector<HTMLElement>("[data-slot=sidebar-layout-bottom-bar]");
+    expect(bar).not.toBeNull();
+    await userEvent.click(canvas.getByRole("button", { name: "Save" }));
+    const toast = await canvas.findByRole("alert");
+    const barTop = bar?.getBoundingClientRect().top ?? 0;
+    await expect(toast.getBoundingClientRect().bottom).toBeLessThanOrEqual(barTop);
   },
 };

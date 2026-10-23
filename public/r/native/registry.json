@@ -79,6 +79,18 @@
       ]
     },
     {
+      "name": "bottom-bar",
+      "type": "registry:lib",
+      "title": "Bottom bar",
+      "description": "Whether a layout draws a bar along the bottom of the screen, and under which width: useReportBottomBar for the layout that draws it, useBottomBar for what floats at the bottom (a toast) to sit above it.",
+      "files": [
+        {
+          "path": "registry/lib/bottom-bar.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "error-message",
       "type": "registry:lib",
       "title": "messageOf",
@@ -1168,7 +1180,7 @@
       "type": "registry:ui",
       "title": "Toast",
       "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/bottom-bar"],
       "files": [
         {
           "path": "registry/ui/toast.tsx",
@@ -1464,7 +1476,7 @@
       "type": "registry:component",
       "title": "Split Layout",
       "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar"],
       "files": [
         {
           "path": "registry/layout/split-layout.tsx",

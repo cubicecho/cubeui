@@ -18,6 +18,7 @@
  * width scale and the `data-slot`s are unchanged.
  */
 import { createContext, type ReactNode } from "react";
+import { useReportBottomBar } from "@/lib/bottom-bar";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -488,6 +489,8 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   const navAtBottom = barPosition === "bottom";
   const topNavSlot = navAtBottom ? undefined : navSlot;
+  // Told to the toasts, so one raised on a phone sits above the places rather than over them.
+  useReportBottomBar(navAtBottom && navSlot && sidebarHideBelow ? sidebarHideBelow : undefined);
   // Rule 5 — the bar, and the column it sits in, are drawn only when there is something in the
   // bar. Without one the content pane holds the caller's node exactly as it always has.
   const main =

@@ -579,6 +579,10 @@ there pushes the buttons off the screen.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
   - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
+  - **A toast sits above the bar.** The layout tells `@cubeui/toast` it draws one, and under
+    `sidebarHideBelow` the stack rises by the bar's height instead of covering the places. Do not
+    offset the `ToastProvider` yourself. A bar of your own that does the same calls
+    `useReportBottomBar("md")` from `@/lib/bottom-bar` (`"always"` for one at every width).
 
 `Sidebar`'s `hideBelow` (`sm` / `md` / `lg` / `xl`) is the same switch for a sidebar that is not
 in a `SidebarLayout`. Do not write `hidden md:flex` in `className` for either: that works only
