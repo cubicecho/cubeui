@@ -466,8 +466,11 @@ function SearchMenu({
           {...trigger}
           className={cn(
             "h-auto min-h-10 w-full justify-between gap-2 bg-background px-3 py-1.5 font-normal",
+            // It looks like a field, so it behaves like one: no hover fill, and focus turns its
+            // border `active`, as the select trigger beside it does — not a button's fill.
+            "hover:bg-background focus-visible:bg-background focus-visible:border-active",
             Platform.select({
-              web: "whitespace-normal aria-invalid:border-negative disabled:cursor-not-allowed",
+              web: "whitespace-normal aria-invalid:border-negative aria-invalid:focus-visible:border-active disabled:cursor-not-allowed",
               default: "",
             }),
             className,
