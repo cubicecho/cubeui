@@ -243,7 +243,12 @@ export function PageHeader({
   const descriptionLine = loading ? (
     <View testID="page-header-description" aria-hidden className={cn(BAR, "h-5 w-72")} />
   ) : (
-    <Text testID="page-header-description" webAs="p" className="text-foreground/60 text-sm">
+    // `max-w-prose`: under a page-wide header a description could run to 200 characters a line.
+    <Text
+      testID="page-header-description"
+      webAs="p"
+      className="max-w-prose text-foreground/60 text-sm"
+    >
       {description}
     </Text>
   );
