@@ -63,7 +63,10 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
+        // `border-collapse` here rather than trusting Tailwind's preflight to set it: without it
+        // a row's border does not paint, and an app that skips preflight drew no row rules.
+        // `tabular-nums` so a column of figures lines up by digit.
+        className={cn("w-full caption-bottom border-collapse text-sm tabular-nums", className)}
         {...props}
       />
     </div>

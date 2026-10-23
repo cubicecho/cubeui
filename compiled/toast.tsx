@@ -133,7 +133,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 role="alert"
                 className="cube-rn-view w-full flex-row items-start gap-3 rounded-lg border border-foreground/10 bg-secondary px-4 py-3 shadow-lg"
               >
-                <div aria-hidden className={cn("cube-rn-view", "mt-0.5 shrink-0", ink)}>
+                {/* `[&_svg]:size-4` for the web, where an icon does not read the context below and
+                    drew at its own 24px beside 14px text; the context sizes it on a device. */}
+                <div
+                  aria-hidden
+                  className={cn("cube-rn-view", "mt-0.5 shrink-0 [&_svg]:size-4", ink)}
+                >
                   <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
                     {glyph}
                   </IconClassContext.Provider>
@@ -145,7 +150,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   aria-label="Dismiss"
                   // The ink is on the press target too, not only in the context: the glyph draws in
                   // `currentColor`, and a `<button>` resets that to the UA's black.
-                  className="cube-rn-view cube-rn-pressable -m-1 shrink-0 rounded-md p-1 text-foreground/60"
+                  // Under the pointer, the keyboard and a finger it looks the same: hovered.
+                  className="cube-rn-view cube-rn-pressable -m-1 shrink-0 rounded-md p-1 text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground focus-visible:outline-none active:bg-hover [&_svg]:size-4"
                 >
                   <IconClassContext.Provider value="size-4 text-foreground/60">
                     <X />

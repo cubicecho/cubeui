@@ -1484,7 +1484,8 @@
         "@cubeui/icons",
         "@cubeui/badge",
         "@cubeui/tooltip",
-        "@cubeui/header-content-footer"
+        "@cubeui/header-content-footer",
+        "@cubeui/split-layout"
       ],
       "files": [
         {

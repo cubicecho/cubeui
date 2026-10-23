@@ -34,7 +34,11 @@ import type {
   DialogSectionProps,
   DialogTriggerProps,
 } from "@/components/ui/dialog-base";
-import { DIALOG_CONTENT_CLASS } from "@/components/ui/dialog-base";
+import {
+  DIALOG_CONTENT_CLASS,
+  DIALOG_DESCRIPTION_CLASS,
+  DIALOG_TITLE_CLASS,
+} from "@/components/ui/dialog-base";
 import { bridgePress, cn } from "@/lib/utils";
 import { Button } from "./button";
 import { X } from "./icons";
@@ -210,7 +214,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+      className={cn(DIALOG_TITLE_CLASS, className)}
       {...props}
     />
   );
@@ -224,7 +228,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-foreground/60 text-sm", className)}
+      className={cn(DIALOG_DESCRIPTION_CLASS, className)}
       {...props}
     />
   );

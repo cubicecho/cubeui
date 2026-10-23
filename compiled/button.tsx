@@ -57,7 +57,10 @@ const buttonVariants = cva(
           "border border-info/40 bg-transparent text-info hover:bg-info/10 focus-visible:bg-info/10",
         outline:
           "border border-foreground/50 bg-background text-foreground hover:bg-hover focus-visible:bg-hover",
-        secondary: "bg-foreground/10 text-foreground hover:bg-hover focus-visible:bg-hover",
+        // Hover and focus draw an edge, not a fill: `bg-hover` is 1.01:1 against this grey, so the
+        // icon buttons inside a field (reveal, clear) showed no change when tabbed to.
+        secondary:
+          "border border-transparent bg-foreground/10 text-foreground hover:border-foreground/60 focus-visible:border-foreground/60",
         ghost:
           "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
         link: "text-info underline-offset-4 hover:underline focus-visible:underline",
