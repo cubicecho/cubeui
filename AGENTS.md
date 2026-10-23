@@ -158,7 +158,7 @@ palette and never `black` or `white` — `registry:check` rule 9.
 | Token | What it is |
 |---|---|
 | `background`, `foreground` | The page, and the text on it |
-| `secondary` | The fill of a surface raised off the page: a card, a popover, the sidebar. Its text is `foreground` |
+| `secondary` | The fill of a surface raised off the page: a card, a popover, a dialog. Its text is `foreground`. App chrome — a sidebar, a top or bottom bar — is not raised: it is `background` with a `/10` rule |
 | `neutral`, `neutral-foreground` | A button or a badge with nothing to say |
 | `positive`, `warning`, `negative`, `info` (each with `-foreground`) | What a thing says. `info` is the blue for a thing worth pointing out: a highlight with a name, and no icon or role of its own |
 | `hover` | The transient fill under a pointer, a menu's keyboard highlight or keyboard focus: `active`'s hue, all but grey. Its text is `foreground` |
