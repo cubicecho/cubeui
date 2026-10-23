@@ -406,6 +406,12 @@ export const ControlledLeavesThePageAlone: Story = {
 };
 
 async function assertControlled(canvasElement: HTMLElement) {
+  // Whatever the toolbar's theme put on `<html>` after `beforeEach` cleared it is the page this
+  // picker has to leave alone, so the check is against that rather than against no class at all.
+  const page = {
+    dark: html().classList.contains("dark"),
+    light: html().classList.contains("light"),
+  };
   const groups = within(canvasElement).getAllByRole("radiogroup", { name: "Controlled" });
   const spies = [onNative, onCompiled];
   for (const [index, element] of groups.entries()) {
@@ -422,8 +428,8 @@ async function assertControlled(canvasElement: HTMLElement) {
     );
   }
   await expect(stored()).toBeNull();
-  await expect(html()).not.toHaveClass("dark");
-  await expect(html()).not.toHaveClass("light");
+  await expect(html().classList.contains("dark")).toBe(page.dark);
+  await expect(html().classList.contains("light")).toBe(page.light);
 }
 
 /**
