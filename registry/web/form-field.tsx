@@ -393,7 +393,9 @@ export function FormField({
       // `Field` turns the whole field destructive from this attribute, which is the primitive's
       // own error state rather than one invented here.
       data-invalid={shownError ? true : undefined}
-      className={cn("min-w-0", className)}
+      // A checkbox or switch beside a caption with a description lines up with the caption's
+      // first line, as on native, not with the middle of the two-line block.
+      className={cn("min-w-0", orientation === "horizontal" && "items-start", className)}
     >
       {orientation === "horizontal" ? (
         <>
