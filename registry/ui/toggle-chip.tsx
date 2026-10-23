@@ -82,8 +82,8 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         // beside the segmented frame. Focus looks hovered; a chosen chip, which has no hover,
         // deepens instead.
         selected
-          ? "border-active bg-active focus-visible:bg-active/90"
-          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover",
+          ? "border-active bg-active focus-visible:bg-active/90 active:bg-active/90"
+          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover active:bg-hover",
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element
