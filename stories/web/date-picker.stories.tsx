@@ -127,7 +127,8 @@ function tokenColor(token: string) {
 
 /**
  * react-day-picker's stylesheet ships its accent as `blue`, so the chevrons and the selected ring
- * ignored the theme (#102). They draw from `--selection` now, and follow it into dark mode.
+ * ignored the theme (#102). The picked day is filled from `--selection` now and the chevrons are
+ * ink, and both follow the theme into dark mode.
  */
 export const TheCalendarFollowsTheTheme: Story = {
   args: { initial: JUNE_10 },
@@ -140,10 +141,12 @@ export const TheCalendarFollowsTheTheme: Story = {
       throw new Error("no react-day-picker root or chevron");
     }
 
+    // The picked day is filled in the chosen colour, with its text on it; the arrows are ink, not
+    // the chosen colour, and never the library's own blue.
     const check = async () => {
-      const selection = tokenColor("selection");
-      await waitFor(() => expect(getComputedStyle(chevron).fill).toBe(selection));
-      expect(getComputedStyle(day).borderTopColor).toBe(selection);
+      await waitFor(() => expect(getComputedStyle(chevron).fill).toBe(tokenColor("foreground")));
+      expect(getComputedStyle(day).backgroundColor).toBe(tokenColor("selection"));
+      expect(getComputedStyle(day).color).toBe(tokenColor("selection-foreground"));
       expect(getComputedStyle(chevron).fill).not.toBe("rgb(0, 0, 255)");
     };
 
