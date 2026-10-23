@@ -81,8 +81,13 @@ export type MenuSeparatorProps = {
   className?: string | undefined;
 };
 
-/** The menu's box: its minimum width and padding. */
-export const MENU_CONTENT_CLASS = "min-w-32 p-1";
+/**
+ * The menu's box: its surface, minimum width and padding. The surface is the popover's, said here
+ * so the web half cannot drift from it: it once wore a bare `border`, which takes the text colour
+ * and drew a black frame where every other floating surface has a 10% edge.
+ */
+export const MENU_CONTENT_CLASS =
+  "min-w-32 rounded-md border border-foreground/10 bg-secondary p-1 shadow-md";
 /** One menu row's layout. */
 export const MENU_ITEM_CLASS = "w-full flex-row items-center gap-2 rounded-sm px-2 py-1.5";
 /** The type of a menu row's label. */
