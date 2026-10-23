@@ -39,14 +39,17 @@ type CardProps = ViewProps & {
   onPress?: React.ComponentProps<typeof Pressable>["onPress"] | undefined;
 };
 
+/**
+ * The card's surface: its edge, fill and ink. Exported for a component that is a card but must
+ * render its own element — `Section`'s `surface="card"` is a `<section>` — so it wears this rather
+ * than a copy of it that drifts.
+ */
+const CARD_SURFACE_CLASS = "rounded-lg border border-foreground/10 bg-secondary text-foreground";
+
 /** A bordered surface for one thing, pressable when given `onPress`. */
 const Card = React.forwardRef<React.ElementRef<typeof View>, CardProps>(
   ({ className, accentColor, accentLabel, onPress, children, ...props }, ref) => {
-    const classes = cn(
-      "rounded-lg border border-foreground/10 bg-secondary text-foreground",
-      accentColor && "relative overflow-hidden",
-      className,
-    );
+    const classes = cn(CARD_SURFACE_CLASS, accentColor && "relative overflow-hidden", className);
     const inner = (
       <>
         <ColorBar color={accentColor} label={accentLabel} />
@@ -174,4 +177,13 @@ const CardAction = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
 );
 CardAction.displayName = "CardAction";
 
-export { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };
+export {
+  CARD_SURFACE_CLASS,
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+};

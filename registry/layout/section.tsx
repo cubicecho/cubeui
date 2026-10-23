@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
+import { CARD_SURFACE_CLASS } from "@/components/ui/card";
 import {
   DescriptionHint,
   DescriptionHintText,
@@ -123,8 +124,8 @@ export function Section({
       {...(folded ? { "aria-describedby": descriptionId } : {})}
       className={cn(
         "min-w-0 gap-3",
-        surface === "card" &&
-          "rounded-lg border border-foreground/10 bg-secondary p-4 text-foreground",
+        // Card's own surface, not a copy of its classes that drifts from it.
+        surface === "card" && cn(CARD_SURFACE_CLASS, "p-4"),
         className,
       )}
     >
