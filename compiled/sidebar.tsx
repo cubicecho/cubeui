@@ -114,7 +114,7 @@ export type SidebarProps = {
 };
 
 /**
- * The sidebar frame: header, a body that scrolls, footer, on the sidebar palette, at a fixed
+ * The sidebar frame: header, a body that scrolls, footer, on the page colour behind a rule, at a fixed
  * `w-64`. It needs a height from its ancestors (`h-full`), or the body grows instead of scrolling.
  *
  * It draws its own border on the edge that faces the content, so inside a `SidebarLayout` pass
@@ -153,8 +153,10 @@ export function Sidebar({
       data-slot="sidebar"
       aria-label={label}
       className={cn(
+        // App chrome is the page colour and a /10 rule, as the top and bottom bars are: on
+        // `secondary` the fill was 1.04:1 against the page in light and added nothing.
         "cube-rn-view",
-        "h-full min-h-0 shrink-0 border-foreground/10 bg-secondary",
+        "h-full min-h-0 shrink-0 border-foreground/10 bg-background",
         collapsed ? "w-14" : "w-64",
         side === "start" ? "border-r" : "border-l",
         hideBelow ? HIDE_BELOW[hideBelow] : undefined,
@@ -542,7 +544,7 @@ function SidebarNavItemBody({
             {Array.from(label.trim())[0]?.toUpperCase()}
           </span>
         )}
-        <IconMarkers count={count} status={status} ring="border-secondary" />
+        <IconMarkers count={count} status={status} ring="border-background" />
       </>
     );
   }

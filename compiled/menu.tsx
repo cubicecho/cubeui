@@ -151,7 +151,13 @@ function MenuItem({
   const { setOpen, skipReturnRef } = useContext(MenuContext);
   const row = (
     <>
-      {iconSlot}
+      {/* The icon quieter than the label, except on a destructive row, where it follows the
+          row's `negative` through currentColor. */}
+      {iconSlot ? (
+        <span className={cn("flex shrink-0", destructive === false && "text-foreground/60")}>
+          {iconSlot}
+        </span>
+      ) : null}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={MENU_TRAILING_CLASS}>{trailing}</span>
@@ -230,7 +236,7 @@ function ToggleRowBody({
 }: Pick<MenuCheckboxItemProps, "iconSlot" | "label" | "trailing">) {
   return (
     <>
-      {iconSlot}
+      {iconSlot ? <span className="flex shrink-0 text-foreground/60">{iconSlot}</span> : null}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={MENU_TRAILING_CLASS}>{trailing}</span>

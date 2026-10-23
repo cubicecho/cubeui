@@ -158,7 +158,7 @@ export function PickerTrigger({
             {children}
           </span>
         }
-        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 opacity-50" aria-hidden />}
+        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden />}
       />
     </PopoverTrigger>
   );
@@ -173,9 +173,11 @@ export function PickerTrigger({
  * then had to render an empty `<div className="h-4 w-4" />` in its place to stop the label
  * shifting, which is the tell that the control was fighting its own markup.
  */
-function ClearRow({ onClear }: { onClear: () => void }) {
+export function ClearRow({ onClear }: { onClear: () => void }) {
+  // Inset as the calendar above it is (12px), not 4px from the pane's edge. Exported for
+  // DateTimeInput, so the two pickers share one Clear row.
   return (
-    <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 p-1">
+    <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 px-3 py-2">
       <Button
         variant="outline"
         size="sm"
@@ -242,7 +244,7 @@ export function DatePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           // Opening on today with a value set in March means the value is not on screen — the
@@ -364,7 +366,7 @@ export function DateRangePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           defaultMonth={value?.from}

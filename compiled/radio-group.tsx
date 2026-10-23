@@ -395,12 +395,17 @@ function RadioGroupItem({
           {iconSlot ? (
             <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
           ) : null}
-          <span
-            id={labelId}
-            className="cube-rn-text text-center text-foreground text-sm font-semibold"
-          >
-            {label}
-          </span>
+          {/* The radio's own dot beside the label: a 1px edge in another colour was the only
+              thing that said which card was chosen, and colour is not to be the only signal. */}
+          <div className="cube-rn-view min-w-0 flex-row items-center justify-center gap-2">
+            {circle}
+            <span
+              id={labelId}
+              className="cube-rn-text text-center text-foreground text-sm font-semibold"
+            >
+              {label}
+            </span>
+          </div>
           {description ? (
             <span
               id={descriptionId}
