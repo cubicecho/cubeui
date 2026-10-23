@@ -179,7 +179,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
         >
           {valueText}
         </PickerTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto gap-0 p-0" align="start">
           <Calendar
             selected={value ?? undefined}
             onSelect={handleDateSelect}

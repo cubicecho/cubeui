@@ -487,8 +487,8 @@ function SearchMenu({
         className={cn(
           Platform.select({
             // As wide as the trigger, so the list does not open narrower than what opened it.
-            web: "w-[var(--radix-popover-trigger-width)] p-0",
-            default: "w-80 max-w-full p-0",
+            web: "w-[var(--radix-popover-trigger-width)] gap-0 p-0",
+            default: "w-80 max-w-full gap-0 p-0",
           }),
           contentClassName,
         )}

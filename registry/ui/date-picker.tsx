@@ -234,7 +234,7 @@ export function DatePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           // Opening on today with a value set in March means the value is not on screen — the
@@ -356,7 +356,7 @@ export function DateRangePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           defaultMonth={value?.from}
