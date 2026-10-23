@@ -133,7 +133,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <View
                 key={toast.id}
                 accessibilityRole="alert"
-                className="w-full flex-row items-start gap-3 rounded-lg border border-foreground/10 bg-secondary px-4 py-3 shadow-lg"
+                className="w-full flex-row items-start gap-3 rounded-lg border border-foreground/10 bg-secondary px-4 py-3 shadow-md"
               >
                 {/* `[&_svg]:size-4` for the web, where an icon does not read the context below and
                     drew at its own 24px beside 14px text; the context sizes it on a device. */}
