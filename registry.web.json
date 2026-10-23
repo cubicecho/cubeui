@@ -1406,6 +1406,7 @@
         "@cubeui/badge",
         "@cubeui/tooltip",
         "@cubeui/header-content-footer",
+        "@cubeui/split-layout",
         "@cubeui/tokens"
       ],
       "files": [

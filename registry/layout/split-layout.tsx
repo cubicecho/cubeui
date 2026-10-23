@@ -7,7 +7,7 @@
  * that one is `flex-1`" — with `min-w-0` on both doing the job `minmax(0,…)` did. The props, the
  * width scale and the `data-slot`s are unchanged.
  */
-import type { ReactNode } from "react";
+import { createContext, type ReactNode } from "react";
 import { Text, View } from "react-native";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -393,6 +393,14 @@ type SidebarLayoutProps = {
  * `barPosition="bottom"` moves the `navSlot` out of that bar into one along the bottom of the
  * page, still the one navigation landmark named by `navLabel`.
  */
+/**
+ * Which edge {@link SidebarLayout} put its sidebar on, for a `Sidebar` inside it: the sidebar draws
+ * its border on the edge facing the content, and without this it guessed `start` while the layout's
+ * default is `end`, so the rule landed on the frame's outer edge and nothing parted it from the page.
+ * `undefined` outside a `SidebarLayout`.
+ */
+export const SidebarPositionContext = createContext<"start" | "end" | undefined>(undefined);
+
 export function SidebarLayout({
   contentSlot,
   sidebarSlot,
@@ -510,15 +518,17 @@ export function SidebarLayout({
     : sidebarClassName;
 
   return (
-    <SplitLayout
-      firstSlot={atStart ? sidebarSlot : main}
-      secondSlot={atStart ? main : sidebarSlot}
-      firstClassName={atStart ? railClassName : contentClassName}
-      secondClassName={atStart ? contentClassName : railClassName}
-      {...(atStart ? { firstWidth: sidebarWidth } : { secondWidth: sidebarWidth })}
-      stackBelow={sidebarHideBelow ? "never" : stackBelow}
-      divider={divider}
-      className={className}
-    />
+    <SidebarPositionContext.Provider value={sidebarPosition}>
+      <SplitLayout
+        firstSlot={atStart ? sidebarSlot : main}
+        secondSlot={atStart ? main : sidebarSlot}
+        firstClassName={atStart ? railClassName : contentClassName}
+        secondClassName={atStart ? contentClassName : railClassName}
+        {...(atStart ? { firstWidth: sidebarWidth } : { secondWidth: sidebarWidth })}
+        stackBelow={sidebarHideBelow ? "never" : stackBelow}
+        divider={divider}
+        className={className}
+      />
+    </SidebarPositionContext.Provider>
   );
 }

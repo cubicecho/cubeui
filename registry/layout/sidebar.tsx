@@ -14,6 +14,7 @@ import {
   type HeaderContentFooterProps,
   StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
+import { SidebarPositionContext } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -70,7 +71,8 @@ export type SidebarProps = {
   label?: string | undefined;
   /**
    * Which edge of the screen the sidebar sits against, which decides the edge its border is on.
-   * `start` (the default) draws it on the right, facing the content.
+   * `start` draws it on the right, facing the content. Inside a `SidebarLayout` it defaults to the
+   * layout's `sidebarPosition`, and to `start` anywhere else.
    */
   side?: "start" | "end" | undefined;
   /**
@@ -119,7 +121,7 @@ export function Sidebar({
   headerSlot,
   footerSlot,
   label,
-  side = "start",
+  side: sideProp,
   hideBelow,
   collapsed = false,
   onCollapsedChange,
@@ -129,6 +131,9 @@ export function Sidebar({
   contentClassName,
   footerClassName,
 }: SidebarProps) {
+  // Inside a `SidebarLayout` the edge is the layout's, unless the caller says otherwise.
+  const layoutSide = React.useContext(SidebarPositionContext);
+  const side = sideProp ?? layoutSide ?? "start";
   const state = React.useMemo(
     () => ({ collapsed, onCollapsedChange, side }),
     [collapsed, onCollapsedChange, side],
