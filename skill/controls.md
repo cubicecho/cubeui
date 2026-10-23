@@ -479,6 +479,10 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 - **`emptySlot`** is what a blank `content` draws. Left out, a blank document draws nothing at all.
 - **`headingId`** — `(text) => id` — gives each heading an id from its text, so a table of
   contents or a `#fragment` can point at one. Left out, no heading has an id.
+- **`collapsible`** folds the document by its headings: each heading gets a chevron button beside
+  it that shows and hides the blocks under it, up to the next heading of its level or higher, so an
+  `##` folds its `###`s with it. Every section starts open, and a heading with nothing under it
+  has no button. Off by default. Do not wrap the parts of a document in `Disclosure`s for this.
 - `className` is the root's: its width, its margin. The document is as wide as what it is put in
   and does not cap its own line length; put it in a `width="prose"` page or a pane.
 - A long URL breaks rather than widening the document, and a table or code block too wide for it

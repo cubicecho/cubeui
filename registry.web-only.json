@@ -148,7 +148,7 @@
       "name": "markdown",
       "type": "registry:component",
       "title": "Markdown",
-      "description": "A Markdown string rendered from the theme's tokens and the registry's own primitives: a fenced block is a CodeBlock, a table the Table, a rule a Separator, a task item a Checkbox. GitHub-flavoured, raw HTML never rendered, URLs filtered. Optional wikilinks, and a resolveLink for links between an app's documents with the pending and broken looks built in.",
+      "description": "A Markdown string rendered from the theme's tokens and the registry's own primitives: a fenced block is a CodeBlock, a table the Table, a rule a Separator, a task item a Checkbox. GitHub-flavoured, raw HTML never rendered, URLs filtered. Optional sections that fold by heading, wikilinks, and a resolveLink for links between an app's documents with the pending and broken looks built in.",
       "registryDependencies": [
         "@cubeui/checkbox",
         "@cubeui/code",

@@ -255,6 +255,68 @@ export const HeadingIds: Story = {
   },
 };
 
+const SECTIONS = `Before any heading.
+
+# Guide
+
+Intro.
+
+## Install
+
+Run it.
+
+### On Linux
+
+Use the package.
+
+## Use
+
+> ## Quoted
+>
+> A heading in a quotation folds nothing.
+
+## Empty
+`;
+
+/**
+ * `collapsible` folds each heading's blocks under it, up to the next heading of its level or
+ * higher. The toggle sits beside the heading and is named by it, so the heading's own name is
+ * unchanged; a heading with nothing under it, or one inside a quotation, has no toggle.
+ */
+export const Collapsible: Story = {
+  args: { content: SECTIONS, collapsible: true },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas, userEvent }) => {
+    await expect(canvas.getByRole("heading", { name: "Install" })).toBeVisible();
+    const toggles = canvas.getAllByRole("button");
+    // Guide, Install, On Linux, Use — not Quoted, and not Empty.
+    await expect(toggles).toHaveLength(4);
+
+    const install = canvas.getByRole("button", { name: "Install" });
+    await expect(install).toHaveAttribute("aria-expanded", "true");
+    await expect(canvas.getByText("Use the package.")).toBeVisible();
+
+    await userEvent.click(install);
+    await expect(install).toHaveAttribute("aria-expanded", "false");
+    await expect(canvas.getByText("Run it.")).not.toBeVisible();
+    await expect(canvas.getByText("Use the package.")).not.toBeVisible();
+    // A sibling section is not folded with it.
+    await expect(canvas.getByText("A heading in a quotation folds nothing.")).toBeVisible();
+
+    const guide = canvas.getByRole("button", { name: "Guide" });
+    await userEvent.click(guide);
+    await expect(canvas.getByText("Intro.")).not.toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "Use", hidden: true })).not.toBeVisible();
+    // Blocks before the first heading belong to no section.
+    await expect(canvas.getByText("Before any heading.")).toBeVisible();
+
+    await userEvent.click(guide);
+    // Opening the parent leaves a folded child folded.
+    await expect(canvas.getByText("Intro.")).toBeVisible();
+    await expect(canvas.getByText("Run it.")).not.toBeVisible();
+  },
+};
+
 /** A stand-in for an app's router link: its own element, and something only the app knows. */
 function AppLink({ href, children }: ComponentPropsWithoutRef<"a">) {
   const external = href?.startsWith("http");
