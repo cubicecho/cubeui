@@ -96,7 +96,18 @@ export function DisclosureRow({
             >
               {title}
             </Text>
-            {meta}
+            {/* Quieter than the title, as ListItem's meta is: left bare, a string took the title's
+                semibold and "atlas 12 tools" read as one name. A node keeps its own look. */}
+            {typeof meta === "string" || typeof meta === "number" ? (
+              <Text
+                testID="disclosure-row-meta"
+                className="shrink-0 font-normal text-foreground/60 text-xs tabular-nums"
+              >
+                {meta}
+              </Text>
+            ) : (
+              meta
+            )}
           </ItemTitle>
           {description ? <ItemDescription>{description}</ItemDescription> : null}
         </ItemContent>
