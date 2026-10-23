@@ -595,7 +595,8 @@
         "@cubeui/error-message",
         "@cubeui/form-binding",
         "@cubeui/field",
-        "@cubeui/radio-group"
+        "@cubeui/radio-group",
+        "@cubeui/skeleton"
       ],
       "files": [
         {

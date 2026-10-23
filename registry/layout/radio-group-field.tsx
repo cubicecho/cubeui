@@ -5,6 +5,7 @@ import * as React from "react";
 import { Text, View } from "react-native";
 import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Skeleton } from "@/components/ui/skeleton";
 import { messageOf } from "@/lib/error-message";
 import {
   type BindableForm,
@@ -120,10 +121,11 @@ function RadioGroupFieldBody({
         title
       )}
       {loading ? (
-        <View
+        // The Skeleton primitive, pulsing as FormField's does, not a hand-drawn still box.
+        <Skeleton
           aria-hidden
           testID="radio-group-field-skeleton"
-          className={cn("h-16 w-full rounded-md bg-foreground/10", loadingClassName)}
+          className={cn("h-16 w-full rounded-md", loadingClassName)}
         />
       ) : (
         <RadioGroup

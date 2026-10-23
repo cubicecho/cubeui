@@ -525,6 +525,7 @@
         "@cubeui/form-binding",
         "@cubeui/field",
         "@cubeui/radio-group",
+        "@cubeui/skeleton",
         "@cubeui/tokens"
       ],
       "files": [
