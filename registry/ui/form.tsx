@@ -764,6 +764,9 @@ type SubmitButtonProps = {
  * The submit control: reads `canSubmit` / `isSubmitting` from form context, so
  * every form guards against a double submit the same way rather than each one
  * remembering to.
+ *
+ * Coloured by what it does, which `isEdit` already says: saving changes keeps the work, so it is
+ * `positive`; creating adds something, so it is `info`. A `variant` passed in still wins.
  */
 function SubmitButton({
   isEdit = false,
@@ -773,6 +776,7 @@ function SubmitButton({
   iconSlot,
   disabled,
   requireChanges = false,
+  variant,
   ...props
 }: SubmitButtonProps) {
   const form = useFormContext();
@@ -791,6 +795,7 @@ function SubmitButton({
       onPress={() => {
         form.handleSubmit();
       }}
+      variant={variant ?? (isEdit ? "positive" : "info")}
       {...props}
       disabled={disabled === true || canSubmit === false || (requireChanges && untouched)}
       loading={isSubmitting}

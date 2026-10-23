@@ -1173,7 +1173,7 @@ function AppFormSample() {
         ]}
       />
       <div>
-        <Button type="submit" content="Save" />
+        <Button type="submit" variant="positive" content="Save" />
       </div>
     </form>
   );
@@ -1258,7 +1258,7 @@ function FormElementSample() {
         <Label htmlFor="gallery-invite">Invite by email</Label>
         <Input id="gallery-invite" placeholder="grace@example.com" />
       </div>
-      <Button type="submit" content={sent ? "Invited" : "Invite"} />
+      <Button type="submit" variant="info" content={sent ? "Invited" : "Invite"} />
     </FormElement>
   );
 }
