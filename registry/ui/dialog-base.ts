@@ -87,3 +87,13 @@ export type DialogSectionProps = {
 /** The dialog's card, on both platforms. `bg-secondary`, as a `Card` is, so it stands off the page behind the overlay. */
 export const DIALOG_CONTENT_CLASS =
   "w-full max-w-lg gap-4 rounded-lg border border-foreground/10 bg-secondary p-6 shadow-lg";
+
+/**
+ * The dialog's title, on both platforms and in `alert-dialog`. It names `text-foreground` itself:
+ * on the web the card is portalled out of the themed tree, and a title that inherited its colour
+ * there was the browser's black on a dark card.
+ */
+export const DIALOG_TITLE_CLASS = "text-lg font-semibold leading-none tracking-tight text-foreground";
+
+/** The sentence under the title, on both platforms and in `alert-dialog`. */
+export const DIALOG_DESCRIPTION_CLASS = "text-sm text-foreground/60";

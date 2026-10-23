@@ -26,6 +26,8 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import {
   DIALOG_CONTENT_CLASS,
+  DIALOG_DESCRIPTION_CLASS,
+  DIALOG_TITLE_CLASS,
   type DialogCloseProps,
   type DialogContentProps,
   type DialogFooterProps,
@@ -261,7 +263,7 @@ function DialogTitle({ className, children }: DialogSectionProps) {
       // The `role` is hand-written because an `<h2>` has no native counterpart.
       role="heading"
       aria-level={2}
-      className={cn("text-lg font-semibold leading-none tracking-tight text-foreground", className)}
+      className={cn(DIALOG_TITLE_CLASS, className)}
     >
       {children}
     </Text>
@@ -270,7 +272,7 @@ function DialogTitle({ className, children }: DialogSectionProps) {
 
 /** The sentence under the title, read as the dialog's description. */
 function DialogDescription({ className, children }: DialogSectionProps) {
-  return <Text className={cn("text-sm text-foreground/60", className)}>{children}</Text>;
+  return <Text className={cn(DIALOG_DESCRIPTION_CLASS, className)}>{children}</Text>;
 }
 
 export {
