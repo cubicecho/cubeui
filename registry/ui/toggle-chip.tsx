@@ -74,9 +74,16 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         ? ({ "aria-pressed": selected, "aria-disabled": disabled ?? false } as const)
         : {})}
       className={cn(
-        "rounded-md border",
-        size === "sm" ? "px-2 py-1" : "px-3 py-2",
-        selected ? "border-active bg-active" : "border-foreground/10 bg-background hover:bg-hover",
+        "items-center justify-center rounded-md border focus-visible:outline-none",
+        // The button's `xs` and `sm` heights, so a chip sits flush beside a button or a
+        // segmented control rather than 2px off it.
+        size === "sm" ? "h-7 px-2" : "h-9 px-3",
+        // A control's edge is /50, 3:1 on every surface: at /10 an unchosen chip was a faint box
+        // beside the segmented frame. Focus looks hovered; a chosen chip, which has no hover,
+        // deepens instead.
+        selected
+          ? "border-active bg-active focus-visible:bg-active/90"
+          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover",
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element
