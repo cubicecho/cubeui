@@ -384,9 +384,14 @@ function RadioGroupItem({
       return (
         <>
           {iconSlot ? <View className="items-center justify-center">{iconSlot}</View> : null}
-          <Text id={labelId} className="text-center text-foreground text-sm font-semibold">
-            {label}
-          </Text>
+          {/* The radio's own dot beside the label: a 1px edge in another colour was the only
+              thing that said which card was chosen, and colour is not to be the only signal. */}
+          <View className="min-w-0 flex-row items-center justify-center gap-2">
+            {circle}
+            <Text id={labelId} className="text-center text-foreground text-sm font-semibold">
+              {label}
+            </Text>
+          </View>
           {description ? (
             <Text id={descriptionId} className="text-center text-foreground/60 text-xs">
               {description}
