@@ -125,7 +125,9 @@ function TableHead({ className, scope, ...props }: React.ComponentProps<"th">) {
       data-slot="table-head"
       scope={scope ?? (inHeader ? "col" : "row")}
       className={cn(
-        "h-10 whitespace-nowrap px-2 text-left align-middle font-semibold text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        // A label quieter than the data under it: weight says it is a header, the grey that it is
+        // not the content. It was the loudest text in the table.
+        "h-10 whitespace-nowrap px-2 text-left align-middle font-semibold text-foreground/60 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className,
       )}
       {...props}
