@@ -91,10 +91,11 @@ export const DIALOG_CONTENT_CLASS =
 /**
  * The dialog's title, on both platforms and in `alert-dialog`. It names `text-foreground` itself:
  * on the web the card is portalled out of the themed tree, and a title that inherited its colour
- * there was the browser's black on a dark card.
+ * there was the browser's black on a dark card. `leading-tight`, not `leading-none`: a title that
+ * wraps at phone width set its lines touching.
  */
 export const DIALOG_TITLE_CLASS =
-  "text-lg font-semibold leading-none tracking-tight text-foreground";
+  "text-lg font-semibold leading-tight tracking-tight text-foreground";
 
 /**
  * The ✕ in the card's corner, on both platforms. `p-1` makes it a 24px target on the web rather
