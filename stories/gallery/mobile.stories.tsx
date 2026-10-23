@@ -746,7 +746,6 @@ const sections: GallerySection[] = [
             iconSlot={<Download />}
           />
           <ConfirmButton
-            variant="destructive-outline"
             title="Delete this project?"
             description="Its tasks go with it."
             confirmLabel="Delete"

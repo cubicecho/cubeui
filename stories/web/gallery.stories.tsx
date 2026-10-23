@@ -1043,7 +1043,6 @@ function IconButtons() {
             />
             <ConfirmButton
               aria-label="Delete the lane"
-              variant="destructive-outline"
               size="sm"
               title="Delete this lane?"
               description="Its cards move to the backlog."
