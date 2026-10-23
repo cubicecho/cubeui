@@ -229,88 +229,62 @@ export function SplitLayout({
   firstClassName,
   secondClassName,
 }: SplitLayoutProps) {
-  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
-  // pane there is one column and it has the whole width.
-  if (!secondSlot) {
-    return (
-      <div
-        data-slot="split-layout"
-        className={cn("cube-rn-view", "min-h-0 min-w-0 flex-col", className)}
-      >
-        <div data-slot="split-layout-first" className={cn("cube-rn-view", PANE, firstClassName)}>
-          {firstSlot}
-        </div>
-      </div>
-    );
-  }
-
   // One pane carries the width and the other takes the rest. Neither given, `half` is two even
   // panes, which is the same classes on both.
   const width = secondWidth ?? firstWidth ?? "half";
   const sized = SIZED[stackBelow][width];
   const rest = REST[stackBelow][width === "fifth" || width === "two-fifths" ? width : "other"];
 
-  const panes = (
-    <>
-      <div
-        data-slot="split-layout-first"
-        className={cn("cube-rn-view", PANE, secondWidth ? rest : sized, firstClassName)}
-      >
-        {firstSlot}
-      </div>
-      {divider === "line" ? (
-        // The rule is an element of its own rather than a border on a pane, so that when the
-        // panes stack it becomes a row between them instead of a line down one side of the screen.
-        <div
-          data-slot="split-layout-divider"
-          aria-hidden
-          className={cn(
-            "cube-rn-view",
-            "shrink-0 self-stretch bg-foreground/10",
-            DIVIDER_AT[stackBelow],
-          )}
-        />
-      ) : null}
-      <div
-        data-slot="split-layout-second"
-        className={cn("cube-rn-view", PANE, secondWidth ? sized : rest, secondClassName)}
-      >
-        {secondSlot}
-      </div>
-    </>
-  );
+  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
+  // pane there is one column and it has the whole width. Its box is exactly the split's, as is a
+  // row that never stacks, so neither has anything for the scroller to move.
+  const stacks = Boolean(secondSlot) && stackBelow !== "never";
+  const row = secondSlot
+    ? cn(STACK_BELOW[stackBelow], DIVIDERS[divider], stacks ? FILL_FROM[stackBelow] : "h-full")
+    : "h-full flex-col";
 
-  if (stackBelow === "never") {
-    return (
-      <div
-        data-slot="split-layout"
-        className={cn(
-          "cube-rn-view",
-          "min-h-0 min-w-0",
-          STACK_BELOW.never,
-          DIVIDERS[divider],
-          className,
-        )}
-      >
-        {panes}
-      </div>
-    );
-  }
-
-  // A split that stacks is drawn in a scroller, on both platforms, so the stack can be scrolled
-  // when it is taller than the split — see FILL_FROM. Side by side it has nothing to scroll.
+  // Every split is drawn in a scroller, on both platforms, so that a stack taller than the split
+  // can be scrolled to its end — see FILL_FROM. It is the same tree whether one pane is passed or
+  // two, so a pane that comes and goes leaves the other mounted: an editor's textarea keeps its
+  // undo history when its preview pane is shut.
   return (
     <div
       data-slot="split-layout"
       className={cn("cube-rn-view overflow-auto", "min-h-0 min-w-0", className)}
     >
-      <div
-        className={cn(
-          "cube-rn-view",
-          cn("min-w-0", STACK_BELOW[stackBelow], FILL_FROM[stackBelow], DIVIDERS[divider]),
-        )}
-      >
-        {panes}
+      <div className={cn("cube-rn-view", cn("min-w-0", row))}>
+        <div
+          data-slot="split-layout-first"
+          className={cn(
+            "cube-rn-view",
+            PANE,
+            secondSlot ? (secondWidth ? rest : sized) : undefined,
+            firstClassName,
+          )}
+        >
+          {firstSlot}
+        </div>
+        {secondSlot && divider === "line" ? (
+          // The rule is an element of its own rather than a border on a pane, so that when the
+          // panes stack it becomes a row between them instead of a line down one side of the screen.
+          <div
+            data-slot="split-layout-divider"
+            aria-hidden
+            className={cn(
+              "cube-rn-view",
+              "shrink-0 self-stretch bg-foreground/10",
+              DIVIDER_AT[stackBelow],
+            )}
+          />
+        ) : null}
+        {secondSlot ? (
+          <div
+            data-slot="split-layout-second"
+            className={cn("cube-rn-view", PANE, secondWidth ? sized : rest, secondClassName)}
+          >
+            {secondSlot}
+          </div>
+        ) : null}
       </div>
     </div>
   );

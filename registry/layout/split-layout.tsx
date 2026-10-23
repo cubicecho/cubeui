@@ -220,33 +220,37 @@ export function SplitLayout({
   firstClassName,
   secondClassName,
 }: SplitLayoutProps) {
-  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
-  // pane there is one column and it has the whole width.
-  if (!secondSlot) {
-    return (
-      <View testID="split-layout" className={cn("min-h-0 min-w-0 flex-col", className)}>
-        <View testID="split-layout-first" className={cn(PANE, firstClassName)}>
-          {firstSlot}
-        </View>
-      </View>
-    );
-  }
-
   // One pane carries the width and the other takes the rest. Neither given, `half` is two even
   // panes, which is the same classes on both.
   const width = secondWidth ?? firstWidth ?? "half";
   const sized = SIZED[stackBelow][width];
   const rest = REST[stackBelow][width === "fifth" || width === "two-fifths" ? width : "other"];
 
-  const panes = (
-    <>
+  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
+  // pane there is one column and it has the whole width. Its box is exactly the split's, as is a
+  // row that never stacks, so neither has anything for the scroller to move.
+  const stacks = Boolean(secondSlot) && stackBelow !== "never";
+  const row = secondSlot
+    ? cn(STACK_BELOW[stackBelow], DIVIDERS[divider], stacks ? FILL_FROM[stackBelow] : "h-full")
+    : "h-full flex-col";
+
+  // Every split is drawn in a scroller, on both platforms, so that a stack taller than the split
+  // can be scrolled to its end — see FILL_FROM. It is the same tree whether one pane is passed or
+  // two, so a pane that comes and goes leaves the other mounted: an editor's textarea keeps its
+  // undo history when its preview pane is shut.
+  return (
+    <ScrollView
+      testID="split-layout"
+      className={cn("min-h-0 min-w-0", className)}
+      contentContainerClassName={cn("min-w-0", row)}
+    >
       <View
         testID="split-layout-first"
-        className={cn(PANE, secondWidth ? rest : sized, firstClassName)}
+        className={cn(PANE, secondSlot ? (secondWidth ? rest : sized) : undefined, firstClassName)}
       >
         {firstSlot}
       </View>
-      {divider === "line" ? (
+      {secondSlot && divider === "line" ? (
         // The rule is an element of its own rather than a border on a pane, so that when the
         // panes stack it becomes a row between them instead of a line down one side of the screen.
         <View
@@ -255,40 +259,14 @@ export function SplitLayout({
           className={cn("shrink-0 self-stretch bg-foreground/10", DIVIDER_AT[stackBelow])}
         />
       ) : null}
-      <View
-        testID="split-layout-second"
-        className={cn(PANE, secondWidth ? sized : rest, secondClassName)}
-      >
-        {secondSlot}
-      </View>
-    </>
-  );
-
-  if (stackBelow === "never") {
-    return (
-      <View
-        testID="split-layout"
-        className={cn("min-h-0 min-w-0", STACK_BELOW.never, DIVIDERS[divider], className)}
-      >
-        {panes}
-      </View>
-    );
-  }
-
-  // A split that stacks is drawn in a scroller, on both platforms, so the stack can be scrolled
-  // when it is taller than the split — see FILL_FROM. Side by side it has nothing to scroll.
-  return (
-    <ScrollView
-      testID="split-layout"
-      className={cn("min-h-0 min-w-0", className)}
-      contentContainerClassName={cn(
-        "min-w-0",
-        STACK_BELOW[stackBelow],
-        FILL_FROM[stackBelow],
-        DIVIDERS[divider],
-      )}
-    >
-      {panes}
+      {secondSlot ? (
+        <View
+          testID="split-layout-second"
+          className={cn(PANE, secondWidth ? sized : rest, secondClassName)}
+        >
+          {secondSlot}
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
