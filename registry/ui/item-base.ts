@@ -47,6 +47,12 @@ export const itemVariants = cva(
 export const ITEM_SELECTED_CLASS = "bg-active/40";
 
 /**
+ * The muted line's ink on the chosen row. `text-foreground/60` is 4.2:1 on the tint, short of the
+ * 4.5:1 text needs, so on that row the description is full `foreground`, as ListItem's is.
+ */
+export const ITEM_SELECTED_DESCRIPTION_CLASS = "text-foreground";
+
+/**
  * The start of the row: an icon in a small tile, an image, or whatever is passed. On the web an
  * `<svg>` or `<img>` inside is sized for you; on a device pass it sized (`size-4`, `size-full`).
  */
