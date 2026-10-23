@@ -84,7 +84,7 @@ export function Gallery({
     >
       <header className="mx-auto flex max-w-6xl flex-col gap-2 pb-6">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-sm text-foreground/60">{description}</p>
         <nav aria-label="Sections" className="flex flex-wrap gap-x-3 gap-y-1 pt-2 text-sm">
           {sections.map((section) => (
             <a
@@ -112,15 +112,15 @@ export function Gallery({
               data-gallery-items={section.items.join(" ")}
               className="flex min-w-0 flex-col gap-3"
             >
-              <div className="flex flex-col gap-1 border-b border-border pb-2">
+              <div className="flex flex-col gap-1 border-b border-foreground/10 pb-2">
                 <h2 id={`${id}-heading`} className="text-lg font-semibold">
                   {section.title}
                 </h2>
-                <p className="font-mono text-xs text-muted-foreground">
+                <p className="font-mono text-xs text-foreground/60">
                   {section.items.map((item) => `@cubeui/${item}`).join(" · ")}
                 </p>
                 {section.description ? (
-                  <p className="text-sm text-muted-foreground">{section.description}</p>
+                  <p className="text-sm text-foreground/60">{section.description}</p>
                 ) : null}
               </div>
               {section.content}
