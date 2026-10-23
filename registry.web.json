@@ -1322,7 +1322,7 @@
       "name": "detail-header",
       "type": "registry:component",
       "title": "Detail Header",
-      "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
+      "description": "The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/color-dot",
