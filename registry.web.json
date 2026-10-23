@@ -1289,7 +1289,13 @@
       "type": "registry:component",
       "title": "Detail Page",
       "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/page", "@cubeui/tokens"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/page",
+        "@cubeui/empty-state",
+        "@cubeui/query-state",
+        "@cubeui/icons"
+      ],
       "files": [
         {
           "path": "compiled/detail-page.tsx",
