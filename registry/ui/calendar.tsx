@@ -226,11 +226,12 @@ export function Calendar(props: CalendarProps) {
                   aria-disabled={off}
                   aria-selected={place.selected}
                   className={cn(
-                    "h-9 items-center justify-center",
+                    // 44px, a finger's target and the web grid's cell.
+                    "h-11 items-center justify-center",
                     // A range's interior is a continuous band, so only its ends are
-                    // rounded — the same shape react-day-picker draws.
+                    // rounded — round, as the web grid draws them.
                     // The inside is chosen, so it is the chosen-row tint, not the hover grey.
-                    place.middle ? "bg-active/40" : "rounded-md",
+                    place.middle ? "bg-active/40" : "rounded-full",
                     place.edge && "bg-active",
                     off && "opacity-50",
                   )}
