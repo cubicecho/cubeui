@@ -186,6 +186,19 @@ html[data-palette="monokai"] {
     scrollbar-color: color-mix(in oklab, var(--foreground) 30%, transparent) transparent;
     scrollbar-width: thin;
   }
+
+  /*
+   * What the browser draws itself — a time field's clock, a date field's calendar, a native
+   * select's list — is drawn for the mode in force, not left light on a dark page. A palette with
+   * only a dark mode is `.dark` as well, so it needs no rule of its own.
+   */
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
 }
 
 @theme inline {

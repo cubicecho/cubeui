@@ -79,28 +79,35 @@ const scrollbarWidth = (indent = "") =>
  * this stylesheet as well, and a literal on \`html\` is something \`tokens-dark.test.mjs\` can show
  * it drops. \`scrollbar-color\` inherits, so \`html\` is the only element that needs it.
  */
-const scrollbarColor = (selector, map, indent = "") =>
+const scrollbarColor = (selector, map, scheme, indent = "") =>
   [
     `${selector} {`,
     `  scrollbar-color: ${toNativeCss({ ...map.foreground, a: SCROLLBAR_ALPHA })} transparent;`,
+    `  color-scheme: ${scheme};`,
     "}",
   ]
     .map((line) => indent + line)
     .join("\n");
 
+/**
+ * The page's own chrome, in the mode in force: each rule also says \`color-scheme\`, so what the
+ * browser draws itself — a time field's clock, a date field's calendar, a native select's list,
+ * the scrollbar's arrows — is drawn for a dark page in a dark mode, not left light on it.
+ */
 const nativeScrollbars = () =>
   [
     scrollbarWidth(),
-    scrollbarColor(":where(html)", light),
-    `@media (prefers-color-scheme: dark) {\n${scrollbarColor(":where(html)", dark, "  ")}\n}`,
-    scrollbarColor(":is(html.dark)", dark),
-    scrollbarColor(":is(html.light)", light),
+    scrollbarColor(":where(html)", light, "light"),
+    `@media (prefers-color-scheme: dark) {\n${scrollbarColor(":where(html)", dark, "dark", "  ")}\n}`,
+    scrollbarColor(":is(html.dark)", dark, "dark"),
+    scrollbarColor(":is(html.light)", light, "light"),
     ...Object.entries(palettes).flatMap(([name, family]) => {
       const attr = `[data-palette="${name}"]`;
       const both = Boolean(family.light && family.dark);
       return [
-        family.light && scrollbarColor(`:is(html${attr})`, family.light),
-        family.dark && scrollbarColor(`:is(html${both ? ".dark" : ""}${attr})`, family.dark),
+        family.light && scrollbarColor(`:is(html${attr})`, family.light, "light"),
+        family.dark &&
+          scrollbarColor(`:is(html${both ? ".dark" : ""}${attr})`, family.dark, "dark"),
       ].filter(Boolean);
     }),
   ].join("\n\n");
@@ -159,6 +166,19 @@ ${paletteBlocks(formatOklch)}
   * {
     scrollbar-color: color-mix(in oklab, var(--foreground) ${SCROLLBAR_ALPHA * PERCENT}%, transparent) transparent;
     scrollbar-width: thin;
+  }
+
+  /*
+   * What the browser draws itself — a time field's clock, a date field's calendar, a native
+   * select's list — is drawn for the mode in force, not left light on a dark page. A palette with
+   * only a dark mode is \`.dark\` as well, so it needs no rule of its own.
+   */
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
   }
 }
 

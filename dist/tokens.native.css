@@ -386,24 +386,29 @@
 
 :where(html) {
   scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :where(html) {
     scrollbar-color: rgba(250, 250, 250, 0.3) transparent;
+    color-scheme: dark;
   }
 }
 
 :is(html.dark) {
   scrollbar-color: rgba(250, 250, 250, 0.3) transparent;
+  color-scheme: dark;
 }
 
 :is(html.light) {
   scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
+  color-scheme: light;
 }
 
 :is(html[data-palette="monokai"]) {
   scrollbar-color: rgba(248, 248, 242, 0.3) transparent;
+  color-scheme: dark;
 }
 
 @theme inline {
