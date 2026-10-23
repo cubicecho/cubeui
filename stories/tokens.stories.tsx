@@ -267,14 +267,17 @@ export const ManualDark: Story = {
     // of a 150ms transition and not the value the tokens set.
     const html = document.documentElement;
     const background = () => getComputedStyle(html).getPropertyValue("--background").trim();
-    const had = html.classList.contains("dark");
+    // The toolbar's theme sets `light` or `dark` on `<html>`; clear both so `dark` is the only
+    // thing deciding, then put back what was there.
+    const had = { dark: html.classList.contains("dark"), light: html.classList.contains("light") };
     try {
-      html.classList.remove("dark");
+      html.classList.remove("dark", "light");
       await expect(background()).toBe("#ffffff");
       html.classList.add("dark");
       await expect(background()).toBe("#0a0a0a");
     } finally {
-      html.classList.toggle("dark", had);
+      html.classList.toggle("dark", had.dark);
+      html.classList.toggle("light", had.light);
     }
   },
 };

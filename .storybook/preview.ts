@@ -15,8 +15,11 @@ const preview: Preview = {
     options: { storySort: { order: ["Gallery", ["Web", "Mobile"], "*"] } },
   },
   decorators: [
+    // `light` is a class too, not the absence of `dark`: the tokens follow the system's
+    // `prefers-color-scheme` unless `<html>` names one, so on a machine set to dark an empty
+    // class drew the "light" theme dark.
     withThemeByClassName<ReactRenderer>({
-      themes: { light: "", dark: "dark" },
+      themes: { light: "light", dark: "dark" },
       defaultTheme: "light",
     }),
   ],

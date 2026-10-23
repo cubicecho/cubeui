@@ -541,9 +541,10 @@ function Colors() {
         <>
           <ColorDot color="#1d4ed8" label="Design" />
           <ColorDot color="#b91c1c" size="sm" label="Bug" />
-          <div className="flex h-10 items-stretch gap-2 text-foreground text-sm">
+          {/* The bar is absolute, so the row it marks has to be the positioned box. */}
+          <div className="relative flex h-10 items-center overflow-hidden rounded-md border border-border pl-5 text-foreground text-sm">
             <ColorBar color="#15803d" label="Docs" />
-            <span className="self-center">A row with a colour bar at its edge</span>
+            <span>A row with a colour bar at its edge</span>
           </div>
         </>
       }
@@ -1751,6 +1752,7 @@ const sections: GallerySection[] = [
         content={
           <HeaderContentFooter
             className="h-full"
+            scroll
             headerSlot={
               <p className="p-3 font-semibold text-foreground text-sm">A header that stays</p>
             }

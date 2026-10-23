@@ -832,10 +832,14 @@ const sections: GallerySection[] = [
           <ColorDot color="#dc2626" label="Red" />
           <Caption>Dots</Caption>
         </Row>
-        <View className="h-10 flex-row items-stretch gap-2">
+        {/* The bar is absolute, so each row it marks is the box it sits in. */}
+        <View className="relative h-10 justify-center overflow-hidden rounded-md border border-foreground/10 pl-5">
           <ColorBar color="#2563eb" label="Blue" />
+          <Caption>A row with a blue bar</Caption>
+        </View>
+        <View className="relative h-10 justify-center overflow-hidden rounded-md border border-foreground/10 pl-5">
           <ColorBar color="#16a34a" label="Green" />
-          <Caption>Bars</Caption>
+          <Caption>A row with a green bar</Caption>
         </View>
       </Stack>
     ),
@@ -1217,6 +1221,7 @@ const sections: GallerySection[] = [
     content: (
       <Screen>
         <HeaderContentFooter
+          scroll
           headerSlot={<Text className="p-3 font-semibold text-foreground">Inbox</Text>}
           footerSlot={
             <View className="p-3">
