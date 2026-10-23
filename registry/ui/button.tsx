@@ -59,13 +59,13 @@ const buttonVariants = cva(
       size: {
         default: "h-10 px-4 py-2",
         /** Small enough to sit inline in a list row without setting its height. */
-        xs: "h-7 rounded-lg px-3",
+        xs: "h-7 px-3",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
         // shadcn's icon ladder, on this file's own heights: each square is the height of the
         // text size it is named after, so an icon button sits flush in a row of text buttons.
-        "icon-xs": "h-7 w-7 rounded-lg [&_svg]:size-3.5",
+        "icon-xs": "h-7 w-7 [&_svg]:size-3.5",
         "icon-sm": "h-9 w-9",
         "icon-lg": "h-11 w-11",
       },

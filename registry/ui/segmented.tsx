@@ -284,7 +284,8 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
         className={cn(
           // Inside the frame a pill is 4px shorter, so it fits the input-height
           // box instead of spilling past its padding.
-          group?.framed ? "rounded-md px-3 py-1" : "rounded-md px-3 py-1.5",
+          // Inside the frame, `rounded-sm`: the radius nested in the frame's, as a tab's is.
+          group?.framed ? "rounded-sm px-3 py-1" : "rounded-md px-3 py-1.5",
           current ? "bg-active" : "group hover:bg-hover",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
