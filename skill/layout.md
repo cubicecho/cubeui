@@ -43,7 +43,7 @@ route should reach for first.
 <PageLayout
   title="Workspaces"
   description="Each one exposes the servers you choose."
-  actionSlot={<Button size="sm" iconSlot={<Plus />} content="New workspace" />}
+  actionSlot={<Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />}
   headerContentSlot={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
   width="page"
   contentSlot={<WorkspaceList />}
@@ -69,6 +69,10 @@ so a page whose rows run flush to the rule passes `py-0` (or `gap-0`) and change
 
 `headerContentSlot` is the row under the title: search, filters, tabs. Passing it removes the rule
 under the header, which is correct — the search row is already the separator.
+
+`footerSlot` is pinned under the body, and is drawn as the header is: a `border-foreground/10` rule
+above it and `py-3` round it, so a count or a "Last saved" line does not read as one more row of
+the list. `footerClassName` is merged after, for the footer that wants no rule (`border-t-0`).
 
 Tabs whose list is in the header and whose panels are in the body are one set of tabs with one
 root around the whole page. Give the root `h-full`, so the page still fills what it is in:
@@ -167,7 +171,7 @@ It is not a page.
   actionSlot={
     <>
       <Button size="sm" variant="outline" iconSlot={<Download />} content="Export" />
-      <Button size="sm" iconSlot={<Plus />} content="New workspace" />
+      <Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />
     </>
   }
   contentSlot={<SearchInput value={query} onChange={setQuery} />}
@@ -213,8 +217,12 @@ It is not a page.
   `className="border-b-0"`.
 
 - **A long title wraps; it never truncates**, and the buttons drop to their own line before the
-  title is squeezed. That is driven by the header's real width against the action's real width,
-  not by a viewport breakpoint, so it also holds for a narrow pane on a wide screen.
+  title is squeezed under `10rem`. That is driven by the header's real width against the action's
+  real width, not by a viewport breakpoint, so it also holds for a narrow pane on a wide screen,
+  and a short title keeps its button beside it on a phone.
+- **The action lines up with the title**, not with the middle of the title and description, as a
+  `CardLayout`'s does. The description stops at `max-w-prose` (about 65 characters a line), however
+  wide the page is.
 
 ### What it does not have
 
@@ -361,9 +369,9 @@ Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row 
 that replaces the rail on a phone, and a fifth, `SidebarCollapseButton`, folds the sidebar to a
 rail of icons — both below):
 
-- **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on `bg-secondary` at a
-  fixed `w-64` with a `border-foreground/10` rule on the edge facing the page (`side="end"` moves
-  it). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
+- **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on the page's
+  own `bg-background` at a fixed `w-64`, set apart by a `border-foreground/10` rule on the edge
+  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
   sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
   different width is one `w-*` in `className`. `sidebarHideBelow` on the layout removes it
@@ -635,13 +643,13 @@ second wrapper around a sidebar.
 <CardLayout
   title="Categories"
   description="Deleting a category keeps its activities — they go back to uncategorized."
-  actionSlot={<Button size="sm" content="Add" />}
+  actionSlot={<Button size="sm" variant="info" content="Add" />}
   loading={isPending}
   contentSlot={categories.map((category) => (
     <CategoryRow key={category.id} category={category} />
   ))}
   emptySlot={<EmptyState compact title="No categories yet." />}
-  footerActionsSlot={<Button onClick={save} content="Save" />}
+  footerActionsSlot={<Button variant="positive" onClick={save} content="Save" />}
 />
 ```
 
@@ -657,8 +665,13 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
 `contentSlot` and leaves `loading` off.
 
-A card with no `title`, `description` or `actionSlot` draws no header, and its body starts 24px
-down from the card's top edge like its other three sides. Do not add `contentClassName="pt-6"`.
+A card with no `title`, `description` or `actionSlot` draws no header, and its body starts 16px
+down from the card's top edge like its other three sides. Do not add `contentClassName="pt-4"`.
+
+A card in the page pads `p-4`: `Card`, `CardLayout`, `Section surface="card"` and `StatTile` share
+that one inset. A dialog keeps `p-6`, because it is the only thing on the screen. Do not pass
+`className="p-6"` to make a card match a dialog. Neither draws a shadow in the page's flow: only a
+thing that floats does.
 
 `level` is which heading the title is, `1 | 2 | 3`, and it defaults to 3 — right for a card on a
 page that already has a title. When the card **is** the page — a sign-in, a token gate, a lone
@@ -696,6 +709,8 @@ reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap th
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
 of its own. `CenteredLayout` is that page — full height, centred both ways, `p-4` off the edges —
 around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under the same names.
+The card is the page here, so its title is the page's: an `h1` at `text-xl`, as `PageHeader`'s
+level 1, not a card title. `level` and `titleClassName` still override it.
 
 ```tsx
 <CenteredLayout
@@ -728,7 +743,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
 
 ```tsx
 <DialogLayout
-  triggerSlot={<Button content="New workspace" />}
+  triggerSlot={<Button variant="info" content="New workspace" />}
   title="New workspace"
   description="A workspace exposes the servers you choose at its own URL."
   size="lg"
@@ -736,7 +751,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
-      <Button onClick={save} loading={saving} loadingLabel="Saving…" content="Save" />
+      <Button variant="positive" onClick={save} loading={saving} loadingLabel="Saving…" content="Save" />
     </>
   )}
 />
@@ -752,7 +767,11 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   close button all ask before throwing the work away, and the dialog is still there behind the
   question. It is asked for, never computed, because only the caller knows what its fields are.
   `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel` reword the question when
-  the dialog knows what is lost.
+  the dialog knows what is lost. The question is a `ConfirmDialog` (so `@cubeui/dialog-layout`
+  installs `@cubeui/confirm-dialog`): an `alertdialog` at `sm` width, Keep first and Discard last.
+- **The header and footer look the same on both platforms.** The title and description are
+  left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
+  on top, below `sm`. Do not centre the header or reverse the buttons yourself.
 - **Pass it as a function when the answer is not something you render.** The question is asked
   once, at a click — nothing in the dialog draws the answer — so a boolean makes you keep a value
   in render that only a handler reads, and work held outside the form's fields has to be lifted
@@ -769,7 +788,7 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
-      <Button onClick={save} content="Save" />
+      <Button variant="positive" onClick={save} content="Save" />
     </>
   )}
   ```
@@ -858,8 +877,11 @@ A heading over a group of fields or rows, inside a page or a card.
   `data-slot="section-title"`, not by `h2`).
 - The root is a `<section>` on the web, named by its title, so a titled section is a `region`
   landmark. There is nothing to add for that — do not wrap it in another `role="region"`.
+- The title is a small uppercase overline in full `foreground`, so it leads the muted, larger
+  description under it by ink and weight rather than size.
 - It draws **no surface** by default. `surface="card"` puts the whole group on a card (border,
-  background, padding) — use that instead of wrapping it in a `Card` yourself. `CardLayout` is still
+  background, `p-4`) drawn from `Card`'s own classes, so the item installs `@cubeui/card` — use that
+  instead of wrapping it in a `Card` yourself. `CardLayout` is still
   the component for a card with a header and footer of its own.
 - `divider` adds a hairline under the heading. Off by default.
 - `descriptionPlacement="popover"` puts the description behind a small button beside the title,
@@ -1060,7 +1082,8 @@ import { formatCount, formatDuration } from "@/lib/format";
   prop is `onClick`, as it is on the compiled `Card`.
 - `label` is what the figure is called, `value` the figure — a string or number drawn large in
   tabular numerals, or a node (a `ColorDot` beside a name) placed as is — and `hint` one muted line
-  under it. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
+  under it. The label is a muted line at normal weight, so the figure is the one bold thing on the
+  tile. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
   toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
   an `active` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
@@ -1128,13 +1151,14 @@ The shells for the shape every list route is: a ladder of states, then a list of
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
   `<QueryError error={error} onRetry={refetch} what="this invoice" describe={describeError} />`.
-  Its root is `role="alert"`, card and `compact` alike, because it replaces what the reader was
-  waiting for — so do not wrap it in another alert.
-- `RowSkeleton` draws `rows` bordered `Card`s — the shape a row is — so the page does not change
-  shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
+  It is an `Alert variant="destructive"` with Try again as its action (so the item installs
+  `@cubeui/alert`), not a card of its own. Its root is `role="alert"`, full and `compact` alike,
+  because it replaces what the reader was waiting for — so do not wrap it in another alert.
+- `RowSkeleton` draws `rows` placeholder rows — a title bar over a shorter line, no card round
+  them — the shape a list row is, so the page does not change shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
   The placeholders are `aria-hidden` inside one `role="status"` wrapper announcing "Loading", so
-  three cards of placeholder text are not three cards of nothing to read out.
+  three placeholder rows are not three rows of nothing to read out.
 - **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
   small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
   it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
@@ -1151,19 +1175,20 @@ and which one is a question of **where the list is**, not how much there is to s
   iconSlot={<Inbox />}
   title="No agents yet"
   description="An agent runs the lanes you give it."
-  actionSlot={<Button onPress={create} content="New agent" />}
+  actionSlot={<Button variant="info" onPress={create} content="New agent" />}
 />
 
 // The list is inside something — a card, a sidebar section, a popover, a dialog: one line.
 <EmptyState
   compact
   title="No labels yet."
-  actionSlot={<Button variant="link" size="xs" onPress={create} content="Add one" />}
+  actionSlot={<Button variant="outline" size="xs" onPress={create} content="Add one" />}
 />
 ```
 
 - **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `actionSlot`
-  under them, centred, with `py-10` around it. The icon is required: an element in `iconSlot`
+  under them, centred, with `py-10` around it and no edge. The title is `text-base`, a step over
+  the description, so it is what the eye lands on. The icon is required: an element in `iconSlot`
   (`iconSlot={<Inbox />}`), as on every other shell, and the shell sizes and inks it. `icon`, a
   component (`icon={Inbox}`), is the older spelling and is deprecated; pass one or the other.
 - **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
@@ -1183,7 +1208,7 @@ and which one is a question of **where the list is**, not how much there is to s
   `EmptyMedia` (`variant="icon"` for the bubble), `EmptyTitle`, `EmptyDescription` and
   `EmptyContent`, with shadcn's names and props, installed to `components/ui/empty`. The block
   above is built on them, so they draw the same thing — which is not shadcn's look: the title is
-  `text-sm`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
+  `text-base`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
   Write `EmptyState` in new code; the parts are there so a shadcn call site ports unchanged, and
   for the rare empty state that needs a second button or an image where the icon goes.
   `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
@@ -1304,7 +1329,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   that under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
   grey fill: that is a hover that stuck.
-- No surface and no list role: the row is `rounded-md px-3 py-2.5` and nothing else. Put rows in a
+- No surface and no list role: the row is `rounded-md px-3 py-2` and nothing else. Put rows in a
   `List` (above), which is the `<ul>`, the rule and the row padding; for a bordered card per row pass
   `divided={false}` to the list and give each row
   `className="rounded-lg border border-foreground/10 bg-secondary"`.
@@ -1347,9 +1372,12 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
   button. With neither, the row is only a row.
 - `selected` is the open file's **path**. Its row is filled `active`; do not hand-write that.
 - `meta` is what follows a name: return a string (a size, a count) and it is drawn muted and
-  `text-xs`, or return an element (a `Badge`) and it is placed as given. It is inside the pressed
+  `text-xs`, or return an element (a `Badge`) and it is placed as given. On the selected row
+  everything in it takes the row's `active-foreground` ink, a string and an element's text alike. On
+  device a node's own `Text` cannot be reached, so an element you return should not set a colour of
+  its own: it would stay that colour on the filled row. It is inside the pressed
   area, so nothing pressable goes there. It is called for folders too — return `null` to skip one.
-- `actionSlot` is the row's far end, **outside** the pressed area: `icon-xs` ghost `Button`s with an
+- `actionSlot` is the row's far end, **outside** the pressed area: `icon-xs` outline `Button`s with an
   `aria-label`, a `ConfirmButton`, or one `Menu` behind an `Ellipsis` when there are more than two.
   Where there is a pointer they show on hover and on keyboard focus; on a touch screen they are
   always drawn. Return `null` for a row that has none (a locked skill, a folder).
@@ -1413,6 +1441,10 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
   So the first cell of a body row — the thing the row is *about* — is a `TableHead`, not a
   `TableCell`, and a screen reader names the row before reading each cell of it. Pass `scope`
   to override.
+- **The header row is quieter than the data**: `TableHead` in a `TableHeader` is `text-foreground/60`,
+  and the table sets `tabular-nums`, so a right-aligned column of figures lines up digit for digit.
+  Right-align a number column yourself with `className="text-right"` on its head and cells. The row
+  rules collapse into one line, with or without Tailwind's preflight.
 - **A `TableCaption` names the table.** Give one to every table that is not already under a
   heading saying what it is; `className="sr-only"` keeps the name without the line.
 - Too wide for its column, it scrolls sideways inside its own container rather than widening the

@@ -331,6 +331,14 @@ take their body as `contentSlot` like every other shell: `<Page contentSlot={…
 `<CardGrid contentSlot={cards} />`, where the cards are an array or a fragment and each one gets a
 cell. `DetailPage`'s `contentSlot` is a function, called with the record once it has loaded.
 
+`Page` lays its body on the same column as `PageLayout` (`PAGE_COLUMN`, or the prose column at
+`width="narrow"`), with `gap-4` between what it stacks, and its `PageHeader` shares the body's one inset,
+so the title sits over the first card rather than indented past it. `DetailPage` draws its own
+waiting and missing states: placeholder rows (`RowSkeleton`) while it loads and an `EmptyState`
+when the record is not found, so it installs `@cubeui/query-state` and `@cubeui/empty-state`.
+`DetailHeader` is the page's title, an `h1` (`aria-level` 1) at `text-xl`; its text column
+shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions off a phone.
+
 | The shape you are building | Use | Item |
 | --- | --- | --- |
 | A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
@@ -400,7 +408,7 @@ cell. `DetailPage`'s `contentSlot` is a function, called with the record once it
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout.md](layout.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout.md](layout.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
 | A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
-| A route that threw — render it as the whole error boundary: `role="alert"`, `title`, `details` (the raw message, for a bug report), `actionsSlot` (a Reload beside Try again) | `RouteError` | `@cubeui/route-error` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionsSlot` (a Reload beside Try again), all in one `max-w-md` column | `RouteError` | `@cubeui/route-error` |
 
 One name means different things across the halves, and it is worth knowing before you grep:
 
