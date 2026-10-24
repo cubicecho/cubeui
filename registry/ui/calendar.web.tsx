@@ -59,8 +59,9 @@ const DAY_BUTTON_CLASS = cn(
   "focus-visible:outline-none",
   "[:not(.rdp-range_start,.rdp-range_end,.rdp-selected:not(.rdp-range_middle))>&]:hover:bg-hover!",
   "[:not(.rdp-range_start,.rdp-range_end,.rdp-selected:not(.rdp-range_middle))>&]:focus-visible:bg-hover!",
-  // A picked day has no hover look, as a chosen control has none; focused, it deepens.
-  "[.rdp-selected:not(.rdp-range_middle)>&]:focus-visible:bg-active/90!",
+  // A picked day has no hover look of its own; focused, it looks hovered, as everything does.
+  "[.rdp-selected:not(.rdp-range_middle)>&]:focus-visible:bg-hover!",
+  "[.rdp-selected:not(.rdp-range_middle)>&]:focus-visible:text-foreground!",
 );
 
 const DEFAULTS = getDefaultClassNames();

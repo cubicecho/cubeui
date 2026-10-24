@@ -30,24 +30,24 @@ import { cn, type SlotNode } from "@/lib/utils";
  * the only one a touch screen fires.
  */
 const buttonVariants = cva(
-  "inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "group/button inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-neutral text-neutral-foreground hover:bg-neutral/90 focus-visible:bg-neutral/90 active:bg-neutral/90",
+          "bg-neutral text-neutral-foreground hover:bg-neutral/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-neutral/90",
         destructive:
-          "bg-negative text-negative-foreground hover:bg-negative/90 focus-visible:bg-negative/90 active:bg-negative/90",
+          "bg-negative text-negative-foreground hover:bg-negative/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-negative/90",
         /** A destructive action that is not the emphasis of its row. */
         "destructive-outline":
           "border border-negative/40 bg-transparent text-negative hover:bg-negative/10 focus-visible:bg-negative/10 active:bg-negative/10",
         /** The action that keeps the work: save, confirm, create. */
         positive:
-          "bg-positive text-positive-foreground hover:bg-positive/90 focus-visible:bg-positive/90 active:bg-positive/90",
+          "bg-positive text-positive-foreground hover:bg-positive/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-positive/90",
         "positive-outline":
           "border border-positive/40 bg-transparent text-positive hover:bg-positive/10 focus-visible:bg-positive/10 active:bg-positive/10",
         /** The action that adds something: add, new, create. */
-        info: "bg-info text-info-foreground hover:bg-info/90 focus-visible:bg-info/90 active:bg-info/90",
+        info: "bg-info text-info-foreground hover:bg-info/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-info/90",
         "info-outline":
           "border border-info/40 bg-transparent text-info hover:bg-info/10 focus-visible:bg-info/10 active:bg-info/10",
         outline:
@@ -102,16 +102,16 @@ const buttonTextVariants = cva("font-semibold", {
       "icon-lg": "text-sm",
     },
     variant: {
-      default: "text-neutral-foreground",
-      destructive: "text-negative-foreground",
+      default: "text-neutral-foreground group-focus-visible/button:text-foreground",
+      destructive: "text-negative-foreground group-focus-visible/button:text-foreground",
       "destructive-outline": "text-negative",
-      positive: "text-positive-foreground",
+      positive: "text-positive-foreground group-focus-visible/button:text-foreground",
       "positive-outline": "text-positive",
-      info: "text-info-foreground",
+      info: "text-info-foreground group-focus-visible/button:text-foreground",
       "info-outline": "text-info",
       outline: "text-foreground",
       secondary: "text-foreground",
-      ghost: "text-foreground/60",
+      ghost: "text-foreground/60 group-focus-visible/button:text-foreground",
       link: "text-info underline",
     },
   },

@@ -177,3 +177,28 @@ for (const [set, map] of sets) {
     assert.deepEqual(close, []);
   });
 }
+
+/**
+ * Nothing draws a focus ring: a focused thing looks hovered, `bg-hover` with `text-foreground`,
+ * filled buttons and chosen controls included. So for each fill a control rests on, the hover fill
+ * has to differ from it by 3:1 (WCAG 2.4.13's change of contrast) on the surfaces it sits on, and
+ * the focused label — `foreground` on `hover` — is held at 4.5:1 by the text pairs above.
+ */
+const FOCUS_APART = 3;
+for (const [set, map] of sets) {
+  test(`${set}: a focused fill is 3:1 or more from its rest`, () => {
+    const close = FILLS.flatMap((fill) =>
+      SURFACES.flatMap((surface) => {
+        const rest = surfaceRgb(map, [
+          [surface, 1],
+          [fill, 1],
+        ]);
+        const focused = toRgb(map.hover);
+        const [hi, lo] = [luminance(rest), luminance(focused)].sort((x, y) => y - x);
+        const r = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
+        return r < FOCUS_APART ? [`${fill} on ${surface}: ${r.toFixed(2)}:1, needs 3`] : [];
+      }),
+    );
+    assert.deepEqual(close, []);
+  });
+}

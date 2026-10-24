@@ -204,10 +204,17 @@ registry file that names one.
 trigger are `focus:border-active`, and `aria-invalid:focus:border-active` on the web so an invalid
 field still shows where focus is.
 
-**Nothing draws a focus ring: a focused thing looks hovered.** Whatever a control does under the
-pointer it does under `focus-visible:` too: `hover:bg-hover focus-visible:bg-hover` on a row,
-`hover:bg-neutral/90 focus-visible:bg-neutral/90` on a filled button. A chosen control, which has no
-hover, takes `focus-visible:bg-active/90`.
+**Nothing draws a focus ring: a focused thing looks hovered** — `bg-hover` with `text-foreground`,
+filled and chosen controls included. A row or an outline button already turns `bg-hover` under the
+pointer, and does the same under `focus-visible:`. A filled button keeps `hover:bg-neutral/90` (and
+the rest) for the pointer, but focused it takes `focus-visible:bg-hover focus-visible:text-foreground`,
+and so does a chosen control — a checked checkbox, an on switch, the active tab, segmented pill,
+toggle chip or sidebar row, a picked day. A label or icon that carries its own ink on a `Text`
+turns with it through a named group (`group/button` and `group-focus-visible/button:text-foreground`).
+The rule is the 3:1 change of contrast (WCAG 2.4.13): every fill a control rests on is 3:1 or more
+from `hover` in every palette, and `foreground` on `hover` is 4.5:1 or more —
+`palette-contrast.test.mjs` holds both. A `/90` fill was 1.1–1.3:1 from its rest, which is why
+focus is not drawn that way. The cost, accepted: a chosen control looks unchosen while it has focus.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
 current sidebar row, toggle chip, a calendar's picked day, a selected stat tile: `bg-active`,

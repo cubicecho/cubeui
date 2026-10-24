@@ -341,7 +341,7 @@ function RadioGroupItem({
       return cn(
         "min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
         checked
-          ? "bg-active text-active-foreground focus-visible:bg-active/90"
+          ? "group/radio bg-active text-active-foreground focus-visible:bg-hover focus-visible:text-foreground"
           : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
       );
     }
@@ -371,7 +371,9 @@ function RadioGroupItem({
               id={labelId}
               className={cn(
                 "truncate text-sm font-semibold",
-                checked ? "text-active-foreground" : "text-foreground/60",
+                checked
+                  ? "text-active-foreground group-focus-visible/radio:text-foreground"
+                  : "text-foreground/60",
               )}
             >
               {label}

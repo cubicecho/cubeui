@@ -437,7 +437,7 @@ function rowClassName(active: boolean, className: string | undefined) {
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     active
-      ? "bg-active text-active-foreground focus-visible:bg-active/90"
+      ? "group/nav bg-active text-active-foreground focus-visible:bg-hover focus-visible:text-foreground"
       : "text-foreground hover:bg-hover focus-visible:bg-hover",
     className,
   );
@@ -523,8 +523,13 @@ function SidebarNavItemBody({
 }: SidebarNavItemBodyProps) {
   // Native inherits no colour, so the label, the count and the icon each carry it. The active
   // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
-  const text = active ? "text-active-foreground" : "text-foreground";
-  const muted = active ? "text-active-foreground" : "text-foreground/60";
+  // Focused, the current row looks hovered, so its ink turns `foreground` with the fill.
+  const text = active
+    ? "text-active-foreground group-focus-visible/nav:text-foreground"
+    : "text-foreground";
+  const muted = active
+    ? "text-active-foreground group-focus-visible/nav:text-foreground"
+    : "text-foreground/60";
 
   if (collapsed) {
     // The icon alone, as the bar's item draws a place. A row with no icon is its first letter, so
@@ -756,7 +761,9 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active ? "text-active-foreground" : "text-foreground/60";
+    const text = active
+      ? "text-active-foreground group-focus-visible/nav:text-foreground"
+      : "text-foreground/60";
 
     return (
       <TooltipProvider>
@@ -777,7 +784,7 @@ const BarNavItem = React.forwardRef<HTMLButtonElement, BarNavItemProps>(
                 "focus-visible:outline-none",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
-                  ? "bg-active text-active-foreground focus-visible:bg-active/90"
+                  ? "group/nav bg-active text-active-foreground focus-visible:bg-hover focus-visible:text-foreground"
                   : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
                 className,
               )}
