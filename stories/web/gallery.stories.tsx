@@ -280,7 +280,9 @@ function Stack({ content }: { content: ReactNode }) {
 /** The box a full-screen shell is drawn in, so it fills this and not the page. */
 function Frame({ content, height = "h-[480px]" }: { content: ReactNode; height?: string }) {
   return (
-    <div className={`${height} flex flex-col overflow-hidden rounded-lg border border-border`}>
+    <div
+      className={`${height} flex flex-col overflow-hidden rounded-lg border border-foreground/10`}
+    >
       {content}
     </div>
   );
@@ -410,7 +412,7 @@ function Icons() {
       {Object.entries(ICONS).map(([name, Icon]) => (
         <li key={name} className="flex w-24 flex-col items-center gap-1 text-foreground">
           <Icon className="size-5" />
-          <span className="text-muted-foreground text-xs">{name}</span>
+          <span className="text-foreground/60 text-xs">{name}</span>
         </li>
       ))}
     </ul>
@@ -483,7 +485,7 @@ function Empties() {
         <EmptyDescription>Make one to start a board.</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button content="New project" />
+        <Button variant="info" content="New project" />
       </EmptyContent>
     </Empty>
   );
@@ -542,7 +544,7 @@ function Colors() {
           <ColorDot color="#1d4ed8" label="Design" />
           <ColorDot color="#b91c1c" size="sm" label="Bug" />
           {/* The bar is absolute, so the row it marks has to be the positioned box. */}
-          <div className="relative flex h-10 items-center overflow-hidden rounded-md border border-border pl-5 text-foreground text-sm">
+          <div className="relative flex h-10 items-center overflow-hidden rounded-md border border-foreground/10 pl-5 text-foreground text-sm">
             <ColorBar color="#15803d" label="Docs" />
             <span>A row with a colour bar at its edge</span>
           </div>
@@ -709,7 +711,7 @@ function AskFirst() {
             }}
             content="Ask with useConfirm"
           />
-          <output aria-label="useConfirm answer" className="text-muted-foreground text-sm">
+          <output aria-label="useConfirm answer" className="text-foreground/60 text-sm">
             {answer}
           </output>
         </>
@@ -790,7 +792,7 @@ function ToastButtons() {
 function CommandSample() {
   const [search, setSearch] = useState("");
   return (
-    <div className="max-w-md rounded-lg border border-border">
+    <div className="max-w-md rounded-lg border border-foreground/10">
       <Command label="Go to">
         <CommandInput value={search} onValueChange={setSearch} placeholder="Search…" />
         <CommandList>
@@ -959,7 +961,7 @@ function Dates() {
         selected={day}
         onSelect={setDay}
         defaultMonth={new Date(2026, 8, 1)}
-        className="rounded-lg border border-border"
+        className="rounded-lg border border-foreground/10"
       />
       <div className="flex w-72 flex-col gap-4">
         <DatePicker aria-label="Due" value={due} onValueChange={setDue} clearable />
@@ -1004,7 +1006,7 @@ function Pickers() {
                   iconSlot={<Upload />}
                   onPick={(_text, name) => setPicked(name)}
                 />
-                <output aria-label="Picked file" className="text-muted-foreground text-sm">
+                <output aria-label="Picked file" className="text-foreground/60 text-sm">
                   {picked}
                 </output>
               </>
@@ -1041,7 +1043,6 @@ function IconButtons() {
             />
             <ConfirmButton
               aria-label="Delete the lane"
-              variant="destructive-outline"
               size="sm"
               title="Delete this lane?"
               description="Its cards move to the backlog."
@@ -1173,7 +1174,7 @@ function AppFormSample() {
         ]}
       />
       <div>
-        <Button type="submit" content="Save" />
+        <Button type="submit" variant="positive" content="Save" />
       </div>
     </form>
   );
@@ -1253,12 +1254,12 @@ function HookFormSample() {
 function FormElementSample() {
   const [sent, setSent] = useState(false);
   return (
-    <FormElement onSubmit={() => setSent(true)} className="flex max-w-xl items-end gap-3">
+    <FormElement onSubmit={() => setSent(true)} className="flex max-w-xl flex-row items-end gap-3">
       <div className="flex flex-1 flex-col gap-2">
         <Label htmlFor="gallery-invite">Invite by email</Label>
         <Input id="gallery-invite" placeholder="grace@example.com" />
       </div>
-      <Button type="submit" content={sent ? "Invited" : "Invite"} />
+      <Button type="submit" variant="info" content={sent ? "Invited" : "Invite"} />
     </FormElement>
   );
 }
@@ -1487,7 +1488,7 @@ function PageHeaders() {
             iconSlot={<Settings />}
             title="Settings"
             description="Everything about this workspace."
-            actionSlot={<Button size="sm" content="Save" />}
+            actionSlot={<Button size="sm" variant="positive" content="Save" />}
           />
           <PageHeader level={3} title="Loading" loading />
         </>
@@ -1549,7 +1550,7 @@ function SidebarSample({ label }: { label: string }) {
   return (
     <Sidebar
       label={label}
-      headerSlot={<span className="font-semibold text-sidebar-foreground">Router</span>}
+      headerSlot={<span className="font-semibold text-foreground">Router</span>}
       contentSlot={
         <SidebarSection
           as="nav"
@@ -1567,7 +1568,7 @@ function SidebarSample({ label }: { label: string }) {
           ))}
         />
       }
-      footerSlot={<span className="text-sidebar-foreground text-sm">ada@example.com</span>}
+      footerSlot={<span className="text-foreground text-sm">ada@example.com</span>}
     />
   );
 }
@@ -1757,7 +1758,7 @@ const sections: GallerySection[] = [
               <p className="p-3 font-semibold text-foreground text-sm">A header that stays</p>
             }
             contentSlot={<div className="px-3">{paragraphs(20)}</div>}
-            footerSlot={<p className="p-3 text-muted-foreground text-sm">A footer that stays</p>}
+            footerSlot={<p className="p-3 text-foreground/60 text-sm">A footer that stays</p>}
           />
         }
       />
@@ -1774,9 +1775,9 @@ const sections: GallerySection[] = [
             level={3}
             title="Servers"
             description="Everything this workspace can reach."
-            actionSlot={<Button size="sm" content="New server" />}
+            actionSlot={<Button size="sm" variant="info" content="New server" />}
             contentSlot={<div className="px-1">{paragraphs(20)}</div>}
-            footerSlot={<p className="text-muted-foreground text-sm">20 rows</p>}
+            footerSlot={<p className="text-foreground/60 text-sm">20 rows</p>}
           />
         }
       />

@@ -104,7 +104,7 @@ test("the web-only rules compile to nothing on native", async () => {
   // the picker's two, and each palette mode.
   const paletteModes = Object.values(palettes).flatMap((modes) => Object.keys(modes)).length;
   assert.equal(
-    (css.match(/^ *scrollbar-color: rgba\(\d+, \d+, \d+, 0\.3\) transparent;$/gm) ?? []).length,
+    (css.match(/^ *scrollbar-color: rgba\(\d+, \d+, \d+, 0\.4\) transparent;$/gm) ?? []).length,
     4 + paletteModes,
   );
   assert.equal((css.match(/^:is\(html\.(dark|light)\) \{/gm) ?? []).length, 4);

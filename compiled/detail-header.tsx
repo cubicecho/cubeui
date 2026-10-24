@@ -53,7 +53,8 @@ export function DetailHeader({
   actionsSlot,
 }: DetailHeaderProps) {
   return (
-    <div className="cube-rn-view flex-row items-center gap-3">
+    // Wraps rather than pushing the actions off a phone; `min-w-0` lets the title column shrink.
+    <div className="cube-rn-view flex-row flex-wrap items-center gap-x-3 gap-y-2">
       <Button
         variant="outline"
         size="icon"
@@ -61,18 +62,19 @@ export function DetailHeader({
         aria-label={backLabel}
         iconSlot={<ArrowLeft className="h-4 w-4" />}
       />
-      <div className="cube-rn-view flex-1">
-        <div className="cube-rn-view flex-row items-center gap-2">
+      <div className="cube-rn-view min-w-0 flex-1 gap-1">
+        <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
           {color ? <ColorDot color={color} {...(colorLabel ? { title: colorLabel } : {})} /> : null}
-          {/* `role`/`aria-level` because an `<h2>` has no native counterpart —
-              and they are what a compiled web build reads to emit one. */}
-          <h2 className="cube-rn-text font-semibold text-foreground text-lg tracking-tight">
+          {/* `role`/`aria-level` because an `<h1>` has no native counterpart — and they are what
+              a compiled web build reads to emit one. The page's own name, so the page title's
+              rank and size: PageHeader level 1's text-xl. */}
+          <h1 className="cube-rn-text min-w-0 shrink font-semibold text-foreground text-xl tracking-tight">
             {title}
-          </h2>
+          </h1>
           {badgeSlot}
         </div>
         {subtitle ? (
-          <span className="cube-rn-text mt-0.5 text-sm text-foreground/60">{subtitle}</span>
+          <span className="cube-rn-text text-sm text-foreground/60">{subtitle}</span>
         ) : null}
       </div>
       {actionsSlot}

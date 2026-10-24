@@ -536,10 +536,14 @@ type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel">
  * `onSubmit` runs. With no form to submit — a dialog's `footerActionsSlot`, a card's footer —
  * a `type="submit"` button does nothing at all, so there it calls `form.handleSubmit()` itself,
  * as the native `SubmitButton` always does.
+ *
+ * `positive` by default, because its default is "Save": an action that keeps the work is
+ * `positive`, one that adds something (Add, Create) is `info` — pass `variant="info"` there.
  */
 export function SubmitButton({
   content = "Save",
   pendingLabel = "Saving…",
+  variant = "positive",
   disabled,
   requireChanges = false,
   onClick,
@@ -555,6 +559,7 @@ export function SubmitButton({
   return (
     <Button
       type="submit"
+      variant={variant}
       {...props}
       onClick={(event) => {
         onClick?.(event);

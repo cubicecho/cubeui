@@ -595,7 +595,8 @@
         "@cubeui/error-message",
         "@cubeui/form-binding",
         "@cubeui/field",
-        "@cubeui/radio-group"
+        "@cubeui/radio-group",
+        "@cubeui/skeleton"
       ],
       "files": [
         {
@@ -663,7 +664,7 @@
       "type": "registry:component",
       "title": "Section",
       "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint", "@cubeui/card"],
       "files": [
         {
           "path": "registry/layout/section.tsx",
@@ -1205,11 +1206,10 @@
       "dependencies": ["date-fns@^4.4.0"],
       "registryDependencies": [
         "@cubeui/utils",
-        "@cubeui/button",
         "@cubeui/calendar",
-        "@cubeui/icons",
         "@cubeui/input",
-        "@cubeui/popover"
+        "@cubeui/popover",
+        "@cubeui/date-picker"
       ],
       "files": [
         {
@@ -1336,7 +1336,7 @@
       "type": "registry:component",
       "title": "Query State",
       "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/card", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/button", "@cubeui/alert", "@cubeui/icons"],
       "files": [
         {
           "path": "registry/layout/query-state.tsx",
@@ -1362,7 +1362,12 @@
       "type": "registry:component",
       "title": "Page",
       "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/empty-state", "@cubeui/page-header"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/empty-state",
+        "@cubeui/page-header",
+        "@cubeui/header-content-footer"
+      ],
       "files": [
         {
           "path": "registry/layout/page.tsx",
@@ -1375,7 +1380,13 @@
       "type": "registry:component",
       "title": "Detail Page",
       "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/page"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/page",
+        "@cubeui/empty-state",
+        "@cubeui/query-state",
+        "@cubeui/icons"
+      ],
       "files": [
         {
           "path": "registry/layout/detail-page.tsx",
@@ -1478,13 +1489,14 @@
       "name": "sidebar",
       "type": "registry:component",
       "title": "Sidebar",
-      "description": "An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.",
+      "description": "An app's sidebar: a header, a body that scrolls and a footer on the page colour behind a rule, at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
         "@cubeui/badge",
         "@cubeui/tooltip",
-        "@cubeui/header-content-footer"
+        "@cubeui/header-content-footer",
+        "@cubeui/split-layout"
       ],
       "files": [
         {
@@ -1525,10 +1537,10 @@
       "title": "Dialog Layout",
       "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
       "registryDependencies": [
-        "@cubeui/button",
         "@cubeui/dialog",
         "@cubeui/header-content-footer",
-        "@cubeui/utils"
+        "@cubeui/utils",
+        "@cubeui/confirm-dialog"
       ],
       "files": [
         {

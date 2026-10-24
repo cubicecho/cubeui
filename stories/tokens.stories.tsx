@@ -94,10 +94,10 @@ export const RawButtonsTakeNoBrowserLook: Story = {
       await expect(style.borderTopWidth).toBe("0px");
       await expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)");
     }
-    // The close is an icon and nothing else, so its box is the icon's once the padding is gone.
+    // The close is the icon and its own `p-1`, a 24px target, and nothing the browser adds.
     // `offsetWidth`, which ignores transforms: the dialog is still mid `zoom-in-95` here.
-    await expect(getComputedStyle(close).paddingLeft).toBe("0px");
-    await expect(close.offsetWidth).toBe(16);
+    await expect(getComputedStyle(close).paddingLeft).toBe("4px");
+    await expect(close.offsetWidth).toBe(24);
     // Inherited now, so the list's colour and the page font reach the label.
     const list = canvas.getByRole("tablist", { hidden: true });
     await expect(getComputedStyle(inactive).color).toBe(getComputedStyle(list).color);
@@ -423,7 +423,7 @@ export const ScrollbarsFollowThePalette: Story = {
     await expect(scroller.scrollbarWidth).toBe("thin");
     // "<thumb> <track>": the foreground at 30%, and nothing behind it.
     await expect(scroller.scrollbarColor).toMatch(
-      /^rgba\(\d+, \d+, \d+, 0\.3\) rgba\(0, 0, 0, 0\)$/,
+      /^rgba\(\d+, \d+, \d+, 0\.4\) rgba\(0, 0, 0, 0\)$/,
     );
     await expect(getComputedStyle(canvas.getByTestId("hidden")).scrollbarWidth).toBe("none");
   },

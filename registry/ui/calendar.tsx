@@ -20,6 +20,7 @@ import {
   isBefore,
   isSameDay,
   isSameMonth,
+  isToday,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -89,10 +90,16 @@ function isDisabled(day: Date, disabled: CalendarProps["disabled"]): boolean {
   return covers(day, disabled as DateMatcher);
 }
 
-/** A day's text colour: the edge of a selection, a day in plain ink, or one from a neighbouring month. */
-function dayInk(edge: boolean, plain: boolean) {
+/**
+ * A day's text: the edge of a selection, today, a day in plain ink, or one from a neighbouring
+ * month. Today is current, so it is `active`, and semibold so it is not colour alone.
+ */
+function dayInk(edge: boolean, plain: boolean, today: boolean) {
   if (edge) {
     return "text-active-foreground";
+  }
+  if (today && plain) {
+    return "font-semibold text-active";
   }
   return plain ? "text-foreground" : "text-foreground/60";
 }
@@ -161,7 +168,7 @@ export function Calendar(props: CalendarProps) {
           onPress={() => setMonth(addMonths(month, -1))}
           disabled={canGoBack === false}
           aria-label="Previous month"
-          className={cn("p-1", canGoBack === false && "opacity-30")}
+          className={cn("p-1", canGoBack === false && "opacity-50")}
         >
           <ChevronLeft className="h-4 w-4 text-foreground" />
         </Pressable>
@@ -219,12 +226,14 @@ export function Calendar(props: CalendarProps) {
                   aria-disabled={off}
                   aria-selected={place.selected}
                   className={cn(
-                    "h-9 items-center justify-center",
+                    // 44px, a finger's target and the web grid's cell.
+                    "h-11 items-center justify-center",
                     // A range's interior is a continuous band, so only its ends are
-                    // rounded — the same shape react-day-picker draws.
-                    place.middle ? "bg-hover" : "rounded-md",
+                    // rounded — round, as the web grid draws them.
+                    // The inside is chosen, so it is the chosen-row tint, not the hover grey.
+                    place.middle ? "bg-active/40" : "rounded-full",
                     place.edge && "bg-active",
-                    off && "opacity-30",
+                    off && "opacity-50",
                   )}
                   // Seven per row, and `flex-wrap` needs a width it can measure.
                   // A `w-[14.2857%]` class would round to the same place; the style
@@ -234,7 +243,7 @@ export function Calendar(props: CalendarProps) {
                   <Text
                     className={cn(
                       "text-sm",
-                      dayInk(place.edge, place.middle || isSameMonth(day, shown)),
+                      dayInk(place.edge, place.middle || isSameMonth(day, shown), isToday(day)),
                     )}
                   >
                     {format(day, "d")}

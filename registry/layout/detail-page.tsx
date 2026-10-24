@@ -6,8 +6,10 @@
  * system agree. A detail route's body then never writes `entity!` or an
  * early return of its own.
  */
-import { Text } from "react-native";
+import { EmptyState } from "@/components/empty-state";
 import { Page } from "@/components/page";
+import { RowSkeleton } from "@/components/query-state";
+import { Search } from "@/components/ui/icons";
 import type { SlotNode } from "@/lib/utils";
 
 type DetailPageProps<T> = {
@@ -38,8 +40,13 @@ export function DetailPage<T>({
       contentSlot={
         entity ? (
           contentSlot(entity)
+        ) : // Designed states, not a lone grey line at the top left: rows that pulse where the
+        // record will be, or the centred empty block naming what is missing — the whole
+        // screen is that state, so its title is the page's h1.
+        loading ? (
+          <RowSkeleton />
         ) : (
-          <Text className="text-foreground/60">{loading ? "Loading…" : notFoundLabel}</Text>
+          <EmptyState icon={Search} title={notFoundLabel} level={1} />
         )
       }
     />

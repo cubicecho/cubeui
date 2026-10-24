@@ -35,7 +35,7 @@ const form = useAppForm({
   <SelectField form={form} name="list" label="List" options={LISTS} />
 
   <form.AppForm>
-    <form.SubmitButton content="Create Todo" />
+    <form.SubmitButton variant="info" content="Create Todo" />
   </form.AppForm>
 </form>
 ```
@@ -512,7 +512,9 @@ field drops to its own line at full width rather than three of them sharing one 
     }
   />
   ```
-- `perRow` is `2` (the default) or `3`, and it only moves that minimum.
+- `perRow` is `2` (the default) or `3`: at most that many on a line. A cell is never narrower than
+  `12rem` (`10rem` at three), so the row stacks on a phone or in a narrow dialog by real width,
+  not at a breakpoint.
 - The cells are equal width. A field that should be wider is not this component — put it on its
   own line.
 
@@ -543,7 +545,12 @@ children and closed without asking, and it was removed. An app that vendored it 
 - The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
   `SubmitButton` that no form owns calls `form.handleSubmit()` itself. The same holds in a
   `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
-  `preventDefault` already in it, so Enter in a field submits too.
+  `preventDefault` already in it, so Enter in a field submits too. It is a `gap-4` column, so the
+  fields in it need no spacing of their own; to lay a field and its button in a row, pass
+  `className="flex-row items-end gap-3"`.
+- **`SubmitButton` is coloured by what it does.** On the web it is `positive` (it keeps the work:
+  Save) unless you pass `variant="info"` for one that adds something (Create, Add). The native
+  one knows which it is: `positive` when editing, `info` when creating. A `variant` you pass wins.
 - To send the press through the DOM submit event instead, name the form: `<FormElement id="todo" …>`
   and `<form.SubmitButton form="todo" … />`. A hand-written `<form id="todo">` works the same way.
 - `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is

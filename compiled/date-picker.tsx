@@ -103,11 +103,19 @@ type PickerTriggerProps = PickerAria & {
   empty: boolean;
   disabled?: boolean | undefined;
   className?: string | undefined;
+  /** An id for the value's own text, for an `aria-labelledby` that names the trigger by it. */
+  valueId?: string | undefined;
   children: ReactNode;
 };
 
-function PickerTrigger({
+/**
+ * The field-looking button a picker opens from: the value (or the placeholder) in normal weight on
+ * one line, the calendar icon trailing. Exported for `DateTimeInput`, so the two date triggers are
+ * one control and not two that drift.
+ */
+export function PickerTrigger({
   empty,
+  valueId,
   disabled,
   className,
   children,
@@ -139,6 +147,7 @@ function PickerTrigger({
           // The colour is on the words, not the button: native has no colour inheritance, so the
           // placeholder's muted class has to be on the `Text` itself.
           <span
+            id={valueId}
             className={cn(
               "cube-rn-text",
               "min-w-0 flex-1 text-left text-sm font-normal",
@@ -149,7 +158,7 @@ function PickerTrigger({
             {children}
           </span>
         }
-        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 opacity-50" aria-hidden />}
+        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden />}
       />
     </PopoverTrigger>
   );
@@ -164,9 +173,11 @@ function PickerTrigger({
  * then had to render an empty `<div className="h-4 w-4" />` in its place to stop the label
  * shifting, which is the tell that the control was fighting its own markup.
  */
-function ClearRow({ onClear }: { onClear: () => void }) {
+export function ClearRow({ onClear }: { onClear: () => void }) {
+  // Inset as the calendar above it is (12px), not 4px from the pane's edge. Exported for
+  // DateTimeInput, so the two pickers share one Clear row.
   return (
-    <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 p-1">
+    <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 px-3 py-2">
       <Button
         variant="outline"
         size="sm"
@@ -233,7 +244,7 @@ export function DatePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           // Opening on today with a value set in March means the value is not on screen — the
@@ -355,7 +366,7 @@ export function DateRangePicker({
       <PopoverContent
         align="start"
         aria-label={placeholder}
-        className={cn("w-auto p-0", contentClassName)}
+        className={cn("w-auto gap-0 p-0", contentClassName)}
       >
         <Calendar
           defaultMonth={value?.from}

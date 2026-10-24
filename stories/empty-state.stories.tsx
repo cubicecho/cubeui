@@ -83,8 +83,8 @@ export const PageHeading: Story = {
     }
 
     // The same size as the plain title: the rank says where it sits, not how big it looks.
-    await expect(getComputedStyle(native).fontSize).toBe("14px");
-    await expect(getComputedStyle(compiled).fontSize).toBe("14px");
+    await expect(getComputedStyle(native).fontSize).toBe("16px");
+    await expect(getComputedStyle(compiled).fontSize).toBe("16px");
     await expect(getComputedStyle(compiled).fontWeight).toBe(getComputedStyle(native).fontWeight);
     await expect(getComputedStyle(compiled).color).toBe(getComputedStyle(native).color);
   },

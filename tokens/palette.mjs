@@ -47,12 +47,13 @@
 /** The corner radius the whole scale is derived from. */
 export const radius = "0.625rem";
 
-// The status colours on a light page: Tailwind's 700s in their sRGB form. White on each is 5.0:1 or
-// better.
+// The status colours on a light page: Tailwind's 800s in their sRGB form. A 700 is 5.0:1 on white
+// but drops under 4.5:1 as text on its own `/10` tint (an outline button under the pointer) and
+// as white text on its `/90` fill (a filled button under the pointer); an 800 clears both.
 const STATUS = {
-  positive: { l: 0.5273, c: 0.1371, h: 150.069 }, // #15803D, green-700 in sRGB
+  positive: { l: 0.4479, c: 0.1083, h: 151.328 }, // #166534, green-800 in sRGB
   "positive-foreground": { l: 1, c: 0, h: 0 },
-  warning: { l: 0.5553, c: 0.1455, h: 48.998 }, // #B45309, amber-700 in sRGB
+  warning: { l: 0.4732, c: 0.1247, h: 46.201 }, // #92400E, amber-800 in sRGB
   "warning-foreground": { l: 1, c: 0, h: 0 },
   // sky-700 and not the 600 it was as a tint: white on #0284C7 is 4.1:1.
   info: { l: 0.5, c: 0.1193, h: 242.749 }, // #0369A1, sky-700 in sRGB
@@ -85,7 +86,8 @@ const lightTokens = {
   active: { l: 0.5, c: 0.07, h: 218 }, // #2D6D7E
   "active-foreground": { l: 1, c: 0, h: 0 },
   ...STATUS,
-  negative: { l: 0.577, c: 0.245, h: 27.325 },
+  // red-700, a step under the 600 it was: the 600 is 3.99:1 as text on its own `/10` tint.
+  negative: { l: 0.505, c: 0.213, h: 27.518 }, // #C10007
   "negative-foreground": { l: 1, c: 0, h: 0 },
   overlay: BLACK,
 };
@@ -97,8 +99,10 @@ const darkTokens = {
   secondary: { l: 0.269, c: 0, h: 0 },
   neutral: { l: 0.922, c: 0, h: 0 },
   "neutral-foreground": { l: 0.205, c: 0, h: 0 },
-  // `active`, all but grey: the pointer and the chosen row read as one family.
-  hover: { l: 0.371, c: 0.035, h: 218 },
+  // `active`, all but grey: the pointer and the chosen row read as one family. Dark enough to
+  // stay apart from a chosen row (`active/40`), which it matched at 0.371, and for `info` to read
+  // on it.
+  hover: { l: 0.3, c: 0.03, h: 218 }, // #1C3238
   active: { l: 0.68, c: 0.065, h: 218 }, // #69A2B3
   "active-foreground": { l: 0.145, c: 0, h: 0 },
   ...DARK_STATUS,
@@ -112,7 +116,7 @@ const darkTokens = {
 /**
  * Monokai. Every text pair clears 4.5:1 — `palette-contrast.test.mjs` holds it — which is why its
  * `negative` is not the editor's pink: `#F92672` is 3.9:1 on the background and against either
- * text colour, so it is Monokai Pro's `#FF6188`.
+ * text colour, so it is Monokai Pro's `#FF6188`, lifted to `#FF7398` to read on its own tint.
  *
  * @type {Record<string, Oklch>}
  */
@@ -132,7 +136,9 @@ const monokaiDark = {
   "warning-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
   info: { l: 0.8269, c: 0.108, h: 211.963 }, // #66D9EF, the cyan
   "info-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
-  negative: { l: 0.7058, c: 0.1936, h: 8.454 }, // #FF6188
+  // Monokai Pro's #FF6188 lifted a little: at its own lightness it is 4.18:1 as text on its `/10`
+  // tint over a popover, the highlighted destructive menu row.
+  negative: { l: 0.76, c: 0.1936, h: 8.454 }, // #FF7398
   "negative-foreground": { l: 0.2737, c: 0.0109, h: 114.803 },
   overlay: BLACK,
 };

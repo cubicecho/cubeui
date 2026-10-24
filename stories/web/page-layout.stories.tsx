@@ -130,7 +130,7 @@ export const WithFooter: Story = {
     title: "Workspaces",
     contentSlot: <Rows />,
     footerSlot: (
-      <div className="flex items-center justify-between py-3 text-foreground/60 text-sm">
+      <div className="flex items-center justify-between text-foreground/60 text-sm">
         <span>40 workspaces</span>
         <Button size="sm" variant="outline" content="Load more" />
       </div>

@@ -29,11 +29,10 @@
 import { format } from "date-fns";
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Button, buttonTextVariants } from "./button";
 import { Calendar } from "./calendar";
-import { Calendar as CalendarIcon, X } from "./icons";
+import { ClearRow, PickerTrigger } from "./date-picker";
 import { Input } from "./input";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Popover, PopoverContent } from "./popover";
 
 type DateTimeInputSharedProps = {
   /**
@@ -169,43 +168,25 @@ export function DateTimeInput(props: DateTimeInputProps) {
   return (
     <div className={cn("cube-rn-view", "flex-row items-center gap-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            id={id}
-            // A name on a button replaces its contents, so a bare "Due" would drop the date —
-            // the part of the field that changes. Both are in the name instead: an `aria-label`
-            // is composed with the value text, which iOS reads too, and a reference is followed
-            // by one to the value text below. `htmlFor` alone cannot do this — see the skill.
-            aria-label={ariaLabel ? `${ariaLabel}, ${valueText}` : undefined}
-            aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${valueId}` : undefined}
-            // What react-native has no prop for, in the spelling the web reads — the same
-            // arrangement as `ColorPicker`'s swatch row. A bound field's hint and error reach
-            // the trigger this way.
-            {...{
-              ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
-              ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
-              ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
-            }}
-            className="flex-1 justify-start text-left font-normal"
-            iconSlot={<CalendarIcon className="mr-2 h-4 w-4" />}
-            content={
-              // Its own `Text` in both states, for the id a reference points at; and because
-              // native has no colour inheritance, the placeholder's muted class has to be on
-              // the words themselves.
-              <span
-                id={valueId}
-                className={cn(
-                  "cube-rn-text",
-                  value ? buttonTextVariants({ variant: "outline" }) : "text-sm text-foreground/60",
-                )}
-              >
-                {valueText}
-              </span>
-            }
-          />
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        {/* DatePicker's own trigger: the value in normal weight on one line, the icon trailing. */}
+        <PickerTrigger
+          id={id}
+          empty={!value}
+          valueId={valueId}
+          // A name on a button replaces its contents, so a bare "Due" would drop the date — the
+          // part of the field that changes. Both are in the name instead: an `aria-label` is
+          // composed with the value text, which iOS reads too, and a reference is followed by one
+          // to the value text. `htmlFor` alone cannot do this — see the skill.
+          aria-label={ariaLabel ? `${ariaLabel}, ${valueText}` : undefined}
+          aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${valueId}` : undefined}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          aria-required={ariaRequired}
+          className="flex-1"
+        >
+          {valueText}
+        </PickerTrigger>
+        <PopoverContent className="w-auto gap-0 p-0" align="start">
           <Calendar
             selected={value ?? undefined}
             onSelect={handleDateSelect}
@@ -214,17 +195,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           {/* In the popover, not an X inside the trigger: the trigger is a button,
               and a button inside a button is invalid HTML that no keyboard reaches.
               `DatePicker` puts its Clear in the same place. */}
-          {props.clearable && value ? (
-            <div className="cube-rn-view flex-row justify-end border-t border-foreground/10 p-1">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClear}
-                iconSlot={<X className="h-4 w-4" />}
-                content="Clear"
-              />
-            </div>
-          ) : null}
+          {props.clearable && value ? <ClearRow onClear={handleClear} /> : null}
         </PopoverContent>
       </Popover>
       {withTime ? (
