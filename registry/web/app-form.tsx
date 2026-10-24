@@ -11,6 +11,7 @@ import type {
 } from "@/components/combobox";
 import { Combobox } from "@/components/combobox";
 import { FormField } from "@/components/form-field";
+import { PasswordInput, revealLabelsFor } from "@/components/password-input";
 import { Button, type ButtonPropsWithout } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -506,6 +507,37 @@ function BoundSwitchField(props: SwitchFieldProps) {
   );
 }
 
+type PasswordFieldProps = FieldProps &
+  Omit<ComponentProps<typeof PasswordInput>, "id" | "value" | "onChangeText" | "onBlur">;
+
+function BoundPasswordField(props: PasswordFieldProps) {
+  const [fieldProps, input] = splitProps(props);
+  const field = useFieldContext<string | null>();
+  const error = useFieldError();
+  const revealLabels = revealLabelsFor(fieldProps.label);
+
+  return (
+    <FormField
+      {...fieldProps}
+      error={error}
+      // The function form: the props belong on the `Input` inside the wrapper, not on the
+      // `<div>` that positions the eye. Cloning would put the label's target on the wrapper —
+      // the same blind spot `SelectField` has, and just as quiet.
+      controlSlot={(wired) => (
+        <PasswordInput
+          {...input}
+          {...wired}
+          showLabel={input.showLabel ?? revealLabels.showLabel}
+          hideLabel={input.hideLabel ?? revealLabels.hideLabel}
+          value={field.state.value ?? ""}
+          onBlur={field.handleBlur}
+          onChangeText={(text) => field.handleChange(text)}
+        />
+      )}
+    />
+  );
+}
+
 type SubmitButtonProps = ButtonPropsWithout<"type" | "loading" | "loadingLabel"> & {
   /** What it says mid-flight. The label is replaced, not appended to. */
   pendingLabel?: string | undefined;
@@ -602,6 +634,7 @@ export const { useAppForm, withForm } = createFormHook({
     SelectField: BoundSelectField,
     CheckboxField: BoundCheckboxField,
     SwitchField: BoundSwitchField,
+    PasswordField: BoundPasswordField,
   },
   formComponents: { SubmitButton },
 });
@@ -765,6 +798,25 @@ export const CheckboxField = bindToForm<CheckboxFieldProps, boolean>(
 
 /** A switch and its caption, as one line. */
 export const SwitchField = bindToForm<SwitchFieldProps, boolean>(BoundSwitchField, "SwitchField");
+
+/**
+ * A password, as one line.
+ *
+ * ```tsx
+ * <PasswordField form={form} name="password" label="Password" autoComplete="current-password" />
+ * ```
+ *
+ * It is not `<InputField type="password">`, and the difference is the reveal button — see
+ * {@link PasswordInput}. A field whose only difference from `InputField` were the `type` would be
+ * a variant wearing a component's clothes, and this registry has a rule about that.
+ *
+ * A string `label` names the button too, "Show API key" and "Hide API key", unless `showLabel`
+ * or `hideLabel` says otherwise. It is on `field.*` as well, as `field.PasswordField`.
+ */
+export const PasswordField = bindToForm<PasswordFieldProps, string>(
+  BoundPasswordField,
+  "PasswordField",
+);
 
 export type { SelectEntry, SelectOption, SelectSeparatorEntry };
 // Local bindings rather than `export … from`: the shadcn CLI rewrites import declarations on

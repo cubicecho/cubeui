@@ -324,6 +324,10 @@ an `absolute` corner over it.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
   one) and `Copied` while the tick shows.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
+  At an `icon*` size the button is the glyph alone and `label` is its name. At a text size (`sm`,
+  `default`, `lg`) `label` is drawn beside the glyph — a toolbar's
+  `<DownloadButton label="Export" size="sm" … />`. Do not build that one from a `Button` and
+  `downloadBlob` by hand.
   `className` is the button's, for placing it.
 - The tick appears only if the write happened. A refused write — an insecure origin, a denied
   permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.

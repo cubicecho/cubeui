@@ -26,7 +26,7 @@
  */
 import { format as formatDateFns } from "date-fns";
 import type { AriaAttributes, ComponentProps, ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 // `DateRange` comes from the registry's own calendar contract, not react-day-picker: the native
 // `Calendar` implements the same shape and cannot import from a web library.
 import type { DateRange } from "@/components/ui/calendar-base";
@@ -126,41 +126,57 @@ export function PickerTrigger({
   "aria-invalid": ariaInvalid,
   "aria-required": ariaRequired,
 }: PickerTriggerProps) {
+  // `aria-required` is not allowed on a button (axe's `aria-allowed-attr`), and the trigger is
+  // one. So "required" reaches it the way a hint does: a hidden word the trigger is described by.
+  // The label's asterisk is decoration and stays out of the accessibility tree.
+  const requiredId = useId();
+  const required = ariaRequired === true || ariaRequired === "true";
+  const describedBy = [ariaDescribedBy, required ? requiredId : undefined]
+    .filter(Boolean)
+    .join(" ");
   return (
-    <PopoverTrigger asChild>
-      <Button
-        data-slot="date-picker-trigger"
-        variant="outline"
-        disabled={disabled}
-        id={id}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        // What react-native has no prop for, in the spelling the web reads — the same arrangement
-        // as `DateTimeInput`'s trigger. A bound field's hint and error reach the trigger this way.
-        {...{
-          ...(ariaDescribedBy === undefined ? {} : { "aria-describedby": ariaDescribedBy }),
-          ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
-          ...(ariaRequired === undefined ? {} : { "aria-required": ariaRequired }),
-        }}
-        className={cn(TRIGGER, className)}
-        content={
-          // The colour is on the words, not the button: native has no colour inheritance, so the
-          // placeholder's muted class has to be on the `Text` itself.
-          <span
-            id={valueId}
-            className={cn(
-              "cube-rn-text",
-              "min-w-0 flex-1 text-left text-sm font-normal",
-              ONE_LINE,
-              empty ? "text-foreground/60" : "text-foreground",
-            )}
-          >
-            {children}
-          </span>
-        }
-        trailingSlot={<CalendarIcon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden />}
-      />
-    </PopoverTrigger>
+    <>
+      <PopoverTrigger asChild>
+        <Button
+          data-slot="date-picker-trigger"
+          variant="outline"
+          disabled={disabled}
+          id={id}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
+          // What react-native has no prop for, in the spelling the web reads — the same arrangement
+          // as `DateTimeInput`'s trigger. A bound field's hint and error reach the trigger this way.
+          {...{
+            ...(describedBy === "" ? {} : { "aria-describedby": describedBy }),
+            ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+          }}
+          className={cn(TRIGGER, className)}
+          content={
+            // The colour is on the words, not the button: native has no colour inheritance, so the
+            // placeholder's muted class has to be on the `Text` itself.
+            <span
+              id={valueId}
+              className={cn(
+                "cube-rn-text",
+                "min-w-0 flex-1 text-left text-sm font-normal",
+                ONE_LINE,
+                empty ? "text-foreground/60" : "text-foreground",
+              )}
+            >
+              {children}
+            </span>
+          }
+          trailingSlot={
+            <CalendarIcon className="h-4 w-4 shrink-0 text-foreground/60" aria-hidden />
+          }
+        />
+      </PopoverTrigger>
+      {required ? (
+        <span id={requiredId} className="cube-rn-text sr-only text-foreground">
+          Required
+        </span>
+      ) : null}
+    </>
   );
 }
 

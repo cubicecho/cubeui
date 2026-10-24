@@ -213,6 +213,7 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths helpers. Functions, not components.",
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
+  "bottom-bar": "Two hooks a toast rises above a layout's bottom bar through. Not a component.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
   "description-hint":
@@ -1094,9 +1095,9 @@ const sections: GallerySection[] = [
           color="#16a34a"
           colorLabel="Green"
           title="Quarterly review"
-          subtitle="Due on Friday"
-          badgeSlot={<Badge variant="positive">On track</Badge>}
-          actionsSlot={
+          description="Due on Friday"
+          badgesSlot={<Badge variant="positive">On track</Badge>}
+          actionSlot={
             <Button
               variant="outline"
               size="sm"

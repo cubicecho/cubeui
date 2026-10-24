@@ -244,6 +244,7 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths, functions only.",
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
+  "bottom-bar": "Two hooks; the toasts rise above SidebarLayout's bottom bar through them.",
   "error-message": "A function; the form fields read their error text with it.",
   "description-hint":
     'The button behind `descriptionPlacement="popover"`; the fields, cards, sections and rows draw it.',
@@ -1822,9 +1823,9 @@ const sections: GallerySection[] = [
                     color="#1d4ed8"
                     colorLabel="Blue"
                     title={server.name}
-                    subtitle={`${server.tools} tools over ${server.transport}`}
-                    badgeSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionsSlot={
+                    description={`${server.tools} tools over ${server.transport}`}
+                    badgesSlot={<Badge variant="secondary">{server.status}</Badge>}
+                    actionSlot={
                       <Button
                         variant="outline"
                         size="sm"
