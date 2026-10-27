@@ -8,7 +8,7 @@ the widened version, not the original.
 They came across from cubeui, where every item was a web-only shell, and they still hold for the
 layout family now that it is written once in React Native and compiled (README, Stage 4). Where a
 rule reads differently on this side of that move it says so. `npm run docs:check` holds rule 2 and
-the skill's vocabulary section to the same list of words.
+the skill's vocabulary (`skill/vocabulary.md`) to the same list of words.
 
 ## 1. Every slot is a named prop, including the body
 
@@ -530,7 +530,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    **Nesting depth is not this library's concern.** How deep a page nests before it should be
    split by route is an app decision; the shells nest as far as the app wants. The
-   list-and-detail note in `layout.md` stays a suggestion rather than a limit.
+   list-and-detail note in the skill's `layout/splits.md` stays a suggestion rather than a limit.
 
    **Settled, and this is the last of it:** the symmetric split is `SplitLayout`, and
    `SidebarLayout` is a preset of it — the same shape as `StickyHeaderContentFooter` over

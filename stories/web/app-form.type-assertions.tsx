@@ -103,7 +103,7 @@ export function AppFormTypeAssertions() {
  * `DeepKeys<TFormData>` fail to terminate, and TypeScript reports the TS2589 at the *first field
  * in the form* rather than at the recursive value. Declaring that one value `unknown` stops the
  * walk, and this whole file failing to compile is what says so: if the shape stops working, or
- * stops being necessary, the note in `forms.md` is wrong and this is the build error saying it.
+ * stops being necessary, the note in the skill's `forms/app-form.md` is wrong and this is the build error saying it.
  */
 interface DraftStep {
   id: string;

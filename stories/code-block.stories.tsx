@@ -231,10 +231,12 @@ export const CopyableValue: Story = {
       for (const root of roots) {
         const style = getComputedStyle(root);
         const padding = getComputedStyle(part(root, "code-block-content")).padding;
-        await expect(style.borderTopWidth).toBe("1px");
+        // The tint is the boundary: no border on top of it.
+        await expect(style.borderTopWidth).toBe("0px");
         await expect(padding).toBe("12px");
         looks.push(
-          [style.backgroundColor, style.borderTopColor, style.borderTopLeftRadius, padding].join(),
+          // No border colour: there is no border to draw it.
+          [style.backgroundColor, style.borderTopLeftRadius, padding].join(),
         );
       }
     }

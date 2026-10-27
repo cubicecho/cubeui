@@ -354,6 +354,13 @@ export const IconAndLabel: Story = {
           await userEvent.click(preview);
           await expect(preview).toHaveAttribute("aria-pressed", "true");
           await expect(edit).toHaveAttribute("aria-pressed", "false");
+          // The press leaves the pill focused, and a focused pill looks hovered — label and icon
+          // in `foreground` together. Off it, it is the chosen colour this step is about.
+          if (preview.matches(":focus-visible")) {
+            await expect(color(iconOf(preview))).toBe(color(within(preview).getByText("Preview")));
+            await expect(color(iconOf(preview))).not.toBe(chosen);
+          }
+          preview.blur();
           await waitFor(() => expect(color(iconOf(preview))).toBe(chosen));
           await expect(color(within(preview).getByText("Preview"))).toBe(chosen);
           await expect(color(iconOf(edit))).toBe(rest);

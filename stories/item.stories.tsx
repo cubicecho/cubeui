@@ -143,8 +143,7 @@ export const Outline: Story = {
     }
     await expect(Math.abs(n.title.left - n.row.left - (c.title.left - c.row.left))).toBeLessThan(1);
     await expect(Math.abs(n.title.top - n.row.top - (c.title.top - c.row.top))).toBeLessThan(1);
-    // The description is the same two clipped lines on both. (Not the row's height: the web half's
-    // description is shadcn's `<p>`, and this harness loads no preflight to take its margin off.)
+    // The description is the same two clipped lines on both.
     const [nd, cd] = [".native-root", ".compiled-root"].map((selector) =>
       slot(rootOf(canvasElement, selector), "item-description").getBoundingClientRect(),
     );

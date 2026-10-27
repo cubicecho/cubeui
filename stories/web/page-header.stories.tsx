@@ -255,7 +255,7 @@ export const Loading: StoryObj<typeof PageHeader> = {
  * Narrow, the action drops to its own line instead of squeezing the title, and the title wraps
  * rather than truncating — a page title is what names the page, and half of one names nothing.
  *
- * The wrap is driven by the title's own 16rem floor against the action's real width, not by a
+ * The wrap is driven by the title's own 10rem floor against the action's real width, not by a
  * viewport breakpoint, so it holds inside a pane of a split on a wide screen — which is where a
  * breakpoint fails.
  */

@@ -9,15 +9,16 @@
  * - `hideTitle`: an `sr-only` clip on the web, a one-pixel box on device;
  * - where the discard question is mounted — see the comment on it.
  *
- * The discard question is a `Dialog` with `role="alertdialog"` rather than the web-only
- * `alert-dialog`, so both halves share it. It keeps what that primitive gave: the role, focus
- * landing on "Keep editing", and a click on the overlay that does not answer the question.
+ * The discard question is `ConfirmDialog`, a `Dialog` with `role="alertdialog"` rather than the
+ * web-only `alert-dialog`, so both halves share it, and the same question `UnsavedChangesDialog`
+ * asks, at the same width. It keeps what that primitive gave: the role, focus landing on "Keep
+ * editing", and a click on the overlay that does not answer the question.
  */
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Platform, View } from "react-native";
 import { HeaderContentFooter } from "@/components/header-content-footer";
-import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -78,6 +79,15 @@ const SR_ONLY = Platform.select({
  */
 const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
 
+/**
+ * The `footerSlot` row, grouped for the reason `CardLayout`'s is: with `footerActionsSlot` beside
+ * it the footer is `justify-between` from `sm` up, and that spread every element of a fragment
+ * across the footer instead of keeping them together at its start. Below `sm` it stacks as
+ * `DialogFooter` does, at the same `gap-2`, so a phone draws what it drew before.
+ */
+const FOOTER_START =
+  "flex-col-reverse gap-2 sm:min-w-0 sm:shrink sm:flex-row sm:flex-wrap sm:items-center";
+
 export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
   contentSlot: SlotNode;
@@ -99,7 +109,10 @@ export type DialogLayoutProps = {
   open?: boolean | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
   size?: keyof typeof SIZES | undefined;
-  /** The footer's start. A destructive action, or a word on why the confirm is refusing. */
+  /**
+   * The footer's start. A destructive action, or a word on why the confirm is refusing. Several
+   * elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end.
+   */
   footerSlot?: SlotNode | undefined;
   /**
    * The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned.
@@ -268,10 +281,6 @@ export function DialogLayout({
   // dialog with no footer, not with an empty one taking up a row.
   const hasFooter = Boolean(footerSlot || actions);
 
-  // Keeping the question's answer from being given by accident: a click on the overlay does not
-  // answer "discard?", which is what the web-only `alert-dialog` refused as well.
-  const holdOpen = (event: Event) => event.preventDefault();
-
   const parts = (
     <HeaderContentFooter
       scroll
@@ -295,7 +304,7 @@ export function DialogLayout({
           <DialogFooter
             className={cn(footerSlot && footerActionsSlot && "sm:justify-between", footerClassName)}
           >
-            {footerSlot}
+            {footerSlot ? <View className={FOOTER_START}>{footerSlot}</View> : null}
             {actions ? <View className={ACTIONS}>{actions}</View> : null}
           </DialogFooter>
         ) : null
@@ -303,25 +312,18 @@ export function DialogLayout({
     />
   );
 
+  // ConfirmDialog holds the overlay click (it does not answer "discard?") and puts the safe
+  // answer first, where focus lands. The labels are passed: its own defaults are Confirm/Cancel.
   const discardQuestion = (
-    <Dialog open={askingToDiscard} onOpenChange={setAskingToDiscard}>
-      <DialogContent
-        role="alertdialog"
-        showCloseButton={false}
-        onInteractOutside={holdOpen}
-        className="sm:max-w-lg"
-      >
-        <DialogHeader>
-          <DialogTitle>{discardTitle}</DialogTitle>
-          <DialogDescription>{discardDescription}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          {/* First, so it is where focus lands: the safe answer is the one a stray Enter gives. */}
-          <Button variant="outline" onPress={() => setAskingToDiscard(false)} content={keepLabel} />
-          <Button variant="destructive" onPress={discard} content={discardLabel} />
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ConfirmDialog
+      open={askingToDiscard}
+      onOpenChange={setAskingToDiscard}
+      title={discardTitle}
+      description={discardDescription}
+      confirmLabel={discardLabel}
+      cancelLabel={keepLabel}
+      onConfirm={discard}
+    />
   );
 
   return (

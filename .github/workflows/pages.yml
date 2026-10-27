@@ -75,9 +75,10 @@ jobs:
 
       # The landing page links to the two gallery stories by id. A renamed title is a link to a
       # "story not found" canvas, which nothing else would notice.
-      - name: The gallery stories the landing page links to were built
+      - name: The gallery and example stories the landing page links to were built
         run: |
-          for id in gallery-web--everything gallery-mobile--everything; do
+          for id in gallery-web--everything gallery-mobile--everything \
+            $(grep -o 'examples-[a-z]*-[a-z-]*--[a-z-]*' scripts/build-page.mjs | sort -u); do
             if ! grep -q "\"$id\"" public/storybook/index.json; then
               echo "::error::the landing page links to '$id', which is not in the built Storybook"
               exit 1

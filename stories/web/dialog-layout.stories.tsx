@@ -227,3 +227,37 @@ export const NarrowFooterActionsWrap: Story = {
     }).toEqual({ inside: true, wrapped: true, endAligned: true });
   },
 };
+
+/**
+ * Two elements in `footerSlot` beside `footerActionsSlot`, on a screen past `sm`, where the footer
+ * is `justify-between`. The shell groups them at the start, `gap-2` apart — the row `CardLayout`
+ * draws — rather than letting the footer spread the second one to its middle.
+ */
+export const GroupedFooterStart: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Project settings"
+      contentSlot={<p>Names, owners and the rest.</p>}
+      footerSlot={
+        <>
+          <span className="text-foreground/60 text-sm">Synced an hour ago</span>
+          <Button variant="destructive-outline" size="sm" content="Archive" />
+        </>
+      }
+      footerActionsSlot={<Button size="sm" variant="positive" content="Save" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Project settings" });
+    const note = within(dialog).getByText("Synced an hour ago").getBoundingClientRect();
+    const archive = within(dialog).getByRole("button", { name: "Archive" }).getBoundingClientRect();
+    const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
+    await expect({
+      sameRow: Math.abs(note.top + note.height / 2 - (archive.top + archive.height / 2)) < 2,
+      gap: Math.round(archive.left - note.right),
+      split: save.left - archive.right > 8,
+    }).toEqual({ sameRow: true, gap: 8, split: true });
+  },
+};

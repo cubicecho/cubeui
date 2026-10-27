@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 105 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 105 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -111,6 +111,55 @@
   Both are stories in <a href="https://cubicecho.github.io/cubeui/storybook/">the Storybook</a>, under <code>Gallery</code>,
   where each item also has stories of its own with its props and its tests.
 </p>
+
+<p>
+  And the same items composed into whole screens, to judge them in context rather than one at a
+  time. Each is a story under <code>Examples</code>, with its loading, empty and failed states a
+  control away.
+</p>
+
+<ul class="galleries">
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-dashboard--default&amp;viewMode=story">Dashboard</a>
+    <span>stat tiles over a table, a project's facts, the team</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-tasks--default&amp;viewMode=story">Tasks</a>
+    <span>a filter bar, bulk selection, row menus and a task dialog</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-settings--general&amp;viewMode=story">Settings</a>
+    <span>tabs, a rename dialog, plan cards and a danger zone</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-authentication--sign-in-page&amp;viewMode=story">Authentication</a>
+    <span>sign in, sign up and check your email</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-docs--default&amp;viewMode=story">Docs</a>
+    <span>a file tree beside a Markdown document</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-inbox--default&amp;viewMode=story">Inbox</a>
+    <span>a message list beside the open message</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/iframe.html?id=examples-web-schedule--default&amp;viewMode=story">Schedule</a>
+    <span>date pickers, event cards, a popover and a ⌘K palette</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/?path=/story/examples-mobile-tasks--default">Mobile tasks</a>
+    <span>a day's list with a bottom bar and a form dialog</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/?path=/story/examples-mobile-settings--default">Mobile settings</a>
+    <span>switches, setting rows and confirms on a phone</span>
+  </li>
+  <li>
+    <a href="https://cubicecho.github.io/cubeui/storybook/?path=/story/examples-mobile-project--default">Mobile project</a>
+    <span>a list that opens a detail screen with a back button</span>
+  </li>
+</ul>
 
 <h2>Install</h2>
 
@@ -152,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  91 on both platforms · 14 web-only · 0 native-only.
+  92 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -174,12 +223,17 @@
         <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
+          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField, PasswordField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/badge</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/bottom-bar</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Whether a layout draws a bar along the bottom of the screen, and under which width: useReportBottomBar for the layout that draws it, useBottomBar for what floats at the bottom (a toast) to sit above it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/button</code></th>
@@ -319,7 +373,7 @@
         <tr>
           <th scope="row"><code>@cubeui/detail-header</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The header row of a detail view: back, colour dot, title, badge, subtitle, actions.</td>
+          <td>The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/detail-page</code></th>
@@ -594,7 +648,7 @@
         <tr>
           <th scope="row"><code>@cubeui/sidebar</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>An app's sidebar: a header, a body that scrolls and a footer on the sidebar palette at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.</td>
+          <td>An app's sidebar: a header, a body that scrolls and a footer on the page colour behind a rule, at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/skeleton</code></th>

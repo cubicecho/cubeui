@@ -3,7 +3,9 @@ import { Text } from "react-native";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
+import { List as CompiledList } from "../compiled/list";
 import { CardLayout as Native } from "../registry/layout/card-layout";
+import { List as NativeList } from "../registry/layout/list";
 import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
@@ -266,7 +268,7 @@ function SmallActionCards({ half }: { half: "native" | "compiled" }) {
 
 /**
  * The other side of #211: an action that fits does not move. One button stays where `CardAction`
- * put it — the header's top corner at its far end, 24px in from each edge — on both halves, with
+ * put it — the header's top corner at its far end, 16px in from each edge — on both halves, with
  * a description under the title and without one.
  */
 export const SmallActionStaysInCorner: Story = {
@@ -287,17 +289,17 @@ export const SmallActionStaysInCorner: Story = {
         }
         const box = card.getBoundingClientRect();
         const button = within(frame).getByRole("button", { name: "Add" }).getBoundingClientRect();
-        // The card's 1px border, then the header's `p-6`.
+        // The card's 1px border, then the header's `p-4`.
         await expect({
           half,
           form,
           fromTop: Math.round(button.top - box.top),
           fromEnd: Math.round(box.right - button.right),
-        }).toEqual({ half, form, fromTop: 25, fromEnd: 25 });
+        }).toEqual({ half, form, fromTop: 17, fromEnd: 17 });
         // Beside a title and a description the button is the shorter of the two, so being in
         // the flow costs the header nothing: the card is as tall as it was.
         if (form === "described") {
-          await expect(Math.round(box.height)).toBe(92);
+          await expect(Math.round(box.height)).toBe(76);
         }
       }
     }
@@ -328,7 +330,7 @@ function HeaderlessCards({ half }: { half: "native" | "compiled" }) {
 /**
  * #268: a card with no header. `CardContent` and `CardFooter` are `pt-0` because the header above
  * them brings the top padding, so with no header the first part of the card sat on its top edge.
- * It is 24px in on every side now, as it is at the start, the end and the bottom.
+ * It is 16px in on every side now, as it is at the start, the end and the bottom.
  */
 export const Headerless: Story = {
   args: {},
@@ -352,13 +354,13 @@ export const Headerless: Story = {
         }
         const box = card.getBoundingClientRect();
         const inner = target.getBoundingClientRect();
-        // The card's 1px border, then `p-6`.
+        // The card's 1px border, then `p-4`.
         await expect({
           half,
           form,
           fromTop: Math.round(inner.top - box.top),
           fromBottom: Math.round(box.bottom - inner.bottom),
-        }).toEqual({ half, form, fromTop: 25, fromBottom: 25 });
+        }).toEqual({ half, form, fromTop: 17, fromBottom: 17 });
       }
     }
   },
@@ -382,3 +384,46 @@ function HalfButton({
   }
   return <CompiledButton {...props} />;
 }
+
+const NO_ROWS: string[] = [];
+
+/**
+ * `emptySlot` over an empty `List`: a `List` with no rows draws nothing, so the card counts it as
+ * empty, the same as an empty array, and says so instead of drawing a body with nothing in it.
+ */
+export const EmptyList: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          title="Members"
+          contentSlot={
+            <NativeList
+              label="Members"
+              contentSlot={NO_ROWS.map((name) => <Text key={name}>{name}</Text>)}
+            />
+          }
+          emptySlot={<Text className="text-sm text-foreground/60">No members yet.</Text>}
+        />
+      }
+      compiled={
+        <Compiled
+          title="Members"
+          contentSlot={
+            <CompiledList
+              label="Members"
+              contentSlot={NO_ROWS.map((name) => <span key={name}>{name}</span>)}
+            />
+          }
+          emptySlot={<p className="text-sm text-foreground/60">No members yet.</p>}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByText("No members yet.")).toHaveLength(2);
+    await expect(canvas.queryByRole("list")).toBeNull();
+  },
+};

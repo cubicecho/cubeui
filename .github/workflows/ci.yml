@@ -41,7 +41,7 @@ jobs:
       - name: Lint and format
         run: npm run lint
 
-      # Rule 2 of docs/component-conventions.md and the skill's vocabulary section are the same
+      # Rule 2 of docs/component-conventions.md and skill/vocabulary.md are the same
       # list in two voices. They drifted by five words on cubeui before anything compared them.
       - name: The conventions and the skill agree on the vocabulary
         run: npm run docs:check
@@ -65,6 +65,12 @@ jobs:
       # A hand-edited or stale one is prose that is wrong and that nothing reads.
       - name: The landing page lists what the registries hold
         run: npm run page:check
+
+      # skill/install-paths.md is generated from the same indexes, and the skill's props tables
+      # from the TSDoc on each props type, so an agent is told where an item really lands, what it
+      # really exports and which props it really takes.
+      - name: The skill's install and props tables match the registry
+        run: npm run skill:check
 
       # `npm test` runs two vitest projects, and the second one renders the
       # stories in a real browser. Without this step it fails at launch rather
@@ -90,9 +96,10 @@ jobs:
 
       # The same check `pages.yml` makes for the links on the landing page, here so a PR that
       # renames a gallery story finds out before the deploy does.
-      - name: The gallery stories the landing page links to were built
+      - name: The gallery and example stories the landing page links to were built
         run: |
-          for id in gallery-web--everything gallery-mobile--everything; do
+          for id in gallery-web--everything gallery-mobile--everything \
+            $(grep -o 'examples-[a-z]*-[a-z-]*--[a-z-]*' scripts/build-page.mjs | sort -u); do
             if ! grep -q "\"$id\"" storybook-static/index.json; then
               echo "::error::the landing page links to '$id', which is not in the built Storybook"
               exit 1

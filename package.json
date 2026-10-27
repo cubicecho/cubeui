@@ -14,15 +14,17 @@
     "install-test": "node scripts/install-test.mjs",
     "page:build": "node scripts/build-page.mjs",
     "page:check": "node scripts/build-page.mjs --check",
-    "docs:check": "node scripts/check-vocabulary.mjs",
+    "skill:build": "node scripts/build-install-table.mjs && node scripts/build-props-tables.mjs",
+    "skill:check": "node scripts/build-install-table.mjs --check && node scripts/build-props-tables.mjs --check",
+    "docs:check": "node scripts/check-vocabulary.mjs && node scripts/check-skill-files.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.web.json",
     "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build",
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "node --test 'scripts/**/*.test.mjs' && vitest run",
-    "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run page:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run docs:check && npm run lint && npm test"
+    "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run page:build && npm run skill:build && npm run registry:check",
+    "check": "npm run tokens:check && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run skill:check && npm run docs:check && npm run lint && npm test"
   },
   "engines": {
     "node": ">=20"
