@@ -4,8 +4,8 @@
 // grepped for the sections it expected and never saw the rest. So the skill is split by component
 // group, and this holds the split:
 //
-// 1. No file under `skill/` is over LIMIT. `SKILL.md` has a larger budget because it holds the
-//    two things every path needs, the web choosing table and the slot vocabulary.
+// 1. No file under `skill/` is over LIMIT, `SKILL.md` included: the slot vocabulary moved out of it
+//    into `vocabulary.md` rather than the router getting a larger budget.
 // 2. A file over CONTENTS_AFTER lines opens with a contents list linking each of its `##`
 //    headings, so a reader that gets only the top of it still knows what is below.
 // 3. Every relative link between the skill's files, and from the pointer in
@@ -21,9 +21,7 @@ const POINTER = join(ROOT, ".claude/skills/cubeui/SKILL.md");
 
 const KB = 1024;
 const LIMIT_KB = 25;
-const SKILL_MD_LIMIT_KB = 30;
 const LIMIT = LIMIT_KB * KB;
-const SKILL_MD_LIMIT = SKILL_MD_LIMIT_KB * KB;
 const CONTENTS_AFTER = 300;
 
 /** GitHub's heading anchor: lower case, punctuation dropped, spaces to hyphens. */
@@ -96,10 +94,9 @@ for (const file of files) {
   const text = readFileSync(file, "utf8");
   const name = relative(ROOT, file);
   const size = Buffer.byteLength(text);
-  const limit = file === join(SKILL_DIR, "SKILL.md") ? SKILL_MD_LIMIT : LIMIT;
-  if (size > limit) {
+  if (size > LIMIT) {
     problems.push(
-      `${name} is ${Math.round(size / KB)} KB, over ${limit / KB} KB. Split it by component group.`,
+      `${name} is ${Math.round(size / KB)} KB, over ${LIMIT_KB} KB. Split it by component group.`,
     );
   }
 
@@ -147,4 +144,4 @@ if (problems.length > 0) {
   }
   process.exit(1);
 }
-console.log(`${files.length} skill files: each within its size, each link resolves.`);
+console.log(`${files.length} skill files: each within ${LIMIT_KB} KB, each link resolves.`);

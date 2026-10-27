@@ -1,6 +1,7 @@
 # cubeui controls
 
-Read [SKILL.md](../SKILL.md) first. These are the controls, not the shells: each one is a real
+Read [SKILL.md](../SKILL.md) first, and [vocabulary.md](../vocabulary.md) before writing a slot
+prop. These are the controls, not the shells: each one is a real
 control with a real accessible name, usable on its own or inside a `FormField`. Every one of them
 has a bound counterpart in [forms/index.md](../forms/index.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.

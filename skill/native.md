@@ -1,6 +1,6 @@
 # cubeui on React Native
 
-Part of the cubeui skill, for an Expo app. Read [SKILL.md](SKILL.md) first: the slot vocabulary and the "no children" rule are there. Each item's import line is in [install-paths.md](install-paths.md).
+Part of the cubeui skill, for an Expo app. Read [SKILL.md](SKILL.md) first for the "no children" rule, and [vocabulary.md](vocabulary.md) for the slot vocabulary. Each item's import line is in [install-paths.md](install-paths.md).
 
 ## Shapes on React Native
 

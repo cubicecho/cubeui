@@ -11,7 +11,9 @@ copies and the text an agent reads in this repo are the same files rather than t
 drift.
 
 - [skill/SKILL.md](../../../skill/SKILL.md) — which platform half you are in,
-  the vocabulary, and which component owns which shape
+  and which component owns which shape
+- [skill/vocabulary.md](../../../skill/vocabulary.md) — the slot vocabulary: what a `…Slot` prop
+  takes and the words every component shares. Read it before writing a slot prop
 - [skill/native.md](../../../skill/native.md) — the same choosing table for an Expo app
 - [skill/install-paths.md](../../../skill/install-paths.md) — where every item lands and what
   to import from it, generated from the registry

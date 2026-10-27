@@ -1,7 +1,7 @@
 # cubeui forms
 
-Read [SKILL.md](../SKILL.md) first — the slot vocabulary and the "no children" rule are there and
-are not repeated here.
+Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
+[vocabulary.md](../vocabulary.md) for the slot vocabulary. Neither is repeated here.
 
 **Web first.** `FormField` and the `@cubeui/app-form` fields are DOM components with no React
 Native half. `RadioGroupField` is one source compiled for both, with the same props on each. An

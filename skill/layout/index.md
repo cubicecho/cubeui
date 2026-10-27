@@ -1,7 +1,7 @@
 # cubeui layout
 
-Read [SKILL.md](../SKILL.md) first — the slot vocabulary and the "no children" rule are there and
-are not repeated here.
+Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
+[vocabulary.md](../vocabulary.md) for the slot vocabulary. Neither is repeated here.
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections, disclosures, sidebars and the top bar are written once in React Native and compiled to
