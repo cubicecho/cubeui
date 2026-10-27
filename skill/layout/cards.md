@@ -51,6 +51,12 @@ Empty means no element (`[]`, `null`, `false`), or a `List` with no rows —
 other element is drawn as it is, even one that renders nothing, so a body wrapped in a `View` or a
 component of your own decides the empty case itself.
 
+**`false` counts as empty.** The test keeps only elements, so `contentSlot={hasStats && <DescriptionList … />}`
+shows `emptySlot` while `hasStats` is false, the same as `[]` or `null`. When `hasStats` is true
+the `DescriptionList` is an element and is drawn, even with no rows: only a `List` is looked
+inside. So pass the condition that means "nothing to show", not a component that happens to draw
+nothing.
+
 What goes in `emptySlot` inside a card is one muted line, `<EmptyState compact … />` — see
 [Empty states](lists.md#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
@@ -92,11 +98,47 @@ is laid out as a row. So a long title with two controls is still a `CardLayout`:
 `Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
 `CardAction`, which is absolute and reserves no room.
 
+**A card's status goes in `actionSlot` too.** `CardLayout` has no `badgesSlot` (that word is a
+list row's), and does not need one: the header's far end takes any element, a `Badge` as well as
+a control, and a fragment of both is laid out as one row with a gap, wrapping as above. Put the
+status first and the controls after it, and do not wrap them in a `<div className="flex gap-2">`
+of your own: the row already is one.
+
+```tsx
+<CardLayout
+  title={project.name}
+  iconSlot={<Folder />}
+  actionSlot={
+    <>
+      <Badge variant={project.archived ? "default" : "positive"} label={project.archived ? "Archived" : "Active"} />
+      <Button size="icon-sm" variant="outline" aria-label="Edit project" iconSlot={<Pencil />} onPress={edit} />
+    </>
+  }
+  …
+/>
+```
+
 The `footerActionsSlot` row **wraps when the card is narrow**: three buttons in a phone-width card
 put the last one on a second line, still against the right edge, rather than running the first
 out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
+
+**`footerSlot` is for one thing.** Its elements are placed straight into the footer, which is a
+row (`flex-row items-center`) with no gap: each at its own width, none stretched, a button
+included. With `footerActionsSlot` beside it the footer is `justify-between` across *every*
+child, so a second `footerSlot` element lands in the middle of the footer rather than beside the
+first. Two things that belong together at the start — a "Read only" note and a delete
+`ConfirmButton` — go in one row of your own, `<View className="flex-row items-center gap-2">` on
+a device and `<div className="flex items-center gap-2">` on the web. That groups them, which the
+shell cannot know to do; it is not the wrapping-to-align the slot rule forbids.
+
+**A small muted note has no component of its own.** Words in a slot are a `<Text>` (a `<p>` or
+`<span>`) of yours, and secondary text is `text-foreground/60` at `text-sm`, the step every
+muted line in the set uses: `footerSlot={<Text className="text-foreground/60 text-sm">Last synced
+an hour ago</Text>}`. The rule against a hand-written muted `<p>` is about `emptySlot` alone, where
+`<EmptyState compact />` is the component. A *state* rather than a sentence — "Read only",
+"Archived" — is a `Badge`, and goes in `actionSlot` with the card's other status.
 
 ## Sections
 
