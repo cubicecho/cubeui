@@ -33,7 +33,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
 | `onOpenChange` | `((open: boolean) => void)` |  |  |
 | `size` | `keyof typeof SIZES` | `"md"` |  |
-| `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. |
+| `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. Several elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end. |
 | `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |

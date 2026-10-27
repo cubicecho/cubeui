@@ -79,6 +79,9 @@ export type CardLayoutProps = {
   /**
    * The footer's start. A timestamp, a note, a destructive action held away from the rest. Words
    * come in a `<Text>` of the caller's, as in every slot.
+   *
+   * Several elements — a fragment, an array — sit together in one row with a small gap, and wrap
+   * on a narrow card; `footerActionsSlot` stays at the far end. There is no row of your own to add.
    */
   footerSlot?: SlotNode | undefined;
   /** The footer's end. The buttons. Given alone, the footer is simply right-aligned. */
@@ -140,6 +143,14 @@ const HEADER_ACTION = cn(
  * line against the right edge, where the primary action is.
  */
 const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
+
+/**
+ * The `footerSlot` row: `ACTIONS` held at the start. Its elements were once placed straight into
+ * the footer, and with `footerActionsSlot` beside them the footer's `justify-between` spread
+ * *every* child, so a second one landed mid-footer rather than beside the first. Grouped here,
+ * they sit together at `ACTIONS`' `gap-2`, and the footer splits between this row and that one.
+ */
+const FOOTER_START = "min-w-0 shrink flex-row flex-wrap items-center gap-2";
 
 /**
  * Whether a body holds nothing to draw: no element at all, or one `List` with no rows.
@@ -279,7 +290,7 @@ export function CardLayout({
             footerClassName,
           )}
         >
-          {footerSlot}
+          {footerSlot ? <View className={FOOTER_START}>{footerSlot}</View> : null}
           {footerActionsSlot ? <View className={ACTIONS}>{footerActionsSlot}</View> : null}
         </CardFooter>
       ) : null}

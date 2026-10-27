@@ -69,6 +69,15 @@ const SR_ONLY = Platform.select({
  */
 const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
 
+/**
+ * The `footerSlot` row, grouped for the reason `CardLayout`'s is: with `footerActionsSlot` beside
+ * it the footer is `justify-between` from `sm` up, and that spread every element of a fragment
+ * across the footer instead of keeping them together at its start. Below `sm` it stacks as
+ * `DialogFooter` does, at the same `gap-2`, so a phone draws what it drew before.
+ */
+const FOOTER_START =
+  "flex-col-reverse gap-2 sm:min-w-0 sm:shrink sm:flex-row sm:flex-wrap sm:items-center";
+
 export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
   contentSlot: SlotNode;
@@ -90,7 +99,10 @@ export type DialogLayoutProps = {
   open?: boolean | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
   size?: keyof typeof SIZES | undefined;
-  /** The footer's start. A destructive action, or a word on why the confirm is refusing. */
+  /**
+   * The footer's start. A destructive action, or a word on why the confirm is refusing. Several
+   * elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end.
+   */
   footerSlot?: SlotNode | undefined;
   /**
    * The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned.
@@ -289,7 +301,7 @@ export function DialogLayout({
                     footerClassName,
                   )}
                 >
-                  {footerSlot}
+                  {footerSlot ? <View className={FOOTER_START}>{footerSlot}</View> : null}
                   {actions ? <View className={ACTIONS}>{actions}</View> : null}
                 </DialogFooter>
               ) : null

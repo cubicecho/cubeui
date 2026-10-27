@@ -125,14 +125,11 @@ out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
 
-**`footerSlot` is for one thing.** Its elements are placed straight into the footer, which is a
-row (`flex-row items-center`) with no gap: each at its own width, none stretched, a button
-included. With `footerActionsSlot` beside it the footer is `justify-between` across *every*
-child, so a second `footerSlot` element lands in the middle of the footer rather than beside the
-first. Two things that belong together at the start — a "Last synced" note and a delete
-`ConfirmButton` — go in one row of your own, `<View className="flex-row items-center gap-2">` on
-a device and `<div className="flex items-center gap-2">` on the web. That groups them, which the
-shell cannot know to do; it is not the wrapping-to-align the slot rule forbids.
+**`footerSlot` groups its own elements.** Pass several — a "Last synced" note and a delete
+`ConfirmButton`, as a fragment — and the shell sets them in one row at the footer's start, `gap-2`
+apart, wrapping on a narrow card; with `footerActionsSlot` beside it the footer splits between that
+row and the buttons at the far end. Do not wrap them in a `<View>` or `<div>` of your own. A single
+element sits at the start at its own width, a button included.
 
 **A small muted note has no component of its own.** Words in a slot are a `<Text>` (a `<p>` or
 `<span>`) of yours, and secondary text is `text-foreground/60` at `text-sm`, the step every

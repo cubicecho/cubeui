@@ -114,6 +114,38 @@ export const SplitFooter: Story = {
 };
 
 /**
+ * Two elements in `footerSlot` beside `footerActionsSlot`. The shell groups them: they sit together
+ * at the start, `gap-2` apart, and the footer splits between that row and the buttons. They used
+ * to be spread by the footer's `justify-between`, which put the second one mid-footer.
+ */
+export const GroupedFooterStart: Story = {
+  args: {
+    title: "Danger zone",
+    footerSlot: (
+      <>
+        <span className="text-foreground/60 text-sm">Synced an hour ago</span>
+        <Button size="sm" variant="destructive-outline" content="Delete" />
+      </>
+    ),
+    footerActionsSlot: <Button size="sm" variant="positive" content="Save" />,
+    contentSlot: <Rows />,
+  },
+  play: async ({ canvas }) => {
+    const note = canvas.getByText("Synced an hour ago").getBoundingClientRect();
+    const remove = canvas.getByRole("button", { name: "Delete" }).getBoundingClientRect();
+    const save = canvas.getByRole("button", { name: "Save" }).getBoundingClientRect();
+    const title = canvas.getByText("Danger zone").getBoundingClientRect();
+    await expect({
+      // `gap-2`: 8px between the two, at the card's start edge.
+      gap: Math.round(remove.left - note.right),
+      atStart: Math.round(note.left - title.left),
+      // The space is between Delete and Save, not between the note and Delete.
+      split: save.left - remove.right > 8,
+    }).toEqual({ gap: 8, atStart: 0, split: true });
+  },
+};
+
+/**
  * `footerActionsSlot` alone right-aligns. This is the common case, and it needs no `footerSlot`.
  */
 export const ActionsOnly: Story = {
