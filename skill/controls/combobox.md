@@ -1,6 +1,14 @@
-# Combobox and segmented control
+# cubeui controls: Combobox and segmented control
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
+
+**Contents**
+
+- [Segmented control](#segmented-control)
+- [Combobox](#combobox)
+  - [A list too long to scroll](#a-list-too-long-to-scroll)
+  - [A menu that fills when it opens](#a-menu-that-fills-when-it-opens)
+  - [Several at once](#several-at-once)
 
 ## Segmented control
 
@@ -13,6 +21,20 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
   <SegmentedButton value="parallel">Parallel</SegmentedButton>
 </SegmentedGroup>
 ```
+
+<!-- props:SegmentedGroup -->
+`SegmentedGroup`'s props, from the TSDoc in `registry/ui/segmented.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `value` | `TValue` |  | The current pill's `value`. With it, a `SegmentedButton value="week"` works out whether it is current, so no pill needs `active={x === value}`. |
+| `onValueChange` | `((value: TValue) => void)` |  | Called with a pill's `value` when it is pressed. Typed as the group's `value` is, so a group over a closed set hands back a member of the set and the caller neither looks it up again nor asserts it. |
+| `ref` | `React.Ref<React.ElementRef<typeof View>>` |  |  |
+| `variant` | `keyof typeof SEGMENTED_GROUP_VARIANTS` | `"framed"` | `framed` (the default) draws the input-height box; `plain` draws the row alone. |
+| `labelHideBelow` | `keyof typeof LABEL_HIDE_BELOW` |  | Under this width a pill with an `iconSlot` draws the icon alone; `always` is a row of icons at every width. Said here and not on each pill because the pills in a row should agree. The label is still the pill's name, read by a screen reader, and a pill with no `iconSlot` keeps its label. |
+| `className` | `string` |  |  |
+| `children` (required) | `ReactNode` |  |  |
+<!-- /props -->
 
 With an icon on each pill, and the labels dropped on a narrow screen:
 
@@ -60,6 +82,37 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 <Combobox options={LISTS} value={list} onValueChange={setList} placeholder="Choose one" />
 <Combobox multiple options={TAGS} value={tags} onValueChange={setTags} placeholder="No tags" />
 ```
+
+<!-- props:Combobox -->
+`Combobox`'s props, from the TSDoc in `registry/layout/combobox.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `className` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+| `options` (required) | `readonly SelectEntry[]` |  |  |
+| `placeholder` | `string` |  | What the trigger says with nothing chosen. |
+| `open` | `boolean` |  | Whether the menu is open, and being told when that changes. The same controlled pair as everywhere else in the set; pass `onOpenChange` on its own to be told without taking over. |
+| `onOpenChange` | `((open: boolean) => void)` |  |  |
+| `contentClassName` | `string` |  | The dropdown's class. `className` still goes to the trigger, which is the control. |
+| `searchable` | `boolean` |  | A box to type in above the list. It matches the label, the group heading and an option's `keywords`, every typed word in any order. |
+| `searchPlaceholder` | `string` |  | The search box's placeholder. Read only when `searchable`. |
+| `searchLabel` | `string` |  | The search box's accessible name. cmdk points its input at a hidden `<label>` it renders from `Command`'s `label`, and the native half makes it the input's `aria-label`: a placeholder is not a name. |
+| `popoverLabel` | `string` |  | What the search menu is called. On the web it is a `role="dialog"`, and a dialog needs a name. Rendered inside it rather than borrowed from the trigger: a label outside the dialog resolves to nothing the moment the thing it points at is hidden or re-keyed. |
+| `emptyMessage` | `string` |  | What the list says when the search matches nothing and there is nothing to add. |
+| `onCreateOption` | `((name: string) => void)` |  | Offer to create what was typed, as a row at the end of the search menu. The handler owns the creation *and* the selection: it is usually a mutation, and only the caller knows the id the new row came back with. Passing it draws the search menu, since the name has to be typed. |
+| `createLabel` | `string` |  | What the create row says, before the quoted name. |
+| `freeText` | `boolean` |  | Hold what was typed, not only what is listed: the options are suggestions, not a closed set. The create row writes the typed text as the value itself, so no `onCreateOption` is needed (and one passed beside it is not called), and a held value no option covers is drawn as its own text. With `multiple` it is a tag input: each typed value is a chip, and one already held (ignoring case) is refused, with the reason said in the menu. |
+| `duplicateMessage` | `((text: string) => string)` |  | What the menu says when the text typed into a `freeText` `multiple` combobox is already held. |
+| `onRefusalChange` | `((message: string) => void)` |  | Told the refusal's message when the menu starts refusing what was typed, and `undefined` when it stops. What `ComboboxField` puts on the field as its error. |
+| `multiple` | `false` |  |  |
+| `value` | `string` |  |  |
+| `onValueChange` (required) | `(value: string) => void` |  |  |
+| `maxDisplay` | `number` |  | Chips to draw before collapsing to a count. `0` always shows the count. |
+| `clearable` | `boolean` |  | A Clear button at the foot of the menu, while anything is chosen. |
+
+It also takes the props declared in `registry/ui/select-base.ts`: `aria-describedby`, `aria-invalid`, `aria-label`, `aria-labelledby`, `aria-required`, `id`, `onBlur`.
+<!-- /props -->
 
 One control for a value chosen from an array of options. Without `multiple` it holds one `string`;
 with it, a `string[]`, shown as chips on the trigger ([Several at once](#several-at-once)).

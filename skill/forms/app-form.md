@@ -1,4 +1,4 @@
-# Forms
+# cubeui forms: Forms
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every form here shares.
 
@@ -293,6 +293,17 @@ input-height, which is right. Pass `loadingClassName` only for a control that is
   }
 />
 ```
+
+<!-- props:FieldRow -->
+`FieldRow`'s props, from the TSDoc in `registry/ui/form.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `ReactNode` |  | The fields, as the web `FieldRow` takes them. Each gets a cell of its own, and one that renders nothing (`{isEdit && <field.InputField … />}`) leaves no empty cell behind. |
+| `perRow` | `keyof typeof CELL_SIZE` | `2` | How many fit on a line before the row wraps. |
+| `className` | `string` |  |  |
+| `cellClassName` | `string` |  |  |
+<!-- /props -->
 
 Do not write `grid grid-cols-2 gap-4` for this. A grid keeps its columns at every width, so the
 row that reads well on a settings page becomes two 140px fields inside a dialog and the values in

@@ -1,6 +1,15 @@
-# List pages
+# cubeui layout: List pages
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
+
+**Contents**
+
+- [List pages](#list-pages)
+  - [QueryState](#querystate)
+  - [Empty states](#empty-states)
+  - [DisclosureRow](#disclosurerow)
+  - [List](#list)
+  - [ListItem](#listitem)
 
 ## List pages
 
@@ -69,6 +78,21 @@ The shells for the shape every list route is: a ladder of states, then a list of
   small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
   it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
 
+
+<!-- props:QueryState -->
+`QueryState`'s props, from the TSDoc in `registry/layout/query-state.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `query` (required) | `QueryLike` |  |  |
+| `what` (required) | `string` |  | What could not be fetched, in the reader's words: "your agents", "the archive". |
+| `count` (required) | `number` |  | How many rows the screen is about to draw. |
+| `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
+| `rows` | `number` | `3` | How many placeholder rows stand in for the list while it loads. |
+| `compact` | `boolean` | `false` | The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row rather than cards. For a list that lives in a sidebar, where a card-sized error would be taller than the list it replaced. |
+| `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `QueryError`. |
+| `className` | `string` |  |  |
+<!-- /props -->
 ### Empty states
 
 `EmptyState` (`@cubeui/empty-state`, on both halves, and re-exported by `@cubeui/page`) is what an
@@ -91,6 +115,21 @@ and which one is a question of **where the list is**, not how much there is to s
   actionSlot={<Button variant="outline" size="xs" onPress={create} content="Add one" />}
 />
 ```
+
+<!-- props:EmptyState -->
+`EmptyState`'s props, from the TSDoc in `registry/layout/empty-state.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `iconSlot` | `SlotNode` |  |  |
+| `icon` | `never` |  |  |
+| `title` (required) | `string` |  |  |
+| `actionSlot` | `SlotNode` |  |  |
+| `className` | `string` |  | The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. |
+| `compact` | `false` |  | The one muted line that stands in for a short list *inside* something else — a card, a sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line inside a region that already has its heading is never what a screen reader lands on. The same word, for the same place, as `QueryState`'s `compact` — whose `emptySlot` it usually is. |
+| `description` | `ReactNode` |  |  |
+| `level` | `1 \| 2 \| 3` |  | Makes the title a heading of this rank. Leave it off for an empty list inside a page that already has its heading. Set it when the empty state *is* the page — a first run, a record that was not found, a link that did not work — so a screen reader has a heading to land on: `1` for a whole screen, `2` or `3` under a title that is already there. The text is the same size at every level, as on `Section`: pick the rank by where it sits, not by how it looks. |
+<!-- /props -->
 
 - **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `actionSlot`
   under them, centred, with `py-10` around it and no edge. The title is `text-base`, a step over
@@ -135,6 +174,23 @@ and which one is a question of **where the list is**, not how much there is to s
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
+
+<!-- props:DisclosureRow -->
+`DisclosureRow`'s props, from the TSDoc in `registry/layout/disclosure-row.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `open` (required) | `boolean` |  |  |
+| `onOpenChange` (required) | `(open: boolean) => void` |  |  |
+| `title` (required) | `ReactNode` |  |  |
+| `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
+| `meta` | `ReactNode` |  | The grey line of facts beside the title — a name, a time, a count. |
+| `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
+| `actionSlot` | `SlotNode` |  | Buttons, outside the disclosure: a row is opened by its heading and acted on by these. |
+| `contentSlot` | `SlotNode` |  | What the row opens onto. |
+| `className` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+<!-- /props -->
 ### List
 
 The list rows sit in: the `<ul>`, the rule between rows and the padding around each, so a page
@@ -148,6 +204,17 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   ))}
 />
 ```
+
+<!-- props:List -->
+`List`'s props, from the TSDoc in `registry/layout/list.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `DisclosureRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
+| `label` | `string` |  | What the list is a list of, in the reader's words: "Workspaces". Its accessible name. |
+| `divided` | `boolean` | `true` | A rule between rows. On unless turned off, for rows that are cards of their own. |
+| `className` | `string` |  |  |
+<!-- /props -->
 
 - **Each element of `contentSlot` is one row**, and the list writes the `<li>` around it. An array
   or a fragment is opened first, so `rows.map(...)` beside a fixed last row is that many rows. Give
@@ -209,6 +276,24 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   ))}
 />
 ```
+
+<!-- props:ListItem -->
+`ListItem`'s props, from the TSDoc in `registry/layout/list-item.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `title` (required) | `ReactNode` |  | What the row is: a person's name, a todo's text. A string is one line, truncated when it runs long; an element — a name with a badge beside it — is placed as it is and styles itself. |
+| `description` | `ReactNode` |  | The line under the title — an email, the first line of the notes. A string is two lines at most; an element is placed as it is. |
+| `leadingSlot` | `SlotNode` |  | The start of the row, before the title: an avatar, a checkbox, an icon. Placed as given — not sized or recoloured the way `iconSlot` is, because a checkbox or an avatar is not a glyph. It sits **outside** the pressed area, so a checkbox here stays its own control. |
+| `meta` | `ReactNode` |  | The small grey facts at the row's far end, before `actionSlot`: "2 days ago", "12", a badge. A string is drawn muted and extra small; an element is placed as it is. Inside the pressed area. |
+| `actionSlot` | `SlotNode` |  | The row's far end, **outside** the pressed area: an edit button, a menu, a delete. One control or a fragment of them. A control nested in a button is invalid HTML and, in practice, a click that also opens the row. |
+| `onPress` | `(() => void)` |  | Makes the row something you press — open the person, edit the todo. The title, description and `meta` become one button between `leadingSlot` and `actionSlot`, so neither of those is nested in it. |
+| `href` | `string` |  | Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web, so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On device there is no URL to open, so `onPress` is what navigates. |
+| `linkSlot` | `ReactElement` |  | The router's link the row is, as an element with no children — `<Link href="/people/1" />` — which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`, which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say. |
+| `selected` | `boolean` | `false` | The chosen row: the one open beside the list. Tinted in `active`, it stays that under the pointer, and a pressable row says so with `aria-current`. |
+| `className` | `string` |  |  |
+| `titleClassName` | `string` |  |  |
+<!-- /props -->
 
 - `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
   sized the way `iconSlot` is, so size an icon yourself (`size-4`), and it is **outside** the pressed

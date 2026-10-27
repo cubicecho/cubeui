@@ -1,4 +1,4 @@
-# Menus and command lists
+# cubeui controls: Menus and command lists
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 
@@ -22,6 +22,34 @@ on both platforms:
   </MenuContent>
 </Menu>
 ```
+
+<!-- props:Menu -->
+`Menu`'s props, from the TSDoc in `registry/ui/menu.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `open` | `boolean` |  | Both optional, together, as on `Popover`: pass neither and the menu keeps its own state. |
+| `onOpenChange` | `((open: boolean) => void)` |  |  |
+| `defaultOpen` | `boolean` | `false` |  |
+| `children` (required) | `ReactNode` |  |  |
+<!-- /props -->
+
+<!-- props:MenuItem -->
+`MenuItem`'s props, from the TSDoc in `registry/ui/menu.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `iconSlot` | `SlotNode` |  | An icon from `@cubeui/icons`. Drawn quieter than the label, at `/60` as Command's row icons are, so the words lead; on a destructive row it is `text-negative` with the label. |
+| `label` (required) | `string` |  | The row's text, and what typeahead matches on the web. |
+| `trailing` | `ReactNode` |  | After the label, at the far edge: a shortcut, a count, a check. A string is drawn muted. |
+| `destructive` | `boolean` | `false` | Draw the row in the destructive colour, for the action that deletes. |
+| `disabled` | `boolean` | `false` |  |
+| `onSelect` | `(() => void)` |  | Runs when the row is chosen. The menu closes itself afterwards; do not close it here. |
+| `focusesElsewhere` | `boolean` | `false` | The row hands focus to something else — a field it reveals with `autoFocus` — so this close must not put focus back on the trigger, which would blur that target (and close it on `onBlur` before anything is typed). Only for the close this row causes: Escape, a click outside and every other row still return focus to the trigger. |
+| `className` | `string` |  |  |
+| `href` | `string` |  | Where the row goes, with no router: on the web the row is an `<a href>`, so it navigates, opens in a new tab and shows its URL. On device it does nothing more than `onSelect` — a native app navigates through its router, which is `linkSlot`. |
+| `linkSlot` | `ReactElement` |  | The app's router link, as an element with no children — `<Link to="/x" preload="intent" />`. The row is drawn inside it, so on the web the menu item *is* the router's `<a>`, and hover and focus reach the link's own handlers (which is what lets a router preload on intent). On device it is cloned with `asChild` around the row, the `<Link asChild>` convention. Wins over `href`; a `disabled` row renders neither and does not navigate. |
+<!-- /props -->
 
 - **An icon-only trigger** is an icon `Button` with an `aria-label` (see
   [Icon buttons](buttons.md#icon-buttons)) under `MenuTrigger asChild`.

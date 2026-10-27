@@ -1,4 +1,4 @@
-# Theme
+# cubeui controls: Theme
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 
@@ -15,6 +15,25 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 import AsyncStorage from "@react-native-async-storage/async-storage";
 useThemePreference({ storage: AsyncStorage });
 ```
+
+<!-- props:ThemePicker -->
+`ThemePicker`'s props, from the TSDoc in `registry/ui/theme-picker.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `variant` | `"card" \| "compact"` |  | `card` (the default): three tiles, icon over caption, for a settings page. `compact`: one row of icon-only segments, the caption as the name and (on the web) the tooltip. |
+| `value` | `ThemePreference` |  | The checked choice, for a controlled picker. Left out, the picker is bound to the hook. |
+| `onValueChange` | `((value: ThemePreference) => void)` |  | Told of every choice — the only way a controlled picker changes; a bound one also stores it. |
+| `disabled` | `boolean` |  |  |
+| `id` | `string` |  |  |
+| `className` | `string` |  |  |
+| `aria-label` | `string` |  | The group's name. Defaults to "Theme"; pass `aria-labelledby` instead when a heading names it. |
+| `aria-labelledby` | `string` |  |  |
+| `aria-describedby` | `string` |  |  |
+| `palettes` | `readonly PalettePreference[]` |  | Offer a palette as well, under the theme: these, in this order. Left out, no palette choice. |
+| `palette` | `PalettePreference` |  | The checked palette, for a controlled picker. Left out, the palette is bound to its hook. |
+| `onPaletteChange` | `((value: PalettePreference) => void)` |  | Told of every palette chosen; a bound picker also stores it. |
+<!-- /props -->
 
 `@cubeui/theme-picker` works on both platforms. `ThemePicker` is a `RadioGroup variant="card"`
 with Light, Dark and System. Do not hand-roll it from `RadioGroup`. The control is the easy part,

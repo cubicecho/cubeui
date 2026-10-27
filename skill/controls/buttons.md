@@ -1,4 +1,4 @@
-# Buttons
+# cubeui controls: Buttons
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 
@@ -24,6 +24,27 @@ the far end, so those are the props:
 <Button variant="outline" linkSlot={<Link to="/docs" />} content="Docs" />
 <Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
 ```
+
+<!-- props:Button -->
+`Button`'s props, from the TSDoc in `registry/ui/button.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link" \| null` |  |  |
+| `className` | `string` |  |  |
+| `content` | `React.ReactNode` |  | The label. A string is drawn in the variant's ink; anything else is rendered as it is — a select's trigger passes the chosen value's own `<Text>`. |
+| `iconSlot` | `SlotNode` |  | Before the label, or alone in an `icon*` size, where `aria-label` is required. |
+| `trailingSlot` | `SlotNode` |  | The far end, after the label: a trigger's chevron, a count. |
+| `linkSlot` | `React.ReactElement` |  | The link this button is, as an element with no children: `<a href="/docs" />`, a router's `<Link to="/docs" />`. It gets the button's look and press, and the icon and label are put inside it. |
+| `loading` | `boolean` |  | Pressed, and the work is still running: disabled, `aria-busy`, and a spinner where the icon is — or before the label when there is none. |
+| `loadingLabel` | `string` |  | The label while `loading`: "Saving…". Without one the label stays as it was. |
+| `size` | `IconSize` |  |  |
+| `aria-label` | `string` |  |  |
+| `hint` | `React.ReactNode` |  | Why it is unavailable, or what it will do: the tooltip, and read after the name whether or not the tooltip is open. On device only a string is read; a node is shown and not read. |
+| `tooltip` | `boolean` | `true` | Off, the button keeps its `hint` as its description and drops the tooltip. A tooltip is only ever drawn for a `hint`. |
+| `side` | `TooltipSide` | `"top"` | Which edge of the button the tooltip sits on. |
+| `aria-describedby` | `string` |  | More ids to describe the button with, kept ahead of the hint's own. Web only: a device describes a control with its accessibility hint, which is what `hint` becomes there. |
+<!-- /props -->
 
 - **`variant`** says what the press does, and each one is a token:
 
@@ -147,6 +168,22 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 />
 ```
 
+<!-- props:CopyButton -->
+`CopyButton`'s props, from the TSDoc in `registry/ui/copy-button.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `value` (required) | `string` |  | The text that goes on the clipboard. |
+| `label` | `string` |  | The accessible name before the press: say what is copied when the screen has more than one thing that could be — "Copy endpoint URL". The default is `Copy`. For the moment after a press the name is `Copied`, whatever this says. Inside a `CodeBlock` with a `title`, the default is "Copy {title}". |
+| `variant` | `ButtonProps["variant"]` |  | The button's variant. The default is `outline`. |
+| `size` | `ButtonProps["size"]` |  | The button's size. The default is `icon-sm`, which sits flush in a row of small text. |
+| `onCopied` | `(() => void)` |  | Called once the text is on the clipboard — a toast, an analytics event. |
+| `onError` | `((error: unknown) => void)` |  | Called when the clipboard refused the text — an insecure origin, a denied permission. The button does not turn into a tick, so it never claims a copy that did not happen; this is where the caller says so, since a shell holds no toasts. |
+| `disabled` | `boolean` |  | Off: a press copies nothing and calls neither `onCopied` nor `onError`. Say why with `hint`, as on `Button` — "Give the webhook an id first". |
+| `hint` | `ButtonProps["hint"]` |  | The button's tooltip, as on `Button`. With `disabled` it keeps the button focusable and hoverable (`aria-disabled`), so the reason it is off can still be read. |
+| `className` | `string` |  | The button's class: its position, say `absolute top-2 right-2` over a snippet. |
+<!-- /props -->
+
 Beside a block of text it goes in the block's `actionSlot` — see [Code block](code-and-markdown.md#code-block) — not in
 an `absolute` corner over it.
 
@@ -187,6 +224,25 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
   onError={(error) => toast.error(String(error))}
 />
 ```
+
+<!-- props:DownloadButton -->
+`DownloadButton`'s props, from the TSDoc in `registry/ui/download-button.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `source` | `DownloadContent \| (() => DownloadContent \| Promise<DownloadContent>)` |  | The file's content, or a function that fetches it. A function is called on the press and not before, so a list of fifty rows fetches nothing until one is asked for. |
+| `href` | `never` |  |  |
+| `filename` (required) | `string` |  | The name the file is saved under, extension included: `note.md`. |
+| `mimeType` | `string` |  | The type of a `source` that is a string, and on device of an `href`. A `Blob` carries its own. The default is `text/plain` for a `source`. |
+| `label` | `string` | `"Download"` | What the button says. At a text size (`sm`, `default`, `lg`) it is drawn beside the icon — an "Export" button in a toolbar. At an `icon*` size the square has no room for words, so it is the accessible name alone: say what is downloaded when the screen has more than one thing that could be — "Download note.md". The default is `Download`. |
+| `variant` | `ButtonProps["variant"]` | `"outline"` | The button's variant. The default is `outline`. |
+| `size` | `ButtonProps["size"]` | `"icon-sm"` | The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text size draws `label` beside the icon. |
+| `destination` | `DownloadDestination` | `"ask"` | Device only: where the file goes. The default is `ask`, which leaves it to the person pressing. The browser has one answer, its own downloads, and ignores this. |
+| `disabled` | `boolean` |  |  |
+| `onDownloaded` | `(() => void)` |  | Called once the file has been handed over — a toast, an analytics event. |
+| `onError` | `((error: unknown) => void)` |  | Called when `source` or `href` threw or the platform refused the file. The button holds no toasts, so this is where the caller says so. |
+| `className` | `string` |  | The button's class. |
+<!-- /props -->
 
 - `source` is the content — a `Blob` or a string — or a function returning either, or a promise
   of either. A function is called on the press, so a list of rows fetches nothing until asked.
@@ -235,6 +291,22 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
   iconSlot={<Trash2 />}
 />
 ```
+
+<!-- props:ConfirmButton -->
+`ConfirmButton`'s props, from the TSDoc in `registry/layout/confirm-button.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `title` (required) | `ReactNode` |  | The question, as a heading. "Delete this workspace?" |
+| `description` (required) | `ReactNode` |  | What is lost if they say yes. Required, and it is the reason the component is worth installing — see the note below. |
+| `confirmLabel` | `ReactNode` | `"Delete"` | The verb on the button that does it. |
+| `cancelLabel` | `ReactNode` | `"Cancel"` |  |
+| `requireText` | `string` |  | The text to type before the confirm button unlocks — the name of the folder, the repository, the workspace. Matched exactly. For a delete that is big and cannot be undone; left out, the dialog asks with one click. |
+| `requireTextLabel` | `ReactNode` |  | The input's label. Defaults to "Type **{requireText}** to confirm". |
+| `onConfirm` (required) | `() => void` |  |  |
+
+It also takes the props declared in `registry/ui/button.tsx`: `aria-describedby`, `aria-label`, `className`, `content`, `hint`, `iconSlot`, `linkSlot`, `loading`, `loadingLabel`, `side`, `size`, `tooltip`, `trailingSlot`, `variant`.
+<!-- /props -->
 
 Do not build the `AlertDialog` by hand. There are 22 hand-written ones across these projects and
 they disagree about the button order, the confirm's variant, and what Cancel is called.

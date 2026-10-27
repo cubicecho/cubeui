@@ -1,6 +1,18 @@
-# Inputs
+# cubeui controls: Inputs
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
+
+**Contents**
+
+- [An icon in an input](#an-icon-in-an-input)
+- [Fixed text in an input](#fixed-text-in-an-input)
+- [An identifier in an input](#an-identifier-in-an-input)
+- [A field the browser can fill](#a-field-the-browser-can-fill)
+- [Search](#search)
+  - [Filter bar](#filter-bar)
+- [Password](#password)
+- [File picker](#file-picker)
+  - [As a button](#as-a-button)
 
 ## An icon in an input
 
@@ -95,6 +107,20 @@ leadingSlot={<Search />}`, and never from a `relative` div, an absolute glyph an
 <SearchInput label="Filter spells" defaultValue={initial} onChangeText={setQuery} wrapperClassName="w-64" />
 ```
 
+<!-- props:SearchInput -->
+`SearchInput`'s props, from the TSDoc in `registry/ui/search-input.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `label` | `string` |  | The accessible name. A search box usually has no visible label, and an unnamed one is read as "search field" and nothing else. `aria-label` wins over it, and a box pointed at by `aria-labelledby` or an `id` (a `<label htmlFor>`, a `FormField`) takes its name from there unless `label` is passed as well. |
+| `clearLabel` | `string` | `SEARCH_CLEAR_LABEL` | The clear button's name. Announced, since the ✕ alone says nothing. |
+| `clearable` | `boolean` | `true` | Off, there is no clear button. On, it shows only while there is text to clear, so an empty box is not a box with a dead control in it. |
+| `onSettledText` | `((text: string) => void)` |  | The text once typing has paused: what a search that asks a server sends. Called `debounce` milliseconds after the last key, and at once when the box is emptied or Enter is pressed. `onChangeText` still hears every key, so the box itself never lags. |
+| `debounce` | `number` | `SEARCH_DEBOUNCE_MS` | How long typing has to pause before `onSettledText`, in milliseconds. |
+
+It also takes the props declared in `registry/ui/input-base.ts`: `aria-describedby`, `aria-invalid`, `aria-label`, `aria-labelledby`, `autoCapitalize`, `autoComplete`, `autoCorrect`, `autoFocus`, `className`, `defaultValue`, `disabled`, `id`, `inputMode`, `max`, `maxLength`, `min`, `onBlur`, `onChangeText`, `onEscape`, `onKeyPress`, `onSubmitEditing`, `placeholder`, `prefixText`, `readOnly`, `ref`, `signed`, `step`, `suffixText`, `value`, `wrapperClassName`.
+<!-- /props -->
+
 - It is `type="search"`, so a screen reader hears a search field (`role="searchbox"` on device
   too) and a phone raises its search keyboard.
 - `label` is its accessible name, default "Search". A placeholder is not a name. `aria-label`
@@ -146,6 +172,18 @@ A password or a pasted secret is `PasswordInput`, on both halves. Do not write
 <PasswordInput value={token} onChange={(e) => setToken(e.target.value)} /> {/* web too */}
 ```
 
+<!-- props:PasswordInput -->
+`PasswordInput`'s props, from the TSDoc in `registry/ui/password-input.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `showLabel` | `string` | `"Show password"` | The reveal button's name while the value is hidden. |
+| `hideLabel` | `string` | `"Hide password"` | And while it is showing. Both are announced; the icon alone says nothing. |
+| `revealable` | `boolean` | `true` | Off, this is a plain `<Input type="password">` with no button. |
+
+It also takes the props declared in `registry/ui/input-base.ts`: `aria-describedby`, `aria-invalid`, `aria-label`, `aria-labelledby`, `autoCapitalize`, `autoComplete`, `autoCorrect`, `autoFocus`, `className`, `defaultValue`, `disabled`, `id`, `inputMode`, `leadingSlot`, `max`, `maxLength`, `min`, `onBlur`, `onChangeText`, `onEscape`, `onKeyPress`, `onSubmitEditing`, `placeholder`, `prefixText`, `readOnly`, `ref`, `signed`, `step`, `suffixText`, `value`, `wrapperClassName`.
+<!-- /props -->
+
 `@cubeui/password-input` installs to `components/password-input`. It is `Input` with
 `type="password"` and a show/hide button in its `trailingSlot`, so it takes `Input`'s props on
 each half — `onChangeText` everywhere, and on the web `onChange`, `name`, `autoComplete` and a ref
@@ -183,6 +221,21 @@ hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a fo
   onPickMany={(files) => upload(files)} // [{ name, path, type, size, text }, ...]
 />
 ```
+
+<!-- props:FilePicker -->
+`FilePicker`'s props, from the TSDoc in `registry/ui/file-picker.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `accept` | `string` |  | e.g. `"application/json,.json"`. Advisory on the dialog, which lets the user pick "All files", so the web half also applies it to what comes back — to a pick and to a drop alike. A file that does not match is skipped, never read. |
+| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file. Off, a pick is one file and a drop keeps the first one `accept` allows. |
+| `read` | `"text" \| "bytes" \| "none"` |  | What to read from each file. `text` (the default) decodes it, which is right for JSON or Markdown and corrupts a `.zip` or an image. `bytes` hands back the file undecoded as `bytes`, and leaves `text` empty. `none` reads nothing at all and hands back a `blob` to read or upload later — for a file too big to hold in memory, or one to refuse by its `size` first. |
+| `directory` | `boolean` |  | Pick a folder and everything under it instead of files: the dialog chooses a folder, a dropped folder is walked, and each file reports where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
+| `label` (required) | `string` |  | What is being picked. On the zone it is the visible heading; on the button, the accessible name. |
+| `onPick` | `(text: string, fileName: string) => void` |  | Handed the picked file's decoded text, never the `File` object itself. `File` is DOM-only, so a contract carrying one could not be implemented on native. A screen that wants the bytes, the type or the path takes `onPickMany`, whose `PickedFile` has them. With `multiple` and no `onPickMany`, called once per file, in pick order. |
+| `onPickMany` | `((files: PickedFile[]) => void)` |  | Called once per pick with every file in it, in pick order — one file without `multiple`. Given, `onPick` is not called at all. |
+| `hint` | `string` |  | The zone's second line, under `label`: what to drop, or where it goes. |
+<!-- /props -->
 
 - The caller gets plain data for each file, never a `File`, so the calling screen is the same on
   both halves. A picked file is `{ name, path, type, size, text, bytes?, blob? }`: `type` is the
@@ -262,6 +315,24 @@ directly, so you do not need a dialog around a zone.
   }
 />
 ```
+
+<!-- props:FilePickerButton -->
+`FilePickerButton`'s props, from the TSDoc in `registry/ui/file-picker.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `accept` | `string` |  | e.g. `"application/json,.json"`. Advisory on the dialog, which lets the user pick "All files", so the web half also applies it to what comes back — to a pick and to a drop alike. A file that does not match is skipped, never read. |
+| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file. Off, a pick is one file and a drop keeps the first one `accept` allows. |
+| `read` | `"text" \| "bytes" \| "none"` |  | What to read from each file. `text` (the default) decodes it, which is right for JSON or Markdown and corrupts a `.zip` or an image. `bytes` hands back the file undecoded as `bytes`, and leaves `text` empty. `none` reads nothing at all and hands back a `blob` to read or upload later — for a file too big to hold in memory, or one to refuse by its `size` first. |
+| `directory` | `boolean` |  | Pick a folder and everything under it instead of files: the dialog chooses a folder, a dropped folder is walked, and each file reports where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
+| `label` (required) | `string` |  | What is being picked. On the zone it is the visible heading; on the button, the accessible name. |
+| `onPick` | `(text: string, fileName: string) => void` |  | Handed the picked file's decoded text, never the `File` object itself. `File` is DOM-only, so a contract carrying one could not be implemented on native. A screen that wants the bytes, the type or the path takes `onPickMany`, whose `PickedFile` has them. With `multiple` and no `onPickMany`, called once per file, in pick order. |
+| `onPickMany` | `((files: PickedFile[]) => void)` |  | Called once per pick with every file in it, in pick order — one file without `multiple`. Given, `onPick` is not called at all. |
+| `iconSlot` | `SlotNode` | `<Upload />` | Drawn before the label, or alone at an `icon*` size, where `label` is only the accessible name. Pass a bare `<Upload />`; the button sizes and colours it. Defaults to the upload icon. |
+| `className` | `string` |  |  |
+
+It also takes the props declared in `registry/ui/button.tsx`: `size`, `variant`.
+<!-- /props -->
 
 - `variant` and `size` are the `Button`'s and are forwarded to it. At an `icon*` size only the
   icon is drawn. At any other size the label is drawn after the icon.

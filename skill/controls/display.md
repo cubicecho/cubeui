@@ -1,4 +1,4 @@
-# Badges, alerts and progress
+# cubeui controls: Badges, alerts and progress
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 
@@ -8,6 +8,19 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 <Progress value={done} max={turns} label="Re-embedding progress" valueLabel={`${done} of ${turns} turns`} />
 <Progress value={job.progress * 100} label={`${job.name} upload`} />
 ```
+
+<!-- props:Progress -->
+`Progress`'s props, from the TSDoc in `registry/ui/progress.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `className` | `string` |  |  |
+| `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: drawn empty and announced with no value, as Radix's is — not animated. |
+| `max` | `number` | `DEFAULT_MAX` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
+| `label` | `string` |  | What is progressing — "Re-embedding progress". The bar's accessible name. |
+| `valueLabel` | `string` |  | The value in words, read instead of the bare number: "1,204 of 5,880 turns". Without it a screen reader says the percentage, which is right when the number means nothing else. |
+| `indicatorClassName` | `string` |  | The filled part: `bg-negative` for a context window nearly full. |
+<!-- /props -->
 
 `@cubeui/progress`, on both halves, for a bar showing how much of something is done — an upload,
 a re-embed, a context window filling. It is one self-closing element: do not draw a track `div`
@@ -32,6 +45,17 @@ with a filled `div` and a `style.width` inside it.
 ```tsx
 <ColorPicker value={color} onValueChange={setColor} clearable />
 ```
+
+<!-- props:ColorDot -->
+`ColorDot`'s props, from the TSDoc in `registry/ui/color-dot.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `color` (required) | `string` |  |  |
+| `size` | `keyof typeof SIZES` | `"md"` |  |
+| `className` | `string` |  |  |
+| `label` | `string` |  | What the colour stands for, exposed as the accessible name. |
+<!-- /props -->
 
 - It is drawn inline, not in a popover: a row of swatches over a hex field, one source for both
   platforms. `<input type="color">` has no native counterpart, so there is no OS colour well.
@@ -83,6 +107,23 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 </Badge>
 ```
 
+<!-- props:Badge -->
+`Badge`'s props, from the TSDoc in `registry/ui/badge.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `variant` | `BadgeVariant` | `"default"` |  |
+| `backgroundColor` | `string` |  | Overrides the variant's background with a literal colour — for a badge standing in for a user-chosen tag or category. Passing it also drops the variant's label colour, since the caller's background is unknown and `text-neutral-foreground` would be a guess. Pair it with `readableTextColor` when the label has to stay legible on an arbitrary hue. |
+| `textColor` | `string` |  | Overrides the label's colour, for the same case as `backgroundColor`: with an arbitrary hue behind it, neither the variant's label colour nor the `text-foreground` fallback is guaranteed to be legible. `readableTextColor` is what computes the value to pass. |
+| `className` | `string` |  |  |
+| `label` | `string` |  | What the dot stands for, exposed as its accessible name. In the pill form the text is already the name, so there it only feeds `removeLabel`'s default when the children hold no text of their own. |
+| `onRemove` | `(() => void)` |  | Draws a trailing ✕, a button of its own, that calls this — a tag or a filter chip the user can take off. The ✕ is in the label's colour, and pressing it reaches nothing else on the badge. Ignored by the dot, which has no room for it, and by the web half's `asChild`, whose one child is the whole badge. |
+| `mono` | `boolean` | `false` | Sets the label in monospace at normal weight, for a machine string: an id, a tool name, a cron expression. It is on the label's type, not the container, so it reaches the `Text` on native. `variant` stays free for colour. |
+| `pulse` | `boolean` | `false` | Pulses the dot, for something live: a run in progress, a connection that is up. The dot only; a badge with children ignores it. It stops for a reader who asked for reduced motion. |
+| `removeLabel` | `string` |  | The ✕'s accessible name. Defaults to `Remove <text>`, the badge's own text. |
+| `children` | `ReactNode` |  | The label: text, a number, or elements such as an icon beside text. Absent — including an empty string — collapses the badge to a dot. |
+<!-- /props -->
+
 - `variant` is shadcn's six (`default`, `secondary`, `destructive`, `outline`, `ghost`, `link`)
   and three meanings of cubeui's own: `positive`, `warning` and `info`. There is no `success`: the
   word is `positive`, as on `Button` and in the tokens. A toast's tone is the same word:
@@ -129,6 +170,20 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 />
 ```
 
+<!-- props:Alert -->
+`Alert`'s props, from the TSDoc in `registry/ui/alert.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `variant` | `AlertVariant` | `"default"` | What kind of notice it is, which sets the tint, the icon and the role. `destructive` is an error the reader has to hear now and is announced as an `alert`; the others are a `status`. |
+| `iconSlot` | `SlotNode` |  | Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink. Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all, and the text moves to the edge. |
+| `title` | `ReactNode` |  | What happened, in a few words: "API key generated", "Last error". |
+| `description` | `ReactNode` |  | The line under the title: what it means, or what to do about it. A link may sit inside it. |
+| `actionSlot` | `SlotNode` |  | The far end: one button that deals with it — "Change the embedder", "Retry". |
+| `className` | `string` |  |  |
+| `children` | `ReactNode` |  | shadcn's compound form: `AlertTitle`, `AlertDescription`, and an icon. See the header for how they are placed. The props are the form to write here; this is the form to port. |
+<!-- /props -->
+
 - `variant` is `default` (on the card), `info`, `warning` or `destructive`. It sets the tint, the
   icon and the role — nothing else is coloured: the title and the line under it stay the
   foreground on a tint, because the variant's own hue on its own tint is under 4.5:1. Do not pass
@@ -160,6 +215,15 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 ```tsx
 <Spinner label="Loading servers" className="size-6 text-foreground/60" />
 ```
+
+<!-- props:Spinner -->
+`Spinner`'s props, from the TSDoc in `registry/ui/spinner.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Loading"` | The spinner's accessible name, announced by its `role="status"`. Say what is loading when the screen has more than one thing that could be. |
+| `className` | `string` |  | Size and colour: `size-6`, `text-foreground/60`. The default is `size-4`. |
+<!-- /props -->
 
 - A button that is working is `<Button loading>`, not a `Spinner` drawn inside one — see
   [Button](buttons.md#button).

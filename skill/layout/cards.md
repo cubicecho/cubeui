@@ -1,4 +1,4 @@
-# Cards, sections and disclosures
+# cubeui layout: Cards, sections and disclosures
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -17,6 +17,30 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   footerActionsSlot={<Button variant="positive" onClick={save} content="Save" />}
 />
 ```
+
+<!-- props:CardLayout -->
+`CardLayout`'s props, from the TSDoc in `registry/layout/card-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `SlotNode` |  | The body. |
+| `title` | `ReactNode` |  | A string, a heading, whatever names the card. Absent, no header row is drawn. On device it is rendered inside a `Text`, so pass text or inline text nodes. |
+| `level` | `1 \| 2 \| 3` | `3` | Which heading the title is, `1 \| 2 \| 3` — 3 by default, a card under a page title. A card that *is* the page (a sign-in, a token gate, a lone settings panel) passes `1`, so the page has an `<h1>`. The title is the same size at every level: pick the rank by where it sits. |
+| `description` | `ReactNode` |  | One line on what the card holds, or what changing it costs. |
+| `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button after the title, named "About <title>", and on the web a screen reader still reads it under the title. It stays inline on a card with no title, which has nothing to put the button beside, and on a card with no body and no footer, where the description is all the card says. |
+| `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
+| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
+| `actionSlot` | `SlotNode` |  | The header's far end: an add button, a menu, a switch. |
+| `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element (`[]`, `null`, `false`), or a `List` with no rows. A body of any other element is drawn as it is, even one that turns out to render nothing — pass `emptySlot` the case, or decide it yourself. |
+| `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted — data that has not arrived is not data that came back empty, and a card that says "no members yet" for half a second before showing four of them is worse than one that waits. |
+| `footerSlot` | `SlotNode` |  | The footer's start. A timestamp, a note, a destructive action held away from the rest. Words come in a `<Text>` of the caller's, as in every slot. |
+| `footerActionsSlot` | `SlotNode` |  | The footer's end. The buttons. Given alone, the footer is simply right-aligned. |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  |  |
+| `titleClassName` | `string` |  | On the title itself: its size, a `line-through`. |
+| `contentClassName` | `string` |  |  |
+| `footerClassName` | `string` |  |  |
+<!-- /props -->
 
 `emptySlot` replaces the body when `contentSlot` is empty — which is what `items.map(…)` returns for
 empty data, so write the `map` plainly and let the shell handle the nothing case. Do not write
@@ -86,6 +110,25 @@ A heading over a group of fields or rows, inside a page or a card.
 />
 ```
 
+<!-- props:Section -->
+`Section`'s props, from the TSDoc in `registry/layout/section.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `SlotNode` |  | The body: the fields, the rows, whatever the heading is over. |
+| `title` | `ReactNode` |  | The overline. A short noun phrase — "Pomodoro", "Danger zone", "Notifications". |
+| `description` | `ReactNode` |  | One line under the title, in sentence case, on what the group is for. |
+| `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button beside the title, named "About <title>", and on the web the section is still described by it. A section with no title has nothing to put the button beside, so its description stays inline. |
+| `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
+| `actionSlot` | `SlotNode` |  | The heading row's far end: an add button, a count, a switch that disables the group. |
+| `divider` | `boolean` | `false` | A hairline under the heading. Off by default; on, the group reads as one block. |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default, because a page's `PageHeader` owns the one `h1` and these are the sections under it. A section nested in a section is `3`; a section in a dialog whose title is the `h2` is `3` as well. Pick it by where the section sits, never by how big the text should look — the text is the same size at every level. |
+| `surface` | `"none" \| "card"` | `"none"` | `card` draws the group on a card: the border and background `Card` has, with the padding inside it. `none` (the default) is a label and a gap and nothing else. |
+| `className` | `string` |  |  |
+| `titleClassName` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+<!-- /props -->
+
 - One source for both platforms: the same item is `@cubeui/section` in `/r/web` and `/r/native`.
 - The title is a heading of rank `level`, **2 by default**: `PageHeader` owns the `h1`, so a
   section on a page is the one below it. Nested in another section, or in a dialog whose title is
@@ -136,6 +179,24 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
   contentSlot={completed.map((todo) => <TodoRow key={todo.id} todo={todo} />)}
 />
 ```
+
+<!-- props:Disclosure -->
+`Disclosure`'s props, from the TSDoc in `registry/layout/disclosure.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `title` (required) | `ReactNode` |  | What the button says: "Completed (3)", "Raw output". It is the button's accessible name. A string is drawn as the title; an element is placed as it is and styles itself. |
+| `description` | `ReactNode` |  | One line under the title, inside the button, drawn whether open or shut. |
+| `actionSlot` | `SlotNode` |  | The header's far end, **outside** the button: a copy button, a count, a clear-all. A control nested in a button is invalid HTML and, in practice, a click that also toggles the section. |
+| `contentSlot` | `SlotNode` |  | What opening shows. Not mounted while shut, so a long list behind it costs nothing. |
+| `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the disclosure holds its own. |
+| `onOpenChange` | `((open: boolean) => void)` |  | Told on every toggle, controlled or not. Given alone, it listens without taking over. |
+| `defaultOpen` | `boolean` | `false` | Where an uncontrolled disclosure starts. Shut by default, the way `<details>` is. |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  |  |
+| `titleClassName` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+<!-- /props -->
 
 - One source for both platforms: `@cubeui/disclosure` in `/r` and `/r/native`.
 - The **whole header is one button** with a chevron that turns, so it is reached by Tab and

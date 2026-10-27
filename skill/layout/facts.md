@@ -1,4 +1,4 @@
-# Description lists, setting rows and stat tiles
+# cubeui layout: Description lists, setting rows and stat tiles
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -27,6 +27,30 @@ Read-only facts — a label, a value, a line under the value — which is most o
   }
 />
 ```
+
+<!-- props:DescriptionList -->
+`DescriptionList`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `SlotNode` |  | The rows: `PropertyRow`s, as an array or a fragment. Nothing else belongs here — on the web this is a `<dl>`, which may hold only term-and-description groups. |
+| `layout` | `Layout` | `"inline"` | `inline` (the default) puts each label beside its value, and falls back to `stacked` on its own when the list is too narrow for both. `stacked` puts the label above the value at every width. Not `orientation`: `inline` is not horizontal below the width it wraps at, and a word that is only true on a wide screen is the kind rule 11 renames later. |
+| `className` | `string` |  |  |
+<!-- /props -->
+
+<!-- props:PropertyRow -->
+`PropertyRow`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `label` (required) | `ReactNode` |  | What the fact is called: "Embedder", "Docs folder". A `<dt>` on the web. |
+| `value` (required) | `ReactNode` |  | The fact itself: a string, or a node — a `Badge`, a relative time. Not a control: a value the user edits is a form field (`FormField`), and this row has no label for it. |
+| `hint` | `ReactNode` |  | One muted line under the value, on where it comes from or what it means: "Set with `RAGDOWN_EMBEDDER`". Part of the `<dd>`, so it is read with the value rather than as a fact of its own. |
+| `actionSlot` | `SlotNode` |  | The row's far end: a copy button, an edit link. Inside the `<dd>`, after the value, because a `<dl>`'s rows may hold nothing but terms and descriptions — and an action on the value is part of what is said about it. |
+| `className` | `string` |  |  |
+| `labelClassName` | `string` |  |  |
+| `valueClassName` | `string` |  | A string or number value's own `Text`, so a path, a version or an id is `value={path} valueClassName="font-mono"` rather than a node written to carry the font. On the text and not on the wrapper around it, because on device a `Text` inherits nothing: from the wrapper a `font-mono` reached the string on the web, with the hint and the action, and none of them on a phone. |
+<!-- /props -->
 
 - One source for both platforms: `@cubeui/description-list` in `/r/web` and `/r/native`, exporting
   `DescriptionList` and `PropertyRow`.
@@ -89,6 +113,22 @@ that changes it at the end.
 />
 ```
 
+<!-- props:SettingRow -->
+`SettingRow`'s props, from the TSDoc in `registry/layout/setting-row.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` |  | What the setting is called: "Dark mode", "Theme", "Auto-sync". Usually given; optional because a row whose control says what it does ("Clear all memory") only needs the line explaining it. |
+| `description` | `ReactNode` |  | One line under the title on what the setting does, or what pressing the button costs. |
+| `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button beside the title, named "About <title>". `descriptionId` is handed to `actionSlot` either way, and on the web still resolves to the text. A row with no title has nothing to put the button beside, so its description stays inline. |
+| `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
+| `actionSlot` | `SlotNode \| ((ids: SettingRowIds) => SlotNode)` |  | The control, at the row's far end: a switch, a select, a button, an input. A function is handed the ids of the title and description so the control can be named by the title: `actionSlot={({ titleId }) => <Switch aria-labelledby={titleId} … />}`. A plain node for a control that names itself — a button whose text is the action. |
+| `className` | `string` |  |  |
+| `titleClassName` | `string` |  |  |
+| `descriptionClassName` | `string` |  |  |
+| `actionClassName` | `string` |  |  |
+<!-- /props -->
+
 - One source for both platforms: `@cubeui/setting-row` in `/r/web` and `/r/native`.
 - `title` (what the setting is called), `description` (one line on what it does), `actionSlot` (the
   control). `title` is optional for a row whose button already says what it does.
@@ -142,6 +182,22 @@ import { formatCount, formatDuration } from "@/lib/format";
   />
 ))}
 ```
+
+<!-- props:StatTile -->
+`StatTile`'s props, from the TSDoc in `registry/layout/stat-tile.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `label` (required) | `ReactNode` |  | What the figure is called: "Turns", "Daily average". Drawn above it, muted. |
+| `value` (required) | `ReactNode` |  | The figure: a string or a number, drawn large in tabular numerals so a row of tiles lines up as it ticks. A node works too — a `ColorDot` beside a category's name — and is placed as is. |
+| `hint` | `ReactNode` |  | One muted line under the figure: what it is out of, or where it comes from — "over 7 days", "schema v4". Read after the value, as part of the tile. |
+| `iconSlot` | `SlotNode` |  | Before the label. A bare `<Clock />`; the tile sizes it and mutes it. |
+| `loading` | `boolean` | `false` | Whether the figure is still being fetched. On, a bar stands in for the value and the label stays — the tile is as tall as it will be, so a row of them does not jump when the data lands. |
+| `onPress` | `(() => void)` |  | Makes the whole tile a button: a filter to toggle, a page to open. The tile's text is its accessible name, so a count and its label are read together. |
+| `selected` | `boolean` |  | With `onPress`, the tile is a toggle and this is whether it is on — the filter tile over a list. Left out, the tile is a plain button. Without `onPress` it is ignored. |
+| `className` | `string` |  |  |
+| `valueClassName` | `string` |  | The figure's class: the colour a count takes when it is one worth noticing. |
+<!-- /props -->
 
 - One source for both platforms: `@cubeui/stat-tile`, exporting `StatTile`. On the web the press
   prop is `onClick`, as it is on the compiled `Card`.

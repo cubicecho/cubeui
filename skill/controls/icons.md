@@ -1,4 +1,4 @@
-# Icons
+# cubeui controls: Icons
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 

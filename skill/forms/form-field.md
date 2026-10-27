@@ -1,4 +1,4 @@
-# `FormField` on its own
+# cubeui forms: `FormField` on its own
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every form here shares.
 
@@ -16,6 +16,30 @@ is what a filter, a search box, or a field in a `useState` form uses.
   controlSlot={<Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />}
 />
 ```
+
+<!-- props:FormField -->
+`FormField`'s props, from the TSDoc in `registry/web/form-field.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `controlSlot` (required) | `SlotNode \| ((props: ControlProps, parts: FieldParts) => SlotNode)` |  | The control itself — one `<Input>`, `<Textarea>`, `<Checkbox>`, `<Switch>`. |
+| `label` | `ReactNode` |  | What the control is called, as a real `<FieldLabel htmlFor>`. Most of why this component exists: a placeholder is not a label — it leaves at the first keystroke, and a field wearing one is a field a screen reader announces as "edit text". |
+| `description` | `ReactNode` |  | What to put in the field, or what changing it costs. |
+| `descriptionPlacement` | `"inline" \| "popover"` | `"inline"` | Where the description is drawn. `inline` puts it under the control; `popover` puts it behind a small button beside the label. |
+| `descriptionIconSlot` | `SlotNode` |  | The `popover` trigger's glyph. Defaults to a question mark; an `Info` reads as less of a plea. |
+| `error` | `ReactNode` |  | What is wrong with the value, as a node or a string. Falsy — `undefined`, `""`, whatever a validator holds for a field that passed — draws nothing and leaves the control unmarked, so a call site passes `errors.email?.message` straight in rather than branching around it. |
+| `required` | `boolean` | `false` | Whether a value is needed. Draws the asterisk, and says so to assistive technology as `aria-required`; the asterisk itself is decoration and stays out of the accessibility tree, so the label still reads "Email" rather than "Email star". |
+| `actionSlot` | `SlotNode` |  | The label row's far end. "Forgot password?", a character count, a reveal toggle. |
+| `loading` | `boolean` | `false` | Whether the value is still being fetched. On, a skeleton stands in for the control and `error` is not consulted — a value that has not arrived is not a value that came back wrong. The same ordering `CardLayout` makes between `loading` and `emptySlot`, one level down. |
+| `htmlFor` | `string` |  | The control's `id`, for a caller that already owns one — something else on the page points at this control, or a form library minted it. Left off, the shell generates one, which is what makes the same field safe to render twice on a page. A control the shell cannot reach wants the function form of `controlSlot`, not this: an `htmlFor` alone points the label at the right element and leaves the description and the error pointing at nothing. |
+| `asGroup` | `boolean` | `false` | Whether the control is a *group* of controls rather than one. |
+| `orientation` | `keyof typeof LOADING_BOX` | `"vertical"` | `horizontal` puts the control first and the label beside it, for the controls whose label is part of the hit target: a checkbox, a switch. Stacked, a 16px box sits on a line of its own above its own caption, which is the shape every app that hand-wrote one worked around differently. |
+| `className` | `string` |  |  |
+| `labelClassName` | `string` |  |  |
+| `descriptionClassName` | `string` |  |  |
+| `errorClassName` | `string` |  |  |
+| `loadingClassName` | `string` |  | Sizes the loading box for a control that is not input-height — a `<Textarea rows={6}>`. |
+<!-- /props -->
 
 `FormField` does the **wiring**, not only the spacing. It mints an id, points the label at the
 control, and gives the control an `aria-describedby` that reaches whichever of the description

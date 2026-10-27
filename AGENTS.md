@@ -268,6 +268,7 @@ scripts/install-test.mjs              `install-test`: `shadcn add` every item in
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links
 scripts/build-install-table.mjs       skill/install-paths.md, from the two registry indexes
+scripts/build-props-tables.mjs        the skill's props tables, from the TSDoc on each props type
 scripts/build-page.mjs                the landing page, public/index.html
 .github/workflows/ci.yml              `npm run check` and the Storybook tests
 .github/workflows/pages.yml           builds and publishes the registry on `main`
@@ -475,6 +476,13 @@ it by component group and update the links, not the budget.
 **`skill/install-paths.md` is generated** — every item's half, where it lands and its import
 line, from `registry.json`, `registry.web.json` and `components.json`. `npm run build` rewrites
 it and `npm run skill:check` fails CI on a stale one; never edit it by hand.
+
+**The props tables are generated too.** A `<!-- props:CardLayout -->` … `<!-- /props -->` pair in
+a skill file is filled by `scripts/build-props-tables.mjs` from the TSDoc on that component's
+props type: one row per prop declared in the item's own files, a line naming the props it takes
+from another item's. So the TSDoc *is* the props documentation — write each prop's first
+paragraph for a reader choosing it — and a new shell or control gets a marker beside its first
+example. `skill:check` fails on a table that no longer matches.
 
 A new item goes in its topic file **and** gets a row in the choosing table; a new slot word
 goes in `SKILL.md`'s vocabulary and in rule 2 of the conventions doc, because those two are the

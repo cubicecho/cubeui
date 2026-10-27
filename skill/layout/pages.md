@@ -1,6 +1,14 @@
-# Pages, page shells and page headers
+# cubeui layout: Pages, page shells and page headers
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
+
+**Contents**
+
+- [Pages](#pages)
+- [Page shells](#page-shells)
+- [Page headers](#page-headers)
+  - [What it does not have](#what-it-does-not-have)
+- [Centered pages](#centered-pages)
 
 ## Pages
 
@@ -18,6 +26,32 @@ route should reach for first.
   contentSlot={<WorkspaceList />}
 />
 ```
+
+<!-- props:PageLayout -->
+`PageLayout`'s props, from the TSDoc in `registry/layout/page-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The page. The only slot that scrolls, unless `scroll` is off. |
+| `title` (required) | `ReactNode` |  | What the page is called. Required for the same reason it is on {@link PageHeader}. |
+| `description` | `ReactNode` |  | One line on what the page is for. |
+| `iconSlot` | `SlotNode` |  | Sits before the title, sized from `level`. Pass a bare `<Users />`. |
+| `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
+| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link. |
+| `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
+| `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
+| `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
+| `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
+| `width` | `HeaderContentFooterProps["width"]` | `"page"` | The column the header and body share. `page` for a list or a board, `prose` for settings, a detail page or a form, `full` for a pane that is already inside someone else's column. |
+| `scroll` | `boolean` | `true` | Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a chat's message list over a pinned composer, a framed app, tab panels that each keep their place. Off, the body is the height left under the header and `contentSlot` divides it. |
+| `contentRef` | `HeaderContentFooterProps["contentRef"]` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. |
+| `scrollRef` | `HeaderContentFooterProps["scrollRef"]` |  | A handle that moves the body: `scrollToEnd()`, the same on both halves. |
+| `onScroll` | `HeaderContentFooterProps["onScroll"]` |  | Called as the body scrolls, with where it now is. Never called while `scroll` is off. |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  |  |
+| `contentClassName` | `string` |  | Merged after the body's own `gap-4 py-4`, so `py-0` or `gap-6` replaces just that half. The body's `px-4` comes with `width` and is not here. |
+| `footerClassName` | `string` |  |  |
+<!-- /props -->
 
 **Do not write the column yourself.** No `mx-auto max-w-3xl`, no `min-h-0 flex-1 overflow-y-auto`,
 no `<header className="border-b px-6 py-4">`. `width` is the whole vocabulary:
@@ -96,6 +130,25 @@ dialog body.
 />
 ```
 
+<!-- props:HeaderContentFooter -->
+`HeaderContentFooter`'s props, from the TSDoc in `registry/layout/header-content-footer.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The body. The only slot that grows. |
+| `headerSlot` | `SlotNode` |  | Page title, toolbar, filters — whatever stays above the body. Absent, no row is drawn. |
+| `footerSlot` | `SlotNode` |  | Paging, totals, a save bar. Absent, no row is drawn. |
+| `scroll` | `boolean` | `false` | Whether the body scrolls inside the chassis rather than growing it. |
+| `width` | `HeaderContentFooterWidth` | `"full"` | - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and anything already inside its own column. - `page` — slots share the capped, centred {@link PAGE_COLUMN}, inset to match the header. Every list page, every board. - `prose` — the narrower {@link PROSE_COLUMN}. Settings, a detail page, a form. |
+| `contentRef` | `Ref<ElementRef<typeof ScrollView>>` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. A `<div>` on the web and, while `scroll` is on, the `ScrollView` on device. |
+| `scrollRef` | `Ref<ScrollHandle>` |  | A handle that moves the body: `scrollRef.current?.scrollToEnd()`, the same on both halves. It does nothing while `scroll` is off, when there is no scrolling body to move. |
+| `onScroll` | `((position: ScrollPosition) => void)` |  | Called as the body scrolls, with where it now is — the same three numbers on the web and on device, so a list that follows its newest row can tell whether the reader is still at the end. Only a body that scrolls reports: with `scroll` off it is never called. |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  |  |
+| `contentClassName` | `string` |  | On the body. On device, where the scroller and what it scrolls are two boxes, this goes on the scrolled content — padding on the scroller itself would scroll away with nothing. |
+| `footerClassName` | `string` |  |  |
+<!-- /props -->
+
 - `width="page"` caps and centres every slot on one column, so the title sits above the first
   table column rather than beside it. `width="full"` (the default) fills the box it was given —
   panes inside a split, print sheets, anything already in a column of its own.
@@ -146,6 +199,24 @@ It is not a page.
   contentSlot={<SearchInput value={query} onChange={setQuery} />}
 />
 ```
+
+<!-- props:PageHeader -->
+`PageHeader`'s props, from the TSDoc in `registry/layout/page-header.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` | `SlotNode` |  | The row under the title block: a search field, a filter row, a set of tabs — stacked, each on its own line, in the order they are passed. |
+| `title` (required) | `ReactNode` |  | What the page is called. Required, because a header with no title is a toolbar, and a toolbar is a row of nodes the caller can place without help. It is also the heading assistive technology navigates the page by. |
+| `description` | `ReactNode` |  | One line on what the page is for. It wraps; it is not clipped. |
+| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized from the level — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
+| `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
+| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link, which is a one-step trail. |
+| `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
+| `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. See {@link LEVELS}. |
+| `className` | `string` |  |  |
+| `titleClassName` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+<!-- /props -->
 
 - **The header brings its own inset, and the shell around it knows.** `HeaderContentFooter` leaves its
   `headerSlot` unpadded on purpose and gives the body `px-4` to match, so the title lands above
@@ -223,6 +294,17 @@ level 1, not a card title. `level` and `titleClassName` still override it.
   }
 />
 ```
+
+<!-- props:CenteredLayout -->
+`CenteredLayout`'s props, from the TSDoc in `registry/layout/centered-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `className` | `string` |  | The root — the full-height box the card is centred in. A background, or a different padding. On device it styles the scroll view's content container, which is the box that fills the screen and does the centring. |
+| `cardClassName` | `string` |  | The card. It is `w-full max-w-sm`; pass `max-w-md` here for a wider one, which replaces the cap rather than competing with it. |
+
+It also takes the props declared in `registry/layout/card-layout.tsx`: `actionSlot`, `contentClassName`, `contentSlot`, `description`, `descriptionIconSlot`, `descriptionPlacement`, `emptySlot`, `footerActionsSlot`, `footerClassName`, `footerSlot`, `headerClassName`, `iconSlot`, `level`, `loading`, `title`, `titleClassName`.
+<!-- /props -->
 
 Render it *instead of* the app shell, not inside it: on the web its root is the page's `<main>`,
 and `min-h-svh` tall. `className` is that page — a `bg-background`, a different padding.

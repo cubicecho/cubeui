@@ -1233,8 +1233,8 @@ npm run registry:check # the sixteen rules under Guards, against both built regi
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)
-npm run skill:build    # skill/install-paths.md, from the two registry indexes
-npm run skill:check    # fail if the skill's install table is stale (CI)
+npm run skill:build    # skill/install-paths.md and the skill's props tables, from the registry
+npm run skill:check    # fail if either is stale (CI)
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
 npm run docs:check     # rule 2 of docs/component-conventions.md and the skill agree on every word;

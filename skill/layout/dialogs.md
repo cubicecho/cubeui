@@ -1,4 +1,4 @@
-# Dialogs
+# cubeui layout: Dialogs
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -19,6 +19,34 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   )}
 />
 ```
+
+<!-- props:DialogLayout -->
+`DialogLayout`'s props, from the TSDoc in `registry/layout/dialog-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The body. It is the only part that scrolls. |
+| `title` (required) | `ReactNode` |  | Required, because a dialog without a title is one no screen reader can announce. A dialog whose design has no room for a heading passes `hideTitle` and keeps this. |
+| `description` | `ReactNode` |  | Read to the same people the title is. Absent, the dialog is described by its body. |
+| `hideTitle` | `boolean` | `false` | Keeps the title for assistive technology and takes it off the screen. |
+| `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
+| `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
+| `onOpenChange` | `((open: boolean) => void)` |  |  |
+| `size` | `keyof typeof SIZES` | `"md"` |  |
+| `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. |
+| `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. |
+| `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
+| `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
+| `discardTitle` | `ReactNode` | `"Discard your changes?"` | The question that asks. Defaulted, because this one really is the same everywhere. |
+| `discardDescription` | `ReactNode` | `"What you have typed here will not be saved."` |  |
+| `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away, and the one that goes back to it. |
+| `keepLabel` | `ReactNode` | `"Keep editing"` |  |
+| `showCloseButton` | `boolean` | `true` |  |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+| `footerClassName` | `string` |  |  |
+<!-- /props -->
 
 - `title` is **required** — it is what assistive technology announces. A design with no room for
   a heading passes `hideTitle`, which keeps the title and takes it off the screen. Never drop it.

@@ -1,4 +1,4 @@
-# Splits
+# cubeui layout: Splits
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -14,6 +14,47 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   contentSlot={<StickyHeaderContentFooter headerSlot={<PageHeader title="Servers" />} contentSlot={rows} />}
 />
 ```
+
+<!-- props:SplitLayout -->
+`SplitLayout`'s props, from the TSDoc in `registry/layout/split-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `firstWidth` | `SplitWidth` |  |  |
+| `secondWidth` | `never` |  |  |
+| `firstSlot` (required) | `SlotNode` |  | The leading pane. Alone, it is the whole width, so a caller never special-cases un-split. |
+| `secondSlot` | `SlotNode` |  | The trailing pane. |
+| `stackBelow` | `keyof typeof STACK_BELOW` | `"lg"` | Below this width the two stack rather than sit side by side. `never` keeps them side by side at every width — an icon strip, a kiosk, a pane already inside a media query the caller owns. |
+| `divider` | `keyof typeof DIVIDERS` | `"space"` | What separates the panes: `space` is a gap, `line` is flush with a hairline rule between them, and `none` is flush with nothing drawn. One prop rather than a gap and a border, because a rule with a gap on both sides floats in the middle of nothing. The rule stays between the panes when they stack, which a `border-r` on one pane does not. |
+| `className` | `string` |  |  |
+| `firstClassName` | `string` |  |  |
+| `secondClassName` | `string` |  |  |
+<!-- /props -->
+
+<!-- props:SidebarLayout -->
+`SidebarLayout`'s props, from the TSDoc in `registry/layout/split-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `sidebarHideBelow` | `undefined` |  |  |
+| `stackBelow` | `keyof typeof STACK_BELOW` | `"lg"` | Below this width the two stack rather than sit side by side. See {@link SplitLayout}. |
+| `divider` | `keyof typeof DIVIDERS` | `"space"` |  |
+| `brandSlot` | `never` |  |  |
+| `navSlot` | `never` |  |  |
+| `navLabel` | `never` |  |  |
+| `status` | `never` |  |  |
+| `actionSlot` | `never` |  |  |
+| `barPosition` | `never` | `"top"` |  |
+| `contentSlot` (required) | `SlotNode` |  | The main surface — the one the screen is about. Alone, it is the whole width, so a caller never has to special-case the un-split state. |
+| `sidebarSlot` | `SlotNode` |  | The second surface: a navigation column, an inspector, a note list, an order panel. |
+| `sidebarPosition` | `"start" \| "end"` | `"end"` | Which side the sidebar sits on. Stacked, it keeps this reading order rather than jumping. |
+| `sidebarWidth` | `SplitWidth` | `"sm"` | {@link SplitWidth}. Naming the width is what stops eight call sites each inventing one. |
+| `className` | `string` |  |  |
+| `contentClassName` | `string` |  |  |
+| `sidebarClassName` | `string` |  |  |
+| `headerClassName` | `string` |  | On the bar, when `sidebarHideBelow` draws one. |
+| `bottomBarClassName` | `string` |  | On the bar along the bottom, when `barPosition="bottom"` draws one. |
+<!-- /props -->
 
 `contentSlot` is the main surface and `sidebarSlot` is the second one. Everything else is where the sidebar
 sits, how wide it is, when it stops sitting there, and what is between them.

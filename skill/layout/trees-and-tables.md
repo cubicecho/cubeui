@@ -1,4 +1,4 @@
-# File trees and tables
+# cubeui layout: File trees and tables
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -18,6 +18,27 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
   actionSlot={(node) => <FileMenu node={node} />}
 />
 ```
+
+<!-- props:FileTree -->
+`FileTree`'s props, from the TSDoc in `registry/layout/file-tree.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `label` (required) | `string` |  | What the list is, for a screen reader: "Files", "Notes". Read, not drawn. |
+| `entries` (required) | `readonly T[]` |  | The files, and any folders worth listing, flat and in any order. A file's missing parents are added and every level is sorted folders first, then by name — `buildTree` in `@/lib/tree`. |
+| `pinned` | `readonly T[]` |  | Files drawn above the tree, in the order given, never nested or sorted: a folder's README, a skill's own Markdown. Each is called by its whole `path`, and reaches `linkSlot`, `meta` and `actionSlot` as any other file does. |
+| `selected` | `string` |  | The open file's path. Its row is filled, and its link or button says it is the current one. |
+| `linkSlot` | `((node: TreeNode<T>) => ReactElement)` |  | The router's link to a file, as an element with no children — `<Link to="/notes/$" />` — which the row is drawn inside. For an app that keeps the open file in the URL, so the row is a real `<a href>` that a middle click opens. Given this, `onSelect` is not called. |
+| `onSelect` | `((path: string) => void)` |  | A file's row was pressed. For an app that holds the open file in state; the row is a button. |
+| `meta` | `((node: TreeNode<T>) => ReactNode)` |  | The small facts after a row's name: a size, a count, a badge. A string is drawn muted and extra small; an element is placed as it is. Inside the pressed area. Called for folders too. |
+| `actionSlot` | `((node: TreeNode<T>) => SlotNode)` |  | A row's far end, **outside** the pressed area: rename and delete buttons, or one `Menu`. Where there is a pointer they are drawn on hover and on focus; on a touch screen, always. |
+| `open` | `readonly string[]` |  | The paths of the open folders, when the caller holds them — to keep them across a reload, or to open the way to a file. Leave it out and the tree holds its own. |
+| `onOpenChange` | `((open: string[]) => void)` |  | Told the open folders on every toggle, controlled or not. |
+| `defaultOpen` | `readonly string[] \| "all"` | `"all"` | Which folders an uncontrolled tree starts with open: their paths, or every one. |
+| `onMove` | `((from: string, into: string) => void \| Promise<void>)` |  | A row was dropped on a folder. `from` is the dragged file's or folder's path; `into` is the folder's path, and `""` for the top level. Given this, rows can be dragged: on the web, with a pointer. The tree reorders nothing itself — move the file and hand back new `entries`. While a returned promise is pending the row is drawn muted; a rejection is the caller's to report. |
+| `canMove` | `((node: TreeNode<T>, into: string) => boolean)` |  | Whether this row may be dropped there. Asked while dragging; a refused folder is not tinted. |
+| `className` | `string` |  |  |
+<!-- /props -->
 
 - `entries` is flat and in any order: `{ path, type: "file" | "dir" }` plus whatever else your row
   holds. A parent the list leaves out is added, and every level is sorted folders first, then by

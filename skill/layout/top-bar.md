@@ -1,4 +1,4 @@
-# Top bar
+# cubeui layout: Top bar
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
@@ -16,6 +16,25 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   contentSlot={<Outlet />}
 />
 ```
+
+<!-- props:TopBarLayout -->
+`TopBarLayout`'s props, from the TSDoc in `registry/layout/top-bar-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The page below the bar. The one part that scrolls. |
+| `brandSlot` | `SlotNode` |  | The bar's start: the logo and the app's name, usually a link home. |
+| `navSlot` | `SlotNode` |  | The primary links, after the brand. Pass the links themselves; the shell draws the `<nav>` around them, which is the part the hand-written bars left out. |
+| `navLabel` | `string` |  | What the navigation landmark is called — "Main". Only needed when the page has a second navigation landmark to tell it from. |
+| `actionSlot` | `SlotNode` |  | The bar's far end: account, theme, sign out, a menu of the links on a narrow screen. |
+| `width` | `HeaderContentFooterWidth` | `"page"` | The column the bar's row is held to — `page` by default, `full` for a board that runs to the window's edge. The page below owns its own column (a `PageLayout` has `width` too), so this lines the bar up with it rather than capping it. |
+| `className` | `string` |  |  |
+| `headerClassName` | `string` |  | On the bar itself: its fill, its border, its height. |
+| `brandClassName` | `string` |  |  |
+| `navClassName` | `string` |  |  |
+| `actionClassName` | `string` |  |  |
+| `contentClassName` | `string` |  | On the `<main>` around `contentSlot`. |
+<!-- /props -->
 
 `@cubeui/top-bar-layout` is the app shell for an app with a handful of top-level pages and **no
 sidebar**: a bar across the top, the page below it. Three slots in the bar, one under it:
