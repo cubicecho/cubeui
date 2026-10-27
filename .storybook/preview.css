@@ -7,6 +7,16 @@
 @import "../dist/tokens.native.css";
 
 /*
+ * Tailwind's preflight, as a DOM app has it: `@import "tailwindcss"` puts it in `@layer base`, and
+ * a story without it is a page no consumer has — links underlined in the browser's blue, lists
+ * bulleted and indented, a `<fieldset>` framed, a heading at the browser's size. It is the
+ * stylesheet only, in the layer it ships in, so it cannot fight anything: the utilities above are
+ * unlayered and outrank it, react-native-web's base classes are unlayered too, and the reset below
+ * shares its layer and comes after it, with class selectors where preflight has element ones.
+ */
+@import "tailwindcss/preflight.css" layer(base);
+
+/*
  * The reset the compiled items rely on, which a consumer of a compiled item installs alongside it.
  * It is imported after the tokens on purpose: those bring Tailwind's utilities in *unlayered*, and
  * this is `@layer base`, so every utility outranks it without a specificity fight.

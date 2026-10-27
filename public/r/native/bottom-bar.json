@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "bottom-bar",
+  "title": "Bottom bar",
+  "description": "Whether a layout draws a bar along the bottom of the screen, and under which width: useReportBottomBar for the layout that draws it, useBottomBar for what floats at the bottom (a toast) to sit above it.",
+  "files": [
+    {
+      "path": "registry/lib/bottom-bar.ts",
+      "content": "/**\n * Whether a bar runs along the bottom of the screen, and up to which width — so what floats at the\n * bottom (a toast) can sit above it instead of over it.\n *\n * A layout that draws the bar says so with {@link useReportBottomBar}; a floating surface reads it\n * with {@link useBottomBar}. A store rather than a context, because the reader is drawn by a\n * provider near the root, above the layout that knows about the bar, and a context only flows\n * down. Nothing is measured: the bar is drawn under a breakpoint, so the reader lifts itself under\n * the same breakpoint, with classes, and the first paint is already right on both platforms.\n */\nimport { useEffect, useSyncExternalStore } from \"react\";\n\n/**\n * Where the bar stops being drawn: `sm`, `md`, `lg`, `xl` (drawn under that width), or `always`.\n */\nexport type BottomBarUntil = \"sm\" | \"md\" | \"lg\" | \"xl\" | \"always\";\n\ntype Entry = { until: BottomBarUntil };\n\nconst bars: Entry[] = [];\nconst listeners = new Set<() => void>();\nlet current: BottomBarUntil | null = null;\n\nfunction publish() {\n  current = bars.at(-1)?.until ?? null;\n  for (const listener of listeners) {\n    listener();\n  }\n}\n\nfunction subscribe(listener: () => void) {\n  listeners.add(listener);\n  return () => {\n    listeners.delete(listener);\n  };\n}\n\nfunction read() {\n  return current;\n}\n\n/**\n * Say that this component draws a bar along the bottom of the screen, under `until`. Pass\n * `undefined` while it draws none. The last bar mounted is the one read.\n */\nexport function useReportBottomBar(until: BottomBarUntil | undefined): void {\n  useEffect(() => {\n    if (until === undefined) {\n      return;\n    }\n    const entry: Entry = { until };\n    bars.push(entry);\n    publish();\n    return () => {\n      bars.splice(bars.indexOf(entry), 1);\n      publish();\n    };\n  }, [until]);\n}\n\n/** The bottom bar on screen, as {@link BottomBarUntil}, or `null` when there is none. */\nexport function useBottomBar(): BottomBarUntil | null {\n  return useSyncExternalStore(subscribe, read, read);\n}\n",
+      "type": "registry:lib"
+    }
+  ],
+  "type": "registry:lib"
+}

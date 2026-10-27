@@ -7,7 +7,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField, PasswordField — that take the form and a checked field name instead of a render prop, and SubmitButton.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -18,7 +18,8 @@
         "@cubeui/number-draft",
         "@cubeui/combobox",
         "@cubeui/switch",
-        "@cubeui/textarea"
+        "@cubeui/textarea",
+        "@cubeui/password-input"
       ],
       "files": [
         {
@@ -210,7 +211,7 @@
       "type": "registry:component",
       "title": "Password Field",
       "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has.",
-      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/password-input"],
       "files": [
         {
           "path": "registry/web/password-field.tsx",

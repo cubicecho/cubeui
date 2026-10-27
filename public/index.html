@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 105 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 105 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -152,7 +152,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  91 on both platforms · 14 web-only · 0 native-only.
+  92 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -174,12 +174,17 @@
         <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
-          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
+          <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField, PasswordField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/badge</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/bottom-bar</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Whether a layout draws a bar along the bottom of the screen, and under which width: useReportBottomBar for the layout that draws it, useBottomBar for what floats at the bottom (a toast) to sit above it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/button</code></th>
@@ -319,7 +324,7 @@
         <tr>
           <th scope="row"><code>@cubeui/detail-header</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The header row of a detail view: back, colour dot, title, badge, subtitle, actions.</td>
+          <td>The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/detail-page</code></th>

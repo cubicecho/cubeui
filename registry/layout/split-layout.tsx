@@ -8,7 +8,8 @@
  * width scale and the `data-slot`s are unchanged.
  */
 import { createContext, type ReactNode } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { useReportBottomBar } from "@/lib/bottom-bar";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -132,6 +133,23 @@ const DIVIDER_AT: Record<keyof typeof STACK_BELOW, string> = {
   xl: "h-px w-full xl:h-auto xl:w-px",
 };
 
+/**
+ * The panes' row inside the scroller a stacking split is drawn in. Stacked, it is as tall as the
+ * two panes one after the other and the scroller moves it — two `StickyHeaderContentFooter`s are
+ * two screens of chrome, and a column that only grows is a phone screen nothing reaches the bottom
+ * of. From the breakpoint up it is exactly the scroller's height, so the panes side by side share
+ * the height the split was given and each scrolls inside itself, as before. `grow` fills a
+ * scroller taller than the stack.
+ *
+ * `h-full` rather than a shrink: a scroller hands its content as much height as it asks for, on
+ * device as on the web, so only a height said outright bounds it.
+ */
+const FILL_FROM = {
+  md: "grow md:h-full",
+  lg: "grow lg:h-full",
+  xl: "grow xl:h-full",
+} as const;
+
 /** What sits between the panes. A rule is drawn flush; space is drawn with nothing in it. */
 const DIVIDERS = { space: "gap-4", line: "gap-0", none: "gap-0" } as const;
 
@@ -202,36 +220,37 @@ export function SplitLayout({
   firstClassName,
   secondClassName,
 }: SplitLayoutProps) {
-  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
-  // pane there is one column and it has the whole width.
-  if (!secondSlot) {
-    return (
-      <View testID="split-layout" className={cn("min-h-0 min-w-0 flex-col", className)}>
-        <View testID="split-layout-first" className={cn(PANE, firstClassName)}>
-          {firstSlot}
-        </View>
-      </View>
-    );
-  }
-
   // One pane carries the width and the other takes the rest. Neither given, `half` is two even
   // panes, which is the same classes on both.
   const width = secondWidth ?? firstWidth ?? "half";
   const sized = SIZED[stackBelow][width];
   const rest = REST[stackBelow][width === "fifth" || width === "two-fifths" ? width : "other"];
 
+  // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
+  // pane there is one column and it has the whole width. Its box is exactly the split's, as is a
+  // row that never stacks, so neither has anything for the scroller to move.
+  const stacks = Boolean(secondSlot) && stackBelow !== "never";
+  const row = secondSlot
+    ? cn(STACK_BELOW[stackBelow], DIVIDERS[divider], stacks ? FILL_FROM[stackBelow] : "h-full")
+    : "h-full flex-col";
+
+  // Every split is drawn in a scroller, on both platforms, so that a stack taller than the split
+  // can be scrolled to its end — see FILL_FROM. It is the same tree whether one pane is passed or
+  // two, so a pane that comes and goes leaves the other mounted: an editor's textarea keeps its
+  // undo history when its preview pane is shut.
   return (
-    <View
+    <ScrollView
       testID="split-layout"
-      className={cn("min-h-0 min-w-0", STACK_BELOW[stackBelow], DIVIDERS[divider], className)}
+      className={cn("min-h-0 min-w-0", className)}
+      contentContainerClassName={cn("min-w-0", row)}
     >
       <View
         testID="split-layout-first"
-        className={cn(PANE, secondWidth ? rest : sized, firstClassName)}
+        className={cn(PANE, secondSlot ? (secondWidth ? rest : sized) : undefined, firstClassName)}
       >
         {firstSlot}
       </View>
-      {divider === "line" ? (
+      {secondSlot && divider === "line" ? (
         // The rule is an element of its own rather than a border on a pane, so that when the
         // panes stack it becomes a row between them instead of a line down one side of the screen.
         <View
@@ -240,13 +259,15 @@ export function SplitLayout({
           className={cn("shrink-0 self-stretch bg-foreground/10", DIVIDER_AT[stackBelow])}
         />
       ) : null}
-      <View
-        testID="split-layout-second"
-        className={cn(PANE, secondWidth ? sized : rest, secondClassName)}
-      >
-        {secondSlot}
-      </View>
-    </View>
+      {secondSlot ? (
+        <View
+          testID="split-layout-second"
+          className={cn(PANE, secondWidth ? sized : rest, secondClassName)}
+        >
+          {secondSlot}
+        </View>
+      ) : null}
+    </ScrollView>
   );
 }
 
@@ -423,6 +444,8 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   const navAtBottom = barPosition === "bottom";
   const topNavSlot = navAtBottom ? undefined : navSlot;
+  // Told to the toasts, so one raised on a phone sits above the places rather than over them.
+  useReportBottomBar(navAtBottom && navSlot && sidebarHideBelow ? sidebarHideBelow : undefined);
   // Rule 5 — the bar, and the column it sits in, are drawn only when there is something in the
   // bar. Without one the content pane holds the caller's node exactly as it always has.
   const main =

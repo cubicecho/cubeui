@@ -73,6 +73,18 @@
       ]
     },
     {
+      "name": "bottom-bar",
+      "type": "registry:lib",
+      "title": "Bottom bar",
+      "description": "Whether a layout draws a bar along the bottom of the screen, and under which width: useReportBottomBar for the layout that draws it, useBottomBar for what floats at the bottom (a toast) to sit above it.",
+      "files": [
+        {
+          "path": "registry/lib/bottom-bar.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "error-message",
       "type": "registry:lib",
       "title": "messageOf",
@@ -1068,7 +1080,12 @@
       "type": "registry:ui",
       "title": "Toast",
       "description": "Transient messages for mutations fired outside a form — the failures that otherwise reach only the console.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/bottom-bar",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/toast.tsx",
@@ -1305,7 +1322,7 @@
       "name": "detail-header",
       "type": "registry:component",
       "title": "Detail Header",
-      "description": "The header row of a detail view: back, colour dot, title, badge, subtitle, actions.",
+      "description": "The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/color-dot",
@@ -1386,7 +1403,7 @@
       "type": "registry:component",
       "title": "Split Layout",
       "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/split-layout.tsx",
@@ -1437,6 +1454,7 @@
         "@cubeui/card",
         "@cubeui/utils",
         "@cubeui/description-hint",
+        "@cubeui/list",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1482,7 +1500,7 @@
       "name": "app-form",
       "type": "registry:component",
       "title": "App Form",
-      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
+      "description": "The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField, PasswordField — that take the form and a checked field name instead of a render prop, and SubmitButton. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/checkbox",
@@ -1493,7 +1511,8 @@
         "@cubeui/number-draft",
         "@cubeui/combobox",
         "@cubeui/switch",
-        "@cubeui/textarea"
+        "@cubeui/textarea",
+        "@cubeui/password-input"
       ],
       "files": [
         {
@@ -1684,7 +1703,7 @@
       "type": "registry:component",
       "title": "Password Field",
       "description": "A password as one line, with a reveal button none of the nine hand-written password inputs has. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/app-form", "@cubeui/form-field", "@cubeui/password-input"],
+      "registryDependencies": ["@cubeui/app-form", "@cubeui/password-input"],
       "files": [
         {
           "path": "compiled/password-field.tsx",
