@@ -518,7 +518,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
 
    **Nesting depth is not this library's concern.** How deep a page nests before it should be
    split by route is an app decision; the shells nest as far as the app wants. The
-   list-and-detail note in `layout.md` stays a suggestion rather than a limit.
+   list-and-detail note in the skill's `layout/splits.md` stays a suggestion rather than a limit.
 
    **Settled, and this is the last of it:** the symmetric split is `SplitLayout`, and
    `SidebarLayout` is a preset of it — the same shape as `StickyHeaderContentFooter` over

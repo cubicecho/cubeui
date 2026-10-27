@@ -78,7 +78,7 @@ const conventions = await readFile(CONVENTIONS, "utf8");
 const skill = await readFile(SKILL, "utf8");
 
 const rule2 = between(conventions, "## 2. One vocabulary across the set", "\n## 3.");
-const vocabulary = between(skill, "## The slot vocabulary", "\n## What does not belong");
+const vocabulary = between(skill, "## The slot vocabulary", "\n## No inline edits");
 
 const problems = [];
 if (rule2 === null) {
