@@ -691,6 +691,27 @@ out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
 
+**A card that is a form takes `wrapperSlot`**, so its Save in `footerActionsSlot` is inside the
+`<form>`: a function of the card's parts — header, body and footer — whose element takes the
+`className` it is handed. It is drawn inside the card, so the border and background stay the
+card's. Enter in any field then submits, which it does not do in a form of two fields whose
+submit button sits outside it:
+
+```tsx
+<CardLayout
+  title="Profile"
+  wrapperSlot={(parts, { className }) => (
+    <form.AppForm>
+      <FormElement onSubmit={() => form.handleSubmit()} className={className}>{parts}</FormElement>
+    </form.AppForm>
+  )}
+  contentSlot={<div className="grid gap-4">…fields…</div>}
+  footerActionsSlot={<form.SubmitButton content="Save" />}
+/>
+```
+
+See [forms.md](forms.md#forms-in-dialogs) — the same slot on a dialog, and why.
+
 ## Centered pages
 
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
@@ -712,6 +733,11 @@ around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under 
   }
 />
 ```
+
+`CenteredLayout` hands `wrapperSlot` to its card as it does every other slot, so a sign-in of
+two fields — an email and a password — puts its `<form>` there and its submit in
+`footerActionsSlot`, as [a card does](#cards). The `form="token"` above is the other way, for a form
+that is already written: the button names the form it submits.
 
 Render it *instead of* the app shell, not inside it: on the web its root is the page's `<main>`,
 and `min-h-svh` tall. `className` is that page — a `bg-background`, a different padding.
@@ -778,7 +804,13 @@ that out with `Page` or by hand rather than stripping the card with `cardClassNa
   takes the function; `footerSlot` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
-- A form in a dialog is this component with a `<form>` as `contentSlot` — see [forms.md](forms.md).
+- **A form in a dialog puts its `<form>` in `wrapperSlot`**, not in `contentSlot`.
+  `wrapperSlot={(parts, { className }) => <FormElement className={className} …>{parts}</FormElement>}`
+  wraps the header, body and footer together inside the dialog, so the footer's submit is a
+  submit button the form owns, and Enter in a field submits. A `<form>` in `contentSlot` leaves the
+  button outside it, and Enter in a form of two fields does nothing. Pass `className` on: it keeps
+  the body scrolling. It is a function, called rather than mounted, so the fields keep their
+  state — see [forms.md](forms.md#forms-in-dialogs).
 
 ### A page with unsaved edits
 

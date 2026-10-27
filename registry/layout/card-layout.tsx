@@ -78,6 +78,24 @@ export type CardLayoutProps = {
   footerSlot?: SlotNode | undefined;
   /** The footer's end. The buttons. Given alone, the footer is simply right-aligned. */
   footerActionsSlot?: SlotNode | undefined;
+  /**
+   * Wraps the header, the body and the footer together, inside the card. Its use is a form: with
+   * the fields and the submit button under one `<form>`, Enter in a field submits it and the
+   * footer's submit button is a real one, where a `<form>` around the body alone leaves the button
+   * outside it.
+   *
+   * A function, called rather than mounted, so the fields keep their state across renders. The
+   * element it returns takes `className`, which keeps the parts laid out as the card lays them.
+   *
+   * ```tsx
+   * wrapperSlot={(parts, { className }) => (
+   *   <FormElement onSubmit={() => form.handleSubmit()} className={className}>
+   *     {parts}
+   *   </FormElement>
+   * )}
+   * ```
+   */
+  wrapperSlot?: ((parts: SlotNode, wrapper: { className: string }) => SlotNode) | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;
   /** On the title itself: its size, a `line-through`. */
@@ -137,6 +155,12 @@ const HEADER_ACTION = cn(
 const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
 
 /**
+ * What `wrapperSlot`'s element takes: the column the card itself is, so the header, body and
+ * footer inside it stack and stretch as they did with nothing between them and the card.
+ */
+const WRAPPER = Platform.select({ web: "flex min-w-0 flex-col", default: "min-w-0" });
+
+/**
  * A card with its slots already placed.
  *
  * The shape is the one every card in these apps arrives at on its own — an icon and a title, a
@@ -164,6 +188,7 @@ export function CardLayout({
   loading = false,
   footerSlot,
   footerActionsSlot,
+  wrapperSlot,
   className,
   headerClassName,
   titleClassName,
@@ -187,8 +212,8 @@ export function CardLayout({
     descriptionPlacement === "popover" &&
     Boolean(body || hasFooter);
 
-  return (
-    <Card testID="card-layout" className={className}>
+  const parts = (
+    <>
       {hasHeader ? (
         <CardHeader className={cn(HEADER, hasText === false && "justify-end", headerClassName)}>
           {hasText ? (
@@ -258,6 +283,13 @@ export function CardLayout({
           {footerActionsSlot ? <View className={ACTIONS}>{footerActionsSlot}</View> : null}
         </CardFooter>
       ) : null}
+    </>
+  );
+
+  return (
+    <Card testID="card-layout" className={className}>
+      {/* Inside the card, so its border, background and accent stripe stay the card's own. */}
+      {wrapperSlot ? wrapperSlot(parts, { className: WRAPPER }) : parts}
     </Card>
   );
 }

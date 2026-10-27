@@ -158,6 +158,10 @@ and the web `FormField`'s `controlSlot`.
 - **`footerSlot`** — the start of the footer. A note, a timestamp, a destructive action held away
   from the others.
 - **`footerActionsSlot`** — the end of the footer. The buttons, in reading order, primary last.
+- **`wrapperSlot`** — a function `(parts, { className }) => …` that wraps the header, body and
+  footer together, inside the shell: a `<form>`, so the submit in `footerActionsSlot` is in the form
+  it submits and Enter in a field submits it. The element it returns takes `className`. On
+  `DialogLayout`, `CardLayout` and `CenteredLayout`.
 - **`emptySlot`** — what the body says when `contentSlot` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `emptySlot` is not consulted.

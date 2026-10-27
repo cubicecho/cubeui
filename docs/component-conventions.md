@@ -44,7 +44,8 @@ the caller's `<Text>`:
 Three slots also take a function that returns elements, where the shell has something the
 caller's node needs: `DialogLayout`'s `footerActionsSlot` (the guarded close), `SettingRow`'s
 `actionSlot` (the ids to point a control at) and the web `FormField`'s `controlSlot` (the wired
-props).
+props). A fourth is only a function: `wrapperSlot`, on the shells with a footer, which is handed
+the shell's own parts to wrap and the class that keeps them laid out.
 
 **Why the body is not `children`.** In a layout, *all* the parts are dynamic — the header is as
 much a slot as the body is, and the footer as much as the header. Handing one of them the
@@ -77,6 +78,7 @@ everything that has the part, and each layer below adds only what its shape actu
 | `actionSlot` | The **header's** far end. One control, or a fragment of them. |
 | `footerSlot` | The footer's start. A `<Text>` of prose, a timestamp, a destructive action held apart. |
 | `footerActionsSlot` | The footer's end. The buttons, reading order, primary last. |
+| `wrapperSlot` | Around the header, body and footer together, inside the shell: a function of the parts and the `className` its element takes. A `<form>`, so the footer's submit is inside it. |
 | `emptySlot` | What the body says when `contentSlot` is empty. Not a slot the caller places. |
 | `loading` | A boolean. The shell substitutes a skeleton for the part the request fills. |
 | `className` | The root. Every other slot is `<slot>ClassName`, without the suffix: `contentClassName`. |
@@ -160,6 +162,16 @@ Notes on why the layering is where it is:
 - **`controlSlot` is the one exception to "the body is `contentSlot`",** and it earns it: it is the only
   body in the set the shell *wires* rather than places. Everything else that renders a body
   renders it untouched.
+- **`wrapperSlot` wraps the parts; it does not replace an element,** and that is why it is not
+  `as`. `as` and radix's `asChild` say which element a part *is*; this one puts the caller's
+  element *around* the parts, inside the shell, so a dialog keeps its role and focus trap and a
+  card its border. Its job is a `<form>`: a browser submits on Enter through a submit button the
+  form owns, and a `<form>` in `contentSlot` leaves `footerActionsSlot`'s button outside it, so a
+  form of two fields ignored Enter in every dialog that had one. It is a function and never
+  a component, because a component passed inline is a new type each render and React would remount
+  the fields under it. It hands over a `className`, as `SettingRow`'s `actionSlot` hands over ids,
+  because the shell knows the layout the wrapper has to keep — the dialog's scrolling body — and
+  the caller cannot.
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.

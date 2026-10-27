@@ -518,9 +518,10 @@ field drops to its own line at full width rather than three of them sharing one 
 
 ## Forms in dialogs
 
-A form in a dialog is `DialogLayout`, on both halves, with the form as its `contentSlot` and the
-submit in `footerActionsSlot`. There is no `FormDialog`: the registry shipped one that took
-children and closed without asking, and it was removed. An app that vendored it moves to this.
+A form in a dialog is `DialogLayout`, on both halves: the fields in `contentSlot`, the submit in
+`footerActionsSlot`, and the `<form>` around all of it in `wrapperSlot`. There is no
+`FormDialog`: the registry shipped one that took children and closed without asking, and it was
+removed. An app that vendored it moves to this.
 
 ```tsx
 <DialogLayout
@@ -528,24 +529,43 @@ children and closed without asking, and it was removed. An app that vendored it 
   onOpenChange={onOpenChange}
   title={isEdit ? "Edit todo" : "New todo"}
   hasUnsavedChanges={() => !form.state.isDefaultValue}
-  contentSlot={<FormElement onSubmit={() => form.handleSubmit()}>…</FormElement>}
+  wrapperSlot={(parts, { className }) => (
+    <form.AppForm>
+      <FormElement onSubmit={() => form.handleSubmit()} className={className}>
+        {parts}
+      </FormElement>
+    </form.AppForm>
+  )}
+  contentSlot={<div className="grid gap-4">…fields…</div>}
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
-      <form.AppForm>
-        <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
-      </form.AppForm>
+      <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
     </>
   )}
 />
 ```
 
-- The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
-  `SubmitButton` that no form owns calls `form.handleSubmit()` itself. The same holds in a
-  `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
-  `preventDefault` already in it, so Enter in a field submits too.
-- To send the press through the DOM submit event instead, name the form: `<FormElement id="todo" …>`
-  and `<form.SubmitButton form="todo" … />`. A hand-written `<form id="todo">` works the same way.
+- **Put the `<form>` in `wrapperSlot`, not in `contentSlot`.** `wrapperSlot` wraps the header, the
+  body and the footer together, so the footer's `SubmitButton` is inside the form it submits. A
+  browser submits on Enter through a submit button the form owns — with one text field it needs
+  none, with two it does — so a `FormElement` in `contentSlot` alone, the button left outside it
+  in the footer, ignores Enter in any form of two fields or more. It looks right and the button
+  works, which is why it goes unnoticed.
+- **Pass `className` on.** It is what keeps the body scrolling under the header and above the
+  footer; without it the form is a box of its content's height. `FormElement`
+  (`@cubeui/form-element`) is the `<form>` with the `preventDefault` already in it, and takes it.
+- **`wrapperSlot` is a function, not a component.** It is called, so the fields keep their state
+  across renders; `wrapperSlot={MyForm}` or a component defined inline would remount them.
+- **`<form.AppForm>` goes in the wrapper too**, once, so the footer's `form.SubmitButton` has the
+  form from context without a second `<form.AppForm>` around it.
+- Cancel and every other `Button` are `type="button"`, so they sit in the form without
+  submitting it. A hand-written `<button>` in the footer needs `type="button"` said.
+- `CardLayout` and `CenteredLayout` take the same `wrapperSlot` — a sign-in card, a settings card
+  with Save in its footer.
+- A submit that has to sit somewhere no wrapper reaches still works by naming the form:
+  `<FormElement id="todo" …>` and `<form.SubmitButton form="todo" … />`. Without either, a
+  `SubmitButton` that no form owns calls `form.handleSubmit()` on press — but Enter does nothing.
 - `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is
   thrown away, and Cancel asks too because it calls the `close` it was handed, not a
   `setOpen(false)` of its own. See [layout.md](layout.md) for the rest of the dialog.
