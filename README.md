@@ -182,12 +182,14 @@ the next `shadcn add` overwrites the edit.
 
 ## The agent skill
 
-How to use these components, written for an agent, is four Markdown files in [`skill/`](skill):
-`SKILL.md`, which routes, and `layout.md`, `forms.md` and `controls.md`, which it routes to. They
-are plain files in this repository and not a registry item, so nothing installs them for you.
-Download them and put them wherever your agent reads skills: a skills directory in the project or
-in your home directory, a skills server, or anywhere else. Keep the four together, because
-`SKILL.md` links the other three by relative path, and fetch them again when the registry changes.
+How to use these components, written for an agent, is the Markdown in [`skill/`](skill):
+`SKILL.md`, which routes, `native.md` for an Expo app, and one file per component group under
+`layout/`, `forms/` and `controls/`, which it routes to. They are plain files in this repository
+and not a registry item, so nothing installs them for you. Download the directory and put it
+wherever your agent reads skills: a skills directory in the project or in your home directory, a
+skills server, or anywhere else. Keep it whole, because the files link each other by relative
+path, and fetch it again when the registry changes. No file is over 25 KB (30 KB for `SKILL.md`),
+so a skills server can hand each one over whole; `npm run docs:check` holds that.
 
 The skill opens with which half the project is in, because the web-only shells are a 404 in an
 Expo project. In this repository `.claude/skills/cubeui/SKILL.md` is a pointer at `skill/`, so
@@ -383,7 +385,7 @@ each named by its caption, which is also its tooltip on the web (#126). The hook
   stored through a `{ getItem, setItem }` adapter the app passes. AsyncStorage fits as it is, so
   the item adds no storage dependency.
 - **The first paint is `THEME_PRE_PAINT_SCRIPT`**, an exported string for an inline `<script>` in
-  `<head>`, with the literal copy in the skill's `controls.md` for a static `index.html`. It is
+  `<head>`, with the literal copy in the skill's `controls/theme.md` for a static `index.html`. It is
   not a `registry:file`. A file cannot put itself into `index.html`, so the head gets edited either
   way, and a `<script src>` would add a render-blocking request and break under a base path. A
   unit test holds the copy to the export.
@@ -1203,13 +1205,18 @@ the framework's own only ever loads a file called `tsconfig.json`.
 
 ### The skill
 
-[`skill/`](skill) holds `SKILL.md` plus `layout.md`, `forms.md` and `controls.md`. It was a registry
+[`skill/`](skill) held `SKILL.md` plus `layout.md`, `forms.md` and `controls.md`. It was a registry
 item, `@cubeui/skill`, that wrote them into `.claude/skills/cubeui/` with shadcn's `files[].target`.
 That assumed one agent and one place to keep a skill, so the item was removed and the files are
 now copied by whoever wants them. It came across with cubeui's three references nearly unchanged —
 they describe the web-only tier, which did not change — and a rewritten `SKILL.md`, because the one
 thing an agent now has to know first is **which half it is in**: the shells are a 404 in an Expo
 project, and the native set is its own smaller vocabulary rather than a port of this one.
+
+The three references later grew past what a skills server hands an agent in one read
+(`controls.md` reached 103 KB), so they were split by component group into `layout/`, `forms/`
+and `controls/`, and the native choosing table moved out of `SKILL.md` into `native.md` (#387).
+`scripts/check-skill-files.mjs` holds the sizes and the links between them.
 
 ## Commands
 
@@ -1228,7 +1235,8 @@ npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)
 npm test               # colour maths (node --test) + registry libs + the stories (vitest)
 npm run lint           # biome
-npm run docs:check     # rule 2 of docs/component-conventions.md and the skill agree on every word
+npm run docs:check     # rule 2 of docs/component-conventions.md and the skill agree on every word;
+                       # every skill file is within its size and every link between them resolves
 
 npm run storybook      # the RN-vs-compiled comparison, on :3001
 npm run build-storybook

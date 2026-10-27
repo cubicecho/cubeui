@@ -14,7 +14,7 @@
     "install-test": "node scripts/install-test.mjs",
     "page:build": "node scripts/build-page.mjs",
     "page:check": "node scripts/build-page.mjs --check",
-    "docs:check": "node scripts/check-vocabulary.mjs",
+    "docs:check": "node scripts/check-vocabulary.mjs && node scripts/check-skill-files.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.web.json",
     "storybook": "storybook dev -p 3001",
     "build-storybook": "storybook build",
