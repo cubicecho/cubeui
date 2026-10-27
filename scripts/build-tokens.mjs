@@ -59,14 +59,14 @@ const paletteBlocks = (format, wrap = (s) => s) =>
  *
  * Left alone it is the browser's: on Windows and Linux a wide light-grey bar that ignores the
  * theme, loudest in a dark one. Each app re-adding its own copy is how it drifts from the palette
- * again, so it is said once, here: a thin thumb of \`foreground\` at 30%, on no track.
+ * again, so it is said once, here: a thin thumb of \`foreground\` at 40%, on no track — the \`/40\` step.
  *
  * The two standard properties and no \`::-webkit-scrollbar\`: every engine that draws a classic
  * scrollbar has them, and a browser that honours them ignores the prefixed rules anyway.
  * \`scrollbar-width\` does not inherit, which is why its selector is \`*\`. Specificity zero, so
  * \`[scrollbar-width:none]\` on a tab row still hides its own.
  */
-const SCROLLBAR_ALPHA = 0.3;
+const SCROLLBAR_ALPHA = 0.4;
 const PERCENT = 100;
 
 const scrollbarWidth = (indent = "") =>
@@ -79,28 +79,35 @@ const scrollbarWidth = (indent = "") =>
  * this stylesheet as well, and a literal on \`html\` is something \`tokens-dark.test.mjs\` can show
  * it drops. \`scrollbar-color\` inherits, so \`html\` is the only element that needs it.
  */
-const scrollbarColor = (selector, map, indent = "") =>
+const scrollbarColor = (selector, map, scheme, indent = "") =>
   [
     `${selector} {`,
     `  scrollbar-color: ${toNativeCss({ ...map.foreground, a: SCROLLBAR_ALPHA })} transparent;`,
+    `  color-scheme: ${scheme};`,
     "}",
   ]
     .map((line) => indent + line)
     .join("\n");
 
+/**
+ * The page's own chrome, in the mode in force: each rule also says \`color-scheme\`, so what the
+ * browser draws itself — a time field's clock, a date field's calendar, a native select's list,
+ * the scrollbar's arrows — is drawn for a dark page in a dark mode, not left light on it.
+ */
 const nativeScrollbars = () =>
   [
     scrollbarWidth(),
-    scrollbarColor(":where(html)", light),
-    `@media (prefers-color-scheme: dark) {\n${scrollbarColor(":where(html)", dark, "  ")}\n}`,
-    scrollbarColor(":is(html.dark)", dark),
-    scrollbarColor(":is(html.light)", light),
+    scrollbarColor(":where(html)", light, "light"),
+    `@media (prefers-color-scheme: dark) {\n${scrollbarColor(":where(html)", dark, "dark", "  ")}\n}`,
+    scrollbarColor(":is(html.dark)", dark, "dark"),
+    scrollbarColor(":is(html.light)", light, "light"),
     ...Object.entries(palettes).flatMap(([name, family]) => {
       const attr = `[data-palette="${name}"]`;
       const both = Boolean(family.light && family.dark);
       return [
-        family.light && scrollbarColor(`:is(html${attr})`, family.light),
-        family.dark && scrollbarColor(`:is(html${both ? ".dark" : ""}${attr})`, family.dark),
+        family.light && scrollbarColor(`:is(html${attr})`, family.light, "light"),
+        family.dark &&
+          scrollbarColor(`:is(html${both ? ".dark" : ""}${attr})`, family.dark, "dark"),
       ].filter(Boolean);
     }),
   ].join("\n\n");
@@ -149,7 +156,7 @@ ${block(".dark", dark, formatOklch, false)}
 ${paletteBlocks(formatOklch)}
 
 /*
- * Scrollbars in the palette: a thin thumb of the foreground at 30%, on no track. In
+ * Scrollbars in the palette: a thin thumb of the foreground at 40%, on no track. In
  * \`@layer base\` because an app's utilities are layered and an unlayered rule would beat every
  * one of them — \`[scrollbar-width:none]\` included, whatever its specificity. The colour is on
  * \`*\` too, though it inherits: read at each element, \`--foreground\` is the one in force there,
@@ -159,6 +166,19 @@ ${paletteBlocks(formatOklch)}
   * {
     scrollbar-color: color-mix(in oklab, var(--foreground) ${SCROLLBAR_ALPHA * PERCENT}%, transparent) transparent;
     scrollbar-width: thin;
+  }
+
+  /*
+   * What the browser draws itself — a time field's clock, a date field's calendar, a native
+   * select's list — is drawn for the mode in force, not left light on a dark page. A palette with
+   * only a dark mode is \`.dark\` as well, so it needs no rule of its own.
+   */
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
   }
 }
 
@@ -318,7 +338,7 @@ ${block(":is(html.light)", light, toNativeCss, false)}
 ${paletteBlocks(toNativeCss, (s) => `:is(${s})`)}
 
 /*
- * Scrollbars in the palette (#282), for Expo web: a thin thumb of the foreground at 30%, on no
+ * Scrollbars in the palette (#282), for Expo web: a thin thumb of the foreground at 40%, on no
  * track, in place of the browser's wide grey bar. One colour rule beside each block above that
  * sets \`--foreground\`, in the same order and at the same specificity, so the thumb follows the
  * system, the picker and the palette exactly as the text does. The width is unlayered and

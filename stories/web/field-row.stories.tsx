@@ -63,7 +63,7 @@ export const WrapsRatherThanSqueezing: Story = {
       </>
     ),
   },
-  decorators: [(Story) => <div className="w-[420px] border p-4">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] border p-4">{Story()}</div>],
   play: async ({ canvasElement }) => {
     const [first, second, third] = cells(canvasElement);
     if (!first || !second || !third) {

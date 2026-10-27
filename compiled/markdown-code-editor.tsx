@@ -41,13 +41,18 @@ const theme = EditorView.theme({
   },
   ".cm-content": { caretColor: "var(--foreground)", padding: "0.5rem 0" },
   ".cm-line": { padding: "0 0.75rem" },
-  ".cm-activeLine": { backgroundColor: "var(--hover)" },
+  // The caret's line is current, so it is the chosen-row tint (`bg-active/40`), and only while the
+  // editor has focus: drawn in `hover` at all times, an unfocused editor showed a hover that stuck.
+  ".cm-activeLine": { backgroundColor: "transparent" },
+  "&.cm-focused .cm-activeLine": {
+    backgroundColor: "color-mix(in oklab, var(--active) 40%, transparent)",
+  },
   ".cm-placeholder": { color: "color-mix(in oklab, var(--foreground) 60%, transparent)" },
   // What an app's own completion or lint extension draws: a popover, in the popover's colours.
   ".cm-tooltip": {
-    backgroundColor: "var(--popover)",
-    color: "var(--popover-foreground)",
-    border: "1px solid var(--border)",
+    backgroundColor: "var(--secondary)",
+    color: "var(--foreground)",
+    border: "1px solid color-mix(in oklab, var(--foreground) 10%, transparent)",
     borderRadius: "var(--radius-md)",
     overflow: "hidden",
   },

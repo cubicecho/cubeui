@@ -213,6 +213,7 @@ const NOT_SHOWN: Record<string, string> = {
   color: "Colour maths helpers. Functions, not components.",
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
+  "bottom-bar": "Two hooks a toast rises above a layout's bottom bar through. Not a component.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
   "description-hint":
@@ -243,13 +244,13 @@ function Row({ children }: { children: ReactNode }) {
 }
 
 function Caption({ children }: { children: string }) {
-  return <Text className="text-muted-foreground text-xs">{children}</Text>;
+  return <Text className="text-foreground/60 text-xs">{children}</Text>;
 }
 
 /** The fixed-height box a full-screen shell is drawn in, so it does not take the page over. */
 function Screen({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-[640px] flex-col overflow-hidden rounded-lg border border-border">
+    <div className="flex h-[640px] flex-col overflow-hidden rounded-lg border border-foreground/10">
       {children}
     </div>
   );
@@ -672,7 +673,7 @@ function Rows() {
           <>
             <PropertyRow label="Owner" value="Dana Whitfield" />
             <PropertyRow label="Region" value="eu-west-1" hint="Set when created" />
-            <PropertyRow label="Plan" value={<Badge variant="secondary" label="Team" />} />
+            <PropertyRow label="Plan" value={<Badge variant="secondary">Team</Badge>} />
           </>
         }
       />
@@ -686,7 +687,7 @@ function Rows() {
         onOpenChange={setOpen}
         title="Deploy 482"
         meta="2 minutes ago"
-        badgesSlot={<Badge variant="positive" label="Passed" />}
+        badgesSlot={<Badge variant="positive">Passed</Badge>}
         contentSlot={<Text className="text-foreground text-sm">All 214 checks passed.</Text>}
       />
     </Stack>
@@ -699,7 +700,7 @@ const pendingQuery = { ...idleQuery, isPending: true };
 type Project = { name: string; owner: string };
 const project: Project = { name: "Quarterly review", owner: "Dana Whitfield" };
 
-const navLink = "rounded-md px-3 py-1.5 text-muted-foreground text-sm";
+const navLink = "rounded-md px-3 py-1.5 text-foreground/60 text-sm";
 
 const sections: GallerySection[] = [
   {
@@ -746,7 +747,6 @@ const sections: GallerySection[] = [
             iconSlot={<Download />}
           />
           <ConfirmButton
-            variant="destructive-outline"
             title="Delete this project?"
             description="Its tasks go with it."
             confirmLabel="Delete"
@@ -763,14 +763,16 @@ const sections: GallerySection[] = [
     content: (
       <Stack>
         <Row>
-          <Badge label="Default" />
-          <Badge variant="secondary" label="Secondary" />
-          <Badge variant="outline" label="Outline" />
-          <Badge variant="positive" label="Positive" />
-          <Badge variant="warning" label="Warning" />
-          <Badge variant="destructive" label="Destructive" />
-          <Badge variant="ghost" label="Ghost" />
-          <Badge variant="secondary" label="Removable" onRemove={noop} />
+          <Badge>Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge variant="positive">Positive</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="ghost">Ghost</Badge>
+          <Badge variant="secondary" onRemove={noop}>
+            Removable
+          </Badge>
         </Row>
         <Row>
           <ToggleChip selected onPress={noop}>
@@ -797,8 +799,8 @@ const sections: GallerySection[] = [
         <Folder className="h-5 w-5 text-foreground" />
         <FileText className="h-5 w-5 text-foreground" />
         <Tag className="h-5 w-5 text-foreground" />
-        <Info className="h-5 w-5 text-muted-foreground" />
-        <CircleCheck className="h-5 w-5 text-primary" />
+        <Info className="h-5 w-5 text-foreground/60" />
+        <CircleCheck className="h-5 w-5 text-positive" />
         <TriangleAlert className="h-5 w-5 text-destructive" />
       </Row>
     ),
@@ -1084,7 +1086,7 @@ const sections: GallerySection[] = [
           level={3}
           title="Projects"
           description="Everything your team is working on."
-          actionSlot={<Button size="sm" content="New project" />}
+          actionSlot={<Button size="sm" variant="info" content="New project" />}
         />
         <Separator />
         <DetailHeader
@@ -1093,9 +1095,9 @@ const sections: GallerySection[] = [
           color="#16a34a"
           colorLabel="Green"
           title="Quarterly review"
-          subtitle="Due on Friday"
-          badgeSlot={<Badge variant="positive" label="On track" />}
-          actionsSlot={
+          description="Due on Friday"
+          badgesSlot={<Badge variant="positive">On track</Badge>}
+          actionSlot={
             <Button
               variant="outline"
               size="sm"
@@ -1124,7 +1126,7 @@ const sections: GallerySection[] = [
           query={idleQuery}
           what="projects"
           count={0}
-          emptySlot={<Text className="text-muted-foreground text-sm">No projects match.</Text>}
+          emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
         />
         <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
         <RouteError error={new Error("Project not found.")} reset={noop} />
@@ -1177,7 +1179,7 @@ const sections: GallerySection[] = [
         <PageLayout
           title="Settings"
           description="For this workspace."
-          actionSlot={<Button size="sm" content="Save" />}
+          actionSlot={<Button size="sm" variant="positive" content="Save" />}
           footerSlot={<Caption>Last saved a minute ago</Caption>}
           contentSlot={<Lines count={6} />}
         />
@@ -1225,7 +1227,7 @@ const sections: GallerySection[] = [
           headerSlot={<Text className="p-3 font-semibold text-foreground">Inbox</Text>}
           footerSlot={
             <View className="p-3">
-              <Button content="Compose" />
+              <Button variant="info" content="Compose" />
             </View>
           }
           contentSlot={
@@ -1247,7 +1249,7 @@ const sections: GallerySection[] = [
           level={3}
           title="Team"
           description="Three members."
-          actionSlot={<Button size="sm" content="Invite" />}
+          actionSlot={<Button size="sm" variant="info" content="Invite" />}
           contentSlot={<Lines count={2} />}
           footerSlot={<Caption>Seats are billed monthly</Caption>}
         />
@@ -1272,7 +1274,9 @@ const sections: GallerySection[] = [
         description="They get an email with a link."
         triggerSlot={<Button variant="outline" content="Open dialog layout" />}
         contentSlot={<Input placeholder="name@example.com" aria-label="Teammate's email" />}
-        footerActionsSlot={(close) => <Button onPress={close} content="Send invite" />}
+        footerActionsSlot={(close) => (
+          <Button variant="info" onPress={close} content="Send invite" />
+        )}
       />
     ),
   },
@@ -1283,8 +1287,8 @@ const sections: GallerySection[] = [
       <Screen>
         <Sidebar
           label="Workspace"
-          headerSlot={<Text className="font-semibold text-sidebar-foreground">Acme</Text>}
-          footerSlot={<Text className="text-sidebar-foreground text-xs">Signed in as Dana</Text>}
+          headerSlot={<Text className="font-semibold text-foreground">Acme</Text>}
+          footerSlot={<Text className="text-foreground text-xs">Signed in as Dana</Text>}
           contentSlot={
             <SidebarSection
               as="nav"

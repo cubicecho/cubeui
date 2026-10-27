@@ -30,9 +30,8 @@ const Actions = () => (
 );
 
 const Rows = ({ count = 40 }: { count?: number }) => (
-  // The list resets are spelled out: the story harness has no preflight, so a bare `<ul>` keeps the
-  // browser's 40px indent and the rows would not start where the title does.
-  <ul className="m-0 list-none divide-y p-0">
+  // A bare `<ul>`: preflight takes the browser's indent and bullets off, as it does in an app.
+  <ul className="divide-y">
     {Array.from({ length: count }, (_, i) => i + 1).map((n) => (
       <li key={n} className="py-3 text-sm">
         Workspace {n}
@@ -130,7 +129,7 @@ export const WithFooter: Story = {
     title: "Workspaces",
     contentSlot: <Rows />,
     footerSlot: (
-      <div className="flex items-center justify-between py-3 text-foreground/60 text-sm">
+      <div className="flex items-center justify-between text-foreground/60 text-sm">
         <span>40 workspaces</span>
         <Button size="sm" variant="outline" content="Load more" />
       </div>

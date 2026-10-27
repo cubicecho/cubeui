@@ -175,3 +175,39 @@ export const FromAUrl: Story = {
     }
   },
 };
+
+/**
+ * At a text size the label is drawn beside the icon — an "Export" button in a toolbar — and it is
+ * the button's name from its words; at an `icon*` size it stays the name alone.
+ */
+export const WithLabel: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <>
+          <Native source="a,b" filename="tasks.csv" label="Export" size="sm" />
+          <Native source="a,b" filename="tasks.csv" label="Export tasks.csv" />
+        </>
+      }
+      compiled={
+        <>
+          <Compiled source="a,b" filename="tasks.csv" label="Export" size="sm" />
+          <Compiled source="a,b" filename="tasks.csv" label="Export tasks.csv" />
+        </>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const labelled = canvas.getAllByRole("button", { name: "Export" });
+    await expect(labelled).toHaveLength(2);
+    for (const button of labelled) {
+      await expect(button).toHaveTextContent("Export");
+    }
+    const icons = canvas.getAllByRole("button", { name: "Export tasks.csv" });
+    await expect(icons).toHaveLength(2);
+    for (const button of icons) {
+      await expect(button).not.toHaveTextContent("Export");
+    }
+  },
+};

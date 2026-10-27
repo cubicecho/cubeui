@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { Badge as CompiledBadge } from "../compiled/badge";
 import { Button as CompiledButton } from "../compiled/button";
 import { FileTree as Compiled } from "../compiled/file-tree";
 import { Trash2 as CompiledTrash } from "../compiled/icons";
 import { FileTree as Native } from "../registry/layout/file-tree";
+import { Badge as NativeBadge } from "../registry/ui/badge";
 import { Button as NativeButton } from "../registry/ui/button";
 import { Trash2 as NativeTrash } from "../registry/ui/icons";
 import { deferredSave } from "./deferred-save";
@@ -484,5 +486,71 @@ export const Move: Story = {
     slowMove.settle("resolve");
     await waitFor(() => expect(item("old").contains(row("deploy.md"))).toBe(false));
     await expect(slowMove.calls).toHaveBeenCalledTimes(2);
+  },
+};
+
+/** A token's colour as the browser resolves it, for comparing with a computed `color`. */
+function tokenColor(token: string) {
+  const probe = document.createElement("span");
+  probe.style.color = `var(--${token})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+  return color;
+}
+
+// What a consumer passed: an outline Badge with its own muted colour class, which on the selected
+// row's fill stayed grey.
+const MUTED_BADGE = "shrink-0 font-normal text-muted-foreground";
+
+/**
+ * On the selected row everything in the meta takes the row's ink, a caller's own colour classes
+ * included: a muted outline Badge on the active fill was grey on light teal.
+ */
+export const SelectedMetaTakesTheRowInk: Story = {
+  args: { label: "Skill files", entries: ENTRIES },
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root" style={{ width: 280 }}>
+          <Native
+            label="Skill files"
+            entries={ENTRIES}
+            selected="notes.md"
+            meta={(node) =>
+              node.path === "notes.md" ? (
+                <NativeBadge variant="outline" className={MUTED_BADGE}>
+                  draft
+                </NativeBadge>
+              ) : null
+            }
+          />
+        </div>
+      }
+      compiled={
+        <div className="compiled-root" style={{ width: 280 }}>
+          <Compiled
+            label="Skill files"
+            entries={ENTRIES}
+            selected="notes.md"
+            meta={(node) =>
+              node.path === "notes.md" ? (
+                <CompiledBadge variant="outline" className={MUTED_BADGE}>
+                  draft
+                </CompiledBadge>
+              ) : null
+            }
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const ink = tokenColor("active-foreground");
+    for (const selector of [".native-root", ".compiled-root"]) {
+      const root = canvasElement.querySelector(selector) as HTMLElement;
+      const label = within(root).getByText("draft");
+      await waitFor(() => expect(getComputedStyle(label).color).toBe(ink));
+    }
   },
 };

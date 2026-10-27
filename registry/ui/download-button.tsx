@@ -15,6 +15,7 @@ import {
   type DownloadButtonProps,
   type DownloadContent,
   type DownloadDestination,
+  isIconSize,
   useDownload,
 } from "@/components/ui/download-button-base";
 import { Download, Folder, Upload } from "@/components/ui/icons";
@@ -143,6 +144,7 @@ export function DownloadButton({
       variant={variant}
       size={size}
       aria-label={label}
+      {...(isIconSize(size) ? {} : { content: label })}
       loading={pending}
       disabled={disabled}
       className={className}

@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { ChevronRight, File, Folder } from "@/components/ui/icons";
+import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -32,6 +33,11 @@ type FileTreeProps<T extends TreeEntry> = {
   /**
    * The small facts after a row's name: a size, a count, a badge. A string is drawn muted and extra
    * small; an element is placed as it is. Inside the pressed area. Called for folders too.
+   *
+   * On the selected row the meta takes the row's ink. On the web that overrides a node's own
+   * colour classes (and turns its borders to the ink at /50); on a device icons follow through
+   * `IconClassContext` but a node's own `Text` cannot be reached, so a node meta should not set
+   * its own colour — leave a Badge's variant to do it, or pass a string.
    */
   meta?: ((node: TreeNode<T>) => ReactNode) | undefined;
   /**
@@ -65,7 +71,8 @@ const ROW_CLASS = cn(
   "min-h-8 min-w-0 flex-1 flex-row items-center gap-2 rounded-md py-1.5 pr-2",
   Platform.select({
     web: "text-left focus-visible:outline-none",
-    default: "active:opacity-70",
+    // Pressed looks hovered, as a menu's or a command's row does: not a fade, which reads disabled.
+    default: "active:bg-hover",
   }),
 );
 
@@ -80,7 +87,8 @@ const NO_PATHS: ReadonlySet<string> = new Set();
 const SPRING_OPEN_MS = 600;
 
 /** The folder a drop would land in, and what is under it. */
-const DROP_TARGET_CLASS = "rounded-md bg-active/10";
+// The chosen-row tint: a drop target is chosen, as the file picker's zone is under a drag.
+const DROP_TARGET_CLASS = "rounded-md bg-active/40";
 
 /** A string on its own is a crash on device, so a string `meta` gets a `Text` around it. */
 function asText(node: ReactNode, className: string) {
@@ -261,7 +269,14 @@ export function FileTree<T extends TreeEntry>({
   const renderRow = (node: TreeNode<T>, depth: number, isFile: boolean, isPinned = false) => {
     const isSelected = isFile && selected === node.path;
     const ink = isSelected ? "text-active-foreground" : "text-foreground";
-    const muted = isSelected ? "text-active-foreground" : "text-foreground/60";
+    // Inside the folder a drag is over, the row sits on the drop tint, where /60 is under 4.5:1.
+    const inDrop =
+      dropInto !== null &&
+      (dropInto === "" || node.path === dropInto || node.path.startsWith(`${dropInto}/`));
+    let muted = inDrop ? "text-foreground" : "text-foreground/60";
+    if (isSelected) {
+      muted = "text-active-foreground";
+    }
     const indent = { paddingLeft: depth * INDENT + EDGE };
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
@@ -302,8 +317,25 @@ export function FileTree<T extends TreeEntry>({
           {node.name}
         </Text>
         {facts ? (
-          <View testID="file-tree-meta" className="shrink-0 flex-row items-center gap-1">
-            {asText(facts, cn("text-xs tabular-nums", muted))}
+          <View
+            testID="file-tree-meta"
+            className={cn(
+              "shrink-0 flex-row items-center gap-1",
+              // On the chosen row's fill everything in the meta takes the row's ink, over a
+              // caller's own colour classes: a muted outline Badge stayed grey on the fill. Its
+              // edges go to the ink at /50, so an outline still reads. Web only — a device has no
+              // descendant selector, so there icons follow through the context below and a node's
+              // own text keeps its colour (see `meta`).
+              isSelected &&
+                Platform.select({
+                  web: "text-active-foreground [&_*]:text-active-foreground! [&_*]:border-active-foreground/50!",
+                  default: "",
+                }),
+            )}
+          >
+            <IconClassContext.Provider value={cn("size-4 shrink-0", muted)}>
+              {asText(facts, cn("text-xs tabular-nums", muted))}
+            </IconClassContext.Provider>
           </View>
         ) : null}
       </>

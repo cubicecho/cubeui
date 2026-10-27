@@ -108,3 +108,31 @@ async function inDark(check: () => Promise<void>) {
     html.classList.toggle("dark", had);
   }
 }
+
+/**
+ * The harness loads Tailwind's preflight, as a DOM app's `@import "tailwindcss"` does, so a story
+ * starts where an app starts: a link is not the browser's underlined blue, a list has no bullets or
+ * indent, and a fieldset draws no frame.
+ */
+export const HarnessHasPreflight: Story = {
+  render: () => (
+    <div className="bg-background p-6 text-foreground">
+      <a href="#top">Read the docs</a>
+      <ul data-testid="list">
+        <li>A row</li>
+      </ul>
+      <fieldset data-testid="fieldset">
+        <legend>A group</legend>
+      </fieldset>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = getComputedStyle(canvas.getByText("Read the docs"));
+    await expect(link.textDecorationLine).toBe("none");
+    const list = getComputedStyle(canvas.getByTestId("list"));
+    await expect(list.listStyleType).toBe("none");
+    await expect(list.paddingLeft).toBe("0px");
+    await expect(getComputedStyle(canvas.getByTestId("fieldset")).borderTopWidth).toBe("0px");
+  },
+};

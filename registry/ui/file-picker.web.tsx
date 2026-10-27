@@ -175,9 +175,12 @@ export function FilePicker({ label, hint, ...options }: FilePickerProps) {
           dragging ? "border-active bg-active/40" : "hover:border-foreground/60",
         )}
       >
-        <Upload className={FILE_PICKER_ICON_CLASS} />
+        {/* On the drop tint the muted grey is under 4.5:1, so the hint and icon take full ink. */}
+        <Upload className={cn(FILE_PICKER_ICON_CLASS, dragging && "text-foreground")} />
         <Text className={FILE_PICKER_TITLE_CLASS}>{label}</Text>
-        {hint ? <Text className={FILE_PICKER_HINT_CLASS}>{hint}</Text> : null}
+        {hint ? (
+          <Text className={cn(FILE_PICKER_HINT_CLASS, dragging && "text-foreground")}>{hint}</Text>
+        ) : null}
       </button>
       {input}
     </>

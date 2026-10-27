@@ -24,7 +24,14 @@ import type {
   DialogSectionProps,
   DialogTriggerProps,
 } from "@/components/ui/dialog-base";
-import { DIALOG_CONTENT_CLASS } from "@/components/ui/dialog-base";
+import {
+  DIALOG_CONTENT_CLASS,
+  DIALOG_DESCRIPTION_CLASS,
+  DIALOG_DISMISS_CLASS,
+  DIALOG_FOOTER_CLASS,
+  DIALOG_HEADER_CLASS,
+  DIALOG_TITLE_CLASS,
+} from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
 import { bridgePress, cn } from "@/lib/utils";
 
@@ -143,7 +150,7 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute right-4 top-4 rounded-sm text-foreground/60 transition-colors hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground focus:outline-none disabled:pointer-events-none"
+            className={cn(DIALOG_DISMISS_CLASS, "transition-colors disabled:pointer-events-none")}
           >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -162,7 +169,7 @@ function DialogHeader({
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1.5 text-center sm:text-left", className)}
+      className={cn("flex", DIALOG_HEADER_CLASS, className)}
       {...props}
     />
   );
@@ -178,7 +185,7 @@ function DialogFooter({
   return (
     <div
       data-slot="dialog-footer"
-      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      className={cn("flex", DIALOG_FOOTER_CLASS, className)}
       {...props}
     >
       {children}
@@ -199,7 +206,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+      className={cn(DIALOG_TITLE_CLASS, className)}
       {...props}
     />
   );
@@ -213,7 +220,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-foreground/60 text-sm", className)}
+      className={cn(DIALOG_DESCRIPTION_CLASS, className)}
       {...props}
     />
   );

@@ -9,7 +9,18 @@
  */
 
 import type { SlotNode } from "@/lib/utils";
+/**
+ * The `<Page>` shell plus the loading / not-found guard a detail route repeats.
+ *
+ * `contentSlot` is a function so the entity is non-null inside it — the guard and
+ * the narrowing are the same act, and a render prop is what makes the type
+ * system agree. A detail route's body then never writes `entity!` or an
+ * early return of its own.
+ */
+import { EmptyState } from "./empty-state";
+import { Search } from "./icons";
 import { Page } from "./page";
+import { RowSkeleton } from "./query-state";
 
 type DetailPageProps<T> = {
   /** The loaded entity, or null/undefined while loading or when missing. */
@@ -39,10 +50,13 @@ export function DetailPage<T>({
       contentSlot={
         entity ? (
           contentSlot(entity)
+        ) : // Designed states, not a lone grey line at the top left: rows that pulse where the
+        // record will be, or the centred empty block naming what is missing — the whole
+        // screen is that state, so its title is the page's h1.
+        loading ? (
+          <RowSkeleton />
         ) : (
-          <span className="cube-rn-text text-foreground/60">
-            {loading ? "Loading…" : notFoundLabel}
-          </span>
+          <EmptyState icon={Search} title={notFoundLabel} level={1} />
         )
       }
     />

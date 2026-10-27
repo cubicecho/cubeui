@@ -77,9 +77,16 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
       aria-disabled={disabled ?? false}
       className={cn(
         "cube-rn-view cube-rn-pressable",
-        "rounded-md border",
-        size === "sm" ? "px-2 py-1" : "px-3 py-2",
-        selected ? "border-active bg-active" : "border-foreground/10 bg-background hover:bg-hover",
+        "group/chip items-center justify-center rounded-md border focus-visible:outline-none",
+        // The button's `xs` and `sm` heights, so a chip sits flush beside a button or a
+        // segmented control rather than 2px off it.
+        size === "sm" ? "h-7 px-2" : "h-9 px-3",
+        // A control's edge is /50, 3:1 on every surface: at /10 an unchosen chip was a faint box
+        // beside the segmented frame. Focus looks hovered; a chosen chip, which has no hover,
+        // deepens instead.
+        selected
+          ? "border-active bg-active focus-visible:bg-hover focus-visible:text-foreground active:bg-active/90"
+          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover active:bg-hover",
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element
@@ -87,7 +94,11 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
         // through untouched and on web takes its colour by inheriting from
         // here. Without this line a selected chip holding markup drew
         // `text-foreground` on `bg-neutral`, which is near-black on near-black.
-        selected && !backgroundColor ? "text-active-foreground" : "text-foreground",
+        // Its own `focus-visible:`, not the `group-*/chip` variant the label takes: that variant
+        // selects what is inside the chip, so on the chip itself it would never apply.
+        selected && !backgroundColor
+          ? "text-active-foreground focus-visible:text-foreground"
+          : "text-foreground",
         disabled && "opacity-50",
         className,
       )}
@@ -100,7 +111,9 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
             "cube-rn-text",
             "font-semibold",
             size === "sm" ? "text-xs" : "text-sm",
-            selected && !backgroundColor ? "text-active-foreground" : "text-foreground",
+            selected && !backgroundColor
+              ? "text-active-foreground group-focus-visible/chip:text-foreground"
+              : "text-foreground",
           )}
         >
           {children}

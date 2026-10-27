@@ -35,7 +35,7 @@ const form = useAppForm({
   <SelectField form={form} name="list" label="List" options={LISTS} />
 
   <form.AppForm>
-    <form.SubmitButton content="Create Todo" />
+    <form.SubmitButton variant="info" content="Create Todo" />
   </form.AppForm>
 </form>
 ```
@@ -54,7 +54,7 @@ The bound fields:
 | `DateRangeField` | `DateRange \| null` | `@cubeui/date-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 | `ColorField` | `string` | `@cubeui/color-field` |
-| `PasswordField` | `string` | `@cubeui/password-field` |
+| `PasswordField` | `string` | `@cubeui/app-form` (also `@cubeui/password-field`, the old path) |
 
 Each one takes everything `FormField` takes — `label`, `description`, `required`, `actionSlot`,
 `loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
@@ -183,6 +183,30 @@ for it, filling a description from a template, clearing the fields the other tra
 The guard is yours, and it is the part worth writing: a listener that overwrites what somebody
 already chose is the form arguing back. Check `form.state.fieldMeta.<name>?.isTouched`, or the
 value itself, before you write to a sibling.
+
+**A field checked against another takes `onChangeListenTo`.** It goes in `validators`, beside
+`onChange`, and names the fields whose change runs this field's `onChange` again — so a
+"Password, again" is marked as differing the moment the first password changes, not only when it
+is typed in itself. `onBlurListenTo` is the same for `onBlur`. Read the other value off
+`fieldApi.form`:
+
+```tsx
+<PasswordField form={form} name="password" label="Password" autoComplete="new-password" />
+<PasswordField
+  form={form}
+  name="again"
+  label="Password, again"
+  autoComplete="new-password"
+  validators={{
+    onChangeListenTo: ["password"],
+    onChange: ({ value, fieldApi }) =>
+      value === fieldApi.form.getFieldValue("password") ? undefined : "The passwords differ",
+  }}
+/>
+```
+
+`PasswordField` is on `field.*` too (`<field.PasswordField label="Password" />`), with the other
+light fields.
 
 ### When you need the `field` object
 
@@ -512,7 +536,9 @@ field drops to its own line at full width rather than three of them sharing one 
     }
   />
   ```
-- `perRow` is `2` (the default) or `3`, and it only moves that minimum.
+- `perRow` is `2` (the default) or `3`: at most that many on a line. A cell is never narrower than
+  `12rem` (`10rem` at three), so the row stacks on a phone or in a narrow dialog by real width,
+  not at a breakpoint.
 - The cells are equal width. A field that should be wider is not this component — put it on its
   own line.
 
@@ -543,7 +569,12 @@ children and closed without asking, and it was removed. An app that vendored it 
 - The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
   `SubmitButton` that no form owns calls `form.handleSubmit()` itself. The same holds in a
   `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
-  `preventDefault` already in it, so Enter in a field submits too.
+  `preventDefault` already in it, so Enter in a field submits too. It is a `gap-4` column, so the
+  fields in it need no spacing of their own; to lay a field and its button in a row, pass
+  `className="flex-row items-end gap-3"`.
+- **`SubmitButton` is coloured by what it does.** On the web it is `positive` (it keeps the work:
+  Save) unless you pass `variant="info"` for one that adds something (Create, Add). The native
+  one knows which it is: `positive` when editing, `info` when creating. A `variant` you pass wins.
 - To send the press through the DOM submit event instead, name the form: `<FormElement id="todo" …>`
   and `<form.SubmitButton form="todo" … />`. A hand-written `<form id="todo">` works the same way.
 - `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is

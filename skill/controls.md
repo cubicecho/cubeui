@@ -188,7 +188,7 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms.md](forms.md)
 the far end, so those are the props:
 
 ```tsx
-<Button content="Save" onPress={save} />
+<Button content="Continue" onPress={next} />
 <Button variant="info" iconSlot={<Plus />} content="New workspace" onPress={create} />
 <Button variant="outline" content={chosen.label} trailingSlot={<ChevronDown />} />
 <Button variant="outline" linkSlot={<Link to="/docs" />} content="Docs" />
@@ -204,11 +204,14 @@ the far end, so those are the props:
   | `positive`, `positive-outline` | Keeps the work: Save, Confirm |
   | `destructive`, `destructive-outline` | Destroys; the outline when it is not the emphasis of its row |
   | `outline` | A quiet action: Cancel, Close, a trigger |
-  | `secondary` | An icon inside a field's own border |
+  | `secondary` | An icon inside a field's own border. Its hover and focus darken its edge, not its fill: the hover grey is the same as its own |
   | `ghost`, `link` | Kept for porting shadcn code. Do not use them in new code: a button looks like a button |
 
 - **`content`** is the label. A string is drawn in the variant's ink. Anything else is rendered as
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
+- **Every size has the same corner**, `rounded-md`, `xs` and `icon-xs` included: a smaller button
+  is not a rounder one. A `ToggleChip` beside them is drawn as a control too — a `/50` edge at rest
+  and the button heights, `h-9` and `h-7` at `size="sm"`.
 - **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
   is why those sizes require `aria-label` (below).
 - **`trailingSlot`** is the far end: a trigger's chevron, a count.
@@ -220,7 +223,8 @@ the far end, so those are the props:
   and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
   swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
   `ConfirmButton` takes the same props; a form's submit is `form.SubmitButton`,
-  which sets `loading` from the form.
+  which sets `loading` from the form and is coloured by what it does (see
+  [forms.md](forms.md)).
 - A shadcn call site ports as `<Button>Save</Button>` → `<Button content="Save" />`, and
   `<Button><Plus /> New</Button>` → `<Button iconSlot={<Plus />} content="New" />`. Everything else
   about the web half is still shadcn's: the `<button>` props, the sizes, `buttonVariants`.
@@ -320,6 +324,10 @@ an `absolute` corner over it.
   The accessible name is `label` (default `Copy` — name what is copied when there is more than
   one) and `Copied` while the tick shows.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
+  At an `icon*` size the button is the glyph alone and `label` is its name. At a text size (`sm`,
+  `default`, `lg`) `label` is drawn beside the glyph — a toolbar's
+  `<DownloadButton label="Export" size="sm" … />`. Do not build that one from a `Button` and
+  `downloadBlob` by hand.
   `className` is the button's, for placing it.
 - The tick appears only if the write happened. A refused write — an insecure origin, a denied
   permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.
@@ -484,7 +492,8 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
   `##` folds its `###`s with it. Every section starts open, and a heading with nothing under it
   has no button. Off by default. Do not wrap the parts of a document in `Disclosure`s for this.
 - `className` is the root's: its width, its margin. The document is as wide as what it is put in
-  and does not cap its own line length; put it in a `width="prose"` page or a pane.
+  and a table or code block in it takes that width; its paragraphs, lists and quotes stop at
+  `max-w-prose` (about 65 characters a line) however wide it is.
 - A long URL breaks rather than widening the document, and a table or code block too wide for it
   scrolls inside itself.
 
@@ -675,8 +684,9 @@ server in it*. If you cannot write that sentence, the confirm is probably not wa
 is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
-Everything `Button` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. A
-disabled `ConfirmButton` does not open the dialog.
+Everything `Button` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. The
+trigger is `destructive-outline` unless you pass a `variant`: it asks the question, and the bold
+destructive step is the dialog's. A disabled `ConfirmButton` does not open the dialog.
 
 **`@cubeui/confirm-button` is on both halves**, with the same props. The press opens the question,
 so it takes neither `onPress` nor `onClick`; `onConfirm` is the one that acts. The dialog is
@@ -743,8 +753,9 @@ on both platforms:
   `onSelect`. `open` / `onOpenChange` / `defaultOpen` are there if you need them, as on `Popover`.
 - **`MenuItem` takes props, not children**: `label` (the text, and what typeahead matches),
   `iconSlot`, `trailing` (a shortcut or a count; a string is drawn muted), `destructive`, `disabled`,
-  `onSelect`, and `linkSlot` or `href` for a row that navigates. The icon takes the row's colour —
-  `text-negative` on a destructive row.
+  `onSelect`, and `linkSlot` or `href` for a row that navigates. The icon is drawn quieter than the
+  label, `text-foreground/60`, as `Command`'s are — `text-negative` on a destructive row. The menu is
+  at least `min-w-48` wide, so a `trailing` shortcut does not crowd its label.
 - **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
   `Link` as an element with no children, `linkSlot`, and the row is drawn inside it — on the web the
   menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
@@ -1739,9 +1750,9 @@ second answer.
 | State | Draw it with | Notes |
 |---|---|---|
 | Under the pointer | `hover:bg-hover` | Grey, on every control and row. A filled button darkens its own fill instead: `hover:bg-neutral/90`. |
-| Keyboard focus | the hover look: `focus-visible:bg-hover` | No ring. A row whose focus is on a child uses `has-[:focus-visible]:bg-hover`. A chosen control that is focused is `focus-visible:bg-active/90`. |
+| Keyboard focus | the hover look: `focus-visible:bg-hover` | No ring. A row whose focus is on a child uses `has-[:focus-visible]:bg-hover`. A filled or chosen control looks hovered too: `focus-visible:bg-hover focus-visible:text-foreground`, so its label and icon turn `foreground` with the fill. |
 | Focus in a field | `focus:border-active` | Input, textarea, select trigger. No ring here either. |
-| Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A `ListItem` dims instead, `active:opacity-70`. |
+| Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A filled button darkens its own fill: `active:bg-neutral/90`. |
 | Chosen, the one of its group | `bg-active text-active-foreground` | The current sidebar row, the active tab, the pressed segment, a checked box, an on switch, an on chip. |
 | Chosen, a row among many | `bg-active/40` | A table row, a `ListItem` or `Item` with `selected`, the option a select is on. A tint, because the row's own text and badges still have to read. |
 | Chosen, a card | `border-active` | A `StatTile` or radio card with `selected`. The fill stays the card's. |
@@ -1749,7 +1760,12 @@ second answer.
 
 - **Chosen never uses the hover grey, and hover never uses `active`.** A grey chosen row is a
   hover that stuck. A chosen row keeps its tint under the pointer:
-  `selected && "hover:bg-active/40"`.
+  `selected && "hover:bg-active/40"`. Focused, it looks hovered like everything else.
+- **A label's `Text` names its own colour, so focus reaches it through a named group.** Put
+  `group/<name>` on the pressable and `group-focus-visible/<name>:text-foreground` on the `Text`
+  inside it, as `Button`, `SidebarNavItem`, `Tabs`, `SegmentedButton` and `ToggleChip` do. The
+  group variant selects what is inside the group, so it does nothing on the element that names it:
+  that element turns its own ink with plain `focus-visible:text-foreground`.
 - **The colour is not the whole of chosen.** Say it as well: `aria-current="page"` on the link to
   the current place, `aria-selected` on an option in a listbox or a tab, `aria-pressed` on a
   toggle, `aria-checked` on a box or a switch. `ListItem`, `SidebarNavItem`, `Tabs`,
@@ -1758,6 +1774,19 @@ second answer.
 - **Use the prop before the class.** `selected` on `Item`, `ListItem`, `ToggleChip` and
   `StatTile`, `active` on `SidebarNavItem` and `BarNavItem`, `data-state="selected"` on a
   `TableRow`. The classes above are for a row that is none of those.
+
+### Elevation
+
+A shadow says how far a thing floats, and there are three:
+
+| Where it sits | Shadow | What |
+|---|---|---|
+| In the page's flow | none | `Card`, `Section surface="card"`, `Alert`, a code block, a switch's track |
+| A part laid over content | `shadow-sm` | A switch's thumb, a copy button over a code block |
+| Floating over the page | `shadow-md` | Popover, menu, a select's list, tooltip, toast |
+| Modal | `shadow-lg` | `Dialog`, `AlertDialog` |
+
+Do not give a card in the page a shadow to lift it: its edge and fill do that.
 
 ## File picker
 

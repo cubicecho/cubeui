@@ -48,7 +48,8 @@ export const Default: Story = {
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
-    await expect(nativeStyle.color).toMatch(/\/ 0\.6\)$/);
+    // Full ink, not the /60 grey: the overline leads its own description.
+    await expect(nativeStyle.color).not.toMatch(/\/ 0\.6\)$/);
     await expect(compiledStyle.color).toBe(nativeStyle.color);
     await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
     await expect(compiledStyle.textTransform).toBe("uppercase");

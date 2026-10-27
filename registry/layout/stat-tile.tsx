@@ -128,7 +128,9 @@ export function StatTile({
         ) : null}
         <Text
           testID="stat-tile-label"
-          className={cn("min-w-0 flex-1 truncate font-semibold text-sm", ink)}
+          // Normal weight, as PropertyRow's label: the label supports the figure under it, and
+          // a grey semibold label competed with it.
+          className={cn("min-w-0 flex-1 truncate text-sm", ink)}
         >
           {label}
         </Text>
