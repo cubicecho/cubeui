@@ -183,12 +183,13 @@ the next `shadcn add` overwrites the edit.
 ## The agent skill
 
 How to use these components, written for an agent, is the Markdown in [`skill/`](skill):
-`SKILL.md`, which routes, `native.md` for an Expo app, and one file per component group under
+`SKILL.md`, which routes, `vocabulary.md`, the slot vocabulary every component shares,
+`native.md` for an Expo app, and one file per component group under
 `layout/`, `forms/` and `controls/`, which it routes to. They are plain files in this repository
 and not a registry item, so nothing installs them for you. Download the directory and put it
 wherever your agent reads skills: a skills directory in the project or in your home directory, a
 skills server, or anywhere else. Keep it whole, because the files link each other by relative
-path, and fetch it again when the registry changes. No file is over 25 KB (30 KB for `SKILL.md`),
+path, and fetch it again when the registry changes. No file is over 25 KB, `SKILL.md` included,
 so a skills server can hand each one over whole; `npm run docs:check` holds that.
 
 The skill opens with which half the project is in, because the web-only shells are a 404 in an
@@ -1215,7 +1216,8 @@ project, and the native set is its own smaller vocabulary rather than a port of 
 
 The three references later grew past what a skills server hands an agent in one read
 (`controls.md` reached 103 KB), so they were split by component group into `layout/`, `forms/`
-and `controls/`, and the native choosing table moved out of `SKILL.md` into `native.md` (#387).
+and `controls/`, and the native choosing table moved out of `SKILL.md` into `native.md` (#387). The slot
+vocabulary followed it into `vocabulary.md`, which brought `SKILL.md` itself under 25 KB.
 `scripts/check-skill-files.mjs` holds the sizes and the links between them.
 
 ## Commands

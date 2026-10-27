@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Rule 2 of docs/component-conventions.md and the skill's vocabulary section are meant to be the
+// Rule 2 of docs/component-conventions.md and the skill's vocabulary file are meant to be the
 // same list, read from two directions: the conventions doc argues a word once, the skill hands it
 // to an agent. Nothing enforced that, and the two drifted by five words — `width`, `trigger`,
 // `rows`, `value`/`onValueChange` were argued and never taught, and `hasUnsavedChanges` was taught
@@ -12,7 +12,10 @@
 import { readFile } from "node:fs/promises";
 
 const CONVENTIONS = "docs/component-conventions.md";
-const SKILL = "skill/SKILL.md";
+// The vocabulary was a section of `skill/SKILL.md` until that file outgrew the skill's 25 KB budget
+// (#387); it is its own file now, and the whole of it is the vocabulary.
+const SKILL = "skill/vocabulary.md";
+const SKILL_HEADING = "# The slot vocabulary\n";
 
 // The layers are the same five in both files; only the first is worded differently, because
 // "Core — every shell" is how you argue it and "Everywhere" is how you use it.
@@ -78,7 +81,9 @@ const conventions = await readFile(CONVENTIONS, "utf8");
 const skill = await readFile(SKILL, "utf8");
 
 const rule2 = between(conventions, "## 2. One vocabulary across the set", "\n## 3.");
-const vocabulary = between(skill, "## The slot vocabulary", "\n## No inline edits");
+// The file opens with its heading, and runs to the end: a second top-level heading would be a
+// second topic in the vocabulary's file, so the read stops there and this fails on the words lost.
+const vocabulary = skill.startsWith(SKILL_HEADING) ? between(skill, SKILL_HEADING, "\n# ") : null;
 
 const problems = [];
 if (rule2 === null) {
@@ -86,7 +91,7 @@ if (rule2 === null) {
 }
 if (vocabulary === null) {
   problems.push(
-    `${SKILL}: the vocabulary section's heading was renamed; this check cannot find it.`,
+    `${SKILL}: the file no longer opens with "${SKILL_HEADING.trim()}"; this check cannot find it.`,
   );
 }
 

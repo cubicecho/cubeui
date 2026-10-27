@@ -8,7 +8,7 @@ the widened version, not the original.
 They came across from cubeui, where every item was a web-only shell, and they still hold for the
 layout family now that it is written once in React Native and compiled (README, Stage 4). Where a
 rule reads differently on this side of that move it says so. `npm run docs:check` holds rule 2 and
-the skill's vocabulary section to the same list of words.
+the skill's vocabulary (`skill/vocabulary.md`) to the same list of words.
 
 ## 1. Every slot is a named prop, including the body
 
