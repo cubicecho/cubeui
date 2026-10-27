@@ -371,7 +371,14 @@ type SidebarLayoutNarrow =
        * is where a phone's thumb is and where Android and iOS apps put them. The brand, the
        * `status` and the `actionSlot` stay in the bar at the top.
        *
-       * The bottom safe-area inset is the app's, as the top one is.
+       * The bottom safe-area inset is the app's, as the top one is: nothing here measures insets,
+       * and a shell is not the place to add the dependency that does. A `SafeAreaView` that takes
+       * the bottom edge stops the bar above the home indicator and leaves a strip under it in the
+       * `SafeAreaView`'s own fill, not the bar's. For the bar's fill to reach the screen's edge,
+       * leave `"bottom"` out of the app's `edges` and pad the bar by the inset through
+       * `bottomBarClassName`: `pb-safe-offset-2` is NativeWind's (the inset plus the bar's own
+       * `py-2`), and a DOM app with `viewport-fit=cover` writes
+       * `pb-[calc(env(safe-area-inset-bottom)+0.5rem)]`.
        */
       barPosition?: "top" | "bottom" | undefined;
     } & SidebarLayoutNav);

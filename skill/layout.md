@@ -572,10 +572,22 @@ there pushes the buttons off the screen.
   />
   ```
 
-  - **The bottom safe-area inset is the app's**, as the top one is: wrap the app in
-    `react-native-safe-area-context`'s `<SafeAreaView edges={["top", "bottom"]}>`, and the bar sits
-    above the home indicator. The layout adds no dependency to measure insets.
-    `bottomBarClassName` is on the bottom bar itself (its fill, its border, its padding).
+  - **The bottom safe-area inset is the app's**, as the top one is; the layout adds no dependency
+    to measure insets. For the bar's fill to run under the home indicator, leave `"bottom"` out of
+    the app's `react-native-safe-area-context` `<SafeAreaView edges={["top"]}>` and pad the bar by
+    the inset through `bottomBarClassName`, which is on the bottom bar itself (its fill, its
+    border, its padding):
+
+    ```tsx
+    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
+      <SidebarLayout barPosition="bottom" bottomBarClassName="pb-safe-offset-2" … />
+    </SafeAreaView>
+    ```
+
+    `pb-safe-offset-2` is NativeWind's: the inset plus the bar's own 8px. A DOM app (with
+    `viewport-fit=cover`) writes `pb-[calc(env(safe-area-inset-bottom)+0.5rem)]`. Keeping
+    `"bottom"` in `edges` instead stops the bar above the indicator, with a strip under it in the
+    `SafeAreaView`'s fill, not the bar's.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
   - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
