@@ -102,7 +102,8 @@ is laid out as a row. So a long title with two controls is still a `CardLayout`:
 list row's), and does not need one: the header's far end takes any element, a `Badge` as well as
 a control, and a fragment of both is laid out as one row with a gap, wrapping as above. Put the
 status first and the controls after it, and do not wrap them in a `<div className="flex gap-2">`
-of your own: the row already is one.
+of your own: the row already is one. The words are the `Badge`'s children: a badge with none is a
+dot, and `label` is only that dot's accessible name.
 
 ```tsx
 <CardLayout
@@ -110,7 +111,7 @@ of your own: the row already is one.
   iconSlot={<Folder />}
   actionSlot={
     <>
-      <Badge variant={project.archived ? "default" : "positive"} label={project.archived ? "Archived" : "Active"} />
+      <Badge variant={project.archived ? "default" : "positive"}>{project.archived ? "Archived" : "Active"}</Badge>
       <Button size="icon-sm" variant="outline" aria-label="Edit project" iconSlot={<Pencil />} onPress={edit} />
     </>
   }
@@ -128,7 +129,7 @@ reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap th
 row (`flex-row items-center`) with no gap: each at its own width, none stretched, a button
 included. With `footerActionsSlot` beside it the footer is `justify-between` across *every*
 child, so a second `footerSlot` element lands in the middle of the footer rather than beside the
-first. Two things that belong together at the start — a "Read only" note and a delete
+first. Two things that belong together at the start — a "Last synced" note and a delete
 `ConfirmButton` — go in one row of your own, `<View className="flex-row items-center gap-2">` on
 a device and `<div className="flex items-center gap-2">` on the web. That groups them, which the
 shell cannot know to do; it is not the wrapping-to-align the slot rule forbids.

@@ -25,6 +25,10 @@ the far end, so those are the props:
 <Button variant="positive" loading={saving} loadingLabel="Saving…" content="Save" onPress={save} />
 ```
 
+The examples in this skill write `onPress`, the device's name. **A DOM app writes `onClick`**: the
+web half renders a real `<button>` and takes its props. The same holds for every pressable in the
+set (see [native.md](../native.md)).
+
 <!-- props:Button -->
 `Button`'s props, from the TSDoc in `registry/ui/button.tsx`:
 
