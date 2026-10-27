@@ -11,8 +11,11 @@ const preview: Preview = {
     // honest answer needs the run to fail when it does not.
     a11y: { test: "error" },
     // The two galleries are the "show me everything" pages the landing page links to, so they
-    // open the sidebar rather than sitting wherever `G` falls among the per-item stories.
-    options: { storySort: { order: ["Gallery", ["Web", "Mobile"], "*"] } },
+    // open the sidebar rather than sitting wherever `G` falls among the per-item stories. The
+    // examples, whole screens composed from the set, come straight after them.
+    options: {
+      storySort: { order: ["Gallery", ["Web", "Mobile"], "Examples", ["Web", "Mobile"], "*"] },
+    },
   },
   decorators: [
     // `light` is a class too, not the absence of `dark`: the tokens follow the system's

@@ -51,6 +51,63 @@ const GALLERY_WEB = `${HOST}/${canvas("gallery-web--everything")}`;
 const MOBILE_OUT = new URL("public/mobile/index.html", root);
 const GALLERY_MOBILE = `${HOST}/mobile/`;
 
+/**
+ * The example screens: whole pages composed from the set, for reviewing the components in
+ * context. A web one opens as its canvas, like the web gallery. A mobile one opens inside the
+ * Storybook UI instead, which applies the story's phone viewport; its bare canvas would draw at
+ * the reader's window width. The ids are checked against the built Storybook by both workflows,
+ * as the galleries' are.
+ */
+const EXAMPLES = [
+  [
+    "examples-web-dashboard--default",
+    "Dashboard",
+    "stat tiles over a table, a project's facts, the team",
+  ],
+  [
+    "examples-web-tasks--default",
+    "Tasks",
+    "a filter bar, bulk selection, row menus and a task dialog",
+  ],
+  [
+    "examples-web-settings--general",
+    "Settings",
+    "tabs, a rename dialog, plan cards and a danger zone",
+  ],
+  [
+    "examples-web-authentication--sign-in-page",
+    "Authentication",
+    "sign in, sign up and check your email",
+  ],
+  ["examples-web-docs--default", "Docs", "a file tree beside a Markdown document"],
+  ["examples-web-inbox--default", "Inbox", "a message list beside the open message"],
+  [
+    "examples-web-schedule--default",
+    "Schedule",
+    "date pickers, event cards, a popover and a ⌘K palette",
+  ],
+  [
+    "examples-mobile-tasks--default",
+    "Mobile tasks",
+    "a day's list with a bottom bar and a form dialog",
+  ],
+  [
+    "examples-mobile-settings--default",
+    "Mobile settings",
+    "switches, setting rows and confirms on a phone",
+  ],
+  [
+    "examples-mobile-project--default",
+    "Mobile project",
+    "a list that opens a detail screen with a back button",
+  ],
+];
+
+const exampleHref = (id) =>
+  id.startsWith("examples-mobile-")
+    ? `${HOST}/storybook/?path=/story/${id}`
+    : `${HOST}/${canvas(id)}`;
+
 /** The tokens these two pages draw with: the page, its text, a raised surface and a link. */
 const PAGE_TOKENS = ["background", "foreground", "secondary", "info"];
 
@@ -257,6 +314,21 @@ function page() {
   Both are stories in <a href="${HOST}/storybook/">the Storybook</a>, under <code>Gallery</code>,
   where each item also has stories of its own with its props and its tests.
 </p>
+
+<p>
+  And the same items composed into whole screens, to judge them in context rather than one at a
+  time. Each is a story under <code>Examples</code>, with its loading, empty and failed states a
+  control away.
+</p>
+
+<ul class="galleries">
+${EXAMPLES.map(
+  ([id, name, what]) => `  <li>
+    <a href="${exampleHref(id)}">${name}</a>
+    <span>${what}</span>
+  </li>`,
+).join("\n")}
+</ul>
 
 <h2>Install</h2>
 
