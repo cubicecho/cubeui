@@ -35,6 +35,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted — data that has not arrived is not data that came back empty, and a card that says "no members yet" for half a second before showing four of them is worse than one that waits. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A timestamp, a note, a destructive action held away from the rest. Words come in a `<Text>` of the caller's, as in every slot. |
 | `footerActionsSlot` | `SlotNode` |  | The footer's end. The buttons. Given alone, the footer is simply right-aligned. |
+| `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the card. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one, where a `<form>` around the body alone leaves the button outside it. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
 | `titleClassName` | `string` |  | On the title itself: its size, a `line-through`. |
@@ -124,6 +125,27 @@ put the last one on a second line, still against the right edge, rather than run
 out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
+
+**A card that is a form takes `wrapperSlot`**, so its Save in `footerActionsSlot` is inside the
+`<form>`: a function of the card's parts — header, body and footer — whose element takes the
+`className` it is handed. It is drawn inside the card, so the border and background stay the
+card's. Enter in any field then submits, which it does not do in a form of two fields whose
+submit button sits outside it:
+
+```tsx
+<CardLayout
+  title="Profile"
+  wrapperSlot={(parts, { className }) => (
+    <form.AppForm>
+      <FormElement onSubmit={() => form.handleSubmit()} className={className}>{parts}</FormElement>
+    </form.AppForm>
+  )}
+  contentSlot={<div className="grid gap-4">…fields…</div>}
+  footerActionsSlot={<form.SubmitButton content="Save" />}
+/>
+```
+
+See [forms/app-form.md](../forms/app-form.md#forms-in-dialogs) — the same slot on a dialog, and why.
 
 **`footerSlot` groups its own elements.** Pass several — a "Last synced" note and a delete
 `ConfirmButton`, as a fragment — and the shell sets them in one row at the footer's start, `gap-2`

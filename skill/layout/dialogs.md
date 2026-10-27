@@ -35,6 +35,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `size` | `keyof typeof SIZES` | `"md"` |  |
 | `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. Several elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end. |
 | `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. |
+| `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
 | `discardTitle` | `ReactNode` | `"Discard your changes?"` | The question that asks. Defaulted, because this one really is the same everywhere. |
@@ -88,7 +89,13 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   takes the function; `footerSlot` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
-- A form in a dialog is this component with a `<form>` as `contentSlot` — see [forms/app-form.md](../forms/app-form.md#forms-in-dialogs).
+- **A form in a dialog puts its `<form>` in `wrapperSlot`**, not in `contentSlot`.
+  `wrapperSlot={(parts, { className }) => <FormElement className={className} …>{parts}</FormElement>}`
+  wraps the header, body and footer together inside the dialog, so the footer's submit is a
+  submit button the form owns, and Enter in a field submits. A `<form>` in `contentSlot` leaves the
+  button outside it, and Enter in a form of two fields does nothing. Pass `className` on: it keeps
+  the body scrolling. It is a function, called rather than mounted, so the fields keep their
+  state — see [forms/app-form.md](../forms/app-form.md#forms-in-dialogs).
 
 ### A page with unsaved edits
 

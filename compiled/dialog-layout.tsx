@@ -63,6 +63,13 @@ const COLUMN = "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden";
  */
 const CHASSIS = "min-h-0 flex-1 gap-4";
 
+/**
+ * What `wrapperSlot`'s element takes so it stands where the chassis stood: the same share of the
+ * dialog's height, passed on to the chassis inside it. Without it the wrapper is a box of its
+ * content's height and the body stops scrolling.
+ */
+const WRAPPER = "flex min-h-0 flex-1 flex-col";
+
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = "sr-only";
 
@@ -130,6 +137,29 @@ export type DialogLayoutProps = {
    */
   footerActionsSlot?: SlotNode | ((close: () => void) => SlotNode) | undefined;
   /**
+   * Wraps the header, the body and the footer together, inside the dialog. Its use is a form:
+   * with the fields and the submit button under one `<form>`, Enter in a field submits it and the
+   * footer's submit button is a real one. A `<form>` around the body alone leaves the button
+   * outside it, where the browser does not count it, and Enter in a form of two fields does
+   * nothing.
+   *
+   * A function of the parts, called rather than mounted, so the fields inside it keep their
+   * state from one render to the next — a component written inline here would be a new type
+   * every render, and React would rebuild everything under it. The element it returns takes
+   * `className`, which keeps the body scrolling under a header and above a footer that do not.
+   *
+   * ```tsx
+   * wrapperSlot={(parts, { className }) => (
+   *   <form.AppForm>
+   *     <FormElement onSubmit={() => form.handleSubmit()} className={className}>
+   *       {parts}
+   *     </FormElement>
+   *   </form.AppForm>
+   * )}
+   * ```
+   */
+  wrapperSlot?: ((parts: SlotNode, wrapper: { className: string }) => SlotNode) | undefined;
+  /**
    * Whether Escape and a click on the overlay close it. Off refuses to leave; prefer
    * `hasUnsavedChanges`, which asks on the way out instead.
    */
@@ -190,6 +220,7 @@ export function DialogLayout({
   size = "md",
   footerSlot,
   footerActionsSlot,
+  wrapperSlot,
   dismissible = true,
   hasUnsavedChanges = false,
   discardTitle = "Discard your changes?",
@@ -250,6 +281,39 @@ export function DialogLayout({
   // dialog with no footer, not with an empty one taking up a row.
   const hasFooter = Boolean(footerSlot || actions);
 
+  const parts = (
+    <HeaderContentFooter
+      scroll
+      className={CHASSIS}
+      headerSlot={
+        <DialogHeader
+          // The close button is positioned against the dialog, not the header, so a long
+          // title runs under it without this.
+          className={cn(showCloseButton && "pr-6", headerClassName)}
+        >
+          <DialogTitle className={cn(hideTitle && SR_ONLY)}>{title}</DialogTitle>
+          {description ? <DialogDescription>{description}</DialogDescription> : null}
+        </DialogHeader>
+      }
+      // Four pixels of room either side, given back as padding: a focus ring is drawn
+      // outside the element that owns it, and a scroll container clips at its edge.
+      contentClassName={cn("-mx-1 px-1", contentClassName)}
+      contentSlot={contentSlot}
+      footerSlot={
+        hasFooter ? (
+          <DialogFooter
+            className={cn(footerSlot && footerActionsSlot && "sm:justify-between", footerClassName)}
+          >
+            {footerSlot ? (
+              <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div>
+            ) : null}
+            {actions ? <div className={cn("cube-rn-view", ACTIONS)}>{actions}</div> : null}
+          </DialogFooter>
+        ) : null
+      }
+    />
+  );
+
   // ConfirmDialog holds the overlay click (it does not answer "discard?") and puts the safe
   // answer first, where focus lands. The labels are passed: its own defaults are Confirm/Cancel.
   const discardQuestion = (
@@ -279,39 +343,9 @@ export function DialogLayout({
           {...(description ? {} : { "aria-describedby": undefined })}
           className={cn(COLUMN, SIZES[size], className)}
         >
-          <HeaderContentFooter
-            scroll
-            className={CHASSIS}
-            headerSlot={
-              <DialogHeader
-                // The close button is positioned against the dialog, not the header, so a long
-                // title runs under it without this.
-                className={cn(showCloseButton && "pr-6", headerClassName)}
-              >
-                <DialogTitle className={cn(hideTitle && SR_ONLY)}>{title}</DialogTitle>
-                {description ? <DialogDescription>{description}</DialogDescription> : null}
-              </DialogHeader>
-            }
-            // Four pixels of room either side, given back as padding: a focus ring is drawn
-            // outside the element that owns it, and a scroll container clips at its edge.
-            contentClassName={cn("-mx-1 px-1", contentClassName)}
-            contentSlot={contentSlot}
-            footerSlot={
-              hasFooter ? (
-                <DialogFooter
-                  className={cn(
-                    footerSlot && footerActionsSlot && "sm:justify-between",
-                    footerClassName,
-                  )}
-                >
-                  {footerSlot ? (
-                    <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div>
-                  ) : null}
-                  {actions ? <div className={cn("cube-rn-view", ACTIONS)}>{actions}</div> : null}
-                </DialogFooter>
-              ) : null
-            }
-          />
+          {/* Inside `DialogContent`, so the wrapper is in the dialog's focus trap and under its
+              role, and the close button stays outside it. */}
+          {wrapperSlot ? wrapperSlot(parts, { className: WRAPPER }) : parts}
 
           {/* On device the question is a `Modal` presented over this one, and iOS presents a
               second modal only from inside the first. */}

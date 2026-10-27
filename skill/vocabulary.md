@@ -12,7 +12,8 @@ come inside an element of yours (`<Text>` on a device, a `<p>` or `<span>` on th
 takes words has no `Slot` in its name (`title`, `description`, `label`), and the component puts the
 `<Text>` around them. Three slots also take a function that returns the elements:
 `DialogLayout`'s `footerActionsSlot` (`(close) => …`), `SettingRow`'s `actionSlot` (`(ids) => …`)
-and the web `FormField`'s `controlSlot`.
+and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSlot`
+(`(parts, { className }) => …`).
 
 **Everywhere:**
 
@@ -23,6 +24,10 @@ and the web `FormField`'s `controlSlot`.
 - **`footerSlot`** — the start of the footer. A note, a timestamp, a destructive action held away
   from the others.
 - **`footerActionsSlot`** — the end of the footer. The buttons, in reading order, primary last.
+- **`wrapperSlot`** — a function `(parts, { className }) => …` that wraps the header, body and
+  footer together, inside the shell: a `<form>`, so the submit in `footerActionsSlot` is in the form
+  it submits and Enter in a field submits it. The element it returns takes `className`. On
+  `DialogLayout`, `CardLayout` and `CenteredLayout`.
 - **`emptySlot`** — what the body says when `contentSlot` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `emptySlot` is not consulted.

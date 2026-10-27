@@ -335,8 +335,8 @@ field drops to its own line at full width rather than three of them sharing one 
 
 ## Forms in dialogs
 
-A form in a dialog is `DialogLayout`, on both halves, with the form as its `contentSlot` and the
-submit in `footerActionsSlot`. There is no `FormDialog`: the registry shipped one that took
+A form in a dialog is `DialogLayout`, on both halves: the fields in `contentSlot`, the submit in
+`footerActionsSlot`, and the `<form>` around all of it in `wrapperSlot`. There is no `FormDialog`: the registry shipped one that took
 children and closed without asking, and it was removed. An app that vendored it moves to this.
 
 ```tsx
@@ -345,31 +345,55 @@ children and closed without asking, and it was removed. An app that vendored it 
   onOpenChange={onOpenChange}
   title={isEdit ? "Edit todo" : "New todo"}
   hasUnsavedChanges={() => !form.state.isDefaultValue}
-  contentSlot={<FormElement onSubmit={() => form.handleSubmit()}>…</FormElement>}
+  wrapperSlot={(parts, { className }) => (
+    <form.AppForm>
+      <FormElement onSubmit={() => form.handleSubmit()} className={className}>
+        {parts}
+      </FormElement>
+    </form.AppForm>
+  )}
+  contentSlot={<div className="grid gap-4">…fields…</div>}
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
-      <form.AppForm>
-        <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
-      </form.AppForm>
+      <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
     </>
   )}
 />
 ```
 
-- The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
-  `SubmitButton` that no form owns calls `form.handleSubmit()` itself. A footer written for an
+- **Put the `<form>` in `wrapperSlot`, not in `contentSlot`.** `wrapperSlot` wraps the header, the
+  body and the footer together, so the footer's `SubmitButton` is inside the form it submits. A
+  browser submits on Enter through a submit button the form owns — with one text field it needs
+  none, with two it does — so a `FormElement` in `contentSlot` alone, the button left outside it
+  in the footer, ignores Enter in any form of two fields or more. It looks right and the button
+  works, which is why it goes unnoticed.
+- **Pass `className` on.** It is what keeps the body scrolling under the header and above the
+  footer; without it the form is a box of its content's height.
+- **`wrapperSlot` is a function, not a component.** It is called, so the fields keep their state
+  across renders; `wrapperSlot={MyForm}` or a component defined inline would remount them.
+- **`<form.AppForm>` goes in the wrapper too**, once, so the footer's `form.SubmitButton` has the
+  form from context without a second `<form.AppForm>` around it.
+- Cancel and every other `Button` are `type="button"`, so they sit in the form without
+  submitting it. A hand-written `<button>` in the footer needs `type="button"` said.
+- `CardLayout` and `CenteredLayout` take the same `wrapperSlot` — a sign-in card, a settings card
+  with Save in its footer.
+
+- Without a wrapper or a named form the submit lives outside the `<form>` and a click still
+  submits — a `SubmitButton` that no form owns calls `form.handleSubmit()` itself — but Enter
+  does nothing in a form of two fields. A footer written for an
   earlier install, `<form.SubmitButton onClick={() => form.handleSubmit()} />`, now submits
   **twice**: drop the `onClick`. The same holds in a
   `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
-  `preventDefault` already in it, so Enter in a field submits too. It is a `gap-4` column, so the
+  `preventDefault` already in it. It is a `gap-4` column, so the
   fields in it need no spacing of their own; to lay a field and its button in a row, pass
   `className="flex-row items-end gap-3"`.
 - **`SubmitButton` is coloured by what it does.** On the web it is `positive` (it keeps the work:
   Save) unless you pass `variant="info"` for one that adds something (Create, Add). The native
   one knows which it is: `positive` when editing, `info` when creating. A `variant` you pass wins.
-- To send the press through the DOM submit event instead, name the form: `<FormElement id="todo" …>`
-  and `<form.SubmitButton form="todo" … />`. A hand-written `<form id="todo">` works the same way.
+- A submit that has to sit somewhere no wrapper reaches names the form instead:
+  `<FormElement id="todo" …>` and `<form.SubmitButton form="todo" … />`. A hand-written
+  `<form id="todo">` works the same way.
 - `hasUnsavedChanges` makes Escape, the overlay and the close button ask before the work is
   thrown away, and Cancel asks too because it calls the `close` it was handed, not a
   `setOpen(false)` of its own. See [layout/dialogs.md](../layout/dialogs.md#dialogs) for the rest of the dialog.
