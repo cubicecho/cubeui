@@ -39,7 +39,9 @@ npx shadcn@latest add @cubeui/card-layout   # one item
 npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, control, primitive
 ```
 
-Install from the registry, do not copy by hand.
+Install from the registry, do not copy by hand. Where each item lands and the line that imports
+it are in [install-paths.md](install-paths.md), generated from the registry: look there rather
+than guess a path.
 
 **On the web, import the stylesheet once.** Any item whose markup needs `@cubeui/tokens` pulls
 it in, landing `cubeui-tokens.css` next to `components.json`, but nothing loads a stylesheet the
@@ -73,7 +75,8 @@ in `native.md`.
 
 ## Choosing — on the web
 
-In an Expo app the table is [native.md](native.md).
+In an Expo app the table is [native.md](native.md). The import line for every item is in
+[install-paths.md](install-paths.md).
 
 | The shape you are building | Use | Reference |
 | --- | --- | --- |

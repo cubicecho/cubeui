@@ -13,6 +13,8 @@ drift.
 - [skill/SKILL.md](../../../skill/SKILL.md) — which platform half you are in,
   the vocabulary, and which component owns which shape
 - [skill/native.md](../../../skill/native.md) — the same choosing table for an Expo app
+- [skill/install-paths.md](../../../skill/install-paths.md) — where every item lands and what
+  to import from it, generated from the registry
 - [skill/layout/](../../../skill/layout/index.md) — the shells, one file per group: pages,
   splits, sidebar, top bar, cards, facts, dialogs, lists, trees and tables
 - [skill/forms/](../../../skill/forms/index.md) — `FormField`, `useAppForm` and the

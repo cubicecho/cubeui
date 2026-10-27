@@ -267,6 +267,7 @@ scripts/check-registry-build.mjs      `registry:check`: sixteen rules over what 
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links
+scripts/build-install-table.mjs       skill/install-paths.md, from the two registry indexes
 scripts/build-page.mjs                the landing page, public/index.html
 .github/workflows/ci.yml              `npm run check` and the Storybook tests
 .github/workflows/pages.yml           builds and publishes the registry on `main`
@@ -420,7 +421,7 @@ shadcn's do.
 ## Before you commit
 
 ```bash
-npm run build     # tokens → compile → typecheck → registry:build → page:build → registry:check
+npm run build     # tokens → compile → typecheck → registry:build → page:build → skill:build → registry:check
 npm run check     # the same, read-only: what CI runs
 ```
 
@@ -429,8 +430,8 @@ A change to how files are placed, imported or depended on also gets `npm run ins
 network, so it is not in `check`.
 
 `npm run check` is `tokens:check`, `compile:check`, both typechecks, `registry:check`,
-`page:check`, `docs:check`, Biome and the tests. It is read-only, so a failure in it is either a
-real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`) that
+`page:check`, `skill:check`, `docs:check`, Biome and the tests. It is read-only, so a failure in it is either a
+real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`, `skill/install-paths.md`) that
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
@@ -470,6 +471,10 @@ and refuses or truncates a large one (#387), so no file is over 25 KB (`SKILL.md
 over 300 lines opens with a contents list, and every link between the files resolves to a heading
 that exists. `npm run docs:check` fails on each of those. When a file outgrows its budget, split
 it by component group and update the links, not the budget.
+
+**`skill/install-paths.md` is generated** — every item's half, where it lands and its import
+line, from `registry.json`, `registry.web.json` and `components.json`. `npm run build` rewrites
+it and `npm run skill:check` fails CI on a stale one; never edit it by hand.
 
 A new item goes in its topic file **and** gets a row in the choosing table; a new slot word
 goes in `SKILL.md`'s vocabulary and in rule 2 of the conventions doc, because those two are the
