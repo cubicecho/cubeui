@@ -662,7 +662,7 @@ const MarkdownCodeEditor = lazy(() => import("@/components/markdown-code-editor"
 
 ```tsx
 <ConfirmButton
-  label="Delete lane"
+  aria-label="Delete lane"
   variant="outline"
   size="icon"
   title="Delete this lane?"
@@ -684,7 +684,9 @@ server in it*. If you cannot write that sentence, the confirm is probably not wa
 is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
-Everything `Button` takes, `ConfirmButton` takes: `hint`, `disabled`, `variant`, `size`. The
+Everything `Button` takes, `ConfirmButton` takes: `content`, `aria-label`, `hint`, `disabled`,
+`variant`, `size`. There is no `label`: at a text size the words are `content`, and at an
+`icon*` size the accessible name is `aria-label`, which is required there, as on `Button`. The
 trigger is `destructive-outline` unless you pass a `variant`: it asks the question, and the bold
 destructive step is the dialog's. A disabled `ConfirmButton` does not open the dialog.
 
@@ -695,6 +697,17 @@ with Cancel first and the destructive verb last, no corner close, and a press be
 not answer it. On device the back button is Cancel, and the trigger's tooltip is `Button`'s
 long press.
 
+### Upgrading an earlier install
+
+Files from an earlier install stay in the app until it is re-added, so a call site can still be
+written against props that have gone:
+
+- **`ConfirmButton`'s `label` is gone.** Write `content="Delete project"` at a text size, and
+  `aria-label="Delete lane"` at an `icon*` size.
+- **`ActionButton` is gone.** It is a `Button` at an `icon*` size with `aria-label` and
+  `iconSlot`. The tooltip no longer comes from the name: pass `hint` for one.
+- **`OptionSelect` is gone.** It is `Combobox`.
+
 ### Type the name to confirm
 
 For a delete that is big and cannot be undone — a whole folder of notes, a workspace, a
@@ -702,7 +715,8 @@ repository — pass `requireText`, and the dialog asks for the name before it ac
 
 ```tsx
 <ConfirmButton
-  label="Delete folder"
+  aria-label="Delete folder"
+  size="icon"
   title="Delete this folder?"
   description="Its 214 notes go with it, and so does their history."
   requireText={folder.name}

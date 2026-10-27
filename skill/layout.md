@@ -877,7 +877,7 @@ A heading over a group of fields or rows, inside a page or a card.
 <Section
   title="Danger zone"
   description="These cannot be undone."
-  contentSlot={<ConfirmButton label="Delete project" … />}
+  contentSlot={<ConfirmButton content="Delete project" … />}
 />
 ```
 
@@ -1030,7 +1030,7 @@ that changes it at the end.
       />
       <SettingRow
         description="Forget every turn and session. This cannot be undone."
-        actionSlot={<ConfirmButton label="Clear all memory" … />}
+        actionSlot={<ConfirmButton content="Clear all memory" … />}
       />
     </>
   }

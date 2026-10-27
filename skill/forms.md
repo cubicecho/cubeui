@@ -567,7 +567,9 @@ children and closed without asking, and it was removed. An app that vendored it 
 ```
 
 - The submit lives outside the `<form>`, in the dialog's footer, and still submits: a
-  `SubmitButton` that no form owns calls `form.handleSubmit()` itself. The same holds in a
+  `SubmitButton` that no form owns calls `form.handleSubmit()` itself. A footer written for an
+  earlier install, `<form.SubmitButton onClick={() => form.handleSubmit()} />`, now submits
+  **twice**: drop the `onClick`. The same holds in a
   `CardLayout` footer. `FormElement` (`@cubeui/form-element`) is the `<form>` with the
   `preventDefault` already in it, so Enter in a field submits too. It is a `gap-4` column, so the
   fields in it need no spacing of their own; to lay a field and its button in a row, pass
