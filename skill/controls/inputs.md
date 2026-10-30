@@ -228,9 +228,9 @@ hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a fo
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `accept` | `string` |  | e.g. `"application/json,.json"`. Advisory on the dialog, which lets the user pick "All files", so the web half also applies it to what comes back — to a pick and to a drop alike. A file that does not match is skipped, never read. |
-| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file. Off, a pick is one file and a drop keeps the first one `accept` allows. |
+| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file, a dropped folder's included. Off, a pick is one file and a drop keeps the first one `accept` allows. |
 | `read` | `"text" \| "bytes" \| "none"` |  | What to read from each file. `text` (the default) decodes it, which is right for JSON or Markdown and corrupts a `.zip` or an image. `bytes` hands back the file undecoded as `bytes`, and leaves `text` empty. `none` reads nothing at all and hands back a `blob` to read or upload later — for a file too big to hold in memory, or one to refuse by its `size` first. |
-| `directory` | `boolean` |  | Pick a folder and everything under it instead of files: the dialog chooses a folder, a dropped folder is walked, and each file reports where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
+| `directory` | `boolean` |  | Make the dialog choose a folder instead of files, and take everything under it, each file reporting where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
 | `label` (required) | `string` |  | What is being picked. On the zone it is the visible heading; on the button, the accessible name. |
 | `onPick` | `(text: string, fileName: string) => void` |  | Handed the picked file's decoded text, never the `File` object itself. `File` is DOM-only, so a contract carrying one could not be implemented on native. A screen that wants the bytes, the type or the path takes `onPickMany`, whose `PickedFile` has them. With `multiple` and no `onPickMany`, called once per file, in pick order. |
 | `onPickMany` | `((files: PickedFile[]) => void)` |  | Called once per pick with every file in it, in pick order — one file without `multiple`. Given, `onPick` is not called at all. |
@@ -264,12 +264,16 @@ hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a fo
     }}
   />
   ```
-- `directory` picks a folder instead of files. The dialog chooses a folder, a dropped folder is
-  walked, and every file under it arrives in one call. Each file's `path` is its place in the
-  folder, with the folder's own name first: `my-skill/assets/logo.png`. `multiple` is not needed,
-  and `accept` still skips what it does not allow. Web only.
-- `multiple` lets the dialog select several files and keeps every file in a drop. Without it, a
-  pick is one file, and a drop keeps the first file that `accept` allows.
+- `directory` picks a folder instead of files. The dialog chooses a folder, and every file under
+  it arrives in one call. Each file's `path` is its place in the folder, with the folder's own
+  name first: `my-skill/assets/logo.png`. `multiple` is not needed, and `accept` still skips what
+  it does not allow. Web only.
+- A drop does not need `directory`. A folder dropped on any picker is walked, so one zone can
+  take "click to choose files" and "drop a folder" both: give it `multiple` and `onPickMany`,
+  and each file from a dropped folder comes with its `path`. A dropped file's `path` is its name.
+- `multiple` lets the dialog select several files and keeps every file in a drop, including the
+  files in a dropped folder. Without it, a pick is one file, and a drop keeps the first file
+  that `accept` allows.
 - `accept` takes the syntax of `<input accept>`: `.ext`, `type/*` or `type/subtype`. It applies
   to drops as well as the dialog. A file that does not match is skipped and never read. List the
   extension as well as the MIME type, because browsers often give `.md` and similar files no
@@ -322,9 +326,9 @@ directly, so you do not need a dialog around a zone.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `accept` | `string` |  | e.g. `"application/json,.json"`. Advisory on the dialog, which lets the user pick "All files", so the web half also applies it to what comes back — to a pick and to a drop alike. A file that does not match is skipped, never read. |
-| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file. Off, a pick is one file and a drop keeps the first one `accept` allows. |
+| `multiple` | `boolean` |  | Take several files per pick: the dialog allows a multi-select and a drop keeps every file, a dropped folder's included. Off, a pick is one file and a drop keeps the first one `accept` allows. |
 | `read` | `"text" \| "bytes" \| "none"` |  | What to read from each file. `text` (the default) decodes it, which is right for JSON or Markdown and corrupts a `.zip` or an image. `bytes` hands back the file undecoded as `bytes`, and leaves `text` empty. `none` reads nothing at all and hands back a `blob` to read or upload later — for a file too big to hold in memory, or one to refuse by its `size` first. |
-| `directory` | `boolean` |  | Pick a folder and everything under it instead of files: the dialog chooses a folder, a dropped folder is walked, and each file reports where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
+| `directory` | `boolean` |  | Make the dialog choose a folder instead of files, and take everything under it, each file reporting where it sat as its `path`. A folder is several files, so every one `accept` allows is kept whether or not `multiple` is set — and since only `onPickMany` carries a `path`, that is the callback to give. Web only. |
 | `label` (required) | `string` |  | What is being picked. On the zone it is the visible heading; on the button, the accessible name. |
 | `onPick` | `(text: string, fileName: string) => void` |  | Handed the picked file's decoded text, never the `File` object itself. `File` is DOM-only, so a contract carrying one could not be implemented on native. A screen that wants the bytes, the type or the path takes `onPickMany`, whose `PickedFile` has them. With `multiple` and no `onPickMany`, called once per file, in pick order. |
 | `onPickMany` | `((files: PickedFile[]) => void)` |  | Called once per pick with every file in it, in pick order — one file without `multiple`. Given, `onPick` is not called at all. |
