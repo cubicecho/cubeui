@@ -551,3 +551,64 @@ export const FolderDropped: Story = {
     ]);
   },
 };
+
+/**
+ * Issue #400: a folder dropped on a files zone — no `directory` — arrived as one empty file, and
+ * the upload failed on it. A drop is walked whatever `directory` is, so the folder comes back as
+ * the files under it, each with its `path`, beside a loose file dropped with it, whose `path` is
+ * its name. The click still opens a files dialog. `read="none"`, as an upload zone would take it.
+ */
+export const FolderDroppedOnFiles: Story = {
+  render: () => (
+    <Compiled
+      label="Upload files"
+      hint="Drop files or a folder, or click to choose files"
+      multiple
+      read="none"
+      onPickMany={onPickMany}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onPickMany.mockClear();
+
+    await expect(fileInput(canvasElement).webkitdirectory).toBe(false);
+
+    const loose = md("readme.md", "# Readme");
+    const one = md("one.md", "# One");
+    const two = md("two.md", "# Two");
+    dropEntries(canvas.getByRole("button", { name: /Upload files/ }), [
+      entry("readme.md", loose),
+      entry("notes", { "one.md": one, drafts: { "two.md": two } }),
+    ]);
+
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    const picked = lastPick();
+    await expect(picked.map((file) => [file.path, file.name, file.size])).toEqual([
+      ["readme.md", "readme.md", loose.size],
+      ["notes/one.md", "one.md", one.size],
+      ["notes/drafts/two.md", "two.md", two.size],
+    ]);
+    // Never the folder itself as an empty file.
+    await expect(picked.every((file) => file.size > 0 && file.blob instanceof File)).toBe(true);
+  },
+};
+
+/**
+ * Without `multiple`, a dropped folder follows the drop rule for files: the first file in it that
+ * `accept` allows, here past an image the zone does not take.
+ */
+export const FolderDroppedOnOne: Story = {
+  render: () => <Compiled label="Import a note" accept=".md" onPickMany={onPickMany} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    onPickMany.mockClear();
+
+    dropEntries(canvas.getByRole("button", { name: /Import a note/ }), [
+      entry("notes", { "cover.png": png, "a.md": md("a.md", "# A"), "b.md": md("b.md", "# B") }),
+    ]);
+
+    await waitFor(() => expect(onPickMany).toHaveBeenCalledTimes(1));
+    await expect(lastPick()).toEqual([{ ...text("a.md", "# A"), path: "notes/a.md" }]);
+  },
+};
