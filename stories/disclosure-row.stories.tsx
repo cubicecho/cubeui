@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactElement, useState } from "react";
 import { Text } from "react-native";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Badge as CompiledBadge } from "../compiled/badge";
 import { Button as CompiledButton } from "../compiled/button";
 import { DisclosureRow as Compiled } from "../compiled/disclosure-row";
 import { DisclosureRow as Native } from "../registry/layout/disclosure-row";
 import { Badge as NativeBadge } from "../registry/ui/badge";
 import { Button as NativeButton } from "../registry/ui/button";
+import { isTurned } from "./chevron";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -101,6 +102,11 @@ export const Default: Story = {
       await expect(header).toHaveAttribute("aria-expanded", "false");
       await expect(header).not.toHaveAttribute("aria-controls");
       await expect(scope.queryByText("146 passed.")).toBeNull();
+      const chevron = header.querySelector("svg");
+      if (!chevron) {
+        throw new Error("the heading should draw a chevron");
+      }
+      await expect(isTurned(chevron)).toBe(false);
 
       // The badge, the title and the meta are one line, in that order, inside the button.
       const badge = scope.getByText("done").getBoundingClientRect();
@@ -114,6 +120,7 @@ export const Default: Story = {
       // A click opens it, and the body is the row's footer, named by `aria-controls` on the web.
       await userEvent.click(header);
       await expect(header).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => expect(isTurned(chevron)).toBe(true));
       const body = scope.getByText("146 passed.");
       await expect(body).toBeVisible();
       const footer = body.closest('[data-slot="item-footer"], [data-testid="item-footer"]');
@@ -142,6 +149,7 @@ export const Default: Story = {
       header.focus();
       await userEvent.keyboard(" ");
       await expect(header).toHaveAttribute("aria-expanded", "false");
+      await expect(header).not.toHaveAttribute("aria-controls");
       await expect(scope.queryByText("146 passed.")).toBeNull();
       rows.push(row.getBoundingClientRect());
     }
