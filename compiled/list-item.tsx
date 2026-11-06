@@ -137,32 +137,29 @@ export function rowLink(
   );
 }
 
+/** A row's box: its padding, its corners and the line its parts sit on. */
+export const LIST_ITEM_CLASS = "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2";
+
+type ListItemTextProps = Pick<
+  ListItemProps,
+  "title" | "description" | "meta" | "selected" | "titleClassName"
+>;
+
 /**
- * One row of a list: something at the start, a title with a line under it, small facts and
- * buttons at the far end. It draws no surface; the list, card or section around it owns the
- * border.
- *
- * The pressed area is the middle and only the middle, so the row is three siblings
- * (`leadingSlot`, the middle, `actionSlot`) and no button wraps another. `href` or `linkSlot`
- * makes the middle a link, and `onPress` alone keeps it a button.
+ * A row's words as `ListItem` draws them: the title over its description, then `meta`. For a
+ * row that is a `ListItem` with a press of its own, as `DisclosureRow` is.
  */
-export function ListItem({
+export function ListItemText({
   title,
   description,
-  leadingSlot,
   meta,
-  actionSlot,
-  onClick: onPress,
-  href,
-  linkSlot,
   selected = false,
-  className,
   titleClassName,
-}: ListItemProps) {
+}: ListItemTextProps) {
   // The muted grey is measured against the page. On the selected row's tint it falls short of
   // 4.5:1 at this size, so there the small lines are drawn in the full colour.
   const muted = selected ? "text-foreground" : "text-foreground/60";
-  const body = (
+  return (
     <>
       <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
         {asText(
@@ -189,6 +186,39 @@ export function ListItem({
         </div>
       ) : null}
     </>
+  );
+}
+
+/**
+ * One row of a list: something at the start, a title with a line under it, small facts and
+ * buttons at the far end. It draws no surface; the list, card or section around it owns the
+ * border.
+ *
+ * The pressed area is the middle and only the middle, so the row is three siblings
+ * (`leadingSlot`, the middle, `actionSlot`) and no button wraps another. `href` or `linkSlot`
+ * makes the middle a link, and `onPress` alone keeps it a button.
+ */
+export function ListItem({
+  title,
+  description,
+  leadingSlot,
+  meta,
+  actionSlot,
+  onClick: onPress,
+  href,
+  linkSlot,
+  selected = false,
+  className,
+  titleClassName,
+}: ListItemProps) {
+  const body = (
+    <ListItemText
+      title={title}
+      description={description}
+      meta={meta}
+      selected={selected}
+      titleClassName={titleClassName}
+    />
   );
 
   // The body in the one form its props ask for: the caller's link, a link, a button, or plain.
@@ -238,7 +268,7 @@ export function ListItem({
       data-slot="list-item"
       className={cn(
         "cube-rn-view",
-        "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2",
+        LIST_ITEM_CLASS,
         rowFillClass(
           selected,
           onPress !== undefined || href !== undefined || linkSlot !== undefined,

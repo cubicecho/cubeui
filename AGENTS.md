@@ -547,8 +547,9 @@ Recorded so the next pass does not re-derive them:
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
-  so the row that opens is on both halves too.
+  shared through `item-base.ts`). `DisclosureRow` is a `ListItem` that opens, built on
+  `ListItem`'s box and words and `Disclosure`'s button, so the row that opens is on both halves
+  too and looks like the rows beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
   `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of

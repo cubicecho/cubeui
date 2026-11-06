@@ -167,8 +167,11 @@ and which one is a question of **where the list is**, not how much there is to s
   practice, a delete that cannot be clicked.
 - `description` shows whether the row is open or shut; `contentSlot` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
-- It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
-  A row that does **not** open onto a body is `ListItem`, below.
+- It is a `ListItem` that opens: the same box, title, description and hover as the `ListItem`
+  rows beside it, so the two line up down to the padding, and like `ListItem` it draws **no
+  surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
+  frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
+  is `ListItem`, below.
 - One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
   string `meta` is wrapped in a `Text` for you; pass the badges, the action

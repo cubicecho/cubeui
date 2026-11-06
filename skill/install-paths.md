@@ -107,7 +107,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
 | `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `header-content-footer`, `list-item`, `page-header`, `page-layout`, `query-state`, `section`, `setting-row`, `sidebar`, `split-layout`, `stat-tile`, `top-bar-layout` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
-| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, ListItem } from "@/components/list-item"` |
+| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
 | `markdown` | web | `components/markdown.tsx` | `import { Markdown } from "@/components/markdown"` |
 | `markdown-code-editor` | web | `components/markdown-code-editor.tsx` | `import { MarkdownCodeEditor } from "@/components/markdown-code-editor"` |
 | `markdown-editor` | web | `components/markdown-editor.tsx` | `import { MarkdownEditor } from "@/components/markdown-editor"` |

@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { DisclosureTrigger } from "./disclosure";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "./item";
+import { LIST_ITEM_CLASS, ListItemText, rowFillClass } from "./list-item";
 
 type DisclosureRowProps = {
   open: boolean;
@@ -33,8 +33,10 @@ type DisclosureRowProps = {
 };
 
 /**
- * One row in a list of things you can open: a run, a task, an archived record. The row is `Item`,
- * so it lines up with rows that do not open, and the opening is `Disclosure`'s.
+ * One row in a list of things you can open: a run, a task, an archived record. It is a
+ * `ListItem` that opens — the same box, words and hover as the rows beside it that do not — and
+ * the opening is `Disclosure`'s. Like `ListItem` it draws no surface: the list, card or section
+ * around it owns the border.
  *
  * The whole heading is one `DisclosureTrigger`, and `actionSlot` sits outside it, because a
  * control nested in a button is invalid HTML and cannot be pressed. Open is controlled, since a
@@ -55,64 +57,71 @@ export function DisclosureRow({
   const contentId = React.useId();
   const isOpen = open && Boolean(contentSlot);
 
-  return (
-    <Item data-slot="disclosure-row" variant="outline" className={cn("items-start", className)}>
-      <DisclosureTrigger
-        data-slot="disclosure-row-trigger"
-        open={open}
-        onClick={() => onOpenChange(!open)}
-        // Only while it is open: the body is unmounted when closed, which is what keeps a list of
-        // two hundred rows cheap.
-        controls={isOpen ? contentId : undefined}
-        contentSlot={
-          <ItemContent className="min-w-0">
-            <ItemTitle className="flex-wrap">
-              {badgesSlot}
-              <span
-                data-slot="disclosure-row-title"
-                className={cn(
-                  "cube-rn-text",
-                  "min-w-0 shrink font-semibold text-foreground text-sm leading-snug",
-                  // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which
-                  // is what `line-clamp-1` becomes and what `truncate` does not.
-                  "truncate",
-                )}
-              >
-                {title}
-              </span>
-              {/* Quieter than the title, as ListItem's meta is: left bare, a string took the
-                  title's semibold and "atlas 12 tools" read as one name. A node keeps its own
-                  look. */}
-              {typeof meta === "string" || typeof meta === "number" ? (
-                <span
-                  data-slot="disclosure-row-meta"
-                  className="cube-rn-text shrink-0 font-normal text-foreground/60 text-xs tabular-nums"
-                >
-                  {meta}
-                </span>
-              ) : (
-                meta
-              )}
-            </ItemTitle>
-            {description ? <ItemDescription>{description}</ItemDescription> : null}
-          </ItemContent>
-        }
-      />
+  const heading = (
+    <div className="cube-rn-view min-w-0 flex-row flex-wrap items-center gap-2">
+      {badgesSlot}
+      <span
+        data-slot="disclosure-row-title"
+        className={cn(
+          "cube-rn-text",
+          "min-w-0 shrink font-semibold text-foreground text-sm leading-snug",
+          // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
+          // what `line-clamp-1` becomes and what `truncate` does not.
+          "truncate",
+        )}
+      >
+        {title}
+      </span>
+      {/* Quieter than the title, as ListItem's meta is: left bare, a string took the title's
+          semibold and "atlas 12 tools" read as one name. A node keeps its own look. */}
+      {typeof meta === "string" || typeof meta === "number" ? (
+        <span
+          data-slot="disclosure-row-meta"
+          className="cube-rn-text shrink-0 font-normal text-foreground/60 text-xs tabular-nums"
+        >
+          {meta}
+        </span>
+      ) : (
+        meta
+      )}
+    </div>
+  );
 
-      {actionSlot ? <ItemActions className="gap-1">{actionSlot}</ItemActions> : null}
+  return (
+    <div data-slot="disclosure-row" className={cn("cube-rn-view", "min-w-0", className)}>
+      <div
+        data-slot="disclosure-row-heading"
+        className={cn("cube-rn-view", LIST_ITEM_CLASS, rowFillClass(false, true))}
+      >
+        <DisclosureTrigger
+          data-slot="disclosure-row-trigger"
+          open={open}
+          onClick={() => onOpenChange(!open)}
+          // Only while it is open: the body is unmounted when closed, which is what keeps a list
+          // of two hundred rows cheap.
+          controls={isOpen ? contentId : undefined}
+          contentSlot={<ListItemText title={heading} description={description} />}
+        />
+        {actionSlot ? (
+          <div
+            data-slot="disclosure-row-action"
+            className="cube-rn-view shrink-0 flex-row items-center gap-1"
+          >
+            {actionSlot}
+          </div>
+        ) : null}
+      </div>
 
       {isOpen ? (
-        <ItemFooter
+        <div
+          data-slot="disclosure-row-content"
           id={contentId}
-          className={cn(
-            // No rule: the row's own outline and the gap already set the opened body apart.
-            "min-w-0 flex-col items-stretch gap-2 pt-3",
-            contentClassName,
-          )}
+          // Under the heading at the row's own inset, so it reads as this row's and not the next.
+          className={cn("cube-rn-view", "min-w-0 gap-2 px-3 pb-2", contentClassName)}
         >
           {contentSlot}
-        </ItemFooter>
+        </div>
       ) : null}
-    </Item>
+    </div>
   );
 }

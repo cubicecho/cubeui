@@ -713,9 +713,9 @@
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `contentSlot` mounted only while open. Controlled with `open`/`onOpenChange`.",
+      "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": [
-        "@cubeui/item",
+        "@cubeui/list-item",
         "@cubeui/disclosure",
         "@cubeui/utils",
         "@cubeui/tokens"
