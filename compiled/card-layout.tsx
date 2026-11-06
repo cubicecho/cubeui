@@ -136,7 +136,8 @@ const ICON = "[&_svg]:size-4";
 const BAR = cn("h-4 rounded-md bg-foreground/10", "animate-pulse");
 
 /**
- * The header, as a row that wraps: the title and description in one column, the action after it.
+ * The heading row, as a row that wraps: the title and description in one column, the action
+ * after it. `CardLayout`, its floating form in a dialog and `Section` all draw this one row.
  *
  * The action used to be `CardAction`, which is absolute and so reserves no width — right for the
  * badge or lone button it was written for, and wrong for anything wider, because a long title ran
@@ -149,27 +150,70 @@ const BAR = cn("h-4 rounded-md bg-foreground/10", "animate-pulse");
  * title, at the far end. `gap-y-1.5` is `CardHeader`'s own gap, for the action's line once it has
  * wrapped.
  */
-const HEADER = "flex-row flex-wrap items-start gap-x-4 gap-y-1.5";
+const HEADING_ROW = "min-w-0 flex-row flex-wrap items-start gap-x-4 gap-y-1.5";
 
 /**
- * The header's text. `basis-40` is the floor the header wraps on: the title keeps 10rem beside
- * the action or the action goes under it. Less than `Section`'s, because a card title truncates
- * and so can give up more before it stops naming the card — and because the lower the floor, the
- * narrower the card in which a single button still sits where it always did.
+ * The heading's text. `basis-40` is the floor the row wraps on: the title keeps 10rem beside the
+ * action or the action goes under it. A card's title and a section's overline both truncate, so
+ * either can give up more before it stops naming its block — and the lower the floor, the narrower
+ * the block in which a single button still sits where it always did.
  */
-const HEADER_TEXT = "min-w-0 flex-1 basis-40 gap-1.5";
+const HEADING_TEXT = "min-w-0 flex-1 basis-40 gap-1.5";
 
 /**
- * The header's action, never shrunk and never wider than the header: on a line of its own, a
- * fragment of controls wraps on this row instead of running out of the card.
+ * The heading's action, never shrunk and never wider than the row: on a line of its own, a
+ * fragment of controls wraps on this row instead of running out of the block.
  */
-const HEADER_ACTION = cn(
+const HEADING_ACTION = cn(
   "max-w-full shrink-0 flex-row flex-wrap items-center gap-2",
   // The caller's own wrapping row, in a browser: a flex item there is as wide as its content and
-  // a react-native-web view does not shrink, so without this it runs out of the card. Yoga
+  // a react-native-web view does not shrink, so without this it runs out of the block. Yoga
   // measures a child against its parent's width, and NativeWind has no child selector anyway.
   "[&>*]:max-w-full",
 );
+
+export type HeadingRowProps = {
+  /** The title and description: a `DescribedTitle`. Absent, the action is pushed to the far end. */
+  textSlot?: SlotNode | undefined;
+  /** The row's far end: an add button, a menu, a switch. */
+  actionSlot?: SlotNode | undefined;
+  /** The row's `testID` / `data-slot`. */
+  "data-slot"?: string | undefined;
+  /** The action's `testID` / `data-slot`. */
+  actionTestID?: string | undefined;
+  className?: string | undefined;
+  textClassName?: string | undefined;
+};
+
+/**
+ * The heading row a block draws over its body: its text at the start and its action at the far
+ * end, with the action dropping under the text when both do not fit.
+ */
+export function HeadingRow({
+  textSlot,
+  actionSlot,
+  "data-slot": testID,
+  actionTestID,
+  className,
+  textClassName,
+}: HeadingRowProps) {
+  return (
+    <div
+      data-slot={testID}
+      // With no text there is no column to push the action along, so the row does it.
+      className={cn("cube-rn-view", HEADING_ROW, textSlot ? undefined : "justify-end", className)}
+    >
+      {textSlot ? (
+        <div className={cn("cube-rn-view", HEADING_TEXT, textClassName)}>{textSlot}</div>
+      ) : null}
+      {actionSlot ? (
+        <div data-slot={actionTestID} className={cn("cube-rn-view", HEADING_ACTION)}>
+          {actionSlot}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 /**
  * The `footerActionsSlot` row. It shrinks to the footer and wraps rather than holding its buttons
@@ -311,38 +355,27 @@ export function CardLayout({
     );
   }
 
-  const headerParts = (
-    <>
-      {hasText ? (
-        // On a floating panel the title and description keep the dialog's own `gap-1`.
-        <div className={cn("cube-rn-view", HEADER_TEXT, floating && "gap-1")}>
-          <DescribedTitle
-            titleSlot={titleSlot}
-            label={title}
-            leadingSlot={
-              iconSlot ? (
-                // Sized here rather than by the caller, so an icon passed as `<Plus />` and one
-                // passed as `<Plus className="size-4" />` land at the same size.
-                <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>
-                  {iconSlot}
-                </div>
-              ) : null
-            }
-            description={description}
-            // A card is not a landmark or a control, so there is nothing for an
-            // `aria-describedby` to hang on: folded, the text is only read where it was.
-            descriptionSlot={descriptionSlot}
-            folded={folded}
-            fallbackName="About this card"
-            iconSlot={descriptionIconSlot}
-            triggerTestID="card-layout-description-trigger"
-          />
-        </div>
-      ) : null}
-      {actionSlot ? <div className={cn("cube-rn-view", HEADER_ACTION)}>{actionSlot}</div> : null}
-    </>
-  );
-  const headerClasses = cn(HEADER, hasText === false && "justify-end", headerClassName);
+  const headingText = hasText ? (
+    <DescribedTitle
+      titleSlot={titleSlot}
+      label={title}
+      leadingSlot={
+        iconSlot ? (
+          // Sized here rather than by the caller, so an icon passed as `<Plus />` and one passed
+          // as `<Plus className="size-4" />` land at the same size.
+          <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>{iconSlot}</div>
+        ) : null
+      }
+      description={description}
+      // A card is not a landmark or a control, so there is nothing for an `aria-describedby` to
+      // hang on: folded, the text is only read where it was.
+      descriptionSlot={descriptionSlot}
+      folded={folded}
+      fallbackName="About this card"
+      iconSlot={descriptionIconSlot}
+      triggerTestID="card-layout-description-trigger"
+    />
+  ) : null;
 
   const footerParts = (
     <>
@@ -363,7 +396,15 @@ export function CardLayout({
         scroll
         className={FLOATING_CHASSIS}
         headerSlot={
-          hasHeader ? <div className={cn("cube-rn-view", headerClasses)}>{headerParts}</div> : null
+          hasHeader ? (
+            <HeadingRow
+              textSlot={headingText}
+              actionSlot={actionSlot}
+              className={headerClassName}
+              // On a floating panel the title and description keep the dialog's own `gap-1`.
+              textClassName="gap-1"
+            />
+          ) : null
         }
         // Four pixels of room either side, given back as padding: a focus ring is drawn outside
         // the element that owns it, and a scroll container clips at its edge.
@@ -392,7 +433,11 @@ export function CardLayout({
 
   const parts = (
     <>
-      {hasHeader ? <CardHeader className={headerClasses}>{headerParts}</CardHeader> : null}
+      {hasHeader ? (
+        <CardHeader className={headerClassName}>
+          <HeadingRow textSlot={headingText} actionSlot={actionSlot} />
+        </CardHeader>
+      ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
       {body ? (

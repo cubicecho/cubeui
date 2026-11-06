@@ -208,8 +208,10 @@ A heading over a group of fields or rows, inside a page or a card.
   named "About <title>", with `descriptionIconSlot` for its glyph. The heading keeps its name and
   rank, and on the web the region is still described by the sentence. A section with no `title`
   keeps its description inline.
-- The heading row **wraps**. An `actionSlot` sits at the far end while the title and description have
-  room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
+- The heading row is **`CardLayout`'s**, and **wraps**. An `actionSlot` sits at the far end, level
+  with the top of the title, while the title and description have room beside it, and drops under
+  them — at the start, as `SettingRow`'s does — when they do not. Installing `section` installs
+  `card-layout` too, for that row (`HeadingRow`); a section draws no card.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
   and wrap inside the section. Do not move a wide toolbar into the top of `contentSlot` to keep the
   description readable, and do not wrap it in a `flex flex-wrap` `<div>` of your own.

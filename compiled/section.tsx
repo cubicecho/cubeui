@@ -11,6 +11,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { cn, type SlotNode } from "@/lib/utils";
+import { HeadingRow } from "./card-layout";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { SectionHeading } from "./section-heading";
 
@@ -47,38 +48,13 @@ type SectionProps = {
 };
 
 /**
- * The title and description. `basis-48` is the floor the heading row wraps on: the text asks for
- * 12rem — `SettingRow`'s number, for the same two sizes of type — and an action that cannot sit
- * beside that much drops to its own line. A basis rather than a `min-w`, so in a column narrower
- * than the floor the text still shrinks to it instead of running out of the section.
- */
-const TEXT = "min-w-0 flex-1 basis-48";
-
-/**
- * The action. It never shrinks, which is what keeps one button or a badge at its own width and
- * where it always sat. `max-w-full` is for the action wider than the section: on a line of its
- * own it is held to the section's width, so what is in it wraps — a fragment of buttons on this
- * row, a caller's own row inside it — rather than running out past the edge.
- */
-const ACTION = "max-w-full shrink-0 flex-row flex-wrap items-center gap-2";
-
-/**
- * What makes the caller's own row wrap in a browser. A flex item's width there starts from its
- * content, and a react-native-web view does not shrink, so a `flex-row flex-wrap` view handed in
- * as the action stayed as wide as its buttons and ran out of the section. Yoga measures a child
- * against the width its parent has, so the device needs nothing — and NativeWind has no child
- * selector to give it.
- */
-const ACTION_FIT = "[&>*]:max-w-full";
-
-/**
  * A heading over a group of fields or rows, with the body in `contentSlot`. It draws no surface: a
  * titled group on a card is a `CardLayout`.
  *
  * The title is a heading of rank `level`, and on the web the root is a `<section>` named by it,
  * which makes it a `region` landmark. An untitled section has no name and is not a landmark. The
- * heading row wraps: the action sits beside the text while both fit and drops under it when they
- * do not.
+ * heading row is `CardLayout`'s and wraps: the action sits beside the text, level with the title's
+ * top, while both fit, and drops under it when they do not.
  */
 export function Section({
   contentSlot,
@@ -124,18 +100,13 @@ export function Section({
       className={cn("cube-rn-view", "min-w-0 gap-3", className)}
     >
       {hasHeading ? (
-        <div
+        // `CardLayout`'s heading row, so a section's heading and a card's line up the same way.
+        <HeadingRow
           data-slot="section-heading"
-          className={cn(
-            "cube-rn-view",
-            "min-w-0 flex-row flex-wrap items-center gap-2",
-            // With no text there is no column to push the action along, so the row does it.
-            hasText === false && "justify-end",
-            divider && "border-b border-foreground/10 pb-1",
-          )}
-        >
-          {hasText ? (
-            <div className={cn("cube-rn-view", TEXT)}>
+          actionTestID="section-action"
+          className={divider ? "border-b border-foreground/10 pb-1" : undefined}
+          textSlot={
+            hasText ? (
               <DescribedTitle
                 titleSlot={titleNode}
                 label={title}
@@ -144,7 +115,7 @@ export function Section({
                   description ? (
                     <p
                       data-slot="section-description"
-                      className="cube-rn-text mt-1 text-foreground/60 text-sm"
+                      className="cube-rn-text text-foreground/60 text-sm"
                     >
                       {description}
                     </p>
@@ -157,14 +128,10 @@ export function Section({
                 triggerTestID="section-description-trigger"
                 rowTestID="section-title-row"
               />
-            </div>
-          ) : null}
-          {actionSlot ? (
-            <div data-slot="section-action" className={cn("cube-rn-view", ACTION, ACTION_FIT)}>
-              {actionSlot}
-            </div>
-          ) : null}
-        </div>
+            ) : null
+          }
+          actionSlot={actionSlot}
+        />
       ) : null}
 
       {contentSlot ? (

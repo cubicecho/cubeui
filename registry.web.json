@@ -627,6 +627,7 @@
       "description": "A heading over a group of fields or rows: title, description, an action at the far end and an optional rule. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
       "registryDependencies": [
         "@cubeui/utils",
+        "@cubeui/card-layout",
         "@cubeui/description-hint",
         "@cubeui/section-heading",
         "@cubeui/tokens"

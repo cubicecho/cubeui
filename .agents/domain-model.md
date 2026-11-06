@@ -211,8 +211,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   empty and loading states, and footer already placed. Inside a floating panel that draws the
   surface (`FloatingSurfaceContext`, set by `DialogLayout`) it draws no card of its own, and its
   body is the only part that scrolls. Owner: `registry/layout/card-layout.tsx`.
+- **`HeadingRow`:** the row over a block's body: its title and description at the start, its
+  action at the far end, dropping under them when both do not fit. `CardLayout`, its floating form
+  and `Section` all draw it. Owner: `registry/layout/card-layout.tsx`.
 - **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
-  titled card is `CardLayout`. Owner: `registry/layout/section.tsx`.
+  titled card is `CardLayout`. Owner: `registry/layout/section.tsx`; composes `HeadingRow`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
   `registry/layout/disclosure.tsx`, with `DisclosureTrigger`, the button `DisclosureRow` and
   `FileTree`'s folders open with too.

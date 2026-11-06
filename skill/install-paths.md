@@ -43,7 +43,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `calendar` | web | `components/ui/calendar.tsx`; also `calendar-base.ts` | `import { Calendar } from "@/components/ui/calendar"` |
 | `calendar` | native | `components/ui/calendar.tsx`; also `calendar-base.ts`, `calendar.web.tsx` | `import { Calendar } from "@/components/ui/calendar"` |
 | `card` | both | `components/ui/card.tsx` | `import { CARD_SURFACE_CLASS, Card, CardAction, CardContent, CardDescription, CardFooter, … 2 more } from "@/components/ui/card"` |
-| `card-layout` | both | `components/card-layout.tsx` | `import { FloatingSurfaceContext, CardLayout } from "@/components/card-layout"` |
+| `card-layout` | both | `components/card-layout.tsx` | `import { FloatingSurfaceContext, HeadingRow, CardLayout } from "@/components/card-layout"` |
 | `card-stories` | web | `components/ui/card.stories.tsx` | — (stories) |
 | `centered-layout` | both | `components/centered-layout.tsx` | `import { CenteredLayout } from "@/components/centered-layout"` |
 | `checkbox` | web | `components/ui/checkbox.tsx`; also `checkbox-base.ts` | `import { Checkbox } from "@/components/ui/checkbox"` |
