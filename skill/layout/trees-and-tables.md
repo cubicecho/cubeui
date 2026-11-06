@@ -27,7 +27,7 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 | `label` (required) | `string` |  | What the list is, for a screen reader: "Files", "Notes". Read, not drawn. |
 | `entries` (required) | `readonly T[]` |  | The files, and any folders worth listing, flat and in any order. A file's missing parents are added and every level is sorted folders first, then by name — `buildTree` in `@/lib/tree`. |
 | `pinned` | `readonly T[]` |  | Files drawn above the tree, in the order given, never nested or sorted: a folder's README, a skill's own Markdown. Each is called by its whole `path`, and reaches `linkSlot`, `meta` and `actionSlot` as any other file does. |
-| `selected` | `string` |  | The open file's path. Its row is filled, and its link or button says it is the current one. |
+| `selected` | `string` |  | The open file's path. Its row is tinted, a step further under the pointer, and its link or button says it is the current one. |
 | `linkSlot` | `((node: TreeNode<T>) => ReactElement)` |  | The router's link to a file, as an element with no children — `<Link to="/notes/$" />` — which the row is drawn inside. For an app that keeps the open file in the URL, so the row is a real `<a href>` that a middle click opens. Given this, `onSelect` is not called. |
 | `onSelect` | `((path: string) => void)` |  | A file's row was pressed. For an app that holds the open file in state; the row is a button. |
 | `meta` | `((node: TreeNode<T>) => ReactNode)` |  | The small facts after a row's name: a size, a count, a badge. A string is drawn muted and extra small; an element is placed as it is. Inside the pressed area. Called for folders too. |
@@ -52,12 +52,13 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
   with no children; the row is drawn inside it, so it is a real `<a href>` and the selected one
   carries `aria-current="page"`. With the open file in state pass `onSelect`, and the row is a
   button. With neither, the row is only a row.
-- `selected` is the open file's **path**. Its row is filled `active`; do not hand-write that.
+- `selected` is the open file's **path**. Its row is tinted `active`, a step further under the
+  pointer, as a chosen `ListItem` is; do not hand-write that.
 - `meta` is what follows a name: return a string (a size, a count) and it is drawn muted and
   `text-xs`, or return an element (a `Badge`) and it is placed as given. On the selected row
-  everything in it takes the row's `active-foreground` ink, a string and an element's text alike. On
+  everything in it takes the row's `foreground` ink, a string and an element's text alike. On
   device a node's own `Text` cannot be reached, so an element you return should not set a colour of
-  its own: it would stay that colour on the filled row. It is inside the pressed
+  its own: it would stay that colour on the tinted row. It is inside the pressed
   area, so nothing pressable goes there. It is called for folders too — return `null` to skip one.
 - `actionSlot` is the row's far end, **outside** the pressed area: `icon-xs` outline `Button`s with an
   `aria-label`, a `ConfirmButton`, or one `Menu` behind an `Ellipsis` when there are more than two.

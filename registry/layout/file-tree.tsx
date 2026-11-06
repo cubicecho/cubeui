@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { DisclosureTrigger } from "@/components/disclosure";
-import { rowLink } from "@/components/list-item";
+import { rowFillClass, rowLink } from "@/components/list-item";
 import { File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
@@ -22,7 +22,10 @@ type FileTreeProps<T extends TreeEntry> = {
    * `actionSlot` as any other file does.
    */
   pinned?: readonly T[] | undefined;
-  /** The open file's path. Its row is filled, and its link or button says it is the current one. */
+  /**
+   * The open file's path. Its row is tinted, a step further under the pointer, and its link or
+   * button says it is the current one.
+   */
   selected?: string | undefined;
   /**
    * The router's link to a file, as an element with no children — `<Link to="/notes/$" />` — which
@@ -273,15 +276,11 @@ export function FileTree<T extends TreeEntry>({
 
   const renderRow = (node: TreeNode<T>, depth: number, isFile: boolean, isPinned = false) => {
     const isSelected = isFile && selected === node.path;
-    const ink = isSelected ? "text-active-foreground" : "text-foreground";
-    // Inside the folder a drag is over, the row sits on the drop tint, where /60 is under 4.5:1.
+    // On the chosen tint, and inside the folder a drag is over (the same tint), /60 is under 4.5:1.
     const inDrop =
       dropInto !== null &&
       (dropInto === "" || node.path === dropInto || node.path.startsWith(`${dropInto}/`));
-    let muted = inDrop ? "text-foreground" : "text-foreground/60";
-    if (isSelected) {
-      muted = "text-active-foreground";
-    }
+    const muted = inDrop || isSelected ? "text-foreground" : "text-foreground/60";
     const indent = { paddingLeft: depth * INDENT + EDGE };
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
@@ -306,7 +305,7 @@ export function FileTree<T extends TreeEntry>({
             // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
             // what `line-clamp-1` becomes and what `truncate` does not.
             Platform.select({ web: "truncate", default: "line-clamp-1" }),
-            ink,
+            "text-foreground",
           )}
         >
           {node.name}
@@ -316,14 +315,14 @@ export function FileTree<T extends TreeEntry>({
             testID="file-tree-meta"
             className={cn(
               "shrink-0 flex-row items-center gap-1",
-              // On the chosen row's fill everything in the meta takes the row's ink, over a
-              // caller's own colour classes: a muted outline Badge stayed grey on the fill. Its
+              // On the chosen row's tint everything in the meta takes the row's ink, over a
+              // caller's own colour classes: a muted outline Badge's grey is under 4.5:1 there. Its
               // edges go to the ink at /50, so an outline still reads. Web only — a device has no
               // descendant selector, so there icons follow through the context below and a node's
               // own text keeps its colour (see `meta`).
               isSelected &&
                 Platform.select({
-                  web: "text-active-foreground [&_*]:text-active-foreground! [&_*]:border-active-foreground/50!",
+                  web: "text-foreground [&_*]:text-foreground! [&_*]:border-foreground/50!",
                   default: "",
                 }),
             )}
@@ -395,16 +394,7 @@ export function FileTree<T extends TreeEntry>({
         className={cn(
           "min-w-0 flex-row items-center gap-1 rounded-md",
           Platform.select({ web: "group", default: undefined }),
-          isSelected
-            ? cn(
-                "bg-active",
-                Platform.select({ web: "has-[:focus-visible]:bg-active/90", default: undefined }),
-              )
-            : pressable &&
-                Platform.select({
-                  web: "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
-                  default: undefined,
-                }),
+          rowFillClass(isSelected, pressable),
           // A slow move is not a failed one: the row waits where it was, drawn as unavailable.
           moving.has(node.path) && "opacity-50",
         )}

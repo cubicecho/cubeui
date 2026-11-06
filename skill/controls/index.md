@@ -38,13 +38,13 @@ second answer.
 | Focus in a field | `focus:border-active` | Input, textarea, select trigger. No ring here either. |
 | Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A filled button darkens its own fill: `active:bg-neutral/90`. |
 | Chosen, the one of its group | `bg-active text-active-foreground` | The current sidebar row, the active tab, the pressed segment, a checked box, an on switch, an on chip. |
-| Chosen, a row among many | `bg-active/40` | A table row, a `ListItem` or `Item` with `selected`, the option a select is on. A tint, because the row's own text and badges still have to read. |
+| Chosen, a row among many | `bg-active/40`, and `hover:bg-active/60` under the pointer | A table row, a `ListItem`, `Item` or `FileTree` file with `selected`, the option a select is on. A tint, because the row's own text and badges still have to read; its text is `foreground`, the secondary lines included. |
 | Chosen, a card | `border-active` | A `StatTile` or radio card with `selected`. The fill stays the card's. |
 | Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. It takes no hover. |
 
 - **Chosen never uses the hover grey, and hover never uses `active`.** A grey chosen row is a
-  hover that stuck. A chosen row keeps its tint under the pointer:
-  `selected && "hover:bg-active/40"`. Focused, it looks hovered like everything else.
+  hover that stuck. The pointer over a chosen row tints it a step further:
+  `selected && "hover:bg-active/60"`. Focused, it looks hovered like everything else.
 - **A label's `Text` names its own colour, so focus reaches it through a named group.** Put
   `group/<name>` on the pressable and `group-focus-visible/<name>:text-foreground` on the `Text`
   inside it, as `Button`, `SidebarNavItem`, `Tabs`, `SegmentedButton` and `ToggleChip` do. The

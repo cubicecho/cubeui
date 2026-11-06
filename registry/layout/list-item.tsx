@@ -50,7 +50,7 @@ type ListItemProps = {
    */
   linkSlot?: ReactElement | undefined;
   /**
-   * The chosen row: the one open beside the list. Tinted in `active`, it stays that under the
+   * The chosen row: the one open beside the list. Tinted in `active`, a step further under the
    * pointer, and a pressable row says so with `aria-current`.
    */
   selected?: boolean | undefined;
@@ -69,6 +69,21 @@ function asText(node: ReactNode, className: string, testID?: string) {
     </Text>
   ) : (
     node
+  );
+}
+
+/**
+ * A row's fill for its state, for `ListItem` and `FileTree`. Chosen is the `active` tint, and the
+ * pointer over a pressable row is `hover`, or over a chosen one the tint a step further. Focused,
+ * a row looks hovered whether it is chosen or not.
+ */
+export function rowFillClass(selected: boolean, pressable: boolean) {
+  const pointer = selected
+    ? "transition-colors hover:bg-active/60 has-[:focus-visible]:bg-hover"
+    : "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover";
+  return cn(
+    selected && "bg-active/40",
+    pressable && Platform.select({ web: pointer, default: undefined }),
   );
 }
 
@@ -234,13 +249,10 @@ export function ListItem({
       testID="list-item"
       className={cn(
         "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2",
-        selected
-          ? "bg-active/40"
-          : (onPress || href !== undefined || linkSlot) &&
-              Platform.select({
-                web: "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
-                default: undefined,
-              }),
+        rowFillClass(
+          selected,
+          onPress !== undefined || href !== undefined || linkSlot !== undefined,
+        ),
         className,
       )}
     >
