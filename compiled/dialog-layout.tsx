@@ -27,6 +27,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
+import { CARD_LAYOUT_FOOTER_ACTIONS_CLASS, CARD_LAYOUT_FOOTER_START_CLASS } from "./card-layout";
 import { ConfirmDialog } from "./confirm-dialog";
 import {
   Dialog,
@@ -74,19 +75,13 @@ const WRAPPER = "flex min-h-0 flex-1 flex-col";
 const SR_ONLY = "sr-only";
 
 /**
- * The `footerActionsSlot` row: shrinks to the footer and wraps, right-aligned, rather than running
- * its buttons past the dialog's edge on a narrow screen — the same row `CardLayout` draws.
+ * The `footerSlot` row: `CardLayout`'s, stacked below `sm` as `DialogFooter` stacks, at the same
+ * `gap-2` and stretched to the footer's width, so a phone draws a column of full-width parts.
  */
-const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
-
-/**
- * The `footerSlot` row, grouped for the reason `CardLayout`'s is: with `footerActionsSlot` beside
- * it the footer is `justify-between` from `sm` up, and that spread every element of a fragment
- * across the footer instead of keeping them together at its start. Below `sm` it stacks as
- * `DialogFooter` does, at the same `gap-2`, so a phone draws what it drew before.
- */
-const FOOTER_START =
-  "flex-col-reverse gap-2 sm:min-w-0 sm:shrink sm:flex-row sm:flex-wrap sm:items-center";
+const FOOTER_START = cn(
+  CARD_LAYOUT_FOOTER_START_CLASS,
+  "flex-col-reverse items-stretch sm:flex-row sm:items-center",
+);
 
 export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
@@ -307,7 +302,9 @@ export function DialogLayout({
             {footerSlot ? (
               <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div>
             ) : null}
-            {actions ? <div className={cn("cube-rn-view", ACTIONS)}>{actions}</div> : null}
+            {actions ? (
+              <div className={cn("cube-rn-view", CARD_LAYOUT_FOOTER_ACTIONS_CLASS)}>{actions}</div>
+            ) : null}
           </DialogFooter>
         ) : null
       }

@@ -221,7 +221,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
 - **`DialogLayout`:** a dialog with its title, description, scrolling body and
   footer placed, a size, and a discard question before unsaved work is thrown away. Owner:
-  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `HeaderContentFooter`, `ConfirmDialog`.
+  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `HeaderContentFooter`, `ConfirmDialog`,
+  and draws `CardLayout`'s footer rows.
 - **`ConfirmDialog`:** an "are you sure?" window with Cancel and one destructive
   button. Owner: `registry/ui/confirm-dialog.tsx`; `useConfirm` in `registry/ui/confirm.tsx`.
 - **`ConfirmButton`:** a destructive button that asks first. Owner:

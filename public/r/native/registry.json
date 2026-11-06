@@ -1595,7 +1595,8 @@
         "@cubeui/dialog",
         "@cubeui/header-content-footer",
         "@cubeui/utils",
-        "@cubeui/confirm-dialog"
+        "@cubeui/confirm-dialog",
+        "@cubeui/card-layout"
       ],
       "files": [
         {

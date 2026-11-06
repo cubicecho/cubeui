@@ -160,9 +160,10 @@ const HEADER_ACTION = cn(
  * The `footerActionsSlot` row. It shrinks to the footer and wraps rather than holding its buttons
  * on one line: a view does not shrink by default on either half, so three buttons in a phone-width
  * card ran past its left edge instead of moving the last one down. `justify-end` keeps a wrapped
- * line against the right edge, where the primary action is.
+ * line against the right edge, where the primary action is. `DialogLayout` draws the same row.
  */
-const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
+export const CARD_LAYOUT_FOOTER_ACTIONS_CLASS =
+  "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-2";
 
 /**
  * What `wrapperSlot`'s element takes: the column the card itself is, so the header, body and
@@ -172,12 +173,13 @@ const ACTIONS = "min-w-0 shrink flex-row flex-wrap items-center justify-end gap-
 const WRAPPER = "flex min-w-0 flex-col gap-0";
 
 /**
- * The `footerSlot` row: `ACTIONS` held at the start. Its elements were once placed straight into
- * the footer, and with `footerActionsSlot` beside them the footer's `justify-between` spread
+ * The `footerSlot` row: the actions row held at the start. Its elements were once placed straight
+ * into the footer, and with `footerActionsSlot` beside them the footer's `justify-between` spread
  * *every* child, so a second one landed mid-footer rather than beside the first. Grouped here,
- * they sit together at `ACTIONS`' `gap-2`, and the footer splits between this row and that one.
+ * they sit together at the same `gap-2`, and the footer splits between this row and that one.
  */
-const FOOTER_START = "min-w-0 shrink flex-row flex-wrap items-center gap-2";
+export const CARD_LAYOUT_FOOTER_START_CLASS =
+  "min-w-0 shrink flex-row flex-wrap items-center gap-2";
 
 /**
  * Whether a body holds nothing to draw: no element at all, or one `List` with no rows.
@@ -322,9 +324,13 @@ export function CardLayout({
             footerClassName,
           )}
         >
-          {footerSlot ? <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div> : null}
+          {footerSlot ? (
+            <div className={cn("cube-rn-view", CARD_LAYOUT_FOOTER_START_CLASS)}>{footerSlot}</div>
+          ) : null}
           {footerActionsSlot ? (
-            <div className={cn("cube-rn-view", ACTIONS)}>{footerActionsSlot}</div>
+            <div className={cn("cube-rn-view", CARD_LAYOUT_FOOTER_ACTIONS_CLASS)}>
+              {footerActionsSlot}
+            </div>
           ) : null}
         </CardFooter>
       ) : null}

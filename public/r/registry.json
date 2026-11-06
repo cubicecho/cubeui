@@ -1516,6 +1516,7 @@
         "@cubeui/header-content-footer",
         "@cubeui/utils",
         "@cubeui/confirm-dialog",
+        "@cubeui/card-layout",
         "@cubeui/tokens"
       ],
       "files": [
