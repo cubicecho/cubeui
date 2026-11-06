@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
+import { rowLink } from "@/components/list-item";
 import { ChevronRight, File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
@@ -359,7 +360,18 @@ export function FileTree<T extends TreeEntry>({
         </Pressable>
       );
     } else if (linkSlot) {
-      row = fileLink(linkSlot(node), isSelected, indent, inside, drag);
+      // `drag` is what picks the row up, which only the web has.
+      row = rowLink(
+        linkSlot(node),
+        {
+          slot: "file-tree-file",
+          className: ROW_CLASS,
+          selected: isSelected,
+          style: indent,
+          webProps: drag,
+        },
+        inside,
+      );
     } else if (onSelect) {
       row = (
         <Pressable
@@ -471,49 +483,6 @@ export function FileTree<T extends TreeEntry>({
       ))}
       {renderItems(tree, 0)}
     </View>
-  );
-}
-
-/**
- * A file's row as the router's link. On the web the caller's element *is* the row — it is cloned
- * with the row's classes and what is inside it, so it stays the router's own `<a>`. On device a
- * link is expo-router's, which takes the row the other way round: it is given `asChild` and wraps
- * the `Pressable`. `drag` is what picks the row up, which only the web has.
- */
-function fileLink(
-  link: ReactElement,
-  isSelected: boolean,
-  indent: { paddingLeft: number },
-  inside: ReactNode,
-  drag: object,
-) {
-  if (Platform.OS !== "web") {
-    return React.cloneElement(
-      link as ReactElement<{ asChild?: boolean }>,
-      { asChild: true },
-      <Pressable
-        testID="file-tree-file"
-        role="link"
-        accessibilityState={{ selected: isSelected }}
-        className={ROW_CLASS}
-        style={indent}
-      >
-        {inside}
-      </Pressable>,
-    );
-  }
-
-  const element = link as ReactElement<Record<string, unknown>>;
-  return React.cloneElement(
-    element,
-    {
-      "data-slot": "file-tree-file",
-      className: cn("flex", ROW_CLASS, element.props.className as string | undefined),
-      style: indent,
-      "aria-current": isSelected ? "page" : undefined,
-      ...drag,
-    },
-    inside,
   );
 }
 

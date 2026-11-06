@@ -87,22 +87,41 @@ const BODY_CLASS = cn(
   "text-left focus-visible:outline-none",
 );
 
+type RowLinkOptions = {
+  /** The pressed part's `testID` on device and `data-slot` on the web: `list-item-body`. */
+  slot: string;
+  /** The pressed part's classes, laid under any the caller's link carries. */
+  className: string;
+  /** The chosen row: `aria-current="page"` on the web, `selected` on device. */
+  selected: boolean;
+  /** A style the row sets itself, such as a tree's indent. Left out, the link keeps its own. */
+  style?: { paddingLeft: number } | undefined;
+  /** Further props for the web's link only, such as what lets the row be dragged. */
+  webProps?: object | undefined;
+};
+
 /**
- * The middle as the router's link. On the web the caller's element *is* the middle — cloned with
- * its classes and what is inside it, so it stays the router's own `<a>`. On device a link is
- * expo-router's, which takes the middle the other way round: given `asChild`, it wraps the
- * `Pressable`.
+ * A row's pressed part as the router's link, for `ListItem` and `FileTree`. On the web the
+ * caller's element *is* the pressed part — cloned with the row's classes and what is inside it,
+ * so it stays the router's own `<a>`. On device a link is expo-router's, which takes the row the
+ * other way round: given `asChild`, it wraps the `Pressable`.
  */
-function bodyLink(link: ReactElement, selected: boolean, body: ReactNode) {
+export function rowLink(
+  link: ReactElement,
+  { slot, className, selected, style, webProps }: RowLinkOptions,
+  inside: ReactNode,
+) {
   const element = link as ReactElement<Record<string, unknown>>;
   return cloneElement(
     element,
     {
-      "data-slot": "list-item-body",
-      className: cn("flex", BODY_CLASS, element.props.className as string | undefined),
+      "data-slot": slot,
+      className: cn("flex", className, element.props.className as string | undefined),
+      ...(style ? { style } : {}),
       "aria-current": selected ? "page" : undefined,
+      ...webProps,
     },
-    body,
+    inside,
   );
 }
 
@@ -163,7 +182,7 @@ export function ListItem({
   // The body in the one form its props ask for: the caller's link, a link, a button, or plain.
   const pressableBody = () => {
     if (linkSlot) {
-      return bodyLink(linkSlot, selected, body);
+      return rowLink(linkSlot, { slot: "list-item-body", className: BODY_CLASS, selected }, body);
     }
     if (href !== undefined) {
       return (
