@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
-import { HeaderContentFooter, StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 
 const meta = {
   title: "Layout/HeaderContentFooter",
@@ -54,10 +54,10 @@ export const NoChrome: Story = {
  * The one every consuming app gets wrong: sticky needs an ancestor height to divide. Given one,
  * the body scrolls and the chrome stays. This story is the documentation of that requirement.
  */
-export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
+export const Sticky: StoryObj<typeof HeaderContentFooter> = {
   render: (args) => (
     <div className="h-[400px] border">
-      <StickyHeaderContentFooter {...args} />
+      <HeaderContentFooter scroll className="h-full" {...args} />
     </div>
   ),
   args: { headerSlot: <Header />, footerSlot: <Footer />, contentSlot: <Rows count={40} /> },
@@ -89,10 +89,10 @@ export const Sticky: StoryObj<typeof StickyHeaderContentFooter> = {
  * Rule 4 — the floors. One wide child must scroll inside the body rather than grow the chassis
  * and push the chrome off the screen. Without `min-w-0` this story fails, which is the point.
  */
-export const WideContentKeepsItsFloor: StoryObj<typeof StickyHeaderContentFooter> = {
+export const WideContentKeepsItsFloor: StoryObj<typeof HeaderContentFooter> = {
   render: (args) => (
     <div className="h-[400px] w-[600px] border">
-      <StickyHeaderContentFooter {...args} />
+      <HeaderContentFooter scroll className="h-full" {...args} />
     </div>
   ),
   args: {

@@ -86,11 +86,13 @@ folders can also be controlled. A shut body is not mounted.
 ### A list's state (`QueryState`)
 
 ```
-failed | loading | empty | has rows
+failed | loading | empty | has rows          (a list: `count`)
+failed | loading | not found | found        (one record: `record`)
 ```
 
-Exactly one at a time, in that order of precedence; once there are rows, `QueryState` draws
-nothing and the list draws them.
+Exactly one at a time, in that order of precedence; once there are rows, or the record is there,
+`QueryState` draws nothing and the screen draws them. A record that is not found is a rung of the
+same ladder, so the guard works inside any shell.
 
 ### A sidebar's fold (`Sidebar`)
 
@@ -167,23 +169,15 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`PageLayout`:** a whole page: its title block pinned above a scrolling body,
   with an optional footer, at a named column width. Owner: `registry/layout/page-layout.tsx`;
   composes `HeaderContentFooter` and `PageHeader`.
-- **`Page`:** a padded column that scrolls with no title block of its own; a `PageHeader`
-  placed in its body scrolls away with it. Owner: `registry/layout/page.tsx`, which also holds
-  `CardGrid` and re-exports `PageHeader` and `EmptyState`.
-- **`DetailPage`:** a `Page` for one record that shows loading, then not found,
-  before handing the loaded record to its body. Owner: `registry/layout/detail-page.tsx`.
+- **`GridLayout`:** equal cells in rows, one to four to a row by the window's width, one cell
+  per element of its body, for any content. Owner: `registry/layout/grid-layout.tsx`.
 - **`HeaderContentFooter`:** the frame most shells build on: a header
   and footer around a body, where either the whole frame or only the body scrolls. Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
   `PROSE_COLUMN`.
-- **`StickyHeaderContentFooter`:** the same frame with the body
-  scrolling and the header and footer fixed. Owner: the same file; it is the frame with `scroll`
-  and `h-full` set.
-- **`PageHeader`:** a page's icon, title, description, actions, breadcrumb or back
-  link, and a row for search, filters or tabs, at heading level 1 to 3. Owner:
-  `registry/layout/page-header.tsx`.
-- **`DetailHeader`:** a back button, a colour dot, a title, badges and
-  actions. Owner: `registry/layout/detail-header.tsx`.
+- **`PageHeader`:** a page's icon, title, description, actions, the way back (one
+  slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
+  at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. Owner: `registry/layout/section-heading.tsx`; takes `children`.
 - **`CenteredLayout`:** a page that is one card in the middle of the screen, such
@@ -251,7 +245,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   a line, an action, or one compact line. Owner: `registry/layout/empty-state.tsx`; composes
   `Empty` (`registry/ui/empty.tsx`).
 - **`QueryState`:** the failed, loading or empty state in front of a list until it
-  has rows. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
+  has rows, or the failed, loading or not-found state in front of one record until it is
+  there. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
 - **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
   Try again. Owner: `registry/layout/route-error.tsx`.
 
@@ -262,8 +257,6 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **Prototype weights:** the proposed named-weight tokens, chart colours and `fg-` utility,
   built beside today's tokens and used by no item. Owner: `tokens/weights.mjs`,
   `tokens/series.mjs`, `scripts/build-token-weights.mjs`, `dist/prototype/`.
-- **`PageInsetContext`:** tells a `PageHeader` inside a `Page` to drop its own
-  padding. Owner: `registry/layout/page-header.tsx`.
 - **`SidebarPositionContext`:** tells a `Sidebar` which edge its border
   is on. Owner: `registry/layout/split-layout.tsx`.
 
@@ -273,7 +266,7 @@ An author writes an item once in React Native; the compiler makes its web half, 
 build turns the palette into the token sheets every item draws with. Each push to `main`
 publishes the registry, and an app installs an item by name as its own files. Primitives are
 the controls and surfaces, and components build one job from them. Shells place the nodes an app
-hands them into a fixed shape: a `PageLayout` or a `Page` inside a `SidebarLayout` or a
+hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout` or a
 `TopBarLayout`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
 each with its empty, loading and failed states. Bound fields wire a control to a form field. A shell keeps only the state of its own
 interaction (a dialog's discard question, a disclosure's open body), never the app's data.

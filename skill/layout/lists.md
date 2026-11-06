@@ -62,6 +62,18 @@ The shells for the shape every list route is: a ladder of states, then a list of
   promise, the button is disabled and reads "Retrying…" until it settles, so a second press does
   not stack requests. A rejected retry is caught — Apollo's `refetch` rejects when it fails again
   — so it never surfaces as an unhandled rejection; the query's own error is what gets shown.
+- **A detail page passes `record` instead of `count`.** The ladder is then failed, loading, **not
+  found**: `record` is what the query returned (`null` or `undefined` is not there), and
+  `notFoundLabel` is what the page says then, drawn as a level-1 `EmptyState` with the Search icon,
+  because the whole page is that state. Once the record is there it renders `null`, as it does for
+  rows. Pass one of `count` and `record`, never both; `emptySlot` goes with `count`.
+- Since the not-found title is the page's `h1`, it stands in front of the page rather than inside
+  one that already has a title:
+
+  ```tsx
+  <QueryState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
+  {project.data ? <PageLayout title={project.data.name} contentSlot={<ProjectBody project={project.data} />} /> : null}
+  ```
 - It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
@@ -86,16 +98,18 @@ The shells for the shape every list route is: a ladder of states, then a list of
 | --- | --- | --- | --- |
 | `query` (required) | `QueryLike` |  |  |
 | `what` (required) | `string` |  | What could not be fetched, in the reader's words: "your agents", "the archive". |
-| `count` (required) | `number` |  | How many rows the screen is about to draw. |
-| `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
 | `rows` | `number` | `3` | How many placeholder rows stand in for the list while it loads. |
 | `compact` | `boolean` | `false` | The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row rather than cards. For a list that lives in a sidebar, where a card-sized error would be taller than the list it replaced. |
 | `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `QueryError`. |
 | `className` | `string` |  |  |
+| `count` | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
+| `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
+| `record` | `never` |  |  |
+| `notFoundLabel` | `never` |  |  |
 <!-- /props -->
 ### Empty states
 
-`EmptyState` (`@cubeui/empty-state`, on both halves, and re-exported by `@cubeui/page`) is what an
+`EmptyState` (`@cubeui/empty-state`, on both halves) is what an
 empty list says. Install `empty-state` for it; it does not need the page shell. It comes in two shapes,
 and which one is a question of **where the list is**, not how much there is to say:
 

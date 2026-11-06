@@ -4,20 +4,18 @@ import { Text, View } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "../../../registry/layout/card-layout";
 import { DescriptionList, PropertyRow } from "../../../registry/layout/description-list";
-import { DetailHeader } from "../../../registry/layout/detail-header";
-import { DetailPage } from "../../../registry/layout/detail-page";
 import { EmptyState } from "../../../registry/layout/empty-state";
 import { List } from "../../../registry/layout/list";
 import { ListItem } from "../../../registry/layout/list-item";
-import { Page } from "../../../registry/layout/page";
 import { PageLayout } from "../../../registry/layout/page-layout";
+import { QueryState } from "../../../registry/layout/query-state";
 import { StatTile } from "../../../registry/layout/stat-tile";
 import { Alert } from "../../../registry/ui/alert";
 import { Badge } from "../../../registry/ui/badge.tsx";
 import { Button } from "../../../registry/ui/button";
 import { ColorDot } from "../../../registry/ui/color-dot";
 import { ConfirmProvider, useConfirm } from "../../../registry/ui/confirm";
-import { Ellipsis, Folder, Pencil, Trash2 } from "../../../registry/ui/icons";
+import { ArrowLeft, Ellipsis, Folder, Pencil, Trash2 } from "../../../registry/ui/icons";
 import {
   Menu,
   MenuContent,
@@ -33,8 +31,8 @@ import { Initials, MobileShell, PHONE } from "./shell";
 /**
  * A phone's list-and-detail as two screens: the projects as pressable rows, and a project's own
  * screen with a back button, its colour and status, a ⋯ menu whose Delete asks first, figures,
- * progress, tabs and its people. The detail is a `DetailPage`, so its loading and not-found
- * branches are one prop away.
+ * progress, tabs and its people. The detail is a `PageLayout` behind a `QueryState`, so its
+ * loading and not-found branches are one prop away.
  */
 type Args = { open: string | null; detail: "ready" | "loading" | "missing" };
 
@@ -144,57 +142,69 @@ function ProjectScreen({
 }) {
   const confirm = useConfirm();
   const [tab, setTab] = useState("overview");
+  // The story's stand-in for the query the screen would read the project from.
+  const query = { isPending: loading, isError: false, error: null, refetch: () => {} };
+  const p = loading ? null : project;
   return (
-    <Page
-      contentSlot={
-        <DetailPage<Project>
-          entity={project}
-          loading={loading}
-          notFoundLabel="This project was archived or deleted."
-          contentSlot={(p) => (
-            <View className="gap-4">
-              <DetailHeader
-                onBack={onBack}
-                backLabel="Back to projects"
-                color={p.color}
-                colorLabel={p.name}
-                title={p.name}
-                subtitle={`${p.client} · led by ${p.lead}`}
-                badgeSlot={
-                  <Badge variant={STATUS[p.status].variant}>{STATUS[p.status].label}</Badge>
-                }
-                actionsSlot={
-                  <Menu>
-                    <MenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        aria-label={`Actions for ${p.name}`}
-                        iconSlot={<Ellipsis />}
-                      />
-                    </MenuTrigger>
-                    <MenuContent aria-label={`Actions for ${p.name}`}>
-                      <MenuItem iconSlot={<Pencil />} label="Rename…" onSelect={() => {}} />
-                      <MenuItem iconSlot={<Folder />} label="Archive" onSelect={() => {}} />
-                      <MenuSeparator />
-                      <MenuItem
-                        iconSlot={<Trash2 />}
-                        label="Delete"
-                        destructive
-                        onSelect={async () => {
-                          const ok = await confirm({
-                            title: `Delete ${p.name}?`,
-                            description: `Its ${p.open + p.done} tasks are deleted for all ${p.people.length} people on it.`,
-                          });
-                          if (ok) {
-                            onDelete();
-                          }
-                        }}
-                      />
-                    </MenuContent>
-                  </Menu>
-                }
-              />
+    <>
+      <QueryState
+        query={query}
+        what="this project"
+        record={p}
+        notFoundLabel="This project was archived or deleted."
+        className="p-4"
+      />
+      {p === null ? null : (
+        <PageLayout
+          backSlot={
+            <Button
+              variant="outline"
+              size="icon"
+              onPress={onBack}
+              aria-label="Back to projects"
+              iconSlot={<ArrowLeft />}
+            />
+          }
+          iconSlot={<ColorDot color={p.color} label={p.name} />}
+          title={p.name}
+          description={`${p.client} · led by ${p.lead}`}
+          actionSlot={
+            <>
+              <Badge variant={STATUS[p.status].variant}>{STATUS[p.status].label}</Badge>
+              <Menu>
+                <MenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label={`Actions for ${p.name}`}
+                    iconSlot={<Ellipsis />}
+                  />
+                </MenuTrigger>
+                <MenuContent aria-label={`Actions for ${p.name}`}>
+                  <MenuItem iconSlot={<Pencil />} label="Rename…" onSelect={() => {}} />
+                  <MenuItem iconSlot={<Folder />} label="Archive" onSelect={() => {}} />
+                  <MenuSeparator />
+                  <MenuItem
+                    iconSlot={<Trash2 />}
+                    label="Delete"
+                    destructive
+                    onSelect={async () => {
+                      const ok = await confirm({
+                        title: `Delete ${p.name}?`,
+                        description: `Its ${p.open + p.done} tasks are deleted for all ${p.people.length} people on it.`,
+                      });
+                      if (ok) {
+                        onDelete();
+                      }
+                    }}
+                  />
+                </MenuContent>
+              </Menu>
+            </>
+          }
+          contentClassName="gap-4"
+          contentSlot={
+            <>
               {p.overdue > 0 ? (
                 <Alert
                   variant="warning"
@@ -250,11 +260,11 @@ function ProjectScreen({
                   />
                 </TabsContent>
               </Tabs>
-            </View>
-          )}
+            </>
+          }
         />
-      }
-    />
+      )}
+    </>
   );
 }
 

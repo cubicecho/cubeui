@@ -11,8 +11,8 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import {
+  HeaderContentFooter,
   type HeaderContentFooterProps,
-  StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
 import { SidebarPositionContext } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
@@ -158,14 +158,15 @@ export function Sidebar({
       )}
     >
       <SidebarContext.Provider value={state}>
-        <StickyHeaderContentFooter
+        <HeaderContentFooter
+          scroll
           headerSlot={headerSlot}
           contentSlot={contentSlot}
           footerSlot={footerSlot}
           contentRef={contentRef}
-          // `flex-1` rather than the preset's `h-full` alone: the frame's own border is inside its
+          // `flex-1` beside `h-full`, not `h-full` alone: the frame's own border is inside its
           // height, and a percentage height would overflow it by the border's width.
-          className="min-h-0 flex-1"
+          className="h-full min-h-0 flex-1"
           // Folded, the header's inset is the rows', so what is in it lines up with their icons.
           headerClassName={cn("gap-2", collapsed ? "p-2" : "p-3", headerClassName)}
           contentClassName={cn("gap-4 p-2", contentClassName)}

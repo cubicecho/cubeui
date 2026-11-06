@@ -1279,12 +1279,13 @@
       "name": "query-state",
       "type": "registry:component",
       "title": "Query State",
-      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
+      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — or a detail screen before its record — failed, pending, not found — with the error card and the row placeholders exported on their own.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
         "@cubeui/alert",
         "@cubeui/icons",
+        "@cubeui/empty-state",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1308,58 +1309,14 @@
       ]
     },
     {
-      "name": "page",
+      "name": "grid-layout",
       "type": "registry:component",
-      "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/empty-state",
-        "@cubeui/page-header",
-        "@cubeui/header-content-footer",
-        "@cubeui/tokens"
-      ],
+      "title": "Grid Layout",
+      "description": "Equal cells in rows, one to four to a row by the window's width, for cards, tiles or anything of one kind.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
-          "path": "compiled/page.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "detail-page",
-      "type": "registry:component",
-      "title": "Detail Page",
-      "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/page",
-        "@cubeui/empty-state",
-        "@cubeui/query-state",
-        "@cubeui/icons"
-      ],
-      "files": [
-        {
-          "path": "compiled/detail-page.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "detail-header",
-      "type": "registry:component",
-      "title": "Detail Header",
-      "description": "The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/color-dot",
-        "@cubeui/icons",
-        "@cubeui/utils",
-        "@cubeui/tokens"
-      ],
-      "files": [
-        {
-          "path": "compiled/detail-header.tsx",
+          "path": "compiled/grid-layout.tsx",
           "type": "registry:component"
         }
       ]

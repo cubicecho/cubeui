@@ -5,7 +5,7 @@ import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
 import { EmptyState } from "@/components/empty-state";
 import { FileTree } from "@/components/file-tree";
-import { StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
@@ -293,7 +293,9 @@ function Docs({ file, longTitle }: Args) {
         stackBelow="lg"
         divider="line"
         firstSlot={
-          <StickyHeaderContentFooter
+          <HeaderContentFooter
+            scroll
+            className="h-full"
             headerSlot={
               <div className="flex items-center gap-2 p-3">
                 <SearchInput
@@ -359,12 +361,14 @@ function Docs({ file, longTitle }: Args) {
         }
         secondSlot={
           doc ? (
-            <StickyHeaderContentFooter
+            <HeaderContentFooter
+              scroll
+              className="h-full"
               width="prose"
               headerSlot={
                 <PageHeader
                   level={2}
-                  breadcrumbsSlot={
+                  backSlot={
                     <span className="font-mono text-foreground/60 text-xs">{doc.path}</span>
                   }
                   iconSlot={<FileText />}

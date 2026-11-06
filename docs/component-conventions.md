@@ -93,7 +93,7 @@ field — because data that has not arrived is not data that came back empty or 
 
 | Word | Means |
 | --- | --- |
-| `breadcrumbsSlot` | The line above the title. A trail, or a back link. Nodes, never a route. |
+| `backSlot` | The way back, on the line above the title: a back link, or a breadcrumb trail. Nodes, never a route. Not `iconSlot`, which is the page's own icon. `breadcrumbsSlot` is its deprecated name. |
 | `headerContentSlot` | The row under the title: search, filters, tabs. `PageHeader` calls it `contentSlot`, because it has no body of its own. |
 | `firstSlot`, `secondSlot` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
@@ -154,6 +154,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
+| `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `QueryState`, in place of `count`. |
+| `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
 | `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
 
@@ -421,9 +423,9 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    since slots took their suffix — and no shell takes children.** Every part of a layout is dynamic, not just the body, so no part gets the
    privileged position — see rule 1, which carries the reasoning.
 2. ~~`HeaderContentFooter` and `StickyHeaderContentFooter` are one component.~~ **Settled:** one
-   file, two exports. `StickyHeaderContentFooter` is a preset that adds `h-full`, which is a
-   *page* concern — it needs a height to divide. Anything already inside a sized box (the
-   dialog) composes the base with `scroll` instead.
+   component. `StickyHeaderContentFooter` was a preset that added `scroll` and `h-full`, and apps
+   already wrote those two out, so it went: a pinned header over a scrolling body is
+   `<HeaderContentFooter scroll className="h-full">`, given a height to divide.
 3. ~~Deferred `CardLayout` props.~~ **Settled: `loading` in, `media` and `onClick`/`selected`
    out.**
 
@@ -533,7 +535,7 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    list-and-detail note in the skill's `layout/splits.md` stays a suggestion rather than a limit.
 
    **Settled, and this is the last of it:** the symmetric split is `SplitLayout`, and
-   `SidebarLayout` is a preset of it — the same shape as `StickyHeaderContentFooter` over
+   `SidebarLayout` is a preset of it — the same shape as `PageLayout` over
    `HeaderContentFooter`, and settled the same way. The evidence was already in the component:
    `sidebarWidth` accepted `half` and `two-thirds` because four of the eleven call sites it
    replaced were `60%`, `2fr`, `3fr/2fr` and `1fr/4fr` — comparable columns, not sidebars. It had
@@ -548,6 +550,6 @@ anything either — it is a widget, and rule 8's note is where that line is draw
    snake_case did not (nothing else in the API has it) and neither did the word `section` (rule 2
    — it is already the `Section` component).
 
-   The preset emits the base's `data-slot` values, exactly as `StickyHeaderContentFooter` emits
+   The preset emits the base's `data-slot` values, exactly as `PageLayout` emits
    `header-content-footer-*`. A preset is a set of defaults, not a second component, so it does
    not get a second set of public slot names to keep in step.

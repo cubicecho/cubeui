@@ -71,8 +71,6 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `date-time-input` | both | `components/ui/date-time-input.tsx` | `import { DateTimeInput } from "@/components/ui/date-time-input"` |
 | `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescriptionHint, DescriptionHintText } from "@/components/ui/description-hint"` |
 | `description-list` | both | `components/description-list.tsx` | `import { DescriptionList, PropertyRow } from "@/components/description-list"` |
-| `detail-header` | both | `components/detail-header.tsx` | `import { DetailHeader } from "@/components/detail-header"` |
-| `detail-page` | both | `components/detail-page.tsx` | `import { DetailPage } from "@/components/detail-page"` |
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog-layout` | both | `components/dialog-layout.tsx` | `import { DialogLayout } from "@/components/dialog-layout"` |
@@ -96,7 +94,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `form-set` | web | a set: `app-form`, `color-field`, `date-field`, `field-row`, `form-field`, `password-field`, `radio-group-field` | — (import from each item) |
 | `format` | both | `lib/format.ts` | `import { formatBytes, formatCount, joinStats, formatDuration, formatDate, formatDateTime, … 1 more } from "@/lib/format"` |
 | `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
-| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, HeaderContentFooter, StickyHeaderContentFooter } from "@/components/header-content-footer"` |
+| `grid-layout` | both | `components/grid-layout.tsx` | `import { GridLayout } from "@/components/grid-layout"` |
+| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, HeaderContentFooter } from "@/components/header-content-footer"` |
 | `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `input` | web | `components/ui/input.tsx`; also `input-base.ts` | `import { Input } from "@/components/ui/input"` |
@@ -114,8 +113,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `menu` | web | `components/ui/menu.tsx`; also `menu-base.ts` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `menu` | native | `components/ui/menu.tsx`; also `menu-base.ts`, `menu.web.tsx` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
-| `page` | both | `components/page.tsx` | `import { Page, PageHeader, CardGrid, EmptyState } from "@/components/page"` |
-| `page-header` | both | `components/page-header.tsx` | `import { PageInsetContext, PageHeader } from "@/components/page-header"` |
+| `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
 | `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
 | `password-input` | both | `components/password-input.tsx` | `import { revealLabelsFor, PasswordInput } from "@/components/password-input"` |

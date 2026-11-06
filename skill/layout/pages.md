@@ -8,12 +8,13 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - [Page shells](#page-shells)
 - [Page headers](#page-headers)
   - [What it does not have](#what-it-does-not-have)
+- [Grids](#grids)
 - [Centered pages](#centered-pages)
 
 ## Pages
 
 `PageLayout` is a page: a title block pinned above a body that scrolls under it. It is
-`StickyHeaderContentFooter` with a `PageHeader` already in the header slot, and it is what a
+`HeaderContentFooter scroll` with a `PageHeader` already in the header slot, and it is what a
 route should reach for first.
 
 ```tsx
@@ -37,7 +38,8 @@ route should reach for first.
 | `description` | `ReactNode` |  | One line on what the page is for. |
 | `iconSlot` | `SlotNode` |  | Sits before the title, sized from `level`. Pass a bare `<Users />`. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
-| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link. |
+| `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
+| `breadcrumbsSlot` | `SlotNode` |  |  |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
@@ -122,7 +124,9 @@ Reach for these when a page is not the shape `PageLayout` makes — a pane, a pr
 dialog body.
 
 ```tsx
-<StickyHeaderContentFooter
+<HeaderContentFooter
+  scroll
+  className="h-full"
   width="page"
   headerSlot={<PageHeader title="Vendors" description="Suppliers inventory is purchased from." />}
   contentSlot={<DataTable columns={columns} data={rows} />}
@@ -152,9 +156,11 @@ dialog body.
 - `width="page"` caps and centres every slot on one column, so the title sits above the first
   table column rather than beside it. `width="full"` (the default) fills the box it was given —
   panes inside a split, print sheets, anything already in a column of its own.
-- The sticky variant needs a **height to divide**. It defaults to `h-full`; the ancestors up to
-  the viewport need to give it one, or nothing scrolls and the header does not stay.
-- `HeaderContentFooter` is the same three zones with the whole thing scrolling with the page.
+- **`scroll` needs a height to divide.** Give the frame one (`className="h-full"`, or `flex-1` in
+  a column), and the ancestors up to the viewport theirs, or nothing scrolls and the header does
+  not stay. `StickyHeaderContentFooter`, the preset that set `scroll` and `h-full`, is gone; write
+  the two out.
+- Without `scroll` it is the same three zones with the whole thing scrolling with the page.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
 - `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
   pixels, the same on both halves. A list that follows its newest row is at the end when
@@ -210,7 +216,8 @@ It is not a page.
 | `description` | `ReactNode` |  | One line on what the page is for. It wraps; it is not clipped. |
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized from the level — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
-| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link, which is a one-step trail. |
+| `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
+| `breadcrumbsSlot` | `SlotNode` |  |  |
 | `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
 | `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. See {@link LEVELS}. |
 | `className` | `string` |  |  |
@@ -235,8 +242,10 @@ It is not a page.
   status pill goes here too. The shell rows and gaps them, so two pages never disagree about the
   space between Export and New.
 
-- **`breadcrumbsSlot` is the line above the title.** Put a back link here rather than beside the
-  title: beside it, it competes with `iconSlot` for the same spot and takes width from the page's name.
+- **`backSlot` is the way back, above the title**: a back link, or a breadcrumb trail. Put a back
+  button here, not in `iconSlot`: that is the page's own icon, and a back button beside the title
+  takes width from the page's name. `breadcrumbsSlot` is the old name, still read when `backSlot`
+  is not passed, for one release.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
   anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
@@ -247,7 +256,7 @@ It is not a page.
   buttons, the search field — stays put and stays usable.
 
   ```tsx
-  <PageHeader breadcrumbsSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
+  <PageHeader backSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
     title={workspace?.name} actionSlot={<Button content="Edit" />} />
   ```
 
@@ -267,9 +276,33 @@ It is not a page.
 ### What it does not have
 
 `search`, `filters`, `tabs` — pass them as `contentSlot`. A count or status badge — put it in
-`actionSlot`, or compose it into the `title` node. A back button *beside* the title — it goes in
-`breadcrumbsSlot`. A description that expands behind a popover — that is state, and state is the
+`actionSlot`, or compose it into the `title` node. A back button *beside* the title, or in `iconSlot` —
+it goes in `backSlot`. A description that expands behind a popover — that is state, and state is the
 caller's.
+
+## Grids
+
+`GridLayout` (`@cubeui/grid-layout`) lays out equal cells in rows: one to a row on a phone, two
+from `sm`, three from `lg`, four from `xl`. Each element of `contentSlot` is one cell, so pass the
+cards as an array or a fragment; both are opened, and a `null` left by a condition is dropped.
+
+```tsx
+<GridLayout contentSlot={projects.map((project) => <ProjectCard key={project.id} project={project} />)} />
+```
+
+- The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
+  cell `GridLayout` draws, so a card in it carries no width of its own.
+- It has no empty or loading state. `QueryState` goes above it, as it does above a list.
+- It was `CardGrid` in `@cubeui/page`, an item that is gone; only the import and the name change.
+
+<!-- props:GridLayout -->
+`GridLayout`'s props, from the TSDoc in `registry/layout/grid-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The cells, as an array or a fragment: cards, tiles, anything of one kind. Both are opened, so a fragment of three cards is three cells and not one. |
+| `className` | `string` |  |  |
+<!-- /props -->
 
 ## Centered pages
 
@@ -320,4 +353,4 @@ when the keyboard comes up, and a tap on the submit button is not spent dismissi
 Do not wrap it in a `KeyboardAvoidingView` or a `ScrollView` of your own.
 
 A sign-in with no card — a heading and a form on the bare background — is not this shape; lay
-that out with `Page` or by hand rather than stripping the card with `cardClassName`.
+that out with `PageLayout` or by hand rather than stripping the card with `cardClassName`.

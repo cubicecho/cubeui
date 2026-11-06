@@ -9,9 +9,9 @@ import {
   EmptyMedia as CompiledMedia,
   EmptyTitle as CompiledTitle,
 } from "../compiled/empty";
+import { EmptyState as CompiledEmptyState } from "../compiled/empty-state";
 import { Search as CompiledSearch } from "../compiled/icons";
-import { EmptyState as CompiledEmptyState } from "../compiled/page";
-import { EmptyState as NativeEmptyState } from "../registry/layout/page";
+import { EmptyState as NativeEmptyState } from "../registry/layout/empty-state";
 import { Button as NativeButton } from "../registry/ui/button";
 import {
   EmptyContent as NativeContent,

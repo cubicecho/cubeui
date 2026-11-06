@@ -29,7 +29,9 @@ export type PageLayoutProps = {
   iconSlot?: SlotNode | undefined;
   /** The header's far end: the page's buttons, a status pill, a menu. */
   actionSlot?: SlotNode | undefined;
-  /** The line above the title: a breadcrumb trail, or a back link. */
+  /** The way back, above the title: a back link, or a breadcrumb trail. */
+  backSlot?: SlotNode | undefined;
+  /** @deprecated Renamed `backSlot`. Read when `backSlot` is not passed. */
   breadcrumbsSlot?: SlotNode | undefined;
   /**
    * The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot`
@@ -85,6 +87,7 @@ export function PageLayout({
   description,
   iconSlot,
   actionSlot,
+  backSlot,
   breadcrumbsSlot,
   headerContentSlot,
   loading = false,
@@ -121,7 +124,7 @@ export function PageLayout({
           description={description}
           iconSlot={iconSlot}
           actionSlot={actionSlot}
-          breadcrumbsSlot={breadcrumbsSlot}
+          backSlot={backSlot ?? breadcrumbsSlot}
           contentSlot={headerContentSlot}
           loading={loading}
           level={level}
