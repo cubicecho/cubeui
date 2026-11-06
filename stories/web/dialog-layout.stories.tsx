@@ -262,9 +262,15 @@ export const GroupedFooterStart: Story = {
   },
 };
 
-/** Waits out the open animation, which scales and slides the dialog while it runs. */
+/**
+ * Waits out the open animation, which scales and slides the dialog while it runs. A looping one —
+ * a skeleton's pulse — never finishes, so only those that end are waited for.
+ */
 async function settled(dialog: HTMLElement) {
-  await Promise.all(dialog.getAnimations({ subtree: true }).map((animation) => animation.finished));
+  const ending = dialog
+    .getAnimations({ subtree: true })
+    .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity);
+  await Promise.all(ending.map((animation) => animation.finished));
 }
 
 /**
