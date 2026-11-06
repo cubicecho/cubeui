@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { CardLayout } from "@/components/card-layout";
 import { DialogLayout } from "@/components/dialog-layout";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -419,5 +422,105 @@ export const TheFooterStacksOnAPhone: Story = {
       actionsOnTop: save.bottom <= Math.min(note.top, archive.top),
       startStacked: archive.bottom <= note.top || note.bottom <= archive.top,
     }).toEqual({ actionsOnTop: true, startStacked: true });
+  },
+};
+
+/**
+ * A dialog is a `CardLayout` on the dialog's panel, so it takes the card's icon and header action:
+ * the icon before the title, the action at the header's far end and clear of the close button.
+ */
+export const IconAndHeaderAction: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="New label"
+      iconSlot={<Plus />}
+      actionSlot={<Badge variant="info">Draft</Badge>}
+      contentSlot={<p>Labels group the cards on a board.</p>}
+      footerActionsSlot={<Button variant="info" content="Create" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "New label" });
+    await settled(dialog);
+    const title = within(dialog).getByText("New label").getBoundingClientRect();
+    const icon = dialog.querySelector("svg.lucide-plus")?.getBoundingClientRect();
+    const badge = within(dialog).getByText("Draft").getBoundingClientRect();
+    const close = within(dialog).getByRole("button", { name: /close/i }).getBoundingClientRect();
+    if (icon === undefined) {
+      throw new Error("expected the icon");
+    }
+    await expect({
+      iconBeforeTitle: icon.right <= title.left,
+      actionAfterTitle: badge.left >= title.right,
+      actionClearOfClose: badge.right <= close.left,
+    }).toEqual({ iconBeforeTitle: true, actionAfterTitle: true, actionClearOfClose: true });
+  },
+};
+
+/** `loading` stands a skeleton in for the body, and keeps the title and the footer. */
+export const Loading: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      loading
+      title="Members"
+      contentSlot={<p>Ada, Grace and Edsger.</p>}
+      emptySlot={<p>No members yet.</p>}
+      footerActionsSlot={<Button variant="positive" content="Save" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Members" });
+    await settled(dialog);
+    await expect(dialog.querySelector("[data-slot=card-layout-skeleton]")).not.toBeNull();
+    await expect(within(dialog).queryByText("Ada, Grace and Edsger.")).toBeNull();
+    await expect(within(dialog).queryByText("No members yet.")).toBeNull();
+    await expect(within(dialog).getByRole("button", { name: "Save" })).toBeVisible();
+  },
+};
+
+const NO_MEMBERS: string[] = [];
+
+/** `emptySlot` is what an empty body says, by the card's rule: here an empty `map`. */
+export const Empty: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Members"
+      contentSlot={NO_MEMBERS.map((name) => <p key={name}>{name}</p>)}
+      emptySlot={<p>No members yet.</p>}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Members" });
+    await settled(dialog);
+    await expect(within(dialog).getByText("No members yet.")).toBeVisible();
+  },
+};
+
+/**
+ * Only the dialog's own card is drawn on the panel. A `CardLayout` in the body is a card again:
+ * its own surface, and a `CardTitle` heading rather than a second title naming the dialog.
+ */
+export const ACardInTheBodyIsACard: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Invite"
+      contentSlot={<CardLayout title="Pending" contentSlot={<p>Two invitations.</p>} />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Invite" });
+    await settled(dialog);
+    const cards = dialog.querySelectorAll("[data-slot=card-layout]");
+    await expect(cards).toHaveLength(1);
+    await expect(within(dialog).getByRole("heading", { level: 3, name: "Pending" })).toBeVisible();
+    await expect(within(dialog).getAllByRole("heading", { level: 2 })).toHaveLength(1);
   },
 };

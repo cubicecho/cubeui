@@ -89,7 +89,8 @@ Read this before adding anything:
    The converse holds too: if a primitive covers the whole job, there is no component to write.
    `SplitLayout` is not resizable partly because dragging is `resizable`, which shadcn ships.
 4. **Compose, do not re-derive.** `HeaderContentFooter` is the only implementation of "chrome
-   that stays, a middle that moves". `DialogLayout` composes it. A shell that reimplements a
+   that stays, a middle that moves". `DialogLayout` composes it, through the `CardLayout` it draws
+   on its panel. A shell that reimplements a
    shape another shell already owns is the exact bug this registry is against.
 5. **Shells hold no state, no data, no routing, no toasts.** They take nodes and place them.
    The line is *who owns the state*: state about the shell's own interaction is the shell's, and

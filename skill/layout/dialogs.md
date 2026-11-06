@@ -29,6 +29,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `title` (required) | `ReactNode` |  | Required, because a dialog without a title is one no screen reader can announce. A dialog whose design has no room for a heading passes `hideTitle` and keeps this. |
 | `description` | `ReactNode` |  | Read to the same people the title is. Absent, the dialog is described by its body. |
 | `hideTitle` | `boolean` | `false` | Keeps the title for assistive technology and takes it off the screen. |
+| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
+| `actionSlot` | `SlotNode` |  | The header's far end, clear of the close button: a menu, a status badge, a switch. |
+| `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element, or a `List` with no rows — `CardLayout`'s rule. |
+| `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted. The title and the footer stay. |
 | `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
 | `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
 | `onOpenChange` | `((open: boolean) => void)` |  |  |
@@ -61,6 +65,12 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel` reword the question when
   the dialog knows what is lost. The question is a `ConfirmDialog` (so `@cubeui/dialog-layout`
   installs `@cubeui/confirm-dialog`): an `alertdialog` at `sm` width, Keep first and Discard last.
+- **A dialog is a `CardLayout` on the dialog's panel.** The panel draws the border, fill, shadow
+  and `p-6` inset, and the card's parts sit on it: the title is the dialog's `text-lg` title and
+  names it, the body is the one part that scrolls, and the footer stacks below `sm`. So a dialog
+  takes the card's `iconSlot` before the title, an `actionSlot` at the header's far end (kept
+  clear of the close button), `loading` and `emptySlot`, with the card's rules for each — see
+  [Cards](cards.md#cards). A `CardLayout` in the dialog's body is drawn as a card again.
 - **The header and footer look the same on both platforms.** The title and description are
   left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
   on top, below `sm`. Do not centre the header or reverse the buttons yourself.

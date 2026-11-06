@@ -212,17 +212,19 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `registry/ui/card.tsx`, with `CardHeader`, `CardContent`, `CardFooter`, `CardTitle`,
   `CARD_SURFACE_CLASS`.
 - **`CardLayout`:** a card with its icon, title, description, header action, body,
-  empty and loading states, and footer already placed. Owner: `registry/layout/card-layout.tsx`.
+  empty and loading states, and footer already placed. Inside a floating panel that draws the
+  surface (`FloatingSurfaceContext`, set by `DialogLayout`) it draws no card of its own, and its
+  body is the only part that scrolls. Owner: `registry/layout/card-layout.tsx`.
 - **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
   titled card is `CardLayout`. Owner: `registry/layout/section.tsx`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
   `registry/layout/disclosure.tsx`.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
-- **`DialogLayout`:** a dialog with its title, description, scrolling body and
-  footer placed, a size, and a discard question before unsaved work is thrown away. Owner:
-  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `HeaderContentFooter`, `ConfirmDialog`,
-  and draws `CardLayout`'s footer rows.
+- **`DialogLayout`:** a `CardLayout` on the floating surface: the modal, a size, and a
+  discard question before unsaved work is thrown away, with the card's parts at the dialog's inset.
+  The title names the dialog, the body scrolls and the footer stacks on a phone. Owner:
+  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `CardLayout`, `ConfirmDialog`.
 - **`ConfirmDialog`:** an "are you sure?" window with Cancel and one destructive
   button. Owner: `registry/ui/confirm-dialog.tsx`; `useConfirm` in `registry/ui/confirm.tsx`.
 - **`ConfirmButton`:** a destructive button that asks first. Owner:

@@ -10,7 +10,9 @@
 
 /**
  * A dialog with its slots placed — written once here and compiled for the web by `scripts/rn2web`,
- * on the `dialog` both platforms already share (radix on the web, a `Modal` on device).
+ * on the `dialog` both platforms already share (radix on the web, a `Modal` on device). Its parts
+ * are a `CardLayout` drawn on the dialog's panel, so a dialog has the card's icon, header action,
+ * `loading` and `emptySlot`, laid out as a card lays them.
  *
  * What differs, each behind a `Platform` test the compiler folds:
  *
@@ -27,18 +29,9 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
-import { CARD_LAYOUT_FOOTER_ACTIONS_CLASS, CARD_LAYOUT_FOOTER_START_CLASS } from "./card-layout";
+import { CardLayout, FloatingSurfaceContext } from "./card-layout";
 import { ConfirmDialog } from "./confirm-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./dialog";
-import { HeaderContentFooter } from "./header-content-footer";
+import { Dialog, DialogContent, DialogTrigger } from "./dialog";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
 const SIZES = {
@@ -57,31 +50,8 @@ const SIZES = {
  */
 const COLUMN = "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden";
 
-/**
- * The chassis inside it. `flex-1` on the web, where it sizes from content in a box of no set
- * height; Yoga's `flex: 1` starts from nothing, so on device it starts from its content and
- * shrinks under the cap instead.
- */
-const CHASSIS = "min-h-0 flex-1 gap-4";
-
-/**
- * What `wrapperSlot`'s element takes so it stands where the chassis stood: the same share of the
- * dialog's height, passed on to the chassis inside it. Without it the wrapper is a box of its
- * content's height and the body stops scrolling.
- */
-const WRAPPER = "flex min-h-0 flex-1 flex-col";
-
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = "sr-only";
-
-/**
- * The `footerSlot` row: `CardLayout`'s, stacked below `sm` as `DialogFooter` stacks, at the same
- * `gap-2` and stretched to the footer's width, so a phone draws a column of full-width parts.
- */
-const FOOTER_START = cn(
-  CARD_LAYOUT_FOOTER_START_CLASS,
-  "flex-col-reverse items-stretch sm:flex-row sm:items-center",
-);
 
 export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
@@ -95,6 +65,23 @@ export type DialogLayoutProps = {
   description?: ReactNode | undefined;
   /** Keeps the title for assistive technology and takes it off the screen. */
   hideTitle?: boolean | undefined;
+  /**
+   * Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device
+   * an icon cannot be sized from outside it, so pass it at the size you want.
+   */
+  iconSlot?: SlotNode | undefined;
+  /** The header's far end, clear of the close button: a menu, a status badge, a switch. */
+  actionSlot?: SlotNode | undefined;
+  /**
+   * Shown instead of `contentSlot` when there is nothing in it: no element, or a `List` with no
+   * rows — `CardLayout`'s rule.
+   */
+  emptySlot?: SlotNode | undefined;
+  /**
+   * Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is
+   * not consulted. The title and the footer stay.
+   */
+  loading?: boolean | undefined;
   /**
    * What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string.
    * With a trigger and no `open`, the dialog owns its own state and the caller holds none.
@@ -198,7 +185,8 @@ export type DialogLayoutProps = {
 
 /**
  * A dialog with its slots already placed, and a body that scrolls under a header and above a
- * footer that do not. The scrolling shape is {@link HeaderContentFooter}'s, composed here.
+ * footer that do not. The parts are a {@link CardLayout} on the dialog's panel: the panel draws
+ * the border, fill, shadow and inset, and the card draws no surface of its own.
  *
  * `hasUnsavedChanges` is a prop and not a hook, because a hook is a thing a caller can forget to
  * wire into closing. Padding stays with `DialogContent`, which differs between shadcn styles, so
@@ -209,6 +197,10 @@ export function DialogLayout({
   title,
   description,
   hideTitle = false,
+  iconSlot,
+  actionSlot,
+  emptySlot,
+  loading = false,
   triggerSlot,
   open,
   onOpenChange,
@@ -272,43 +264,29 @@ export function DialogLayout({
       ? footerActionsSlot(closeFromFooter)
       : footerActionsSlot;
 
-  // Asked of what the footer actually rendered: a function that returns nothing should leave the
-  // dialog with no footer, not with an empty one taking up a row.
-  const hasFooter = Boolean(footerSlot || actions);
-
-  const parts = (
-    <HeaderContentFooter
-      scroll
-      className={CHASSIS}
-      headerSlot={
-        <DialogHeader
-          // The close button is positioned against the dialog, not the header, so a long
-          // title runs under it without this.
-          className={cn(showCloseButton && "pr-6", headerClassName)}
-        >
-          <DialogTitle className={cn(hideTitle && SR_ONLY)}>{title}</DialogTitle>
-          {description ? <DialogDescription>{description}</DialogDescription> : null}
-        </DialogHeader>
-      }
-      // Four pixels of room either side, given back as padding: a focus ring is drawn
-      // outside the element that owns it, and a scroll container clips at its edge.
-      contentClassName={cn("-mx-1 px-1", contentClassName)}
-      contentSlot={contentSlot}
-      footerSlot={
-        hasFooter ? (
-          <DialogFooter
-            className={cn(footerSlot && footerActionsSlot && "sm:justify-between", footerClassName)}
-          >
-            {footerSlot ? (
-              <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div>
-            ) : null}
-            {actions ? (
-              <div className={cn("cube-rn-view", CARD_LAYOUT_FOOTER_ACTIONS_CLASS)}>{actions}</div>
-            ) : null}
-          </DialogFooter>
-        ) : null
-      }
-    />
+  // The card draws on the panel: `DialogContent` is the surface, and the card's parts sit at its
+  // inset. A function `footerActionsSlot` that returns nothing leaves the card with no footer.
+  const card = (
+    <FloatingSurfaceContext.Provider value={true}>
+      <CardLayout
+        title={title}
+        description={description}
+        iconSlot={iconSlot}
+        actionSlot={actionSlot}
+        contentSlot={contentSlot}
+        emptySlot={emptySlot}
+        loading={loading}
+        footerSlot={footerSlot}
+        footerActionsSlot={actions}
+        wrapperSlot={wrapperSlot}
+        // The close button is positioned against the dialog, not the header, so a long title or
+        // a header action runs under it without this.
+        headerClassName={cn(showCloseButton && "pr-6", headerClassName)}
+        titleClassName={cn(hideTitle && SR_ONLY)}
+        contentClassName={contentClassName}
+        footerClassName={footerClassName}
+      />
+    </FloatingSurfaceContext.Provider>
   );
 
   // ConfirmDialog holds the overlay click (it does not answer "discard?") and puts the safe
@@ -340,9 +318,9 @@ export function DialogLayout({
           {...(description ? {} : { "aria-describedby": undefined })}
           className={cn(COLUMN, SIZES[size], className)}
         >
-          {/* Inside `DialogContent`, so the wrapper is in the dialog's focus trap and under its
+          {/* Inside `DialogContent`, so a wrapper is in the dialog's focus trap and under its
               role, and the close button stays outside it. */}
-          {wrapperSlot ? wrapperSlot(parts, { className: WRAPPER }) : parts}
+          {card}
 
           {/* On device the question is a `Modal` presented over this one, and iOS presents a
               second modal only from inside the first. */}
