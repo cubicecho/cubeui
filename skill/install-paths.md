@@ -71,7 +71,6 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `date-time-input` | both | `components/ui/date-time-input.tsx` | `import { DateTimeInput } from "@/components/ui/date-time-input"` |
 | `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescriptionHint, DescriptionHintText } from "@/components/ui/description-hint"` |
 | `description-list` | both | `components/description-list.tsx` | `import { DescriptionList, PropertyRow } from "@/components/description-list"` |
-| `detail-header` | both | `components/detail-header.tsx` | `import { DetailHeader } from "@/components/detail-header"` |
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog-layout` | both | `components/dialog-layout.tsx` | `import { DialogLayout } from "@/components/dialog-layout"` |

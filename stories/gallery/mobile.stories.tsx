@@ -7,7 +7,6 @@ import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { Combobox } from "../../registry/layout/combobox";
 import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
-import { DetailHeader } from "../../registry/layout/detail-header";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
@@ -98,6 +97,7 @@ import { FilePicker, FilePickerButton } from "../../registry/ui/file-picker.tsx"
 import { createAppForm, Form } from "../../registry/ui/form";
 import { FormElement } from "../../registry/ui/form-element.tsx";
 import {
+  ArrowLeft,
   CircleCheck,
   Download,
   FileText,
@@ -1076,8 +1076,8 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Page and detail headers",
-    items: ["page-header", "detail-header"],
+    title: "Page headers",
+    items: ["page-header"],
     content: (
       <Stack>
         <PageHeader
@@ -1087,22 +1087,31 @@ const sections: GallerySection[] = [
           actionSlot={<Button size="sm" variant="info" content="New project" />}
         />
         <Separator />
-        <DetailHeader
-          onBack={noop}
-          backLabel="Back to projects"
-          color="#16a34a"
-          colorLabel="Green"
-          title="Quarterly review"
-          description="Due on Friday"
-          badgesSlot={<Badge variant="positive">On track</Badge>}
-          actionSlot={
+        <PageHeader
+          level={3}
+          backSlot={
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onPress={noop}
-              iconSlot={<Pencil />}
-              content="Edit"
+              aria-label="Back to projects"
+              iconSlot={<ArrowLeft />}
             />
+          }
+          iconSlot={<ColorDot color="#16a34a" label="Green" />}
+          title="Quarterly review"
+          description="Due on Friday"
+          actionSlot={
+            <>
+              <Badge variant="positive">On track</Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={noop}
+                iconSlot={<Pencil />}
+                content="Edit"
+              />
+            </>
           }
         />
       </Stack>

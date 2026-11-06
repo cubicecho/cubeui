@@ -178,8 +178,6 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`PageHeader`:** a page's icon, title, description, actions, the way back (one
   slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
   at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
-- **`DetailHeader`:** a back button, a colour dot, a title, badges and
-  actions. Owner: `registry/layout/detail-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. Owner: `registry/layout/section-heading.tsx`; takes `children`.
 - **`CenteredLayout`:** a page that is one card in the middle of the screen, such

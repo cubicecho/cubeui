@@ -4,12 +4,12 @@ import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { TextareaField, useAppForm } from "@/components/app-form";
 import { ConfirmButton } from "@/components/confirm-button";
-import { DetailHeader } from "@/components/detail-header";
 import { EmptyState } from "@/components/empty-state";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { PageHeader } from "@/components/page-header";
+import { PageLayout } from "@/components/page-layout";
 import { QueryState } from "@/components/query-state";
 import { SplitLayout } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code";
 import { CopyButton } from "@/components/ui/copy-button";
 import { FormElement } from "@/components/ui/form-element";
-import { Trash2 } from "@/components/ui/icons";
+import { ArrowLeft, Trash2 } from "@/components/ui/icons";
 import { SearchInput } from "@/components/ui/search-input";
 import { Separator } from "@/components/ui/separator";
 import { ToastProvider, useToast } from "@/components/ui/toast";
@@ -236,62 +236,62 @@ function Inbox({ detail }: Args) {
         />
       }
       secondSlot={
-        <HeaderContentFooter
-          scroll
-          className="h-full"
-          width="prose"
-          contentClassName="py-4"
-          contentSlot={
-            <>
-              <QueryState
-                query={{
-                  isPending: detail === "loading",
-                  isError: false,
-                  error: null,
-                  refetch: () => {},
-                }}
-                what="this message"
-                record={open}
-                notFoundLabel="That message was moved or deleted."
-              />
-              {open && detail !== "loading" ? (
-                <div className="flex flex-col gap-4">
-                  <DetailHeader
-                    onBack={() => setOpenId(null)}
-                    backLabel="Back to the inbox"
-                    title={open.subject}
-                    subtitle={`${open.from} · ${formatAgo(open.at, TODAY)}`}
-                    badgeSlot={
-                      open.label ? (
-                        <Badge variant={LABEL_BADGE[open.label]}>{open.label}</Badge>
-                      ) : null
-                    }
-                    actionsSlot={
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon-sm"
-                          aria-label="Archive"
-                          hint="Archive: out of the inbox, still searchable"
-                          iconSlot={<Archive />}
-                          onClick={() => {
-                            remove(open.id);
-                            toast("Archived.", "info");
-                          }}
-                        />
-                        <ConfirmButton
-                          variant="destructive-outline"
-                          size="icon-sm"
-                          aria-label="Delete"
-                          iconSlot={<Trash2 />}
-                          title="Delete this message?"
-                          description={`“${open.subject}” is deleted for you. ${open.from} still has their copy.`}
-                          onConfirm={() => remove(open.id)}
-                        />
-                      </div>
-                    }
+        <>
+          <QueryState
+            query={{
+              isPending: detail === "loading",
+              isError: false,
+              error: null,
+              refetch: () => {},
+            }}
+            what="this message"
+            record={open}
+            notFoundLabel="That message was moved or deleted."
+            className="p-4"
+          />
+          {open && detail !== "loading" ? (
+            <PageLayout
+              width="prose"
+              backSlot={
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Back to the inbox"
+                  iconSlot={<ArrowLeft />}
+                  onClick={() => setOpenId(null)}
+                />
+              }
+              title={open.subject}
+              description={`${open.from} · ${formatAgo(open.at, TODAY)}`}
+              actionSlot={
+                <div className="flex items-center gap-2">
+                  {open.label ? (
+                    <Badge variant={LABEL_BADGE[open.label]}>{open.label}</Badge>
+                  ) : null}
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Archive"
+                    hint="Archive: out of the inbox, still searchable"
+                    iconSlot={<Archive />}
+                    onClick={() => {
+                      remove(open.id);
+                      toast("Archived.", "info");
+                    }}
                   />
-                  <Separator />
+                  <ConfirmButton
+                    variant="destructive-outline"
+                    size="icon-sm"
+                    aria-label="Delete"
+                    iconSlot={<Trash2 />}
+                    title="Delete this message?"
+                    description={`“${open.subject}” is deleted for you. ${open.from} still has their copy.`}
+                    onConfirm={() => remove(open.id)}
+                  />
+                </div>
+              }
+              contentSlot={
+                <>
                   {open.body.split("\n\n").map((paragraph) => (
                     <p key={paragraph} className="text-foreground text-sm leading-relaxed">
                       {paragraph}
@@ -308,11 +308,11 @@ function Inbox({ detail }: Args) {
                   ) : null}
                   <Separator />
                   <Reply to={open.from} />
-                </div>
-              ) : null}
-            </>
-          }
-        />
+                </>
+              }
+            />
+          ) : null}
+        </>
       }
     />
   );

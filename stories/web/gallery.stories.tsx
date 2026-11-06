@@ -18,7 +18,6 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
-import { DetailHeader } from "@/components/detail-header";
 import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
 import { DisclosureRow } from "@/components/disclosure-row";
@@ -123,6 +122,7 @@ import { FilePicker, FilePickerButton } from "@/components/ui/file-picker";
 import { createAppForm, Form } from "@/components/ui/form";
 import { FormElement } from "@/components/ui/form-element";
 import {
+  ArrowLeft,
   Calendar as CalendarIcon,
   Check,
   Copy,
@@ -1787,8 +1787,8 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Grid and detail header",
-    items: ["grid-layout", "empty-state", "detail-header"],
+    title: "Grid and a detail page's header",
+    items: ["grid-layout", "empty-state"],
     content: (
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
@@ -1814,22 +1814,32 @@ const sections: GallerySection[] = [
         <Frame
           content={
             <div className="flex flex-col gap-4 p-4">
-              <DetailHeader
-                onBack={noop}
-                backLabel="Back to servers"
-                color="#1d4ed8"
-                colorLabel="Blue"
-                title={SERVER.name}
-                description={`${SERVER.tools} tools over ${SERVER.transport}`}
-                badgesSlot={<Badge variant="secondary">{SERVER.status}</Badge>}
-                actionSlot={
+              <PageHeader
+                level={3}
+                className="px-0 pt-0"
+                backSlot={
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="icon-sm"
                     onClick={noop}
-                    iconSlot={<Pencil />}
-                    content="Edit the server"
+                    aria-label="Back to servers"
+                    iconSlot={<ArrowLeft />}
                   />
+                }
+                iconSlot={<ColorDot color="#1d4ed8" label="Blue" />}
+                title={SERVER.name}
+                description={`${SERVER.tools} tools over ${SERVER.transport}`}
+                actionSlot={
+                  <>
+                    <Badge variant="secondary">{SERVER.status}</Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={noop}
+                      iconSlot={<Pencil />}
+                      content="Edit the server"
+                    />
+                  </>
                 }
               />
               <p className="text-foreground text-sm">The body of the detail page.</p>

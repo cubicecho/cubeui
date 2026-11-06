@@ -13,8 +13,8 @@ A screen is `PageLayout`, on the phone as on the web: its title block pinned ove
 scrolls. A detail screen for one record puts `QueryState` in front of it, with `record` and
 `notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
 record is not found, and nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
-`DetailHeader` is the page's title, an `h1` (`aria-level` 1) at `text-xl`; its text column
-shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions off a phone.
+A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`, a colour dot in
+`iconSlot`, the record's name as `title`, and its badges with the buttons in `actionSlot`.
 
 | The shape you are building | Use | Item |
 | --- | --- | --- |
@@ -30,7 +30,6 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
-| The header of that screen: a back button, the record's name (`title`, a heading `level` 1–3, 1 by default), a `description` under it, `badgesSlot` and `actionSlot`. Its own item, so it is its own import (`@/components/detail-header`). `subtitle`, `badgeSlot` and `actionsSlot` are the old names, deprecated | `DetailHeader` | `@cubeui/detail-header` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
