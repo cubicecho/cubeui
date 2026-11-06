@@ -4,9 +4,9 @@ import { Platform, Text, View } from "react-native";
 import { SectionHeading } from "@/components/section-heading";
 import { CARD_SURFACE_CLASS } from "@/components/ui/card";
 import {
-  DescriptionHint,
-  DescriptionHintText,
+  DescribedTitle,
   type DescriptionPlacement,
+  foldsDescription,
 } from "@/components/ui/description-hint";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -97,7 +97,7 @@ export function Section({
 }: SectionProps) {
   const titleId = React.useId();
   const descriptionId = React.useId();
-  const folded = Boolean(title && description) && descriptionPlacement === "popover";
+  const folded = foldsDescription(title, description, descriptionPlacement);
   const titleNode = title ? (
     <SectionHeading
       testID="section-title"
@@ -143,33 +143,28 @@ export function Section({
         >
           {hasText ? (
             <View className={TEXT}>
-              {folded ? (
-                // Beside the heading and not inside it: a heading is a `Text`.
-                <View testID="section-title-row" className="min-w-0 flex-row items-center gap-2">
-                  {titleNode}
-                  <DescriptionHint
-                    testID="section-description-trigger"
-                    label={title}
-                    fallbackName="About this section"
-                    description={description}
-                    iconSlot={descriptionIconSlot}
-                  />
-                </View>
-              ) : (
-                titleNode
-              )}
-              {folded ? (
-                <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
-              ) : null}
-              {description && folded === false ? (
-                <Text
-                  webAs="p"
-                  testID="section-description"
-                  className="mt-1 text-foreground/60 text-sm"
-                >
-                  {description}
-                </Text>
-              ) : null}
+              <DescribedTitle
+                titleSlot={titleNode}
+                label={title}
+                description={description}
+                descriptionSlot={
+                  description ? (
+                    <Text
+                      webAs="p"
+                      testID="section-description"
+                      className="mt-1 text-foreground/60 text-sm"
+                    >
+                      {description}
+                    </Text>
+                  ) : null
+                }
+                descriptionId={descriptionId}
+                folded={folded}
+                fallbackName="About this section"
+                iconSlot={descriptionIconSlot}
+                triggerTestID="section-description-trigger"
+                rowTestID="section-title-row"
+              />
             </View>
           ) : null}
           {actionSlot ? (

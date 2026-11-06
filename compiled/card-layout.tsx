@@ -24,11 +24,7 @@ import type { ReactNode } from "react";
 import { Children, isValidElement } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
-import {
-  DescriptionHint,
-  DescriptionHintText,
-  type DescriptionPlacement,
-} from "./description-hint";
+import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { hasRows, List } from "./list";
 
 export type CardLayoutProps = {
@@ -249,9 +245,7 @@ export function CardLayout({
   // A card that is only its title and description keeps the description: folded, it would be a
   // heading on an empty card.
   const folded =
-    Boolean(title && description) &&
-    descriptionPlacement === "popover" &&
-    Boolean(body || hasFooter);
+    foldsDescription(title, description, descriptionPlacement) && Boolean(body || hasFooter);
 
   const parts = (
     <>
@@ -259,44 +253,42 @@ export function CardLayout({
         <CardHeader className={cn(HEADER, hasText === false && "justify-end", headerClassName)}>
           {hasText ? (
             <div className={cn("cube-rn-view", HEADER_TEXT)}>
-              {title ? (
-                // The icon sits beside the heading rather than inside it: a heading is a `Text`,
-                // and a view inside a `Text` is not something the device lays out.
-                <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
-                  {iconSlot ? (
+              <DescribedTitle
+                titleSlot={
+                  title ? (
+                    // The padding is what stops `truncate` clipping the title: `CardTitle` is
+                    // `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts
+                    // the ascenders and descenders off it. The negative margin gives the space
+                    // back, so the header keeps the height shadcn drew it at.
+                    <CardTitle
+                      level={level}
+                      className={cn("-my-1 min-w-0 shrink truncate py-1", titleClassName)}
+                    >
+                      {title}
+                    </CardTitle>
+                  ) : null
+                }
+                label={title}
+                leadingSlot={
+                  iconSlot ? (
                     // Sized here rather than by the caller, so an icon passed as `<Plus />` and
                     // one passed as `<Plus className="size-4" />` land at the same size.
                     <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>
                       {iconSlot}
                     </div>
-                  ) : null}
-                  {/* The padding is what stops `truncate` clipping the title: `CardTitle` is
-                      `leading-none`, so the line box is exactly 1em and `overflow: hidden` cuts
-                      the ascenders and descenders off it. The negative margin gives the space
-                      back, so the header keeps the height shadcn drew it at. */}
-                  <CardTitle
-                    level={level}
-                    className={cn("-my-1 min-w-0 shrink truncate py-1", titleClassName)}
-                  >
-                    {title}
-                  </CardTitle>
-                  {folded ? (
-                    <DescriptionHint
-                      data-slot="card-layout-description-trigger"
-                      label={title}
-                      fallbackName="About this card"
-                      description={description}
-                      iconSlot={descriptionIconSlot}
-                    />
-                  ) : null}
-                </div>
-              ) : null}
-              {/* Read where the inline line would be. A card is not a landmark or a control, so
-                  there is nothing for an `aria-describedby` to hang on. */}
-              {folded ? <DescriptionHintText>{description}</DescriptionHintText> : null}
-              {description && folded === false ? (
-                <CardDescription>{description}</CardDescription>
-              ) : null}
+                  ) : null
+                }
+                description={description}
+                // A card is not a landmark or a control, so there is nothing for an
+                // `aria-describedby` to hang on: folded, the text is only read where it was.
+                descriptionSlot={
+                  description ? <CardDescription>{description}</CardDescription> : null
+                }
+                folded={folded}
+                fallbackName="About this card"
+                iconSlot={descriptionIconSlot}
+                triggerTestID="card-layout-description-trigger"
+              />
             </div>
           ) : null}
           {actionSlot ? (

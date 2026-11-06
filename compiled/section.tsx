@@ -12,11 +12,7 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { CARD_SURFACE_CLASS } from "./card";
-import {
-  DescriptionHint,
-  DescriptionHintText,
-  type DescriptionPlacement,
-} from "./description-hint";
+import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { SectionHeading } from "./section-heading";
 
 type SectionProps = {
@@ -106,7 +102,7 @@ export function Section({
 }: SectionProps) {
   const titleId = React.useId();
   const descriptionId = React.useId();
-  const folded = Boolean(title && description) && descriptionPlacement === "popover";
+  const folded = foldsDescription(title, description, descriptionPlacement);
   const titleNode = title ? (
     <SectionHeading
       data-slot="section-title"
@@ -153,35 +149,27 @@ export function Section({
         >
           {hasText ? (
             <div className={cn("cube-rn-view", TEXT)}>
-              {folded ? (
-                // Beside the heading and not inside it: a heading is a `Text`.
-                <div
-                  data-slot="section-title-row"
-                  className="cube-rn-view min-w-0 flex-row items-center gap-2"
-                >
-                  {titleNode}
-                  <DescriptionHint
-                    data-slot="section-description-trigger"
-                    label={title}
-                    fallbackName="About this section"
-                    description={description}
-                    iconSlot={descriptionIconSlot}
-                  />
-                </div>
-              ) : (
-                titleNode
-              )}
-              {folded ? (
-                <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
-              ) : null}
-              {description && folded === false ? (
-                <p
-                  data-slot="section-description"
-                  className="cube-rn-text mt-1 text-foreground/60 text-sm"
-                >
-                  {description}
-                </p>
-              ) : null}
+              <DescribedTitle
+                titleSlot={titleNode}
+                label={title}
+                description={description}
+                descriptionSlot={
+                  description ? (
+                    <p
+                      data-slot="section-description"
+                      className="cube-rn-text mt-1 text-foreground/60 text-sm"
+                    >
+                      {description}
+                    </p>
+                  ) : null
+                }
+                descriptionId={descriptionId}
+                folded={folded}
+                fallbackName="About this section"
+                iconSlot={descriptionIconSlot}
+                triggerTestID="section-description-trigger"
+                rowTestID="section-title-row"
+              />
             </div>
           ) : null}
           {actionSlot ? (
