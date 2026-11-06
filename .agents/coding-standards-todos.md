@@ -100,7 +100,7 @@ that makes it true.
 | A12 | API change | `RouteError`'s `actionsSlot` becomes `actionSlot`, the name every other item uses. | One name for one slot. | — | approved |
 | A13 | API change | The discard question's "keep" button is `keepLabel` in `DialogLayout` and `stayLabel` in `UnsavedChangesDialog`; one name, and the default words in one place. | Two copies of one question. | — | approved |
 | B5 | Question | The `layout` bundle leaves out `list`, `file-tree`, `page` and `route-error`, among others. Answered: the bundle lists every layout. | Decides what "every layout" installs. | — | answered |
-| D4 | Docs | The convention "`registry/ui`, `registry/layout`, `registry/lib` … are public install paths" is wrong: an item's type decides where it installs (min-agent has `password-input` from `registry/ui/` and `confirm-button` from `registry/layout/` side by side in `components/`). | A wrong rule would have made R20 look breaking. | — | approved |
+| D4 | Docs | The convention "`registry/ui`, `registry/layout`, `registry/lib` … are public install paths" is wrong: an item's type decides where it installs (min-agent has `password-input` from `registry/ui/` and `confirm-button` from `registry/layout/` side by side in `components/`). | A wrong rule would have made R20 look breaking. | — | done |
 | D5 | Docs | Stale comments in `query-state.tsx`: line 76 names a `contentSlot` it does not have; lines 250-251 call `Item` DOM-only. | Comments that describe code that is not there. | — | approved |
 | D6 | Docs | Stale README facts: the item counts (lines 312-313, 728), `skill` listed as an item (467), `file-picker` called web-only (475). | The README is what a new consumer reads. | — | approved |
 | R21 | Refactor [reuse] · low value | `RouteError`'s `friendlyMessage` may be able to share `lib/error-message`. (unverified) | A third error-to-text helper. | — | open |
@@ -112,8 +112,11 @@ The canonical way this codebase does things. New code and refactors follow these
 
 - A registry item installs as its own files. Sharing code between two items means a
   `registryDependencies` entry, so a merge (P6) costs the consumer a file.
-- `registry/ui`, `registry/layout`, `registry/lib` are the shadcn registry's own folder
-  names and are public install paths; P21's by-concept folders do not apply to them.
+- An item's `type` decides where it installs in an app (`registry:ui` in `components/ui/`,
+  `registry:component` in `components/`, `registry:lib` in `lib/`), not its folder here:
+  `password-input`, from `registry/ui/`, and `confirm-button`, from `registry/layout/`, both
+  land in `components/`. Moving a file between `registry/ui`, `registry/layout` and
+  `registry/lib` is internal; changing its type moves it in every app.
 - The shadcn-compatible compound primitives (`Card`, `Dialog`, `Tabs`, …) take `children`,
   by `AGENTS.md`. No shell does. P23 is already met.
 - In `.mjs` files a JSDoc `{type}` is the only type there is, so `@param {string} x` stays.
