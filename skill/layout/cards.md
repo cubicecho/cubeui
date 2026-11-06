@@ -273,4 +273,4 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
   disclosure is the heading of its part of the page; `contentClassName` to indent the body.
   An element as `title` or `description` is placed as it is and styles itself.
 - A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
-  `meta` and surface.
+  `meta` and `ListItem`'s box.

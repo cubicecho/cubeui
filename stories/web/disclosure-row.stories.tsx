@@ -169,8 +169,13 @@ export const LongContentStaysInTheRow: Story = {
     const header = canvas.getByRole("button", { name: /Rename the settings page/ });
     await userEvent.click(header);
     const row = canvasElement.querySelector('[data-slot="disclosure-row"]') as HTMLElement;
-    const footer = canvasElement.querySelector('[data-slot="item-footer"]') as HTMLElement;
-    expect(footer.getBoundingClientRect().width).toBeLessThanOrEqual(
+    // What opened, found by the id the heading names rather than by the part that draws it.
+    const opened = document.getElementById(header.getAttribute("aria-controls") ?? "");
+    if (!opened) {
+      throw new Error("the heading should name what it opened");
+    }
+    expect(row.contains(opened)).toBe(true);
+    expect(opened.getBoundingClientRect().width).toBeLessThanOrEqual(
       row.getBoundingClientRect().width,
     );
   },

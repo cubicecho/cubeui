@@ -10,17 +10,21 @@
     "@cubeui/dialog-layout",
     "@cubeui/disclosure",
     "@cubeui/disclosure-row",
+    "@cubeui/empty-state",
+    "@cubeui/file-tree",
     "@cubeui/header-content-footer",
+    "@cubeui/list",
     "@cubeui/list-item",
     "@cubeui/page-header",
     "@cubeui/page-layout",
     "@cubeui/query-state",
+    "@cubeui/route-error",
     "@cubeui/section",
+    "@cubeui/section-heading",
     "@cubeui/setting-row",
     "@cubeui/sidebar",
     "@cubeui/split-layout",
-    "@cubeui/stat-tile",
-    "@cubeui/top-bar-layout"
+    "@cubeui/stat-tile"
   ],
   "files": [],
   "type": "registry:component"

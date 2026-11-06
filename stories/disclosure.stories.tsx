@@ -6,6 +6,7 @@ import { Button as CompiledButton } from "../compiled/button";
 import { Disclosure as Compiled } from "../compiled/disclosure";
 import { Disclosure as Native } from "../registry/layout/disclosure";
 import { Button as NativeButton } from "../registry/ui/button";
+import { isTurned } from "./chevron";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -46,6 +47,7 @@ function Examples({
         onOpenChange={setShowCompleted}
         contentSlot={body("Water the plants")}
       />
+      <Disclosure title="No output" />
     </div>
   );
 }
@@ -107,6 +109,7 @@ export const Default: Story = {
       raw.focus();
       await userEvent.keyboard("{Enter}");
       await expect(raw).toHaveAttribute("aria-expanded", "false");
+      await expect(raw).not.toHaveAttribute("aria-controls");
       await expect(scope.queryByText('{ "exitCode": 0 }')).toBeNull();
       await userEvent.keyboard(" ");
       await expect(raw).toHaveAttribute("aria-expanded", "true");
@@ -119,6 +122,12 @@ export const Default: Story = {
       await expect(completed).toHaveAttribute("aria-expanded", "true");
       await expect(completed).toHaveTextContent("Hide completed (3)");
       await expect(scope.getByText("Water the plants")).toBeVisible();
+
+      // Open with nothing to show, it names no body: there is none in the document.
+      const empty = scope.getByRole("button", { name: "No output" });
+      await userEvent.click(empty);
+      await expect(empty).toHaveAttribute("aria-expanded", "true");
+      await expect(empty).not.toHaveAttribute("aria-controls");
     }
 
     // The chevron turns from the same boolean, the same way on both halves.
@@ -131,13 +140,8 @@ export const Default: Story = {
     }
     await expect(getComputedStyle(nativeChevron).width).toBe("16px");
     await expect(getComputedStyle(compiledChevron).width).toBe("16px");
-    // Turned, however each half says it: Tailwind's `rotate` property, or a `transform` where the
-    // native half is styled by NativeWind. Waited for, since the web turns it with a transition.
-    const turned = (svg: Element) => {
-      const style = getComputedStyle(svg);
-      return style.rotate === "90deg" || /^matrix\(0, 1, -1, 0/.test(style.transform);
-    };
-    await waitFor(() => expect(turned(nativeChevron)).toBe(true));
-    await waitFor(() => expect(turned(compiledChevron)).toBe(true));
+    // Waited for, since the web turns it with a transition.
+    await waitFor(() => expect(isTurned(nativeChevron)).toBe(true));
+    await waitFor(() => expect(isTurned(compiledChevron)).toBe(true));
   },
 };

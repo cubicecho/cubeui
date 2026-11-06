@@ -181,8 +181,11 @@ and which one is a question of **where the list is**, not how much there is to s
   practice, a delete that cannot be clicked.
 - `description` shows whether the row is open or shut; `contentSlot` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
-- It is built on `Item`, so a row that opens lines up with one that does not down to the padding.
-  A row that does **not** open onto a body is `ListItem`, below.
+- It is a `ListItem` that opens: the same box, title, description and hover as the `ListItem`
+  rows beside it, so the two line up down to the padding, and like `ListItem` it draws **no
+  surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
+  frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
+  is `ListItem`, below.
 - One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
@@ -304,7 +307,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 | `onPress` | `(() => void)` |  | Makes the row something you press — open the person, edit the todo. The title, description and `meta` become one button between `leadingSlot` and `actionSlot`, so neither of those is nested in it. |
 | `href` | `string` |  | Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web, so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On device there is no URL to open, so `onPress` is what navigates. |
 | `linkSlot` | `ReactElement` |  | The router's link the row is, as an element with no children — `<Link href="/people/1" />` — which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`, which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say. |
-| `selected` | `boolean` | `false` | The chosen row: the one open beside the list. Tinted in `active`, it stays that under the pointer, and a pressable row says so with `aria-current`. |
+| `selected` | `boolean` | `false` | The chosen row: the one open beside the list. Tinted in `active`, a step further under the pointer, and a pressable row says so with `aria-current`. |
 | `className` | `string` |  |  |
 | `titleClassName` | `string` |  |  |
 <!-- /props -->
@@ -331,8 +334,8 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `href="https://…"` alone is a plain `<a href>` for a URL no router owns; on device it only runs
   `onPress`. A `selected` link carries `aria-current="page"`. Keep `onPress` on its own for a row
   that opens something on the page it is on: a dialog, a pane.
-- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, stays
-  that under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
+- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, a step
+  further under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
   there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
   grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2` and nothing else. Put rows in a

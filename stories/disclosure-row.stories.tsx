@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactElement, useState } from "react";
 import { Text } from "react-native";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Badge as CompiledBadge } from "../compiled/badge";
 import { Button as CompiledButton } from "../compiled/button";
 import { DisclosureRow as Compiled } from "../compiled/disclosure-row";
 import { DisclosureRow as Native } from "../registry/layout/disclosure-row";
 import { Badge as NativeBadge } from "../registry/ui/badge";
 import { Button as NativeButton } from "../registry/ui/button";
+import { isTurned } from "./chevron";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -85,14 +86,15 @@ export const Default: Story = {
     for (const [index, half] of halves.entries()) {
       const scope = within(half as HTMLElement);
       const header = scope.getByRole("button", { name: /Rename the settings page/ });
-      // The row is the button's parent `Item`. Asked that way because under Storybook a native
-      // layout's `@/components/ui/*` import resolves to the web twin, so the native half's `Item`
-      // is the DOM one here and its `testID` does not become `data-testid` — it does on a device
+      // The row is what the example's frame holds. Asked that way, and not by its slot, because
+      // under Storybook a native layout's `@/components/ui/*` import resolves to the web twin, so
+      // a part drawn with one does not turn its `testID` into `data-testid` — it does on a device
       // and under react-native-web proper. The compiled half says `data-slot="disclosure-row"`.
-      const row = header.parentElement;
-      if (!row) {
+      const row = half.querySelector<HTMLElement>('div[style*="width: 420px"]')?.firstElementChild;
+      if (row instanceof HTMLElement === false) {
         throw new Error("the row should render");
       }
+      await expect(row.contains(header)).toBe(true);
       if (index === 1) {
         await expect(row).toHaveAttribute("data-slot", "disclosure-row");
       }
@@ -101,6 +103,11 @@ export const Default: Story = {
       await expect(header).toHaveAttribute("aria-expanded", "false");
       await expect(header).not.toHaveAttribute("aria-controls");
       await expect(scope.queryByText("146 passed.")).toBeNull();
+      const chevron = header.querySelector("svg");
+      if (!chevron) {
+        throw new Error("the heading should draw a chevron");
+      }
+      await expect(isTurned(chevron)).toBe(false);
 
       // The badge, the title and the meta are one line, in that order, inside the button.
       const badge = scope.getByText("done").getBoundingClientRect();
@@ -111,25 +118,25 @@ export const Default: Story = {
         scope.getByText("Read 4 files and wrote 2.").getBoundingClientRect().top,
       ).toBeGreaterThanOrEqual(title.bottom - 1);
 
-      // A click opens it, and the body is the row's footer, named by `aria-controls` on the web.
+      // A click opens it, and the body is part of the row, named by `aria-controls` on the web.
       await userEvent.click(header);
       await expect(header).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => expect(isTurned(chevron)).toBe(true));
       const body = scope.getByText("146 passed.");
       await expect(body).toBeVisible();
-      const footer = body.closest('[data-slot="item-footer"], [data-testid="item-footer"]');
-      await expect(footer).not.toBeNull();
-      await expect(row.contains(footer)).toBe(true);
+      await expect(row.contains(body)).toBe(true);
+      await expect(header.contains(body)).toBe(false);
       const controlled = header.getAttribute("aria-controls");
       await expect(controlled).toBeTruthy();
-      // The id is the footer's `nativeID`, which only the compiled half turns into `id` here (see
-      // above: the native half's `ItemFooter` is the DOM one under Storybook).
+      // The id is the body's `nativeID`, which the compiled half always turns into `id` here (see
+      // above for why the native half may not under Storybook).
       if (index === 1) {
         await expect(body.closest(`[id="${controlled}"]`)).not.toBeNull();
       }
-      // The footer is its own line under the heading, and stays inside the row.
-      const footerBox = (footer as HTMLElement).getBoundingClientRect();
-      await expect(footerBox.top).toBeGreaterThanOrEqual(title.bottom);
-      await expect(footerBox.width).toBeLessThanOrEqual(row.getBoundingClientRect().width);
+      // The body is its own line under the heading, and stays inside the row.
+      const bodyBox = body.getBoundingClientRect();
+      await expect(bodyBox.top).toBeGreaterThanOrEqual(title.bottom);
+      await expect(bodyBox.width).toBeLessThanOrEqual(row.getBoundingClientRect().width);
 
       // The action is beside the button, not in it, and pressing it leaves the row open.
       const remove = scope.getByRole("button", { name: "Delete" });
@@ -142,6 +149,7 @@ export const Default: Story = {
       header.focus();
       await userEvent.keyboard(" ");
       await expect(header).toHaveAttribute("aria-expanded", "false");
+      await expect(header).not.toHaveAttribute("aria-controls");
       await expect(scope.queryByText("146 passed.")).toBeNull();
       rows.push(row.getBoundingClientRect());
     }

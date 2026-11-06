@@ -174,7 +174,7 @@ component cannot invent a seventh:
 | `/10` | A quiet fill, a tint, a border | `bg-foreground/10`, `bg-warning/10`, `border-foreground/10` |
 | `/40` | The edge of a tint, an invalid ring, the tint of a chosen row | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
 | `/50` | A control's edge — an input, a select, a checkbox, an unchecked switch — 3:1 on every surface (WCAG 1.4.11), held by `palette-contrast.test.mjs` | `border-foreground/50`, `bg-foreground/50` |
-| `/60` | Secondary text, the scrim, a border under the pointer | `text-foreground/60`, `bg-overlay/60` |
+| `/60` | Secondary text, the scrim, a border under the pointer, a chosen row under the pointer | `text-foreground/60`, `bg-overlay/60`, `hover:bg-active/60` |
 | `/90` | A fill under the pointer | `hover:bg-neutral/90` |
 | none | Everything else | `bg-neutral`, `border-active` |
 
@@ -231,7 +231,12 @@ states and no more, and none of them borrows another's colour:
   that.
 - *Chosen* — checked, pressed, current, selected: persistent, and `active`. A control is
   filled (`bg-active text-active-foreground`); a card is ringed (`border-active`, its fill
-  unchanged so it does not read as hovered); a table row is tinted (`bg-active/40`).
+  unchanged so it does not read as hovered); a row among many — a `ListItem`, an `Item`, a
+  `FileTree` file, a table row — is tinted (`bg-active/40`), with its text in `foreground`, and
+  the pointer over it tints it a step further (`hover:bg-active/60`) rather than turning it grey.
+  Foreground on the `/60` tint is 4.5:1 or more, and the three row fills are 1.3:1 apart, in
+  every palette: `palette-contrast.test.mjs` holds both. Focused, a chosen row looks hovered, as
+  everything does.
 
 A chosen state drawn in `hover` is the bug this rule exists for: it looks like a hover that stuck.
 
@@ -543,8 +548,9 @@ Recorded so the next pass does not re-derive them:
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`), and `DisclosureRow` is rebuilt on it in `registry/layout/`,
-  so the row that opens is on both halves too.
+  shared through `item-base.ts`). `DisclosureRow` is a `ListItem` that opens, built on
+  `ListItem`'s box and words and `Disclosure`'s button, so the row that opens is on both halves
+  too and looks like the rows beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
   `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of

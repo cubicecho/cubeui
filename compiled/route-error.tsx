@@ -17,7 +17,7 @@
  * It is the whole screen and says everything an error boundary needs said, so
  * the boundary renders it and nothing around it: the root is `role="alert"`,
  * the raw message for a bug report is `details`, and a second way out (a
- * reload, a restart) is `actionsSlot`.
+ * reload, a restart) is `actionSlot`.
  *
  * ```tsx
  * <RouteError
@@ -25,7 +25,7 @@
  *   reset={retry}
  *   describe={describeError}
  *   details
- *   actionsSlot={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
+ *   actionSlot={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
  * />
  * ```
  */
@@ -57,6 +57,8 @@ type RouteErrorProps = {
    */
   details?: ReactNode | boolean;
   /** More buttons beside "Try again" — a reload is the usual one. */
+  actionSlot?: SlotNode;
+  /** @deprecated Use `actionSlot`; this name goes in the next release. `actionSlot` wins. */
   actionsSlot?: SlotNode;
 };
 
@@ -88,15 +90,20 @@ function rawMessage(error: unknown): string | undefined {
   return undefined;
 }
 
-/** The whole-screen message shown when the tree below a route has thrown. */
+/**
+ * The whole-screen message shown when the tree below a route has thrown. `actionsSlot` is the old
+ * name of `actionSlot`, kept for one release; the new name wins when both are passed.
+ */
 export function RouteError({
   error,
   reset,
   describe = friendlyMessage,
   title = "Something went wrong",
   details,
+  actionSlot,
   actionsSlot,
 }: RouteErrorProps) {
+  const actions = actionSlot ?? actionsSlot;
   const summary = describe(error);
   const detail = details === true ? rawMessage(error) : details || undefined;
   // A plain `Error` is described by its own message, so the default block would print it twice.
@@ -133,7 +140,7 @@ export function RouteError({
       ) : null}
       <div className="cube-rn-view flex-row flex-wrap items-center justify-center gap-2">
         <Button variant="outline" size="sm" onClick={reset} content="Try again" />
-        {actionsSlot}
+        {actions}
       </div>
     </div>
   );

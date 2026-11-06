@@ -9,6 +9,7 @@ import { FileTree as Native } from "../registry/layout/file-tree";
 import { Badge as NativeBadge } from "../registry/ui/badge";
 import { Button as NativeButton } from "../registry/ui/button";
 import { Trash2 as NativeTrash } from "../registry/ui/icons";
+import { isTurned } from "./chevron";
 import { deferredSave } from "./deferred-save";
 import { SideBySide } from "./side-by-side";
 
@@ -210,9 +211,19 @@ export const Deep: Story = {
 
       // A folder is a button that folds what is under it, and tells the caller what is left open.
       const api = canvas.getByRole("button", { name: "api" });
+      const apiItem = api.closest<HTMLElement>(SLOT("file-tree-item"));
+      const apiChevron = api.querySelector("svg");
+      if (!apiItem || !apiChevron) {
+        throw new Error("a folder should sit in an item and draw a chevron");
+      }
       await expect(api).toHaveAttribute("aria-expanded", "true");
+      await waitFor(() => expect(isTurned(apiChevron)).toBe(true));
       await userEvent.click(api);
       await expect(api).toHaveAttribute("aria-expanded", "false");
+      // Shut, what is under it is not in the document, and nothing claims to control it.
+      await expect(api).not.toHaveAttribute("aria-controls");
+      await expect(apiItem.querySelector(SLOT("file-tree-children"))).toBeNull();
+      await waitFor(() => expect(isTurned(apiChevron)).toBe(false));
       await expect(canvas.queryByText("endpoints.md")).toBeNull();
       await expect(canvas.getByText("forms.md")).toBeVisible();
       // `v2` is still open under it: shutting a folder does not forget what was open inside.
@@ -504,8 +515,9 @@ function tokenColor(token: string) {
 const MUTED_BADGE = "shrink-0 font-normal text-muted-foreground";
 
 /**
- * On the selected row everything in the meta takes the row's ink, a caller's own colour classes
- * included: a muted outline Badge on the active fill was grey on light teal.
+ * On the selected row everything in the meta takes the row's ink — the colour its name is drawn
+ * in — a caller's own colour classes included: a muted outline Badge on the chosen fill was grey
+ * on light teal.
  */
 export const SelectedMetaTakesTheRowInk: Story = {
   args: { label: "Skill files", entries: ENTRIES },
@@ -546,9 +558,11 @@ export const SelectedMetaTakesTheRowInk: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    const ink = tokenColor("active-foreground");
     for (const selector of [".native-root", ".compiled-root"]) {
       const root = canvasElement.querySelector(selector) as HTMLElement;
+      const ink = getComputedStyle(within(root).getByText("notes.md")).color;
+      // The row's ink, and not the muted grey the caller's class asked for.
+      await expect(ink).not.toBe(tokenColor("muted-foreground"));
       const label = within(root).getByText("draft");
       await waitFor(() => expect(getComputedStyle(label).color).toBe(ink));
     }

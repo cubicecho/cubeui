@@ -81,7 +81,9 @@ shut --pressed--> open --pressed--> shut
 ```
 
 `Disclosure` keeps the state itself or takes it from the caller; `DisclosureRow` and `FileTree`
-folders can also be controlled. A shut body is not mounted.
+folders can also be controlled. A shut body is not mounted. All three are pressed through the same
+button, `DisclosureTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
+while the body is there.
 
 ### A list's state (`QueryState`)
 
@@ -212,7 +214,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
   titled card is `CardLayout`. Owner: `registry/layout/section.tsx`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
-  `registry/layout/disclosure.tsx`.
+  `registry/layout/disclosure.tsx`, with `DisclosureTrigger`, the button `DisclosureRow` and
+  `FileTree`'s folders open with too.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
 - **`DialogLayout`:** a `CardLayout` on the floating surface: the modal, a size, and a
@@ -229,11 +232,13 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`List`:** the container a page's rows sit in, with the rules between them and nesting.
   Owner: `registry/layout/list.tsx`, with `ListRow` and `hasRows`.
 - **`ListItem`:** one row: leading picture or checkbox, title, description, extra info,
-  actions; pressable or a link. Owner: `registry/layout/list-item.tsx`.
+  actions; pressable or a link. Owner: `registry/layout/list-item.tsx`, with the parts the other
+  rows share: `ListItemText`, `rowFillClass` (the chosen and hovered fills) and `rowLink`.
 - **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. Owner:
   `registry/ui/item.tsx`.
-- **`DisclosureRow`:** a row on an outlined surface that opens onto more below
-  it. Owner: `registry/layout/disclosure-row.tsx`; composes `Item`.
+- **`DisclosureRow`:** a `ListItem` that opens onto more below it, with no surface
+  of its own. Owner: `registry/layout/disclosure-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
+  and `ListItemText`, and `DisclosureTrigger`.
 - **`FileTree`:** a foldable tree of folders and files built from a list of paths,
   with dragging a row onto a folder on the web. Owner: `registry/layout/file-tree.tsx`.
 - **`DescriptionList`, `PropertyRow`:** read-only label-and-value facts. Owner:

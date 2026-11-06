@@ -680,8 +680,15 @@
       "name": "file-tree",
       "type": "registry:component",
       "title": "File Tree",
-      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, `pinned` keeps a file above the tree, and `onMove` lets a row be dragged onto a folder in a browser.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tree", "@cubeui/tokens"],
+      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), tinted when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, `pinned` keeps a file above the tree, and `onMove` lets a row be dragged onto a folder in a browser.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/tree",
+        "@cubeui/list-item",
+        "@cubeui/disclosure",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/file-tree.tsx",
@@ -706,8 +713,13 @@
       "name": "disclosure-row",
       "type": "registry:component",
       "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `contentSlot` mounted only while open. Controlled with `open`/`onOpenChange`.",
-      "registryDependencies": ["@cubeui/item", "@cubeui/icons", "@cubeui/utils", "@cubeui/tokens"],
+      "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
+      "registryDependencies": [
+        "@cubeui/list-item",
+        "@cubeui/disclosure",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/disclosure-row.tsx",
@@ -1325,7 +1337,7 @@
       "name": "route-error",
       "type": "registry:component",
       "title": "Route Error",
-      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionsSlot`).",
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).",
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/icons",
@@ -1609,17 +1621,21 @@
         "@cubeui/dialog-layout",
         "@cubeui/disclosure",
         "@cubeui/disclosure-row",
+        "@cubeui/empty-state",
+        "@cubeui/file-tree",
         "@cubeui/header-content-footer",
+        "@cubeui/list",
         "@cubeui/list-item",
         "@cubeui/page-header",
         "@cubeui/page-layout",
         "@cubeui/query-state",
+        "@cubeui/route-error",
         "@cubeui/section",
+        "@cubeui/section-heading",
         "@cubeui/setting-row",
         "@cubeui/sidebar",
         "@cubeui/split-layout",
-        "@cubeui/stat-tile",
-        "@cubeui/top-bar-layout"
+        "@cubeui/stat-tile"
       ],
       "files": []
     },
