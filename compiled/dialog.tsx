@@ -42,6 +42,7 @@ import {
   DIALOG_HEADER_CLASS,
   DIALOG_TITLE_CLASS,
 } from "@/components/ui/dialog-base";
+import { FrameFocusGuard } from "@/lib/frame-focus-guard";
 import { bridgePress, cn } from "@/lib/utils";
 import { Button } from "./button";
 import { X } from "./icons";
@@ -158,6 +159,8 @@ function DialogContent({
         )}
       >
         {children}
+        {/* A framed app focusing itself would take the focus, and the typing, out of the dialog. */}
+        <FrameFocusGuard />
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"

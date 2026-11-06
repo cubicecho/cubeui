@@ -214,6 +214,8 @@ const NOT_SHOWN: Record<string, string> = {
   "readable-text-color": "Picks black or white text for a background. A function, not a component.",
   format: "Writes a count, a size, a duration and a date as text. Functions, not components.",
   "bottom-bar": "Two hooks a toast rises above a layout's bottom bar through. Not a component.",
+  "frame-focus-guard":
+    "Keeps a framed page from taking focus out of an open overlay. Web only: a device has no frames.",
   "error-message":
     "Turns a validator's error into the text a field shows. A function, not a component.",
   "description-hint":
