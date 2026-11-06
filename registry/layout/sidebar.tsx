@@ -14,6 +14,7 @@ import {
   type HeaderContentFooterProps,
   StickyHeaderContentFooter,
 } from "@/components/header-content-footer";
+import { SectionHeading } from "@/components/section-heading";
 import { SidebarPositionContext } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
@@ -275,16 +276,15 @@ export function SidebarSection({
         >
           <View className="min-w-0 flex-1">
             {title ? (
-              // web: biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-              <Text
+              <SectionHeading
                 testID="sidebar-section-title"
-                nativeID={titleId}
-                role="heading"
-                aria-level={level}
-                className="truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide"
+                id={titleId}
+                variant="overline"
+                level={level}
+                className="truncate"
               >
                 {title}
-              </Text>
+              </SectionHeading>
             ) : null}
           </View>
           {actionSlot && collapsed === false ? (

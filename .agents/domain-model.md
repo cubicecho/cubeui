@@ -185,7 +185,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`DetailHeader`:** a back button, a colour dot, a title, badges and
   actions. Owner: `registry/layout/detail-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
-  given a level. Owner: `registry/layout/section-heading.tsx`; takes `children`.
+  given a level. It is the title `Section` and `SidebarSection` draw. Owner:
+  `registry/layout/section-heading.tsx`; takes `children`.
 - **`CenteredLayout`:** a page that is one card in the middle of the screen, such
   as a sign-in. Owner: `registry/layout/centered-layout.tsx`; composes `CardLayout`.
 

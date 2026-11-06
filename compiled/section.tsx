@@ -17,6 +17,7 @@ import {
   DescriptionHintText,
   type DescriptionPlacement,
 } from "./description-hint";
+import { SectionHeading } from "./section-heading";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
@@ -107,23 +108,21 @@ export function Section({
   const descriptionId = React.useId();
   const folded = Boolean(title && description) && descriptionPlacement === "popover";
   const titleNode = title ? (
-    // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-    <span
+    <SectionHeading
       data-slot="section-title"
       id={titleId}
-      role="heading"
-      aria-level={level}
+      variant="overline"
+      level={level}
       className={cn(
         // An overline in full ink: grey, it was outranked by the larger grey description under it.
         // Weight, caps and ink lead; the size stays small.
-        "cube-rn-text",
-        "truncate font-semibold text-foreground text-xs uppercase tracking-wide",
+        "truncate text-foreground",
         folded && "min-w-0 shrink",
         titleClassName,
       )}
     >
       {title}
-    </span>
+    </SectionHeading>
   ) : null;
   const hasText = Boolean(title || description);
   const hasHeading = Boolean(hasText || actionSlot);

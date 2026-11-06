@@ -629,6 +629,7 @@
         "@cubeui/utils",
         "@cubeui/description-hint",
         "@cubeui/card",
+        "@cubeui/section-heading",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1463,6 +1464,7 @@
         "@cubeui/tooltip",
         "@cubeui/header-content-footer",
         "@cubeui/split-layout",
+        "@cubeui/section-heading",
         "@cubeui/tokens"
       ],
       "files": [
