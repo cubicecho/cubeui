@@ -6,7 +6,7 @@ import { TextareaField, useAppForm } from "@/components/app-form";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DetailHeader } from "@/components/detail-header";
 import { EmptyState } from "@/components/empty-state";
-import { StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { PageHeader } from "@/components/page-header";
@@ -177,7 +177,9 @@ function Inbox({ detail }: Args) {
       stackBelow="lg"
       divider="line"
       firstSlot={
-        <StickyHeaderContentFooter
+        <HeaderContentFooter
+          scroll
+          className="h-full"
           headerSlot={
             <PageHeader
               title="Inbox"
@@ -234,7 +236,9 @@ function Inbox({ detail }: Args) {
         />
       }
       secondSlot={
-        <StickyHeaderContentFooter
+        <HeaderContentFooter
+          scroll
+          className="h-full"
           width="prose"
           contentClassName="py-4"
           contentSlot={

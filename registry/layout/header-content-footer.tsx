@@ -347,16 +347,3 @@ export function HeaderContentFooter({
     </View>
   );
 }
-
-/**
- * The same chassis with the body scrolling and the chrome pinned — a list page, a pane inside a
- * split, anything whose header should not leave with the rows.
- *
- * It needs a height to divide, so it defaults to filling its parent.
- */
-export function StickyHeaderContentFooter({
-  className,
-  ...props
-}: Omit<HeaderContentFooterProps, "scroll">) {
-  return <HeaderContentFooter scroll {...props} className={cn("h-full", className)} />;
-}

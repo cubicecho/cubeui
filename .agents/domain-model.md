@@ -175,9 +175,6 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   and footer around a body, where either the whole frame or only the body scrolls. Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
   `PROSE_COLUMN`.
-- **`StickyHeaderContentFooter`:** the same frame with the body
-  scrolling and the header and footer fixed. Owner: the same file; it is the frame with `scroll`
-  and `h-full` set.
 - **`PageHeader`:** a page's icon, title, description, actions, breadcrumb or back
   link, and a row for search, filters or tabs, at heading level 1 to 3. Owner:
   `registry/layout/page-header.tsx`.

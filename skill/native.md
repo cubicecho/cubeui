@@ -19,7 +19,7 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | The shape you are building | Use | Item |
 | --- | --- | --- |
 | A screen — a title, actions, a body that scrolls | `PageLayout` | `@cubeui/page-layout` |
-| Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
+| Chrome above, a body that scrolls, chrome below | `HeaderContentFooter scroll` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |

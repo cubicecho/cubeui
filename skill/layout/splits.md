@@ -11,7 +11,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   stackBelow="md"
   divider="line"
   sidebarSlot={<Nav />}
-  contentSlot={<StickyHeaderContentFooter headerSlot={<PageHeader title="Servers" />} contentSlot={rows} />}
+  contentSlot={<PageLayout width="full" title="Servers" contentSlot={rows} />}
 />
 ```
 
@@ -93,7 +93,7 @@ the slots is spelled the same on each.
   `hidden md:block` to fight it; a navigation rail that should go rather than stack is
   `sidebarHideBelow` (see [Sidebar](sidebar.md#on-a-phone-a-bar-instead-of-the-rail)).
   Stacked, the split scrolls the two panes as one column — a `ScrollView` on device, a scrolling
-  `<div>` on the web — so two `StickyHeaderContentFooter` panes taller than the screen together
+  `<div>` on the web — so two scrolling `HeaderContentFooter` panes taller than the screen together
   can still be read to the end. Give the split a height (`className="h-full"`, `flex-1`) and it
   keeps it at every width; do not cap it with `lg:h-full` to dodge the overflow.
 - **`divider`** is `space` (a gap — two surfaces on a page, the default), `line` (flush, with a
@@ -117,8 +117,8 @@ the slots is spelled the same on each.
   pane it meant. Each pane's content owns its own loading state.
 - **It is horizontal only.** Two zones stacked in a column, each able to scroll, is
   `HeaderContentFooter`, which already exists. Below `stackBelow` this *is* that arrangement.
-- **It does not scroll.** A pane that needs to scroll is a `StickyHeaderContentFooter` passed as
-  `contentSlot` or `sidebarSlot` — which is also where the tab stop that a scrolling region owes a keyboard
+- **It does not scroll.** A pane that needs to scroll is a `<HeaderContentFooter scroll className="h-full">`
+  (or a `PageLayout`) passed as `contentSlot` or `sidebarSlot` — which is also where the tab stop that a scrolling region owes a keyboard
   user comes from. Do not put `overflow-y-auto` on a pane by hand; without a height above it to
   divide, it will not scroll, and it gives a keyboard user no way in.
 

@@ -53,10 +53,10 @@ sidebar**: a bar across the top, the page below it. Three slots in the bar, one 
   the chrome. Pass a `PageLayout` here — it carries its own title and column.
 
 **On the web the bar is `sticky top-0` and the document scrolls.** It needs no height from its
-ancestors, unlike a `StickyHeaderContentFooter`: the bar sticks to the top of whatever scrolls it —
+ancestors, unlike a scrolling `HeaderContentFooter`: the bar sticks to the top of whatever scrolls it —
 the window, or a pane you already made scrollable. **On device** there is no sticky, so the shell
 divides the height it is given: the bar stays and the page is a `ScrollView`, as in
-`StickyHeaderContentFooter`. Give it the screen (`flex-1` on the parent).
+`HeaderContentFooter scroll`. Give it the screen (`flex-1` on the parent).
 
 **On a narrow screen the links scroll sideways** inside their landmark while the brand and the
 actions keep their place, so six links on a phone move rather than wrap the bar to two lines. To

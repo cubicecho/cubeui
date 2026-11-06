@@ -14,7 +14,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 ## Pages
 
 `PageLayout` is a page: a title block pinned above a body that scrolls under it. It is
-`StickyHeaderContentFooter` with a `PageHeader` already in the header slot, and it is what a
+`HeaderContentFooter scroll` with a `PageHeader` already in the header slot, and it is what a
 route should reach for first.
 
 ```tsx
@@ -123,7 +123,9 @@ Reach for these when a page is not the shape `PageLayout` makes — a pane, a pr
 dialog body.
 
 ```tsx
-<StickyHeaderContentFooter
+<HeaderContentFooter
+  scroll
+  className="h-full"
   width="page"
   headerSlot={<PageHeader title="Vendors" description="Suppliers inventory is purchased from." />}
   contentSlot={<DataTable columns={columns} data={rows} />}
@@ -153,9 +155,11 @@ dialog body.
 - `width="page"` caps and centres every slot on one column, so the title sits above the first
   table column rather than beside it. `width="full"` (the default) fills the box it was given —
   panes inside a split, print sheets, anything already in a column of its own.
-- The sticky variant needs a **height to divide**. It defaults to `h-full`; the ancestors up to
-  the viewport need to give it one, or nothing scrolls and the header does not stay.
-- `HeaderContentFooter` is the same three zones with the whole thing scrolling with the page.
+- **`scroll` needs a height to divide.** Give the frame one (`className="h-full"`, or `flex-1` in
+  a column), and the ancestors up to the viewport theirs, or nothing scrolls and the header does
+  not stay. `StickyHeaderContentFooter`, the preset that set `scroll` and `h-full`, is gone; write
+  the two out.
+- Without `scroll` it is the same three zones with the whole thing scrolling with the page.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
 - `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
   pixels, the same on both halves. A list that follows its newest row is at the end when

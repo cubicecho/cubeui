@@ -202,7 +202,8 @@ The shells take no children. The body is `contentSlot`, exactly like `headerSlot
 are props:
 
 ```tsx
-<StickyHeaderContentFooter
+<HeaderContentFooter
+  scroll
   width="page"
   headerSlot={<PageHeader title="Workspaces" />}
   contentSlot={<DataTable columns={columns} data={rows} />}

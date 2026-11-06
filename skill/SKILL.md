@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, StickyHeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -61,7 +61,7 @@ that should show none takes `[scrollbar-width:none]`.
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
 
-**So are the layout shells.** `HeaderContentFooter`, `StickyHeaderContentFooter`, `PageHeader`,
+**So are the layout shells.** `HeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `Sidebar`, `TopBarLayout`, `CardLayout`,
 `CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
@@ -83,7 +83,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | The shape you are building | Use | Reference |
 | --- | --- | --- |
 | A whole page — a title, buttons, and rows under them | `PageLayout` | [layout/pages.md](layout/pages.md#pages) |
-| A page: chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | [layout/pages.md](layout/pages.md#page-shells) |
+| A page: chrome above, a body that scrolls, chrome below | `HeaderContentFooter scroll className="h-full"` | [layout/pages.md](layout/pages.md#page-shells) |
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout/pages.md](layout/pages.md#page-shells) |
 | The title block at the top of a page: name, buttons, search | `PageHeader` | [layout/pages.md](layout/pages.md#page-headers) |
 | Equal cells in rows — a grid of cards or tiles, 1 to 4 to a row by width | `GridLayout` | [layout/pages.md](layout/pages.md#grids) |

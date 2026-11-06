@@ -135,7 +135,7 @@ const DIVIDER_AT: Record<keyof typeof STACK_BELOW, string> = {
 
 /**
  * The panes' row inside the scroller a stacking split is drawn in. Stacked, it is as tall as the
- * two panes one after the other and the scroller moves it — two `StickyHeaderContentFooter`s are
+ * two panes one after the other and the scroller moves it — two scrolling `HeaderContentFooter`s are
  * two screens of chrome, and a column that only grows is a phone screen nothing reaches the bottom
  * of. From the breakpoint up it is exactly the scroller's height, so the panes side by side share
  * the height the split was given and each scrolls inside itself, as before. `grow` fills a

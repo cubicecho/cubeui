@@ -115,8 +115,8 @@ rail of icons — both below):
 
 - **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on the page's
   own `bg-background` at a fixed `w-64`, set apart by a `border-foreground/10` rule on the edge
-  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
-  sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
+  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a scrolling `HeaderContentFooter` inside, so it needs a height from above, like any
+  chassis whose body scrolls. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
   different width is one `w-*` in `className`. `sidebarHideBelow` on the layout removes it
   under a width and draws a bar in its place (see below).
