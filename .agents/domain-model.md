@@ -86,11 +86,13 @@ folders can also be controlled. A shut body is not mounted.
 ### A list's state (`QueryState`)
 
 ```
-failed | loading | empty | has rows
+failed | loading | empty | has rows          (a list: `count`)
+failed | loading | not found | found        (one record: `record`)
 ```
 
-Exactly one at a time, in that order of precedence; once there are rows, `QueryState` draws
-nothing and the list draws them.
+Exactly one at a time, in that order of precedence; once there are rows, or the record is there,
+`QueryState` draws nothing and the screen draws them. A record that is not found is a rung of the
+same ladder, so the guard works inside any shell.
 
 ### A sidebar's fold (`Sidebar`)
 
@@ -251,7 +253,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   a line, an action, or one compact line. Owner: `registry/layout/empty-state.tsx`; composes
   `Empty` (`registry/ui/empty.tsx`).
 - **`QueryState`:** the failed, loading or empty state in front of a list until it
-  has rows. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
+  has rows, or the failed, loading or not-found state in front of one record until it is
+  there. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
 - **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
   Try again. Owner: `registry/layout/route-error.tsx`.
 

@@ -85,7 +85,7 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/lists.md](layout/lists.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
-| A list screen's failed / loading / empty rungs | `QueryState` | `@cubeui/query-state` |
+| A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `QueryState` | `@cubeui/query-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionsSlot` (a Reload beside Try again), all in one `max-w-md` column | `RouteError` | `@cubeui/route-error` |
 
 One name means different things across the halves, and it is worth knowing before you grep:

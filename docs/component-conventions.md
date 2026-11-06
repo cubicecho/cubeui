@@ -154,6 +154,8 @@ field — because data that has not arrived is not data that came back empty or 
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
+| `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `QueryState`, in place of `count`. |
+| `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
 | `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
 

@@ -146,6 +146,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   data library.
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
 - **`count`** — how many rows the page is *about to draw*, which is not what came back.
+- **`record`** — the one record a detail screen asked for, once its query has answered; `null` or
+  `undefined` is one that is not there. On `QueryState`, in place of `count`.
+- **`notFoundLabel`** — what a detail screen says when its `record` is not there: "Project not
+  found". Drawn as the screen's heading.
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
   the DOM attribute of that name and is not this word.
 - **`layout`** — on `DescriptionList`: `inline` (label beside value, stacking by itself when

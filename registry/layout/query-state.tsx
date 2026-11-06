@@ -28,9 +28,10 @@
  */
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { EmptyState } from "@/components/empty-state";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, TriangleAlert } from "@/components/ui/icons";
+import { RefreshCw, Search, TriangleAlert } from "@/components/ui/icons";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** What a list screen needs off its query, and nothing more. */
@@ -73,30 +74,11 @@ const settles = (value: unknown): value is PromiseLike<unknown> =>
   value !== null &&
   typeof (value as { then?: unknown }).then === "function";
 
-/** Draws a query's error, loading or empty state, and `contentSlot` once there are rows. */
-export function QueryState({
-  query,
-  what,
-  count,
-  emptySlot,
-  rows = 3,
-  compact = false,
-  describe,
-  className,
-}: {
+/** What every screen passes, whether it draws a list or one record. */
+type QueryStateCommon = {
   query: QueryLike;
   /** What could not be fetched, in the reader's words: "your agents", "the archive". */
   what: string;
-  /**
-   * How many rows the screen is about to draw.
-   *
-   * Passed rather than derived, because the rows a screen draws are usually a filtered or paged
-   * view of what came back: an empty *result* and an empty *view* are different states, and only
-   * the screen knows which one it is showing.
-   */
-  count: number;
-  /** What to say when there are none — whatever invites the first one. */
-  emptySlot?: SlotNode | undefined;
   /** How many placeholder rows stand in for the list while it loads. */
   rows?: number | undefined;
   /**
@@ -108,7 +90,61 @@ export function QueryState({
   /** What the failure means, in the app's words — handed through to `QueryError`. */
   describe?: ((error: unknown) => string) | undefined;
   className?: string | undefined;
-}) {
+};
+
+/** A list screen: the last rung is empty. */
+type QueryStateList = {
+  /**
+   * How many rows the screen is about to draw. Pass this or `record`.
+   *
+   * Passed rather than derived, because the rows a screen draws are usually a filtered or paged
+   * view of what came back: an empty *result* and an empty *view* are different states, and only
+   * the screen knows which one it is showing.
+   */
+  count: number;
+  /** What to say when there are none — whatever invites the first one. */
+  emptySlot?: SlotNode | undefined;
+  record?: never;
+  notFoundLabel?: never;
+};
+
+/** A detail screen: the last rung is a record that is not there. */
+type QueryStateRecord = {
+  /**
+   * The one record the screen asked for, once the query has answered. `null` or `undefined` is a
+   * record that is not there. Pass this or `count`.
+   */
+  record: unknown;
+  /**
+   * What the screen says when `record` is not there: "Project not found". It is drawn as the
+   * screen's own heading — a level-1 `EmptyState` with the Search icon — because the whole screen
+   * is that state.
+   */
+  notFoundLabel: string;
+  count?: never;
+  emptySlot?: never;
+};
+
+export type QueryStateProps = QueryStateCommon & (QueryStateList | QueryStateRecord);
+
+/**
+ * Draws a query's failed, loading or empty state, and nothing once there is something to draw.
+ *
+ * A detail screen passes `record` and `notFoundLabel` instead of `count`, and the last rung is
+ * then "not found" rather than "empty".
+ */
+export function QueryState({
+  query,
+  what,
+  count,
+  emptySlot,
+  record,
+  notFoundLabel,
+  rows = 3,
+  compact = false,
+  describe,
+  className,
+}: QueryStateProps) {
   if (query.isError) {
     return (
       <QueryError
@@ -126,6 +162,25 @@ export function QueryState({
       <RowSkeleton
         rows={rows}
         compact={compact}
+        {...(className === undefined ? {} : { className })}
+      />
+    );
+  }
+  if (notFoundLabel !== undefined) {
+    if (record !== null && record !== undefined) {
+      return null;
+    }
+    return compact ? (
+      <EmptyState
+        compact
+        title={notFoundLabel}
+        {...(className === undefined ? {} : { className })}
+      />
+    ) : (
+      <EmptyState
+        icon={Search}
+        title={notFoundLabel}
+        level={1}
         {...(className === undefined ? {} : { className })}
       />
     );

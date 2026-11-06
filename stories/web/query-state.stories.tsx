@@ -215,3 +215,50 @@ export const AnEmptyViewIsNotAnEmptyResult: Story = {
     expect(canvas.getByText("No roles match “verdict”")).toBeVisible();
   },
 };
+
+/**
+ * A detail screen passes the record it asked for instead of a count. When the query answered
+ * with nothing, the last rung is "not found", drawn as the screen's own heading — the whole
+ * screen is that state.
+ */
+export const NotFound: Story = {
+  args: { query: settled, what: "this project", record: null, notFoundLabel: "Project not found" },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("heading", { level: 1, name: "Project not found" })).toBeVisible();
+    expect(canvas.queryByRole("status")).toBeNull();
+  },
+};
+
+/** A record still on its way is the loading rung, not "not found". */
+export const RecordLoading: Story = {
+  args: {
+    query: { ...settled, isPending: true },
+    what: "this project",
+    record: undefined,
+    notFoundLabel: "Project not found",
+  },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("status")).toHaveAccessibleName("Loading");
+    expect(canvas.queryByRole("heading", { name: "Project not found" })).toBeNull();
+  },
+};
+
+/** Once the record is there it draws nothing, and the screen draws the record. */
+export const RecordFound: Story = {
+  args: {
+    query: settled,
+    what: "this project",
+    record: { name: "Telos" },
+    notFoundLabel: "Project not found",
+  },
+  render: (args) => (
+    <>
+      <QueryState {...args} />
+      <p>Telos</p>
+    </>
+  ),
+  play: async ({ canvas }) => {
+    expect(canvas.queryByRole("heading", { name: "Project not found" })).toBeNull();
+    expect(canvas.getByText("Telos")).toBeVisible();
+  },
+};

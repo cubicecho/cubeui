@@ -102,7 +102,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout/facts.md](layout/facts.md#setting-rows) |
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout/facts.md](layout/facts.md#description-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout/facts.md](layout/facts.md#stat-tiles) |
-| A list page's failed / loading / empty rungs | `QueryState` | [layout/lists.md](layout/lists.md#querystate) |
+| A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found | `QueryState` | [layout/lists.md](layout/lists.md#querystate) |
 | The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout/lists.md](layout/lists.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/lists.md](layout/lists.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |
