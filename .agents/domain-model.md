@@ -175,9 +175,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   and footer around a body, where either the whole frame or only the body scrolls. Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
   `PROSE_COLUMN`.
-- **`PageHeader`:** a page's icon, title, description, actions, breadcrumb or back
-  link, and a row for search, filters or tabs, at heading level 1 to 3. Owner:
-  `registry/layout/page-header.tsx`.
+- **`PageHeader`:** a page's icon, title, description, actions, the way back (one
+  slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
+  at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
 - **`DetailHeader`:** a back button, a colour dot, a title, badges and
   actions. Owner: `registry/layout/detail-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when

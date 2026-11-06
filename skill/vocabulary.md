@@ -37,8 +37,8 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 
 **Page, split and dialog shells add:**
 
-- **`breadcrumbsSlot`** — the line above the title. A trail, or a back link, which is a one-step
-  trail. Nodes, never a route.
+- **`backSlot`** — the way back, on the line above the title: a back link, or a breadcrumb trail.
+  Nodes, never a route. `breadcrumbsSlot` is its old name, still read for one release.
 - **`headerContentSlot`** — the row under the title: search, filters, tabs. Stacked in the order
   you pass them.
 - **`sidebarSlot`** — the second surface in a `SidebarLayout`. `contentSlot` is still the main one, so the

@@ -368,7 +368,7 @@ function Docs({ file, longTitle }: Args) {
               headerSlot={
                 <PageHeader
                   level={2}
-                  breadcrumbsSlot={
+                  backSlot={
                     <span className="font-mono text-foreground/60 text-xs">{doc.path}</span>
                   }
                   iconSlot={<FileText />}

@@ -93,7 +93,7 @@ One name means different things across the halves, and it is worth knowing befor
   name, and the shadcn CLI resolves a cross-item import by basename — the two cannot share it.
 
 `PageHeader` is one component on both halves: `@cubeui/page-header`, the title block `PageLayout`
-draws — `title`, `description`, `actionSlot`, `iconSlot`, `breadcrumbsSlot`, `loading`, and a
+draws — `title`, `description`, `actionSlot`, `iconSlot`, `backSlot`, `loading`, and a
 `level` (default 1) for the heading's rank.
 
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,

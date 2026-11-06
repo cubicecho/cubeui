@@ -38,7 +38,8 @@ route should reach for first.
 | `description` | `ReactNode` |  | One line on what the page is for. |
 | `iconSlot` | `SlotNode` |  | Sits before the title, sized from `level`. Pass a bare `<Users />`. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
-| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link. |
+| `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
+| `breadcrumbsSlot` | `SlotNode` |  |  |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
@@ -215,7 +216,8 @@ It is not a page.
 | `description` | `ReactNode` |  | One line on what the page is for. It wraps; it is not clipped. |
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized from the level — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
-| `breadcrumbsSlot` | `SlotNode` |  | The line above the title: a breadcrumb trail, or a back link, which is a one-step trail. |
+| `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
+| `breadcrumbsSlot` | `SlotNode` |  |  |
 | `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
 | `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. See {@link LEVELS}. |
 | `className` | `string` |  |  |
@@ -240,8 +242,10 @@ It is not a page.
   status pill goes here too. The shell rows and gaps them, so two pages never disagree about the
   space between Export and New.
 
-- **`breadcrumbsSlot` is the line above the title.** Put a back link here rather than beside the
-  title: beside it, it competes with `iconSlot` for the same spot and takes width from the page's name.
+- **`backSlot` is the way back, above the title**: a back link, or a breadcrumb trail. Put a back
+  button here, not in `iconSlot`: that is the page's own icon, and a back button beside the title
+  takes width from the page's name. `breadcrumbsSlot` is the old name, still read when `backSlot`
+  is not passed, for one release.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
   anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
@@ -252,7 +256,7 @@ It is not a page.
   buttons, the search field — stays put and stays usable.
 
   ```tsx
-  <PageHeader breadcrumbsSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
+  <PageHeader backSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
     title={workspace?.name} actionSlot={<Button content="Edit" />} />
   ```
 
@@ -272,8 +276,8 @@ It is not a page.
 ### What it does not have
 
 `search`, `filters`, `tabs` — pass them as `contentSlot`. A count or status badge — put it in
-`actionSlot`, or compose it into the `title` node. A back button *beside* the title — it goes in
-`breadcrumbsSlot`. A description that expands behind a popover — that is state, and state is the
+`actionSlot`, or compose it into the `title` node. A back button *beside* the title, or in `iconSlot` —
+it goes in `backSlot`. A description that expands behind a popover — that is state, and state is the
 caller's.
 
 ## Grids

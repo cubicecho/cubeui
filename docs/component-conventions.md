@@ -93,7 +93,7 @@ field — because data that has not arrived is not data that came back empty or 
 
 | Word | Means |
 | --- | --- |
-| `breadcrumbsSlot` | The line above the title. A trail, or a back link. Nodes, never a route. |
+| `backSlot` | The way back, on the line above the title: a back link, or a breadcrumb trail. Nodes, never a route. Not `iconSlot`, which is the page's own icon. `breadcrumbsSlot` is its deprecated name. |
 | `headerContentSlot` | The row under the title: search, filters, tabs. `PageHeader` calls it `contentSlot`, because it has no body of its own. |
 | `firstSlot`, `secondSlot` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |

@@ -156,7 +156,7 @@ function ProjectScreen({
       />
       {p === null ? null : (
         <PageLayout
-          breadcrumbsSlot={
+          backSlot={
             <Button
               variant="outline"
               size="icon"

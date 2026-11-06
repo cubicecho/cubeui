@@ -131,17 +131,15 @@ export type PageHeaderProps = {
    */
   actionSlot?: SlotNode | undefined;
   /**
-   * The line above the title: a breadcrumb trail, or a back link, which is a one-step trail.
+   * The way back, on the line above the title: a back link, or a breadcrumb trail, which is a
+   * back link with more steps.
    *
-   * A slot rather than the caller's own node above the header, because that node would not carry
-   * the header's inset, and a trail starting 16px left of the title it belongs to is exactly the
-   * drift this set exists to stop.
-   *
-   * Above the title, not beside it. Both placements are in use; above is the one that also holds
-   * a trail, and a back button beside the title competes with `iconSlot` for the same spot and
-   * takes width from the page's name for a control that is not part of it. It is a node, not a
-   * route — no shell routes.
+   * Above the title, not beside it. A back button beside the title takes `iconSlot`'s place,
+   * which is the page's own icon, and width from the page's name for a control that is not part
+   * of it. It is a node, not a route — no shell routes.
    */
+  backSlot?: SlotNode | undefined;
+  /** @deprecated Renamed `backSlot`. Read when `backSlot` is not passed. */
   breadcrumbsSlot?: SlotNode | undefined;
   /**
    * Whether the title is still being fetched. On, a bar of the title's own height stands in for
@@ -226,6 +224,7 @@ export function PageHeader({
   description,
   iconSlot,
   actionSlot,
+  backSlot,
   breadcrumbsSlot,
   loading = false,
   level = 1,
@@ -234,6 +233,7 @@ export function PageHeader({
   contentClassName,
 }: PageHeaderProps) {
   const { title: titleSize, icon: iconSize, row: rowFloor, bar: barHeight } = LEVELS[level];
+  const back = backSlot ?? breadcrumbsSlot;
 
   // The rule these apps already follow without having named it: a page header draws a line under
   // itself exactly when nothing else separates it from the body. The list headers, which all
@@ -270,9 +270,10 @@ export function PageHeader({
       aria-busy={loading || undefined}
       className={cn("cube-rn-view", "min-w-0 flex-col gap-3 px-4 py-4", rule, className)}
     >
-      {breadcrumbsSlot ? (
+      {back ? (
+        // The slot keeps its old name: a `data-slot` is public, and a selector on it still matches.
         <div data-slot="page-header-breadcrumbs" className={cn("cube-rn-view", SLOT, "min-w-0")}>
-          {breadcrumbsSlot}
+          {back}
         </div>
       ) : null}
 
