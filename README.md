@@ -309,8 +309,8 @@ Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was 
 3, and it needed a real component set to have anything to compile. In the write-ups below,
 "cubeui" on its own in a historical passage means that pre-native registry.
 
-Today the native registry holds 60 items and the web registry 91: 83 components and 8 story
-items. 23 of the web items are web-only, and every native item has a web half.
+Today the native registry holds 93 items and the web registry 115: 107 items and 8 story items.
+14 of the web items are web-only, four of them bundles, and every native item has a web half.
 
 
 ## Stage 1 — tokens
@@ -464,7 +464,6 @@ the React Native set.
 | forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
 | layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
-| docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
@@ -472,8 +471,8 @@ left behind on purpose: its vocabulary was the app's, not the set's. `inline-len
 edits), and `status-chip` stopped naming a project's three lifecycle states — first as a tone, and then, in
 open decision 4, as `badge`.
 
-**`file-picker` is web-only.** Its native half draws the zone and says so on screen; it does not
-pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
+**`file-picker` works on the web only.** It ships in `registry.json` with both halves, but its
+native half is a placeholder: it draws the zone and says so on screen, and does not pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
 choice with its own permission flow, so the registry ships the contract and the working web half
 rather than a control that silently opens nothing. The contract stays one a native half can
 implement: a picked file is a name, a path, a type, a size, its text and — with `read="bytes"` — a
@@ -723,9 +722,9 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 57 generated, 36
+react-native-web anywhere in the output. **Every file has a web half — 58 generated, 36
 hand-written** (26 `.web.tsx` halves and the 10 web-only files) — and `registry.web.json`, derived
-from `registry.json` and `registry.web-only.json` in the same run, publishes **all 104 items**, plus
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 107 items**, plus
 the 8 story items. `scripts/rn2web/` is about 2700 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs`, with one module per pass in `passes/`, is the
 ts-morph that applies it.
