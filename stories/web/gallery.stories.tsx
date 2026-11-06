@@ -19,7 +19,6 @@ import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DetailHeader } from "@/components/detail-header";
-import { DetailPage } from "@/components/detail-page";
 import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
 import { DisclosureRow } from "@/components/disclosure-row";
@@ -33,7 +32,6 @@ import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
@@ -304,6 +302,9 @@ const SERVERS = [
   { name: "borealis", transport: "stdio", tools: 4, status: "Stopped" },
   { name: "cygnus", transport: "http", tools: 31, status: "Running" },
 ];
+
+/** The one server a detail specimen shows. */
+const SERVER = { name: "atlas", transport: "http", tools: 12, status: "Running" };
 
 const PRIORITIES = [
   { value: "low", label: "Low" },
@@ -1577,8 +1578,6 @@ function SidebarSample({ label }: { label: string }) {
   );
 }
 
-type Server = (typeof SERVERS)[number];
-
 const sections: GallerySection[] = [
   // Primitives
   { title: "Button", items: ["button"], content: <Buttons /> },
@@ -1788,60 +1787,53 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Page, grid, detail page and detail header",
-    items: ["page", "grid-layout", "empty-state", "detail-page", "detail-header"],
+    title: "Grid and detail header",
+    items: ["grid-layout", "empty-state", "detail-header"],
     content: (
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
           content={
-            <Page
+            <PageLayout
+              level={3}
+              title="Projects"
               contentSlot={
-                <>
-                  <PageHeader level={3} title="Projects" />
-                  <GridLayout
-                    contentSlot={SERVERS.map((server) => (
-                      <Card key={server.name}>
-                        <CardHeader>
-                          <CardTitle>{server.name}</CardTitle>
-                          <CardDescription>{server.status}</CardDescription>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  />
-                </>
+                <GridLayout
+                  contentSlot={SERVERS.map((server) => (
+                    <Card key={server.name}>
+                      <CardHeader>
+                        <CardTitle>{server.name}</CardTitle>
+                        <CardDescription>{server.status}</CardDescription>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                />
               }
             />
           }
         />
         <Frame
           content={
-            <DetailPage<Server>
-              entity={SERVERS[0]}
-              notFoundLabel="Server not found"
-              contentSlot={(server) => (
-                <>
-                  <DetailHeader
-                    onBack={noop}
-                    backLabel="Back to servers"
-                    color="#1d4ed8"
-                    colorLabel="Blue"
-                    title={server.name}
-                    description={`${server.tools} tools over ${server.transport}`}
-                    badgesSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionSlot={
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={noop}
-                        iconSlot={<Pencil />}
-                        content="Edit the server"
-                      />
-                    }
+            <div className="flex flex-col gap-4 p-4">
+              <DetailHeader
+                onBack={noop}
+                backLabel="Back to servers"
+                color="#1d4ed8"
+                colorLabel="Blue"
+                title={SERVER.name}
+                description={`${SERVER.tools} tools over ${SERVER.transport}`}
+                badgesSlot={<Badge variant="secondary">{SERVER.status}</Badge>}
+                actionSlot={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={noop}
+                    iconSlot={<Pencil />}
+                    content="Edit the server"
                   />
-                  <p className="text-foreground text-sm">The body of the detail page.</p>
-                </>
-              )}
-            />
+                }
+              />
+              <p className="text-foreground text-sm">The body of the detail page.</p>
+            </div>
           }
         />
       </div>

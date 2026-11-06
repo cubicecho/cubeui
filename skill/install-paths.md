@@ -72,7 +72,6 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescriptionHint, DescriptionHintText } from "@/components/ui/description-hint"` |
 | `description-list` | both | `components/description-list.tsx` | `import { DescriptionList, PropertyRow } from "@/components/description-list"` |
 | `detail-header` | both | `components/detail-header.tsx` | `import { DetailHeader } from "@/components/detail-header"` |
-| `detail-page` | both | `components/detail-page.tsx` | `import { DetailPage } from "@/components/detail-page"` |
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog-layout` | both | `components/dialog-layout.tsx` | `import { DialogLayout } from "@/components/dialog-layout"` |
@@ -115,8 +114,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `menu` | web | `components/ui/menu.tsx`; also `menu-base.ts` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `menu` | native | `components/ui/menu.tsx`; also `menu-base.ts`, `menu.web.tsx` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
-| `page` | both | `components/page.tsx` | `import { Page, PageHeader, CardGrid, EmptyState } from "@/components/page"` |
-| `page-header` | both | `components/page-header.tsx` | `import { PageInsetContext, PageHeader } from "@/components/page-header"` |
+| `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
 | `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
 | `password-input` | both | `components/password-input.tsx` | `import { revealLabelsFor, PasswordInput } from "@/components/password-input"` |

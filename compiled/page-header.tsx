@@ -23,7 +23,7 @@
  * The title's colour is not one of them: it is named on every platform, because react-native-web
  * does not inherit it either.
  */
-import { createContext, type ReactNode, useContext } from "react";
+import type { ReactNode } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -220,12 +220,6 @@ function Heading({
  * one line, because the variable is how wide the action is, not the window. The title wraps and
  * never truncates.
  */
-/**
- * Set by a shell that already insets its content — `Page` — so a `PageHeader` inside it does not
- * add its own `px-4` and top padding on top, which put the title 16px right of the body under it.
- */
-export const PageInsetContext = createContext(false);
-
 export function PageHeader({
   contentSlot,
   title,
@@ -240,7 +234,6 @@ export function PageHeader({
   contentClassName,
 }: PageHeaderProps) {
   const { title: titleSize, icon: iconSize, row: rowFloor, bar: barHeight } = LEVELS[level];
-  const inset = useContext(PageInsetContext);
 
   // The rule these apps already follow without having named it: a page header draws a line under
   // itself exactly when nothing else separates it from the body. The list headers, which all
@@ -275,13 +268,7 @@ export function PageHeader({
     <div
       data-slot="page-header"
       aria-busy={loading || undefined}
-      className={cn(
-        "cube-rn-view",
-        "min-w-0 flex-col gap-3 px-4 py-4",
-        inset && "px-0 pt-0",
-        rule,
-        className,
-      )}
+      className={cn("cube-rn-view", "min-w-0 flex-col gap-3 px-4 py-4", rule, className)}
     >
       {breadcrumbsSlot ? (
         <div data-slot="page-header-breadcrumbs" className={cn("cube-rn-view", SLOT, "min-w-0")}>

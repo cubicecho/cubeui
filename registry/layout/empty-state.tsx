@@ -4,8 +4,8 @@
  * a sidebar section or a popover.
  *
  * Its own item so an app that wants an empty state installs this and `@cubeui/empty` and nothing
- * else; `@cubeui/page` re-exports it, beside the `CardGrid` it is usually drawn under. The block is
- * drawn by `@cubeui/empty`'s parts, so shadcn's compound form and this one-line form agree.
+ * else. The block is drawn by `@cubeui/empty`'s parts, so shadcn's compound form and this one-line
+ * form agree.
  */
 import type { ReactNode } from "react";
 import { Text, View } from "react-native";

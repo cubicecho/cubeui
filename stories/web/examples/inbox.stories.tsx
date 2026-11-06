@@ -5,12 +5,12 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { TextareaField, useAppForm } from "@/components/app-form";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DetailHeader } from "@/components/detail-header";
-import { DetailPage } from "@/components/detail-page";
 import { EmptyState } from "@/components/empty-state";
 import { StickyHeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { PageHeader } from "@/components/page-header";
+import { QueryState } from "@/components/query-state";
 import { SplitLayout } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,8 +28,8 @@ import { TODAY } from "./fixtures";
 
 /**
  * An inbox as two panes: the messages as list rows, the chosen one tinted, and the message open
- * beside them with its header, its body, an attachment and a reply box. The detail pane is a
- * `DetailPage`, so it has a loading and a not-found branch of its own.
+ * beside them with its header, its body, an attachment and a reply box. The detail pane opens
+ * behind a `QueryState`, so it has a loading and a not-found branch of its own.
  */
 type Args = { detail: "ready" | "loading" | "missing" };
 
@@ -238,20 +238,28 @@ function Inbox({ detail }: Args) {
           width="prose"
           contentClassName="py-4"
           contentSlot={
-            <DetailPage<Message>
-              entity={open}
-              loading={detail === "loading"}
-              notFoundLabel="That message was moved or deleted."
-              contentSlot={(message) => (
+            <>
+              <QueryState
+                query={{
+                  isPending: detail === "loading",
+                  isError: false,
+                  error: null,
+                  refetch: () => {},
+                }}
+                what="this message"
+                record={open}
+                notFoundLabel="That message was moved or deleted."
+              />
+              {open && detail !== "loading" ? (
                 <div className="flex flex-col gap-4">
                   <DetailHeader
                     onBack={() => setOpenId(null)}
                     backLabel="Back to the inbox"
-                    title={message.subject}
-                    subtitle={`${message.from} · ${formatAgo(message.at, TODAY)}`}
+                    title={open.subject}
+                    subtitle={`${open.from} · ${formatAgo(open.at, TODAY)}`}
                     badgeSlot={
-                      message.label ? (
-                        <Badge variant={LABEL_BADGE[message.label]}>{message.label}</Badge>
+                      open.label ? (
+                        <Badge variant={LABEL_BADGE[open.label]}>{open.label}</Badge>
                       ) : null
                     }
                     actionsSlot={
@@ -263,7 +271,7 @@ function Inbox({ detail }: Args) {
                           hint="Archive: out of the inbox, still searchable"
                           iconSlot={<Archive />}
                           onClick={() => {
-                            remove(message.id);
+                            remove(open.id);
                             toast("Archived.", "info");
                           }}
                         />
@@ -273,32 +281,32 @@ function Inbox({ detail }: Args) {
                           aria-label="Delete"
                           iconSlot={<Trash2 />}
                           title="Delete this message?"
-                          description={`“${message.subject}” is deleted for you. ${message.from} still has their copy.`}
-                          onConfirm={() => remove(message.id)}
+                          description={`“${open.subject}” is deleted for you. ${open.from} still has their copy.`}
+                          onConfirm={() => remove(open.id)}
                         />
                       </div>
                     }
                   />
                   <Separator />
-                  {message.body.split("\n\n").map((paragraph) => (
+                  {open.body.split("\n\n").map((paragraph) => (
                     <p key={paragraph} className="text-foreground text-sm leading-relaxed">
                       {paragraph}
                     </p>
                   ))}
-                  {message.attachment ? (
+                  {open.attachment ? (
                     <CodeBlock
-                      content={message.attachment}
+                      content={open.attachment}
                       wrap
                       actionSlot={
-                        <CopyButton value={message.attachment} label="Copy the webhook URL" />
+                        <CopyButton value={open.attachment} label="Copy the webhook URL" />
                       }
                     />
                   ) : null}
                   <Separator />
-                  <Reply to={message.from} />
+                  <Reply to={open.from} />
                 </div>
-              )}
-            />
+              ) : null}
+            </>
           }
         />
       }

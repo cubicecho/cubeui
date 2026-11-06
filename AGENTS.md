@@ -560,7 +560,7 @@ Recorded so the next pass does not re-derive them:
   keyboard, a touch screen and a native build move a row through the app's own "Move to…"
   action, which is why `onMove` is never the only way in.
 - **`EmptyState`**. ~30 files hand-roll "no results". `@cubeui/empty` is the primitive, and
-  `CardLayout` already has the slot. `EmptyState` did ship later, in `@cubeui/page`, and `empty`
+  `CardLayout` already has the slot. `EmptyState` did ship later, as `@cubeui/empty-state`, and `empty`
   is now shadcn's parts on both halves drawn the same way — `EmptyState` is built on them.
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
   copies of a `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project

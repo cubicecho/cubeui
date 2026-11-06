@@ -1416,44 +1416,6 @@
       ]
     },
     {
-      "name": "page",
-      "type": "registry:component",
-      "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state` and the grid `@cubeui/grid-layout`, re-exported here.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/empty-state",
-        "@cubeui/grid-layout",
-        "@cubeui/page-header",
-        "@cubeui/header-content-footer"
-      ],
-      "files": [
-        {
-          "path": "registry/layout/page.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "detail-page",
-      "type": "registry:component",
-      "title": "Detail Page",
-      "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/page",
-        "@cubeui/empty-state",
-        "@cubeui/query-state",
-        "@cubeui/icons"
-      ],
-      "files": [
-        {
-          "path": "registry/layout/detail-page.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "detail-header",
       "type": "registry:component",
       "title": "Detail Header",

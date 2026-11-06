@@ -67,18 +67,12 @@ The shells for the shape every list route is: a ladder of states, then a list of
   `notFoundLabel` is what the page says then, drawn as a level-1 `EmptyState` with the Search icon,
   because the whole page is that state. Once the record is there it renders `null`, as it does for
   rows. Pass one of `count` and `record`, never both; `emptySlot` goes with `count`.
+- Since the not-found title is the page's `h1`, it stands in front of the page rather than inside
+  one that already has a title:
 
   ```tsx
-  <PageLayout
-    title={project.data?.name ?? "Project"}
-    loading={project.isPending}
-    contentSlot={
-      <>
-        <QueryState query={project} what="this project" record={project.data} notFoundLabel="Project not found" />
-        {project.data ? <ProjectBody project={project.data} /> : null}
-      </>
-    }
-  />
+  <QueryState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
+  {project.data ? <PageLayout title={project.data.name} contentSlot={<ProjectBody project={project.data} />} /> : null}
   ```
 - It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
@@ -115,7 +109,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
 <!-- /props -->
 ### Empty states
 
-`EmptyState` (`@cubeui/empty-state`, on both halves, and re-exported by `@cubeui/page`) is what an
+`EmptyState` (`@cubeui/empty-state`, on both halves) is what an
 empty list says. Install `empty-state` for it; it does not need the page shell. It comes in two shapes,
 and which one is a question of **where the list is**, not how much there is to say:
 

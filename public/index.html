@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 108 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 108 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  94 on both platforms · 14 web-only · 0 native-only.
+  92 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -376,11 +376,6 @@
           <td>The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.</td>
         </tr>
         <tr>
-          <th scope="row"><code>@cubeui/detail-page</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.</td>
-        </tr>
-        <tr>
           <th scope="row"><code>@cubeui/dialog</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.</td>
@@ -544,11 +539,6 @@
           <th scope="row"><code>@cubeui/number-draft</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>What a number box holds while it is typed in: `parseNumber`, which reads `""`, `-` and `1e` as no number yet and never as `0` or `NaN`, and `numberText`, which draws the typed text while it still means the stored number. What the two form bindings' NumberField share.</td>
-        </tr>
-        <tr>
-          <th scope="row"><code>@cubeui/page</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state` and the grid `@cubeui/grid-layout`, re-exported here.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page-header</code></th>

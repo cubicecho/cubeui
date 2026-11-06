@@ -169,13 +169,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`PageLayout`:** a whole page: its title block pinned above a scrolling body,
   with an optional footer, at a named column width. Owner: `registry/layout/page-layout.tsx`;
   composes `HeaderContentFooter` and `PageHeader`.
-- **`Page`:** a padded column that scrolls with no title block of its own; a `PageHeader`
-  placed in its body scrolls away with it. Owner: `registry/layout/page.tsx`, which re-exports
-  `PageHeader`, `EmptyState` and `GridLayout` (as `CardGrid`).
 - **`GridLayout`:** equal cells in rows, one to four to a row by the window's width, one cell
   per element of its body, for any content. Owner: `registry/layout/grid-layout.tsx`.
-- **`DetailPage`:** a `Page` for one record that shows loading, then not found,
-  before handing the loaded record to its body. Owner: `registry/layout/detail-page.tsx`.
 - **`HeaderContentFooter`:** the frame most shells build on: a header
   and footer around a body, where either the whole frame or only the body scrolls. Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
@@ -267,8 +262,6 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **Prototype weights:** the proposed named-weight tokens, chart colours and `fg-` utility,
   built beside today's tokens and used by no item. Owner: `tokens/weights.mjs`,
   `tokens/series.mjs`, `scripts/build-token-weights.mjs`, `dist/prototype/`.
-- **`PageInsetContext`:** tells a `PageHeader` inside a `Page` to drop its own
-  padding. Owner: `registry/layout/page-header.tsx`.
 - **`SidebarPositionContext`:** tells a `Sidebar` which edge its border
   is on. Owner: `registry/layout/split-layout.tsx`.
 
@@ -278,7 +271,7 @@ An author writes an item once in React Native; the compiler makes its web half, 
 build turns the palette into the token sheets every item draws with. Each push to `main`
 publishes the registry, and an app installs an item by name as its own files. Primitives are
 the controls and surfaces, and components build one job from them. Shells place the nodes an app
-hands them into a fixed shape: a `PageLayout` or a `Page` inside a `SidebarLayout` or a
+hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout` or a
 `TopBarLayout`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
 each with its empty, loading and failed states. Bound fields wire a control to a form field. A shell keeps only the state of its own
 interaction (a dialog's discard question, a disclosure's open body), never the app's data.

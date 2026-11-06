@@ -463,7 +463,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
+| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `grid-layout`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
 | docs | `skill` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was

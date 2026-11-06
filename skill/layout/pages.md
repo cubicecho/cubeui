@@ -285,7 +285,7 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 - The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
   cell `GridLayout` draws, so a card in it carries no width of its own.
 - It has no empty or loading state. `QueryState` goes above it, as it does above a list.
-- It was `CardGrid` in `@cubeui/page`, which still exports that name for now.
+- It was `CardGrid` in `@cubeui/page`, an item that is gone; only the import and the name change.
 
 <!-- props:GridLayout -->
 `GridLayout`'s props, from the TSDoc in `registry/layout/grid-layout.tsx`:
@@ -345,4 +345,4 @@ when the keyboard comes up, and a tap on the submit button is not spent dismissi
 Do not wrap it in a `KeyboardAvoidingView` or a `ScrollView` of your own.
 
 A sign-in with no card — a heading and a form on the bare background — is not this shape; lay
-that out with `Page` or by hand rather than stripping the card with `cardClassName`.
+that out with `PageLayout` or by hand rather than stripping the card with `cardClassName`.

@@ -8,7 +8,6 @@ import { Combobox } from "../../registry/layout/combobox";
 import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
 import { DetailHeader } from "../../registry/layout/detail-header";
-import { DetailPage } from "../../registry/layout/detail-page";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
@@ -18,7 +17,6 @@ import { GridLayout } from "../../registry/layout/grid-layout";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
-import { Page } from "../../registry/layout/page";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
 import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
@@ -700,9 +698,6 @@ function Rows() {
 const idleQuery = { isPending: false, isError: false, error: null, refetch: noop };
 const pendingQuery = { ...idleQuery, isPending: true };
 
-type Project = { name: string; owner: string };
-const project: Project = { name: "Quarterly review", owner: "Dana Whitfield" };
-
 const navLink = "rounded-md px-3 py-1.5 text-foreground/60 text-sm";
 
 const sections: GallerySection[] = [
@@ -1116,7 +1111,8 @@ const sections: GallerySection[] = [
   {
     title: "Query state and route error",
     items: ["query-state", "route-error"],
-    description: "Loading, failed, empty, then the screen a route shows when it throws.",
+    description:
+      "Loading, failed, empty, a record not found, then the screen a route shows when it throws.",
     content: (
       <Stack>
         <RowSkeleton rows={2} />
@@ -1132,20 +1128,29 @@ const sections: GallerySection[] = [
           emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
         />
         <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
+        <QueryState
+          query={idleQuery}
+          what="this project"
+          record={null}
+          notFoundLabel="Project not found."
+        />
         <RouteError error={new Error("Project not found.")} reset={noop} />
       </Stack>
     ),
   },
   {
-    title: "Page",
-    items: ["page", "grid-layout", "empty-state"],
-    description: "A scrolling screen: a header, a grid of cards, an empty state.",
+    title: "Grid layout",
+    items: ["grid-layout", "empty-state"],
+    description: "A screen's grid of cards, and its empty state.",
     content: (
       <Screen>
-        <Page
+        <PageLayout
+          level={3}
+          title="Projects"
+          description="Two active."
+          contentClassName="gap-4"
           contentSlot={
             <>
-              <PageHeader level={3} title="Projects" description="Two active." />
               <GridLayout
                 contentSlot={
                   <>
@@ -1185,36 +1190,6 @@ const sections: GallerySection[] = [
           actionSlot={<Button size="sm" variant="positive" content="Save" />}
           footerSlot={<Caption>Last saved a minute ago</Caption>}
           contentSlot={<Lines count={6} />}
-        />
-      </Screen>
-    ),
-  },
-  {
-    title: "Detail page",
-    items: ["detail-page"],
-    description: "The record when it has loaded, a line of text when it has not.",
-    content: (
-      <Screen>
-        <DetailPage<Project>
-          entity={project}
-          loading={false}
-          notFoundLabel="Project not found."
-          contentSlot={(found) => (
-            <DescriptionList
-              contentSlot={
-                <>
-                  <PropertyRow label="Name" value={found.name} />
-                  <PropertyRow label="Owner" value={found.owner} />
-                </>
-              }
-            />
-          )}
-        />
-        <DetailPage<Project>
-          entity={null}
-          loading={false}
-          notFoundLabel="Project not found."
-          contentSlot={() => null}
         />
       </Screen>
     ),

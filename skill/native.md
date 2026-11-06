@@ -5,22 +5,20 @@ Part of the cubeui skill, for an Expo app. Read [SKILL.md](SKILL.md) first for t
 ## Shapes on React Native
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They
-take their body as `contentSlot` like every other shell: `<Page contentSlot={…} />`, and
-`<GridLayout contentSlot={cards} />`, where the cards are an array or a fragment and each one gets a
-cell. `DetailPage`'s `contentSlot` is a function, called with the record once it has loaded.
+take their body as `contentSlot` like every other shell: `<PageLayout title="Projects" contentSlot={…} />`,
+and `<GridLayout contentSlot={cards} />`, where the cards are an array or a fragment and each one
+gets a cell.
 
-`Page` lays its body on the same column as `PageLayout` (`PAGE_COLUMN`, or the prose column at
-`width="narrow"`), with `gap-4` between what it stacks, and its `PageHeader` shares the body's one inset,
-so the title sits over the first card rather than indented past it. `DetailPage` draws its own
-waiting and missing states: placeholder rows (`RowSkeleton`) while it loads and an `EmptyState`
-when the record is not found, so it installs `@cubeui/query-state` and `@cubeui/empty-state`.
+A screen is `PageLayout`, on the phone as on the web: its title block pinned over a body that
+scrolls. A detail screen for one record puts `QueryState` in front of it, with `record` and
+`notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
+record is not found, and nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
 `DetailHeader` is the page's title, an `h1` (`aria-level` 1) at `text-xl`; its text column
 shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions off a phone.
 
 | The shape you are building | Use | Item |
 | --- | --- | --- |
-| A screen — a title, actions, a body that scrolls | `Page` | `@cubeui/page` |
-| The same screen with the web's props, on both halves | `PageLayout` | `@cubeui/page-layout` |
+| A screen — a title, actions, a body that scrolls | `PageLayout` | `@cubeui/page-layout` |
 | Chrome above, a body that scrolls, chrome below | `StickyHeaderContentFooter` | `@cubeui/header-content-footer` |
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
@@ -32,7 +30,6 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
-| A detail screen for one record: its loading and not-found branches around the body | `DetailPage` | `@cubeui/detail-page` |
 | The header of that screen: a back button, the record's name (`title`, a heading `level` 1–3, 1 by default), a `description` under it, `badgesSlot` and `actionSlot`. Its own item, so it is its own import (`@/components/detail-header`). `subtitle`, `badgeSlot` and `actionsSlot` are the old names, deprecated | `DetailHeader` | `@cubeui/detail-header` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
@@ -41,7 +38,7 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | One figure on a card, or a pressable filter tile with a pressed state — see [layout/facts.md](layout/facts.md#stat-tiles) | `StatTile` | `@cubeui/stat-tile` |
 | A grid of cards or tiles, 1 to 4 to a row by width — see [layout/pages.md](layout/pages.md#grids) | `GridLayout` | `@cubeui/grid-layout` |
-| What an empty list says (also re-exported by `@cubeui/page`) | `EmptyState` | `@cubeui/empty-state` |
+| What an empty list says | `EmptyState` | `@cubeui/empty-state` |
 | A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/empty-state` |
 | An empty list *inside* something — a card, a sidebar section, a popover: one muted line, optional small icon and action, never a heading — see [layout/lists.md](layout/lists.md#empty-states) | `EmptyState compact` | `@cubeui/empty-state` |
 | A form of any size — see [forms/native.md](forms/native.md#on-react-native) | `useAppForm`, `Form` and its bound fields | `@cubeui/form` |
@@ -95,9 +92,9 @@ One name means different things across the halves, and it is worth knowing befor
   fields. The item is called `form-set` on the web because `form` is the native component's
   name, and the shadcn CLI resolves a cross-item import by basename — the two cannot share it.
 
-`PageHeader` is one component on both halves: `@cubeui/page-header`. `@cubeui/page` re-exports
-it, so `Page` and `PageLayout` draw the same title block — `title`, `description`, `actionSlot`,
-`iconSlot`, `breadcrumbsSlot`, `loading`, and a `level` (default 1) for the heading's rank.
+`PageHeader` is one component on both halves: `@cubeui/page-header`, the title block `PageLayout`
+draws — `title`, `description`, `actionSlot`, `iconSlot`, `breadcrumbsSlot`, `loading`, and a
+`level` (default 1) for the heading's rank.
 
 Everything else in the native set is the primitive of the same name: `Button`, `Card`, `Input`,
 `Label`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Dialog`, `Popover`, `Menu`, `Tabs`, `Tooltip`,
