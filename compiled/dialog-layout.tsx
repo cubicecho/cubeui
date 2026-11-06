@@ -30,7 +30,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { CardLayout, FloatingSurfaceContext } from "./card-layout";
-import { ConfirmDialog } from "./confirm-dialog";
+import { ConfirmDialog, DISCARD_QUESTION } from "./confirm-dialog";
 import { Dialog, DialogContent, DialogTrigger } from "./dialog";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
@@ -170,11 +170,16 @@ export type DialogLayoutProps = {
    * form identical to how it opened.
    */
   hasUnsavedChanges?: boolean | (() => boolean) | undefined;
-  /** The question that asks. Defaulted, because this one really is the same everywhere. */
+  /**
+   * The question that asks: "Discard your changes?". Defaulted, because this one really is the
+   * same everywhere.
+   */
   discardTitle?: ReactNode | undefined;
+  /** The line under it: "What you have typed here will not be saved." */
   discardDescription?: ReactNode | undefined;
-  /** The verb that throws the work away, and the one that goes back to it. */
+  /** The verb that throws the work away: "Discard". */
   discardLabel?: ReactNode | undefined;
+  /** The verb that goes back to it: "Keep editing". Also what Escape answers. */
   keepLabel?: ReactNode | undefined;
   showCloseButton?: boolean | undefined;
   className?: string | undefined;
@@ -210,10 +215,10 @@ export function DialogLayout({
   wrapperSlot,
   dismissible = true,
   hasUnsavedChanges = false,
-  discardTitle = "Discard your changes?",
-  discardDescription = "What you have typed here will not be saved.",
-  discardLabel = "Discard",
-  keepLabel = "Keep editing",
+  discardTitle = DISCARD_QUESTION.title,
+  discardDescription = DISCARD_QUESTION.description,
+  discardLabel = DISCARD_QUESTION.discardLabel,
+  keepLabel = DISCARD_QUESTION.keepLabel,
   showCloseButton = true,
   className,
   headerClassName,

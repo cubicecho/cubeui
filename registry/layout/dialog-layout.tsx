@@ -20,7 +20,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Platform } from "react-native";
 import { CardLayout, FloatingSurfaceContext } from "@/components/card-layout";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ConfirmDialog, DISCARD_QUESTION } from "@/components/ui/confirm-dialog";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -167,11 +167,16 @@ export type DialogLayoutProps = {
    * form identical to how it opened.
    */
   hasUnsavedChanges?: boolean | (() => boolean) | undefined;
-  /** The question that asks. Defaulted, because this one really is the same everywhere. */
+  /**
+   * The question that asks: "Discard your changes?". Defaulted, because this one really is the
+   * same everywhere.
+   */
   discardTitle?: ReactNode | undefined;
+  /** The line under it: "What you have typed here will not be saved." */
   discardDescription?: ReactNode | undefined;
-  /** The verb that throws the work away, and the one that goes back to it. */
+  /** The verb that throws the work away: "Discard". */
   discardLabel?: ReactNode | undefined;
+  /** The verb that goes back to it: "Keep editing". Also what Escape answers. */
   keepLabel?: ReactNode | undefined;
   showCloseButton?: boolean | undefined;
   className?: string | undefined;
@@ -207,10 +212,10 @@ export function DialogLayout({
   wrapperSlot,
   dismissible = true,
   hasUnsavedChanges = false,
-  discardTitle = "Discard your changes?",
-  discardDescription = "What you have typed here will not be saved.",
-  discardLabel = "Discard",
-  keepLabel = "Keep editing",
+  discardTitle = DISCARD_QUESTION.title,
+  discardDescription = DISCARD_QUESTION.description,
+  discardLabel = DISCARD_QUESTION.discardLabel,
+  keepLabel = DISCARD_QUESTION.keepLabel,
   showCloseButton = true,
   className,
   headerClassName,

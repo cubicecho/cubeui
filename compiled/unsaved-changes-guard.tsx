@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ConfirmDialog } from "./confirm-dialog";
+import { ConfirmDialog, DISCARD_QUESTION } from "./confirm-dialog";
 
 /**
  * A router's navigation blocker, as far as the guard reads it.
@@ -137,12 +137,18 @@ export function useUnsavedChangesGuard({
 type UnsavedChangesDialogProps = {
   /** What `useUnsavedChangesGuard` returned. */
   guard: UnsavedChangesGuard;
-  /** The question. `DialogLayout`'s wording by default, so a page and a dialog ask alike. */
+  /**
+   * The question: "Discard your changes?". `DialogLayout`'s wording by default, so a page and a
+   * dialog ask alike.
+   */
   discardTitle?: ReactNode | undefined;
+  /** The line under it: "What you have typed here will not be saved." */
   discardDescription?: ReactNode | undefined;
-  /** The destructive button. */
+  /** The destructive button: "Discard". */
   discardLabel?: ReactNode | undefined;
-  /** The other button, which is also what Escape answers. */
+  /** The other button, "Keep editing", which is also what Escape answers. */
+  keepLabel?: ReactNode | undefined;
+  /** @deprecated The old name of `keepLabel`, kept for one release. */
   stayLabel?: ReactNode | undefined;
 };
 
@@ -160,10 +166,11 @@ type UnsavedChangesDialogProps = {
  */
 export function UnsavedChangesDialog({
   guard,
-  discardTitle = "Discard your changes?",
-  discardDescription = "What you have typed here will not be saved.",
-  discardLabel = "Discard",
-  stayLabel = "Keep editing",
+  discardTitle = DISCARD_QUESTION.title,
+  discardDescription = DISCARD_QUESTION.description,
+  discardLabel = DISCARD_QUESTION.discardLabel,
+  stayLabel,
+  keepLabel = stayLabel ?? DISCARD_QUESTION.keepLabel,
 }: UnsavedChangesDialogProps) {
   return (
     <ConfirmDialog
@@ -176,7 +183,7 @@ export function UnsavedChangesDialog({
       title={discardTitle}
       description={discardDescription}
       confirmLabel={discardLabel}
-      cancelLabel={stayLabel}
+      cancelLabel={keepLabel}
       onConfirm={guard.discard}
     />
   );

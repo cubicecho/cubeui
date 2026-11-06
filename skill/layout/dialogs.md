@@ -42,10 +42,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
-| `discardTitle` | `ReactNode` | `"Discard your changes?"` | The question that asks. Defaulted, because this one really is the same everywhere. |
-| `discardDescription` | `ReactNode` | `"What you have typed here will not be saved."` |  |
-| `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away, and the one that goes back to it. |
-| `keepLabel` | `ReactNode` | `"Keep editing"` |  |
+| `discardTitle` | `ReactNode` | `DISCARD_QUESTION.title` | The question that asks: "Discard your changes?". Defaulted, because this one really is the same everywhere. |
+| `discardDescription` | `ReactNode` | `DISCARD_QUESTION.description` | The line under it: "What you have typed here will not be saved." |
+| `discardLabel` | `ReactNode` | `DISCARD_QUESTION.discardLabel` | The verb that throws the work away: "Discard". |
+| `keepLabel` | `ReactNode` | `DISCARD_QUESTION.keepLabel` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
 | `showCloseButton` | `boolean` | `true` |  |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
@@ -134,8 +134,9 @@ const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
   while there are changes, so the router's `enableBeforeUnload` is not needed. The browser words
   that question itself.
 - `hasUnsavedChanges` is a boolean or a function, as on `DialogLayout`.
-- The wording is `DialogLayout`'s by default. `discardTitle`, `discardDescription`,
-  `discardLabel` and `stayLabel` on `UnsavedChangesDialog` change it.
+- The wording is `DialogLayout`'s by default, and the props that change it have the same names:
+  `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`. `stayLabel` is
+  `keepLabel`'s old name, deprecated and kept for one release.
 
 ### Saving with Cmd/Ctrl+S
 
