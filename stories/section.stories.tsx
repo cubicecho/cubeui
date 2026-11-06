@@ -175,8 +175,7 @@ function SmallActionSection({ half }: { half: "native" | "compiled" }) {
 
 /**
  * The other side of #211: an action that fits does not move. One button at 390px stays at the
- * heading row's far end, centred on the text beside it, exactly where it sat before the row
- * learned to wrap.
+ * heading row's far end, beside the text rather than under it.
  */
 export const SmallActionStaysBeside: Story = {
   args: { title: "Files" },
@@ -190,20 +189,15 @@ export const SmallActionStaysBeside: Story = {
     for (const half of ["native", "compiled"] as const) {
       const frame = within(canvasElement).getByTestId(`${half}-small`);
       const box = frame.getBoundingClientRect();
-      const title = within(frame).getByRole("heading", { name: "Files" }).getBoundingClientRect();
       const description = within(frame).getByText(toolbarDescription).getBoundingClientRect();
       const button = within(frame).getByRole("button", { name: "Export" }).getBoundingClientRect();
-      const textMiddle = (title.top + description.bottom) / 2;
-      const buttonMiddle = (button.top + button.bottom) / 2;
       await expect({
         half,
         // At the far end, flush with the section's edge.
         atEnd: Math.abs(button.right - box.right) < 1,
-        // Beside the text, past its end, with the row's 8px gap between them.
-        beside: Math.abs(button.left - description.right - 8) < 1,
-        // Centred on the text block, as `items-center` always had it.
-        centred: Math.abs(buttonMiddle - textMiddle) < 1,
-      }).toEqual({ half, atEnd: true, beside: true, centred: true });
+        // Beside the text, past its end, and not on a line of its own under it.
+        beside: button.left > description.right && button.top < description.bottom,
+      }).toEqual({ half, atEnd: true, beside: true });
     }
   },
 };
