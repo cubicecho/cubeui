@@ -301,9 +301,8 @@ export function QueryError({
  * What a list shows before its first answer.
  *
  * Drawn as the row it stands in for — a title bar over a line bar — so the screen does not change
- * shape underneath the reader when the answer lands.
- * The web half of `main` drew an outlined `Item` here; `Item` is a DOM-only primitive, and a
- * placeholder that matches the row is the point rather than which component draws it.
+ * shape underneath the reader when the answer lands: a placeholder that matches the row is the
+ * point, rather than which component draws it.
  *
  * The placeholders are `aria-hidden` under one `role="status"` saying "Loading", because three
  * cards' worth of placeholder text is three cards' worth of nothing to a screen reader. `main`
