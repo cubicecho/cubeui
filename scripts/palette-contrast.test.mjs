@@ -59,15 +59,17 @@ const PAIRS = [
       ],
     ]),
   ),
-  // A chosen row's text, on `bg-active/40`. Its secondary text turns `foreground` when chosen,
-  // because `/60` does not clear 4.5:1 there.
-  ...SURFACES.map((surface) => [
-    "foreground",
-    [
-      [surface, 1],
-      ["active", 0.4],
-    ],
-  ]),
+  // A chosen row's text, on `bg-active/40`, and on `bg-active/60` under the pointer. Its secondary
+  // text turns `foreground` when chosen, because `/60` does not clear 4.5:1 there.
+  ...[0.4, 0.6].flatMap((tint) =>
+    SURFACES.map((surface) => [
+      "foreground",
+      [
+        [surface, 1],
+        ["active", tint],
+      ],
+    ]),
+  ),
 ];
 
 /**
@@ -157,22 +159,37 @@ test("the known exceptions are still exceptions", () => {
 });
 
 /**
- * A chosen row (`bg-active/40`) and a row under the pointer (`bg-hover`) are different states, and
- * a hovered row should not read as chosen. Not a contrast floor WCAG sets, so the bar is the one
- * the default palette was tuned to: the two fills 1.3:1 apart on the surfaces a row sits on.
+ * A chosen row (`bg-active/40`), a chosen row under the pointer (`bg-active/60`) and an unchosen
+ * row under the pointer (`bg-hover`) are three states, and none should read as another. Not a
+ * contrast floor WCAG sets, so the bar is the one the default palette was tuned to: each pair of
+ * fills 1.3:1 apart on the surfaces a row sits on.
  */
 const STATE_APART = 1.3;
 for (const [set, map] of sets) {
-  test(`${set}: a chosen row is apart from a hovered one`, () => {
+  test(`${set}: a chosen row, hovered or not, is apart from a hovered one`, () => {
     const close = SURFACES.flatMap((surface) => {
-      const chosen = surfaceRgb(map, [
-        [surface, 1],
-        ["active", 0.4],
-      ]);
-      const hovered = toRgb(map.hover);
-      const [hi, lo] = [luminance(chosen), luminance(hovered)].sort((x, y) => y - x);
-      const r = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
-      return r < STATE_APART ? [`on ${surface}: ${r.toFixed(2)}:1, needs ${STATE_APART}`] : [];
+      const tint = (alpha) =>
+        surfaceRgb(map, [
+          [surface, 1],
+          ["active", alpha],
+        ]);
+      const states = {
+        chosen: tint(0.4),
+        "chosen and hovered": tint(0.6),
+        hovered: toRgb(map.hover),
+      };
+      const pairs = [
+        ["chosen", "hovered"],
+        ["chosen and hovered", "hovered"],
+        ["chosen", "chosen and hovered"],
+      ];
+      return pairs.flatMap(([a, b]) => {
+        const [hi, lo] = [luminance(states[a]), luminance(states[b])].sort((x, y) => y - x);
+        const r = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
+        return r < STATE_APART
+          ? [`${a} and ${b} on ${surface}: ${r.toFixed(2)}:1, needs ${STATE_APART}`]
+          : [];
+      });
     });
     assert.deepEqual(close, []);
   });

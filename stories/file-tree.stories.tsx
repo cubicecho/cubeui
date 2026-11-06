@@ -515,8 +515,9 @@ function tokenColor(token: string) {
 const MUTED_BADGE = "shrink-0 font-normal text-muted-foreground";
 
 /**
- * On the selected row everything in the meta takes the row's ink, a caller's own colour classes
- * included: a muted outline Badge on the active fill was grey on light teal.
+ * On the selected row everything in the meta takes the row's ink — the colour its name is drawn
+ * in — a caller's own colour classes included: a muted outline Badge on the chosen fill was grey
+ * on light teal.
  */
 export const SelectedMetaTakesTheRowInk: Story = {
   args: { label: "Skill files", entries: ENTRIES },
@@ -557,9 +558,11 @@ export const SelectedMetaTakesTheRowInk: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    const ink = tokenColor("active-foreground");
     for (const selector of [".native-root", ".compiled-root"]) {
       const root = canvasElement.querySelector(selector) as HTMLElement;
+      const ink = getComputedStyle(within(root).getByText("notes.md")).color;
+      // The row's ink, and not the muted grey the caller's class asked for.
+      await expect(ink).not.toBe(tokenColor("muted-foreground"));
       const label = within(root).getByText("draft");
       await waitFor(() => expect(getComputedStyle(label).color).toBe(ink));
     }
