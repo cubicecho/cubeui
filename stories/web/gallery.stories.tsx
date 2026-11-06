@@ -245,6 +245,8 @@ const NOT_SHOWN: Record<string, string> = {
   "readable-text-color": "A function; the tinted badge takes its ink from it.",
   format: "Functions that write a count, a size, a duration and a date as text.",
   "bottom-bar": "Two hooks; the toasts rise above SidebarLayout's bottom bar through them.",
+  "frame-focus-guard":
+    "Nothing to draw; menus, dialogs, popovers and selects hold it while they are open.",
   "error-message": "A function; the form fields read their error text with it.",
   "description-hint":
     'The button behind `descriptionPlacement="popover"`; the fields, cards, sections and rows draw it.',

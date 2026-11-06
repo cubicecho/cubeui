@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 107 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 107 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  92 on both platforms · 14 web-only · 0 native-only.
+  93 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -469,6 +469,11 @@
           <th scope="row"><code>@cubeui/format</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>How a count, a size in bytes, a duration and a date are written for a reader, and how a row of them is joined: formatCount, formatBytes, formatDuration, formatDate, formatDateTime, formatAgo and joinStats, on Intl with no dependency.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/frame-focus-guard</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Keeps a framed page from taking focus out of an open menu, dialog, popover or select: frames go inert while an overlay is open, and a window blur that only moved focus into one is stopped and focus put back. Held by those overlays' web halves; web only.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/header-content-footer</code></th>

@@ -146,6 +146,12 @@ on both platforms:
 - A value chosen from a list is `Select` or `Combobox`, not a menu. `MenuRadioGroup` is for a
   view setting that lives behind a menu button — a filter, a sort — not for a form's value.
 
+**A page that frames another app needs nothing extra.** On the web, `Menu`, `Select`, `Popover`,
+`Dialog` and `AlertDialog` hold `@cubeui/frame-focus-guard` while they are open: an `<iframe>` of an
+app that focuses itself from script would otherwise blur the window, and a Radix menu or select closes
+on window blur, so it would open and shut at once. Do not add a hook of your own for it, and do not
+work around it with `modal={false}` or `onFocusOutside`; reinstall the overlay if it predates the guard.
+
 ## Command
 
 A search box over a list of rows that filters as you type: shadcn's `Command` parts, on both

@@ -95,6 +95,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `form-field` | web | `components/form-field.tsx` | `import { FormField, ticks } from "@/components/form-field"` |
 | `form-set` | web | a set: `app-form`, `color-field`, `date-field`, `field-row`, `form-field`, `password-field`, `radio-group-field` | — (import from each item) |
 | `format` | both | `lib/format.ts` | `import { formatBytes, formatCount, joinStats, formatDuration, formatDate, formatDateTime, … 1 more } from "@/lib/format"` |
+| `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
 | `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, HeaderContentFooter, StickyHeaderContentFooter } from "@/components/header-content-footer"` |
 | `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |

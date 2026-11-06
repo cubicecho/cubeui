@@ -44,6 +44,7 @@ import {
   type MenuSeparatorProps,
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
+import { FrameFocusGuard } from "@/lib/frame-focus-guard";
 import { cn } from "@/lib/utils";
 import { Check } from "./icons";
 
@@ -105,6 +106,7 @@ function MenuContent({
   align = "center",
   sideOffset = 4,
   onCloseAutoFocus,
+  children,
   ...props
 }: Wide<MenuContentProps, React.ComponentProps<typeof MenuPrimitive.Content>>) {
   const { skipReturnRef } = useContext(MenuContext);
@@ -129,7 +131,11 @@ function MenuContent({
           }
           skipReturnRef.current = false;
         }}
-      />
+      >
+        {children}
+        {/* A framed app focusing itself would blur the window, which closes a menu at once. */}
+        <FrameFocusGuard />
+      </MenuPrimitive.Content>
     </MenuPrimitive.Portal>
   );
 }
