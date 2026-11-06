@@ -318,6 +318,36 @@ export const PartsInTheirPlaces: Story = {
   },
 };
 
+/**
+ * The description describes the dialog, through radix's own link to it, so a screen reader reads
+ * it after the name on opening.
+ */
+export const TheDescriptionDescribesIt: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Described"
+      description="What the dialog is for."
+      contentSlot={<p>The body.</p>}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Described" });
+    await expect(dialog).toHaveAccessibleDescription("What the dialog is for.");
+  },
+};
+
+/** With no description, nothing describes the dialog, and radix is told so rather than warning. */
+export const NoDescriptionDescribesNothing: Story = {
+  args: { unsaved: false },
+  render: () => <DialogLayout open title="Undescribed" contentSlot={<p>The body.</p>} />,
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Undescribed" });
+    await expect(dialog).not.toHaveAttribute("aria-describedby");
+  },
+};
+
 /** `hideTitle` takes the title off the screen and leaves it naming the dialog. */
 export const AHiddenTitleStillNamesIt: Story = {
   args: { unsaved: false },
