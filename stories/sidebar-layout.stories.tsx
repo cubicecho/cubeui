@@ -178,7 +178,10 @@ const shell: Story = {
 
     const headers = Array.from(
       canvasElement.querySelectorAll<HTMLElement>(
-        '[data-testid="sidebar-layout-header"], [data-slot="sidebar-layout-header"]',
+        [
+          '[data-testid="sidebar-layout-header"], [data-slot="sidebar-layout-header"]',
+          '[data-testid="app-bar"], [data-slot="app-bar"]',
+        ].join(", "),
       ),
     );
     await expect(headers).toHaveLength(2);
@@ -246,14 +249,14 @@ const shell: Story = {
         header.getBoundingClientRect().bottom - 0.5,
       );
       // The brand is first in the bar and the action last, with the nav between them.
-      const slots = Array.from(header.children).map(
-        (el) => el.getAttribute("data-testid") ?? el.getAttribute("data-slot"),
+      // Whichever prefix the parts carry, `sidebar-layout-` or `app-bar-`.
+      const slots = Array.from(header.children).map((el) =>
+        (el.getAttribute("data-testid") ?? el.getAttribute("data-slot"))?.replace(
+          /^(sidebar-layout|app-bar)-/,
+          "",
+        ),
       );
-      await expect(slots).toEqual([
-        "sidebar-layout-brand",
-        "sidebar-layout-nav",
-        "sidebar-layout-action",
-      ]);
+      await expect(slots).toEqual(["brand", "nav", "action"]);
     }
 
     // The same bar on both halves: the same height and the same fill.
