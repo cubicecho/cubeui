@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { CardLayout } from "../../../registry/layout/card-layout";
 import { ConfirmButton } from "../../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../../registry/layout/description-list";
 import { DialogLayout } from "../../../registry/layout/dialog-layout";
 import { PageLayout } from "../../../registry/layout/page-layout";
-import { Section } from "../../../registry/layout/section";
 import { SettingRow } from "../../../registry/layout/setting-row";
 import { Button } from "../../../registry/ui/button";
 import { createAppForm, Form } from "../../../registry/ui/form";
@@ -105,9 +105,9 @@ function Settings() {
       title="Settings"
       contentSlot={
         <>
-          <Section
+          <CardLayout
             title="Account"
-            surface="card"
+            level={2}
             contentSlot={
               <DescriptionList
                 layout="stacked"
@@ -144,9 +144,9 @@ function Settings() {
             }}
           />
 
-          <Section
+          <CardLayout
             title="Notifications"
-            surface="card"
+            level={2}
             contentSlot={
               <>
                 <SwitchField
@@ -180,9 +180,9 @@ function Settings() {
             }
           />
 
-          <Section
+          <CardLayout
             title="Appearance"
-            surface="card"
+            level={2}
             contentSlot={
               <>
                 <SettingRow
@@ -207,9 +207,9 @@ function Settings() {
             }
           />
 
-          <Section
+          <CardLayout
             title="Account actions"
-            surface="card"
+            level={2}
             contentSlot={
               <>
                 <SettingRow

@@ -213,8 +213,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `CARD_SURFACE_CLASS`.
 - **`CardLayout`:** a card with its icon, title, description, header action, body,
   empty and loading states, and footer already placed. Owner: `registry/layout/card-layout.tsx`.
-- **`Section`:** an overline heading over a group of fields or rows, optionally on a
-  card surface. Owner: `registry/layout/section.tsx`.
+- **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
+  titled card is `CardLayout`. Owner: `registry/layout/section.tsx`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
   `registry/layout/disclosure.tsx`.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:

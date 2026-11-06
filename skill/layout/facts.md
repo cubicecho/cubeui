@@ -79,8 +79,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
 - A `PropertyRow` only renders inside a `DescriptionList`. A row the user *edits* is not this — it
   is a field in a form (`FormField`, or a `DialogLayout` with a form in it, opened from the row), never a value that
   turns into an input where it sits.
-- It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
-  `contentSlot` for those.
+- It draws no surface and no heading: put it in a `Section` or `CardLayout` `contentSlot` for
+  those.
 
 ## Setting rows
 
@@ -88,9 +88,9 @@ One row of a settings page: what the setting is called and what it does at the s
 that changes it at the end.
 
 ```tsx
-<Section
+<CardLayout
   title="Appearance"
-  surface="card"
+  level={2}
   contentSlot={
     <>
       <SettingRow
@@ -146,8 +146,8 @@ that changes it at the end.
   and drops under it, at the start, when they do not — following the width the row is given, not
   the window. A switch stays beside its title on a phone; a select or a wide button goes under.
   There is no breakpoint prop.
-- It draws no surface, no border and no heading. Put the rows in a `Section` (`surface="card"`) or
-  `CardLayout` `contentSlot`; the gap between them is the parent's.
+- It draws no surface, no border and no heading. Put the rows in a `Section` or `CardLayout`
+  `contentSlot`; the gap between them is the parent's.
 - **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
   the switch with its caption beside it, the whole row one hit target. It takes a `description`
   under the caption and `disabled`, so a switch that cannot be changed can say why. Take
