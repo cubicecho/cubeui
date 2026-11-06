@@ -2,6 +2,17 @@
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every control here shares.
 
+**Contents**
+
+- [Progress](#progress)
+- [Colour](#colour)
+- [Removable badge](#removable-badge)
+- [Alert](#alert)
+- [Spinner](#spinner)
+- [Toast](#toast)
+- [Skeleton](#skeleton)
+- [Separator](#separator)
+
 ## Progress
 
 ```tsx
@@ -235,6 +246,35 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
 - Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
   platform's own spinner, a different shape on each.
 - A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
+
+## Toast
+
+A message after something happened that has no surface of its own: a toggle in a list, a drag, a
+move. `ToastProvider` once near the root, then `useToast()` anywhere under it, on both halves:
+
+```tsx
+const toast = useToast();
+toast("Could not save the order.");                 // error, the default
+toast("Saved.", "positive");                         // error | warning | positive | info
+toast(`Moved ${item.title} to ${page.title}.`, "positive", {
+  actionSlot: (dismiss) => (
+    <Button variant="link" size="sm" className="h-auto px-0" content={`Go to ${page.title}`}
+      linkSlot={<Link to="/pages/$slug" params={{ slug: page.slug }} onClick={dismiss} />} />
+  ),
+});
+```
+
+- **`actionSlot`** takes elements, as every slot does: a link-styled `Button`, an Undo, a note. It
+  is drawn under the message, at its start, because the toast is a set width and a link beside the
+  words would squeeze them to a column.
+- **Pressing what is in it does not dismiss the toast.** Pass a function `(dismiss) => …` and call
+  `dismiss` from what should close it — a link that navigates away usually should.
+- **A toast with an `actionSlot` stays up for at least ten seconds**, whatever its tone: a
+  confirmation's three are enough to read "Moved." and not to reach "Go to Media". The ✕ still
+  closes it at once.
+- The tone is a glyph as well as a hue; the box is the raised surface, not a block of the tone's
+  colour. Errors and warnings stay six seconds, confirmations three.
+- A shell never raises a toast; a toast is the caller's, raised where the mutation is.
 
 ## Skeleton
 

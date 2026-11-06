@@ -142,6 +142,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | An Upload button in a page header or toolbar that opens the file dialog directly | `FilePickerButton` | [controls/inputs.md](controls/inputs.md#as-a-button) |
 | A callout on a screen — a key shown once, a fallback in use, the last error — tinted, with an icon | `Alert` | [controls/display.md](controls/display.md#alert) |
 | A loading indicator — in a button, beside a heading, in place of a value | `Spinner` | [controls/display.md](controls/display.md#spinner) |
+| A message after something happened that has no surface of its own — a failed toggle, "Moved", with a link or an Undo in its `actionSlot` | `useToast` | [controls/display.md](controls/display.md#toast) |
 | A pulsing block standing in for content that has not arrived, inside a part no shell's `loading` covers | `Skeleton` | [controls/display.md](controls/display.md#skeleton) |
 | A one-pixel rule between groups, across or down | `Separator` | [controls/display.md](controls/display.md#separator) |
 | An icon anywhere | `@cubeui/icons`, not lucide directly | [controls/icons.md](controls/icons.md#icons) |

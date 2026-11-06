@@ -22,7 +22,7 @@ component with no React Native half, so it does not install in an Expo project. 
 | [dates.md](dates.md) | `DatePicker`, `DateRangePicker`, `DateTimeInput`, the `format*` helpers |
 | [code-and-markdown.md](code-and-markdown.md) | `CodeBlock`, `Markdown`, `MarkdownEditor`, `MarkdownCodeEditor` |
 | [inputs.md](inputs.md) | icons and fixed text in an input, `SearchInput`, `PasswordInput`, `FilePicker` |
-| [display.md](display.md) | `Progress`, `ColorDot`, `Badge onRemove`, `Alert`, `Spinner`, `Skeleton`, `Separator` |
+| [display.md](display.md) | `Progress`, `ColorDot`, `Badge onRemove`, `Alert`, `Spinner`, `Toast`, `Skeleton`, `Separator` |
 | [theme.md](theme.md) | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` |
 
 ## Hover, focus, chosen and disabled
