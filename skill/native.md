@@ -2,6 +2,29 @@
 
 Part of the cubeui skill, for an Expo app. Read [SKILL.md](SKILL.md) first for the "no children" rule, and [vocabulary.md](vocabulary.md) for the slot vocabulary. Each item's import line is in [install-paths.md](install-paths.md).
 
+## Before the first install: two react-native-css fixes
+
+An Expo app installing from `r/native` needs both, or the screen looks wrong on device and right on
+the web:
+
+```jsonc
+// package.json
+"scripts": { "postinstall": "patch-package" },
+"devDependencies": { "patch-package": "^8.0.1" },
+"overrides": { "react-native-css": { "lightningcss": "1.30.1" } }
+```
+
+and cubeui's `patches/react-native-css+3.1.0-rc.0.patch` in the app's `patches/`.
+
+- **Without the pin** the Android bundle does not build: *"failed to deserialize; expected an
+  object-like struct named Specifier"*.
+- **Without the patch** every opacity class (`text-foreground/60`, `border-foreground/50`,
+  `bg-negative/10`) resolves to no colour on device, which React Native draws as black. Black icons,
+  black input borders and missing tints are this, not a wrong class.
+
+A `postinstall` and a `patches/` file both change an Expo runtime fingerprint, so adding them means
+one new native build.
+
 ## Shapes on React Native
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They

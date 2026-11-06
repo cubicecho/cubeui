@@ -24,7 +24,8 @@
     "format": "biome check --write .",
     "test": "node --test 'scripts/**/*.test.mjs' && vitest run",
     "build": "npm run tokens:build && npm run compile && npm run typecheck && npm run registry:build && npm run page:build && npm run skill:build && npm run registry:check",
-    "check": "npm run tokens:check && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run skill:check && npm run docs:check && npm run lint && npm test"
+    "check": "npm run tokens:check && npm run compile:check && npm run typecheck && npm run registry:check && npm run page:check && npm run skill:check && npm run docs:check && npm run lint && npm test",
+    "postinstall": "patch-package"
   },
   "engines": {
     "node": ">=20"
@@ -72,6 +73,7 @@
     "@types/react-dom": "^19.2.5",
     "@vitest/browser-playwright": "^4.1.11",
     "cmdk": "^1.1.1",
+    "patch-package": "^8.0.1",
     "playwright": "^1.63.0",
     "react-markdown": "^10.1.0",
     "react-native-web": "^0.21.2",
@@ -87,5 +89,10 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true
+  },
+  "overrides": {
+    "react-native-css": {
+      "lightningcss": "1.30.1"
+    }
   }
 }

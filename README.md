@@ -500,6 +500,36 @@ The `placeholder:` variant is the better spelling regardless: react-native-css c
 `placeholderTextColor` prop on device and to a real `::placeholder` rule on web, so one class covers
 both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
 
+### Two things an Expo app has to add
+
+Both are fixes to react-native-css, the library under NativeWind that applies styles on device. This
+repo carries both, so its native tests run the same code a phone does, and so must every Expo app that
+installs from `public/r/native`:
+
+```jsonc
+// package.json
+"scripts": { "postinstall": "patch-package" },
+"devDependencies": { "patch-package": "^8.0.1" },
+"overrides": { "react-native-css": { "lightningcss": "1.30.1" } }
+```
+
+and `patches/react-native-css+3.1.0-rc.0.patch` copied from this repo.
+
+- **The lightningcss pin.** From lightningcss 1.30.2, the round trip react-native-css's compiler
+  makes through it fails on any `var()`: *"failed to deserialize; expected an object-like struct
+  named Specifier"*. In an app the Android bundle does not build at all.
+- **The `colorMix` patch.** Tailwind writes an opacity class such as `border-foreground/50` as
+  `color-mix(in oklab, var(--foreground) 50%, transparent)`. The compiler leaves the missing second
+  percentage `undefined`, and Metro injects the stylesheet as JSON, which turns it into `null`. The
+  runtime's `colorMix` then gave up on the leftover argument, so every `/NN` class resolved to no
+  colour, and React Native draws an unset text, icon or border colour as black. The native source
+  uses these classes about 270 times. The web is unaffected, because the browser mixes the colour
+  itself. The patch drops the empty arguments before parsing, and 3.1.0-rc.1 still needs it.
+
+`scripts/native-color-mix.test.mjs` compiles real opacity classes, makes Metro's JSON round trip and
+resolves them with the real runtime function. Without the patch its three class assertions fail. It
+also fails when the compiler stops writing the gap, which is the sign the patch can go.
+
 ### Guards
 
 `scripts/check-registry-build.mjs` enforces sixteen rules, numbered in the script's header, and
