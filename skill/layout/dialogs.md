@@ -29,6 +29,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `title` (required) | `ReactNode` |  | Required, because a dialog without a title is one no screen reader can announce. A dialog whose design has no room for a heading passes `hideTitle` and keeps this. |
 | `description` | `ReactNode` |  | Read to the same people the title is. Absent, the dialog is described by its body. |
 | `hideTitle` | `boolean` | `false` | Keeps the title for assistive technology and takes it off the screen. |
+| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
+| `actionSlot` | `SlotNode` |  | The header's far end, clear of the close button: a menu, a status badge, a switch. |
+| `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element, or a `List` with no rows — `CardLayout`'s rule. |
+| `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted. The title and the footer stay. |
 | `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
 | `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
 | `onOpenChange` | `((open: boolean) => void)` |  |  |
@@ -38,10 +42,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
-| `discardTitle` | `ReactNode` | `"Discard your changes?"` | The question that asks. Defaulted, because this one really is the same everywhere. |
-| `discardDescription` | `ReactNode` | `"What you have typed here will not be saved."` |  |
-| `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away, and the one that goes back to it. |
-| `keepLabel` | `ReactNode` | `"Keep editing"` |  |
+| `discardTitle` | `ReactNode` | `DISCARD_QUESTION.title` | The question that asks: "Discard your changes?". Defaulted, because this one really is the same everywhere. |
+| `discardDescription` | `ReactNode` | `DISCARD_QUESTION.description` | The line under it: "What you have typed here will not be saved." |
+| `discardLabel` | `ReactNode` | `DISCARD_QUESTION.discardLabel` | The verb that throws the work away: "Discard". |
+| `keepLabel` | `ReactNode` | `DISCARD_QUESTION.keepLabel` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
 | `showCloseButton` | `boolean` | `true` |  |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
@@ -61,6 +65,12 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel` reword the question when
   the dialog knows what is lost. The question is a `ConfirmDialog` (so `@cubeui/dialog-layout`
   installs `@cubeui/confirm-dialog`): an `alertdialog` at `sm` width, Keep first and Discard last.
+- **A dialog is a `CardLayout` on the dialog's panel.** The panel draws the border, fill, shadow
+  and `p-6` inset, and the card's parts sit on it: the title is the dialog's `text-lg` title and
+  names it, the body is the one part that scrolls, and the footer stacks below `sm`. So a dialog
+  takes the card's `iconSlot` before the title, an `actionSlot` at the header's far end (kept
+  clear of the close button), `loading` and `emptySlot`, with the card's rules for each — see
+  [Cards](cards.md#cards). A `CardLayout` in the dialog's body is drawn as a card again.
 - **The header and footer look the same on both platforms.** The title and description are
   left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
   on top, below `sm`. Do not centre the header or reverse the buttons yourself.
@@ -124,8 +134,9 @@ const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
   while there are changes, so the router's `enableBeforeUnload` is not needed. The browser words
   that question itself.
 - `hasUnsavedChanges` is a boolean or a function, as on `DialogLayout`.
-- The wording is `DialogLayout`'s by default. `discardTitle`, `discardDescription`,
-  `discardLabel` and `stayLabel` on `UnsavedChangesDialog` change it.
+- The wording is `DialogLayout`'s by default, and the props that change it have the same names:
+  `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`. `stayLabel` is
+  `keepLabel`'s old name, deprecated and kept for one release.
 
 ### Saving with Cmd/Ctrl+S
 

@@ -65,7 +65,7 @@ A shadow says how far a thing floats, and there are three:
 
 | Where it sits | Shadow | What |
 |---|---|---|
-| In the page's flow | none | `Card`, `Section surface="card"`, `Alert`, a code block, a switch's track |
+| In the page's flow | none | `Card`, `CardLayout`, `Alert`, a code block, a switch's track |
 | A part laid over content | `shadow-sm` | A switch's thumb, a copy button over a code block |
 | Floating over the page | `shadow-md` | Popover, menu, a select's list, tooltip, toast |
 | Modal | `shadow-lg` | `Dialog`, `AlertDialog` |

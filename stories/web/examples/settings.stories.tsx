@@ -8,7 +8,6 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
 import { PageLayout } from "@/components/page-layout";
-import { Section } from "@/components/section";
 import { SettingRow } from "@/components/setting-row";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -126,9 +125,9 @@ function GeneralTab() {
   const [savedPlan, setSavedPlan] = useState("team");
   return (
     <>
-      <Section
+      <CardLayout
         title="Workspace"
-        surface="card"
+        level={2}
         contentSlot={
           <DescriptionList
             contentSlot={[
@@ -181,10 +180,10 @@ function GeneralTab() {
         }}
       />
 
-      <Section
+      <CardLayout
         title="Plan"
         description="Billed monthly to the card ending 4242. Change it any time."
-        surface="card"
+        level={2}
         actionSlot={
           plan === savedPlan ? (
             <Badge variant="positive-soft">
@@ -300,10 +299,10 @@ function NotificationsTab() {
   const [push, setPush] = useState(false);
   return (
     <>
-      <Section
+      <CardLayout
         title="Email"
         description="Sent to mara@acme.example."
-        surface="card"
+        level={2}
         contentSlot={
           <>
             <SwitchField
@@ -330,9 +329,9 @@ function NotificationsTab() {
           </>
         }
       />
-      <Section
+      <CardLayout
         title="Digest"
-        surface="card"
+        level={2}
         contentSlot={
           <>
             <SettingRow
@@ -364,9 +363,9 @@ function NotificationsTab() {
           </>
         }
       />
-      <Section
+      <CardLayout
         title="On this device"
-        surface="card"
+        level={2}
         contentSlot={
           <>
             {push ? null : (
@@ -401,10 +400,10 @@ function AppearanceTab() {
   const [density, setDensity] = useState("comfortable");
   return (
     <>
-      <Section
+      <CardLayout
         title="Theme"
         description="Stored for this browser only. Here it is held by the story, so the page does not repaint."
-        surface="card"
+        level={2}
         contentSlot={
           <ThemePicker
             value={theme}
@@ -415,9 +414,9 @@ function AppearanceTab() {
           />
         }
       />
-      <Section
+      <CardLayout
         title="Density"
-        surface="card"
+        level={2}
         contentSlot={
           <SettingRow
             title="Row height"

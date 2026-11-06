@@ -654,7 +654,6 @@ function Rows() {
       <Section
         title="Notifications"
         description="What reaches your inbox."
-        surface="card"
         contentSlot={
           <>
             <SettingRow

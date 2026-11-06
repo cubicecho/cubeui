@@ -72,30 +72,6 @@ export const Level: Story = {
   },
 };
 
-export const CardSurface: Story = {
-  args: { title: "Danger zone", surface: "card" },
-  render: (args) => (
-    <SideBySide
-      native={<Native {...args} className="native-root" contentSlot={body} />}
-      compiled={<Compiled {...args} className="compiled-root" contentSlot={body} />}
-    />
-  ),
-  play: async ({ canvasElement }) => {
-    const native = canvasElement.querySelector(".native-root");
-    const compiled = canvasElement.querySelector(".compiled-root");
-    if (!native || !compiled) {
-      throw new Error("both halves should render");
-    }
-
-    const nativeStyle = getComputedStyle(native);
-    const compiledStyle = getComputedStyle(compiled);
-    await expect(compiledStyle.borderTopWidth).toBe("1px");
-    await expect(compiledStyle.borderTopWidth).toBe(nativeStyle.borderTopWidth);
-    await expect(compiledStyle.paddingTop).toBe(nativeStyle.paddingTop);
-    await expect(compiledStyle.backgroundColor).toBe(nativeStyle.backgroundColor);
-  },
-};
-
 const toolbarLabels = ["New file", "New folder", "Add files", "Add folder", "Export"] as const;
 const toolbarDescription = "Files live under the skill's folder; you can also edit them on disk.";
 

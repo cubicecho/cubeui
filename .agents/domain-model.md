@@ -179,7 +179,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
   at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
-  given a level. Owner: `registry/layout/section-heading.tsx`; takes `children`.
+  given a level. It is the title `Section` and `SidebarSection` draw. Owner:
+  `registry/layout/section-heading.tsx`; takes `children`.
 - **`CenteredLayout`:** a page that is one card in the middle of the screen, such
   as a sign-in. Owner: `registry/layout/centered-layout.tsx`; composes `CardLayout`.
 
@@ -205,16 +206,19 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `registry/ui/card.tsx`, with `CardHeader`, `CardContent`, `CardFooter`, `CardTitle`,
   `CARD_SURFACE_CLASS`.
 - **`CardLayout`:** a card with its icon, title, description, header action, body,
-  empty and loading states, and footer already placed. Owner: `registry/layout/card-layout.tsx`.
-- **`Section`:** an overline heading over a group of fields or rows, optionally on a
-  card surface. Owner: `registry/layout/section.tsx`.
+  empty and loading states, and footer already placed. Inside a floating panel that draws the
+  surface (`FloatingSurfaceContext`, set by `DialogLayout`) it draws no card of its own, and its
+  body is the only part that scrolls. Owner: `registry/layout/card-layout.tsx`.
+- **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
+  titled card is `CardLayout`. Owner: `registry/layout/section.tsx`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
   `registry/layout/disclosure.tsx`.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
-- **`DialogLayout`:** a dialog with its title, description, scrolling body and
-  footer placed, a size, and a discard question before unsaved work is thrown away. Owner:
-  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `HeaderContentFooter`, `ConfirmDialog`.
+- **`DialogLayout`:** a `CardLayout` on the floating surface: the modal, a size, and a
+  discard question before unsaved work is thrown away, with the card's parts at the dialog's inset.
+  The title names the dialog, the body scrolls and the footer stacks on a phone. Owner:
+  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `CardLayout`, `ConfirmDialog`.
 - **`ConfirmDialog`:** an "are you sure?" window with Cancel and one destructive
   button. Owner: `registry/ui/confirm-dialog.tsx`; `useConfirm` in `registry/ui/confirm.tsx`.
 - **`ConfirmButton`:** a destructive button that asks first. Owner:

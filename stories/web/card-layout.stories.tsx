@@ -198,3 +198,68 @@ export const LongTitleTruncates: Story = {
     expect(style.marginTop).toBe(`-${style.paddingTop}`);
   },
 };
+
+/** The body of a card that has rows is the rows, with `emptySlot` given and not drawn. */
+export const RowsIgnoreTheEmptySlot: Story = {
+  args: {
+    title: "Categories",
+    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    contentSlot: <Rows />,
+  },
+  play: async ({ canvas }) => {
+    expect(canvas.getByText("Fabrication")).toBeVisible();
+    expect(canvas.queryByText("No categories yet.")).toBeNull();
+  },
+};
+
+/** The skeleton in the card's body, and only there. */
+function skeletonIn(canvasElement: HTMLElement) {
+  return canvasElement.querySelector("[data-slot=card-layout-skeleton]");
+}
+
+/**
+ * `loading` puts a skeleton where the body goes and keeps the header: only the part that is
+ * waiting waits. The footer stays too.
+ */
+export const Loading: Story = {
+  args: {
+    title: "Categories",
+    loading: true,
+    contentSlot: <Rows />,
+    footerActionsSlot: <Button size="sm" variant="positive" content="Save" />,
+  },
+  play: async ({ canvas, canvasElement }) => {
+    expect(skeletonIn(canvasElement)).not.toBeNull();
+    expect(canvas.getByRole("heading", { name: "Categories" })).toBeVisible();
+    expect(canvas.queryByText("Fabrication")).toBeNull();
+    expect(canvas.getByRole("button", { name: "Save" })).toBeVisible();
+  },
+};
+
+/** Loading an empty body is still loading: `emptySlot` waits until the data has arrived. */
+export const LoadingIsNotEmpty: Story = {
+  args: {
+    title: "Categories",
+    loading: true,
+    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    contentSlot: [].map(() => null),
+  },
+  play: async ({ canvas, canvasElement }) => {
+    expect(skeletonIn(canvasElement)).not.toBeNull();
+    expect(canvas.queryByText("No categories yet.")).toBeNull();
+  },
+};
+
+/** `footerSlot` alone sits at the footer's start, level with the title's start edge. */
+export const FooterStartOnly: Story = {
+  args: {
+    title: "Categories",
+    footerSlot: <span className="text-foreground/60 text-sm">Synced an hour ago</span>,
+    contentSlot: <Rows />,
+  },
+  play: async ({ canvas }) => {
+    const title = canvas.getByText("Categories").getBoundingClientRect();
+    const note = canvas.getByText("Synced an hour ago").getBoundingClientRect();
+    expect(Math.round(note.left - title.left)).toBe(0);
+  },
+};

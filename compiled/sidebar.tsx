@@ -24,6 +24,7 @@ import { cn, type SlotNode } from "@/lib/utils";
 import { Badge } from "./badge";
 import { HeaderContentFooter, type HeaderContentFooterProps } from "./header-content-footer";
 import { ChevronLeft, ChevronRight } from "./icons";
+import { SectionHeading } from "./section-heading";
 import { SidebarPositionContext } from "./split-layout";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
@@ -285,16 +286,15 @@ export function SidebarSection({
         >
           <div className="cube-rn-view min-w-0 flex-1">
             {title ? (
-              // biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-              <span
+              <SectionHeading
                 data-slot="sidebar-section-title"
                 id={titleId}
-                role="heading"
-                aria-level={level}
-                className="cube-rn-text truncate font-semibold text-foreground/60 text-xs uppercase tracking-wide"
+                variant="overline"
+                level={level}
+                className="truncate"
               >
                 {title}
-              </span>
+              </SectionHeading>
             ) : null}
           </div>
           {actionSlot && collapsed === false ? (

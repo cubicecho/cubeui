@@ -122,3 +122,29 @@ export const Default: Story = {
     }
   },
 };
+
+/** A guard that is asking, for a story about the question's words alone. */
+const ASKING: Native.UnsavedChangesGuard = {
+  leave: () => {},
+  asking: true,
+  discard: () => {},
+  stay: () => {},
+};
+
+/** `keepLabel` names the button that goes back, as on `DialogLayout`. */
+export const KeepLabel: Story = {
+  render: () => <Compiled.UnsavedChangesDialog guard={ASKING} keepLabel="Stay here" />,
+  play: async () => {
+    await expect(await body().findByRole("button", { name: "Stay here" })).toBeInTheDocument();
+  },
+};
+
+/** `stayLabel`, its old name, still does for one release. */
+export const StayLabelStillNamesIt: Story = {
+  render: () => <Compiled.UnsavedChangesDialog guard={ASKING} stayLabel="Back to the form" />,
+  play: async () => {
+    await expect(
+      await body().findByRole("button", { name: "Back to the form" }),
+    ).toBeInTheDocument();
+  },
+};

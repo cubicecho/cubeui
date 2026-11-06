@@ -1285,13 +1285,6 @@ function Sections() {
             actionSlot={<Button size="sm" variant="outline" content="Invite" />}
             contentSlot={<p className="text-foreground text-sm">Ada, Grace and Edsger.</p>}
           />
-          <Section
-            level={3}
-            surface="card"
-            title="Billing"
-            description="A section drawn on a card."
-            contentSlot={<p className="text-foreground text-sm">Team plan, ten seats.</p>}
-          />
         </>
       }
     />

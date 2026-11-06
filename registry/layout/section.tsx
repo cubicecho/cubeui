@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
-import { CARD_SURFACE_CLASS } from "@/components/ui/card";
+import { SectionHeading } from "@/components/section-heading";
 import {
-  DescriptionHint,
-  DescriptionHintText,
+  DescribedTitle,
   type DescriptionPlacement,
+  foldsDescription,
 } from "@/components/ui/description-hint";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -36,11 +36,6 @@ type SectionProps = {
    * the text should look — the text is the same size at every level.
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
-  /**
-   * `card` draws the group on a card: the border and background `Card` has, with the
-   * padding inside it. `none` (the default) is a label and a gap and nothing else.
-   */
-  surface?: "none" | "card" | undefined;
   className?: string | undefined;
   titleClassName?: string | undefined;
   contentClassName?: string | undefined;
@@ -72,8 +67,8 @@ const ACTION = "max-w-full shrink-0 flex-row flex-wrap items-center gap-2";
 const ACTION_FIT = Platform.select({ web: "[&>*]:max-w-full", default: undefined });
 
 /**
- * A heading over a group of fields or rows, with the body in `contentSlot`. The surface is a prop
- * rather than a wrapper, so an app that puts every section on a card does not rewrite this one.
+ * A heading over a group of fields or rows, with the body in `contentSlot`. It draws no surface: a
+ * titled group on a card is a `CardLayout`.
  *
  * The title is a heading of rank `level`, and on the web the root is a `<section>` named by it,
  * which makes it a `region` landmark. An untitled section has no name and is not a landmark. The
@@ -89,31 +84,29 @@ export function Section({
   actionSlot,
   divider = false,
   level = 2,
-  surface = "none",
   className,
   titleClassName,
   contentClassName,
 }: SectionProps) {
   const titleId = React.useId();
   const descriptionId = React.useId();
-  const folded = Boolean(title && description) && descriptionPlacement === "popover";
+  const folded = foldsDescription(title, description, descriptionPlacement);
   const titleNode = title ? (
-    // web: biome-ignore lint/a11y/useSemanticElements: React Native has no heading element; role="heading" is the cross-platform form
-    <Text
+    <SectionHeading
       testID="section-title"
-      nativeID={titleId}
-      role="heading"
-      aria-level={level}
+      id={titleId}
+      variant="overline"
+      level={level}
       className={cn(
         // An overline in full ink: grey, it was outranked by the larger grey description under it.
         // Weight, caps and ink lead; the size stays small.
-        "truncate font-semibold text-foreground text-xs uppercase tracking-wide",
+        "truncate text-foreground",
         folded && "min-w-0 shrink",
         titleClassName,
       )}
     >
       {title}
-    </Text>
+    </SectionHeading>
   ) : null;
   const hasText = Boolean(title || description);
   const hasHeading = Boolean(hasText || actionSlot);
@@ -124,12 +117,7 @@ export function Section({
       testID="section"
       {...(title ? { "aria-labelledby": titleId } : {})}
       {...(folded ? { "aria-describedby": descriptionId } : {})}
-      className={cn(
-        "min-w-0 gap-3",
-        // Card's own surface, not a copy of its classes that drifts from it.
-        surface === "card" && cn(CARD_SURFACE_CLASS, "p-4"),
-        className,
-      )}
+      className={cn("min-w-0 gap-3", className)}
     >
       {hasHeading ? (
         <View
@@ -143,33 +131,28 @@ export function Section({
         >
           {hasText ? (
             <View className={TEXT}>
-              {folded ? (
-                // Beside the heading and not inside it: a heading is a `Text`.
-                <View testID="section-title-row" className="min-w-0 flex-row items-center gap-2">
-                  {titleNode}
-                  <DescriptionHint
-                    testID="section-description-trigger"
-                    label={title}
-                    fallbackName="About this section"
-                    description={description}
-                    iconSlot={descriptionIconSlot}
-                  />
-                </View>
-              ) : (
-                titleNode
-              )}
-              {folded ? (
-                <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
-              ) : null}
-              {description && folded === false ? (
-                <Text
-                  webAs="p"
-                  testID="section-description"
-                  className="mt-1 text-foreground/60 text-sm"
-                >
-                  {description}
-                </Text>
-              ) : null}
+              <DescribedTitle
+                titleSlot={titleNode}
+                label={title}
+                description={description}
+                descriptionSlot={
+                  description ? (
+                    <Text
+                      webAs="p"
+                      testID="section-description"
+                      className="mt-1 text-foreground/60 text-sm"
+                    >
+                      {description}
+                    </Text>
+                  ) : null
+                }
+                descriptionId={descriptionId}
+                folded={folded}
+                fallbackName="About this section"
+                iconSlot={descriptionIconSlot}
+                triggerTestID="section-description-trigger"
+                rowTestID="section-title-row"
+              />
             </View>
           ) : null}
           {actionSlot ? (

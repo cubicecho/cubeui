@@ -697,8 +697,12 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/description-hint", "@cubeui/card"],
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end and an optional rule. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/description-hint",
+        "@cubeui/section-heading"
+      ],
       "files": [
         {
           "path": "registry/layout/section.tsx",
@@ -1504,7 +1508,8 @@
         "@cubeui/badge",
         "@cubeui/tooltip",
         "@cubeui/header-content-footer",
-        "@cubeui/split-layout"
+        "@cubeui/split-layout",
+        "@cubeui/section-heading"
       ],
       "files": [
         {
@@ -1522,7 +1527,9 @@
         "@cubeui/card",
         "@cubeui/utils",
         "@cubeui/description-hint",
-        "@cubeui/list"
+        "@cubeui/list",
+        "@cubeui/dialog",
+        "@cubeui/header-content-footer"
       ],
       "files": [
         {
@@ -1551,9 +1558,9 @@
       "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
       "registryDependencies": [
         "@cubeui/dialog",
-        "@cubeui/header-content-footer",
         "@cubeui/utils",
-        "@cubeui/confirm-dialog"
+        "@cubeui/confirm-dialog",
+        "@cubeui/card-layout"
       ],
       "files": [
         {

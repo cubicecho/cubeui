@@ -43,7 +43,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `calendar` | web | `components/ui/calendar.tsx`; also `calendar-base.ts` | `import { Calendar } from "@/components/ui/calendar"` |
 | `calendar` | native | `components/ui/calendar.tsx`; also `calendar-base.ts`, `calendar.web.tsx` | `import { Calendar } from "@/components/ui/calendar"` |
 | `card` | both | `components/ui/card.tsx` | `import { CARD_SURFACE_CLASS, Card, CardAction, CardContent, CardDescription, CardFooter, … 2 more } from "@/components/ui/card"` |
-| `card-layout` | both | `components/card-layout.tsx` | `import { CardLayout } from "@/components/card-layout"` |
+| `card-layout` | both | `components/card-layout.tsx` | `import { FloatingSurfaceContext, CardLayout } from "@/components/card-layout"` |
 | `card-stories` | web | `components/ui/card.stories.tsx` | — (stories) |
 | `centered-layout` | both | `components/centered-layout.tsx` | `import { CenteredLayout } from "@/components/centered-layout"` |
 | `checkbox` | web | `components/ui/checkbox.tsx`; also `checkbox-base.ts` | `import { Checkbox } from "@/components/ui/checkbox"` |
@@ -61,7 +61,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `command` | native | `components/ui/command.tsx`; also `command-base.ts`, `command.web.tsx` | `import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, … 3 more } from "@/components/ui/command"` |
 | `confirm` | both | `components/ui/confirm.tsx` | `import { ConfirmProvider, useConfirm } from "@/components/ui/confirm"` |
 | `confirm-button` | both | `components/confirm-button.tsx` | `import { ConfirmButton } from "@/components/confirm-button"` |
-| `confirm-dialog` | both | `components/ui/confirm-dialog.tsx` | `import { ConfirmDialog } from "@/components/ui/confirm-dialog"` |
+| `confirm-dialog` | both | `components/ui/confirm-dialog.tsx` | `import { DISCARD_QUESTION, ConfirmDialog } from "@/components/ui/confirm-dialog"` |
 | `control` | web | a set: `color-picker`, `confirm-button`, `copy-button`, `date-picker`, `menu`, `combobox`, `password-input` | — (import from each item) |
 | `copy-button` | web | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
 | `copy-button` | native | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx`, `copy-button.web.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
@@ -69,7 +69,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `date-picker` | both | `components/date-picker.tsx` | `import { combineDateAndTime, setTime, PickerTrigger, ClearRow, DatePicker, DateRangePicker } from "@/components/date-picker"` |
 | `date-time-field` | both | `components/ui/date-time-field.tsx` | `import { DateTimeField } from "@/components/ui/date-time-field"` |
 | `date-time-input` | both | `components/ui/date-time-input.tsx` | `import { DateTimeInput } from "@/components/ui/date-time-input"` |
-| `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescriptionHint, DescriptionHintText } from "@/components/ui/description-hint"` |
+| `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescribedTitle, DescriptionHint, DescriptionHintText, foldsDescription } from "@/components/ui/description-hint"` |
 | `description-list` | both | `components/description-list.tsx` | `import { DescriptionList, PropertyRow } from "@/components/description-list"` |
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |

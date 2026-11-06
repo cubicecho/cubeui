@@ -429,9 +429,9 @@ function Schedule({ empty }: Args) {
                   />
                 }
               />
-              <Section
+              <CardLayout
                 title="Calendars"
-                surface="card"
+                level={2}
                 contentSlot={CALENDARS.map((calendar) => (
                   <SettingRow
                     key={calendar.id}
