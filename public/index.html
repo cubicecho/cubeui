@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 107 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 108 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 107 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 108 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  93 on both platforms · 14 web-only · 0 native-only.
+  94 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -476,6 +476,11 @@
           <td>Keeps a framed page from taking focus out of an open menu, dialog, popover or select: frames go inert while an overlay is open, and a window blur that only moved focus into one is stopped and focus put back. Held by those overlays' web halves; web only.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/grid-layout</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Equal cells in rows, one to four to a row by the window's width, for cards, tiles or anything of one kind.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/header-content-footer</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.</td>
@@ -543,7 +548,7 @@
         <tr>
           <th scope="row"><code>@cubeui/page</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.</td>
+          <td>The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state` and the grid `@cubeui/grid-layout`, re-exported here.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page-header</code></th>

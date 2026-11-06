@@ -6,7 +6,7 @@ Part of the cubeui skill, for an Expo app. Read [SKILL.md](SKILL.md) first for t
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They
 take their body as `contentSlot` like every other shell: `<Page contentSlot={…} />`, and
-`<CardGrid contentSlot={cards} />`, where the cards are an array or a fragment and each one gets a
+`<GridLayout contentSlot={cards} />`, where the cards are an array or a fragment and each one gets a
 cell. `DetailPage`'s `contentSlot` is a function, called with the record once it has loaded.
 
 `Page` lays its body on the same column as `PageLayout` (`PAGE_COLUMN`, or the prose column at
@@ -40,7 +40,7 @@ shrinks (`min-w-0`) and the row wraps, so a long name never pushes the actions o
 | A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#disclosure) | `Disclosure` | `@cubeui/disclosure` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | One figure on a card, or a pressable filter tile with a pressed state — see [layout/facts.md](layout/facts.md#stat-tiles) | `StatTile` | `@cubeui/stat-tile` |
-| A grid of cards | `CardGrid` | `@cubeui/page` |
+| A grid of cards or tiles, 1 to 4 to a row by width — see [layout/pages.md](layout/pages.md#grids) | `GridLayout` | `@cubeui/grid-layout` |
 | What an empty list says (also re-exported by `@cubeui/page`) | `EmptyState` | `@cubeui/empty-state` |
 | A screen that *is* its empty state — a first run, a record not found, a dead link — so its title is the heading: `level` 1–3, same size | `EmptyState level={1}` | `@cubeui/empty-state` |
 | An empty list *inside* something — a card, a sidebar section, a popover: one muted line, optional small icon and action, never a heading — see [layout/lists.md](layout/lists.md#empty-states) | `EmptyState compact` | `@cubeui/empty-state` |

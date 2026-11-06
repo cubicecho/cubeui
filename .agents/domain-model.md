@@ -170,8 +170,10 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   with an optional footer, at a named column width. Owner: `registry/layout/page-layout.tsx`;
   composes `HeaderContentFooter` and `PageHeader`.
 - **`Page`:** a padded column that scrolls with no title block of its own; a `PageHeader`
-  placed in its body scrolls away with it. Owner: `registry/layout/page.tsx`, which also holds
-  `CardGrid` and re-exports `PageHeader` and `EmptyState`.
+  placed in its body scrolls away with it. Owner: `registry/layout/page.tsx`, which re-exports
+  `PageHeader`, `EmptyState` and `GridLayout` (as `CardGrid`).
+- **`GridLayout`:** equal cells in rows, one to four to a row by the window's width, one cell
+  per element of its body, for any content. Owner: `registry/layout/grid-layout.tsx`.
 - **`DetailPage`:** a `Page` for one record that shows loading, then not found,
   before handing the loaded record to its body. Owner: `registry/layout/detail-page.tsx`.
 - **`HeaderContentFooter`:** the frame most shells build on: a header

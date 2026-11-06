@@ -8,6 +8,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - [Page shells](#page-shells)
 - [Page headers](#page-headers)
   - [What it does not have](#what-it-does-not-have)
+- [Grids](#grids)
 - [Centered pages](#centered-pages)
 
 ## Pages
@@ -270,6 +271,30 @@ It is not a page.
 `actionSlot`, or compose it into the `title` node. A back button *beside* the title — it goes in
 `breadcrumbsSlot`. A description that expands behind a popover — that is state, and state is the
 caller's.
+
+## Grids
+
+`GridLayout` (`@cubeui/grid-layout`) lays out equal cells in rows: one to a row on a phone, two
+from `sm`, three from `lg`, four from `xl`. Each element of `contentSlot` is one cell, so pass the
+cards as an array or a fragment; both are opened, and a `null` left by a condition is dropped.
+
+```tsx
+<GridLayout contentSlot={projects.map((project) => <ProjectCard key={project.id} project={project} />)} />
+```
+
+- The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
+  cell `GridLayout` draws, so a card in it carries no width of its own.
+- It has no empty or loading state. `QueryState` goes above it, as it does above a list.
+- It was `CardGrid` in `@cubeui/page`, which still exports that name for now.
+
+<!-- props:GridLayout -->
+`GridLayout`'s props, from the TSDoc in `registry/layout/grid-layout.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `contentSlot` (required) | `SlotNode` |  | The cells, as an array or a fragment: cards, tiles, anything of one kind. Both are opened, so a fragment of three cards is three cells and not one. |
+| `className` | `string` |  |  |
+<!-- /props -->
 
 ## Centered pages
 

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "grid-layout",
+  "title": "Grid Layout",
+  "description": "Equal cells in rows, one to four to a row by the window's width, for cards, tiles or anything of one kind.",
+  "registryDependencies": [
+    "@cubeui/utils"
+  ],
+  "files": [
+    {
+      "path": "registry/layout/grid-layout.tsx",
+      "content": "/**\n * Equal cells in rows: one column on a phone, then two, three and four as the window widens.\n *\n * `grid` has no native equivalent, so the columns come from flex wrapping and a percentage width\n * on each cell. The width sits on a cell this shell draws round each element, rather than on the\n * elements themselves: a `Card` that carried it would only be the right width inside a grid.\n */\nimport { Children, Fragment, isValidElement, type ReactElement } from \"react\";\nimport { View } from \"react-native\";\nimport { cn, type SlotNode } from \"@/lib/utils\";\n\nexport type GridLayoutProps = {\n  /**\n   * The cells, as an array or a fragment: cards, tiles, anything of one kind. Both are opened, so\n   * a fragment of three cards is three cells and not one.\n   */\n  contentSlot: SlotNode;\n  className?: string | undefined;\n};\n\n/** Lays `contentSlot` out as equal cells, 1 to 4 to a row by the window's width. */\nexport function GridLayout({ contentSlot, className }: GridLayoutProps) {\n  return (\n    <View className={cn(\"flex-row flex-wrap gap-4\", className)}>\n      {cells(contentSlot).map(({ key, cell }) => (\n        // A fraction of the row minus its share of the `gap-4`, which a percentage width does not\n        // account for.\n        <View\n          key={key}\n          className=\"w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)] xl:w-[calc(25%-0.75rem)]\"\n        >\n          {cell}\n        </View>\n      ))}\n    </View>\n  );\n}\n\n/**\n * A slot's elements, one per cell: arrays and fragments opened, the nothing values dropped. A\n * cell's key is prefixed with its fragment's, since two opened fragments number their cells alike.\n */\nfunction cells(slot: SlotNode, prefix = \"\"): { key: string; cell: ReactElement }[] {\n  return Children.toArray(slot).flatMap((child) => {\n    if (isValidElement<{ children?: SlotNode }>(child) === false) {\n      return [];\n    }\n    const key = `${prefix}${child.key}`;\n    return child.type === Fragment ? cells(child.props.children, key) : [{ key, cell: child }];\n  });\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

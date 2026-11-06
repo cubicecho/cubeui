@@ -27,12 +27,13 @@ import { EmptyState } from "@/components/empty-state";
 import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
+import { GridLayout } from "@/components/grid-layout";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { CardGrid, Page } from "@/components/page";
+import { Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
@@ -1787,8 +1788,8 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Page, detail page and detail header",
-    items: ["page", "empty-state", "detail-page", "detail-header"],
+    title: "Page, grid, detail page and detail header",
+    items: ["page", "grid-layout", "empty-state", "detail-page", "detail-header"],
     content: (
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
@@ -1797,7 +1798,7 @@ const sections: GallerySection[] = [
               contentSlot={
                 <>
                   <PageHeader level={3} title="Projects" />
-                  <CardGrid
+                  <GridLayout
                     contentSlot={SERVERS.map((server) => (
                       <Card key={server.name}>
                         <CardHeader>
