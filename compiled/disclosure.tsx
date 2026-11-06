@@ -57,15 +57,82 @@ function asText(node: ReactNode, className: string, testID: string) {
   );
 }
 
+type DisclosureTriggerProps = {
+  /** Whether what it opens is showing: `aria-expanded`, and which way the chevron points. */
+  open: boolean;
+  onClick: () => void;
+  /**
+   * The `nativeID` of the body it opens, given only while that body is mounted. It becomes
+   * `aria-controls` on the web; React Native has none, and an id that is not in the document is a
+   * broken reference rather than a hint.
+   */
+  controls?: string | undefined;
+  /** What the button holds after the chevron: a title, or a folder's icon and name. */
+  contentSlot: SlotNode;
+  "data-slot": string;
+  className?: string | undefined;
+  chevronClassName?: string | undefined;
+  /** A style the row sets itself, such as a tree's indent. */
+  style?: { paddingLeft: number } | undefined;
+  /** Further props for the web's button only, such as what lets a folder be dragged. */
+  webProps?: object | undefined;
+};
+
+/**
+ * The button that opens and shuts something, for `Disclosure`, `DisclosureRow` and `FileTree`'s
+ * folders: a chevron that turns down while open, then `contentSlot`, with `aria-expanded` and,
+ * while the body is there, `aria-controls`. Anything else on the row sits beside it, because a
+ * button in a button is invalid.
+ */
+export function DisclosureTrigger({
+  open,
+  onClick: onPress,
+  controls,
+  contentSlot,
+  "data-slot": testID,
+  className,
+  chevronClassName,
+  style,
+  webProps,
+}: DisclosureTriggerProps) {
+  return (
+    <button
+      type="button"
+      data-slot={testID}
+      aria-expanded={open}
+      {...(controls !== undefined ? { "aria-controls": controls } : {})}
+      onClick={onPress}
+      className={cn(
+        "cube-rn-view cube-rn-pressable",
+        "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
+        "text-left focus-visible:bg-hover focus-visible:outline-none",
+        className,
+      )}
+      style={style}
+      {...(webProps as React.ComponentPropsWithoutRef<"button">)}
+    >
+      <ChevronRight
+        aria-hidden
+        className={cn(
+          "mt-0.5 size-4 shrink-0 text-foreground/60",
+          "transition-transform",
+          open && "rotate-90",
+          chevronClassName,
+        )}
+      />
+      {contentSlot}
+    </button>
+  );
+}
+
 /**
  * A titled part of a screen whose body shows and hides: "Show completed (3)" under a list. The
  * look is a muted `text-sm` line with the chevron before it; `titleClassName` makes the title the
  * foreground where the disclosure is a section's heading.
  *
- * The whole header is one button carrying `aria-expanded`, and the chevron turns off the same
- * boolean. `actionSlot` sits outside that button, because a button in a button is invalid. Open
- * is uncontrolled with `defaultOpen` or controlled with `open`, and `onOpenChange` is heard
- * either way.
+ * The whole header is one `DisclosureTrigger`, and `actionSlot` sits outside it, because a button
+ * in a button is invalid. Open is uncontrolled with `defaultOpen` or controlled with `open`, and
+ * `onOpenChange` is heard either way.
  */
 export function Disclosure({
   title,
@@ -98,39 +165,24 @@ export function Disclosure({
         data-slot="disclosure-header"
         className={cn("cube-rn-view", "min-w-0 flex-row items-start gap-2", headerClassName)}
       >
-        <button
-          type="button"
+        <DisclosureTrigger
           data-slot="disclosure-trigger"
-          aria-expanded={open}
-          // Web only: React Native has no `aria-controls`, and pointing it at an id that is not in
-          // the document is a broken reference rather than a hint — the body unmounts when shut.
-          {...(shown ? { "aria-controls": contentId } : {})}
+          open={open}
           onClick={toggle}
-          className={cn(
-            "cube-rn-view cube-rn-pressable",
-            "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
-            "text-left focus-visible:bg-hover focus-visible:outline-none",
-          )}
-        >
-          <ChevronRight
-            aria-hidden
-            className={cn(
-              "mt-0.5 size-4 shrink-0 text-foreground/60",
-              "transition-transform",
-              open && "rotate-90",
-            )}
-          />
-          <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
-            {asText(
-              title,
-              cn("font-semibold text-foreground/60 text-sm", titleClassName),
-              "disclosure-title",
-            )}
-            {description
-              ? asText(description, "text-foreground/60 text-xs", "disclosure-description")
-              : null}
-          </div>
-        </button>
+          controls={shown ? contentId : undefined}
+          contentSlot={
+            <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
+              {asText(
+                title,
+                cn("font-semibold text-foreground/60 text-sm", titleClassName),
+                "disclosure-title",
+              )}
+              {description
+                ? asText(description, "text-foreground/60 text-xs", "disclosure-description")
+                : null}
+            </div>
+          }
+        />
         {actionSlot ? (
           <div
             data-slot="disclosure-action"

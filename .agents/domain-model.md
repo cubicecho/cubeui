@@ -81,7 +81,9 @@ shut --pressed--> open --pressed--> shut
 ```
 
 `Disclosure` keeps the state itself or takes it from the caller; `DisclosureRow` and `FileTree`
-folders can also be controlled. A shut body is not mounted.
+folders can also be controlled. A shut body is not mounted. All three are pressed through the same
+button, `DisclosureTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
+while the body is there.
 
 ### A list's state (`QueryState`)
 
@@ -215,7 +217,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`Section`:** an overline heading over a group of fields or rows, optionally on a
   card surface. Owner: `registry/layout/section.tsx`.
 - **`Disclosure`:** a titled block whose body shows and hides. Owner:
-  `registry/layout/disclosure.tsx`.
+  `registry/layout/disclosure.tsx`, with `DisclosureTrigger`, the button `DisclosureRow` and
+  `FileTree`'s folders open with too.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
 - **`DialogLayout`:** a dialog with its title, description, scrolling body and

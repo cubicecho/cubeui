@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
-import { Platform, Pressable, Text } from "react-native";
-import { ChevronRight } from "@/components/ui/icons";
+import { Platform, Text } from "react-native";
+import { DisclosureTrigger } from "@/components/disclosure";
 import {
   Item,
   ItemActions,
@@ -34,10 +34,9 @@ type DisclosureRowProps = {
  * One row in a list of things you can open: a run, a task, an archived record. The row is `Item`,
  * so it lines up with rows that do not open, and the opening is `Disclosure`'s.
  *
- * The whole heading is one button carrying `aria-expanded`, and the chevron turns off the same
- * boolean. `actionSlot` sits outside that button, because a control nested in a button is invalid
- * HTML and cannot be pressed. Open is controlled, since a row is often opened from somewhere else,
- * such as a deep link.
+ * The whole heading is one `DisclosureTrigger`, and `actionSlot` sits outside it, because a
+ * control nested in a button is invalid HTML and cannot be pressed. Open is controlled, since a
+ * row is often opened from somewhere else, such as a deep link.
  */
 export function DisclosureRow({
   open,
@@ -56,62 +55,46 @@ export function DisclosureRow({
 
   return (
     <Item testID="disclosure-row" variant="outline" className={cn("items-start", className)}>
-      <Pressable
+      <DisclosureTrigger
         testID="disclosure-row-trigger"
-        role="button"
-        aria-expanded={open}
-        accessibilityState={{ expanded: open }}
-        // Web only, and only while it is open: React Native has no `aria-controls`, and pointing it
-        // at an id that is not in the document is a broken reference rather than a hint — the
-        // body is unmounted when closed, which is what keeps a list of two hundred rows cheap.
-        {...(Platform.OS === "web" && isOpen ? { "aria-controls": contentId } : {})}
+        open={open}
         onPress={() => onOpenChange(!open)}
-        className={cn(
-          "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
-          Platform.select({
-            web: "text-left focus-visible:bg-hover focus-visible:outline-none",
-            default: undefined,
-          }),
-        )}
-      >
-        <ChevronRight
-          aria-hidden
-          className={cn(
-            "mt-0.5 size-4 shrink-0 text-foreground/60",
-            Platform.select({ web: "transition-transform", default: undefined }),
-            open && "rotate-90",
-          )}
-        />
-        <ItemContent className="min-w-0">
-          <ItemTitle className="flex-wrap">
-            {badgesSlot}
-            <Text
-              testID="disclosure-row-title"
-              className={cn(
-                "min-w-0 shrink font-semibold text-foreground text-sm leading-snug",
-                // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
-                // what `line-clamp-1` becomes and what `truncate` does not.
-                Platform.select({ web: "truncate", default: "line-clamp-1" }),
-              )}
-            >
-              {title}
-            </Text>
-            {/* Quieter than the title, as ListItem's meta is: left bare, a string took the title's
-                semibold and "atlas 12 tools" read as one name. A node keeps its own look. */}
-            {typeof meta === "string" || typeof meta === "number" ? (
+        // Only while it is open: the body is unmounted when closed, which is what keeps a list of
+        // two hundred rows cheap.
+        controls={isOpen ? contentId : undefined}
+        contentSlot={
+          <ItemContent className="min-w-0">
+            <ItemTitle className="flex-wrap">
+              {badgesSlot}
               <Text
-                testID="disclosure-row-meta"
-                className="shrink-0 font-normal text-foreground/60 text-xs tabular-nums"
+                testID="disclosure-row-title"
+                className={cn(
+                  "min-w-0 shrink font-semibold text-foreground text-sm leading-snug",
+                  // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which
+                  // is what `line-clamp-1` becomes and what `truncate` does not.
+                  Platform.select({ web: "truncate", default: "line-clamp-1" }),
+                )}
               >
-                {meta}
+                {title}
               </Text>
-            ) : (
-              meta
-            )}
-          </ItemTitle>
-          {description ? <ItemDescription>{description}</ItemDescription> : null}
-        </ItemContent>
-      </Pressable>
+              {/* Quieter than the title, as ListItem's meta is: left bare, a string took the
+                  title's semibold and "atlas 12 tools" read as one name. A node keeps its own
+                  look. */}
+              {typeof meta === "string" || typeof meta === "number" ? (
+                <Text
+                  testID="disclosure-row-meta"
+                  className="shrink-0 font-normal text-foreground/60 text-xs tabular-nums"
+                >
+                  {meta}
+                </Text>
+              ) : (
+                meta
+              )}
+            </ItemTitle>
+            {description ? <ItemDescription>{description}</ItemDescription> : null}
+          </ItemContent>
+        }
+      />
 
       {actionSlot ? <ItemActions className="gap-1">{actionSlot}</ItemActions> : null}
 

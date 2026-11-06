@@ -76,7 +76,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog-layout` | both | `components/dialog-layout.tsx` | `import { DialogLayout } from "@/components/dialog-layout"` |
-| `disclosure` | both | `components/disclosure.tsx` | `import { Disclosure } from "@/components/disclosure"` |
+| `disclosure` | both | `components/disclosure.tsx` | `import { DisclosureTrigger, Disclosure } from "@/components/disclosure"` |
 | `disclosure-row` | both | `components/disclosure-row.tsx` | `import { DisclosureRow } from "@/components/disclosure-row"` |
 | `download-button` | web | `components/ui/download-button.tsx`; also `download-button-base.ts` | `import { downloadBlob, downloadUrl, DownloadButton } from "@/components/ui/download-button"` |
 | `download-button` | native | `components/ui/download-button.tsx`; also `download-button-base.ts`, `download-button.web.tsx` | `import { downloadBlob, downloadUrl, DownloadButton } from "@/components/ui/download-button"` |

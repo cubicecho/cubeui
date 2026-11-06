@@ -13,7 +13,8 @@ import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
 import { cn, type SlotNode } from "@/lib/utils";
-import { ChevronRight, File, Folder } from "./icons";
+import { DisclosureTrigger } from "./disclosure";
+import { File, Folder } from "./icons";
 import { rowLink } from "./list-item";
 
 type FileTreeProps<T extends TreeEntry> = {
@@ -138,6 +139,9 @@ export function FileTree<T extends TreeEntry>({
   className,
 }: FileTreeProps<T>) {
   const tree = React.useMemo(() => buildTree(entries), [entries]);
+  const treeId = React.useId();
+  // What a folder's `aria-controls` names. A path may hold a space, which would split the id list.
+  const childrenId = (path: string) => `${treeId}${encodeURIComponent(path)}`;
   const folders = React.useMemo(() => folderPaths(tree), [tree]);
   // What has been pressed, rather than what is open: a folder that arrives later still starts as
   // `defaultOpen` says, which a list of the open ones taken at mount would get wrong.
@@ -297,18 +301,8 @@ export function FileTree<T extends TreeEntry>({
             <File aria-hidden className={cn("size-4 shrink-0", muted)} />
           </>
         ) : (
-          <>
-            <ChevronRight
-              aria-hidden
-              className={cn(
-                "size-4 shrink-0",
-                muted,
-                "transition-transform",
-                isOpen(node.path) && "rotate-90",
-              )}
-            />
-            <Folder aria-hidden className={cn("size-4 shrink-0", muted)} />
-          </>
+          // The chevron before it is the trigger's own.
+          <Folder aria-hidden className={cn("size-4 shrink-0", muted)} />
         )}
         <span
           data-slot="file-tree-name"
@@ -350,17 +344,19 @@ export function FileTree<T extends TreeEntry>({
     if (isFile === false) {
       const expanded = isOpen(node.path);
       row = (
-        <button
-          type="button"
+        <DisclosureTrigger
           data-slot="file-tree-folder"
-          aria-expanded={expanded}
+          open={expanded}
           onClick={() => toggle(node.path)}
-          className={cn("cube-rn-view cube-rn-pressable", ROW_CLASS)}
+          controls={expanded && node.children.length > 0 ? childrenId(node.path) : undefined}
+          className={ROW_CLASS}
+          // Centred on the row rather than set down to a first line of text, and muted as the
+          // folder's icon is.
+          chevronClassName={cn("mt-0", muted)}
           style={indent}
-          {...(drag as React.ComponentPropsWithoutRef<"button">)}
-        >
-          {inside}
-        </button>
+          webProps={drag}
+          contentSlot={inside}
+        />
       );
     } else if (linkSlot) {
       // `drag` is what picks the row up, which only the web has.
@@ -449,7 +445,11 @@ export function FileTree<T extends TreeEntry>({
       >
         {renderRow(node, depth, node.type === "file")}
         {node.type === "dir" && node.children.length > 0 && isOpen(node.path) ? (
-          <ul data-slot="file-tree-children" className="cube-rn-view min-w-0 gap-0.5">
+          <ul
+            data-slot="file-tree-children"
+            id={childrenId(node.path)}
+            className="cube-rn-view min-w-0 gap-0.5"
+          >
             {renderItems(node.children, depth + 1)}
           </ul>
         ) : null}
