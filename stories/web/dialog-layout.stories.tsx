@@ -261,3 +261,157 @@ export const GroupedFooterStart: Story = {
     }).toEqual({ sameRow: true, gap: 8, split: true });
   },
 };
+
+/** Waits out the open animation, which scales and slides the dialog while it runs. */
+async function settled(dialog: HTMLElement) {
+  await Promise.all(dialog.getAnimations({ subtree: true }).map((animation) => animation.finished));
+}
+
+/**
+ * The parts, where they stand: the title names the dialog and the description is under it, the
+ * header is above the body and the body above the footer, and the title stops short of the close
+ * button rather than running under it.
+ */
+export const PartsInTheirPlaces: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="A title long enough to reach the corner the close button sits in"
+      description="What the dialog is for."
+      contentSlot={<p>The body.</p>}
+      footerActionsSlot={<Button variant="positive" content="Save" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", {
+      name: "A title long enough to reach the corner the close button sits in",
+    });
+    await settled(dialog);
+    const title = within(dialog)
+      .getByText(/^A title long enough/)
+      .getBoundingClientRect();
+    const description = within(dialog).getByText("What the dialog is for.").getBoundingClientRect();
+    const body = within(dialog).getByText("The body.").getBoundingClientRect();
+    const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
+    const close = within(dialog).getByRole("button", { name: /close/i }).getBoundingClientRect();
+    await expect({
+      descriptionUnderTitle: description.top >= title.bottom,
+      bodyUnderHeader: body.top >= description.bottom,
+      footerUnderBody: save.top >= body.bottom,
+      clearOfClose: title.right <= close.left,
+    }).toEqual({
+      descriptionUnderTitle: true,
+      bodyUnderHeader: true,
+      footerUnderBody: true,
+      clearOfClose: true,
+    });
+  },
+};
+
+/** `hideTitle` takes the title off the screen and leaves it naming the dialog. */
+export const AHiddenTitleStillNamesIt: Story = {
+  args: { unsaved: false },
+  render: () => <DialogLayout open hideTitle title="Pick a colour" contentSlot={<p>Swatches</p>} />,
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Pick a colour" });
+    const title = within(dialog).getByText("Pick a colour").getBoundingClientRect();
+    await expect(title.width * title.height).toBeLessThanOrEqual(1);
+  },
+};
+
+const rows = Array.from({ length: 60 }, (_, index) => `Row ${index + 1}`);
+
+/** Every element in the dialog, the dialog included, that scrolls its own content. */
+function scrollersIn(dialog: HTMLElement) {
+  return [dialog, ...dialog.querySelectorAll<HTMLElement>("*")].filter((element) => {
+    const { overflowY } = getComputedStyle(element);
+    const scrolls = overflowY === "auto" || overflowY === "scroll";
+    return scrolls && element.scrollHeight > element.clientHeight + 1;
+  });
+}
+
+/**
+ * A body taller than the screen. The dialog stays inside the viewport, the body is the one part
+ * that scrolls, and the title and the footer stay where they are while it does.
+ */
+export const OnlyTheBodyScrolls: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Long list"
+      contentSlot={
+        <ul>
+          {rows.map((row) => (
+            <li key={row}>{row}</li>
+          ))}
+        </ul>
+      }
+      footerActionsSlot={<Button variant="positive" content="Save" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Long list" });
+    await settled(dialog);
+    const scrollers = scrollersIn(dialog);
+    const [body] = scrollers;
+    if (scrollers.length !== 1 || !body) {
+      throw new Error(`expected one scrolling part, found ${scrollers.length}`);
+    }
+    const title = within(dialog).getByText("Long list");
+    const save = within(dialog).getByRole("button", { name: "Save" });
+    const titleTop = title.getBoundingClientRect().top;
+    body.scrollTop = body.scrollHeight;
+    await waitFor(() => expect(body.scrollTop).toBeGreaterThan(0));
+    await expect({
+      fitsTheViewport: dialog.getBoundingClientRect().bottom <= window.innerHeight,
+      bodyHoldsTheRows: body.contains(within(dialog).getByText("Row 1")),
+      titleOutside: body.contains(title),
+      saveOutside: body.contains(save),
+      titleStayed: title.getBoundingClientRect().top === titleTop,
+      saveOnScreen: save.getBoundingClientRect().bottom <= window.innerHeight,
+    }).toEqual({
+      fitsTheViewport: true,
+      bodyHoldsTheRows: true,
+      titleOutside: false,
+      saveOutside: false,
+      titleStayed: true,
+      saveOnScreen: true,
+    });
+  },
+};
+
+/**
+ * Below `sm` the footer stacks: the actions over the start group, and the start group's elements
+ * one over another. Past `sm` the same footer is one row, which `GroupedFooterStart` holds.
+ */
+export const TheFooterStacksOnAPhone: Story = {
+  args: { unsaved: false },
+  globals: { viewport: { value: "mobile2", isRotated: false } },
+  render: () => (
+    <DialogLayout
+      open
+      title="Project settings"
+      contentSlot={<p>Names, owners and the rest.</p>}
+      footerSlot={
+        <>
+          <span className="text-foreground/60 text-sm">Synced an hour ago</span>
+          <Button variant="destructive-outline" size="sm" content="Archive" />
+        </>
+      }
+      footerActionsSlot={<Button size="sm" variant="positive" content="Save" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Project settings" });
+    await settled(dialog);
+    const note = within(dialog).getByText("Synced an hour ago").getBoundingClientRect();
+    const archive = within(dialog).getByRole("button", { name: "Archive" }).getBoundingClientRect();
+    const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
+    await expect({
+      actionsOnTop: save.bottom <= Math.min(note.top, archive.top),
+      startStacked: archive.bottom <= note.top || note.bottom <= archive.top,
+    }).toEqual({ actionsOnTop: true, startStacked: true });
+  },
+};
