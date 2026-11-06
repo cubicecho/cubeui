@@ -9,7 +9,8 @@ import { SideBySide } from "./side-by-side";
 /**
  * An error boundary renders `RouteError` and nothing around it: the alert, the raw message for a
  * bug report and the second way out are all props. Both halves are asserted, because a consumer on
- * either registry should be able to delete its wrapper.
+ * either registry should be able to delete its wrapper. The native half passes the Reload as
+ * `actionSlot` and the compiled half as `actionsSlot`, its deprecated name, so both stay held.
  */
 const meta = { title: "RN Parity/RouteError" } satisfies Meta;
 export default meta;
@@ -27,7 +28,7 @@ export const Details: Story = {
           reset={() => {}}
           describe={describe}
           details
-          actionsSlot={<Button variant="outline" size="sm" onPress={() => {}} content="Reload" />}
+          actionSlot={<Button variant="outline" size="sm" onPress={() => {}} content="Reload" />}
         />
       }
       compiled={
@@ -36,6 +37,7 @@ export const Details: Story = {
           reset={() => {}}
           describe={describe}
           details
+          // The old name, kept working for one release.
           actionsSlot={
             <CompiledButton variant="outline" size="sm" onClick={() => {}} content="Reload" />
           }
