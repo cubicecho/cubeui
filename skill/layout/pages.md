@@ -376,7 +376,7 @@ level 1, not a card title. `level` and `titleClassName` still override it.
 | `className` | `string` |  | The root — the full-height box the card is centred in. A background, or a different padding. On device it styles the scroll view's content container, which is the box that fills the screen and does the centring. |
 | `cardClassName` | `string` |  | The card. It is `w-full max-w-sm`; pass `max-w-md` here for a wider one, which replaces the cap rather than competing with it. |
 
-It also takes the props declared in `registry/layout/card-layout.tsx`: `actionSlot`, `contentClassName`, `contentSlot`, `description`, `descriptionIconSlot`, `descriptionPlacement`, `emptySlot`, `footerActionsSlot`, `footerClassName`, `footerSlot`, `headerClassName`, `iconSlot`, `level`, `loading`, `title`, `titleClassName`, `wrapperSlot`.
+It also takes the props declared in `registry/layout/card-layout.tsx`: `actionPlacement`, `actionSlot`, `contentClassName`, `contentSlot`, `description`, `descriptionIconSlot`, `descriptionPlacement`, `emptySlot`, `footerActionsSlot`, `footerClassName`, `footerSlot`, `headerClassName`, `iconSlot`, `level`, `loading`, `title`, `titleClassName`, `wrapperSlot`.
 <!-- /props -->
 
 **It was `CenteredLayout`.** `CenteredLayout`, and the `@cubeui/centered-layout` item that

@@ -42,6 +42,11 @@ export type FloatingSurface = {
   drawTitle: (title: ReactNode, className: string | undefined) => SlotNode;
   /** The description, as the element that describes the panel. */
   drawDescription: (description: ReactNode) => SlotNode;
+  /**
+   * The description while `descriptionPlacement="popover"` folds it: off the screen, and still
+   * what describes the panel, so a dialog is announced with it when it opens.
+   */
+  drawFoldedDescription: (description: ReactNode) => SlotNode;
   /** The card's header, body and footer, placed on the panel. */
   drawParts: (parts: FloatingCardParts) => SlotNode;
 };
@@ -71,6 +76,12 @@ export type FloatingCardParts = {
  * raised card and a floating panel would take its place.
  */
 export const FloatingSurfaceContext = createContext<FloatingSurface | null>(null);
+
+/**
+ * What a heading row does with its action when the title and the action do not both fit on one
+ * line: move the action under the title, or keep it beside the title and cut the title short.
+ */
+export type ActionPlacement = "wrap" | "inline";
 
 export type CardLayoutProps = {
   /** The body. */
@@ -105,6 +116,14 @@ export type CardLayoutProps = {
   iconSlot?: SlotNode | undefined;
   /** The header's far end: an add button, a menu, a switch. */
   actionSlot?: SlotNode | undefined;
+  /**
+   * Where the action goes when the title and the action do not both fit on one line. `wrap` (the
+   * default) moves the action under the title once the title would have less than 10rem, so the
+   * whole title stays readable. `inline` keeps the action beside the title on every width and
+   * cuts the title short with an ellipsis instead: for a narrow card whose action belongs on the
+   * title's line, such as a switch that turns the card's subject on.
+   */
+  actionPlacement?: ActionPlacement | undefined;
   /**
    * Shown instead of `contentSlot` when there is nothing in it: no element (`[]`, `null`, `false`),
    * or a `List` with no rows. A body of any other element is drawn as it is, even one that turns
@@ -162,8 +181,8 @@ const ICON = "[&_svg]:size-4";
 const BAR = cn("h-4 rounded-md bg-foreground/10", "animate-pulse");
 
 /**
- * The heading row, as a row that wraps: the title and description in one column, the action
- * after it. `CardLayout`, its floating form in a dialog and `Section` all draw this one row.
+ * The heading row: the title and description in one column, the action after it. `CardLayout`,
+ * its floating form in a dialog and `Section` all draw this one row.
  *
  * The action used to be `CardAction`, which is absolute and so reserves no width — right for the
  * badge or lone button it was written for, and wrong for anything wider, because a long title ran
@@ -176,15 +195,26 @@ const BAR = cn("h-4 rounded-md bg-foreground/10", "animate-pulse");
  * title, at the far end. `gap-y-1.5` is `CardHeader`'s own gap, for the action's line once it has
  * wrapped.
  */
-const HEADING_ROW = "min-w-0 flex-row flex-wrap items-start gap-x-4 gap-y-1.5";
+const HEADING_ROW = "min-w-0 flex-row items-start gap-x-4 gap-y-1.5";
+
+/** Whether the row wraps, by `actionPlacement`: `inline` holds the action on the title's line. */
+const ROW_WRAP = { wrap: "flex-wrap", inline: "flex-nowrap" } as const;
 
 /**
  * The heading's text. `basis-40` is the floor the row wraps on: the title keeps 10rem beside the
  * action or the action goes under it. A card's title and a section's overline both truncate, so
  * either can give up more before it stops naming its block — and the lower the floor, the narrower
- * the block in which a single button still sits where it always did.
+ * the block in which a single button still sits where it always did. A row that does not wrap
+ * shrinks the text past the floor instead.
  */
 const HEADING_TEXT = "min-w-0 flex-1 basis-40 gap-1.5";
+
+/**
+ * A title held to one line, for a row whose action stays beside it. `truncate` is the ellipsis on
+ * the web; on device it is `numberOfLines`, which is what `line-clamp-1` becomes and what
+ * `truncate` does not. `min-w-0 shrink` let it give way inside the icon's row as well.
+ */
+const ONE_LINE_TITLE = cn("min-w-0 shrink", "truncate");
 
 /**
  * The heading's action, never shrunk and never wider than the row: on a line of its own, a
@@ -203,6 +233,11 @@ export type HeadingRowProps = {
   textSlot?: SlotNode | undefined;
   /** The row's far end: an add button, a menu, a switch. */
   actionSlot?: SlotNode | undefined;
+  /**
+   * `wrap` (the default) moves the action under the text when both do not fit; `inline` keeps it
+   * beside the text, which shrinks. The shell holds its own title to one line for `inline`.
+   */
+  actionPlacement?: ActionPlacement | undefined;
   /** The row's `testID` / `data-slot`. */
   "data-slot"?: string | undefined;
   /** The action's `testID` / `data-slot`. */
@@ -213,11 +248,12 @@ export type HeadingRowProps = {
 
 /**
  * The heading row a block draws over its body: its text at the start and its action at the far
- * end, with the action dropping under the text when both do not fit.
+ * end, with the action dropping under the text when both do not fit, unless it is `inline`.
  */
 export function HeadingRow({
   textSlot,
   actionSlot,
+  actionPlacement = "wrap",
   "data-slot": testID,
   actionTestID,
   className,
@@ -227,10 +263,25 @@ export function HeadingRow({
     <div
       data-slot={testID}
       // With no text there is no column to push the action along, so the row does it.
-      className={cn("cube-rn-view", HEADING_ROW, textSlot ? undefined : "justify-end", className)}
+      className={cn(
+        "cube-rn-view",
+        HEADING_ROW,
+        ROW_WRAP[actionPlacement],
+        textSlot ? undefined : "justify-end",
+        className,
+      )}
     >
       {textSlot ? (
-        <div className={cn("cube-rn-view", HEADING_TEXT, textClassName)}>{textSlot}</div>
+        <div
+          className={cn(
+            "cube-rn-view",
+            HEADING_TEXT,
+            actionPlacement === "inline" && "shrink",
+            textClassName,
+          )}
+        >
+          {textSlot}
+        </div>
       ) : null}
       {actionSlot ? (
         <div data-slot={actionTestID} className={cn("cube-rn-view", HEADING_ACTION)}>
@@ -319,6 +370,7 @@ export function CardLayout({
   descriptionIconSlot,
   iconSlot,
   actionSlot,
+  actionPlacement = "wrap",
   emptySlot,
   loading = false,
   footerSlot,
@@ -343,16 +395,20 @@ export function CardLayout({
   // heading on an empty card.
   const folded =
     foldsDescription(title, description, descriptionPlacement) && Boolean(body || hasFooter);
+  const oneLineTitle = actionPlacement === "inline" ? ONE_LINE_TITLE : undefined;
 
   const titleSlot = title ? (
     surface ? (
-      surface.drawTitle(title, titleClassName)
+      surface.drawTitle(title, cn(oneLineTitle, titleClassName))
     ) : (
       // The padding is what stops `truncate` clipping the title: `CardTitle` is `leading-none`,
       // so the line box is exactly 1em and `overflow: hidden` cuts the ascenders and descenders
       // off it. The negative margin gives the space back, so the header keeps the height shadcn
       // drew it at.
-      <CardTitle level={level} className={cn("-my-1 min-w-0 shrink truncate py-1", titleClassName)}>
+      <CardTitle
+        level={level}
+        className={cn("-my-1 min-w-0 shrink truncate py-1", oneLineTitle, titleClassName)}
+      >
         {title}
       </CardTitle>
     )
@@ -380,8 +436,12 @@ export function CardLayout({
       }
       description={description}
       // A card is not a landmark or a control, so there is nothing for an `aria-describedby` to
-      // hang on: folded, the text is only read where it was.
+      // hang on: folded, the text is only read where it was. A panel is a dialog, which its
+      // description describes, so it draws the folded copy itself.
       descriptionSlot={descriptionSlot}
+      foldedDescriptionSlot={
+        surface && folded ? surface.drawFoldedDescription(description) : undefined
+      }
       folded={folded}
       fallbackName="About this card"
       iconSlot={descriptionIconSlot}
@@ -410,6 +470,7 @@ export function CardLayout({
             <HeadingRow
               textSlot={headingText}
               actionSlot={actionSlot}
+              actionPlacement={actionPlacement}
               className={headerClassName}
               // On a floating panel the title and description keep the dialog's own `gap-1`.
               textClassName="gap-1"
@@ -432,7 +493,11 @@ export function CardLayout({
     <>
       {hasHeader ? (
         <CardHeader className={headerClassName}>
-          <HeadingRow textSlot={headingText} actionSlot={actionSlot} />
+          <HeadingRow
+            textSlot={headingText}
+            actionSlot={actionSlot}
+            actionPlacement={actionPlacement}
+          />
         </CardHeader>
       ) : null}
 

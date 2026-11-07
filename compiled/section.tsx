@@ -11,7 +11,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { cn, type SlotNode } from "@/lib/utils";
-import { HeadingRow } from "./card-layout";
+import { type ActionPlacement, HeadingRow } from "./card-layout";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { SectionHeading } from "./section-heading";
 
@@ -33,6 +33,12 @@ type SectionProps = {
   descriptionIconSlot?: SlotNode | undefined;
   /** The heading row's far end: an add button, a count, a switch that disables the group. */
   actionSlot?: SlotNode | undefined;
+  /**
+   * Where the action goes when the title and the action do not both fit on one line. `wrap` (the
+   * default) moves the action under the title; `inline` keeps it beside the title and cuts the
+   * title short with an ellipsis instead. `CardLayout`'s, so a section and a card agree.
+   */
+  actionPlacement?: ActionPlacement | undefined;
   /** A hairline under the heading. Off by default; on, the group reads as one block. */
   divider?: boolean | undefined;
   /**
@@ -48,13 +54,19 @@ type SectionProps = {
 };
 
 /**
+ * The title held to one line on device, for an `inline` action: `truncate` is the ellipsis on the
+ * web, and on device it is `numberOfLines`, which is what `line-clamp-1` becomes.
+ */
+const ONE_LINE_ON_DEVICE = undefined;
+
+/**
  * A heading over a group of fields or rows, with the body in `contentSlot`. It draws no surface: a
  * titled group on a card is a `CardLayout`.
  *
  * The title is a heading of rank `level`, and on the web the root is a `<section>` named by it,
  * which makes it a `region` landmark. An untitled section has no name and is not a landmark. The
  * heading row is `CardLayout`'s and wraps: the action sits beside the text, level with the title's
- * top, while both fit, and drops under it when they do not.
+ * top, while both fit, and drops under it when they do not, unless `actionPlacement` is `inline`.
  */
 export function Section({
   contentSlot,
@@ -63,6 +75,7 @@ export function Section({
   descriptionPlacement = "inline",
   descriptionIconSlot,
   actionSlot,
+  actionPlacement = "wrap",
   divider = false,
   level = 2,
   className,
@@ -82,7 +95,8 @@ export function Section({
         // An overline in full ink: grey, it was outranked by the larger grey description under it.
         // Weight, caps and ink lead; the size stays small.
         "truncate text-foreground",
-        folded && "min-w-0 shrink",
+        (folded || actionPlacement === "inline") && "min-w-0 shrink",
+        actionPlacement === "inline" && ONE_LINE_ON_DEVICE,
         titleClassName,
       )}
     >
@@ -104,6 +118,7 @@ export function Section({
         <HeadingRow
           data-slot="section-heading"
           actionTestID="section-action"
+          actionPlacement={actionPlacement}
           className={divider ? "border-b border-foreground/10 pb-1" : undefined}
           textSlot={
             hasText ? (
