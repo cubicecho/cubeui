@@ -153,7 +153,7 @@ device, `onClick` on the web.
   with a `hint` still hears it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
   announce the button as unavailable.
 - The tooltip draws no element around the button, on device or on the web, so `className`
-  places the button in its parent: `absolute top-2 right-2`, `ml-auto`, `self-end`.
+  places the button in its parent: `ml-auto`, `self-end`, `flex-1`.
 - A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
 - `type` and `aria-describedby` are web only. A device has no form to submit.
@@ -197,7 +197,7 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 | `disabled` | `boolean` |  | Off: a press copies nothing and calls neither `onCopied` nor `onError`. Say why with `hint`, as on `Button` — "Give the webhook an id first". |
 | `hint` | `ButtonProps["hint"]` |  | The button's tooltip, as on `Button`. With `disabled` it keeps the button focusable and hoverable (`aria-disabled`), so the reason it is off can still be read. |
 | `tooltip` | `ButtonProps["tooltip"]` |  | Whether the tooltip is drawn: the `hint`, or with none at an `icon*` size the name, `label` and then `Copied`. Off, a `hint` is still the button's description. Turn it off where the icon already explains itself. |
-| `className` | `string` |  | The button's class: its position, say `absolute top-2 right-2` over a snippet. |
+| `className` | `string` |  | The button's class, for its place in a row: `ml-auto`, `self-end`. Beside a block of text it goes in the block's `actionSlot` — `CodeBlock`, `CardLayout`, `Section`, `PropertyRow`, `ListItem` — not in an `absolute` corner over the block, where it covers the text. |
 <!-- /props -->
 
 Beside a block of text it goes in the block's `actionSlot` — see [Code block](code-and-markdown.md#code-block) — not in

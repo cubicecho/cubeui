@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Archive, Inbox as InboxIcon } from "lucide-react";
+import { Inbox as InboxIcon } from "lucide-react";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { TextareaField, useAppForm } from "@/components/app-form";
@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code";
 import { CopyButton } from "@/components/ui/copy-button";
 import { FormElement } from "@/components/ui/form-element";
-import { ArrowLeft, Trash2 } from "@/components/ui/icons";
+import { Archive, ArrowLeft, Trash2 } from "@/components/ui/icons";
 import { SearchInput } from "@/components/ui/search-input";
 import { Separator } from "@/components/ui/separator";
 import { ToastProvider, useToast } from "@/components/ui/toast";
