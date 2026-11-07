@@ -7,14 +7,17 @@ an item you don't have does not apply.
 **How to update.** cubeui has no version numbers: the registry published from `main` is the
 newest version. Reinstall every cubeui item the app has with
 `npx shadcn add @cubeui/<item> --overwrite`, then go through this list, then run the app's
-typecheck, lint and tests. Files you have edited by hand are overwritten; re-apply your edits or
+typecheck, lint and tests. The CLI rewrites import paths, so the reinstalled files can come out of
+your formatter's import order: run it over them (`biome check --write <components dir>`) before
+lint. It also adds the items' new npm dependencies, such as `@radix-ui/react-slot` for `button`;
+commit the changed `package.json` and lockfile with them. Files you have edited by hand are overwritten; re-apply your edits or
 move them out of the cubeui file first.
 
 ## Removed items
 
 | Item | Replace with |
 |---|---|
-| `page` (`Page`, `CardGrid`) | `PageLayout` (`@cubeui/page-layout`); for a body with no title block, `HeaderContentFooter`. `CardGrid` becomes `GridLayout` (`@cubeui/grid-layout`). `PageHeader` and `EmptyState` are imported from their own items. Delete `components/page.tsx`. |
+| `page` (`Page`, `CardGrid`) | `PageLayout` (`@cubeui/page-layout`); for a body with no title block, `HeaderContentFooter`. `CardGrid` becomes `GridLayout` (`@cubeui/grid-layout`). `PageHeader` and `EmptyState` are imported from their own items, so install `@cubeui/page-header` and `@cubeui/empty-state` if the app does not have them. Delete `components/page.tsx`. |
 | `detail-page` (`DetailPage`) | `<LoadState query={q} what="…" record={q.data} notFoundLabel="…" />` (`@cubeui/load-state`), then the page once `q.data` is there. Inside a page that already has its level-1 title, pass `level={2}`. Delete `components/detail-page.tsx`. |
 | `detail-header` (`DetailHeader`) | `<PageHeader backSlot={<Button aria-label="Back" onPress={f} … />} iconSlot={<ColorDot color={c} />} title={t} description={d} actionSlot={<>{badges}{actions}</>} />`, or the same props on `PageLayout`. Delete `components/detail-header.tsx`. |
 | `top-bar-layout` (`TopBarLayout`) | `<HeaderContentFooter className="h-full" headerSlot={<AppBar brandSlot={…} navSlot={…} navLabel="Main" actionSlot={…} />} contentSlot={<main>…</main>} />`, installing `@cubeui/app-bar`. Delete `components/top-bar-layout.tsx`. |
