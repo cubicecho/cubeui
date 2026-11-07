@@ -10,6 +10,7 @@ import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
 import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { EmptyState } from "../../registry/layout/empty-state";
+import { ErrorPage } from "../../registry/layout/error-page";
 import { FileTree } from "../../registry/layout/file-tree";
 import { GridLayout } from "../../registry/layout/grid-layout";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
@@ -18,7 +19,6 @@ import { ListItem } from "../../registry/layout/list-item";
 import { LoadError, LoadState, RowSkeleton } from "../../registry/layout/load-state";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
-import { RouteError } from "../../registry/layout/route-error";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
 import { SettingRow } from "../../registry/layout/setting-row";
@@ -232,6 +232,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The native source imports expo-file-system and expo-sharing, which this repo only declares in types/, so it cannot run in a browser.",
   "query-state":
     "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
 };
 
 const onButtonPress = fn();
@@ -1119,8 +1121,8 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Load state and route error",
-    items: ["load-state", "route-error"],
+    title: "Load state and error page",
+    items: ["load-state", "error-page"],
     description:
       "Loading, failed, empty, a record not found, then the screen a route shows when it throws.",
     content: (
@@ -1140,7 +1142,7 @@ const sections: GallerySection[] = [
           record={null}
           notFoundLabel="Project not found."
         />
-        <RouteError error={new Error("Project not found.")} reset={noop} />
+        <ErrorPage error={new Error("Project not found.")} reset={noop} />
       </Stack>
     ),
   },

@@ -23,6 +23,7 @@ import { DialogLayout } from "@/components/dialog-layout";
 import { Disclosure } from "@/components/disclosure";
 import { DisclosureRow } from "@/components/disclosure-row";
 import { EmptyState } from "@/components/empty-state";
+import { ErrorPage } from "@/components/error-page";
 import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
@@ -37,7 +38,6 @@ import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
-import { RouteError } from "@/components/route-error";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { SettingRow } from "@/components/setting-row";
@@ -269,6 +269,8 @@ const NOT_SHOWN: Record<string, string> = {
   "toggle-chip-stories": "A story file a consumer installs beside `toggle-chip`.",
   "query-state":
     "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
 };
 
 const noop = () => {};
@@ -1704,12 +1706,12 @@ const sections: GallerySection[] = [
   { title: "Stat tile", items: ["stat-tile"], content: <StatTiles /> },
   { title: "Load state", items: ["load-state"], content: <LoadStates /> },
   {
-    title: "Route error",
-    items: ["route-error"],
+    title: "Error page",
+    items: ["error-page"],
     content: (
       <Frame
         height="h-[320px]"
-        content={<RouteError error={new Error("Project not found")} reset={noop} />}
+        content={<ErrorPage error={new Error("Project not found")} reset={noop} />}
       />
     ),
   },

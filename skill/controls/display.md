@@ -215,7 +215,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
   The icon child goes into the icon box (and replaces the default glyph); the parts go into the
   column. New code uses the props.
-- A failed *fetch* on a list page is `LoadState`'s rung, and a crashed route is `RouteError`;
+- A failed *fetch* on a list page is `LoadState`'s rung, and a crashed route is `ErrorPage`;
   `Alert` is for what the screen says while it works.
 
 ## Spinner

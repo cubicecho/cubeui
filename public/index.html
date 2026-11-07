@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 107 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 107 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  92 on both platforms · 14 web-only · 0 native-only.
+  93 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -416,6 +416,11 @@
           <td>The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/error-page</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/field</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>Label, description and error chrome around a control. The unbound half of the form set.</td>
@@ -603,7 +608,7 @@
         <tr>
           <th scope="row"><code>@cubeui/route-error</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).</td>
+          <td>The old name of error-page, kept for one release: RouteError, re-exported from it. Install error-page.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/search-input</code></th>

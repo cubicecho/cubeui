@@ -1,18 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
-import { RouteError as Compiled } from "../compiled/route-error";
-import { RouteError as Native } from "../registry/layout/route-error";
+import { ErrorPage as Compiled } from "../compiled/error-page";
+import { RouteError as CompiledOld } from "../compiled/route-error";
+import { ErrorPage as Native } from "../registry/layout/error-page";
+import { RouteError as NativeOld } from "../registry/layout/route-error";
 import { Button } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
 /**
- * An error boundary renders `RouteError` and nothing around it: the alert, the raw message for a
+ * An error boundary renders `ErrorPage` and nothing around it: the alert, the raw message for a
  * bug report and the second way out are all props. Both halves are asserted, because a consumer on
  * either registry should be able to delete its wrapper. The native half passes the Reload as
  * `actionSlot` and the compiled half as `actionsSlot`, its deprecated name, so both stay held.
  */
-const meta = { title: "RN Parity/RouteError" } satisfies Meta;
+const meta = { title: "RN Parity/ErrorPage" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
@@ -91,5 +93,23 @@ export const NoRepeat: Story = {
         "[data-slot=route-error-details], [data-slot=error-page-details]",
       ),
     ).toBeNull();
+  },
+};
+
+/**
+ * The old name and its old item, kept for one release: `RouteError` from `route-error` draws what
+ * `ErrorPage` draws, so an app moves its call sites across one at a time.
+ */
+export const OldName: Story = {
+  render: () => (
+    <SideBySide
+      native={<NativeOld error={crash} reset={() => {}} describe={describe} />}
+      compiled={<CompiledOld error={crash} reset={() => {}} describe={describe} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getAllByRole("alert")).toHaveLength(2);
+    await expect(canvas.getAllByText("Something went wrong")).toHaveLength(2);
   },
 };

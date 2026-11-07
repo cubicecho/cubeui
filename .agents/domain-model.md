@@ -270,8 +270,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/load-state.tsx`, with `LoadError` and `RowSkeleton`.
   `QueryState`, `QueryError` and the `query-state` item are its old names, deprecated for one
   release.
-- **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
-  Try again. Owner: `registry/layout/route-error.tsx`.
+- **`ErrorPage`:** the whole-screen panel shown when a page fails to draw, with
+  Try again. Owner: `registry/layout/error-page.tsx`. `RouteError` and the `route-error` item are
+  its old names, deprecated for one release.
 
 ### Internals
 

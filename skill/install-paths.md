@@ -84,6 +84,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `empty` | both | `components/ui/empty.tsx` | `import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"` |
 | `empty-state` | both | `components/empty-state.tsx` | `import { EmptyState } from "@/components/empty-state"` |
 | `error-message` | both | `lib/error-message.ts` | `import { messageOf } from "@/lib/error-message"` |
+| `error-page` | both | `components/error-page.tsx` | `import { ErrorPage } from "@/components/error-page"` |
 | `field` | both | `components/ui/field.tsx` | `import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, … 4 more } from "@/components/ui/field"` |
 | `field-row` | web | `components/field-row.tsx` | `import { FieldRow } from "@/components/field-row"` |
 | `file-picker` | web | `components/ui/file-picker.tsx`; also `file-picker-base.ts` | `import { FilePicker, FilePickerButton } from "@/components/ui/file-picker"` |
@@ -107,7 +108,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `item` | native | `components/ui/item.tsx`; also `item-base.ts`, `item.web.tsx` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
 | `label` | web | `components/ui/label.tsx`; also `label-base.ts` | `import { Label } from "@/components/ui/label"` |
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
-| `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `empty-state`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `route-error`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
+| `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
 | `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
 | `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |

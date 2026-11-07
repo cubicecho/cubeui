@@ -1348,9 +1348,9 @@
       ]
     },
     {
-      "name": "route-error",
+      "name": "error-page",
       "type": "registry:component",
-      "title": "Route Error",
+      "title": "Error Page",
       "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).",
       "registryDependencies": [
         "@cubeui/button",
@@ -1358,6 +1358,19 @@
         "@cubeui/utils",
         "@cubeui/tokens"
       ],
+      "files": [
+        {
+          "path": "compiled/error-page.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "route-error",
+      "type": "registry:component",
+      "title": "Route Error (deprecated)",
+      "description": "The old name of error-page, kept for one release: RouteError, re-exported from it. Install error-page.",
+      "registryDependencies": ["@cubeui/error-page"],
       "files": [
         {
           "path": "compiled/route-error.tsx",
@@ -1640,6 +1653,7 @@
         "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/empty-state",
+        "@cubeui/error-page",
         "@cubeui/file-tree",
         "@cubeui/header-content-footer",
         "@cubeui/list",
@@ -1647,7 +1661,6 @@
         "@cubeui/load-state",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/route-error",
         "@cubeui/section",
         "@cubeui/section-heading",
         "@cubeui/setting-row",
