@@ -19,11 +19,10 @@ move them out of the cubeui file first.
   its web packages in `devDependencies`. It also raises the ranges of packages the app already has
   (`radix-ui`, `lucide-react`) to the newest. Move the new ones to where the app keeps its
   packages, put back any pin you meant to keep, and commit the `package.json` and lockfile.
-  Until [#408](https://github.com/cubicecho/cubeui/issues/408) and
-  [#409](https://github.com/cubicecho/cubeui/issues/409) are fixed, a reinstall also adds
-  `@types/react-dom` to `dependencies`, and in an Expo app turns `~` pins on `expo-*` and
-  `react-native-svg` into `^`. Remove the first, or move it to `devDependencies`, and run
-  `npx expo install --fix` for the second.
+  An earlier reinstall added `@types/react-dom@~19.2.0` to `dependencies`
+  ([#408](https://github.com/cubicecho/cubeui/issues/408)): remove it, or put the app's own entry
+  back in `devDependencies`. Only an Expo app with `menu` still gets it, because `menu`'s web half
+  needs React DOM's types and the CLI can't add a dev dependency to an Expo app; leave it there.
 - **shadcn's own files.** `@cubeui/table` (web), `@cubeui/separator` and `@cubeui/alert-dialog`
   install to the same `components/ui/` paths as shadcn's components of those names. In an app that
   had shadcn's, cubeui's replaces it, so check the call sites.

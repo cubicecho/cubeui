@@ -161,7 +161,7 @@
         "lucide-react@^1.41.0",
         "nativewind@^5.0.0-rc.0",
         "react-native-css@3.1.0-rc.0",
-        "react-native-svg@^15.13.0",
+        "react-native-svg@~15.15.4",
         "tailwindcss@^4.3.3"
       ],
       "registryDependencies": ["@cubeui/utils"],
@@ -243,7 +243,7 @@
       "type": "registry:ui",
       "title": "Checkbox",
       "description": "Radix on web, with its whole prop surface; a Pressable announced through role and aria-checked on device. Controlled or uncontrolled on both.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -359,7 +359,7 @@
       "type": "registry:ui",
       "title": "Label",
       "description": "A caption for a control. Radix on web so clicking it focuses the control; plain text on native, where that association does not exist.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -402,7 +402,7 @@
       "type": "registry:ui",
       "title": "Dialog",
       "description": "A modal. Radix on web with its focus trap and scroll lock; a transparent native Modal with a dimmed backdrop and a centred card.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
@@ -429,7 +429,7 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "Radix anchored to its trigger on web; a centred native sheet on device, because anchoring is a pointer-era affordance.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/frame-focus-guard"],
       "files": [
         {
@@ -518,7 +518,7 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "A radix listbox under its trigger on web; the options in a Modal sheet on device, which is what every native platform does.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/frame-focus-guard"],
       "files": [
         {
@@ -540,7 +540,7 @@
       "type": "registry:ui",
       "title": "Switch",
       "description": "Radix on web; a Pressable track with a moving thumb on device, rather than RN's Switch, whose raw colour props would not follow the theme.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/tooltip"],
       "files": [
         {
@@ -562,11 +562,7 @@
       "type": "registry:ui",
       "title": "Tabs",
       "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour, and a dot or a count at its far end as `trailingSlot`. A list with more tabs than fit scrolls sideways and keeps the selected tab in view.",
-      "dependencies": [
-        "@radix-ui/react-slot@^1.5.0",
-        "@types/react-dom@~19.2.0",
-        "radix-ui@^1.6.7"
-      ],
+      "dependencies": ["@radix-ui/react-slot@^1.5.0", "radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
       "files": [
         {
@@ -588,7 +584,7 @@
       "type": "registry:ui",
       "title": "Tooltip",
       "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": ["@cubeui/utils"],
       "files": [
         {
@@ -991,11 +987,7 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "@types/react-dom@~19.2.0",
-        "class-variance-authority@^0.7.1",
-        "radix-ui@^1.6.7"
-      ]
+      "dependencies": ["class-variance-authority@^0.7.1", "radix-ui@^1.6.7"]
     },
     {
       "name": "copy-button",
@@ -1003,7 +995,7 @@
       "title": "Copy button",
       "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`, or `Copy {title}` inside a titled CodeBlock) and then `Copied`.",
       "registryDependencies": ["@cubeui/button", "@cubeui/code", "@cubeui/icons"],
-      "dependencies": ["expo-clipboard@^57.0.2"],
+      "dependencies": ["expo-clipboard@~57.0.2"],
       "files": [
         {
           "path": "registry/ui/copy-button-base.ts",
@@ -1034,7 +1026,7 @@
         "@cubeui/menu",
         "@cubeui/spinner"
       ],
-      "dependencies": ["expo-file-system@^57.0.7", "expo-sharing@^57.0.22"],
+      "dependencies": ["expo-file-system@~57.0.7", "expo-sharing@~57.0.22"],
       "files": [
         {
           "path": "registry/ui/download-button-base.ts",
@@ -1093,7 +1085,6 @@
       ],
       "dependencies": [
         "@radix-ui/react-slot@^1.5.0",
-        "@types/react-dom@~19.2.0",
         "class-variance-authority@^0.7.1",
         "radix-ui@^1.6.7"
       ]
@@ -1138,7 +1129,7 @@
       "type": "registry:ui",
       "title": "Alert Dialog",
       "description": "shadcn's modal that interrupts to ask, with the same part names on both halves: radix's `AlertDialog` on the web, the native `Dialog` as an `alertdialog` with no close button on device.",
-      "dependencies": ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+      "dependencies": ["radix-ui@^1.6.7"],
       "registryDependencies": [
         "@cubeui/button",
         "@cubeui/dialog",

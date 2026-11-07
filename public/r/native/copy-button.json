@@ -4,7 +4,7 @@
   "title": "Copy button",
   "description": "An icon button that copies `value` to the clipboard and turns into a tick for a moment, named `Copy` (or `label`, or `Copy {title}` inside a titled CodeBlock) and then `Copied`.",
   "dependencies": [
-    "expo-clipboard@^57.0.2"
+    "expo-clipboard@~57.0.2"
   ],
   "registryDependencies": [
     "@cubeui/button",
