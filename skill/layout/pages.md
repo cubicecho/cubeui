@@ -76,7 +76,8 @@ so a page whose rows run flush to the rule passes `py-0` (or `gap-0`) and change
 
 `headerContentSlot` is the row under the title: search, filters, tabs. It keeps the title's
 column. Passing it removes the rule under the header, which is correct — the search row is already
-the separator.
+the separator. Each node keeps its own width (a search field fills the line); a filter row of
+your own passes `self-stretch`.
 
 **The header runs the full width; the title keeps the column.** The rule under the header is drawn
 on the whole header, so it runs the width of the page whatever `width` is, while the title, its
@@ -280,7 +281,7 @@ It is not a page.
 - **`backSlot` is the way back, above the title**: a back link, or a breadcrumb trail. Put a back
   button here, not in `iconSlot`: that is the page's own icon, and a back button beside the title
   takes width from the page's name. `breadcrumbsSlot` is the old name, still read when `backSlot`
-  is not passed, for one release.
+  is not passed, for one release. Under it, the title row is a button's height.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
   anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
