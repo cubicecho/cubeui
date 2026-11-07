@@ -28,23 +28,49 @@ import { Children, createContext, isValidElement, useContext } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
-import { DialogDescription, DialogFooter, DialogTitle } from "./dialog";
-import { HeaderContentFooter } from "./header-content-footer";
 import { hasRows, List } from "./list";
 
 /**
- * Whether the `CardLayout` directly inside is drawn on a floating panel that already draws the
- * surface: the border, the fill, the shadow and the `p-6` inset. `DialogLayout` sets it, and the
- * card then draws its parts on the dialog instead of a `Card` of its own: the title is the
- * `DialogTitle` that names the dialog, the body is the one part that scrolls, and the footer
- * stacks below `sm`. The card sets it back to `false` for what it holds, so a card in a dialog's
- * body is a card again.
+ * The parts a floating panel draws a card with, handed down by the panel that already draws the
+ * surface: the border, the fill, the shadow and the inset. `DialogLayout` hands its own, so the
+ * title is the `DialogTitle` that names the dialog, the description the `DialogDescription` that
+ * describes it, the body the one part that scrolls, and the footer the one that stacks below `sm`.
+ * The panel owns those parts, so a card installed without a dialog carries none of them.
+ */
+export type FloatingSurface = {
+  /** The title, as the element that names the panel. */
+  drawTitle: (title: ReactNode, className: string | undefined) => SlotNode;
+  /** The description, as the element that describes the panel. */
+  drawDescription: (description: ReactNode) => SlotNode;
+  /** The card's header, body and footer, placed on the panel. */
+  drawParts: (parts: FloatingCardParts) => SlotNode;
+};
+
+/** What a card hands its floating panel to place. */
+export type FloatingCardParts = {
+  /** The heading row, or nothing. */
+  headerSlot: SlotNode;
+  /** The body: the content, its empty state or its skeleton. */
+  contentSlot: SlotNode;
+  contentClassName: string | undefined;
+  /** The footer's rows, or nothing. The panel draws the footer around them. */
+  footerSlot: SlotNode;
+  footerClassName: string | undefined;
+  /** The caller's `wrapperSlot`, for the panel to wrap its parts in. */
+  wrapperSlot: CardLayoutProps["wrapperSlot"];
+};
+
+/**
+ * The floating panel the `CardLayout` directly inside is drawn on, or `null` on the page.
+ * `DialogLayout` sets it, and the card then draws no `Card` of its own: it hands its parts to the
+ * panel instead. The card sets it back to `null` for what it holds, so a card in a dialog's body
+ * is a card again.
  *
  * A context rather than a prop, so `CardLayout` takes no prop that only one caller may pass. It
  * is the first answer to "what surface am I on?"; a surface-level context covering the page, a
  * raised card and a floating panel would take its place.
  */
-export const FloatingSurfaceContext = createContext(false);
+export const FloatingSurfaceContext = createContext<FloatingSurface | null>(null);
 
 export type CardLayoutProps = {
   /** The body. */
@@ -248,20 +274,6 @@ const FLOATING_FOOTER_START = cn(
 );
 
 /**
- * The chassis on a floating panel. `flex-1` on the web, where it sizes from content in a box of
- * no set height; Yoga's `flex: 1` starts from nothing, so on device it starts from its content
- * and shrinks under the panel's cap instead.
- */
-const FLOATING_CHASSIS = "min-h-0 flex-1 gap-4";
-
-/**
- * What `wrapperSlot`'s element takes on a floating panel, so it stands where the chassis stood:
- * the same share of the panel's height, passed on to the chassis inside it. Without it the
- * wrapper is a box of its content's height and the body stops scrolling.
- */
-const FLOATING_WRAPPER = "flex min-h-0 flex-1 flex-col";
-
-/**
  * Whether a body holds nothing to draw: no element at all, or one `List` with no rows.
  *
  * Elements rather than a truth test: `{items.map(…)}` on an empty array is an empty array, not
@@ -318,7 +330,7 @@ export function CardLayout({
   contentClassName,
   footerClassName,
 }: CardLayoutProps) {
-  const floating = useContext(FloatingSurfaceContext);
+  const surface = useContext(FloatingSurfaceContext);
   const isEmpty = isEmptyBody(contentSlot);
   const settled = isEmpty && emptySlot ? emptySlot : contentSlot;
   const body = loading ? <CardLayoutSkeleton /> : settled;
@@ -333,8 +345,8 @@ export function CardLayout({
     foldsDescription(title, description, descriptionPlacement) && Boolean(body || hasFooter);
 
   const titleSlot = title ? (
-    floating ? (
-      <DialogTitle className={titleClassName}>{title}</DialogTitle>
+    surface ? (
+      surface.drawTitle(title, titleClassName)
     ) : (
       // The padding is what stops `truncate` clipping the title: `CardTitle` is `leading-none`,
       // so the line box is exactly 1em and `overflow: hidden` cuts the ascenders and descenders
@@ -348,8 +360,8 @@ export function CardLayout({
 
   let descriptionSlot: SlotNode = null;
   if (description) {
-    descriptionSlot = floating ? (
-      <DialogDescription>{description}</DialogDescription>
+    descriptionSlot = surface ? (
+      surface.drawDescription(description)
     ) : (
       <CardDescription>{description}</CardDescription>
     );
@@ -380,7 +392,7 @@ export function CardLayout({
   const footerParts = (
     <>
       {footerSlot ? (
-        <div className={cn("cube-rn-view", floating ? FLOATING_FOOTER_START : FOOTER_START)}>
+        <div className={cn("cube-rn-view", surface ? FLOATING_FOOTER_START : FOOTER_START)}>
           {footerSlot}
         </div>
       ) : null}
@@ -390,13 +402,11 @@ export function CardLayout({
     </>
   );
 
-  if (floating) {
-    const floatingParts = (
-      <HeaderContentFooter
-        scroll
-        className={FLOATING_CHASSIS}
-        headerSlot={
-          hasHeader ? (
+  if (surface) {
+    return (
+      <FloatingSurfaceContext.Provider value={null}>
+        {surface.drawParts({
+          headerSlot: hasHeader ? (
             <HeadingRow
               textSlot={headingText}
               actionSlot={actionSlot}
@@ -404,29 +414,16 @@ export function CardLayout({
               // On a floating panel the title and description keep the dialog's own `gap-1`.
               textClassName="gap-1"
             />
-          ) : null
-        }
-        // Four pixels of room either side, given back as padding: a focus ring is drawn outside
-        // the element that owns it, and a scroll container clips at its edge.
-        contentClassName={cn("-mx-1 min-w-0 px-1", contentClassName)}
-        contentSlot={body}
-        footerSlot={
-          hasFooter ? (
-            <DialogFooter
-              className={cn(
-                footerSlot && footerActionsSlot && "sm:justify-between",
-                footerClassName,
-              )}
-            >
-              {footerParts}
-            </DialogFooter>
-          ) : null
-        }
-      />
-    );
-    return (
-      <FloatingSurfaceContext.Provider value={false}>
-        {wrapperSlot ? wrapperSlot(floatingParts, { className: FLOATING_WRAPPER }) : floatingParts}
+          ) : null,
+          contentSlot: body,
+          contentClassName,
+          footerSlot: hasFooter ? footerParts : null,
+          footerClassName: cn(
+            footerSlot && footerActionsSlot && "sm:justify-between",
+            footerClassName,
+          ),
+          wrapperSlot,
+        })}
       </FloatingSurfaceContext.Provider>
     );
   }

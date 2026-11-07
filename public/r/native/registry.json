@@ -1534,9 +1534,7 @@
         "@cubeui/card",
         "@cubeui/utils",
         "@cubeui/description-hint",
-        "@cubeui/list",
-        "@cubeui/dialog",
-        "@cubeui/header-content-footer"
+        "@cubeui/list"
       ],
       "files": [
         {
@@ -1567,7 +1565,8 @@
         "@cubeui/dialog",
         "@cubeui/utils",
         "@cubeui/confirm-dialog",
-        "@cubeui/card-layout"
+        "@cubeui/card-layout",
+        "@cubeui/header-content-footer"
       ],
       "files": [
         {

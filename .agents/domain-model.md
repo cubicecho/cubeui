@@ -209,8 +209,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `CARD_SURFACE_CLASS`.
 - **`CardLayout`:** a card with its icon, title, description, header action, body,
   empty and loading states, and footer already placed. Inside a floating panel that draws the
-  surface (`FloatingSurfaceContext`, set by `DialogLayout`) it draws no card of its own, and its
-  body is the only part that scrolls. Owner: `registry/layout/card-layout.tsx`.
+  surface (`FloatingSurfaceContext`, set by `DialogLayout`) it draws no card of its own: it hands
+  its parts to the panel, which draws them with its own title, description, footer and a chassis
+  where only the body scrolls. Owner: `registry/layout/card-layout.tsx`.
 - **`HeadingRow`:** the row over a block's body: its title and description at the start, its
   action at the far end, dropping under them when both do not fit. `CardLayout`, its floating form
   and `Section` all draw it. Owner: `registry/layout/card-layout.tsx`.
@@ -224,7 +225,8 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`DialogLayout`:** a `CardLayout` on the floating surface: the modal, a size, and a
   discard question before unsaved work is thrown away, with the card's parts at the dialog's inset.
   The title names the dialog, the body scrolls and the footer stacks on a phone. Owner:
-  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `CardLayout`, `ConfirmDialog`.
+  `registry/layout/dialog-layout.tsx`; composes `Dialog`, `CardLayout`, `ConfirmDialog`, and
+  hands the card `HeaderContentFooter` as its chassis.
 - **`ConfirmDialog`:** an "are you sure?" window with Cancel and one destructive
   button. Owner: `registry/ui/confirm-dialog.tsx`; `useConfirm` in `registry/ui/confirm.tsx`.
 - **`ConfirmButton`:** a destructive button that asks first. Owner:

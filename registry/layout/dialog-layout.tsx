@@ -19,9 +19,17 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Platform } from "react-native";
-import { CardLayout, FloatingSurfaceContext } from "@/components/card-layout";
+import { CardLayout, type FloatingSurface, FloatingSurfaceContext } from "@/components/card-layout";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { ConfirmDialog, DISCARD_QUESTION } from "@/components/ui/confirm-dialog";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
@@ -49,6 +57,60 @@ const SR_ONLY = Platform.select({
   web: "sr-only",
   default: "absolute -m-px h-px w-px overflow-hidden",
 });
+
+/**
+ * The chassis on the panel. `flex-1` on the web, where it sizes from content in a box of no set
+ * height; Yoga's `flex: 1` starts from nothing, so on device it starts from its content and
+ * shrinks under the panel's cap instead.
+ */
+const CHASSIS = Platform.select({
+  web: "min-h-0 flex-1 gap-4",
+  default: "min-h-0 shrink gap-4",
+});
+
+/**
+ * What `wrapperSlot`'s element takes on the panel, so it stands where the chassis stood: the same
+ * share of the panel's height, passed on to the chassis inside it. Without it the wrapper is a box
+ * of its content's height and the body stops scrolling.
+ */
+const WRAPPER = Platform.select({
+  web: "flex min-h-0 flex-1 flex-col",
+  default: "min-h-0 shrink",
+});
+
+/**
+ * The dialog's parts, handed to the `CardLayout` on its panel: the title names the dialog, the
+ * description describes it, the body is the one part that scrolls, and the footer stacks below
+ * `sm`. They live here rather than in the card so that a card installed alone carries no dialog.
+ */
+const DIALOG_SURFACE: FloatingSurface = {
+  drawTitle: (title, className) => <DialogTitle className={className}>{title}</DialogTitle>,
+  drawDescription: (description) => <DialogDescription>{description}</DialogDescription>,
+  drawParts: ({
+    headerSlot,
+    contentSlot,
+    contentClassName,
+    footerSlot,
+    footerClassName,
+    wrapperSlot,
+  }) => {
+    const chassis = (
+      <HeaderContentFooter
+        scroll
+        className={CHASSIS}
+        headerSlot={headerSlot}
+        // Four pixels of room either side, given back as padding: a focus ring is drawn outside
+        // the element that owns it, and a scroll container clips at its edge.
+        contentClassName={cn("-mx-1 min-w-0 px-1", contentClassName)}
+        contentSlot={contentSlot}
+        footerSlot={
+          footerSlot ? <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter> : null
+        }
+      />
+    );
+    return wrapperSlot ? wrapperSlot(chassis, { className: WRAPPER }) : chassis;
+  },
+};
 
 export type DialogLayoutProps = {
   /** The body. It is the only part that scrolls. */
@@ -269,7 +331,7 @@ export function DialogLayout({
   // The card draws on the panel: `DialogContent` is the surface, and the card's parts sit at its
   // inset. A function `footerActionsSlot` that returns nothing leaves the card with no footer.
   const card = (
-    <FloatingSurfaceContext.Provider value={true}>
+    <FloatingSurfaceContext.Provider value={DIALOG_SURFACE}>
       <CardLayout
         title={title}
         description={description}
