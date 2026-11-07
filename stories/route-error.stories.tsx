@@ -85,6 +85,11 @@ export const NoRepeat: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getAllByText("Row 12 is locked.")).toHaveLength(2);
     await expect(canvas.getByText("Could not save")).toBeVisible();
-    await expect(canvasElement.querySelector("[data-slot=route-error-details]")).toBeNull();
+    // Under either name the details box has had, so this holds across the rename to `ErrorPage`.
+    await expect(
+      canvasElement.querySelector(
+        "[data-slot=route-error-details], [data-slot=error-page-details]",
+      ),
+    ).toBeNull();
   },
 };

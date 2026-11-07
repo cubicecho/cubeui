@@ -354,11 +354,12 @@ export const BordersNameTheirColour: Story = {
     const border = resolved("foreground", canvasElement, 10);
     await expect(border).not.toBe("rgb(0, 0, 0)");
 
-    const colour = (testId: string, side: "Top" | "Bottom" = "Top") =>
+    const colour = (testId: string | RegExp, side: "Top" | "Bottom" = "Top") =>
       getComputedStyle(canvas.getByTestId(testId))[`border${side}Color`];
     await expect(colour("card")).toBe(border);
     await expect(colour("section-heading", "Bottom")).toBe(border);
-    await expect(colour("route-error-details")).toBe(border);
+    // The details box under either name it has had, `route-error-` or `error-page-`.
+    await expect(colour(/^(route-error|error-page)-details$/)).toBe(border);
   },
 };
 
