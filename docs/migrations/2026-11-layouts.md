@@ -7,15 +7,18 @@ an item you don't have does not apply.
 **How to update.** cubeui has no version numbers: the registry published from `main` is the
 newest version. Reinstall every cubeui item the app has with
 `npx shadcn add @cubeui/<item> --overwrite`, then go through this list, then run the app's
-typecheck, lint and tests. Files you have edited by hand are overwritten; re-apply your edits or
+typecheck, lint and tests. The CLI rewrites import paths, so the reinstalled files can come out of
+your formatter's import order: run it over them (`biome check --write <components dir>`) before
+lint. It also adds the items' new npm dependencies, such as `@radix-ui/react-slot` for `button`;
+commit the changed `package.json` and lockfile with them. Files you have edited by hand are overwritten; re-apply your edits or
 move them out of the cubeui file first.
 
 ## Removed items
 
 | Item | Replace with |
 |---|---|
-| `page` (`Page`, `CardGrid`) | `PageLayout` (`@cubeui/page-layout`); for a body with no title block, `HeaderContentFooter`. `CardGrid` becomes `GridLayout` (`@cubeui/grid-layout`). `PageHeader` and `EmptyState` are imported from their own items. Delete `components/page.tsx`. |
-| `detail-page` (`DetailPage`) | `<QueryState query={q} what="…" record={q.data} notFoundLabel="…" />`, then the page once `q.data` is there. Inside a page that already has its level-1 title, pass `level={2}`. Delete `components/detail-page.tsx`. |
+| `page` (`Page`, `CardGrid`) | `PageLayout` (`@cubeui/page-layout`); for a body with no title block, `HeaderContentFooter`. `CardGrid` becomes `GridLayout` (`@cubeui/grid-layout`). `PageHeader` and `EmptyState` are imported from their own items, so install `@cubeui/page-header` and `@cubeui/empty-state` if the app does not have them. Delete `components/page.tsx`. |
+| `detail-page` (`DetailPage`) | `<LoadState query={q} what="…" record={q.data} notFoundLabel="…" />` (`@cubeui/load-state`), then the page once `q.data` is there. Inside a page that already has its level-1 title, pass `level={2}`. Delete `components/detail-page.tsx`. |
 | `detail-header` (`DetailHeader`) | `<PageHeader backSlot={<Button aria-label="Back" onPress={f} … />} iconSlot={<ColorDot color={c} />} title={t} description={d} actionSlot={<>{badges}{actions}</>} />`, or the same props on `PageLayout`. Delete `components/detail-header.tsx`. |
 | `top-bar-layout` (`TopBarLayout`) | `<HeaderContentFooter className="h-full" headerSlot={<AppBar brandSlot={…} navSlot={…} navLabel="Main" actionSlot={…} />} contentSlot={<main>…</main>} />`, installing `@cubeui/app-bar`. Delete `components/top-bar-layout.tsx`. |
 | `StickyHeaderContentFooter` (from `header-content-footer`) | `<HeaderContentFooter scroll className="h-full …" />`, or `PageLayout` when the header is a `PageHeader`. |
@@ -29,9 +32,9 @@ install the new item, change the import and the names, and delete the old file.
 
 | Old item (`Old` name) | New item (`New` name) |
 |---|---|
-| `query-state` (`QueryState`, `QueryStateProps`) | `load-state` (`LoadState`, `LoadStateProps`) |
+| `query-state` (`QueryState`, `QueryStateProps`, `QueryError`) | `load-state` (`LoadState`, `LoadStateProps`, `LoadError`) |
 | `route-error` (`RouteError`) | `error-page` (`ErrorPage`) |
-| `disclosure` (`Disclosure`) | `collapsible` (`Collapsible`) |
+| `disclosure` (`Disclosure`, `DisclosureTrigger`) | `collapsible` (`Collapsible`, `CollapsibleTrigger`) |
 | `disclosure-row` (`DisclosureRow`) | `collapsible-row` (`CollapsibleRow`) |
 | `description-list` (`DescriptionList`; `PropertyRow` keeps its name) | `property-list` (`PropertyList`) |
 | `centered-layout` (`CenteredLayout`, `CenteredLayoutProps`) | `centered-card-layout` (`CenteredCardLayout`, `CenteredCardLayoutProps`) |
@@ -64,14 +67,14 @@ test that finds them by name needs changing:
 | `PageLayout` | `headerClassName` now lands on the whole header, which runs the full width, not on the `PageHeader` inside it. The rule under the title runs the pane's width. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
-| `QueryState` | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
+| `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. |
 
 ## Moved installs
 
 | Item | Change |
 |---|---|
-| `radio-group-field` | Installs to `components/ui/radio-group-field.tsx`. Change `@/components/radio-group-field` to `@/components/ui/radio-group-field`, and delete the old `components/radio-group-field.tsx`. |
+| `radio-group-field` | Installs to `components/ui/radio-group-field.tsx`. Change `@/components/radio-group-field` to `@/components/ui/radio-group-field`, and delete the old `components/radio-group-field.tsx`: a reinstall writes the new file but leaves the old one in place. |
 | `section` | Now installs `card-layout` too. |
 | `split-layout` | Now installs `app-bar` too. |
 
