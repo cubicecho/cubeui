@@ -1299,6 +1299,12 @@ and runs under `node --test` so it stays runnable with nothing installed. Everyt
 vitest, in two projects: `unit` in node for the registry libs, and `storybook` in a headless Chromium
 for the stories, because an axe run and a `getComputedStyle` assertion both need a real browser.
 
+`patches/storybook+10.6.0.patch` is for this repo's own story run, not for apps. Storybook 10.6
+freezes animations before a story's `afterEach` and unfreezes them only if it returns, so one
+failed a11y check left every later story in the shared page frozen, and the dialog close tests
+timed out (#440). The patch backports the upstream fix (storybookjs/storybook#36107). Delete it
+when Storybook moves to 11.
+
 `compiled/` and `registry.web.json` are committed for the same reason `dist/` is, and
 `compile:check` is what catches a compiler change that silently stops emitting for an item.
 
