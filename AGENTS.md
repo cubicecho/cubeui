@@ -163,7 +163,7 @@ palette and never `black` or `white` — `registry:check` rule 9.
 | `neutral`, `neutral-foreground` | A button or a badge with nothing to say |
 | `positive`, `warning`, `negative`, `info` (each with `-foreground`) | What a thing says. `info` is the blue for a thing worth pointing out: a highlight with a name, and no icon or role of its own |
 | `hover` | The transient fill under a pointer, a menu's keyboard highlight or keyboard focus: `active`'s hue, all but grey. Its text is `foreground` |
-| `active`, `active-foreground` | Chosen, current and focused: a checked control, the current row, a focused field's border |
+| `active`, `active-foreground` | Chosen, current and focused: the tint of a checked control or the current row (`bg-active/40`), a focused field's border. Nothing in the registry draws `active-foreground`: it is kept for an app's own solid `active` mark, such as a brand tile |
 | `overlay` | The scrim behind a dialog |
 
 **Muted is an opacity, not a token, and there are six steps.** A palette is only predictable if a
@@ -172,9 +172,9 @@ component cannot invent a seventh:
 | Step | Is | Example |
 |---|---|---|
 | `/10` | A quiet fill, a tint, a border | `bg-foreground/10`, `bg-warning/10`, `border-foreground/10` |
-| `/40` | The edge of a tint, an invalid ring, the tint of a chosen row | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
+| `/40` | The edge of a tint, an invalid ring, the tint of a chosen thing | `border-warning/40`, `ring-negative/40`, `bg-active/40` |
 | `/50` | A control's edge — an input, a select, a checkbox, an unchecked switch — 3:1 on every surface (WCAG 1.4.11), held by `palette-contrast.test.mjs` | `border-foreground/50`, `bg-foreground/50` |
-| `/60` | Secondary text, the scrim, a border under the pointer, a chosen row under the pointer | `text-foreground/60`, `bg-overlay/60`, `hover:bg-active/60` |
+| `/60` | Secondary text, the scrim, a border under the pointer, a chosen thing under the pointer or focused | `text-foreground/60`, `bg-overlay/60`, `hover:bg-active/60` |
 | `/90` | A fill under the pointer | `hover:bg-neutral/90` |
 | none | Everything else | `bg-neutral`, `border-active` |
 
@@ -205,40 +205,53 @@ registry file that names one.
 trigger are `focus:border-active`, and `aria-invalid:focus:border-active` on the web so an invalid
 field still shows where focus is.
 
-**Nothing draws a focus ring: a focused thing looks hovered** — `bg-hover` with `text-foreground`,
-filled and chosen controls included. A row or an outline button already turns `bg-hover` under the
-pointer, and does the same under `focus-visible:`. A filled button keeps `hover:bg-neutral/90` (and
-the rest) for the pointer, but focused it takes `focus-visible:bg-hover focus-visible:text-foreground`,
-and so does a chosen control — a checked checkbox, an on switch, the active tab, segmented pill,
-toggle chip or sidebar row, a picked day. A label or icon that carries its own ink on a `Text`
-turns with it through a named group (`group/button` and `group-focus-visible/button:text-foreground`).
-The rule is the 3:1 change of contrast (WCAG 2.4.13): every fill a control rests on is 3:1 or more
-from `hover` in every palette, and `foreground` on `hover` is 4.5:1 or more —
+**Nothing draws a focus ring: a focused thing looks hovered** — as it looks under the pointer in
+the state it is in. An unchosen row or an outline button turns `bg-hover` under the pointer, and
+does the same under `focus-visible:`. A filled button keeps `hover:bg-neutral/90` (and the rest)
+for the pointer, but focused it takes `focus-visible:bg-hover focus-visible:text-foreground`; a
+label or icon that carries its own ink on a `Text` turns with it through a named group
+(`group/button` and `group-focus-visible/button:text-foreground`). For a filled button the rule is
+the 3:1 change of contrast (WCAG 2.4.13): every solid fill a control rests on is 3:1 or more from
+`hover` in every palette, and `foreground` on `hover` is 4.5:1 or more —
 `palette-contrast.test.mjs` holds both. A `/90` fill was 1.1–1.3:1 from its rest, which is why
-focus is not drawn that way. The cost, accepted: a chosen control looks unchosen while it has focus.
+focus is not drawn that way. A chosen thing — a checked checkbox, an on switch, the active tab,
+segmented pill, toggle chip or sidebar row, a picked day, a chosen row — focused takes the `/60`
+step it has under the pointer (`focus-visible:bg-active/60`, or `has-[:focus-visible]:` on a row
+whose focus is on a child), so it still reads as chosen; its ink is `foreground` already and does
+not change. The `/60` step is 1.39–1.57:1 from the `/40` rest, short of 2.4.13's 3:1; it was
+chosen over `bg-hover`, which is no closer to 3:1 and made a focused chosen thing look unchosen.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
-current sidebar row, toggle chip, a calendar's picked day, a selected stat tile: `bg-active`,
-`text-active-foreground`, `border-active`. `neutral` is for the thing to press. Keeping the two
-apart is why a chosen option does not look like a button.
+current sidebar row, toggle chip, a calendar's picked day, a selected stat tile, a checked menu row,
+the option a select or combobox is on: the `active` tint. `neutral` is for the thing to press.
+Keeping the two apart is why a chosen option does not look like a button.
 
-**Hover is grey, chosen is `active`, rest is no fill.** Every interactive thing has these three
-states and no more, and none of them borrows another's colour:
+**Hover is grey, chosen is the `active` tint, rest is no fill.** Every interactive thing has these
+three states and no more, and none of them borrows another's colour:
 
 - *Rest* — no fill (or the framed control's `bg-background`).
 - *Hover, or a menu's keyboard highlight* — transient, and `bg-hover`. Secondary text
   (`text-foreground/60`) stays readable on it in every palette; `palette-contrast.test.mjs` holds
   that.
-- *Chosen* — checked, pressed, current, selected: persistent, and `active`. A control is
-  filled (`bg-active text-active-foreground`); a card is ringed (`border-active`, its fill
-  unchanged so it does not read as hovered); a row among many — a `ListItem`, an `Item`, a
-  `FileTree` file, a table row — is tinted (`bg-active/40`), with its text in `foreground`, and
-  the pointer over it tints it a step further (`hover:bg-active/60`) rather than turning it grey.
-  Foreground on the `/60` tint is 4.5:1 or more, and the three row fills are 1.3:1 apart, in
-  every palette: `palette-contrast.test.mjs` holds both. Focused, a chosen row looks hovered, as
-  everything does.
+- *Chosen* — checked, pressed, current, on, selected: persistent, and the `active` tint,
+  `bg-active/40` with its text in `foreground`, controls and rows alike. Its secondary text and
+  quiet icons turn `foreground` too, because `/60` on the tint is under 4.5:1. The pointer over it
+  tints it a step further (`hover:bg-active/60`) rather than turning it grey, and so does focus. A
+  control whose edge is what shows it is there — a checkbox, a switch's track, a radio's circle, a
+  toggle chip, a radio tile, a stat tile — is also edged in `border-active`, because the tint is not
+  3:1 from the surface (WCAG 1.4.11) and `active` is; its mark — the check, the switch's thumb, the
+  radio's dot — is `foreground`, 3:1 or more on the tint, on the `/60` step and on the surface.
+  Foreground on both steps is 4.5:1 or more, the three fills (chosen, chosen under the pointer,
+  hovered) are 1.3:1 apart, and the mark and the edge are 3:1, in every palette:
+  `palette-contrast.test.mjs` holds all of it, and `Tokens/Chosen state` holds the controls to it.
 
 A chosen state drawn in `hover` is the bug this rule exists for: it looks like a hover that stuck.
+A chosen state drawn solid (`bg-active text-active-foreground`) was the look until the tint
+replaced it everywhere: coloured content on the fill failed (2.7–3.4:1 for text, about 1:1 for an
+`info` badge), and its pointer step, `/90`, was 1.15–1.24:1 from rest. Three looks were compared
+side by side — solid everywhere, tinted rows beside solid controls, and the tint everywhere — and
+the tint everywhere was chosen, accepting that a chosen control stands out less among its
+neighbours than a filled one did.
 
 ## Status
 

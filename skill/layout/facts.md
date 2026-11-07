@@ -206,8 +206,9 @@ import { formatCount, formatDuration } from "@/lib/format";
   under it. The label is a muted line at normal weight, so the figure is the one bold thing on the
   tile. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
-  toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
-  an `active` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
+  toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn as
+  the chosen tint inside an `active` border, a step stronger under the pointer; its label, hint
+  and icon turn `foreground` on the tint. Without `selected` it is a plain button (a tile that opens a
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.

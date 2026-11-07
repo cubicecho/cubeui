@@ -106,10 +106,11 @@ says.
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
 - **A checked, pressed or current control is drawn in `active`**, not `primary`: a quiet cyan in the
-  default palette, Monokai's purple in Monokai. A selected state you draw yourself uses
-  `bg-active` and `text-active-foreground` too, so it follows the palette; `primary` stays
-  the colour of a button to press. The active tab and the sidebar's current row are `active`
-  too. Hover is grey and never `active`. The whole rule, state by state, is in
+  default palette, Monokai's purple in Monokai. It is the tint, `bg-active/40` with
+  `text-foreground`, a step stronger (`/60`) under the pointer, and a selected state you draw
+  yourself uses the same, so it follows the palette; `primary` stays the colour of a button to
+  press. The active tab and the sidebar's current row are the tint too. Hover is grey and never
+  `active`. The whole rule, state by state, is in
   [Hover, focus, chosen and disabled](index.md#hover-focus-chosen-and-disabled).
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
