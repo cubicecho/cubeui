@@ -13,7 +13,7 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cn, FOCUS_EDGE } from "@/lib/utils";
 
 /**
  * Whether a `TableHead` sits in the header row group, so it can default its `scope` to the
@@ -62,16 +62,6 @@ const MAX_HEIGHTS = {
 } as const;
 
 /**
- * The focused container's look: its edge turns `active`, as a focused field's border does, and no
- * ring is drawn. It cannot look hovered, the way a row does, because a scroll box has no look
- * under the pointer, and `bg-hover` is what a row under the pointer already is: a tinted container
- * would hide the row being pointed at. `active` is 3:1 from every surface (WCAG 1.4.11), held by
- * `palette-contrast.test.mjs`. The edge is there, transparent, for as long as the container is a
- * tab stop, so focus moves nothing, and a table that fits is drawn as it always was.
- */
-const FOCUS_EDGE = "border border-transparent focus-visible:border-active";
-
-/**
  * Whether the table scrolls inside its own capped container, so the header row pins itself to the
  * top of it. Without a cap the container never scrolls down, and a pinned header would only be
  * an opaque fill that a table on a card has to override.
@@ -102,7 +92,8 @@ function Table({ className, maxHeight, ...props }: TableProps) {
         data-slot="table-container"
         tabIndex={overflows ? 0 : undefined}
         className={cn(
-          "relative w-full overflow-x-auto outline-none",
+          "relative w-full overflow-x-auto",
+          // Not tinted as hovered: a tinted container would hide the row under the pointer.
           overflows && FOCUS_EDGE,
           isCapped && "overflow-y-auto",
           isCapped && MAX_HEIGHTS[maxHeight],

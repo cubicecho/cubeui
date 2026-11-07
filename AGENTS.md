@@ -220,6 +220,10 @@ step it has under the pointer (`focus-visible:bg-active/60`, or `has-[:focus-vis
 whose focus is on a child), so it still reads as chosen; its ink is `foreground` already and does
 not change. The `/60` step is 1.39–1.57:1 from the `/40` rest, short of 2.4.13's 3:1; it was
 chosen over `bg-hover`, which is no closer to 3:1 and made a focused chosen thing look unchosen.
+A box that is a tab stop only so a keyboard can scroll it — an overflowing `Table`, a `CodeBlock`,
+`HeaderContentFooter`'s scrolling body — has no hover look, so it shows focus as a field does,
+with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns `active` under
+`focus-visible:`. The page body draws that line as a 1px inset shadow, which takes no room.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
 current sidebar row, toggle chip, a calendar's picked day, a selected stat tile, a checked menu row,
