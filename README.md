@@ -458,13 +458,13 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft` |
-| primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
-| platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
+| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft`, `select-options`, `tree`, `bottom-bar`, `frame-focus-guard` |
+| primitives | `icons`, `button`, `card`, `code`, `input`, `search-input`, `password-input`, `label`, `textarea`, `switch`, `alert`, `empty`, `item`, `separator`, `progress`, `skeleton`, `spinner`, `copy-button`, `download-button` |
+| platform-split | `checkbox`, `dialog`, `alert-dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
-| feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `grid-layout`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
+| forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `date-picker`, `date-time-field`, `color-picker-field`, `combobox`, `combobox-field`, `segmented-field`, `radio-group`, `radio-group-field`, `theme-picker` |
+| feedback | `confirm`, `confirm-dialog`, `confirm-button`, `unsaved-changes-guard`, `toast` |
+| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `disclosure`, `disclosure-row`, `description-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `query-state`, `route-error` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
