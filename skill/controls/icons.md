@@ -15,14 +15,17 @@ The set, on both halves — check it before wrapping a glyph in the app:
 - **Arrows and chevrons:** `ArrowLeft`, `ArrowRight`, `ChevronDown`, `ChevronLeft`,
   `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
-  `Search`, `Settings`, `Ellipsis` (a ⋯ menu's trigger), `X`
+  `Search`, `ScanSearch`, `Settings`, `ArchiveRestore`, `LogOut`, `Ellipsis` (a ⋯ menu's
+  trigger), `X`
 - **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `CircleQuestionMark`
-  (the button a folded description sits behind), `LoaderCircle`
-- **Files and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and `FolderPen` (rename
-  or move a file, a folder)
-- **Access:** `KeyRound`, `Lock`, `Plug`, `Eye`, `EyeOff`, `UserRound`
-- **Time:** `Calendar`, `Clock`
-- **Transport and theme:** `Play`, `Pause`, `Square`, `Sun`, `Moon`, `Monitor`
+  (the button a folded description sits behind), `LoaderCircle`, `Activity`, `Sparkles`, `Zap`
+- **Files, lists and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and
+  `FolderPen` (rename or move a file, a folder), `List`, `ListChecks`, `Layers`
+- **Access:** `KeyRound`, `Lock`, `Plug`, `PlugZap`, `Eye`, `EyeOff`, `UserRound`
+- **Systems:** `Server`, `Bot`, `GitBranch`, `Route`
+- **Time:** `Calendar`, `Clock`, `RotateCcwClock` (history: lucide's current name for `History`,
+  which it keeps only as an alias)
+- **Transport and theme:** `Play`, `Pause`, `SkipForward`, `Square`, `Sun`, `Moon`, `Monitor`
 
 **A glyph the set does not ship is the app's, and that is the settled answer (#251), not a gap
 to report.** The set is curated: what the registry's own components draw, plus the glyphs two
