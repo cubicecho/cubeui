@@ -4,7 +4,6 @@
   "title": "Badge",
   "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.",
   "dependencies": [
-    "@types/react-dom@~19.2.0",
     "class-variance-authority@^0.7.1",
     "radix-ui@^1.6.7"
   ],

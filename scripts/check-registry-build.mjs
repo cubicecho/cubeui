@@ -35,6 +35,11 @@
 // A bare name is only safe for a package with no breaking majors ahead of it, which is not a
 // judgement a build should be making silently. Spell the range.
 //
+// An `expo-*` or `react-native-*` package spells it with `~`. An Expo SDK supports one minor of
+// each native package it bundles, `npx expo install` pins that minor with `~`, and the CLI writes
+// the item's range over the app's. `^` there rewrote an app's `~57.0.7` pin on `expo-file-system`
+// to a caret that lets npm take a version the SDK does not support (#409).
+//
 // ## 4. Every file in a built registry item arrives with its content in it
 //
 // `shadcn build` inlines each source file into the item's JSON. A *missing* path fails the build
@@ -114,25 +119,23 @@
 // from the "no file imports it" half above — nothing imports `react-native-svg` here, and it still
 // has to be in the consumer's tree.
 //
-// An *optional* peer has to be declared too, which is the part that reads wrong until it bites.
-// npm installs an optional peer when it can, and an unpinned one floats to its newest version:
-// `radix-ui` optionally peers `@types/react-dom@*`, npm takes 19.3.0, and 19.3.0 requires
-// `@types/react@^19.3.0`. An app whose lockfile holds `@types/react` at 19.2.x — which is every
-// Expo 57 app with a committed `package-lock.json` — then fails the install outright with
-// ERESOLVE, and the half it was failing to install is the `.web.tsx` half that makes Expo Web
-// work. Declaring `@types/react-dom@~19.2.0` is what lets `shadcn add` run there without
-// `--legacy-peer-deps`.
+// An *optional* peer is not declared. npm installs one only when something else in the tree asks
+// for it, so `radix-ui` optionally peering `@types/react-dom` asks a consumer for nothing. Every
+// radix item used to declare `@types/react-dom@~19.2.0`, on the reading that npm would float the
+// optional peer to 19.3.0 and fail an Expo 57 install on its `@types/react`. It does not: `radix-ui`
+// goes into that app's committed lockfile with no `@types/react-dom` at all, and the install test
+// installs every native item with none declared. What the twelve declarations did do was rewrite
+// every app's own `@types/react-dom` range to `~19.2.0`, in `dependencies` (#408).
 //
-// The tilde is the point and `^19.2.0` does not work: a caret still admits 19.3.0, npm still
-// takes it, and the conflict is unchanged. This is a pin on a minor line and it needs moving
-// when the Expo SDK's own `@types/react` moves — `npm run registry:check` says so when the peer
-// stops resolving, and that is the whole reason this rule reads the real manifests.
-//
-// It goes in `dependencies`, not `devDependencies`, which is not where it belongs: the shadcn
-// CLI builds the Expo path's dev flag as a single malformed argument — `npx expo install
-// '-- -D' -- '@types/react-dom@...'` — and `expo install` rejects it, so `devDependencies` does
-// not install at all for an Expo consumer. A type package in `dependencies` is inert; a registry
-// item that cannot install is not.
+// `menu` keeps it, for a different reason: `menu.web.tsx` imports `flushSync` from `react-dom`.
+// An Expo app has `react-dom` and no React DOM types, so its `tsc` fails on that file
+// (TS7016) unless the item brings them, and the install test is what says so. On the native half
+// only — a DOM app has its own, and `rn2web` drops it from the web half. It is in `dependencies`,
+// not `devDependencies`, because the shadcn CLI builds the Expo path's dev flag as a single
+// malformed argument — `npx expo install '-- -D' -- '@types/react-dom@...'` — which `expo install`
+// rejects, so a `devDependencies` entry does not install at all for an Expo consumer. The tilde is
+// the point: `^19.2.0` admits 19.3.0, which wants an `@types/react` ahead of the `~19.2` Expo 57
+// pins, and that install fails with ERESOLVE. It moves when the Expo SDK's `@types/react` does.
 //
 // It also checks that a package declared by more than one item carries the *same* range in all of
 // them. Two items asking for two ranges of one package is a single install whose result depends on
@@ -794,6 +797,11 @@ for (const built of BUILT) {
         unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
       }
       const name = packageName(dependency);
+      if (/^(expo|react-native)-/.test(name) && dependency.slice(name.length + 1).startsWith("^")) {
+        unpinned.push(
+          `${item.name} declares \`${dependency}\` with \`^\`, where an Expo app pins with \`~\``,
+        );
+      }
       const seenRange = pinned.get(name);
       if (seenRange && seenRange.spec !== dependency) {
         ranges.push(
@@ -821,8 +829,7 @@ for (const built of BUILT) {
       imported.delete("storybook");
       imported.delete("@storybook/react-vite");
     }
-    // `devDependencies` is where an optional peer goes — `@types/react-dom` is not a runtime
-    // dependency — so both lists count as "declared" for every question below.
+    // Both lists count as "declared" for every question below.
     const declared = [...(item.dependencies ?? []), ...(item.devDependencies ?? [])].map(
       packageName,
     );
@@ -843,12 +850,11 @@ for (const built of BUILT) {
           continue;
         }
         peers.add(peer);
-        if (declared.includes(peer)) {
+        if (optional || declared.includes(peer)) {
           continue;
         }
         peerless.push(
-          `${built}: "${item.name}" declares \`${name}\`, which ` +
-            `${optional ? "optionally peers" : "requires"} \`${peer}\` — and it is declared nowhere`,
+          `${built}: "${item.name}" declares \`${name}\`, which requires \`${peer}\` — and it is declared nowhere`,
         );
       }
     }
@@ -1020,14 +1026,18 @@ if (drift.length > 0) {
 }
 
 if (unpinned.length > 0) {
-  console.error(`${collisions.length + drift.length > 0 ? "\n" : ""}An npm dependency is bare:\n`);
+  console.error(
+    `${collisions.length + drift.length > 0 ? "\n" : ""}An npm dependency has the wrong range:\n`,
+  );
   for (const one of unpinned) {
     console.error(`  ${one}`);
   }
   console.error(
     "\nThe CLI runs `npm install <name>`, which takes the latest stable. `nativewind` alone" +
       "\ninstalls 4 into an app whose components are written against 5, and the app fails at" +
-      "\nimport time in a file it did not write. Spell the range: `nativewind@^5.0.0-rc.0`.",
+      "\nimport time in a file it did not write. Spell the range: `nativewind@^5.0.0-rc.0`." +
+      "\nAn `expo-*` or `react-native-*` package takes `~` on the minor its Expo SDK bundles:" +
+      "\nthe CLI writes the item's range over the app's pin, and `^` lets npm leave the SDK.",
   );
 }
 
@@ -1097,12 +1107,9 @@ if (peerless.length > 0) {
     console.error(`  ${one}`);
   }
   console.error(
-    "\nnpm does not install a required peer, and floats an optional one to its newest version." +
-      "\n`icons` declared `lucide-react-native` without `react-native-svg`, so it installed into an" +
-      "\nExpo app that could then draw no icon at all. `radix-ui` optionally peers `@types/react-dom`," +
-      "\nwhose newest wants an `@types/react` ahead of the one Expo pins, which fails the install" +
-      "\noutright. Declare it on the item that declares the package — an optional peer in" +
-      "\n`devDependencies`, a required one in `dependencies`.",
+    "\n`icons` declared `lucide-react-native` without `react-native-svg`, so it installed into an" +
+      "\nExpo app that could then draw no icon at all. Declare the peer in `dependencies`, on the" +
+      "\nitem that declares the package.",
   );
 }
 
@@ -1277,7 +1284,8 @@ console.log(
   `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
     `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
     "names, every platform pair exports the same set, every npm dependency carries a version " +
-    `range, every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
+    "range (`~` on an Expo package), " +
+    `every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
     "every built item file is still listed by the index beside it, and every item declares exactly " +
     "the packages its own files import plus their required peers, at one range per package, " +
     "every shared class constant is applied only by the component it is named for, every " +
