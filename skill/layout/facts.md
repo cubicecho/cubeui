@@ -39,12 +39,17 @@ Read-only facts — a label, a value, a line under the value — which is most o
 <!-- /props -->
 
 <!-- props:PropertyRow -->
-`PropertyRow`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+`PropertyRow`'s props, from the TSDoc in `registry/layout/property-list.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-
-It also takes the props declared in `registry/layout/property-list.tsx`: `actionSlot`, `className`, `hint`, `label`, `labelClassName`, `value`, `valueClassName`.
+| `label` (required) | `ReactNode` |  | What the fact is called: "Embedder", "Docs folder". A `<dt>` on the web. |
+| `value` (required) | `ReactNode` |  | The fact itself: a string, or a node — a `Badge`, a relative time. Not a control: a value the user edits is a form field (`FormField`), and this row has no label for it. |
+| `hint` | `ReactNode` |  | One muted line under the value, on where it comes from or what it means: "Set with `RAGDOWN_EMBEDDER`". Part of the `<dd>`, so it is read with the value rather than as a fact of its own. |
+| `actionSlot` | `SlotNode` |  | The row's far end: a copy button, an edit link. Inside the `<dd>`, after the value, because a `<dl>`'s rows may hold nothing but terms and descriptions — and an action on the value is part of what is said about it. |
+| `className` | `string` |  |  |
+| `labelClassName` | `string` |  |  |
+| `valueClassName` | `string` |  | A string or number value's own `Text`, so a path, a version or an id is `value={path} valueClassName="font-mono"` rather than a node written to carry the font. On the text and not on the wrapper around it, because on device a `Text` inherits nothing: from the wrapper a `font-mono` reached the string on the web, with the hint and the action, and none of them on a phone. |
 <!-- /props -->
 
 - One source for both platforms: `@cubeui/property-list` in `/r/web` and `/r/native`, exporting

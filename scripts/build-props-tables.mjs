@@ -51,17 +51,26 @@ function markdownFiles(dir) {
   });
 }
 
-/** The file that exports `name` as a component, and the tsconfig it is checked under. */
+/**
+ * The file that exports `name` as a component, and the tsconfig it is checked under. Within a
+ * directory, a file that declares it wins over one that only lists it in an `export { … }`,
+ * because an old item kept for a release re-exports the names of the one that replaced it
+ * (`description-list` re-exports `PropertyRow`); a component declared unexported and listed at
+ * the end (`sidebar`) is still found.
+ */
 function findComponent(name) {
-  const declares = new RegExp(`export (function|const) ${name}\\b|export \\{[^}]*\\b${name}\\b`);
+  const declares = new RegExp(`export (function|const) ${name}\\b`);
+  const lists = new RegExp(`export \\{[^}]*\\b${name}\\b`);
   for (const { dir, config } of SOURCES) {
     const files = readdirSync(join(ROOT, dir)).filter(
       (file) => /\.tsx?$/.test(file) && /\.(web|test|stories)\./.test(file) === false,
     );
-    for (const file of files) {
-      const path = join(ROOT, dir, file);
-      if (declares.test(readFileSync(path, "utf8"))) {
-        return { path, config };
+    for (const pattern of [declares, lists]) {
+      for (const file of files) {
+        const path = join(ROOT, dir, file);
+        if (pattern.test(readFileSync(path, "utf8"))) {
+          return { path, config };
+        }
       }
     }
   }
