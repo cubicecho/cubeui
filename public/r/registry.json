@@ -1533,11 +1533,24 @@
       ]
     },
     {
-      "name": "centered-layout",
+      "name": "centered-card-layout",
       "type": "registry:component",
-      "title": "Centered Layout",
+      "title": "Centered Card Layout",
       "description": "A page that is one card, centred both ways: a sign-in, a token gate, a check-your-email screen. Full height, padded off the edges, a `max-w-sm` `CardLayout` taking every card slot; on device a scroll view that keeps the form above the keyboard.",
       "registryDependencies": ["@cubeui/card-layout", "@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/centered-card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "centered-layout",
+      "type": "registry:component",
+      "title": "Centered Layout (deprecated)",
+      "description": "The old name of centered-card-layout, kept for one release: CenteredLayout, re-exported from it. Install centered-card-layout.",
+      "registryDependencies": ["@cubeui/centered-card-layout"],
       "files": [
         {
           "path": "compiled/centered-layout.tsx",
@@ -1686,7 +1699,7 @@
       "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/card-layout",
-        "@cubeui/centered-layout",
+        "@cubeui/centered-card-layout",
         "@cubeui/collapsible",
         "@cubeui/collapsible-row",
         "@cubeui/dialog-layout",

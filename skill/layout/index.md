@@ -37,7 +37,7 @@ lay their children out the same way on both halves, so one class list is right f
 
 | File | What is in it |
 | --- | --- |
-| [pages.md](pages.md) | `PageLayout`, `HeaderContentFooter`, `PageHeader`, `GridLayout`, `CenteredLayout` |
+| [pages.md](pages.md) | `PageLayout`, `HeaderContentFooter`, `PageHeader`, `GridLayout`, `CenteredCardLayout` |
 | [splits.md](splits.md) | `SplitLayout`, `SidebarLayout`, list-and-detail |
 | [sidebar.md](sidebar.md) | `Sidebar`, `SidebarSection`, `SidebarNavItem`, the rail of icons, `SidebarLayout`'s bar and `BarNavItem` |
 | [app-bar.md](app-bar.md) | `AppBar`, and the app with no sidebar |

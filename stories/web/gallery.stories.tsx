@@ -12,7 +12,7 @@ import {
   useAppForm,
 } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
-import { CenteredLayout } from "@/components/centered-layout";
+import { CenteredCardLayout } from "@/components/centered-card-layout";
 import { Collapsible } from "@/components/collapsible";
 import { CollapsibleRow } from "@/components/collapsible-row";
 import { ColorField } from "@/components/color-field";
@@ -277,6 +277,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
   "description-list":
     "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const noop = () => {};
@@ -1726,12 +1728,12 @@ const sections: GallerySection[] = [
   // Shells
   { title: "Card layout", items: ["card-layout"], content: <CardLayouts /> },
   {
-    title: "Centered layout",
-    items: ["centered-layout"],
+    title: "Centered card layout",
+    items: ["centered-card-layout"],
     content: (
       <Frame
         content={
-          <CenteredLayout
+          <CenteredCardLayout
             className="h-full min-h-0"
             level={3}
             title="Sign in"

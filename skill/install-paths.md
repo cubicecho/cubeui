@@ -48,6 +48,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `card` | both | `components/ui/card.tsx` | `import { CARD_SURFACE_CLASS, Card, CardAction, CardContent, CardDescription, CardFooter, … 2 more } from "@/components/ui/card"` |
 | `card-layout` | both | `components/card-layout.tsx` | `import { FloatingSurfaceContext, HeadingRow, CardLayout } from "@/components/card-layout"` |
 | `card-stories` | web | `components/ui/card.stories.tsx` | — (stories) |
+| `centered-card-layout` | both | `components/centered-card-layout.tsx` | `import { CenteredCardLayout } from "@/components/centered-card-layout"` |
 | `centered-layout` | both | `components/centered-layout.tsx` | `import { CenteredLayout } from "@/components/centered-layout"` |
 | `checkbox` | web | `components/ui/checkbox.tsx`; also `checkbox-base.ts` | `import { Checkbox } from "@/components/ui/checkbox"` |
 | `checkbox` | native | `components/ui/checkbox.tsx`; also `checkbox-base.ts`, `checkbox.web.tsx` | `import { Checkbox } from "@/components/ui/checkbox"` |
@@ -110,7 +111,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `item` | native | `components/ui/item.tsx`; also `item-base.ts`, `item.web.tsx` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
 | `label` | web | `components/ui/label.tsx`; also `label-base.ts` | `import { Label } from "@/components/ui/label"` |
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
-| `layout` | web | a set: `card-layout`, `centered-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
+| `layout` | web | a set: `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
 | `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
 | `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |

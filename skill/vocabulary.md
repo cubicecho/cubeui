@@ -27,7 +27,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`wrapperSlot`** — a function `(parts, { className }) => …` that wraps the header, body and
   footer together, inside the shell: a `<form>`, so the submit in `footerActionsSlot` is in the form
   it submits and Enter in a field submits it. The element it returns takes `className`. On
-  `DialogLayout`, `CardLayout` and `CenteredLayout`.
+  `DialogLayout`, `CardLayout` and `CenteredCardLayout`.
 - **`emptySlot`** — what the body says when `contentSlot` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `emptySlot` is not consulted.
@@ -57,7 +57,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
-- **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
+- **`cardClassName`** — on `CenteredCardLayout`, the card; `className` is the page around it. Pass
   `max-w-md` here for a wider card than the default `max-w-sm`.
 - **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
   `SidebarSection` makes it the navigation landmark, named by its `title` or a `label`. A value,

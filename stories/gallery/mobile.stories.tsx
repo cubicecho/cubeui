@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
-import { CenteredLayout } from "../../registry/layout/centered-layout";
+import { CenteredCardLayout } from "../../registry/layout/centered-card-layout";
 import { Collapsible } from "../../registry/layout/collapsible";
 import { CollapsibleRow } from "../../registry/layout/collapsible-row";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
@@ -240,6 +240,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
   "description-list":
     "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const onButtonPress = fn();
@@ -1233,7 +1235,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Card layout and centred layout",
-    items: ["card-layout", "centered-layout"],
+    items: ["card-layout", "centered-card-layout"],
     description: "A card with named parts, then the same card centred on a screen.",
     content: (
       <Stack>
@@ -1246,7 +1248,7 @@ const sections: GallerySection[] = [
           footerSlot={<Caption>Seats are billed monthly</Caption>}
         />
         <Screen>
-          <CenteredLayout
+          <CenteredCardLayout
             level={3}
             title="Sign in"
             description="Use your work email."

@@ -120,7 +120,7 @@ dot, and `label` is only that dot's accessible name.
 
 The `footerActionsSlot` row **wraps when the card is narrow**: three buttons in a phone-width card
 put the last one on a second line, still against the right edge, rather than running the first
-out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
+out past the card's left edge. `CenteredCardLayout` and `DialogLayout` draw the same row. Do not
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
 

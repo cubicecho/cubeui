@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, AppBar, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, PropertyList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Collapsible, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, LoadState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, AppBar, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, PropertyList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Collapsible, StatTile, SettingRow, CenteredCardLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, LoadState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -63,7 +63,7 @@ the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `AppBar`, `Sidebar`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Collapsible`, `CollapsibleRow`, `PropertyList`, `List`, `ListItem`, `FileTree`, `StatTile`
+`CenteredCardLayout`, `DialogLayout`, `GridLayout`, `Section`, `Collapsible`, `CollapsibleRow`, `PropertyList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -98,7 +98,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout/splits.md](layout/splits.md#list-and-detail) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout/cards.md](layout/cards.md#cards) |
 | A page that is one card — a sign-in, a token gate — so its title is the page's `<h1>` | `CardLayout level={1}` | [layout/cards.md](layout/cards.md#cards) |
-| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredLayout` | [layout/pages.md](layout/pages.md#centered-pages) |
+| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredCardLayout` | [layout/pages.md](layout/pages.md#centered-pages) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout/dialogs.md](layout/dialogs.md#dialogs) |
 | A heading over a group of fields or rows | `Section` | [layout/cards.md](layout/cards.md#sections) |
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout/facts.md](layout/facts.md#setting-rows) |

@@ -190,8 +190,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. It is the title `Section` and `SidebarSection` draw. Owner:
   `registry/layout/section-heading.tsx`; takes `children`.
-- **`CenteredLayout`:** a page that is one card in the middle of the screen, such
-  as a sign-in. Owner: `registry/layout/centered-layout.tsx`; composes `CardLayout`.
+- **`CenteredCardLayout`:** a page that is one card in the middle of the screen, such
+  as a sign-in. Owner: `registry/layout/centered-card-layout.tsx`; composes `CardLayout`.
+  `CenteredLayout` and the `centered-layout` item are its old names, deprecated for one release.
 
 ### App frames
 

@@ -3,8 +3,10 @@ import type { ReactNode } from "react";
 import { Text } from "react-native";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
-import { CenteredLayout as Compiled } from "../compiled/centered-layout";
-import { CenteredLayout as Native } from "../registry/layout/centered-layout";
+import { CenteredCardLayout as Compiled } from "../compiled/centered-card-layout";
+import { CenteredLayout as CompiledOld } from "../compiled/centered-layout";
+import { CenteredCardLayout as Native } from "../registry/layout/centered-card-layout";
+import { CenteredLayout as NativeOld } from "../registry/layout/centered-layout";
 import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
@@ -18,7 +20,7 @@ import { SideBySide } from "./side-by-side";
  * this story that it would not say about an app, so those two rules are off here and nowhere else.
  */
 const meta = {
-  title: "RN Parity/Centered Layout",
+  title: "RN Parity/Centered Card Layout",
   component: Native,
   parameters: {
     a11y: {
@@ -162,6 +164,36 @@ export const Wider: Story = {
       const card = await expectCentred(root);
       // `max-w-md` replaced the default cap rather than losing to it.
       await expect(near(card.width, 448)).toBe(true);
+    }
+  },
+};
+
+/**
+ * The old name and its old item, kept for one release: `CenteredLayout` from `centered-layout`
+ * draws what `CenteredCardLayout` draws, so an app moves its call sites across one at a time.
+ */
+export const OldName: Story = {
+  args: { title: "Authentication required" },
+  render: (args) => (
+    <SideBySide
+      native={
+        <Frame>
+          <NativeOld {...args} className="native-root" contentSlot={body} />
+        </Frame>
+      }
+      compiled={
+        <Frame>
+          <CompiledOld {...args} className="compiled-root" contentSlot={body} />
+        </Frame>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const root of roots(canvasElement)) {
+      await expectCentred(root);
+      await expect(
+        within(root).getByRole("heading", { name: "Authentication required" }),
+      ).toBeVisible();
     }
   },
 };
