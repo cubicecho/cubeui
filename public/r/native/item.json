@@ -5,7 +5,6 @@
   "description": "shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.",
   "dependencies": [
     "@radix-ui/react-slot@^1.5.0",
-    "@types/react-dom@~19.2.0",
     "class-variance-authority@^0.7.1",
     "radix-ui@^1.6.7"
   ],

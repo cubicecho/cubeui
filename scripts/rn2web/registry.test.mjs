@@ -38,3 +38,14 @@ test("an item that never names a reset class is left alone", () => {
   });
   assert.deepEqual(clean.registryDependencies, ["@cubeui/utils"]);
 });
+
+test("the web half declares no type package for React DOM, which a DOM app has (#408)", () => {
+  const probe = {
+    ...item("probe"),
+    dependencies: ["@types/react-dom@~19.2.0", "radix-ui@^1.6.7"],
+  };
+  const [, , web] = derive([probe], {
+    "probe.tsx": 'import { DropdownMenu } from "radix-ui";\nimport { flushSync } from "react-dom";',
+  });
+  assert.deepEqual(web.dependencies, ["radix-ui@^1.6.7"]);
+});
