@@ -135,6 +135,16 @@ to add them.
   `sidebar-layout-header`, `-brand`, `-nav`, `-status` and `-action`. `sidebar-layout-main`,
   `sidebar-layout-content` and `sidebar-layout-bottom-bar` keep their names. Only a selector on the
   renamed ones needs changing.
+- **Icon-only buttons show their name on hover again**
+  ([#419](https://github.com/cubicecho/cubeui/issues/419)). A `Button` at an `icon*` size, and so
+  `CopyButton`, `DownloadButton` and `ConfirmButton` at one, shows its `aria-label` as its tooltip,
+  as `ActionButton` did. A `hint` still replaces it. Pass `tooltip={false}` to a `Button` or
+  `ConfirmButton` to turn it off, and remove any `Tooltip` you wrapped around an icon button by
+  hand, or it shows two.
+- **A disabled link button is no longer followed**
+  ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
+  `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
+  nothing. It no longer writes `disabled` on the `<a>`.
 
 ## Checking the result
 

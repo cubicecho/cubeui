@@ -13,7 +13,6 @@ import {
   type DownloadButtonProps,
   type DownloadContent,
   type DownloadDestination,
-  isIconSize,
   useDownload,
 } from "@/components/ui/download-button-base";
 /**
@@ -25,7 +24,7 @@ import {
  * and `expo-sharing`, which the compiler has no DOM translation for — and a DOM app should not
  * install an Expo module to click a link.
  */
-import { Button } from "./button";
+import { Button, isIconSize } from "./button";
 import { Download } from "./icons";
 
 export type { DownloadButtonProps, DownloadContent, DownloadDestination };

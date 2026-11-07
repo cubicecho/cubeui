@@ -18,8 +18,8 @@
  * the link as `linkSlot`. The compiled web half is a real `<button>` with the rest of its props,
  * and its sizes and variants are a superset of shadcn's.
  *
- * An `icon*` size has to be given an `aria-label`. A `hint` is the button's tooltip, the only
- * one it draws, and is read after the name: on the web from an always-mounted `sr-only` text
+ * An `icon*` size has to be given an `aria-label`, and shows it as its tooltip. A `hint` takes the
+ * name's place there, and is read after the name: on the web from an always-mounted `sr-only` text
  * the button points at, because Radix unmounts a closed tooltip, and on device as the
  * accessibility hint. With a `hint`, `disabled` is `aria-disabled`, so the reason can be reached.
  */
@@ -156,6 +156,10 @@ type ButtonBodyProps = Omit<
      * On the web the element is drawn *as* the button — radix's `Slot`, which only clones it with
      * the props merged in. On device a link is expo-router's, which takes the button the other
      * way round: it is given `asChild` and wraps the `Pressable`.
+     *
+     * Disabled or `loading`, the link is not followed. On the web it is `aria-disabled`, its click
+     * is cancelled and it leaves the tab order unless it has a `hint`; it is never handed
+     * `disabled`, which an `<a>` ignores. On device the button is drawn without the link.
      */
     linkSlot?: React.ReactElement | undefined;
     /**
@@ -171,6 +175,11 @@ type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>["size"]>;
 
 /** The sizes that draw an icon and no label. */
 type IconSize = Extract<ButtonSize, `icon${string}`>;
+
+/** Whether `size` is a square with no room for words, where a label is only the accessible name. */
+function isIconSize(size: ButtonSize | null | undefined): size is IconSize {
+  return size?.startsWith("icon") === true;
+}
 
 /**
  * The accessible name, which an `icon*` size cannot go without.
@@ -188,16 +197,17 @@ type TextButtonName = {
 
 type ButtonHint = {
   /**
-   * Why it is unavailable, or what it will do: the tooltip, and read after the name whether or
-   * not the tooltip is open. On device only a string is read; a node is shown and not read.
+   * Why it is unavailable, or what it will do: the tooltip, in place of an icon size's name, and
+   * read after the name whether or not the tooltip is open. On device only a string is read; a
+   * node is shown and not read.
    *
    * With a `hint`, `disabled` keeps the button's focus, hover and tooltip and refuses the press,
    * since a truly disabled button could not be asked why.
    */
   hint?: React.ReactNode | undefined;
   /**
-   * Off, the button keeps its `hint` as its description and drops the tooltip. A tooltip is
-   * only ever drawn for a `hint`.
+   * Whether the tooltip is drawn: the `hint`, or with none an `icon*` size's `aria-label`. Off, a
+   * `hint` is still the button's description. Turn it off where the icon already explains itself.
    *
    * @defaultValue true
    */
@@ -251,6 +261,9 @@ function pressThenClick<Press extends ((event: never) => void) | null | undefine
   };
   return both as Press;
 }
+
+/** Refuses a press, and with it the link a click on an `<a>` would follow. */
+const cancel = (event: { preventDefault: () => void }) => event.preventDefault();
 
 /** The pressable itself: `Button` without its tooltip and its `hint`. */
 const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
@@ -323,9 +336,21 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
     if (!linkSlot) {
       return button;
     }
+
+    // `Button` marks a disabled button with a `hint` `aria-disabled` and leaves it pressable, so the
+    // reason can be reached. Its link is no more to be followed than a plainly disabled one's.
+    const refused = props["aria-disabled"] === true;
+    const unavailable = disabled || refused;
     // A DOM element takes the press as a click; a router's link is a component and takes `onPress`.
     // Handed `onPress`, a bare `<a>` drops it. Compiled, both arms are `onClick`, which is right there.
     const isDomLink = typeof linkSlot.type === "string";
+    // Not `disabled` (#410): an `<a>` has no such attribute and was followed anyway, and a router's
+    // link may hand an unknown prop to its `<a>` or read it as its own. `Button` hands an unavailable
+    // link `cancel` as its press, and a cancelled click is what the browser and the routers' links
+    // both heed. The middle button's click opens a tab instead, so it is cancelled too.
+    const unavailableProps = unavailable
+      ? { "aria-disabled": true, onAuxClick: cancel, ...(refused ? {} : { tabIndex: -1 }) }
+      : {};
 
     return (
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
@@ -342,7 +367,7 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
             ...props,
             ...busy,
             ...(isDomLink ? { onClick: onPress } : { onClick: onPress }),
-            disabled,
+            ...unavailableProps,
           } as unknown as React.HTMLAttributes<HTMLElement>)}
           ref={ref as unknown as React.Ref<HTMLElement>}
         >
@@ -382,8 +407,9 @@ type ButtonComponent = {
 };
 
 /**
- * A button made of `iconSlot`, `content` and `trailingSlot`, with a `loading` state and a `hint`
- * that is its tooltip and can still be read while it is disabled.
+ * A button made of `iconSlot`, `content` and `trailingSlot`, with a `loading` state, an icon size's
+ * name as its tooltip, and a `hint` that takes the name's place there and can still be read while
+ * it is disabled.
  */
 const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -403,6 +429,9 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
     const hasHint = Boolean(hint);
     // Only with a hint: with nothing to read, a disabled button is better off out of the tab order.
     const refuses = hasHint && Boolean(disabled);
+    // A disabled `<button>` ignores the press itself. A link's `<a>` cannot be disabled, so its press
+    // is refused here.
+    const unavailable = Boolean(disabled) || props.loading === true;
 
     const node = React.useRef<HTMLButtonElement | null>(null);
     const setNode = React.useCallback(
@@ -423,8 +452,10 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
       return () => element?.removeAttribute("aria-disabled");
     }, [refuses]);
 
-    // Only pointed at when there is a hint: with none the tooltip repeats the name, and describing
-    // the button with its own name has it read as "Delete workspace, Delete workspace".
+    // Only pointed at when there is a hint: with none the tooltip is the name, and describing the
+    // button with its own name has it read as "Delete workspace, Delete workspace". The key is
+    // passed even when empty: radix points its trigger at the open bubble, and `Slot` lets the
+    // child's value win.
     const describedBy = hasHint
       ? [ariaDescribedBy, hintId].filter(Boolean).join(" ")
       : ariaDescribedBy;
@@ -440,7 +471,7 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
         {...(refuses ? { "aria-disabled": true } : {})}
         // `opacity-50` is what `disabled` would have drawn.
         className={cn(refuses && "opacity-50", className)}
-        onClick={refuses ? (event) => event.preventDefault() : onPress}
+        onClick={unavailable ? cancel : onPress}
       />
     );
 
@@ -452,8 +483,13 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
       </span>
     ) : null;
 
+    // An icon tells a pointer nothing of what it does, so its name is the tooltip until a hint says
+    // more (#419). It is not the description: that would read the name twice.
+    const iconName = isIconSize(props.size) ? props["aria-label"] : undefined;
+    const tip = hasHint ? hint : iconName;
     // `tooltip={false}` drops the tooltip, not the explanation: the description stays.
-    if (tooltip === false || hasHint === false) {
+    const drawsTooltip = tooltip !== false && Boolean(tip);
+    if (drawsTooltip === false) {
       return (
         <>
           {button}
@@ -466,7 +502,7 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
       <>
         <Tooltip>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent side={side}>{hint}</TooltipContent>
+          <TooltipContent side={side}>{tip}</TooltipContent>
         </Tooltip>
         {description}
       </>
@@ -475,4 +511,4 @@ const Button: ButtonComponent = React.forwardRef<HTMLButtonElement, ButtonProps>
 );
 Button.displayName = "Button";
 
-export { Button, buttonTextVariants, buttonVariants };
+export { Button, buttonTextVariants, buttonVariants, isIconSize };
