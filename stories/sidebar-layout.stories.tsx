@@ -177,12 +177,7 @@ const shell: Story = {
     const wide = window.matchMedia("(min-width: 48rem)").matches;
 
     const headers = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        [
-          '[data-testid="sidebar-layout-header"], [data-slot="sidebar-layout-header"]',
-          '[data-testid="app-bar"], [data-slot="app-bar"]',
-        ].join(", "),
-      ),
+      canvasElement.querySelectorAll<HTMLElement>('[data-testid="app-bar"], [data-slot="app-bar"]'),
     );
     await expect(headers).toHaveLength(2);
     const rails = Array.from(
@@ -249,14 +244,10 @@ const shell: Story = {
         header.getBoundingClientRect().bottom - 0.5,
       );
       // The brand is first in the bar and the action last, with the nav between them.
-      // Whichever prefix the parts carry, `sidebar-layout-` or `app-bar-`.
-      const slots = Array.from(header.children).map((el) =>
-        (el.getAttribute("data-testid") ?? el.getAttribute("data-slot"))?.replace(
-          /^(sidebar-layout|app-bar)-/,
-          "",
-        ),
+      const slots = Array.from(header.children).map(
+        (el) => el.getAttribute("data-testid") ?? el.getAttribute("data-slot"),
       );
-      await expect(slots).toEqual(["brand", "nav", "action"]);
+      await expect(slots).toEqual(["app-bar-brand", "app-bar-nav", "app-bar-action"]);
     }
 
     // The same bar on both halves: the same height and the same fill.
