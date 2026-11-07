@@ -42,6 +42,7 @@ import { Alert } from "./alert";
 import { Button } from "./button";
 import { EmptyState } from "./empty-state";
 import { RefreshCw, Search, TriangleAlert } from "./icons";
+import { Skeleton } from "./skeleton";
 
 /** What a list screen needs off its query, and nothing more. */
 type QueryLike = {
@@ -349,13 +350,16 @@ export function RowSkeleton({
     return (
       <div role="status" aria-label="Loading" className={cn("cube-rn-view", "gap-1", className)}>
         {Array.from({ length: rows }, (_, index) => (
+          // The row's name on a box round the bar, as in `StatTile`, so the bar keeps `Skeleton`'s.
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: placeholders, in a list with no identity
             key={index}
             data-slot="row-skeleton"
             aria-hidden
-            className="cube-rn-view h-8 motion-safe:animate-pulse rounded-md bg-foreground/10"
-          />
+            className="cube-rn-view"
+          >
+            <Skeleton className="h-8" />
+          </div>
         ))}
       </div>
     );
@@ -373,10 +377,8 @@ export function RowSkeleton({
           aria-hidden
           className="cube-rn-view gap-2 py-2"
         >
-          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it, and
-              `motion-safe:` keeps it still under reduced motion. */}
-          <div className="cube-rn-view h-4 w-1/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
-          <div className="cube-rn-view h-3 w-2/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-3 w-2/3" />
         </div>
       ))}
     </div>

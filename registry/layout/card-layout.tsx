@@ -30,6 +30,7 @@ import {
   type DescriptionPlacement,
   foldsDescription,
 } from "@/components/ui/description-hint";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -180,12 +181,6 @@ export type CardLayoutProps = {
 
 /** Sized from outside on the web; see the file comment for the device. */
 const ICON = Platform.select({ web: "[&_svg]:size-4", default: undefined });
-
-/** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn(
-  "h-4 rounded-md bg-foreground/10",
-  Platform.OS === "web" && "motion-safe:animate-pulse",
-);
 
 /**
  * The heading row: the title and description in one column, the action after it. `CardLayout`,
@@ -537,9 +532,9 @@ export function CardLayout({
 function CardLayoutSkeleton() {
   return (
     <View testID="card-layout-skeleton" className="gap-2" aria-hidden>
-      <View className={cn(BAR, "w-2/3")} />
-      <View className={cn(BAR, "w-full")} />
-      <View className={cn(BAR, "w-1/2")} />
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-1/2" />
     </View>
   );
 }

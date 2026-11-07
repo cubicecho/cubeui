@@ -860,7 +860,12 @@
       "type": "registry:component",
       "title": "Stat Tile",
       "description": "One number on a card: a `label`, a large tabular `value`, an optional `hint` under it and an `iconSlot` before the label. Given `onPress` the tile is a button, and with `selected` a toggle (`aria-pressed`) for the filter tile over a list. `loading` holds the figure's place.",
-      "registryDependencies": ["@cubeui/card", "@cubeui/icons", "@cubeui/utils"],
+      "registryDependencies": [
+        "@cubeui/card",
+        "@cubeui/icons",
+        "@cubeui/skeleton",
+        "@cubeui/utils"
+      ],
       "files": [
         {
           "path": "registry/layout/stat-tile.tsx",
@@ -1453,7 +1458,8 @@
         "@cubeui/button",
         "@cubeui/alert",
         "@cubeui/icons",
-        "@cubeui/empty-state"
+        "@cubeui/empty-state",
+        "@cubeui/skeleton"
       ],
       "files": [
         {
@@ -1545,7 +1551,7 @@
       "type": "registry:component",
       "title": "Page Header",
       "description": "The title block a page wears in a header slot: an optional trail, an icon and title at a chosen heading level, a description, the page's buttons at the far end, and a search or filter row beneath. Carries the inset the page chassis leaves it.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/skeleton", "@cubeui/utils"],
       "files": [
         {
           "path": "registry/layout/page-header.tsx",
@@ -1627,7 +1633,8 @@
         "@cubeui/card",
         "@cubeui/utils",
         "@cubeui/description-hint",
-        "@cubeui/list"
+        "@cubeui/list",
+        "@cubeui/skeleton"
       ],
       "files": [
         {
