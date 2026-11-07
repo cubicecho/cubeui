@@ -18,7 +18,8 @@ drift.
 - [skill/install-paths.md](../../../skill/install-paths.md) — where every item lands and what
   to import from it, generated from the registry
 - [skill/layout/](../../../skill/layout/index.md) — the shells, one file per group: pages,
-  splits, sidebar, app bar, cards, facts, dialogs, lists, trees and tables
+  page headers, centered pages, splits, sidebar, app bar, cards, facts, dialogs, lists, trees
+  and tables
 - [skill/forms/](../../../skill/forms/index.md) — `FormField`, `useAppForm` and the
   bound fields, and the native form
 - [skill/controls/](../../../skill/controls/index.md) — the controls, one file per group:

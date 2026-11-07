@@ -85,7 +85,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A whole page — a title, buttons, and rows under them | `PageLayout` | [layout/pages.md](layout/pages.md#pages) |
 | A page: chrome above, a body that scrolls, chrome below | `HeaderContentFooter scroll className="h-full"` | [layout/pages.md](layout/pages.md#page-shells) |
 | The same three zones, whole thing scrolls with the page | `HeaderContentFooter` | [layout/pages.md](layout/pages.md#page-shells) |
-| The title block at the top of a page: name, buttons, search | `PageHeader` | [layout/pages.md](layout/pages.md#page-headers) |
+| The title block at the top of a page: name, buttons, search | `PageHeader` | [layout/page-headers.md](layout/page-headers.md#page-headers) |
 | Equal cells in rows — a grid of cards or tiles, 1 to 4 to a row by width | `GridLayout` | [layout/pages.md](layout/pages.md#grids) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout/splits.md](layout/splits.md#splits) |
 | An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brandSlot`, `navSlot`, `status`, `actionSlot` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
@@ -98,7 +98,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout/splits.md](layout/splits.md#list-and-detail) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout/cards.md](layout/cards.md#cards) |
 | A page that is one card — a sign-in, a token gate — so its title is the page's `<h1>` | `CardLayout level={1}` | [layout/cards.md](layout/cards.md#cards) |
-| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredCardLayout` | [layout/pages.md](layout/pages.md#centered-pages) |
+| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredCardLayout` | [layout/centered-pages.md](layout/centered-pages.md#centered-pages) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout/dialogs.md](layout/dialogs.md#dialogs) |
 | A heading over a group of fields or rows | `Section` | [layout/cards.md](layout/cards.md#sections) |
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout/facts.md](layout/facts.md#setting-rows) |
