@@ -179,6 +179,11 @@ to add them.
   ([#436](https://github.com/cubicecho/cubeui/issues/436)). The placeholder sits on the page's
   background, as an input's does. On the tint it was too faint to read. The current line is
   tinted again once there is text.
+- **A focused `Table` no longer draws the browser's focus ring**
+  ([#445](https://github.com/cubicecho/cubeui/issues/445)). A table too wide or too tall for its
+  container is a tab stop. Tabbed to, its edge turns `active`, as a focused field's border does. A
+  click on it shows nothing. While it can scroll, it has a transparent 1px edge, so its rows sit
+  1px further in.
 
 ## Checking the result
 

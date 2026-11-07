@@ -197,7 +197,8 @@ export const MaxHeight: Story = {
     // rule still drawn.
     container.scrollTop = 200;
     await waitFor(() => expect(container.scrollTop).toBe(200));
-    const top = container.getBoundingClientRect().top;
+    // The inside of the container: it keeps a transparent edge while it is a tab stop.
+    const top = container.getBoundingClientRect().top + container.clientTop;
     expect(Math.abs(header.getBoundingClientRect().top - top)).toBeLessThanOrEqual(SUBPIXEL);
     expect(firstRow.getBoundingClientRect().top).toBeLessThan(top);
     expect(getComputedStyle(header).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
@@ -216,5 +217,52 @@ export const MaxHeight: Story = {
     await userEvent.click(canvasElement);
     await userEvent.tab();
     expect(container).toHaveFocus();
+  },
+};
+
+/** What `var(--<token>)` resolves to right now, in the colour syntax the browser reports. */
+function tokenColor(token: string) {
+  const probe = document.createElement("span");
+  probe.style.color = `var(--${token})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+  return color;
+}
+
+/**
+ * Tabbed to, an overflowing table's container draws no ring: its edge turns `active`, as a
+ * focused field's border does. Focused by a click, it shows neither.
+ */
+export const KeyboardFocus: Story = {
+  render: () => (
+    <div className="w-48">
+      <Servers />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const table = canvas.getByRole("table", { name: "Servers in this workspace" });
+    const container = table.parentElement as HTMLElement;
+    await waitFor(() => expect(container).toHaveAttribute("tabindex", "0"));
+    const rest = getComputedStyle(container).borderTopColor;
+
+    // Focus as a mouse click leaves it. The story's `userEvent.click` is synthetic, so Chromium
+    // counts the focus it moves as a script's and shows it; `focusVisible: false` is the state a
+    // real click puts the container in. TypeScript's `FocusOptions` does not have the option yet.
+    container.focus({ focusVisible: false } as FocusOptions);
+    expect(container).toHaveFocus();
+    expect(container.matches(":focus-visible")).toBe(false);
+    expect(getComputedStyle(container).outlineStyle).toBe("none");
+    expect(getComputedStyle(container).borderTopColor).toBe(rest);
+
+    await userEvent.click(canvasElement);
+    await userEvent.tab();
+    expect(container).toHaveFocus();
+    expect(container.matches(":focus-visible")).toBe(true);
+    const focused = getComputedStyle(container);
+    expect(focused.outlineStyle).toBe("none");
+    expect(focused.borderTopWidth).not.toBe("0px");
+    expect(focused.borderTopColor).toBe(tokenColor("active"));
+    expect(focused.borderTopColor).not.toBe(rest);
   },
 };
