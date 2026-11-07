@@ -8,6 +8,7 @@ import {
   type ScrollHandle,
   type ScrollPosition,
 } from "../registry/layout/header-content-footer";
+import { expectFocusEdge } from "./focus-edge";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -167,6 +168,53 @@ export const SlotIsAFlexColumn: Story = {
         gap: Math.round(pane.top - row.bottom),
         filled: pane.height > 100,
       }).toEqual({ half, gap: 16, filled: true });
+    }
+  },
+};
+
+/** A titled chassis 200px tall whose scrolling body holds more rows than fit. */
+function Scrolling({ half }: { half: "native" | "compiled" }) {
+  const Chassis = half === "native" ? Native : Compiled;
+  return (
+    <div style={{ height: 200 }} className="border">
+      <Chassis
+        scroll
+        className="h-full"
+        headerSlot={<Text className="p-4 font-semibold text-foreground">Messages</Text>}
+        contentSlot={
+          <View>
+            {rows.map((row) => (
+              <Text key={row} className="px-4 py-2 text-foreground text-sm">
+                {row}
+              </Text>
+            ))}
+          </View>
+        }
+      />
+    </div>
+  );
+}
+
+/**
+ * Tabbed to, the scrolling body draws no ring: an `active` line inside its edge, as a focused
+ * field's border is, drawn as an inset shadow so it takes no room (#448). Focused by a click, it
+ * shows neither.
+ */
+export const KeyboardFocus: Story = {
+  args: { contentSlot: null },
+  render: () => (
+    <SideBySide native={<Scrolling half="native" />} compiled={<Scrolling half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const bodies = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        "[data-testid=header-content-footer-content], [data-slot=header-content-footer-content]",
+      ),
+    );
+    await expect(bodies).toHaveLength(2);
+    for (const body of bodies) {
+      await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+      await expectFocusEdge(body, canvasElement, "inset");
     }
   },
 };

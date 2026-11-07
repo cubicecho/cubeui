@@ -30,6 +30,22 @@ export const HOVER_REVEAL =
   Platform.OS === "web" ? "opacity-0 transition-opacity group-hover:opacity-100" : "";
 
 /**
+ * How a box that is a tab stop only so a keyboard can scroll it shows focus: a table too wide for
+ * its column, a code block. Its edge turns `active`, as a focused field's border does, and no ring
+ * is drawn. A page's scrolling body draws the same line as an inset shadow (`HeaderContentFooter`),
+ * because the pixel this takes would move it off the header's column. It cannot look hovered, the rule for everything else, because
+ * a scroll box looks the same under the pointer. `active` is 3:1 from every surface (WCAG 1.4.11),
+ * held by `palette-contrast.test.mjs`.
+ *
+ * The edge is there, transparent, for as long as the box is a tab stop, so focus moves nothing:
+ * give it the class only while it has `tabIndex={0}`. A click shows nothing, which is what
+ * `focus-visible` is for. Web only, as {@link HOVER_REVEAL} is: a device draws no keyboard focus,
+ * and the edge would be a pixel of nothing around every scroller.
+ */
+export const FOCUS_EDGE =
+  Platform.OS === "web" ? "border border-transparent outline-none focus-visible:border-active" : "";
+
+/**
  * A field whose value was refused, on device: the web halves draw the same thing from the
  * `aria-invalid` attribute (`aria-invalid:border-negative`), which React Native has no variant
  * for. Focus still wins while the value is being fixed. Here rather than in one field's base so

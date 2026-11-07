@@ -179,5 +179,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |

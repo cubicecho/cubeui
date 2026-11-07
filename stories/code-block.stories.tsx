@@ -5,6 +5,7 @@ import { CodeBlock as Compiled } from "../compiled/code";
 import { CopyButton as CompiledCopyButton } from "../compiled/copy-button";
 import { CodeBlock as Native } from "../registry/ui/code";
 import { CopyButton as NativeCopyButton } from "../registry/ui/copy-button";
+import { expectFocusEdge } from "./focus-edge";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -129,8 +130,9 @@ export const Wrap: Story = {
       // One line in the string, several on screen.
       await expect(text.getBoundingClientRect().height).toBeGreaterThan(2 * 16);
 
-      // It cannot scroll, so it is not a tab stop.
+      // It cannot scroll, so it is not a tab stop, and has no focus edge to keep room for.
       await expect(content).not.toHaveAttribute("tabindex");
+      await expect(getComputedStyle(content).borderTopWidth).toBe("0px");
     }
   },
 };
@@ -190,6 +192,19 @@ export const MaxHeight: Story = {
 
       // Wrapped, but capped: it scrolls, so it is a tab stop again.
       await expect(content).toHaveAttribute("tabindex", "0");
+    }
+  },
+};
+
+/**
+ * Tabbed to, a block that scrolls draws no ring: its edge turns `active`, as a focused field's
+ * border does (#448). Focused by a click, it shows neither.
+ */
+export const KeyboardFocus: Story = {
+  render: () => both((CodeBlock) => <CodeBlock content={COMMAND} />),
+  play: async ({ canvasElement }) => {
+    for (const half of halvesOf(canvasElement)) {
+      await expectFocusEdge(part(half, "code-block-content"), canvasElement);
     }
   },
 };
