@@ -7,8 +7,8 @@ import { Disclosure } from "../../../registry/layout/disclosure";
 import { EmptyState } from "../../../registry/layout/empty-state";
 import { List } from "../../../registry/layout/list";
 import { ListItem } from "../../../registry/layout/list-item";
+import { LoadState } from "../../../registry/layout/load-state";
 import { PageLayout } from "../../../registry/layout/page-layout";
-import { QueryState } from "../../../registry/layout/query-state";
 import { Badge } from "../../../registry/ui/badge.tsx";
 import { Button } from "../../../registry/ui/button";
 import { Checkbox } from "../../../registry/ui/checkbox.tsx";
@@ -305,7 +305,7 @@ function Today({ state }: Args) {
         }
         contentSlot={
           <>
-            <QueryState
+            <LoadState
               query={{
                 isPending: state === "loading",
                 isError: state === "error",

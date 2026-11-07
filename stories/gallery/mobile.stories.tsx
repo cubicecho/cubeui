@@ -15,9 +15,9 @@ import { GridLayout } from "../../registry/layout/grid-layout";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
+import { LoadError, LoadState, RowSkeleton } from "../../registry/layout/load-state";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
-import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
 import { RouteError } from "../../registry/layout/route-error";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
@@ -230,6 +230,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The native source imports expo-clipboard, which this repo only declares in types/, so it cannot run in a browser.",
   "download-button":
     "The native source imports expo-file-system and expo-sharing, which this repo only declares in types/, so it cannot run in a browser.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
 };
 
 const onButtonPress = fn();
@@ -1117,26 +1119,22 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Query state and route error",
-    items: ["query-state", "route-error"],
+    title: "Load state and route error",
+    items: ["load-state", "route-error"],
     description:
       "Loading, failed, empty, a record not found, then the screen a route shows when it throws.",
     content: (
       <Stack>
         <RowSkeleton rows={2} />
-        <QueryError
-          error={new Error("The server did not answer.")}
-          onRetry={noop}
-          what="projects"
-        />
-        <QueryState
+        <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="projects" />
+        <LoadState
           query={idleQuery}
           what="projects"
           count={0}
           emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
         />
-        <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
-        <QueryState
+        <LoadState query={pendingQuery} what="members" count={0} rows={1} compact />
+        <LoadState
           query={idleQuery}
           what="this project"
           record={null}

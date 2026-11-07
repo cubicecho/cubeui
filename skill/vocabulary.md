@@ -129,11 +129,11 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   an `iconSlot` draws the icon alone. Its label is still its name. On `SegmentedGroup`, for every pill
   in the row.
 
-**List rows and query states add:**
+**List rows and load states add:**
 
 - **`badgesSlot`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
 - **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
-  title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
+  title and the rows (a `<LoadState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
   given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
   drawn as a dot on the icon. On `AppBar` (and so `SidebarLayout`'s bar), a node: one line of the app's own state
@@ -152,7 +152,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
 - **`count`** — how many rows the page is *about to draw*, which is not what came back.
 - **`record`** — the one record a detail screen asked for, once its query has answered; `null` or
-  `undefined` is one that is not there. On `QueryState`, in place of `count`.
+  `undefined` is one that is not there. On `LoadState`, in place of `count`.
 - **`notFoundLabel`** — what a detail screen says when its `record` is not there: "Project not
   found". Drawn as the screen's heading, at `level` (`1` unless the screen already has its title).
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is

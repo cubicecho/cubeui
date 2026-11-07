@@ -568,7 +568,7 @@ Recorded so the next pass does not re-derive them:
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
   `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of
-  `contentSlot` itself, as `GridLayout` does, and has no empty or loading state: `QueryState` sits
+  `contentSlot` itself, as `GridLayout` does, and has no empty or loading state: `LoadState` sits
   above it.
 - **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
   and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.

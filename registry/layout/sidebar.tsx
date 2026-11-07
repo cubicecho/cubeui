@@ -209,7 +209,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
   contentSlot?: SlotNode | undefined;
   /**
    * What the section says instead of rows, or before them: failed, loading, empty. Drawn between
-   * the title and the list, so it is the place for a `<QueryState compact … />`, which renders
+   * the title and the list, so it is the place for a `<LoadState compact … />`, which renders
    * nothing once there are rows.
    */
   status?: ReactNode | undefined;

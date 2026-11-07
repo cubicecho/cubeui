@@ -16,7 +16,7 @@ import {
   CircleCheck as CompiledCircleCheck,
   Settings as CompiledSettings,
 } from "../compiled/icons";
-import { QueryState as CompiledQueryState } from "../compiled/query-state";
+import { LoadState as CompiledLoadState } from "../compiled/load-state";
 import {
   SidebarCollapseButton as CompiledCollapseButton,
   SidebarNavItem as CompiledNavItem,
@@ -24,7 +24,7 @@ import {
   Sidebar as CompiledSidebar,
   useSidebar as useCompiledSidebar,
 } from "../compiled/sidebar";
-import { QueryState as NativeQueryState } from "../registry/layout/query-state";
+import { LoadState as NativeLoadState } from "../registry/layout/load-state";
 import {
   SidebarCollapseButton as NativeCollapseButton,
   SidebarNavItem as NativeNavItem,
@@ -574,7 +574,7 @@ const failed = {
 };
 
 /**
- * A section's loading and failure rungs, drawn by a `compact` `QueryState` in the `status` slot:
+ * A section's loading and failure rungs, drawn by a `compact` `LoadState` in the `status` slot:
  * no list is drawn while there are no rows, so neither half announces an empty one.
  */
 export const States: Story = {
@@ -589,13 +589,13 @@ export const States: Story = {
                 <NativeSection
                   title="Projects"
                   status={
-                    <NativeQueryState compact query={pending} what="projects" count={0} rows={2} />
+                    <NativeLoadState compact query={pending} what="projects" count={0} rows={2} />
                   }
                 />
                 <NativeSection
                   title="Shared"
                   status={
-                    <NativeQueryState compact query={failed} what="shared projects" count={0} />
+                    <NativeLoadState compact query={failed} what="shared projects" count={0} />
                   }
                 />
               </>
@@ -612,19 +612,13 @@ export const States: Story = {
                 <CompiledSection
                   title="Projects"
                   status={
-                    <CompiledQueryState
-                      compact
-                      query={pending}
-                      what="projects"
-                      count={0}
-                      rows={2}
-                    />
+                    <CompiledLoadState compact query={pending} what="projects" count={0} rows={2} />
                   }
                 />
                 <CompiledSection
                   title="Shared"
                   status={
-                    <CompiledQueryState compact query={failed} what="shared projects" count={0} />
+                    <CompiledLoadState compact query={failed} what="shared projects" count={0} />
                   }
                 />
               </>

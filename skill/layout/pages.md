@@ -331,7 +331,7 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 
 - The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
   cell `GridLayout` draws, so a card in it carries no width of its own.
-- It has no empty or loading state. `QueryState` goes above it, as it does above a list.
+- It has no empty or loading state. `LoadState` goes above it, as it does above a list.
 - It was `CardGrid` in `@cubeui/page`, an item that is gone; only the import and the name change.
 
 <!-- props:GridLayout -->

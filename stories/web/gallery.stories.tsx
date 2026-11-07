@@ -30,13 +30,13 @@ import { GridLayout } from "@/components/grid-layout";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadError, LoadState, RowSkeleton } from "@/components/load-state";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
-import { QueryError, QueryState, RowSkeleton } from "@/components/query-state";
 import { RouteError } from "@/components/route-error";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
@@ -267,6 +267,8 @@ const NOT_SHOWN: Record<string, string> = {
   "sidebar-stories": "A story file a consumer installs beside `sidebar`.",
   "theme-picker-stories": "A story file a consumer installs beside `theme-picker`.",
   "toggle-chip-stories": "A story file a consumer installs beside `toggle-chip`.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
 };
 
 const noop = () => {};
@@ -1461,12 +1463,12 @@ function StatTiles() {
 
 const idle = { isPending: false, isError: false, error: null, refetch: noop };
 
-function QueryStates() {
+function LoadStates() {
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <RowSkeleton rows={3} />
-      <QueryError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
-      <QueryState
+      <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
+      <LoadState
         query={idle}
         what="servers"
         count={0}
@@ -1700,7 +1702,7 @@ const sections: GallerySection[] = [
   { title: "Description list", items: ["description-list"], content: <Descriptions /> },
   { title: "Setting row", items: ["setting-row"], content: <SettingRows /> },
   { title: "Stat tile", items: ["stat-tile"], content: <StatTiles /> },
-  { title: "Query state", items: ["query-state"], content: <QueryStates /> },
+  { title: "Load state", items: ["load-state"], content: <LoadStates /> },
   {
     title: "Route error",
     items: ["route-error"],

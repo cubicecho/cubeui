@@ -8,9 +8,9 @@ import { EmptyState } from "@/components/empty-state";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadState } from "@/components/load-state";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
-import { QueryState } from "@/components/query-state";
 import { SplitLayout } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ import { TODAY } from "./fixtures";
 /**
  * An inbox as two panes: the messages as list rows, the chosen one tinted, and the message open
  * beside them with its header, its body, an attachment and a reply box. The detail pane opens
- * behind a `QueryState`, so it has a loading and a not-found branch of its own.
+ * behind a `LoadState`, so it has a loading and a not-found branch of its own.
  */
 type Args = { detail: "ready" | "loading" | "missing" };
 
@@ -237,7 +237,7 @@ function Inbox({ detail }: Args) {
       }
       secondSlot={
         <>
-          <QueryState
+          <LoadState
             query={{
               isPending: detail === "loading",
               isError: false,

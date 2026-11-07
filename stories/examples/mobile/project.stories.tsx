@@ -7,8 +7,8 @@ import { DescriptionList, PropertyRow } from "../../../registry/layout/descripti
 import { EmptyState } from "../../../registry/layout/empty-state";
 import { List } from "../../../registry/layout/list";
 import { ListItem } from "../../../registry/layout/list-item";
+import { LoadState } from "../../../registry/layout/load-state";
 import { PageLayout } from "../../../registry/layout/page-layout";
-import { QueryState } from "../../../registry/layout/query-state";
 import { StatTile } from "../../../registry/layout/stat-tile";
 import { Alert } from "../../../registry/ui/alert";
 import { Badge } from "../../../registry/ui/badge.tsx";
@@ -31,7 +31,7 @@ import { Initials, MobileShell, PHONE } from "./shell";
 /**
  * A phone's list-and-detail as two screens: the projects as pressable rows, and a project's own
  * screen with a back button, its colour and status, a ⋯ menu whose Delete asks first, figures,
- * progress, tabs and its people. The detail is a `PageLayout` behind a `QueryState`, so its
+ * progress, tabs and its people. The detail is a `PageLayout` behind a `LoadState`, so its
  * loading and not-found branches are one prop away.
  */
 type Args = { open: string | null; detail: "ready" | "loading" | "missing" };
@@ -147,7 +147,7 @@ function ProjectScreen({
   const p = loading ? null : project;
   return (
     <>
-      <QueryState
+      <LoadState
         query={query}
         what="this project"
         record={p}

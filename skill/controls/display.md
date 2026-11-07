@@ -215,7 +215,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
   `<Alert><CircleAlert /><AlertTitle>…</AlertTitle><AlertDescription>…</AlertDescription></Alert>`.
   The icon child goes into the icon box (and replaces the default glyph); the parts go into the
   column. New code uses the props.
-- A failed *fetch* on a list page is `QueryState`'s rung, and a crashed route is `RouteError`;
+- A failed *fetch* on a list page is `LoadState`'s rung, and a crashed route is `RouteError`;
   `Alert` is for what the screen says while it works.
 
 ## Spinner
@@ -245,7 +245,7 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   `currentColor`; on native it takes a `Button`'s ink the way any icon there does.
 - Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
   platform's own spinner, a different shape on each.
-- A list screen's loading rung is `QueryState`'s `loading`, not a spinner in the middle of it.
+- A list screen's loading rung is `LoadState`'s `loading`, not a spinner in the middle of it.
 
 ## Toast
 
@@ -293,7 +293,7 @@ while what it stands in for loads. `className` is its size.
   (down to half and back, two seconds) run by `Animated`. No Reanimated needed.
 - It says nothing to assistive tech itself, as shadcn's does not. Hide each block with
   `aria-hidden` and put them in a `role="status"` named for what is loading.
-- Reach for a shell's `loading` first. `CardLayout`, `QueryState`, `StatTile`, `PageHeader` and
+- Reach for a shell's `loading` first. `CardLayout`, `LoadState`, `StatTile`, `PageHeader` and
   the form fields each draw their own skeleton for the part the request fills. `Skeleton` is for a
   part no shell covers.
 

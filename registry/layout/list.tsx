@@ -67,7 +67,7 @@ type ListProps = {
  * - The rule between rows and the padding around each are the list's. A row brings neither.
  * - A row in a `ListRow` with a `depth` is indented that many steps, with a guide rule, and its
  *   item carries `aria-level` (the depth plus one), so a step under a decision is read as nested.
- * - It has no empty and no loading state: those rungs are `QueryState`'s, above the list, and a
+ * - It has no empty and no loading state: those rungs are `LoadState`'s, above the list, and a
  *   list of no rows is not drawn at all rather than announced as "list, 0 items".
  */
 function List({ contentSlot, label, divided = true, className }: ListProps) {

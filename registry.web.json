@@ -1289,9 +1289,9 @@
       ]
     },
     {
-      "name": "query-state",
+      "name": "load-state",
       "type": "registry:component",
-      "title": "Query State",
+      "title": "Load State",
       "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — or a detail screen before its record — failed, pending, not found — with the error card and the row placeholders exported on their own.",
       "registryDependencies": [
         "@cubeui/utils",
@@ -1301,6 +1301,19 @@
         "@cubeui/empty-state",
         "@cubeui/tokens"
       ],
+      "files": [
+        {
+          "path": "compiled/load-state.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "query-state",
+      "type": "registry:component",
+      "title": "Query State (deprecated)",
+      "description": "The old name of load-state, kept for one release: QueryState, QueryError and RowSkeleton, re-exported from it. Install load-state.",
+      "registryDependencies": ["@cubeui/load-state"],
       "files": [
         {
           "path": "compiled/query-state.tsx",
@@ -1631,9 +1644,9 @@
         "@cubeui/header-content-footer",
         "@cubeui/list",
         "@cubeui/list-item",
+        "@cubeui/load-state",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/query-state",
         "@cubeui/route-error",
         "@cubeui/section",
         "@cubeui/section-heading",

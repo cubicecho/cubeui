@@ -25,7 +25,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
           title="Projects"
           actionSlot={<Button variant="outline" size="xs" aria-label="New project" iconSlot={<Plus />} />}
           status={
-            <QueryState
+            <LoadState
               compact
               query={projects}
               what="projects"
@@ -87,7 +87,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `label` | `string` |  | What the landmark is called — "Main", "Projects". Absent, the `title` names it; give one when there is no title, or when two navigation sections would otherwise share a name. |
 | `title` | `ReactNode` |  | The overline over the rows. A short noun — "Projects", "Pinned". |
 | `contentSlot` | `SlotNode` |  | The rows, as an array — `projects.map(…)`, each with its `key`. Each one becomes an item of the list, so pass the rows themselves rather than a fragment or a wrapper around them: a wrapper would be one item holding every row. |
-| `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<QueryState compact … />`, which renders nothing once there are rows. |
+| `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<LoadState compact … />`, which renders nothing once there are rows. |
 | `actionSlot` | `SlotNode` |  | The title row's far end: an add button, a filter. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default — the sidebar sits beside the page, not under its `h1`. Pick it by structure, never by size; the text is the same at every level. |
 | `className` | `string` |  |  |
@@ -124,7 +124,7 @@ rail of icons — both below):
   `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
   holding everything. `status` sits between the title and the list and is where a
-  `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
+  `<LoadState compact …/>` goes; no list is drawn while there are no rows. `level` is the
   title's heading rank, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
   `<nav>` on the web, `role="navigation"` on device — named by its `title`, or by `label` when it
   has none or two would share one. `Sidebar` is a complementary `<aside>`, so without it the rows

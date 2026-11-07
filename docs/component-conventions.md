@@ -143,12 +143,12 @@ field — because data that has not arrived is not data that came back empty or 
 | `defaultView` | The view a control starts in when it holds its own, as `defaultOpen` is for a thing that opens. |
 | `labelHideBelow` | Under this width, or `always`, a control with an `iconSlot` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
 
-**List rows and query states add:**
+**List rows and load states add:**
 
 | Word | Means |
 | --- | --- |
 | `badgesSlot` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `AppBar`, and so `SidebarLayout`'s bar, a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
+| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `LoadState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `AppBar`, and so `SidebarLayout`'s bar, a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
 | `leadingSlot` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `iconSlot` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badgesSlot` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `actionSlot` — still facts about the title, placed where a list scans them. |
 | `entries` | The things a tree is built from: a flat list of `{ path, type }`, in any order, each carrying whatever else the caller's rows hold. On `FileTree`, which nests and sorts them. Not `items` or `options`: those are rows drawn as given, and these are rearranged. |
@@ -156,7 +156,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `query` | A `{ isPending, isError, error, refetch }`, structural — no shell names a data library. |
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
-| `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `QueryState`, in place of `count`. |
+| `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `LoadState`, in place of `count`. |
 | `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading, at `level`: `2` when the guard sits inside a page that already has its title, so there is one `h1`. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
 | `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |

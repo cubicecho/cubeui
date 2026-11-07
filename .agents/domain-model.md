@@ -85,7 +85,7 @@ folders can also be controlled. A shut body is not mounted. All three are presse
 button, `DisclosureTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
 while the body is there.
 
-### A list's state (`QueryState`)
+### A list's state (`LoadState`)
 
 ```
 failed | loading | empty | has rows          (a list: `count`)
@@ -93,7 +93,7 @@ failed | loading | not found | found        (one record: `record`)
 ```
 
 Exactly one at a time, in that order of precedence; once there are rows, or the record is there,
-`QueryState` draws nothing and the screen draws them. A record that is not found is a rung of the
+`LoadState` draws nothing and the screen draws them. A record that is not found is a rung of the
 same ladder, so the guard works inside any shell.
 
 ### A sidebar's fold (`Sidebar`)
@@ -265,9 +265,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`EmptyState`:** what a list says when it has nothing in it: an icon, a title,
   a line, an action, or one compact line. Owner: `registry/layout/empty-state.tsx`; composes
   `Empty` (`registry/ui/empty.tsx`).
-- **`QueryState`:** the failed, loading or empty state in front of a list until it
+- **`LoadState`:** the failed, loading or empty state in front of a list until it
   has rows, or the failed, loading or not-found state in front of one record until it is
-  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
+  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/load-state.tsx`, with `LoadError` and `RowSkeleton`.
+  `QueryState`, `QueryError` and the `query-state` item are its old names, deprecated for one
+  release.
 - **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
   Try again. Owner: `registry/layout/route-error.tsx`.
 

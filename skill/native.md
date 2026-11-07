@@ -33,10 +33,10 @@ and `<GridLayout contentSlot={cards} />`, where the cards are an array or a frag
 gets a cell.
 
 A screen is `PageLayout`, on the phone as on the web: its title block pinned over a body that
-scrolls. A detail screen for one record puts `QueryState` in front of it, with `record` and
+scrolls. A detail screen for one record puts `LoadState` in front of it, with `record` and
 `notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
 record is not found (`level={2}` when the guard is inside a screen that has its own title), and
-nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
+nothing once it is there — see [layout/lists.md](layout/lists.md#loadstate).
 A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`, a colour dot in
 `iconSlot`, the record's name as `title`, and its badges with the buttons in `actionSlot`.
 
@@ -105,7 +105,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/lists.md](layout/lists.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
-| A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `QueryState` | `@cubeui/query-state` |
+| A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `LoadState` | `@cubeui/load-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `RouteError` | `@cubeui/route-error` |
 
 One name means different things across the halves, and it is worth knowing before you grep:

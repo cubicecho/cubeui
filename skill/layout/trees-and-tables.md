@@ -118,7 +118,7 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 </Table>
 ```
 
-- It is a primitive, so it takes `children` like shadcn's. The `QueryState` ladder goes above it
+- It is a primitive, so it takes `children` like shadcn's. The `LoadState` ladder goes above it
   exactly as it does above a list of rows.
 - **`TableHead` scopes itself**: `scope="col"` inside `TableHeader`, `scope="row"` anywhere else.
   So the first cell of a body row — the thing the row is *about* — is a `TableHead`, not a

@@ -27,6 +27,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
   `@import "../cubeui-tokens.css";` in the app's CSS entry (see SKILL.md, "Which half you are in").
 - The import line names the value exports: components, hooks, functions and constants. The types
   are exported beside them: each `<Name>Props`, and `SlotNode` from `@/lib/utils`.
+- A name kept for one release under its old spelling is left out of its new item's line. Its old
+  item is listed as it was, re-exporting the old names from the new one.
 
 | Item | On | Lands at | Import |
 | --- | --- | --- | --- |
@@ -105,9 +107,10 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `item` | native | `components/ui/item.tsx`; also `item-base.ts`, `item.web.tsx` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
 | `label` | web | `components/ui/label.tsx`; also `label-base.ts` | `import { Label } from "@/components/ui/label"` |
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
-| `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `empty-state`, `file-tree`, `header-content-footer`, `list`, `list-item`, `page-header`, `page-layout`, `query-state`, `route-error`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
+| `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `empty-state`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `route-error`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
 | `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
+| `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |
 | `markdown` | web | `components/markdown.tsx` | `import { Markdown } from "@/components/markdown"` |
 | `markdown-code-editor` | web | `components/markdown-code-editor.tsx` | `import { MarkdownCodeEditor } from "@/components/markdown-code-editor"` |
 | `markdown-editor` | web | `components/markdown-editor.tsx` | `import { MarkdownEditor } from "@/components/markdown-editor"` |
@@ -122,7 +125,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `popover` | native | `components/ui/popover.tsx`; also `popover-base.ts`, `popover.web.tsx` | `import { Popover, PopoverAnchor, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, … 2 more } from "@/components/ui/popover"` |
 | `primitive` | web | a set: `empty`, `item`, `table` | — (import from each item) |
 | `progress` | both | `components/ui/progress.tsx` | `import { Progress } from "@/components/ui/progress"` |
-| `query-state` | both | `components/query-state.tsx` | `import { QueryState, QueryError, RowSkeleton } from "@/components/query-state"` |
+| `query-state` | both | `components/query-state.tsx` | `import { QueryError, QueryState, RowSkeleton } from "@/components/query-state"` |
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
 | `radio-group-field` | both | `components/ui/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/ui/radio-group-field"` |
 | `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, readableTextColor } from "@/lib/readable-text-color"` |
