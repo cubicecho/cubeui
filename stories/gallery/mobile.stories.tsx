@@ -28,7 +28,6 @@ import { SettingRow } from "../../registry/layout/setting-row";
 import { Sidebar, SidebarNavItem, SidebarSection } from "../../registry/layout/sidebar";
 import { SidebarLayout, SplitLayout } from "../../registry/layout/split-layout";
 import { StatTile } from "../../registry/layout/stat-tile";
-import { TopBarLayout } from "../../registry/layout/top-bar-layout";
 import { Alert } from "../../registry/ui/alert";
 import {
   AlertDialog,
@@ -1368,34 +1367,6 @@ const sections: GallerySection[] = [
               actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
             />
           }
-          contentSlot={
-            <View className="p-3">
-              <Lines count={5} />
-            </View>
-          }
-        />
-      </Screen>
-    ),
-  },
-  {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
-    content: (
-      <Screen>
-        <TopBarLayout
-          brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
-          navLabel="Site pages"
-          navSlot={
-            <>
-              <Text role="link" className={navLink}>
-                Projects
-              </Text>
-              <Text role="link" className={navLink}>
-                Team
-              </Text>
-            </>
-          }
-          actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
           contentSlot={
             <View className="p-3">
               <Lines count={5} />

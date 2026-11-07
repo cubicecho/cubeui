@@ -201,9 +201,6 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `SidebarCollapseButton`, `useSidebar`.
 - **`BarNavItem`:** a place in an app bar, drawn as its icon. Owner:
   `registry/layout/sidebar.tsx`.
-- **`TopBarLayout`:** an app frame with a bar across the top (brand, places,
-  actions) and no sidebar. Owner: `registry/layout/top-bar-layout.tsx`; composes
-  `HeaderContentFooter`.
 
 ### Blocks on a page
 
@@ -278,7 +275,7 @@ An author writes an item once in React Native; the compiler makes its web half, 
 build turns the palette into the token sheets every item draws with. Each push to `main`
 publishes the registry, and an app installs an item by name as its own files. Primitives are
 the controls and surfaces, and components build one job from them. Shells place the nodes an app
-hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout` or a
-`TopBarLayout`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
+hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout`, or under an
+`AppBar` in a `HeaderContentFooter`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
 each with its empty, loading and failed states. Bound fields wire a control to a form field. A shell keeps only the state of its own
 interaction (a dialog's discard question, a disclosure's open body), never the app's data.

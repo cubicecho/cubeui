@@ -48,10 +48,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place;
   `barPosition="bottom"` puts that bar's `navSlot` along the bottom of the page.
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
-  `AppBar`, on `TopBarLayout`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
+  `AppBar`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
   is hidden — so there pass what the sidebar's header shows.
 - **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `BarNavItem`s —
-  on `AppBar` and `SidebarLayout`'s bar, the primary links on `TopBarLayout`. The shell draws the `<nav>` and
+  or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
 - **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass

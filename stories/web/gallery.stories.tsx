@@ -45,7 +45,6 @@ import { SettingRow } from "@/components/setting-row";
 import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
 import { SidebarLayout, SplitLayout } from "@/components/split-layout";
 import { StatTile } from "@/components/stat-tile";
-import { TopBarLayout } from "@/components/top-bar-layout";
 import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -1907,33 +1906,6 @@ const sections: GallerySection[] = [
                 actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
               />
             }
-            contentSlot={<div className="p-4">{paragraphs(20)}</div>}
-          />
-        }
-      />
-    ),
-  },
-  {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
-    content: (
-      <Frame
-        height="h-[320px]"
-        content={
-          <TopBarLayout
-            className="h-full"
-            brandSlot={<span className="font-semibold text-foreground">Router</span>}
-            navLabel="Gallery top bar"
-            navSlot={PLACES.map((place) => (
-              <a
-                key={place}
-                href={`#${place.toLowerCase()}`}
-                className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
-              >
-                {place}
-              </a>
-            ))}
-            actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
             contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }

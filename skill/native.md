@@ -49,7 +49,6 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A place in that bar: an icon link named by `label`, with a count badge or a status dot | `BarNavItem` | `@cubeui/sidebar` |
 | An app's bar across the top — brand, places, a status line, actions — on its own; with no sidebar, in a `HeaderContentFooter`'s `headerSlot` over the screen — see [layout/app-bar.md](layout/app-bar.md#app-bar) | `AppBar` | `@cubeui/app-bar` |
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
-| An app with no sidebar: a bar across the top — brand, links, actions — over a screen that scrolls — see [layout/top-bar.md](layout/top-bar.md#top-bar) | `TopBarLayout` | `@cubeui/top-bar-layout` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |

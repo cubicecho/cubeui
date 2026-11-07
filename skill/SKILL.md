@@ -62,7 +62,7 @@ one written in React Native and one compiled or hand-written for the DOM. That i
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `PageHeader`,
-`PageLayout`, `SplitLayout`, `SidebarLayout`, `AppBar`, `Sidebar`, `TopBarLayout`, `CardLayout`,
+`PageLayout`, `SplitLayout`, `SidebarLayout`, `AppBar`, `Sidebar`, `CardLayout`,
 `CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
@@ -91,10 +91,9 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brandSlot`, `navSlot`, `status`, `actionSlot` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
 | A place in that bar: an icon link with a name, a tooltip, the current-page fill, a count or a status dot | `BarNavItem` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
 | An app's bar across the top — brand, places, a status line, actions — on its own | `AppBar` | [layout/app-bar.md](layout/app-bar.md#app-bar) |
-| An app with no sidebar: that bar over the page | `HeaderContentFooter` with an `AppBar` in `headerSlot` | [layout/app-bar.md](layout/app-bar.md#an-app-with-no-sidebar) |
+| An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `HeaderContentFooter` with an `AppBar` in `headerSlot` | [layout/app-bar.md](layout/app-bar.md#an-app-with-no-sidebar) |
 | The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout/sidebar.md](layout/sidebar.md#sidebar) |
 | A sidebar the reader folds down to a rail of icons and opens again | `Sidebar collapsed onCollapsedChange`, `SidebarCollapseButton`, `useSidebar` | [layout/sidebar.md](layout/sidebar.md#folded-to-a-rail-of-icons) |
-| An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `TopBarLayout` | [layout/top-bar.md](layout/top-bar.md#top-bar) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout/splits.md](layout/splits.md#splits) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout/splits.md](layout/splits.md#list-and-detail) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout/cards.md](layout/cards.md#cards) |
