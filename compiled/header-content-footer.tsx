@@ -53,7 +53,11 @@ export const PAGE_COLUMN = "mx-auto w-full max-w-(--breakpoint-2xl)";
  */
 export const PROSE_COLUMN = "mx-auto w-full max-w-3xl";
 
-const COLUMNS = {
+/**
+ * The class each `width` holds a slot to. Exported for a shell that holds one part of its header
+ * to the body's column while the rest of the header runs the full width.
+ */
+export const COLUMNS = {
   full: undefined,
   page: PAGE_COLUMN,
   prose: PROSE_COLUMN,
@@ -120,6 +124,13 @@ export type HeaderContentFooterProps = {
    * - `prose` — the narrower {@link PROSE_COLUMN}. Settings, a detail page, a form.
    */
   width?: HeaderContentFooterWidth | undefined;
+  /**
+   * The header's own column, when it is not the body's: `full` lets a rule under the header, and
+   * a bar in it, run the full width over a body held to `page` or `prose`. What in the header
+   * should still sit over the body's column holds itself to it, with `COLUMNS[width]`. Absent,
+   * the header shares `width`.
+   */
+  headerWidth?: HeaderContentFooterWidth | undefined;
   /**
    * The scrolling body, for a caller that has to reach it — restoring a scroll position. A
    * `<div>` on the web and, while `scroll` is on, the `ScrollView` on device.
@@ -262,6 +273,7 @@ export function HeaderContentFooter({
   footerSlot,
   scroll = false,
   width = "full",
+  headerWidth,
   contentRef,
   scrollRef,
   onScroll,
@@ -284,7 +296,12 @@ export function HeaderContentFooter({
       {headerSlot ? (
         <div
           data-slot="header-content-footer-header"
-          className={cn("cube-rn-view", "min-w-0 shrink-0", column, headerClassName)}
+          className={cn(
+            "cube-rn-view",
+            "min-w-0 shrink-0",
+            COLUMNS[headerWidth ?? width],
+            headerClassName,
+          )}
         >
           {headerSlot}
         </div>

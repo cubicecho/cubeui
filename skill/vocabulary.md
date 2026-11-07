@@ -40,7 +40,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`backSlot`** — the way back, on the line above the title: a back link, or a breadcrumb trail.
   Nodes, never a route. `breadcrumbsSlot` is its old name, still read for one release.
 - **`headerContentSlot`** — the row under the title: search, filters, tabs. Stacked in the order
-  you pass them.
+  you pass them, in the title's column.
+- **`headerBarSlot`** — bars under the title that run the full width of the page while the title
+  keeps its column: a second toolbar, a pinned notice. On `PageLayout`; each bar draws its own fill
+  and inset.
 - **`sidebarSlot`** — the second surface in a `SidebarLayout`. `contentSlot` is still the main one, so the
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the

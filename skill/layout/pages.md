@@ -41,6 +41,7 @@ route should reach for first.
 | `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
 | `breadcrumbsSlot` | `SlotNode` |  |  |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
+| `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
 | `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
@@ -50,7 +51,7 @@ route should reach for first.
 | `scrollRef` | `HeaderContentFooterProps["scrollRef"]` |  | A handle that moves the body: `scrollToEnd()`, the same on both halves. |
 | `onScroll` | `HeaderContentFooterProps["onScroll"]` |  | Called as the body scrolls, with where it now is. Never called while `scroll` is off. |
 | `className` | `string` |  |  |
-| `headerClassName` | `string` |  |  |
+| `headerClassName` | `string` |  | On the whole header — the title block and `headerBarSlot` — which runs the full width. The rule under it is here: `border-b-0` removes it, and `border-b border-foreground/10` draws it under a `headerContentSlot`, which otherwise has none. |
 | `contentClassName` | `string` |  | Merged after the body's own `gap-4 py-4`, so `py-0` or `gap-6` replaces just that half. The body's `px-4` comes with `width` and is not here. |
 | `footerClassName` | `string` |  |  |
 <!-- /props -->
@@ -72,8 +73,35 @@ header and the blocks a page stacks sit 16px apart. Do not add `contentClassName
 wrap `contentSlot` in a `<div className="space-y-4 py-4">`. `contentClassName` is merged after it,
 so a page whose rows run flush to the rule passes `py-0` (or `gap-0`) and changes only that half.
 
-`headerContentSlot` is the row under the title: search, filters, tabs. Passing it removes the rule
-under the header, which is correct — the search row is already the separator.
+`headerContentSlot` is the row under the title: search, filters, tabs. It keeps the title's
+column. Passing it removes the rule under the header, which is correct — the search row is already
+the separator.
+
+**The header runs the full width; the title keeps the column.** The rule under the header is drawn
+on the whole header, so it runs the width of the page whatever `width` is, while the title, its
+buttons and `headerContentSlot` sit over the body's column. `headerClassName` is on that whole
+header: `border-b-0` removes the rule, and `border-b border-foreground/10` draws it under tabs in
+`headerContentSlot`, which otherwise have none.
+
+`headerBarSlot` is for bars under the title that run the full width: a second toolbar, a notice
+pinned with the header, a strip of the page's state. They stack in the order passed, above the
+rule, and each draws its own fill and inset (`px-4`). Like the title, they stay while the body
+scrolls. Do not write the page out as `HeaderContentFooter` with a `PageHeader` and a bar in its
+header for this:
+
+```tsx
+<PageLayout
+  title={project.name}
+  actionSlot={<ProjectMenu />}
+  headerBarSlot={
+    <>
+      <ProjectBar project={project} />
+      {notice ? <Text className="px-4 pt-3 text-foreground/60 text-sm">{notice}</Text> : null}
+    </>
+  }
+  contentSlot={board}
+/>
+```
 
 `footerSlot` is pinned under the body, and is drawn as the header is: a `border-foreground/10` rule
 above it and `py-3` round it, so a count or a "Last saved" line does not read as one more row of
@@ -144,6 +172,7 @@ dialog body.
 | `footerSlot` | `SlotNode` |  | Paging, totals, a save bar. Absent, no row is drawn. |
 | `scroll` | `boolean` | `false` | Whether the body scrolls inside the chassis rather than growing it. |
 | `width` | `HeaderContentFooterWidth` | `"full"` | - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and anything already inside its own column. - `page` — slots share the capped, centred {@link PAGE_COLUMN}, inset to match the header. Every list page, every board. - `prose` — the narrower {@link PROSE_COLUMN}. Settings, a detail page, a form. |
+| `headerWidth` | `HeaderContentFooterWidth` |  | The header's own column, when it is not the body's: `full` lets a rule under the header, and a bar in it, run the full width over a body held to `page` or `prose`. What in the header should still sit over the body's column holds itself to it, with `COLUMNS[width]`. Absent, the header shares `width`. |
 | `contentRef` | `Ref<ElementRef<typeof ScrollView>>` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. A `<div>` on the web and, while `scroll` is on, the `ScrollView` on device. |
 | `scrollRef` | `Ref<ScrollHandle>` |  | A handle that moves the body: `scrollRef.current?.scrollToEnd()`, the same on both halves. It does nothing while `scroll` is off, when there is no scrolling body to move. |
 | `onScroll` | `((position: ScrollPosition) => void)` |  | Called as the body scrolls, with where it now is — the same three numbers on the web and on device, so a list that follows its newest row can tell whether the reader is still at the end. Only a body that scrolls reports: with `scroll` off it is never called. |
@@ -156,6 +185,10 @@ dialog body.
 - `width="page"` caps and centres every slot on one column, so the title sits above the first
   table column rather than beside it. `width="full"` (the default) fills the box it was given —
   panes inside a split, print sheets, anything already in a column of its own.
+- `headerWidth` gives the header a column of its own: `headerWidth="full"` over a `page` or `prose`
+  body lets a rule on `headerClassName`, or a bar in the header, run the full width. What in the
+  header should stay over the body holds itself to `COLUMNS[width]`, exported beside the shell.
+  `PageLayout` is built this way; reach for it first.
 - **`scroll` needs a height to divide.** Give the frame one (`className="h-full"`, or `flex-1` in
   a column), and the ancestors up to the viewport theirs, or nothing scrolls and the header does
   not stay. `StickyHeaderContentFooter`, the preset that set `scroll` and `h-full`, is gone; write

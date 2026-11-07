@@ -95,6 +95,7 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `backSlot` | The way back, on the line above the title: a back link, or a breadcrumb trail. Nodes, never a route. Not `iconSlot`, which is the page's own icon. `breadcrumbsSlot` is its deprecated name. |
 | `headerContentSlot` | The row under the title: search, filters, tabs. `PageHeader` calls it `contentSlot`, because it has no body of its own. |
+| `headerBarSlot` | Bars under the title that run the full width while the title keeps its column: a second toolbar, a pinned notice. On `PageLayout`, a slot of the header, so it wears the header's prefix; a bar because it spans the page, where `headerContentSlot` sits in the column. Two apps wrote the page out by hand for it. |
 | `firstSlot`, `secondSlot` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebarSlot` | The second surface in a `SidebarLayout`. `contentSlot` stays the main one. |

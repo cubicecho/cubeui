@@ -169,14 +169,16 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 ### Pages
 
 - **`PageLayout`:** a whole page: its title block pinned above a scrolling body,
-  with an optional footer, at a named column width. Owner: `registry/layout/page-layout.tsx`;
-  composes `HeaderContentFooter` and `PageHeader`.
+  with an optional footer, at a named column width. Its header runs the full width, with the
+  rule under it and any full-width bars (`headerBarSlot`), while the title keeps the column.
+  Owner: `registry/layout/page-layout.tsx`; composes `HeaderContentFooter` and `PageHeader`.
 - **`GridLayout`:** equal cells in rows, one to four to a row by the window's width, one cell
   per element of its body, for any content. Owner: `registry/layout/grid-layout.tsx`.
 - **`HeaderContentFooter`:** the frame most shells build on: a header
-  and footer around a body, where either the whole frame or only the body scrolls. Owner:
+  and footer around a body, where either the whole frame or only the body scrolls, and the
+  header may run wider than the body's column (`headerWidth`). Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
-  `PROSE_COLUMN`.
+  `PROSE_COLUMN` and `COLUMNS`.
 - **`PageHeader`:** a page's icon, title, description, actions, the way back (one
   slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
   at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
