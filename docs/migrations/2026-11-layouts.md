@@ -163,6 +163,12 @@ to add them.
   row with a tooltip place it in its parent again: `absolute top-2 right-2`, `ml-auto`,
   `self-end` and `flex-1` work as they do on the web. A class you moved onto a `View` of your own
   to get round the wrapper can come back to the button.
+- **`Markdown` lines a toggle up with its heading, and keeps a mixed list's bullets**
+  ([#412](https://github.com/cubicecho/cubeui/issues/412)). With `collapsible`, a heading's
+  chevron is level with its text, not 12px above it. A list with task items and plain items
+  keeps the plain items' bullets. Every task item's box now hangs in the list's indent, where a
+  bullet would be, so its text lines up with the other items' text, and a nested task list is
+  indented under its item.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
