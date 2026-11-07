@@ -41,7 +41,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `badge` | native | `components/ui/badge.tsx`; also `badge-base.ts`, `badge.web.tsx` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
 | `badge-stories` | web | `components/ui/badge.stories.tsx` | — (stories) |
 | `bottom-bar` | both | `lib/bottom-bar.ts` | `import { useReportBottomBar, useBottomBar } from "@/lib/bottom-bar"` |
-| `button` | both | `components/ui/button.tsx` | `import { Button, buttonTextVariants, buttonVariants } from "@/components/ui/button"` |
+| `button` | both | `components/ui/button.tsx` | `import { Button, buttonTextVariants, buttonVariants, isIconSize } from "@/components/ui/button"` |
 | `button-stories` | web | `components/ui/button.stories.tsx` | — (stories) |
 | `calendar` | web | `components/ui/calendar.tsx`; also `calendar-base.ts` | `import { Calendar } from "@/components/ui/calendar"` |
 | `calendar` | native | `components/ui/calendar.tsx`; also `calendar-base.ts`, `calendar.web.tsx` | `import { Calendar } from "@/components/ui/calendar"` |

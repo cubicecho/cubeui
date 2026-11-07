@@ -148,8 +148,3 @@ export function useDownload({
 
   return { pending, download };
 }
-
-/** Whether `size` is a square with no room for words, where `label` is only the accessible name. */
-export function isIconSize(size: ButtonProps["size"] | undefined): boolean {
-  return typeof size === "string" && size.startsWith("icon");
-}

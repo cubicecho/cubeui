@@ -44,8 +44,8 @@ set (see [native.md](../native.md)).
 | `loadingLabel` | `string` |  | The label while `loading`: "Saving…". Without one the label stays as it was. |
 | `size` | `IconSize` |  |  |
 | `aria-label` | `string` |  |  |
-| `hint` | `React.ReactNode` |  | Why it is unavailable, or what it will do: the tooltip, and read after the name whether or not the tooltip is open. On device only a string is read; a node is shown and not read. |
-| `tooltip` | `boolean` | `true` | Off, the button keeps its `hint` as its description and drops the tooltip. A tooltip is only ever drawn for a `hint`. |
+| `hint` | `React.ReactNode` |  | Why it is unavailable, or what it will do: the tooltip, in place of an icon size's name, and read after the name whether or not the tooltip is open. On device only a string is read; a node is shown and not read. |
+| `tooltip` | `boolean` | `true` | Whether the tooltip is drawn: the `hint`, or with none an `icon*` size's `aria-label`. Off, a `hint` is still the button's description. Turn it off where the icon already explains itself. |
 | `side` | `TooltipSide` | `"top"` | Which edge of the button the tooltip sits on. |
 | `aria-describedby` | `string` |  | More ids to describe the button with, kept ahead of the hint's own. Web only: a device describes a control with its accessibility hint, which is what `hint` becomes there. |
 <!-- /props -->
@@ -74,6 +74,10 @@ set (see [native.md](../native.md)).
   router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
   button; on a device it is expo-router's `Link`, which wraps the button with its own `asChild`.
   Handing a `Button` to a radix trigger is unchanged: `<PopoverTrigger asChild><Button … />`.
+  A `disabled` or `loading` link button is not followed. On the web the link is `aria-disabled`,
+  its click is cancelled, and it leaves the tab order unless it has a `hint`, as a disabled button
+  does. It is never handed `disabled`, which an `<a>` ignores and a router's link may write onto
+  its `<a>`. On a device the button is drawn without the link.
 - **`loading`** is "pressed, and the work is still running": the button is disabled, `aria-busy`,
   and a spinner stands where the icon is, or before the label when there is none. `loadingLabel`
   swaps the label while it runs. Do not disable it, relabel it and draw a `Spinner` by hand.
@@ -95,13 +99,18 @@ set (see [native.md](../native.md)).
 
 `aria-label` is required in the `icon`, `icon-xs`, `icon-sm` and `icon-lg` sizes, and is the
 accessible name. `title` is not a name — it is a hint, it is not read in place of one, and it
-never appears on a touch device. The name is not shown as a tooltip.
+never appears on a touch device.
 
-**`hint` is the button's tooltip, and the only one it draws**, on any button, icon or text. No
-`hint`, no tooltip. The accessible name stays what it was, and the hint is read after it whether
-or not the tooltip is open — it is also an always-mounted `sr-only` node, because a tooltip's
-text is in the DOM only while it is showing. Pass `tooltip={false}` to keep the description and
-drop the tooltip, and `side` to move it.
+**The name is also the tooltip**, on hover and focus, and on a long press on device: an icon on
+its own does not tell a sighted user what it does. A screen reader hears the name once, because
+the tooltip is not also the button's description. Pass `tooltip={false}` where the icon already
+explains itself. A text button has no tooltip unless it has a `hint`: its label is already on
+screen.
+
+**A `hint` takes the name's place in the tooltip**, on any button, icon or text. The accessible
+name stays what it was, and the hint is read after it whether or not the tooltip is open. It is
+also an always-mounted `sr-only` node, because a tooltip's text is in the DOM only while it is
+showing. `tooltip={false}` keeps that description and drops the tooltip, and `side` moves it.
 
 **`disabled` with a `hint` is not the HTML attribute.** It becomes `aria-disabled`, so the control
 keeps its focus ring, its hover and its tooltip and refuses the press in the handler. That is
@@ -140,8 +149,8 @@ device, `onClick` on the web.
 />
 ```
 
-- On device the tooltip opens on a **long press**, and a `disabled` one with a `hint` still hears
-  it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
+- On device the tooltip, the name or the `hint`, opens on a **long press**, and a `disabled` one
+  with a `hint` still hears it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
   announce the button as unavailable.
 - A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
@@ -207,8 +216,8 @@ an `absolute` corner over it.
   that does not exist (plain http on a LAN address). The native half is `expo-clipboard`, which
   the native item installs; a DOM app installs nothing extra.
 - It is `type="button"` on the web, so it never submits the form it sits in.
-- It has no tooltip unless given a `hint`: the glyph is the universal one and the name is always
-  set.
+- At an `icon*` size its name is its tooltip, as on `Button`: `label`, then `Copied` while the
+  tick shows. A `hint` takes its place.
 - When there is nothing to copy yet, pass `disabled` and a `hint` saying why, as on `Button`:
   `<CopyButton value={url} label="Copy the URL" disabled={!id} hint="Give the webhook an id first" />`.
   With the hint it stays focusable (`aria-disabled`), and a press copies nothing and calls neither
@@ -345,9 +354,10 @@ written against props that have gone:
 - **`ConfirmButton`'s `label` is gone.** Write `content="Delete project"` at a text size, and
   `aria-label="Delete lane"` at an `icon*` size.
 - **`ActionButton` is gone.** It is a `Button` at an `icon*` size with `aria-label` and
-  `iconSlot`. The tooltip no longer comes from the name: pass `hint` for one. `disabled` changes
-  with it. With a `hint`, a disabled button is `aria-disabled`: it keeps its focus and tooltip, so
-  it can say why. Without one, it is plainly `disabled` and leaves the tab order.
+  `iconSlot`. Its `aria-label` is still the tooltip; a `hint` replaces it there, and
+  `tooltip={false}` turns it off. `disabled` changes with the hint. With a `hint`, a disabled
+  button is `aria-disabled`: it keeps its focus and tooltip, so it can say why. Without one, it is
+  plainly `disabled` and leaves the tab order.
 - **`OptionSelect` is gone.** It is `Combobox`.
 
 ### Type the name to confirm
