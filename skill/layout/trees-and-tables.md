@@ -118,6 +118,14 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 </Table>
 ```
 
+<!-- props:Table -->
+`Table`'s props, from the TSDoc in `registry/web/ui/table.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `maxHeight` | `keyof typeof MAX_HEIGHTS` |  | The tallest the table may get before it scrolls inside itself, with its header row pinned at the top. Left out, it is as tall as its rows and the page scrolls it. For a long table — a log, an audit trail — that would carry its column names off the screen. `sm` and `md` are twenty and thirty-two rem, `lg` is 70% of the screen's height. |
+<!-- /props -->
+
 - It is a primitive, so it takes `children` like shadcn's. The `LoadState` ladder goes above it
   exactly as it does above a list of rows.
 - **`TableHead` scopes itself**: `scope="col"` inside `TableHeader`, `scope="row"` anywhere else.
@@ -132,6 +140,43 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
   heading saying what it is; `className="sr-only"` keeps the name without the line.
 - Too wide for its column, it scrolls sideways inside its own container rather than widening the
   page, and the container becomes a tab stop while it does so a keyboard can scroll it too.
+- **A long table keeps its column names in view with `maxHeight`.** The table becomes its own
+  scroll box, capped at `sm` (20rem), `md` (32rem) or `lg` (70% of the screen's height), and the
+  header row stays pinned at its top while the rows scroll under it. Sideways, the header moves
+  with its columns. The page's own scroll can't pin it: the container that scrolls a wide table
+  sideways is the box a pinned header sticks to. The cost is a second scrollbar inside the page,
+  so leave it off a table short enough to read whole.
+
+  ```tsx
+  <PageLayout
+    title="Run log"
+    contentSlot={
+      <Table maxHeight="lg">
+        <TableCaption className="sr-only">Run log</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Time</TableHead>
+            <TableHead>Level</TableHead>
+            <TableHead>Message</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {lines.map((line) => (
+            <TableRow key={line.id}>
+              <TableHead>{line.time}</TableHead>
+              <TableCell>{line.level}</TableCell>
+              <TableCell>{line.message}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    }
+  />
+  ```
+
+  The pinned header is filled with the page's `background`, so rows don't show through it. On a
+  card, give it the card's fill: `<TableHeader className="bg-secondary">`.
+
 - No sorting, filtering or pagination: nothing here uses them. Sort the array you map.
 - **Web only — no native twin.** React Native has no table element, and a phone has no width for
   columns. On native, draw the same data as rows: `ListItem`s for many records, and

@@ -28,9 +28,10 @@ const InTableHeader = React.createContext(false);
  * column a region only a mouse wheel can move: axe reports it as `scrollable-region-focusable`,
  * and a keyboard user cannot read the columns past the edge. The container takes a tab stop —
  * the fix that rule asks for, and the one `HeaderContentFooter`'s scrolling body makes — but only
- * while it actually overflows, so a table that fits is not a stray stop in every page's tab order.
+ * while it actually overflows, on either axis, so a table that fits is not a stray stop in every
+ * page's tab order.
  */
-function useOverflowsX() {
+function useOverflows() {
   const ref = React.useRef<HTMLDivElement>(null);
   const [overflows, setOverflows] = React.useState(false);
   React.useEffect(() => {
@@ -38,10 +39,12 @@ function useOverflowsX() {
     if (!node || typeof ResizeObserver === "undefined") {
       return;
     }
-    const measure = () => setOverflows(node.scrollWidth > node.clientWidth);
+    const measure = () =>
+      setOverflows(node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight);
     const observer = new ResizeObserver(measure);
     observer.observe(node);
-    // The container keeps its width when a column grows, so the table is watched as well.
+    // The container keeps its size when a column grows or a row is added, so the table is
+    // watched as well.
     if (node.firstElementChild) {
       observer.observe(node.firstElementChild);
     }
@@ -51,38 +54,87 @@ function useOverflowsX() {
   return [ref, overflows] as const;
 }
 
-/** A table inside a container that scrolls sideways when it is too wide. */
-function Table({ className, ...props }: React.ComponentProps<"table">) {
-  const [ref, overflows] = useOverflowsX();
+/** The heights a table may be capped at: twenty and thirty-two rem, and most of the screen. */
+const MAX_HEIGHTS = {
+  sm: "max-h-80",
+  md: "max-h-128",
+  lg: "max-h-[70dvh]",
+} as const;
+
+/**
+ * Whether the table scrolls inside its own capped container, so the header row pins itself to the
+ * top of it. Without a cap the container never scrolls down, and a pinned header would only be
+ * an opaque fill that a table on a card has to override.
+ */
+const TableIsCapped = React.createContext(false);
+
+export type TableProps = React.ComponentProps<"table"> & {
+  /**
+   * The tallest the table may get before it scrolls inside itself, with its header row pinned at
+   * the top. Left out, it is as tall as its rows and the page scrolls it. For a long table — a log,
+   * an audit trail — that would carry its column names off the screen. `sm` and `md` are twenty
+   * and thirty-two rem, `lg` is 70% of the screen's height.
+   */
+  maxHeight?: keyof typeof MAX_HEIGHTS | undefined;
+};
+
+/**
+ * A table inside a container that scrolls sideways when it is too wide, and up and down as well
+ * when it is given a `maxHeight`.
+ */
+function Table({ className, maxHeight, ...props }: TableProps) {
+  const [ref, overflows] = useOverflows();
+  const isCapped = maxHeight !== undefined;
   return (
-    <div
-      ref={ref}
-      data-slot="table-container"
-      tabIndex={overflows ? 0 : undefined}
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        // `border-collapse` here rather than trusting Tailwind's preflight to set it: without it
-        // a row's border does not paint, and an app that skips preflight drew no row rules.
-        // `tabular-nums` so a column of figures lines up by digit.
-        className={cn("w-full caption-bottom border-collapse text-sm tabular-nums", className)}
-        {...props}
-      />
-    </div>
+    <TableIsCapped.Provider value={isCapped}>
+      <div
+        ref={ref}
+        data-slot="table-container"
+        tabIndex={overflows ? 0 : undefined}
+        className={cn(
+          "relative w-full overflow-x-auto",
+          isCapped && "overflow-y-auto",
+          isCapped && MAX_HEIGHTS[maxHeight],
+        )}
+      >
+        <table
+          data-slot="table"
+          // `border-collapse` here rather than trusting Tailwind's preflight to set it: without it
+          // a row's border does not paint, and an app that skips preflight drew no row rules.
+          // `tabular-nums` so a column of figures lines up by digit.
+          className={cn("w-full caption-bottom border-collapse text-sm tabular-nums", className)}
+          {...props}
+        />
+      </div>
+    </TableIsCapped.Provider>
   );
 }
+
+/**
+ * The header of a capped table, pinned to the top of its container. A collapsed border belongs to
+ * the table rather than the row, so the row's rule would stay behind as the header moved: it is
+ * drawn as a one-pixel inset shadow on the cells instead, which travels with them. That shadow is
+ * a rule, not elevation. The fill is the page's, so rows do not show through; on a card, the
+ * caller gives the header the card's.
+ */
+const PINNED_HEADER =
+  "sticky top-0 z-10 bg-background [&_tr]:border-b-0 [&_tr>*]:shadow-[inset_0_-1px_0] [&_tr>*]:shadow-foreground/10";
 
 // Every border below names `border-foreground/10` beside its width. Upstream leans on the app's base
 // layer to colour a bare `border-b`, and the cubeui stylesheet sets no such rule, so without it
 // the rules between rows are `currentColor` — black lines in a light theme.
 /** The table's header row group. */
 function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+  const isCapped = React.useContext(TableIsCapped);
   return (
     <InTableHeader.Provider value={true}>
       <thead
         data-slot="table-header"
-        className={cn("[&_tr]:border-foreground/10 [&_tr]:border-b", className)}
+        className={cn(
+          "[&_tr]:border-foreground/10 [&_tr]:border-b",
+          isCapped && PINNED_HEADER,
+          className,
+        )}
         {...props}
       />
     </InTableHeader.Provider>
