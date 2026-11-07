@@ -152,7 +152,7 @@ and which one is a question of **where the list is**, not how much there is to s
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `iconSlot` | `SlotNode` |  |  |
-| `icon` | `never` |  |  |
+| `icon` | `never` |  | **Deprecated.** Pass the element as `iconSlot={<Plug />}`. |
 | `title` (required) | `string` |  |  |
 | `actionSlot` | `SlotNode` |  |  |
 | `className` | `string` |  | The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. |

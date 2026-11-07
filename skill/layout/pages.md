@@ -39,7 +39,7 @@ route should reach for first.
 | `iconSlot` | `SlotNode` |  | Sits before the title, sized with it. Pass a bare `<Users />`. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
 | `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
-| `breadcrumbsSlot` | `SlotNode` |  |  |
+| `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
 | `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
@@ -251,7 +251,7 @@ It is not a page.
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized with the title — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
 | `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
-| `breadcrumbsSlot` | `SlotNode` |  |  |
+| `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
 | `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
 | `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. The size follows it unless `size` says otherwise. |
 | `size` | `PageHeaderSize` |  | How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the header follows `level`, not this. |

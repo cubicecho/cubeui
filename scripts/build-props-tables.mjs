@@ -17,7 +17,8 @@
  * TypeScript compiler against the tsconfig that file is checked under. A row is a prop declared
  * in the component's own file; props it takes from another registry type (`Button`'s, on
  * `ConfirmButton`) are named in one line under the table, and the platform's own props (a
- * `Pressable`'s, a `<div>`'s) are left out. The text is the first paragraph of the prop's TSDoc.
+ * `Pressable`'s, a `<div>`'s) are left out. The text is the first paragraph of the prop's TSDoc,
+ * and a `@deprecated` prop's row opens by saying so, with what its tag says replaces it.
  *
  * `--check` fails when a committed table is not what this generates.
  */
@@ -93,6 +94,20 @@ const oneLine = (text) => text.replace(/\s+/g, " ").trim();
 const firstParagraph = (text) => oneLine(text.split(/\n\s*\n/)[0] ?? "");
 const cell = (text) => text.replace(/\|/g, "\\|");
 const dropUndefined = (type) => type.replace(/\s*\|\s*undefined\b/g, "").trim();
+
+/**
+ * A prop's row text. A deprecated prop often has no summary of its own, only the tag, and a row
+ * with nothing in it reads as a prop nobody documented rather than one to move off.
+ */
+function docOf(prop, checker) {
+  const doc = firstParagraph(ts.displayPartsToString(prop.getDocumentationComment(checker)));
+  const tag = prop.getJsDocTags(checker).find((t) => t.name === "deprecated");
+  if (tag === undefined) {
+    return doc;
+  }
+  const replacement = oneLine(ts.displayPartsToString(tag.text ?? []));
+  return ["**Deprecated.**", replacement, doc].filter(Boolean).join(" ");
+}
 
 /** `{ level = 3, loading = false }`: the defaults written in the component's own parameter. */
 function defaultsOf(declaration) {
@@ -178,7 +193,7 @@ function propsTable(name, roots) {
       type: dropUndefined(oneLine(typeText)),
       required: required && count === members.length,
       fallback: defaults.get(propName) ?? "",
-      doc: firstParagraph(ts.displayPartsToString(prop.getDocumentationComment(checker))),
+      doc: docOf(prop, checker),
     });
   }
   own.sort((a, b) => a.pos - b.pos);
