@@ -1,0 +1,205 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ReactNode } from "react";
+import { Text } from "react-native";
+import { expect, within } from "storybook/test";
+import { Checkbox as CompiledCheckbox } from "../compiled/checkbox";
+import {
+  RadioGroup as CompiledRadioGroup,
+  RadioGroupItem as CompiledRadioItem,
+} from "../compiled/radio-group";
+import { StatTile as CompiledStatTile } from "../compiled/stat-tile";
+import { Switch as CompiledSwitch } from "../compiled/switch";
+import {
+  Tabs as CompiledTabs,
+  TabsContent as CompiledTabsContent,
+  TabsList as CompiledTabsList,
+  TabsTrigger as CompiledTabsTrigger,
+} from "../compiled/tabs";
+import { ToggleChip as CompiledToggleChip } from "../compiled/toggle-chip";
+import { StatTile } from "../registry/layout/stat-tile";
+import { Checkbox } from "../registry/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
+import { Switch } from "../registry/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs";
+import { ToggleChip } from "../registry/ui/toggle-chip";
+import { SideBySide } from "./side-by-side";
+
+/**
+ * Every chosen thing is tinted: `bg-active/40` with `foreground` ink, and a step further,
+ * `bg-active/60`, under the pointer and focused. A control whose edge is what says it is there —
+ * a checkbox, a switch's track, a radio tile, a toggle chip, a stat tile — is edged in `active` as
+ * well, because the tint is not 3:1 from the surface; a switch's thumb is `foreground`, as the
+ * check in a box is. `palette-contrast.test.mjs` holds the ratios; this holds that the controls
+ * draw them, on both halves.
+ */
+const meta = { title: "Tokens/Chosen state" } satisfies Meta;
+export default meta;
+type Story = StoryObj;
+
+/** What a colour resolves to right now, in the syntax the browser reports a computed colour in. */
+function resolved(property: "color" | "backgroundColor", value: string) {
+  const probe = document.createElement("span");
+  probe.style[property] = value;
+  document.body.append(probe);
+  const color = getComputedStyle(probe)[property];
+  probe.remove();
+  return color;
+}
+const token = (name: string) => resolved("color", `var(--${name})`);
+/** `bg-active/40`, which Tailwind compiles to this mix. */
+const tint = (percent: number) =>
+  resolved("backgroundColor", `color-mix(in oklab, var(--active) ${percent}%, transparent)`);
+
+function Controls({ half, compiled }: { half: string; compiled: boolean }) {
+  const noop = () => {};
+  return (
+    <section aria-label={half} className="flex flex-col items-start gap-4">
+      {compiled ? (
+        <>
+          <CompiledCheckbox aria-label="Email me" checked />
+          <CompiledSwitch aria-label="Notify" checked />
+          <CompiledToggleChip selected>Mon</CompiledToggleChip>
+          <CompiledTabs defaultValue="list">
+            <CompiledTabsList>
+              <CompiledTabsTrigger value="list">List</CompiledTabsTrigger>
+              <CompiledTabsTrigger value="board">Board</CompiledTabsTrigger>
+            </CompiledTabsList>
+            <CompiledTabsContent value="list">The list.</CompiledTabsContent>
+            <CompiledTabsContent value="board">The board.</CompiledTabsContent>
+          </CompiledTabs>
+          <CompiledRadioGroup aria-label="Tiles" value="dark" variant="card">
+            <CompiledRadioItem value="light" label="Light" />
+            <CompiledRadioItem value="dark" label="Dark" description="Always dark." />
+          </CompiledRadioGroup>
+          <CompiledRadioGroup aria-label="Segments" value="week" variant="segmented">
+            <CompiledRadioItem value="day" label="Day" />
+            <CompiledRadioItem value="week" label="Week" />
+          </CompiledRadioGroup>
+          <CompiledStatTile label="Open" value="12" selected onClick={noop} />
+        </>
+      ) : (
+        <>
+          <Checkbox accessibilityLabel="Email me" checked />
+          <Switch accessibilityLabel="Notify" checked />
+          <ToggleChip selected>Mon</ToggleChip>
+          <Tabs defaultValue="list">
+            <TabsList>
+              <TabsTrigger value="list">List</TabsTrigger>
+              <TabsTrigger value="board">Board</TabsTrigger>
+            </TabsList>
+            <TabsContent value="list">
+              <Text className="text-foreground">The list.</Text>
+            </TabsContent>
+            <TabsContent value="board">
+              <Text className="text-foreground">The board.</Text>
+            </TabsContent>
+          </Tabs>
+          <RadioGroup aria-label="Tiles" value="dark" variant="card">
+            <RadioGroupItem value="light" label="Light" />
+            <RadioGroupItem value="dark" label="Dark" description="Always dark." />
+          </RadioGroup>
+          <RadioGroup aria-label="Segments" value="week" variant="segmented">
+            <RadioGroupItem value="day" label="Day" />
+            <RadioGroupItem value="week" label="Week" />
+          </RadioGroup>
+          <StatTile label="Open" value="12" selected onPress={noop} />
+        </>
+      )}
+    </section>
+  );
+}
+
+function Both(): ReactNode {
+  return (
+    <SideBySide
+      native={<Controls half="Native" compiled={false} />}
+      compiled={<Controls half="Compiled" compiled />}
+    />
+  );
+}
+
+/** Each chosen control at rest: the `/40` tint, `foreground` ink, and an `active` edge where it has one. */
+export const TintedAtRest: Story = {
+  render: () => <Both />,
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const style = (el: Element) => getComputedStyle(el);
+    const rest = tint(40);
+    const active = token("active");
+    const foreground = token("foreground");
+
+    for (const half of ["Native", "Compiled"]) {
+      const group = within(canvas.getByRole("region", { name: half }));
+
+      await step(
+        `${half}: a checked box is tinted and edged, its check in foreground`,
+        async () => {
+          const box = group.getByRole("checkbox", { name: "Email me" });
+          await expect(style(box).backgroundColor).toBe(rest);
+          await expect(style(box).borderTopColor).toBe(active);
+          const check = box.querySelector("svg");
+          if (!check) {
+            throw new Error("a checked box draws its check");
+          }
+          // Native's icon is handed its colour as a stroke; the DOM's takes `currentColor`.
+          const ink = check.getAttribute("stroke");
+          await expect(
+            ink === null || ink === "currentColor" ? style(check).color : resolved("color", ink),
+          ).toBe(foreground);
+        },
+      );
+
+      await step(`${half}: an on switch is tinted and edged, its thumb in foreground`, async () => {
+        const track = group.getByRole("switch", { name: "Notify" });
+        await expect(style(track).backgroundColor).toBe(rest);
+        await expect(style(track).borderTopColor).toBe(active);
+        const thumb = track.firstElementChild;
+        if (!thumb) {
+          throw new Error("a switch draws its thumb");
+        }
+        await expect(style(thumb).backgroundColor).toBe(foreground);
+      });
+
+      await step(`${half}: a chosen chip is tinted and edged, in foreground`, async () => {
+        const chip = group.getByRole("button", { name: "Mon" });
+        await expect(style(chip).backgroundColor).toBe(rest);
+        await expect(style(chip).borderTopColor).toBe(active);
+        await expect(style(within(chip).getByText("Mon")).color).toBe(foreground);
+      });
+
+      await step(`${half}: the active tab is tinted, in foreground`, async () => {
+        const tab = group.getByRole("tab", { name: "List" });
+        await expect(style(tab).backgroundColor).toBe(rest);
+        await expect(style(within(tab).getByText("List")).color).toBe(foreground);
+      });
+
+      await step(
+        `${half}: a chosen tile is tinted and edged, its description in foreground`,
+        async () => {
+          const tile = within(group.getByRole("radiogroup", { name: "Tiles" })).getByRole("radio", {
+            name: "Dark",
+          });
+          await expect(style(tile).backgroundColor).toBe(rest);
+          await expect(style(tile).borderTopColor).toBe(active);
+          await expect(style(within(tile).getByText("Always dark.")).color).toBe(foreground);
+        },
+      );
+
+      await step(`${half}: a chosen segment is tinted, in foreground`, async () => {
+        const segment = within(group.getByRole("radiogroup", { name: "Segments" })).getByRole(
+          "radio",
+          { name: "Week" },
+        );
+        await expect(style(segment).backgroundColor).toBe(rest);
+        await expect(style(within(segment).getByText("Week")).color).toBe(foreground);
+      });
+
+      await step(`${half}: a selected stat tile is tinted and edged`, async () => {
+        const tile = group.getByRole("button", { name: /Open/ });
+        await expect(tile).toHaveAttribute("aria-pressed", "true");
+        await expect(style(tile).backgroundColor).toBe(rest);
+        await expect(style(tile).borderTopColor).toBe(active);
+      });
+    }
+  },
+};

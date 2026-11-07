@@ -75,11 +75,11 @@ function asText(node: ReactNode, className: string, testID?: string) {
 /**
  * A row's fill for its state, for `ListItem` and `FileTree`. Chosen is the `active` tint, and the
  * pointer over a pressable row is `hover`, or over a chosen one the tint a step further. Focused,
- * a row looks hovered whether it is chosen or not.
+ * a row looks hovered: `hover` if it is not chosen, the `/60` step if it is.
  */
 export function rowFillClass(selected: boolean, pressable: boolean) {
   const pointer = selected
-    ? "transition-colors hover:bg-active/60 has-[:focus-visible]:bg-hover"
+    ? "transition-colors hover:bg-active/60 has-[:focus-visible]:bg-active/60"
     : "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover";
   return cn(
     selected && "bg-active/40",

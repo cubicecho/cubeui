@@ -162,6 +162,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   Owner: `tokens/palette.mjs`; emitted to `dist/` by the token build.
 - **Palette:** one full set of tokens for a mode: the default light and dark, and Monokai (dark
   only). Owner: `tokens/palette.mjs`; chosen in an app by `usePalettePreference`.
+- **Chosen state:** how anything chosen, current, checked, on or selected is drawn, in every
+  item: the `active` tint (`bg-active/40`) with `foreground` ink, the `/60` step under the
+  pointer and focused, and an `active` edge on a control that needs one to be seen, with its
+  mark (check, thumb, dot) in `foreground`. Never a solid `active` fill. Owner: the state rules
+  in `AGENTS.md`; held by `scripts/palette-contrast.test.mjs` and `stories/chosen-state.stories.tsx`.
 - **Alias:** a shadcn token name (`muted-foreground`, `card`, `border`) written as a copy of a
   cubeui token, so a copied shadcn component keeps working. A cubeui item may not name one.
   Owner: `ALIASES` in `tokens/palette.mjs`.
@@ -240,7 +245,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   Owner: `registry/layout/list.tsx`, with `ListRow` and `hasRows`.
 - **`ListItem`:** one row: leading picture or checkbox, title, description, extra info,
   actions; pressable or a link. Owner: `registry/layout/list-item.tsx`, with the parts the other
-  rows share: `ListItemText`, `rowFillClass` (the chosen and hovered fills) and `rowLink`.
+  rows share: `ListItemText`, `rowFillClass` (the chosen tint and the hovered fill) and `rowLink`.
 - **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. Owner:
   `registry/ui/item.tsx`.
 - **`DisclosureRow`:** a `ListItem` that opens onto more below it, with no surface

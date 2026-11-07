@@ -58,9 +58,11 @@ const theme = EditorView.theme({
   },
   ".cm-tooltip.cm-tooltip-autocomplete > ul": { fontFamily: "inherit", maxHeight: "16rem" },
   ".cm-tooltip.cm-tooltip-autocomplete > ul > li": { padding: "0.25rem 0.5rem" },
+  // The highlighted completion is the list's keyboard highlight, as a command palette's is: the
+  // hover grey, not a chosen fill. Nothing is chosen until Enter takes it.
   ".cm-tooltip-autocomplete ul li[aria-selected]": {
-    backgroundColor: "var(--active)",
-    color: "var(--active-foreground)",
+    backgroundColor: "var(--hover)",
+    color: "var(--foreground)",
   },
   ".cm-completionDetail": {
     color: "color-mix(in oklab, currentColor 60%, transparent)",

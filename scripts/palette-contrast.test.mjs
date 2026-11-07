@@ -59,8 +59,9 @@ const PAIRS = [
       ],
     ]),
   ),
-  // A chosen row's text, on `bg-active/40`, and on `bg-active/60` under the pointer. Its secondary
-  // text turns `foreground` when chosen, because `/60` does not clear 4.5:1 there.
+  // A chosen thing's text — a row, a tab, a pill, a sidebar place, a toggle chip — on its
+  // `bg-active/40` tint, and on `bg-active/60` under the pointer or focused. Its secondary text
+  // turns `foreground` when chosen, because `/60` does not clear 4.5:1 there.
   ...[0.4, 0.6].flatMap((tint) =>
     SURFACES.map((surface) => [
       "foreground",
@@ -159,14 +160,15 @@ test("the known exceptions are still exceptions", () => {
 });
 
 /**
- * A chosen row (`bg-active/40`), a chosen row under the pointer (`bg-active/60`) and an unchosen
- * row under the pointer (`bg-hover`) are three states, and none should read as another. Not a
- * contrast floor WCAG sets, so the bar is the one the default palette was tuned to: each pair of
- * fills 1.3:1 apart on the surfaces a row sits on.
+ * A chosen thing (`bg-active/40`), a chosen thing under the pointer or focused (`bg-active/60`) and
+ * an unchosen thing under the pointer or focused (`bg-hover`) are three states, and none should
+ * read as another. Not a contrast floor WCAG sets, so the bar is the one the default palette was
+ * tuned to: each pair of fills 1.3:1 apart on the surfaces a chosen thing sits on. The first pair is
+ * chosen against hovered, the third the pointer's step against the rest.
  */
 const STATE_APART = 1.3;
 for (const [set, map] of sets) {
-  test(`${set}: a chosen row, hovered or not, is apart from a hovered one`, () => {
+  test(`${set}: a chosen thing, hovered or not, is apart from a hovered one`, () => {
     const close = SURFACES.flatMap((surface) => {
       const tint = (alpha) =>
         surfaceRgb(map, [
@@ -196,15 +198,53 @@ for (const [set, map] of sets) {
 }
 
 /**
- * Nothing draws a focus ring: a focused thing looks hovered, `bg-hover` with `text-foreground`,
- * filled buttons and chosen controls included. So for each fill a control rests on, the hover fill
- * has to differ from it by 3:1 (WCAG 2.4.13's change of contrast) on the surfaces it sits on, and
- * the focused label — `foreground` on `hover` — is held at 4.5:1 by the text pairs above.
+ * A chosen control is tinted, so what says it is checked, on or picked is its mark: a checkbox's
+ * check, a switch's thumb, a radio's dot. The mark is `foreground`, as the text on a chosen thing
+ * is, and it has to be 3:1 (WCAG 1.4.11) against the tint at rest, against the `/60` step under
+ * the pointer or focused, and against the surface around the control. The tint itself is not 3:1
+ * from the surface, so the box, the track and the circle are edged in `active`, which has to be
+ * 3:1 from the surface too.
  */
+const MARK = "foreground";
+const MARK_APART = 3;
+for (const [set, map] of sets) {
+  test(`${set}: a chosen control's mark and edge are 3:1 or more`, () => {
+    const short = SURFACES.flatMap((surface) => {
+      const under = {
+        [surface]: toRgb(map[surface]),
+        [`active@0.4 on ${surface}`]: surfaceRgb(map, [
+          [surface, 1],
+          ["active", 0.4],
+        ]),
+        [`active@0.6 on ${surface}`]: surfaceRgb(map, [
+          [surface, 1],
+          ["active", 0.6],
+        ]),
+      };
+      const marks = Object.entries(under).map(([name, rgb]) => [`mark on ${name}`, map[MARK], rgb]);
+      const edge = [`edge (active) on ${surface}`, map.active, toRgb(map[surface])];
+      return [...marks, edge].flatMap(([name, top, rgb]) => {
+        const r = Math.round(ratio(top, rgb) * 100) / 100;
+        return r < MARK_APART ? [`${name}: ${r.toFixed(2)}:1, needs ${MARK_APART}`] : [];
+      });
+    });
+    assert.deepEqual(short, []);
+  });
+}
+
+/**
+ * Nothing draws a focus ring: a focused thing looks hovered. An unchosen thing and a filled button
+ * take `bg-hover` with `text-foreground`, so for each solid fill a control rests on, the hover fill
+ * has to differ from it by 3:1 (WCAG 2.4.13's change of contrast) on the surfaces it sits on, and
+ * the focused label — `foreground` on `hover` — is held at 4.5:1 by the text pairs above. `active`
+ * is not one of them: nothing chosen is filled solid. A chosen thing is the `/40` tint, and focused
+ * it takes the `/60` step it has under the pointer, which the state test above holds apart.
+ */
+const FOCUS_FILLS = FILLS.filter((fill) => fill !== "active");
 const FOCUS_APART = 3;
 for (const [set, map] of sets) {
   test(`${set}: a focused fill is 3:1 or more from its rest`, () => {
-    const close = FILLS.flatMap((fill) =>
+    const close = FOCUS_FILLS.flatMap((fill) =>
       SURFACES.flatMap((surface) => {
         const rest = surfaceRgb(map, [
           [surface, 1],

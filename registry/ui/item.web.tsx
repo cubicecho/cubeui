@@ -104,7 +104,7 @@ function Item({
         ITEM_WEB,
         itemVariants({ variant, size }),
         selected && ITEM_SELECTED_CLASS,
-        selected && "[a]:hover:bg-active/60 [a]:focus-visible:bg-hover",
+        selected && "[a]:hover:bg-active/60 [a]:focus-visible:bg-active/60",
         className,
       )}
       {...props}

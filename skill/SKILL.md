@@ -89,7 +89,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | Equal cells in rows — a grid of cards or tiles, 1 to 4 to a row by width | `GridLayout` | [layout/pages.md](layout/pages.md#grids) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout/splits.md](layout/splits.md#splits) |
 | An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brandSlot`, `navSlot`, `status`, `actionSlot` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
-| A place in that bar: an icon link with a name, a tooltip, the current-page fill, a count or a status dot | `BarNavItem` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
+| A place in that bar: an icon link with a name, a tooltip, the current-page tint, a count or a status dot | `BarNavItem` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
 | An app's bar across the top — brand, places, a status line, actions — on its own | `AppBar` | [layout/app-bar.md](layout/app-bar.md#app-bar) |
 | An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `HeaderContentFooter` with an `AppBar` in `headerSlot` | [layout/app-bar.md](layout/app-bar.md#an-app-with-no-sidebar) |
 | The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout/sidebar.md](layout/sidebar.md#sidebar) |
