@@ -1,11 +1,6 @@
 import type { ReactElement } from "react";
 import { Text, View } from "react-native";
-import {
-  BarNavItem,
-  Sidebar,
-  SidebarNavItem,
-  SidebarSection,
-} from "../../../registry/layout/sidebar";
+import { AppBarItem, Sidebar, SidebarItem, SidebarSection } from "../../../registry/layout/sidebar";
 import { SidebarLayout } from "../../../registry/layout/split-layout";
 import { Calendar, CircleCheck, Folder, Settings } from "../../../registry/ui/icons";
 
@@ -45,7 +40,7 @@ export function MobileShell({ current, screen }: { current: MobilePlace; screen:
                 as="nav"
                 title="Places"
                 contentSlot={PLACES.map((place) => (
-                  <SidebarNavItem
+                  <SidebarItem
                     key={place.id}
                     href={`#${place.id}`}
                     label={place.label}
@@ -60,7 +55,7 @@ export function MobileShell({ current, screen }: { current: MobilePlace; screen:
         }
         navLabel="Main"
         navSlot={PLACES.map((place) => (
-          <BarNavItem
+          <AppBarItem
             key={place.id}
             href={`#${place.id}`}
             label={place.label}

@@ -47,9 +47,9 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |
-| A place in that bar: an icon link named by `label`, with a count badge or a status dot | `BarNavItem` | `@cubeui/sidebar` |
+| A place in that bar: an icon link named by `label`, with a count badge or a status dot | `AppBarItem` | `@cubeui/sidebar` |
 | An app's bar across the top — brand, places, a status line, actions — on its own; with no sidebar, in a `HeaderContentFooter`'s `headerSlot` over the screen — see [layout/app-bar.md](layout/app-bar.md#app-bar) | `AppBar` | `@cubeui/app-bar` |
-| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
@@ -127,7 +127,7 @@ take the props the web ones take, with four conversions that are the same everyw
 - **`onPress` on a device, `onClick` on the web.** Every pressable in the native set takes
   `onPress`; its compiled web half renders a real `<button>` and takes `onClick`, with the rest of
   the `<button>` props. So a DOM app writes `onClick` on `Button`, `Card`, `ListItem`, `StatTile`,
-  `SidebarNavItem` and the rest, and the examples in these files that say `onPress` read as
+  `SidebarItem` and the rest, and the examples in these files that say `onPress` read as
   `onClick` there. Code shared between the halves has no one name to write; keep the handler and
   pass it under each half's name.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.

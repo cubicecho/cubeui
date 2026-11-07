@@ -550,7 +550,7 @@ Recorded so the next pass does not re-derive them:
   icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brandSlot`,
   `navSlot`, `status` and `actionSlot`, a widening rather than a new `app-shell` item, which would also
   have collided with mcp-ragdown's own `components/app-shell.tsx` on install. The links in that
-  bar are `@cubeui/sidebar`'s `BarNavItem` — the rail's row with only the icon drawn — so the
+  bar are `@cubeui/sidebar`'s `AppBarItem` — the rail's row with only the icon drawn — so the
   apps' own link classes, and the counts they dropped on the bar, go with it. The bar itself is
   `@cubeui/app-bar`'s `AppBar`, which an app with no sidebar puts over its page on its own.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of

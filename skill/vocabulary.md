@@ -53,7 +53,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
   `AppBar`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
   is hidden — so there pass what the sidebar's header shows.
-- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `BarNavItem`s —
+- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `AppBarItem`s —
   or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
@@ -133,9 +133,9 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 
 - **`badgesSlot`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
 - **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
-  title and the rows (a `<LoadState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
+  title and the rows (a `<LoadState compact />`). On `SidebarItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
-  given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
+  given, is what is seen instead of it — decorative, never read. On `AppBarItem`, the same object,
   drawn as a dot on the icon. On `AppBar` (and so `SidebarLayout`'s bar), a node: one line of the app's own state
   ("3/5 servers running") between `navSlot` and `actionSlot`, the first part of the bar to give way.
 - **`leadingSlot`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as

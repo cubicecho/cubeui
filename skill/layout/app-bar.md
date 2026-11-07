@@ -26,7 +26,7 @@ and the header of an app with no sidebar.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `navSlot` | `SlotNode` |  | The app's places, usually `BarNavItem`s. Drawn inside a `<nav>` — `role="navigation"` on device — named by `navLabel`, which is the landmark every hand-written bar either forgot or spelled differently. Do not wrap them in one yourself. |
+| `navSlot` | `SlotNode` |  | The app's places, usually `AppBarItem`s. Drawn inside a `<nav>` — `role="navigation"` on device — named by `navLabel`, which is the landmark every hand-written bar either forgot or spelled differently. Do not wrap them in one yourself. |
 | `navLabel` | `string` |  | What the bar's navigation landmark is called — "Main". Required with `navSlot`. |
 | `brandSlot` | `SlotNode` |  | The bar's start: the app's mark and name, usually a link home. It keeps its width. |
 | `status` | `ReactNode` |  | One line saying what state the app is in — "3/5 servers running" — between the `navSlot` and the `actionSlot`. It gets the width the rest of the bar leaves and no more, so on a narrow bar it is the first thing to give way: a string is cut short with an ellipsis, down to nothing, before the brand, a place or an action loses a pixel. A node is clipped to the same box and truncates itself. |
@@ -37,7 +37,7 @@ and the header of an app with no sidebar.
 
 - **`brandSlot`** — the bar's start: the logo and the app's name, usually a link home. It keeps its
   width.
-- **`navSlot`** — the app's places, after the brand: `BarNavItem`s, or text links. The bar draws the
+- **`navSlot`** — the app's places, after the brand: `AppBarItem`s, or text links. The bar draws the
   navigation landmark around them (`<nav>` on the web, `role="navigation"` on device), so do not
   hand-write a `<nav>` inside it. **`navLabel` is required with it** and names the landmark — "Main".
   Marking the current place (`active`, `aria-current`) is the link's, since only the router knows

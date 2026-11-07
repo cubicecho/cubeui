@@ -205,10 +205,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   narrow), one line of its state (which gives way first) and its actions; the banner landmark.
   Owner: `registry/layout/app-bar.tsx`.
 - **`Sidebar`:** the app's navigation column, with sections of rows, that can fold to a
-  rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarNavItem`,
-  `SidebarCollapseButton`, `useSidebar`.
-- **`BarNavItem`:** a place in an app bar, drawn as its icon. Owner:
-  `registry/layout/sidebar.tsx`.
+  rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarItem`,
+  `SidebarCollapseButton`, `useSidebar`. `SidebarNavItem` is `SidebarItem`'s old name, deprecated
+  for one release.
+- **`AppBarItem`:** a place in an app bar, drawn as its icon. Owner:
+  `registry/layout/sidebar.tsx`. `BarNavItem` is its old name, deprecated for one release.
 
 ### Blocks on a page
 

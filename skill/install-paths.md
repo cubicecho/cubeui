@@ -148,7 +148,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `select-options` | both | `lib/select-options.ts` | `import { isSeparator, isNote, blocksOf, optionText, withOrphanOptions, isAddableOptionName, … 3 more } from "@/lib/select-options"` |
 | `separator` | both | `components/ui/separator.tsx` | `import { Separator } from "@/components/ui/separator"` |
 | `setting-row` | both | `components/setting-row.tsx` | `import { SettingRow } from "@/components/setting-row"` |
-| `sidebar` | both | `components/sidebar.tsx` | `import { useSidebar, Sidebar, SidebarSection, SidebarCollapseButton, BarNavItem, SidebarNavItem } from "@/components/sidebar"` |
+| `sidebar` | both | `components/sidebar.tsx` | `import { useSidebar, Sidebar, SidebarSection, SidebarCollapseButton, AppBarItem, SidebarItem } from "@/components/sidebar"` |
 | `sidebar-stories` | web | `components/sidebar.stories.tsx` | — (stories) |
 | `skeleton` | web | `components/ui/skeleton.tsx`; also `skeleton-base.ts` | `import { Skeleton } from "@/components/ui/skeleton"` |
 | `skeleton` | native | `components/ui/skeleton.tsx`; also `skeleton-base.ts`, `skeleton.web.tsx` | `import { Skeleton } from "@/components/ui/skeleton"` |

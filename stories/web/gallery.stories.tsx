@@ -41,7 +41,7 @@ import { PropertyList, PropertyRow } from "@/components/property-list";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { SettingRow } from "@/components/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "@/components/sidebar";
 import { SidebarLayout, SplitLayout } from "@/components/split-layout";
 import { StatTile } from "@/components/stat-tile";
 import { Alert } from "@/components/ui/alert";
@@ -1568,7 +1568,7 @@ function SidebarSample({ label }: { label: string }) {
           title="Workspace"
           level={3}
           contentSlot={PLACES.map((place) => (
-            <SidebarNavItem
+            <SidebarItem
               key={place}
               href={`#${place.toLowerCase()}`}
               label={place}

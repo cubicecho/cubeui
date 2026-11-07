@@ -10,18 +10,18 @@ import {
   Settings as CompiledSettings,
 } from "../compiled/icons";
 import {
-  BarNavItem as CompiledBarItem,
-  SidebarNavItem as CompiledNavItem,
+  AppBarItem as CompiledBarItem,
   SidebarSection as CompiledSection,
   Sidebar as CompiledSidebar,
+  SidebarItem as CompiledSidebarItem,
 } from "../compiled/sidebar";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
 import {
-  BarNavItem as NativeBarItem,
-  SidebarNavItem as NativeNavItem,
+  AppBarItem as NativeBarItem,
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
+  SidebarItem as NativeSidebarItem,
 } from "../registry/layout/sidebar";
 import { SidebarLayout as NativeLayout } from "../registry/layout/split-layout";
 import { Button as NativeButton } from "../registry/ui/button";
@@ -82,7 +82,7 @@ const shell: Story = {
                     as="nav"
                     label="Native rail places"
                     contentSlot={places.map((p) => (
-                      <NativeNavItem
+                      <NativeSidebarItem
                         key={p.id}
                         href={`#/${p.id}`}
                         label={p.name}
@@ -95,7 +95,7 @@ const shell: Story = {
             }
             brandSlot={<Text className="font-semibold text-foreground">Router</Text>}
             navSlot={places.map((p) => (
-              <NativeNavItem
+              <NativeSidebarItem
                 key={p.id}
                 href={`#/${p.id}`}
                 label={p.name}
@@ -133,7 +133,7 @@ const shell: Story = {
                     as="nav"
                     label="Compiled rail places"
                     contentSlot={places.map((p) => (
-                      <CompiledNavItem
+                      <CompiledSidebarItem
                         key={p.id}
                         href={`#/${p.id}`}
                         label={p.name}
@@ -146,7 +146,7 @@ const shell: Story = {
             }
             brandSlot={<span className="font-semibold text-foreground">Router</span>}
             navSlot={places.map((p) => (
-              <CompiledNavItem
+              <CompiledSidebarItem
                 key={p.id}
                 href={`#/${p.id}`}
                 label={p.name}
@@ -289,7 +289,7 @@ export const Narrow: Story = {
 
 /**
  * Issue #267: the bar on the narrowest phone, 320px, holding what it was made to hold — two
- * `BarNavItem`s, a compact `ThemePicker` and an icon button, with no brand. The halves are
+ * `AppBarItem`s, a compact `ThemePicker` and an icon button, with no brand. The halves are
  * stacked rather than side by side, so each has the whole 320px, and neither may be wider than
  * it: a bar that is scrolls the whole page sideways.
  */

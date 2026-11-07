@@ -22,7 +22,7 @@ import { PropertyList, PropertyRow } from "../../registry/layout/property-list";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
 import { SettingRow } from "../../registry/layout/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "../../registry/layout/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "../../registry/layout/sidebar";
 import { SidebarLayout, SplitLayout } from "../../registry/layout/split-layout";
 import { StatTile } from "../../registry/layout/stat-tile";
 import { Alert } from "../../registry/ui/alert";
@@ -1290,15 +1290,9 @@ const sections: GallerySection[] = [
               title="Workspace"
               contentSlot={
                 <>
-                  <SidebarNavItem
-                    label="Projects"
-                    iconSlot={<Folder />}
-                    count={12}
-                    active
-                    href="#"
-                  />
-                  <SidebarNavItem label="Documents" iconSlot={<FileText />} href="#" />
-                  <SidebarNavItem label="Settings" iconSlot={<Settings />} href="#" />
+                  <SidebarItem label="Projects" iconSlot={<Folder />} count={12} active href="#" />
+                  <SidebarItem label="Documents" iconSlot={<FileText />} href="#" />
+                  <SidebarItem label="Settings" iconSlot={<Settings />} href="#" />
                 </>
               }
             />
