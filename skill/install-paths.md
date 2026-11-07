@@ -124,7 +124,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `progress` | both | `components/ui/progress.tsx` | `import { Progress } from "@/components/ui/progress"` |
 | `query-state` | both | `components/query-state.tsx` | `import { QueryState, QueryError, RowSkeleton } from "@/components/query-state"` |
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
-| `radio-group-field` | both | `components/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/radio-group-field"` |
+| `radio-group-field` | both | `components/ui/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/ui/radio-group-field"` |
 | `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, readableTextColor } from "@/lib/readable-text-color"` |
 | `route-error` | both | `components/route-error.tsx` | `import { RouteError } from "@/components/route-error"` |
 | `search-input` | web | `components/ui/search-input.tsx`; also `search-input-base.ts` | `import { SearchInput } from "@/components/ui/search-input"` |

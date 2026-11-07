@@ -549,7 +549,7 @@
     },
     {
       "name": "radio-group-field",
-      "type": "registry:component",
+      "type": "registry:ui",
       "title": "Radio Group Field",
       "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
       "dependencies": ["@tanstack/react-form@^1.33.5"],
@@ -565,7 +565,7 @@
       "files": [
         {
           "path": "compiled/radio-group-field.tsx",
-          "type": "registry:component"
+          "type": "registry:ui"
         }
       ]
     },

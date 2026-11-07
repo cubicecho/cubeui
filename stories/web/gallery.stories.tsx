@@ -37,7 +37,6 @@ import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
 import { QueryError, QueryState, RowSkeleton } from "@/components/query-state";
-import { RadioGroupField } from "@/components/radio-group-field";
 import { RouteError } from "@/components/route-error";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
@@ -171,6 +170,7 @@ import {
 } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroupField } from "@/components/ui/radio-group-field";
 import { SearchInput } from "@/components/ui/search-input";
 import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 import { SegmentedField } from "@/components/ui/segmented-field";

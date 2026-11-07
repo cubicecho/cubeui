@@ -3,8 +3,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { useAppForm } from "@/components/app-form";
 import { ColorField } from "@/components/color-field";
 import { PasswordField } from "@/components/password-field";
-import { RadioGroupField } from "@/components/radio-group-field";
 import { Button } from "@/components/ui/button";
+import { RadioGroupField } from "@/components/ui/radio-group-field";
 
 const VISIBILITY = [
   { value: "private", label: "Private", description: "Only you can open it." },
