@@ -99,7 +99,7 @@ test that finds them by name needs changing:
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
-| `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. |
+| `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
 
