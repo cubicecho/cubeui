@@ -168,7 +168,10 @@ export const LongContentStaysInTheRow: Story = {
   play: async ({ canvas, canvasElement }) => {
     const header = canvas.getByRole("button", { name: /Rename the settings page/ });
     await userEvent.click(header);
-    const row = canvasElement.querySelector('[data-slot="disclosure-row"]') as HTMLElement;
+    // Under either name the row has had, `disclosure-row` or `collapsible-row`.
+    const row = canvasElement.querySelector(
+      '[data-slot="disclosure-row"], [data-slot="collapsible-row"]',
+    ) as HTMLElement;
     // What opened, found by the id the heading names rather than by the part that draws it.
     const opened = document.getElementById(header.getAttribute("aria-controls") ?? "");
     if (!opened) {

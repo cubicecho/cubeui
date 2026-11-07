@@ -96,7 +96,8 @@ export const Default: Story = {
       }
       await expect(row.contains(header)).toBe(true);
       if (index === 1) {
-        await expect(row).toHaveAttribute("data-slot", "disclosure-row");
+        // Under either name the row has had, so this holds across the rename to `CollapsibleRow`.
+        await expect(row.getAttribute("data-slot")).toMatch(/^(disclosure|collapsible)-row$/);
       }
 
       // Shut: no body, and no `aria-controls` pointing at one.
