@@ -1,0 +1,34 @@
+diff --git a/node_modules/storybook/dist/_browser-chunks/chunk-M6YZR3ZW.js b/node_modules/storybook/dist/_browser-chunks/chunk-M6YZR3ZW.js
+--- a/node_modules/storybook/dist/_browser-chunks/chunk-M6YZR3ZW.js
++++ b/node_modules/storybook/dist/_browser-chunks/chunk-M6YZR3ZW.js
+@@ -1217,7 +1217,12 @@ async function runStory(story, context) {
+     throw new MountMustBeDestructuredError({ playFunction: playFunction.toString() });
+   }), await playFunction(context));
+   let cleanUp;
+-  isTestEnvironment() ? cleanUp = pauseAnimations() : await waitForAnimations(context.abortSignal), await story.applyAfterEach(context), await cleanUp?.();
++  isTestEnvironment() ? cleanUp = pauseAnimations() : await waitForAnimations(context.abortSignal);
++  try {
++    await story.applyAfterEach(context);
++  } finally {
++    await cleanUp?.();
++  }
+ }
+ 
+ // src/preview-api/modules/store/StoryStore.ts
+diff --git a/node_modules/storybook/dist/preview/runtime.js b/node_modules/storybook/dist/preview/runtime.js
+--- a/node_modules/storybook/dist/preview/runtime.js
++++ b/node_modules/storybook/dist/preview/runtime.js
+@@ -35239,7 +35239,12 @@ async function runStory(story, context) {
+     throw new MountMustBeDestructuredError({ playFunction: playFunction.toString() });
+   }), await playFunction(context));
+   let cleanUp;
+-  isTestEnvironment() ? cleanUp = pauseAnimations() : await waitForAnimations(context.abortSignal), await story.applyAfterEach(context), await cleanUp?.();
++  isTestEnvironment() ? cleanUp = pauseAnimations() : await waitForAnimations(context.abortSignal);
++  try {
++    await story.applyAfterEach(context);
++  } finally {
++    await cleanUp?.();
++  }
+ }
+ 
+ // src/preview-api/modules/store/StoryStore.ts
