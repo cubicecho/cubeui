@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "collapsible-row",
   "title": "Collapsible Row",
-  "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
+  "description": "A list row that opens: a `ListItem` whose whole heading is `Collapsible`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
   "registryDependencies": [
     "@cubeui/list-item",
     "@cubeui/collapsible",

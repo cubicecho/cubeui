@@ -727,7 +727,7 @@
       "name": "collapsible-row",
       "type": "registry:component",
       "title": "Collapsible Row",
-      "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
+      "description": "A list row that opens: a `ListItem` whose whole heading is `Collapsible`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": [
         "@cubeui/list-item",
         "@cubeui/collapsible",
@@ -758,7 +758,7 @@
       "name": "property-list",
       "type": "registry:component",
       "title": "Property List",
-      "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
+      "description": "Read-only facts: `PropertyList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
