@@ -43,6 +43,14 @@ export type CopyButtonProps = {
    * hoverable (`aria-disabled`), so the reason it is off can still be read.
    */
   hint?: ButtonProps["hint"] | undefined;
+  /**
+   * Whether the tooltip is drawn: the `hint`, or with none at an `icon*` size the name, `label`
+   * and then `Copied`. Off, a `hint` is still the button's description. Turn it off where the
+   * icon already explains itself.
+   *
+   * @defaultValue true
+   */
+  tooltip?: ButtonProps["tooltip"] | undefined;
   /** The button's class: its position, say `absolute top-2 right-2` over a snippet. */
   className?: string | undefined;
 };
