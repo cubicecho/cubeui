@@ -181,6 +181,30 @@ test("a platform && in a class list folds to its operand", () => {
 });
 
 /**
+ * The web arm takes the place of a call, which binds tighter than anything around it. A ternary
+ * in that place has to keep its parentheses: `on && a ? b : c` reads back as `(on && a) ? b : c`,
+ * and the reparse of that threw inside ts-morph rather than compiling the wrong thing quietly.
+ */
+test("a Platform.select arm looser than the call keeps its parentheses", () => {
+  const code = ok(
+    "export const A = ({ on, open }: { on: boolean; open: boolean }) =>\n" +
+      '  <View className={cn(on && Platform.select({ web: open ? "a" : "b", default: undefined }))} />;',
+    "Platform, View",
+  );
+  assert.match(code, /, on && \(open \? "a" : "b"\)\)/);
+});
+
+/** Where the arm is the whole of what is passed, it needs none. */
+test("a Platform.select arm passed whole is not wrapped", () => {
+  const code = ok(
+    "export const A = ({ open }: { open: boolean }) =>\n" +
+      '  <View className={cn(Platform.select({ web: open ? "a" : "b", default: undefined }))} />;',
+    "Platform, View",
+  );
+  assert.match(code, /cn\("cube-rn-view", open \? "a" : "b"\)/);
+});
+
+/**
  * A heading whose rank the caller picks. A literal `aria-level` is an `<hN>`; an expression cannot
  * be one, because the tag is written once at compile time, so the element keeps `role="heading"`
  * and `aria-level` — which is a heading of that rank to assistive technology, and what
