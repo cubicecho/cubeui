@@ -14,6 +14,11 @@ import {
   Plus as NativePlus,
   Trash2 as NativeTrash,
 } from "../registry/ui/icons";
+import {
+  Tooltip as NativeTooltip,
+  TooltipContent as NativeTooltipContent,
+  TooltipTrigger as NativeTooltipTrigger,
+} from "../registry/ui/tooltip.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -269,5 +274,130 @@ export const DisabledButStillReadable: Story = {
       await userEvent.unhover(remove);
       await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     }
+  },
+};
+
+/**
+ * The native icon button as a device draws it: under the native `Tooltip`, which Storybook would
+ * otherwise swap for radix as Metro does on the web. This is the tree `Button` builds on device,
+ * spelled out, with its own tooltip off so there is only one.
+ */
+function DeviceIconButton({ name, className }: { name: string; className: string }) {
+  return (
+    <NativeTooltip>
+      <NativeTooltipTrigger asChild>
+        <Native
+          aria-label={name}
+          variant="outline"
+          size="icon-sm"
+          tooltip={false}
+          className={className}
+          iconSlot={<NativePencil />}
+        />
+      </NativeTooltipTrigger>
+      <NativeTooltipContent>{name}</NativeTooltipContent>
+    </NativeTooltip>
+  );
+}
+
+/** A bordered box with a button in its corner, and a row with a button pushed to its end. */
+function PlacedButtons({ half }: { half: (typeof halves)[number] }) {
+  const corner = "absolute top-2 right-2";
+  const end = "ml-auto";
+  return (
+    <div className="flex flex-col gap-2">
+      <div data-testid={`${half}-corner`} className="relative h-24 border border-foreground/10">
+        {half === "native" ? (
+          <DeviceIconButton name={`${half} corner`} className={corner} />
+        ) : (
+          <Compiled
+            aria-label={`${half} corner`}
+            variant="outline"
+            size="icon-sm"
+            className={corner}
+            iconSlot={<CompiledPencil />}
+          />
+        )}
+      </div>
+      <div
+        data-testid={`${half}-row`}
+        className="flex flex-row items-center border border-foreground/10 p-2"
+      >
+        <span className="text-sm">Endpoint</span>
+        {half === "native" ? (
+          <DeviceIconButton name={`${half} end`} className={end} />
+        ) : (
+          <Compiled
+            aria-label={`${half} end`}
+            variant="outline"
+            size="icon-sm"
+            className={end}
+            iconSlot={<CompiledPencil />}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** The 1px border every frame in `PlacedButtons` has, which an inset is measured inside of. */
+const FRAME_BORDER = 1;
+/** `top-2`, `right-2` and `p-2`. */
+const INSET = 8;
+/** How long a press is held to count as a long one: react-native's 500ms, and some to spare. */
+const LONG_PRESS_MS = 700;
+
+/**
+ * Layout classes on an icon button place it in its parent (#423). Every icon `Button` has a
+ * tooltip since #419, and on device the tooltip wrapped its trigger in a `View`, so
+ * `absolute top-2 right-2` and `ml-auto` placed the button inside that wrapper and not in the
+ * box or the row. The native tooltip now draws nothing around its trigger, and its bubble still
+ * opens over the button. The compiled half's radix tooltip adds no element either.
+ */
+export const LayoutClassesPlaceTheButton: Story = {
+  render: () => (
+    <SideBySide
+      native={<PlacedButtons half="native" />}
+      compiled={<PlacedButtons half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of halves) {
+      const box = canvas.getByTestId(`${half}-corner`);
+      const corner = within(box).getByRole("button", { name: `${half} corner` });
+      await expect(corner.parentElement).toBe(box);
+      const inBox = box.getBoundingClientRect();
+      const placed = corner.getBoundingClientRect();
+      // `half` rides along so a failure names which half broke.
+      await expect({
+        half,
+        top: Math.round(placed.top - inBox.top - FRAME_BORDER),
+        right: Math.round(inBox.right - FRAME_BORDER - placed.right),
+      }).toEqual({ half, top: INSET, right: INSET });
+
+      const row = canvas.getByTestId(`${half}-row`);
+      const end = within(row).getByRole("button", { name: `${half} end` });
+      await expect(end.parentElement).toBe(row);
+      const inRow = row.getBoundingClientRect();
+      await expect({
+        half,
+        right: Math.round(inRow.right - FRAME_BORDER - end.getBoundingClientRect().right),
+      }).toEqual({ half, right: INSET });
+    }
+
+    // The native bubble opens on a long press, above the button and centred on it, as it did
+    // against the wrapper. Within the frame's border, which a layout's position counts.
+    const corner = canvas.getByRole("button", { name: "native corner" });
+    await userEvent.pointer({ keys: "[MouseLeft>]", target: corner });
+    await new Promise((resolve) => setTimeout(resolve, LONG_PRESS_MS));
+    await userEvent.pointer({ keys: "[/MouseLeft]", target: corner });
+    const bubble = await canvas.findByRole("tooltip");
+    await expect(bubble).toHaveTextContent("native corner");
+    const button = corner.getBoundingClientRect();
+    const tip = bubble.getBoundingClientRect();
+    await expect(tip.bottom).toBeLessThanOrEqual(button.top + FRAME_BORDER);
+    const offCentre = Math.abs(tip.left + tip.width / 2 - (button.left + button.width / 2));
+    await expect(offCentre).toBeLessThanOrEqual(FRAME_BORDER);
   },
 };

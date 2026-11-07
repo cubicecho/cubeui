@@ -7,9 +7,12 @@
  * some labels are written down. Long-press is the platform's own convention
  * for "tell me more about this control", and it costs no dependency.
  *
- * `Tooltip` wraps its children in a relatively-positioned `View` so the bubble
- * can be absolutely placed against the trigger; on web radix's root is a
- * fragment and the wrapper is not there.
+ * There is no wrapper around the trigger, as there is none on web, where radix's
+ * root is a fragment. A `View` around it took the trigger's place in its parent,
+ * so the trigger's own `absolute top-2 right-2` or `ml-auto` placed it inside the
+ * wrapper rather than in the row (#423), and every icon `Button` has a tooltip.
+ * The trigger reports where it was laid out instead, and the bubble is drawn
+ * beside it in the same parent, over a box at that place and size.
  */
 
 import {
@@ -17,11 +20,13 @@ import {
   createContext,
   isValidElement,
   type ReactElement,
+  type RefObject,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
-import { Pressable, Text, View } from "react-native";
+import { type LayoutChangeEvent, type LayoutRectangle, Pressable, Text, View } from "react-native";
 import {
   TOOLTIP_CONTENT_CLASS,
   TOOLTIP_SIDE_CLASS,
@@ -33,11 +38,20 @@ import {
 } from "@/components/ui/tooltip-base";
 import { cn } from "@/lib/utils";
 
-type TooltipState = { open: boolean; setOpen: (open: boolean) => void };
+type TooltipState = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  /**
+   * Where the trigger was last laid out in its parent. A ref, not state: every icon button has a
+   * tooltip, and a render per button per layout is paid for a bubble that is rarely opened.
+   */
+  frame: RefObject<LayoutRectangle | null>;
+};
 
 const TooltipContext = createContext<TooltipState>({
   open: false,
   setOpen: () => {},
+  frame: { current: null },
 });
 
 /**
@@ -54,29 +68,46 @@ function TooltipProvider({ children }: TooltipProviderProps) {
 /** The root of a tooltip: it holds the open state. */
 function Tooltip({ children }: TooltipProps) {
   const [open, setOpen] = useState(false);
+  const frame = useRef<LayoutRectangle | null>(null);
   return (
-    <TooltipContext.Provider value={{ open, setOpen }}>
-      <View className="relative">{children}</View>
-    </TooltipContext.Provider>
+    <TooltipContext.Provider value={{ open, setOpen, frame }}>{children}</TooltipContext.Provider>
   );
 }
 
-/** The element the tooltip describes: hovered or focused on the web, long-pressed on device. */
+type TriggerChildProps = {
+  onLongPress?: (() => void) | undefined;
+  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+};
+
+/**
+ * The element the tooltip describes: hovered or focused on the web, long-pressed on device.
+ *
+ * With `asChild` the child is handed `onLongPress` and `onLayout`, and has to put both on the
+ * element it draws, as a `Pressable` and a `Button` do. Without `onLayout` the bubble has nowhere
+ * to go and is not drawn.
+ */
 function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
-  const { setOpen } = useContext(TooltipContext);
+  const { setOpen, frame } = useContext(TooltipContext);
   const show = () => setOpen(true);
+  const measure = (event: LayoutChangeEvent) => {
+    frame.current = event.nativeEvent.layout;
+  };
   if (asChild && isValidElement(children)) {
-    // The child's own long press still runs: the tooltip is added to it, not swapped in for it.
-    const child = children as ReactElement<{ onLongPress?: (() => void) | undefined }>;
+    // The child's own handlers still run: the tooltip's are added to them, not swapped in.
+    const child = children as ReactElement<TriggerChildProps>;
     return cloneElement(child, {
       onLongPress: () => {
         child.props.onLongPress?.();
         show();
       },
+      onLayout: (event: LayoutChangeEvent) => {
+        child.props.onLayout?.(event);
+        measure(event);
+      },
     });
   }
   return (
-    <Pressable onLongPress={show} className={cn(className)}>
+    <Pressable onLongPress={show} onLayout={measure} className={cn(className)}>
       {children}
     </Pressable>
   );
@@ -87,7 +118,7 @@ const VISIBLE_MS = 2500;
 
 /** The tooltip's bubble and its text. */
 function TooltipContent({ side = "top", className, children }: TooltipContentProps) {
-  const { open, setOpen } = useContext(TooltipContext);
+  const { open, setOpen, frame } = useContext(TooltipContext);
 
   useEffect(() => {
     if (open === false) {
@@ -97,16 +128,30 @@ function TooltipContent({ side = "top", className, children }: TooltipContentPro
     return () => clearTimeout(timer);
   }, [open, setOpen]);
 
-  if (open === false) {
+  const at = frame.current;
+  if (open === false || at === null) {
     return null;
   }
+  // A box over the trigger, in the trigger's parent, so the side classes place the bubble against
+  // the trigger as they did against the wrapper. A layout's position counts the parent's border
+  // and an absolute one starts inside it, so a bordered parent moves the bubble by that border.
   return (
     <View
-      role="tooltip"
-      className={cn("absolute z-50", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}
-      pointerEvents="none"
+      className="absolute z-50"
+      style={{
+        left: at.x,
+        top: at.y,
+        width: at.width,
+        height: at.height,
+        pointerEvents: "none",
+      }}
     >
-      <Text className={TOOLTIP_TEXT_CLASS}>{children}</Text>
+      <View
+        role="tooltip"
+        className={cn("absolute", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}
+      >
+        <Text className={TOOLTIP_TEXT_CLASS}>{children}</Text>
+      </View>
     </View>
   );
 }

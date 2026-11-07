@@ -76,6 +76,13 @@ export type DownloadButtonProps = (DownloadFromSource | DownloadFromHref) & {
    */
   destination?: DownloadDestination | undefined;
   disabled?: boolean | undefined;
+  /**
+   * Whether the tooltip is drawn: at an `icon*` size, `label`. A text size draws its label and
+   * has no tooltip. Turn it off where the icon already explains itself.
+   *
+   * @defaultValue true
+   */
+  tooltip?: ButtonProps["tooltip"] | undefined;
   /** Called once the file has been handed over — a toast, an analytics event. */
   onDownloaded?: (() => void) | undefined;
   /**
