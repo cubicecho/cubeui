@@ -40,16 +40,6 @@ import { isSource, packageName, packagesIn } from "../imports.mjs";
 const root = fileURLToPath(new URL("../..", import.meta.url));
 
 /**
- * Which package wants which other package alongside it, for narrowing `dependencies` below.
- *
- * Small and explicit rather than read out of `node_modules`: this runs inside `npm run compile`,
- * whose job is to write a file that has to be byte-identical on every machine, and a peer list
- * read from an installed tree is a dependency of this repo's lockfile. The guard in
- * `check-registry-build.mjs` does read the real manifests, and it is what fails if this drifts.
- */
-const PEERS_OF = { "radix-ui": ["@types/react", "@types/react-dom"] };
-
-/**
  * The packages an item's *web* files import, which is what the web half of it declares.
  *
  * Computed rather than listed, and that is the point. The hand-written version of this was a
@@ -284,15 +274,11 @@ export function deriveWebRegistry(registry, webOnly, emitted) {
     if (webOnlyNames.has(item.name)) {
       next.description = `${next.description} ${WEB_ONLY_NOTE}`;
     }
-    // A package is in the web half either because a web file imports it, or because something a
-    // web file imports peers it — `@types/react-dom` is imported by nothing and pins itself to the
-    // line Expo's own `@types/react` is on. An item whose only reason for a peer was a dependency
-    // the web half does not have should not go on asking a DOM consumer to install it.
+    // A package is in the web half only because a web file imports it. `menu` declares
+    // `@types/react-dom` for the Expo app whose `tsc` reads `menu.web.tsx` and has no React DOM
+    // types of its own; a DOM app has them, and pinning its range there rewrote the app's (#408).
     const used = webPackages(files, emitted);
-    const deps = (item.dependencies ?? []).filter((d) => {
-      const name = packageName(d);
-      return used.has(name) || [...used].some((reason) => PEERS_OF[reason]?.includes(name));
-    });
+    const deps = (item.dependencies ?? []).filter((d) => used.has(packageName(d)));
     deps.push(...(WEB_ONLY[item.name]?.dependencies ?? []));
     if (deps.length) {
       next.dependencies = deps;
