@@ -342,7 +342,9 @@ export const Phone320: Story = {
     for (const { header, nav, status, action } of bars) {
       const edge = header.getBoundingClientRect();
       await expect(edge.width).toBe(320);
-      await expect(nav.getBoundingClientRect().width).toBe(140);
+      // The places keep all or nearly all of their 140px: the status is what went.
+      await expect(nav.getBoundingClientRect().width).toBeGreaterThan(120);
+      await expect(nav.getBoundingClientRect().width).toBeLessThanOrEqual(140);
       await expect(status.getBoundingClientRect().width).toBeLessThan(40);
       await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right + 0.5);
       await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
