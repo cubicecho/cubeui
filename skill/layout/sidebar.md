@@ -105,7 +105,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `status` | `SidebarNavItemStatus` |  | What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`. `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With an `iconSlot` the icon is what is seen and the label is read only; without one the label is drawn, small and muted. `SidebarSection`'s `status` is the same word for the section's own state. |
 | `className` | `string` |  |  |
 | `href` | `string` |  | Where the row goes. The `<a href>` on the web. |
-| `active` | `boolean` | `false` | The row for the page on screen — filled, and `aria-current="page"`. |
+| `active` | `boolean` | `false` | The row for the page on screen — tinted, and `aria-current="page"`. |
 <!-- /props -->
 
 `@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
@@ -249,7 +249,7 @@ const BarLink = createLink(BarNavItem);         // beside createLink(SidebarNavI
 | `label` (required) | `string` |  | What the place is called. Nothing draws it, so it is the link's accessible name — an icon with no name is announced as "link" — and the tooltip a pointer or a long press brings up. |
 | `iconSlot` (required) | `SlotNode` |  | The whole of what is drawn. Pass a bare `<Folder />`; the item sizes and colours it. |
 | `href` | `string` |  | Where it goes — the `<a href>` on the web. Left out when a router's link names it: TanStack's `createLink`, or expo-router's `<Link href asChild>`, both of which hand it the `href`. |
-| `active` | `boolean` | `false` | The item for the page on screen — filled, and `aria-current="page"`. |
+| `active` | `boolean` | `false` | The item for the page on screen — tinted, and `aria-current="page"`. |
 | `count` | `number \| string` |  | How many things are behind the place, as a small badge on the icon's corner and in the name: "Skills, 12". The badge has a corner to fit in, so cap a long one where it is passed — `"99+"`. |
 | `status` | `SidebarNavItemStatus` |  | What state the place's thing is in, as a dot on the icon's other corner and in the name: "Servers, 2 failing". The same object `SidebarNavItem` takes, so one array feeds both; the bar has room for neither its words nor its `iconSlot`, so the dot is all that is drawn and the `label` is what is read. |
 | `className` | `string` |  |  |

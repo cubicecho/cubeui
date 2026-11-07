@@ -388,7 +388,7 @@ type SidebarNavItemBaseProps = Omit<PressableProps, "children" | "className" | "
 type SidebarNavItemLinkProps = {
   /** Where the row goes. The `<a href>` on the web. */
   href: string;
-  /** The row for the page on screen — filled, and `aria-current="page"`. */
+  /** The row for the page on screen — tinted, and `aria-current="page"`. */
   active?: boolean | undefined;
 };
 
@@ -403,7 +403,7 @@ type SidebarNavItemLinkProps = {
  */
 type SidebarNavItemRouterLinkProps = {
   href?: undefined;
-  /** The row for the page on screen — filled, and `aria-current="page"`. */
+  /** The row for the page on screen — tinted, and `aria-current="page"`. */
   active?: boolean | undefined;
   onPress?: never;
 };
@@ -434,8 +434,9 @@ function rowClassName(active: boolean, className: string | undefined) {
     "focus-visible:outline-none",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    // The current place is the chosen tint, a step further under the pointer and focused.
     active
-      ? "group/nav bg-active text-active-foreground focus-visible:bg-hover focus-visible:text-foreground"
+      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
       : "text-foreground hover:bg-hover focus-visible:bg-hover",
     className,
   );
@@ -524,15 +525,11 @@ function SidebarNavItemBody({
   active,
   collapsed,
 }: SidebarNavItemBodyProps) {
-  // Native inherits no colour, so the label, the count and the icon each carry it. The active
-  // count takes the row's foreground rather than muted: muted on the selection fill is under 4.5:1.
-  // Focused, the current row looks hovered, so its ink turns `foreground` with the fill.
-  const text = active
-    ? "text-active-foreground group-focus-visible/nav:text-foreground"
-    : "text-foreground";
-  const muted = active
-    ? "text-active-foreground group-focus-visible/nav:text-foreground"
-    : "text-foreground/60";
+  // Native inherits no colour, so the label, the count and the icon each carry it. The current
+  // row's count takes the row's foreground rather than muted: muted on the chosen tint is under
+  // 4.5:1.
+  const text = "text-foreground";
+  const muted = active ? "text-foreground" : "text-foreground/60";
 
   if (collapsed) {
     // The icon alone, as the bar's item draws a place. A row with no icon is its first letter, so
@@ -726,7 +723,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
    * `createLink`, or expo-router's `<Link href asChild>`, both of which hand it the `href`.
    */
   href?: string | undefined;
-  /** The item for the page on screen — filled, and `aria-current="page"`. */
+  /** The item for the page on screen — tinted, and `aria-current="page"`. */
   active?: boolean | undefined;
   /**
    * How many things are behind the place, as a small badge on the icon's corner and in the name:
@@ -763,9 +760,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active
-      ? "text-active-foreground group-focus-visible/nav:text-foreground"
-      : "text-foreground/60";
+    const text = active ? "text-foreground" : "text-foreground/60";
 
     return (
       <TooltipProvider>
@@ -788,7 +783,7 @@ const BarNavItem = React.forwardRef<React.ElementRef<typeof Pressable>, BarNavIt
                 "focus-visible:outline-none",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
-                  ? "group/nav bg-active text-active-foreground focus-visible:bg-hover focus-visible:text-foreground"
+                  ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
                   : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
                 className,
               )}
