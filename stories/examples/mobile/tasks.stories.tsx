@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { Collapsible } from "../../../registry/layout/collapsible";
 import { DialogLayout } from "../../../registry/layout/dialog-layout";
-import { Disclosure } from "../../../registry/layout/disclosure";
 import { EmptyState } from "../../../registry/layout/empty-state";
 import { List } from "../../../registry/layout/list";
 import { ListItem } from "../../../registry/layout/list-item";
@@ -25,7 +25,7 @@ import { dayFrom, MobileShell, PHONE, TODAY } from "./shell";
 /**
  * A phone's task list: the day's title with a New button, a filter and a search over the list,
  * each task a row with its checkbox outside the pressed area, the done ones folded under a
- * disclosure, and a dialog holding the native form for a new task or an edit.
+ * collapsible, and a dialog holding the native form for a new task or an edit.
  */
 type Args = { state: "ready" | "loading" | "empty" | "error" };
 
@@ -356,7 +356,7 @@ function Today({ state }: Args) {
               <Text className="py-2 text-foreground/60 text-sm">Everything here is done.</Text>
             ) : null}
             {done.length > 0 ? (
-              <Disclosure
+              <Collapsible
                 title={`Completed (${done.length})`}
                 contentSlot={
                   <List

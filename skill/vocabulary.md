@@ -79,7 +79,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
   and so does `Combobox`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
-- **`defaultOpen`** — where it starts, when the thing holds its own open state: `Disclosure`, and
+- **`defaultOpen`** — where it starts, when the thing holds its own open state: `Collapsible`, and
   the `Dialog`, `Popover` and `Menu` primitives. Pass it instead of `open`, never beside it.
 - **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
   called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer

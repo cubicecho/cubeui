@@ -13,7 +13,7 @@ import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
 import { cn, type SlotNode } from "@/lib/utils";
-import { DisclosureTrigger } from "./disclosure";
+import { CollapsibleTrigger } from "./collapsible";
 import { File, Folder } from "./icons";
 import { rowFillClass, rowLink } from "./list-item";
 
@@ -342,7 +342,7 @@ export function FileTree<T extends TreeEntry>({
     if (isFile === false) {
       const expanded = isOpen(node.path);
       row = (
-        <DisclosureTrigger
+        <CollapsibleTrigger
           data-slot="file-tree-folder"
           open={expanded}
           onClick={() => toggle(node.path)}

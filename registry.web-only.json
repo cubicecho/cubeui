@@ -127,9 +127,9 @@
       "registryDependencies": [
         "@cubeui/card-layout",
         "@cubeui/centered-layout",
+        "@cubeui/collapsible",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
-        "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/empty-state",
         "@cubeui/error-page",

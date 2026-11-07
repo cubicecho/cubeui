@@ -563,7 +563,7 @@ Recorded so the next pass does not re-derive them:
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
   shared through `item-base.ts`). `DisclosureRow` is a `ListItem` that opens, built on
-  `ListItem`'s box and words and `Disclosure`'s button, so the row that opens is on both halves
+  `ListItem`'s box and words and `Collapsible`'s button, so the row that opens is on both halves
   too and looks like the rows beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so

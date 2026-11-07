@@ -220,20 +220,20 @@ A heading over a group of fields or rows, inside a page or a card.
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
 
-## Disclosure
+## Collapsible
 
 A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
 over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
 counterpart, and instead of a chevron `<button>` or a `Button` with a `useState` beside it.
 
 ```tsx
-<Disclosure
+<Collapsible
   title="Raw output"
   actionSlot={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
   contentSlot={<CodeBlock content={json} />}
 />
 
-<Disclosure
+<Collapsible
   title={`${showCompleted ? "Hide" : "Show"} completed (${completed.length})`}
   open={showCompleted}
   onOpenChange={setShowCompleted}
@@ -241,8 +241,8 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 />
 ```
 
-<!-- props:Disclosure -->
-`Disclosure`'s props, from the TSDoc in `registry/layout/disclosure.tsx`:
+<!-- props:Collapsible -->
+`Collapsible`'s props, from the TSDoc in `registry/layout/collapsible.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -250,16 +250,19 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 | `description` | `ReactNode` |  | One line under the title, inside the button, drawn whether open or shut. |
 | `actionSlot` | `SlotNode` |  | The header's far end, **outside** the button: a copy button, a count, a clear-all. A control nested in a button is invalid HTML and, in practice, a click that also toggles the section. |
 | `contentSlot` | `SlotNode` |  | What opening shows. Not mounted while shut, so a long list behind it costs nothing. |
-| `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the disclosure holds its own. |
+| `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the collapsible holds its own. |
 | `onOpenChange` | `((open: boolean) => void)` |  | Told on every toggle, controlled or not. Given alone, it listens without taking over. |
-| `defaultOpen` | `boolean` | `false` | Where an uncontrolled disclosure starts. Shut by default, the way `<details>` is. |
+| `defaultOpen` | `boolean` | `false` | Where an uncontrolled collapsible starts. Shut by default, the way `<details>` is. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
 | `titleClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
 <!-- /props -->
 
-- One source for both platforms: `@cubeui/disclosure` in `/r` and `/r/native`.
+- One source for both platforms: `@cubeui/collapsible` in `/r` and `/r/native`.
+- **It was `Disclosure`.** `Disclosure` and `DisclosureTrigger`, and the `@cubeui/disclosure` item
+  that re-exports them, stay for one release as deprecated aliases; import `Collapsible` from
+  `@/components/collapsible` in new code.
 - The **whole header is one button** with a chevron that turns, so it is reached by Tab and
   toggled by Enter and Space. `aria-expanded` is on it, and on the web `aria-controls` names the
   body while the body is there.
@@ -272,7 +275,7 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
   failure" button elsewhere on the page. `onOpenChange` alone listens without taking over.
 - The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
-  disclosure is the heading of its part of the page; `contentClassName` to indent the body.
+  collapsible is the heading of its part of the page; `contentClassName` to indent the body.
   An element as `title` or `description` is placed as it is and styles itself.
 - A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
   `meta` and `ListItem`'s box.

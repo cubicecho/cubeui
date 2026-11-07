@@ -687,7 +687,7 @@
         "@cubeui/icons",
         "@cubeui/tree",
         "@cubeui/list-item",
-        "@cubeui/disclosure",
+        "@cubeui/collapsible",
         "@cubeui/tokens"
       ],
       "files": [
@@ -698,11 +698,24 @@
       ]
     },
     {
-      "name": "disclosure",
+      "name": "collapsible",
       "type": "registry:component",
-      "title": "Disclosure",
+      "title": "Collapsible",
       "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/collapsible.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "disclosure",
+      "type": "registry:component",
+      "title": "Disclosure (deprecated)",
+      "description": "The old name of collapsible, kept for one release: Disclosure and DisclosureTrigger, re-exported from it. Install collapsible.",
+      "registryDependencies": ["@cubeui/collapsible"],
       "files": [
         {
           "path": "compiled/disclosure.tsx",
@@ -717,7 +730,7 @@
       "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": [
         "@cubeui/list-item",
-        "@cubeui/disclosure",
+        "@cubeui/collapsible",
         "@cubeui/utils",
         "@cubeui/tokens"
       ],
@@ -1648,9 +1661,9 @@
       "registryDependencies": [
         "@cubeui/card-layout",
         "@cubeui/centered-layout",
+        "@cubeui/collapsible",
         "@cubeui/description-list",
         "@cubeui/dialog-layout",
-        "@cubeui/disclosure",
         "@cubeui/disclosure-row",
         "@cubeui/empty-state",
         "@cubeui/error-page",

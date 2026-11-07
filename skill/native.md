@@ -57,7 +57,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
-| A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#disclosure) | `Disclosure` | `@cubeui/disclosure` |
+| A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#collapsible) | `Collapsible` | `@cubeui/collapsible` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
 | One figure on a card, or a pressable filter tile with a pressed state — see [layout/facts.md](layout/facts.md#stat-tiles) | `StatTile` | `@cubeui/stat-tile` |
 | A grid of cards or tiles, 1 to 4 to a row by width — see [layout/pages.md](layout/pages.md#grids) | `GridLayout` | `@cubeui/grid-layout` |

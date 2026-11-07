@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 107 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 108 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 107 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 108 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  93 on both platforms · 14 web-only · 0 native-only.
+  94 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -274,6 +274,11 @@
           <th scope="row"><code>@cubeui/code</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, an optional title (and language) in a header row, a wrap prop to wrap long lines instead of scrolling sideways, a maxHeight that scrolls, and follow to keep a growing log at its end.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/collapsible</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>A titled part of a screen whose body shows and hides: "Show completed (3)", "Raw output". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/color</code></th>
@@ -388,7 +393,7 @@
         <tr>
           <th scope="row"><code>@cubeui/disclosure</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>A titled part of a screen whose body shows and hides: "Show completed (3)", "Raw output". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.</td>
+          <td>The old name of collapsible, kept for one release: Disclosure and DisclosureTrigger, re-exported from it. Install collapsible.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/disclosure-row</code></th>

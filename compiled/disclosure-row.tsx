@@ -11,7 +11,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { cn, type SlotNode } from "@/lib/utils";
-import { DisclosureTrigger } from "./disclosure";
+import { CollapsibleTrigger } from "./collapsible";
 import { LIST_ITEM_CLASS, ListItemText, rowFillClass } from "./list-item";
 
 type DisclosureRowProps = {
@@ -35,10 +35,10 @@ type DisclosureRowProps = {
 /**
  * One row in a list of things you can open: a run, a task, an archived record. It is a
  * `ListItem` that opens — the same box, words and hover as the rows beside it that do not — and
- * the opening is `Disclosure`'s. Like `ListItem` it draws no surface: the list, card or section
+ * the opening is `Collapsible`'s. Like `ListItem` it draws no surface: the list, card or section
  * around it owns the border.
  *
- * The whole heading is one `DisclosureTrigger`, and `actionSlot` sits outside it, because a
+ * The whole heading is one `CollapsibleTrigger`, and `actionSlot` sits outside it, because a
  * control nested in a button is invalid HTML and cannot be pressed. Open is controlled, since a
  * row is often opened from somewhere else, such as a deep link.
  */
@@ -93,7 +93,7 @@ export function DisclosureRow({
         data-slot="disclosure-row-heading"
         className={cn("cube-rn-view", LIST_ITEM_CLASS, rowFillClass(false, true))}
       >
-        <DisclosureTrigger
+        <CollapsibleTrigger
           data-slot="disclosure-row-trigger"
           open={open}
           onClick={() => onOpenChange(!open)}

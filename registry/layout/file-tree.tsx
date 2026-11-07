@@ -1,7 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
-import { DisclosureTrigger } from "@/components/disclosure";
+import { CollapsibleTrigger } from "@/components/collapsible";
 import { rowFillClass, rowLink } from "@/components/list-item";
 import { File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -339,7 +339,7 @@ export function FileTree<T extends TreeEntry>({
     if (isFile === false) {
       const expanded = isOpen(node.path);
       row = (
-        <DisclosureTrigger
+        <CollapsibleTrigger
           testID="file-tree-folder"
           open={expanded}
           onPress={() => toggle(node.path)}

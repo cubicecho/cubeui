@@ -13,6 +13,7 @@ import {
 } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
 import { CenteredLayout } from "@/components/centered-layout";
+import { Collapsible } from "@/components/collapsible";
 import { ColorField } from "@/components/color-field";
 import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -20,7 +21,6 @@ import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
-import { Disclosure } from "@/components/disclosure";
 import { DisclosureRow } from "@/components/disclosure-row";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorPage } from "@/components/error-page";
@@ -271,6 +271,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
   "route-error":
     "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
+  disclosure:
+    "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
 };
 
 const noop = () => {};
@@ -1354,20 +1356,20 @@ function FileTrees() {
   );
 }
 
-function Disclosures() {
+function Collapsibles() {
   const [open, setOpen] = useState(false);
   return (
     <Stack
       content={
         <>
-          <Disclosure
+          <Collapsible
             title="Advanced"
             description="Timeouts and retries."
             contentSlot={
               <p className="text-foreground text-sm">Retries: 3. Timeout: 30 seconds.</p>
             }
           />
-          <Disclosure
+          <Collapsible
             title="Open from the start"
             defaultOpen
             contentSlot={<p className="text-foreground text-sm">This one begins open.</p>}
@@ -1697,9 +1699,9 @@ const sections: GallerySection[] = [
   { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
-    title: "Disclosure and disclosure row",
-    items: ["disclosure", "disclosure-row"],
-    content: <Disclosures />,
+    title: "Collapsible and disclosure row",
+    items: ["collapsible", "disclosure-row"],
+    content: <Collapsibles />,
   },
   { title: "Description list", items: ["description-list"], content: <Descriptions /> },
   { title: "Setting row", items: ["setting-row"], content: <SettingRows /> },
