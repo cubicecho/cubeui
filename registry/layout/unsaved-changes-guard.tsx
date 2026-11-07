@@ -39,7 +39,9 @@ export type UnsavedChangesGuard = {
   asking: boolean;
   /** *Discard*: the held navigation, or the held `go`, goes ahead. */
   discard: () => void;
-  /** *Keep editing*: the held navigation is dropped. */
+  /** *Keep editing*: the held navigation is dropped. Named for the `keepLabel` button it answers. */
+  keep: () => void;
+  /** @deprecated The old name of `keep`, kept for one release. */
   stay: () => void;
 };
 
@@ -118,14 +120,14 @@ export function useUnsavedChangesGuard({
     }
   };
 
-  const stay = () => {
+  const keep = () => {
     setHeld(undefined);
     if (blocked) {
       blocker?.reset?.();
     }
   };
 
-  return { leave, asking: held !== undefined || blocked, discard, stay };
+  return { leave, asking: held !== undefined || blocked, discard, keep, stay: keep };
 }
 
 type UnsavedChangesDialogProps = {
@@ -171,7 +173,7 @@ export function UnsavedChangesDialog({
       open={guard.asking}
       onOpenChange={(open) => {
         if (open === false) {
-          guard.stay();
+          guard.keep();
         }
       }}
       title={discardTitle}

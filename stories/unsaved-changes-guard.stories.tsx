@@ -128,6 +128,7 @@ const ASKING: Native.UnsavedChangesGuard = {
   leave: () => {},
   asking: true,
   discard: () => {},
+  keep: () => {},
   stay: () => {},
 };
 

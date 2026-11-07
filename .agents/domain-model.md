@@ -69,7 +69,7 @@ Every close path (Escape, the backdrop, the corner X, a Cancel handed `close`) g
 
 ```
 editing --leave asked, unsaved--> asking --discard--> left
-                                  asking --stay--> editing
+                                  asking --keep--> editing
 ```
 
 On the web a browser unload also asks (`beforeunload`).
