@@ -255,8 +255,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   its old names, deprecated for one release.
 - **`FileTree`:** a foldable tree of folders and files built from a list of paths,
   with dragging a row onto a folder on the web. Owner: `registry/layout/file-tree.tsx`.
-- **`DescriptionList`, `PropertyRow`:** read-only label-and-value facts. Owner:
-  `registry/layout/description-list.tsx`.
+- **`PropertyList`, `PropertyRow`:** read-only label-and-value facts. Owner:
+  `registry/layout/property-list.tsx`. `DescriptionList` and the `description-list` item are its
+  old names, deprecated for one release.
 - **`SettingRow`:** what a setting is on one side, its control on the other.
   Owner: `registry/layout/setting-row.tsx`.
 - **`StatTile`:** one headline number with its label on a card, optionally a filter to

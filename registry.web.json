@@ -755,11 +755,24 @@
       ]
     },
     {
-      "name": "description-list",
+      "name": "property-list",
       "type": "registry:component",
-      "title": "Description List",
+      "title": "Property List",
       "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/property-list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "description-list",
+      "type": "registry:component",
+      "title": "Description List (deprecated)",
+      "description": "The old name of property-list, kept for one release: DescriptionList and PropertyRow, re-exported from it. Install property-list.",
+      "registryDependencies": ["@cubeui/property-list"],
       "files": [
         {
           "path": "compiled/description-list.tsx",
@@ -1676,7 +1689,6 @@
         "@cubeui/centered-layout",
         "@cubeui/collapsible",
         "@cubeui/collapsible-row",
-        "@cubeui/description-list",
         "@cubeui/dialog-layout",
         "@cubeui/empty-state",
         "@cubeui/error-page",
@@ -1687,6 +1699,7 @@
         "@cubeui/load-state",
         "@cubeui/page-header",
         "@cubeui/page-layout",
+        "@cubeui/property-list",
         "@cubeui/section",
         "@cubeui/section-heading",
         "@cubeui/setting-row",

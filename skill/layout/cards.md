@@ -52,9 +52,9 @@ Empty means no element (`[]`, `null`, `false`), or a `List` with no rows —
 other element is drawn as it is, even one that renders nothing, so a body wrapped in a `View` or a
 component of your own decides the empty case itself.
 
-**`false` counts as empty.** The test keeps only elements, so `contentSlot={hasStats && <DescriptionList … />}`
+**`false` counts as empty.** The test keeps only elements, so `contentSlot={hasStats && <PropertyList … />}`
 shows `emptySlot` while `hasStats` is false, the same as `[]` or `null`. When `hasStats` is true
-the `DescriptionList` is an element and is drawn, even with no rows: only a `List` is looked
+the `PropertyList` is an element and is drawn, even with no rows: only a `List` is looked
 inside. So pass the condition that means "nothing to show", not a component that happens to draw
 nothing.
 

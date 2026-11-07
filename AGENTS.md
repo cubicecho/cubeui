@@ -587,9 +587,9 @@ Recorded so the next pass does not re-derive them:
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
   copies of a `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project
   bar: cubicecho has 4 `<dl>` files and they are all in one app. Superseded by
-  `@cubeui/description-list` (#135), once mcp-ragdown's settings page became the second app with a
-  hand-built label / value / hint row — as a list of rows rather than a grid, because the rows
-  are what those settings pages are made of.
+  `@cubeui/description-list` (#135), now `property-list`, once mcp-ragdown's settings page became
+  the second app with a hand-built label / value / hint row — as a list of rows rather than a
+  grid, because the rows are what those settings pages are made of.
 - **Inline edits — never add them back.** `InlineTextEdit` and `InlineNumberEdit` (a value
   shown as text that became an input on press, committing on blur) were removed. Every form and
   input in this set is explicit: a field is always drawn as a field, and an edit goes through a

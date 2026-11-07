@@ -7,7 +7,6 @@ import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { Collapsible } from "../../registry/layout/collapsible";
 import { CollapsibleRow } from "../../registry/layout/collapsible-row";
-import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { EmptyState } from "../../registry/layout/empty-state";
 import { ErrorPage } from "../../registry/layout/error-page";
@@ -19,6 +18,7 @@ import { ListItem } from "../../registry/layout/list-item";
 import { LoadError, LoadState, RowSkeleton } from "../../registry/layout/load-state";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
+import { PropertyList, PropertyRow } from "../../registry/layout/property-list";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
 import { SettingRow } from "../../registry/layout/setting-row";
@@ -238,6 +238,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
   "disclosure-row":
     "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
 };
 
 const onButtonPress = fn();
@@ -676,7 +678,7 @@ function Rows() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Dana Whitfield" />
@@ -1068,7 +1070,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Sections and rows",
-    items: ["section", "setting-row", "description-list", "collapsible", "collapsible-row"],
+    items: ["section", "setting-row", "property-list", "collapsible", "collapsible-row"],
     content: <Rows />,
   },
   {

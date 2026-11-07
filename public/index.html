@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 109 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 110 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 109 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 110 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  95 on both platforms · 14 web-only · 0 native-only.
+  96 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -383,7 +383,7 @@
         <tr>
           <th scope="row"><code>@cubeui/description-list</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `&lt;dl&gt;` of `&lt;dt&gt;`/`&lt;dd&gt;` groups on the web, `role="list"` on device; `layout="inline"` puts labels beside values and wraps to stacked when narrow.</td>
+          <td>The old name of property-list, kept for one release: DescriptionList and PropertyRow, re-exported from it. Install property-list.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/dialog</code></th>
@@ -594,6 +594,11 @@
           <th scope="row"><code>@cubeui/progress</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>A horizontal bar showing how much of something is done: `role="progressbar"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/property-list</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `&lt;dl&gt;` of `&lt;dt&gt;`/`&lt;dd&gt;` groups on the web, `role="list"` on device; `layout="inline"` puts labels beside values and wraps to stacked when narrow.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/query-state</code></th>

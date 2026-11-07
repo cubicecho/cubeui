@@ -42,7 +42,7 @@ lay their children out the same way on both halves, so one class list is right f
 | [sidebar.md](sidebar.md) | `Sidebar`, `SidebarSection`, `SidebarNavItem`, the rail of icons, `SidebarLayout`'s bar and `BarNavItem` |
 | [app-bar.md](app-bar.md) | `AppBar`, and the app with no sidebar |
 | [cards.md](cards.md) | `CardLayout`, `Section`, `Collapsible` |
-| [facts.md](facts.md) | `DescriptionList`, `PropertyRow`, `SettingRow`, `StatTile` |
+| [facts.md](facts.md) | `PropertyList`, `PropertyRow`, `SettingRow`, `StatTile` |
 | [dialogs.md](dialogs.md) | `DialogLayout`, the unsaved-changes guard, Cmd/Ctrl+S |
 | [lists.md](lists.md) | `LoadState`, `EmptyState`, `CollapsibleRow`, `List`, `ListItem` |
 | [trees-and-tables.md](trees-and-tables.md) | `FileTree`, `Table` |

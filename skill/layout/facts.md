@@ -1,8 +1,8 @@
-# cubeui layout: Description lists, setting rows and stat tiles
+# cubeui layout: Property lists, setting rows and stat tiles
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
-## Description lists
+## Property lists
 
 Read-only facts — a label, a value, a line under the value — which is most of a settings page or an
 "about this server" page.
@@ -11,7 +11,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
 <Section
   title="Index"
   contentSlot={
-    <DescriptionList
+    <PropertyList
       contentSlot={[
         <PropertyRow key="e" label="Embedder" value="bge-small" hint="Set with RAGDOWN_EMBEDDER" />,
         <PropertyRow
@@ -28,8 +28,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
 />
 ```
 
-<!-- props:DescriptionList -->
-`DescriptionList`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+<!-- props:PropertyList -->
+`PropertyList`'s props, from the TSDoc in `registry/layout/property-list.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -43,18 +43,16 @@ Read-only facts — a label, a value, a line under the value — which is most o
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `label` (required) | `ReactNode` |  | What the fact is called: "Embedder", "Docs folder". A `<dt>` on the web. |
-| `value` (required) | `ReactNode` |  | The fact itself: a string, or a node — a `Badge`, a relative time. Not a control: a value the user edits is a form field (`FormField`), and this row has no label for it. |
-| `hint` | `ReactNode` |  | One muted line under the value, on where it comes from or what it means: "Set with `RAGDOWN_EMBEDDER`". Part of the `<dd>`, so it is read with the value rather than as a fact of its own. |
-| `actionSlot` | `SlotNode` |  | The row's far end: a copy button, an edit link. Inside the `<dd>`, after the value, because a `<dl>`'s rows may hold nothing but terms and descriptions — and an action on the value is part of what is said about it. |
-| `className` | `string` |  |  |
-| `labelClassName` | `string` |  |  |
-| `valueClassName` | `string` |  | A string or number value's own `Text`, so a path, a version or an id is `value={path} valueClassName="font-mono"` rather than a node written to carry the font. On the text and not on the wrapper around it, because on device a `Text` inherits nothing: from the wrapper a `font-mono` reached the string on the web, with the hint and the action, and none of them on a phone. |
+
+It also takes the props declared in `registry/layout/property-list.tsx`: `actionSlot`, `className`, `hint`, `label`, `labelClassName`, `value`, `valueClassName`.
 <!-- /props -->
 
-- One source for both platforms: `@cubeui/description-list` in `/r/web` and `/r/native`, exporting
-  `DescriptionList` and `PropertyRow`.
-- `DescriptionList` takes the rows as `contentSlot` — `PropertyRow`s and nothing else, as an array
+- One source for both platforms: `@cubeui/property-list` in `/r/web` and `/r/native`, exporting
+  `PropertyList` and `PropertyRow`.
+- **It was `DescriptionList`.** `DescriptionList`, and the `@cubeui/description-list` item that
+  re-exports it with `PropertyRow`, stay for one release as deprecated aliases; import
+  `PropertyList` from `@/components/property-list` in new code.
+- `PropertyList` takes the rows as `contentSlot` — `PropertyRow`s and nothing else, as an array
   with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
   hold only its term-and-description groups.
 - `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
@@ -76,7 +74,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
   in, and **falls back to stacked by itself** when the list is too narrow for both — it follows the
   width the list is given, not the window. `layout="stacked"` puts the label above the value at
   every width. There is no breakpoint prop.
-- A `PropertyRow` only renders inside a `DescriptionList`. A row the user *edits* is not this — it
+- A `PropertyRow` only renders inside a `PropertyList`. A row the user *edits* is not this — it
   is a field in a form (`FormField`, or a `DialogLayout` with a form in it, opened from the row), never a value that
   turns into an input where it sits.
 - It draws no surface and no heading: put it in a `Section` or `CardLayout` `contentSlot` for
@@ -215,5 +213,5 @@ import { formatCount, formatDuration } from "@/lib/format";
 - `valueClassName` is for the figure's colour — a count worth noticing in `text-negative`.
   There is no `tone` or `size` prop.
 - It lays out one tile, not the row: the grid is the caller's, since the column count is the
-  page's decision. A label-over-number pair with no card around it is a `DescriptionList` with
+  page's decision. A label-over-number pair with no card around it is a `PropertyList` with
   `layout="stacked"`, not this.

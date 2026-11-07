@@ -159,7 +159,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `LoadState`, in place of `count`. |
 | `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading, at `level`: `2` when the guard sits inside a page that already has its title, so there is one `h1`. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
-| `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
+| `layout` | On `PropertyList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
 
 Notes on why the layering is where it is:
 
@@ -220,7 +220,7 @@ Notes on why the layering is where it is:
   never changes it. The same stretch as `PropertyRow`'s: the button is set to that string. The
   call sites it replaced said `text`, and a new word for it would have been the only one in the
   set.
-- **`layout`, not `orientation`,** on `DescriptionList`. `orientation="horizontal"` on a field is
+- **`layout`, not `orientation`,** on `PropertyList`. `orientation="horizontal"` on a field is
   horizontal at every width; `layout="inline"` stacks by itself once the list is too narrow for a
   label beside its value, so `horizontal` would be a lie below that width — the same reason the
   split panes are `firstSlot` and `secondSlot` rather than a left and a right.

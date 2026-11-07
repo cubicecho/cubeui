@@ -4,13 +4,13 @@ import { expect, userEvent, within } from "storybook/test";
 import { InputField, SelectField, TextareaField, useAppForm } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
 import { ColorField } from "@/components/color-field";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
 import { EmptyState } from "@/components/empty-state";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { LoadError, LoadState } from "@/components/load-state";
 import { PageLayout } from "@/components/page-layout";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { StatTile } from "@/components/stat-tile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -334,7 +334,7 @@ function Dashboard({ state }: Args) {
               contentSlot={
                 state === "ready" || state === "empty" ? (
                   <>
-                    <DescriptionList
+                    <PropertyList
                       contentSlot={[
                         <PropertyRow key="lead" label="Lead" value="Inès Duval" />,
                         <PropertyRow

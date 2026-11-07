@@ -20,7 +20,6 @@ import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorPage } from "@/components/error-page";
@@ -38,6 +37,7 @@ import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { SettingRow } from "@/components/setting-row";
@@ -275,6 +275,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
   "disclosure-row":
     "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
 };
 
 const noop = () => {};
@@ -1391,10 +1393,10 @@ function Collapsibles() {
   );
 }
 
-function Descriptions() {
+function Properties() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Ada Lovelace" />
@@ -1407,7 +1409,7 @@ function Descriptions() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         layout="stacked"
         contentSlot={
           <>
@@ -1705,7 +1707,7 @@ const sections: GallerySection[] = [
     items: ["collapsible", "collapsible-row"],
     content: <Collapsibles />,
   },
-  { title: "Description list", items: ["description-list"], content: <Descriptions /> },
+  { title: "Property list", items: ["property-list"], content: <Properties /> },
   { title: "Setting row", items: ["setting-row"], content: <SettingRows /> },
   { title: "Stat tile", items: ["stat-tile"], content: <StatTiles /> },
   { title: "Load state", items: ["load-state"], content: <LoadStates /> },

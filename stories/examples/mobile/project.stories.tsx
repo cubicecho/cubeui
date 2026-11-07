@@ -3,12 +3,12 @@ import { useState } from "react";
 import { Text, View } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "../../../registry/layout/card-layout";
-import { DescriptionList, PropertyRow } from "../../../registry/layout/description-list";
 import { EmptyState } from "../../../registry/layout/empty-state";
 import { List } from "../../../registry/layout/list";
 import { ListItem } from "../../../registry/layout/list-item";
 import { LoadState } from "../../../registry/layout/load-state";
 import { PageLayout } from "../../../registry/layout/page-layout";
+import { PropertyList, PropertyRow } from "../../../registry/layout/property-list";
 import { StatTile } from "../../../registry/layout/stat-tile";
 import { Alert } from "../../../registry/ui/alert";
 import { Badge } from "../../../registry/ui/badge.tsx";
@@ -236,7 +236,7 @@ function ProjectScreen({
                 <TabsContent value="overview">
                   <CardLayout
                     contentSlot={
-                      <DescriptionList
+                      <PropertyList
                         contentSlot={[
                           <PropertyRow key="client" label="Client" value={p.client} />,
                           <PropertyRow key="lead" label="Lead" value={p.lead} />,
