@@ -10,8 +10,9 @@
 import { createContext, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { AppBar, type AppBarNav } from "@/components/app-bar";
+import { useOverflows } from "@/components/ui/overflows";
 import { useReportBottomBar } from "@/lib/bottom-bar";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, INSET_FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /**
  * How much of the split one pane claims. The other takes the rest.
@@ -231,6 +232,7 @@ export function SplitLayout({
   // pane there is one column and it has the whole width. Its box is exactly the split's, as is a
   // row that never stacks, so neither has anything for the scroller to move.
   const stacks = Boolean(secondSlot) && stackBelow !== "never";
+  const [measured, overflows] = useOverflows();
   const row = secondSlot
     ? cn(STACK_BELOW[stackBelow], DIVIDERS[divider], stacks ? FILL_FROM[stackBelow] : "h-full")
     : "h-full flex-col";
@@ -242,7 +244,14 @@ export function SplitLayout({
   return (
     <ScrollView
       testID="split-layout"
-      className={cn("min-h-0 min-w-0", className)}
+      ref={(node) => {
+        measured.current = node;
+      }}
+      // A stack taller than the split scrolls, and a scroller a keyboard cannot reach is one only a
+      // mouse wheel moves (axe `scrollable-region-focusable`). So it is a tab stop while it
+      // overflows; side by side it never does, and each pane's body takes its own.
+      tabIndex={overflows ? 0 : undefined}
+      className={cn("min-h-0 min-w-0", INSET_FOCUS_EDGE, className)}
       contentContainerClassName={cn("min-w-0", row)}
     >
       <View

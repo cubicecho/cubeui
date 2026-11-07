@@ -1059,6 +1059,22 @@
       ]
     },
     {
+      "name": "overflows",
+      "type": "registry:ui",
+      "title": "Overflows",
+      "description": "useOverflows(): whether a box that scrolls has anything to scroll, so it is a tab stop only while it does, and the width its scrollbar takes as `--scrollbar-width`. Measured on the web; on device, which has no tab stops, always false. Table's container, HeaderContentFooter's body and a stacked SplitLayout hold it.",
+      "files": [
+        {
+          "path": "registry/ui/overflows.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/overflows.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
@@ -1516,7 +1532,7 @@
       "type": "registry:component",
       "title": "Header / Content / Footer",
       "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion", "@cubeui/overflows"],
       "files": [
         {
           "path": "registry/layout/header-content-footer.tsx",
@@ -1568,7 +1584,12 @@
       "type": "registry:component",
       "title": "Split Layout",
       "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, an AppBar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar", "@cubeui/app-bar"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/bottom-bar",
+        "@cubeui/app-bar",
+        "@cubeui/overflows"
+      ],
       "files": [
         {
           "path": "registry/layout/split-layout.tsx",

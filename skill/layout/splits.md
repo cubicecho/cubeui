@@ -120,7 +120,8 @@ the slots is spelled the same on each.
 - **It does not scroll.** A pane that needs to scroll is a `<HeaderContentFooter scroll className="h-full">`
   (or a `PageLayout`) passed as `contentSlot` or `sidebarSlot` — which is also where the tab stop that a scrolling region owes a keyboard
   user comes from. Do not put `overflow-y-auto` on a pane by hand; without a height above it to
-  divide, it will not scroll, and it gives a keyboard user no way in.
+  divide, it will not scroll, and it gives a keyboard user no way in. Stacked, the split scrolls
+  the two panes as one column, and is the tab stop itself while they are taller than it.
 
 ### List-and-detail
 

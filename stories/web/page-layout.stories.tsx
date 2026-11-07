@@ -85,18 +85,28 @@ export const HeaderStaysWhileTheBodyScrolls: Story = {
 /**
  * `width` is the prop the two hand-written versions each answered with a `wide` boolean, and
  * then answered differently. Three names, and the header and body always share one of them.
+ *
+ * The column is inside the scroller, which runs the page's full width, so the scrollbar and the
+ * focus line are at the page's edge rather than floating at the column's (#451).
  */
 export const WidthIsAWordNotANumber: Story = {
   args: { title: "Settings", width: "prose", contentSlot: <Rows count={12} /> },
   play: async ({ canvasElement }) => {
     // The title block, not the header around it: the column is what the two share.
     const header = canvasElement.querySelector("[data-slot=page-header]") as HTMLElement;
-    const body = canvasElement.querySelector(
+    const page = canvasElement.querySelector("[data-slot=header-content-footer]") as HTMLElement;
+    const scroller = canvasElement.querySelector(
       "[data-slot=header-content-footer-content]",
     ) as HTMLElement;
+    const body = scroller.querySelector(
+      ":scope > [data-slot=header-content-footer-column]",
+    ) as HTMLElement;
+    expect(scroller.getBoundingClientRect().width).toBe(page.getBoundingClientRect().width);
+    expect(body.getBoundingClientRect().width).toBeLessThan(scroller.getBoundingClientRect().width);
     // The seam: the header carries its own px-4 and the body is given a matching one, so the
     // title sits directly above the first row rather than 16px left of it.
     expect(header.getBoundingClientRect().width).toBe(body.getBoundingClientRect().width);
+    expect(header.getBoundingClientRect().left).toBe(body.getBoundingClientRect().left);
     // `page-header` and `hcf-content` are the two padded boxes; what has to line up is what
     // they hold. The header's own `px-4` is the inset, and the body is given a matching one.
     expect(

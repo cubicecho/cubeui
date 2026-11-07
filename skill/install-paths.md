@@ -121,6 +121,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `menu` | web | `components/ui/menu.tsx`; also `menu-base.ts` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `menu` | native | `components/ui/menu.tsx`; also `menu-base.ts`, `menu.web.tsx` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
+| `overflows` | web | `components/ui/overflows.tsx` | `import { useOverflows } from "@/components/ui/overflows"` |
+| `overflows` | native | `components/ui/overflows.tsx`; also `overflows.web.tsx` | `import { useOverflows } from "@/components/ui/overflows"` |
 | `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
 | `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
@@ -179,5 +181,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, … 1 more } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, isInvalid, … 1 more } from "@/lib/utils"` |

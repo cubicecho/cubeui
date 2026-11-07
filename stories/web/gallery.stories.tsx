@@ -254,6 +254,7 @@ const NOT_SHOWN: Record<string, string> = {
   "select-options": "Types and functions; the selects read their options list through them.",
   tree: "`buildTree`, a function; the file tree is drawn from what it returns.",
   "reduced-motion": "A hook; HeaderContentFooter and CodeBlock jump rather than glide by it.",
+  overflows: "A hook; a table and a page body are tab stops only while they can scroll, by it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   control: "A bundle: it installs the controls shown here one by one.",

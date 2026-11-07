@@ -40,7 +40,7 @@ export const HOVER_REVEAL = "opacity-0 transition-opacity group-hover:opacity-10
 /**
  * How a box that is a tab stop only so a keyboard can scroll it shows focus: a table too wide for
  * its column, a code block. Its edge turns `active`, as a focused field's border does, and no ring
- * is drawn. A page's scrolling body draws the same line as an inset shadow (`HeaderContentFooter`),
+ * is drawn. A page's scrolling body draws the same line as an inset shadow, {@link INSET_FOCUS_EDGE},
  * because the pixel this takes would move it off the header's column. It cannot look hovered, the rule for everything else, because
  * a scroll box looks the same under the pointer. `active` is 3:1 from every surface (WCAG 1.4.11),
  * held by `palette-contrast.test.mjs`.
@@ -51,6 +51,15 @@ export const HOVER_REVEAL = "opacity-0 transition-opacity group-hover:opacity-10
  * and the edge would be a pixel of nothing around every scroller.
  */
 export const FOCUS_EDGE = "border border-transparent outline-none focus-visible:border-active";
+
+/**
+ * {@link FOCUS_EDGE}'s line drawn as a 1px inset shadow, for a scroller whose pixel of border would
+ * move what it holds: `HeaderContentFooter`'s body, off the header's column, and a stacked
+ * `SplitLayout`. It takes no room, so it can be there while the box is not a tab stop as well.
+ * The shadow is a rule, not elevation, as a pinned table header's is. Something with a fill laid
+ * against the box's edge covers that side of it. Web only, as `FOCUS_EDGE` is.
+ */
+export const INSET_FOCUS_EDGE = "outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--active)]";
 
 /**
  * A field whose value was refused, on device: the web halves draw the same thing from the
