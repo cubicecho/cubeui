@@ -36,7 +36,7 @@ route should reach for first.
 | `contentSlot` (required) | `SlotNode` |  | The page. The only slot that scrolls, unless `scroll` is off. |
 | `title` (required) | `ReactNode` |  | What the page is called. Required for the same reason it is on {@link PageHeader}. |
 | `description` | `ReactNode` |  | One line on what the page is for. |
-| `iconSlot` | `SlotNode` |  | Sits before the title, sized from `level`. Pass a bare `<Users />`. |
+| `iconSlot` | `SlotNode` |  | Sits before the title, sized with it. Pass a bare `<Users />`. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
 | `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
 | `breadcrumbsSlot` | `SlotNode` |  |  |
@@ -44,6 +44,7 @@ route should reach for first.
 | `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
+| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when left out. `size="sm"` is a compact title on a page that is still the `h1`. |
 | `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
 | `width` | `HeaderContentFooterProps["width"]` | `"page"` | The column the header and body share. `page` for a list or a board, `prose` for settings, a detail page or a form, `full` for a pane that is already inside someone else's column. |
 | `scroll` | `boolean` | `true` | Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a chat's message list over a pinned composer, a framed app, tab panels that each keep their place. Off, the body is the height left under the header and `contentSlot` divides it. |
@@ -247,12 +248,13 @@ It is not a page.
 | `contentSlot` | `SlotNode` |  | The row under the title block: a search field, a filter row, a set of tabs — stacked, each on its own line, in the order they are passed. |
 | `title` (required) | `ReactNode` |  | What the page is called. Required, because a header with no title is a toolbar, and a toolbar is a row of nodes the caller can place without help. It is also the heading assistive technology navigates the page by. |
 | `description` | `ReactNode` |  | One line on what the page is for. It wraps; it is not clipped. |
-| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized from the level — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
+| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized with the title — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
 | `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
 | `breadcrumbsSlot` | `SlotNode` |  |  |
 | `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
-| `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. See {@link LEVELS}. |
+| `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. The size follows it unless `size` says otherwise. |
+| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the header follows `level`, not this. |
 | `className` | `string` |  |  |
 | `titleClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
@@ -282,7 +284,11 @@ It is not a page.
 
 - **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
   anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
-  and do not restyle the title — the level carries the size, which is the whole point of it.
+  and do not restyle the title — the level carries the size.
+- **`size` is the title's size apart from its heading**: `lg`, `md` or `sm`, following `level` when
+  left out. A page whose header is mostly controls (a chat with a model picker) stays `level={1}`
+  and passes `size="sm"`; do not take `level={3}` for a small title. The rule follows `level`.
+  `PageLayout` takes `size` too.
 
 - **`loading` stands in for the title**, at the title's exact height, so the page below does not
   jump when the name lands. Everything that did not come from that request — the trail, the
@@ -293,8 +299,8 @@ It is not a page.
     title={workspace?.name} actionSlot={<Button content="Edit" />} />
   ```
 
-- **The rule under the header is not a prop.** It is drawn when there is no `contentSlot` and not
-  drawn when there is, because a search row already separates the header from the body and a
+- **The rule under the header is not a prop.** At level 1 it is drawn when there is no
+  `contentSlot` and not drawn when there is, because a search row already separates the header from the body and a
   second divider under it is one too many. A screen that disagrees says so in one class:
   `className="border-b-0"`.
 

@@ -70,7 +70,9 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`width`** — on a page shell, its column: `page`, `prose` or `full`. A named column rather than
   a number, so every page in an app is one of three widths instead of eleven.
 - **`level`** — not a slot: `1 | 2 | 3`, which heading element the title is. The size follows the
-  element, so you never set both.
+  element unless `size` says otherwise.
+- **`size`** — on `PageHeader` and `PageLayout`, how large the title is drawn apart from its
+  `level`: `lg`, `md` or `sm`. For a compact title on a page that is still the `h1`.
 - **`triggerSlot`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here

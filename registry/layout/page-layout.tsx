@@ -10,7 +10,7 @@ import {
   HeaderContentFooter,
   type HeaderContentFooterProps,
 } from "@/components/header-content-footer";
-import { PageHeader, type PageHeaderLevel } from "@/components/page-header";
+import { PageHeader, type PageHeaderLevel, type PageHeaderSize } from "@/components/page-header";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** The line under a page's header, the colour `PageHeader` draws it in. */
@@ -23,7 +23,7 @@ export type PageLayoutProps = {
   title: ReactNode;
   /** One line on what the page is for. */
   description?: ReactNode | undefined;
-  /** Sits before the title, sized from `level`. Pass a bare `<Users />`. */
+  /** Sits before the title, sized with it. Pass a bare `<Users />`. */
   iconSlot?: SlotNode | undefined;
   /** The header's far end: the page's buttons, a status pill, a menu. */
   actionSlot?: SlotNode | undefined;
@@ -50,6 +50,11 @@ export type PageLayoutProps = {
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
   level?: PageHeaderLevel | undefined;
+  /**
+   * How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when
+   * left out. `size="sm"` is a compact title on a page that is still the `h1`.
+   */
+  size?: PageHeaderSize | undefined;
   /** Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. */
   footerSlot?: SlotNode | undefined;
   /**
@@ -104,6 +109,7 @@ export function PageLayout({
   headerBarSlot,
   loading = false,
   level = 1,
+  size,
   footerSlot,
   width = "page",
   scroll = true,
@@ -147,6 +153,7 @@ export function PageLayout({
             contentSlot={headerContentSlot}
             loading={loading}
             level={level}
+            size={size}
             // The title block keeps the body's column, and leaves the rule to the header.
             className={cn(COLUMNS[width], "border-b-0")}
           />

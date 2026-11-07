@@ -181,7 +181,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `PROSE_COLUMN` and `COLUMNS`.
 - **`PageHeader`:** a page's icon, title, description, actions, the way back (one
   slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
-  at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
+  at heading level 1 to 3; its title's `size` follows the level unless set apart from it. Owner: `registry/layout/page-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. It is the title `Section` and `SidebarSection` draw. Owner:
   `registry/layout/section-heading.tsx`; takes `children`.

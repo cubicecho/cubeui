@@ -27,27 +27,27 @@ import type { ReactNode } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
- * How each heading level is drawn. The level is a prop because only the caller knows whether the
- * block names a page or sits inside a card under one.
+ * How large a title is drawn. Each heading level has a size it takes unless `size` names another
+ * (see {@link LEVEL_SIZE}), so a page can keep its `h1` and still have a compact title.
  *
  * `row` is the floor under the title row, so `contentSlot` starts at the same place on every
  * page. `bar` is the height of one line of `title`, so a loading header is as tall as the header
  * it becomes. The tag is not in the map: {@link Heading} spells each one out for the compiler.
  */
-const LEVELS = {
-  1: {
+const SIZES = {
+  lg: {
     title: "text-xl",
     icon: "[&_svg]:size-5",
     row: "min-h-14",
     bar: "h-7",
   },
-  2: {
+  md: {
     title: "text-lg",
     icon: "[&_svg]:size-5",
     row: "min-h-12",
     bar: "h-7",
   },
-  3: {
+  sm: {
     title: "text-base",
     icon: "[&_svg]:size-4",
     row: "min-h-10",
@@ -56,7 +56,13 @@ const LEVELS = {
 } as const;
 
 /** The heading levels a {@link PageHeader} can be. */
-export type PageHeaderLevel = keyof typeof LEVELS;
+export type PageHeaderLevel = 1 | 2 | 3;
+
+/** The sizes a {@link PageHeader}'s title can be drawn at. */
+export type PageHeaderSize = keyof typeof SIZES;
+
+/** The size each level is drawn at unless told otherwise: the bigger the heading, the larger. */
+const LEVEL_SIZE: Record<PageHeaderLevel, PageHeaderSize> = { 1: "lg", 2: "md", 3: "sm" };
 
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = "sr-only";
@@ -113,7 +119,7 @@ export type PageHeaderProps = {
    */
   description?: ReactNode | undefined;
   /**
-   * Sits before the title. On the web it is sized from the level — pass a bare `<Users />`, not a
+   * Sits before the title. On the web it is sized with the title — pass a bare `<Users />`, not a
    * sized one. On device an icon cannot be sized from outside it, so pass it at the size you want.
    *
    * Also where a status dot goes. Four of these apps put a coloured dot, a live indicator or a
@@ -163,9 +169,17 @@ export type PageHeaderProps = {
   loading?: boolean | undefined;
   /**
    * Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card
-   * that already sits under a page title; `3` goes a level below that. See {@link LEVELS}.
+   * that already sits under a page title; `3` goes a level below that. The size follows it unless
+   * `size` says otherwise.
    */
   level?: PageHeaderLevel | undefined;
+  /**
+   * How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out,
+   * it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls
+   * (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a
+   * lower heading to get a smaller title. The rule under the header follows `level`, not this.
+   */
+  size?: PageHeaderSize | undefined;
   className?: string | undefined;
   titleClassName?: string | undefined;
   contentClassName?: string | undefined;
@@ -228,11 +242,17 @@ export function PageHeader({
   breadcrumbsSlot,
   loading = false,
   level = 1,
+  size,
   className,
   titleClassName,
   contentClassName,
 }: PageHeaderProps) {
-  const { title: titleSize, icon: iconSize, row: rowFloor, bar: barHeight } = LEVELS[level];
+  const {
+    title: titleSize,
+    icon: iconSize,
+    row: rowFloor,
+    bar: barHeight,
+  } = SIZES[size ?? LEVEL_SIZE[level]];
   const back = backSlot ?? breadcrumbsSlot;
 
   // The rule these apps already follow without having named it: a page header draws a line under
@@ -302,7 +322,7 @@ export function PageHeader({
             {iconSlot ? (
               // Sized here on the web rather than by the caller, so an icon passed as `<Users />`
               // and one passed as `<Users className="size-6" />` land at the same size — and so the
-              // size follows the level instead of being guessed once per page.
+              // size follows the title instead of being guessed once per page.
               <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", iconSize)}>
                 {iconSlot}
               </div>

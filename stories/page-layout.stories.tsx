@@ -221,3 +221,33 @@ export const FullWidthRuleOverAColumn: Story = {
     }
   },
 };
+
+/** `size` reaches the title: a compact `h1`, and the page's rule under it all the same. */
+export const CompactTitle: Story = {
+  render: () => (
+    <div>
+      <Frame name="native">
+        <NativePageLayout
+          title="Chats"
+          size="sm"
+          contentSlot={<Text className="text-foreground">No chat open.</Text>}
+        />
+      </Frame>
+      <Frame name="compiled">
+        <CompiledPageLayout
+          title="Chats"
+          size="sm"
+          contentSlot={<p className="text-foreground">No chat open.</p>}
+        />
+      </Frame>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const frame of frames(canvasElement)) {
+      const title = within(frame).getByRole("heading", { level: 1, name: "Chats" });
+      await expect(getComputedStyle(title).fontSize).toBe("16px");
+      const header = part(frame, "header-content-footer-header");
+      await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");
+    }
+  },
+};

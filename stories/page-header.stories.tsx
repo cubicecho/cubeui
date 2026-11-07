@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect } from "storybook/test";
+import { expect, within } from "storybook/test";
 import { PageHeader as Compiled } from "../compiled/page-header";
 import { PageHeader as Native } from "../registry/layout/page-header";
 import { SideBySide } from "./side-by-side";
@@ -46,6 +46,37 @@ export const TitleOnly: Story = {
       const { above, below } = bands(row, titles);
       await expect(above).toBeGreaterThan(0);
       await expect(Math.abs(above - below)).toBeLessThanOrEqual(1);
+    }
+  },
+};
+
+/**
+ * `size` apart from `level`: a page's `h1` drawn as small as a level-3 title, for a header that is
+ * mostly controls. The rule still follows the level, so the page's header keeps its line.
+ */
+export const CompactTitleAtLevelOne: Story = {
+  args: { title: "Chats", size: "sm" },
+  render: (args) => <SideBySide native={<Native {...args} />} compiled={<Compiled {...args} />} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const titles = canvas.getAllByRole("heading", { level: 1, name: "Chats" });
+    await expect(titles).toHaveLength(2);
+
+    for (const title of titles) {
+      // A level-3 title's `text-base`, and the 40px row floor that goes with it.
+      await expect(getComputedStyle(title).fontSize).toBe("16px");
+      const header = title.closest<HTMLElement>(
+        "[data-slot=page-header], [data-testid=page-header]",
+      );
+      const row = header?.querySelector<HTMLElement>(
+        "[data-slot=page-header-title-row], [data-testid=page-header-title-row]",
+      );
+      if (!header || !row) {
+        throw new Error("the title should be in its header's title row");
+      }
+      await expect(getComputedStyle(row).minHeight).toBe("40px");
+      // Still the page's header: the rule under it is drawn.
+      await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");
     }
   },
 };
