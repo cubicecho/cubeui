@@ -9,7 +9,7 @@
  */
 import { createContext, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
-import { AppBar } from "@/components/app-bar";
+import { AppBar, type AppBarNav } from "@/components/app-bar";
 import { useReportBottomBar } from "@/lib/bottom-bar";
 import { cn, type SlotNode } from "@/lib/utils";
 
@@ -455,6 +455,13 @@ export function SidebarLayout({
   useReportBottomBar(navAtBottom && navSlot && sidebarHideBelow ? sidebarHideBelow : undefined);
   // Rule 5 — the bar, and the column it sits in, are drawn only when there is something in the
   // bar. Without one the content pane holds the caller's node exactly as it always has.
+  // Built in an `if`, not a ternary: a ternary of two object literals is widened into one shape
+  // with both keys optional, which `AppBar`'s either-or nav props reject under
+  // `exactOptionalPropertyTypes`.
+  let barNav: AppBarNav = {};
+  if (topNavSlot && navLabel !== undefined) {
+    barNav = { navSlot: topNavSlot, navLabel };
+  }
   const main =
     sidebarHideBelow && (brandSlot || navSlot || status || actionSlot) ? (
       <View testID="sidebar-layout-main" className={COLUMN}>
@@ -463,7 +470,7 @@ export function SidebarLayout({
         {brandSlot || topNavSlot || status || actionSlot ? (
           <AppBar
             brandSlot={brandSlot}
-            {...(topNavSlot && navLabel !== undefined ? { navSlot: topNavSlot, navLabel } : {})}
+            {...barNav}
             status={status}
             actionSlot={actionSlot}
             className={cn(HEADER_HIDE_FROM[sidebarHideBelow], headerClassName)}

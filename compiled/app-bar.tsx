@@ -62,7 +62,7 @@ function Nav({ navSlot, label, className }: NavProps) {
 }
 
 /** The bar's navigation is a landmark, and a landmark with no name is one of several `nav`s. */
-type AppBarNav =
+export type AppBarNav =
   | {
       /**
        * The app's places, usually `AppBarItem`s. Drawn inside a `<nav>` — `role="navigation"` on
