@@ -137,6 +137,8 @@ const guard = useUnsavedChangesGuard({ hasUnsavedChanges: dirty, blocker });
 - The wording is `DialogLayout`'s by default, and the props that change it have the same names:
   `discardTitle`, `discardDescription`, `discardLabel` and `keepLabel`. `stayLabel` is
   `keepLabel`'s old name, deprecated and kept for one release.
+- The guard's two answers are `guard.discard()` and `guard.keep()`, named for the buttons they
+  answer. `guard.stay()` is `keep`'s old name, deprecated and kept for one release.
 
 ### Saving with Cmd/Ctrl+S
 
