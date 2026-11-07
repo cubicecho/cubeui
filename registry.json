@@ -265,7 +265,7 @@
       "type": "registry:ui",
       "title": "Code",
       "description": "Monospaced text: Code, the inline span, and CodeBlock, a bordered block of preformatted text with an action slot for a CopyButton, an optional title (and language) in a header row, a wrap prop to wrap long lines instead of scrolling sideways, a maxHeight that scrolls, and follow to keep a growing log at its end.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion"],
       "files": [
         {
           "path": "registry/ui/code.tsx",
@@ -563,7 +563,7 @@
       "title": "Tabs",
       "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour, and a dot or a count at its far end as `trailingSlot`. A list with more tabs than fit scrolls sideways and keeps the selected tab in view.",
       "dependencies": ["@radix-ui/react-slot@^1.5.0", "radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/reduced-motion"],
       "files": [
         {
           "path": "registry/ui/tabs-base.ts",
@@ -937,8 +937,8 @@
       "name": "skeleton",
       "type": "registry:ui",
       "title": "Skeleton",
-      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device), and still when the reader's system asks for reduced motion.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion"],
       "files": [
         {
           "path": "registry/ui/skeleton-base.ts",
@@ -972,7 +972,7 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/reduced-motion"],
       "files": [
         {
           "path": "registry/ui/badge-base.ts",
@@ -1038,6 +1038,22 @@
         },
         {
           "path": "registry/ui/download-button.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "reduced-motion",
+      "type": "registry:ui",
+      "title": "Reduced Motion",
+      "description": "useReducedMotion(): whether the reader's system asks for reduced motion, kept up to date as they change it. The `prefers-reduced-motion` media query on the web, AccessibilityInfo on device, where NativeWind's `motion-safe:` and `motion-reduce:` never match. For an animation written in script; the components already honour it.",
+      "files": [
+        {
+          "path": "registry/ui/reduced-motion.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/reduced-motion.web.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1500,7 +1516,7 @@
       "type": "registry:component",
       "title": "Header / Content / Footer",
       "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion"],
       "files": [
         {
           "path": "registry/layout/header-content-footer.tsx",

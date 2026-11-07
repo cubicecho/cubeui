@@ -92,7 +92,7 @@ function Switch({
         data-slot="switch-thumb"
         className={cn(
           SWITCH_THUMB_CLASS,
-          "pointer-events-none block ring-0 transition-transform data-[state=checked]:bg-foreground data-[state=unchecked]:bg-background data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0 group-data-[size=sm]/switch:h-3 group-data-[size=sm]/switch:w-3 group-data-[size=sm]/switch:data-[state=checked]:translate-x-3",
+          "pointer-events-none block ring-0 transition-transform motion-reduce:transition-none data-[state=checked]:bg-foreground data-[state=unchecked]:bg-background data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0 group-data-[size=sm]/switch:h-3 group-data-[size=sm]/switch:w-3 group-data-[size=sm]/switch:data-[state=checked]:translate-x-3",
         )}
       />
     </SwitchPrimitive.Root>

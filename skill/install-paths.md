@@ -134,6 +134,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
 | `radio-group-field` | both | `components/ui/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/ui/radio-group-field"` |
 | `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, readableTextColor } from "@/lib/readable-text-color"` |
+| `reduced-motion` | web | `components/ui/reduced-motion.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
+| `reduced-motion` | native | `components/ui/reduced-motion.tsx`; also `reduced-motion.web.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
 | `route-error` | both | `components/route-error.tsx` | `import { RouteError } from "@/components/route-error"` |
 | `search-input` | web | `components/ui/search-input.tsx`; also `search-input-base.ts` | `import { SearchInput } from "@/components/ui/search-input"` |
 | `search-input` | native | `components/ui/search-input.tsx`; also `search-input-base.ts`, `search-input.web.tsx` | `import { SearchInput } from "@/components/ui/search-input"` |

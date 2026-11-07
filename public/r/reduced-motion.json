@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reduced-motion",
+  "title": "Reduced Motion",
+  "description": "useReducedMotion(): whether the reader's system asks for reduced motion, kept up to date as they change it. The `prefers-reduced-motion` media query on the web, AccessibilityInfo on device, where NativeWind's `motion-safe:` and `motion-reduce:` never match. For an animation written in script; the components already honour it.",
+  "files": [
+    {
+      "path": "compiled/reduced-motion.tsx",
+      "content": "/**\n * Copied from `registry/ui/reduced-motion.web.tsx` by `scripts/rn2web`.\n * Do not edit — edit the source and re-run `npm run compile`.\n *\n * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The\n * same passes still ran over it, and for a file already written against the DOM they find nothing\n * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one\n * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one\n * speak the same prop vocabulary, instead of the two drifting where nobody is looking.\n */\n\n/**\n * Whether the reader asked the system for reduced motion, on the web: the\n * `(prefers-reduced-motion: reduce)` media query. `reduced-motion.tsx` is the device half.\n *\n * The components here honour the query in CSS, through the tokens stylesheet and `motion-safe:`\n * classes, and need no hook. This is for what CSS cannot reach — a `scrollTo` that would glide —\n * and for an app's own animation in script.\n *\n * Nothing touches `window` at import, and a server render answers `false`.\n */\nimport { useSyncExternalStore } from \"react\";\n\nconst QUERY = \"(prefers-reduced-motion: reduce)\";\n\nfunction subscribe(listener: () => void) {\n  if (typeof window.matchMedia !== \"function\") {\n    return () => {};\n  }\n  const query = window.matchMedia(QUERY);\n  query.addEventListener(\"change\", listener);\n  return () => query.removeEventListener(\"change\", listener);\n}\n\nfunction read() {\n  return typeof window.matchMedia === \"function\" && window.matchMedia(QUERY).matches;\n}\n\n/** `true` when the reader's system asks for reduced motion, kept up to date as they change it. */\nexport function useReducedMotion(): boolean {\n  return useSyncExternalStore(subscribe, read, () => false);\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

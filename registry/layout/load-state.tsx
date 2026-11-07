@@ -341,7 +341,7 @@ export function RowSkeleton({
             key={index}
             testID="row-skeleton"
             aria-hidden
-            className="h-8 animate-pulse rounded-md bg-foreground/10"
+            className="h-8 motion-safe:animate-pulse rounded-md bg-foreground/10"
           />
         ))}
       </View>
@@ -360,9 +360,10 @@ export function RowSkeleton({
           aria-hidden
           className="gap-2 py-2"
         >
-          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it. */}
-          <View className="h-4 w-1/3 animate-pulse rounded-md bg-foreground/10" />
-          <View className="h-3 w-2/3 animate-pulse rounded-md bg-foreground/10" />
+          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it, and
+              `motion-safe:` keeps it still under reduced motion. */}
+          <View className="h-4 w-1/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
+          <View className="h-3 w-2/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
         </View>
       ))}
     </View>

@@ -419,6 +419,30 @@ It holds about nine times in ten. `Section` is the smallest layout that is still
 standing exception is the controls: a `DatePicker` is not a domain object, but it is not placing
 anything either — it is a widget, and rule 8's note is where that line is drawn.
 
+## 13. Movement stops under reduced motion
+
+Every part that moves honours the reader's reduced-motion setting (WCAG 2.3.3, #441), on both
+halves, and a new one is not finished until it does. What stops is movement: a zoom, a slide, a
+spin or a pulse that only decorates, a glide to a scroll position. What stays is what carries
+information — a spinner that says work is going on, a short fade that says a thing arrived — and
+a colour change, which is not motion.
+
+- **An `animate-in` or `animate-out` needs nothing.** The tokens stylesheet sets tw-animate-css's
+  movement variables to rest under `prefers-reduced-motion: reduce`, so the fade runs alone. The
+  fade has to stay: radix unmounts a closed dialog, menu or popover on the exit animation's
+  `animationend`, so `animation: none` there is a dialog that never leaves.
+- **Any other movement class is written behind `motion-safe:`** — `motion-safe:animate-pulse` —
+  or given `motion-reduce:transition-none` beside its `transition-transform`, literally, in the
+  class map (rule 3).
+- **On device it is `useReducedMotion()`** from `@cubeui/reduced-motion`, which is the one
+  implementation. react-native-css has no `prefers-reduced-motion` feature, so both variants are
+  false there: a `motion-safe:` class never runs on device and a `motion-reduce:` one never
+  applies. An `Animated` loop reads the hook and does not start; a `scrollTo` passes
+  `animated: false`.
+
+The `reduced-motion` test project runs the stories tagged `reduced-motion` in a browser that asks
+for reduced motion. A new animated part adds a check there.
+
 ## Open questions
 
 1. ~~`children` vs `content` for the body.~~ **Settled: a named prop, everywhere — `contentSlot`

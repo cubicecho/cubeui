@@ -5,6 +5,33 @@ import { defineConfig } from "vitest/config";
 
 const root = import.meta.dirname;
 
+// Chromium's sandbox needs user namespaces, which containers and most CI images do not grant.
+// Chromium sizes its shared memory against /dev/shm, which is 64MB in a default container; the
+// renderer dies mid-run without the second flag, and it presents as "browser connection was
+// closed" on whichever file was unlucky.
+const CHROMIUM_ARGS = ["--no-sandbox", "--disable-dev-shm-usage"];
+
+// Pre-bundled up front rather than on discovery. Vite finds `react-native-css/components` only
+// when the first story imports a registry component — by which point the run is already going, so
+// it optimizes, invalidates the dep URLs and reloads mid-test. The stories that lost that race
+// failed with "Failed to fetch dynamically imported module" pointing at a stale pre-bundle, which
+// reads like a component fault and is not one. Naming it here is what vitest's own "please add
+// mentioned dependencies" message asks for; the import is the plugin in
+// `.storybook/rn-classname.ts`, which rewrites every `from "react-native"` in this repo's files to
+// it. `@tanstack/react-form` for the same reason: only `radio-group.stories.tsx` reaches it, so it
+// is discovered mid-run, and the first cold run lost all four of that file's stories.
+// `@tanstack/react-router` likewise: only the sidebar's router-link story imports it.
+// `react-markdown` and `remark-gfm` likewise: only the two Markdown story files reach them.
+const OPTIMIZE_DEPS = {
+  include: [
+    "react-native-css/components",
+    "@tanstack/react-form",
+    "@tanstack/react-router",
+    "react-markdown",
+    "remark-gfm",
+  ],
+};
+
 // Three test runners, deliberately split by what they are testing.
 //
 // `scripts/` is the token pipeline: plain node ESM with no JSX, no React and no bundler, and it
@@ -36,27 +63,7 @@ export default defineConfig({
         // No setup file: since Storybook 10.3 the addon applies `.storybook/preview.ts` itself,
         // so the stylesheet and the theme decorator are already in place here.
         plugins: [storybookTest({ configDir: resolve(root, ".storybook") })],
-        // Pre-bundled up front rather than on discovery. Vite finds `react-native-css/components`
-        // only when the first story imports a registry component — by which point the run is
-        // already going, so it optimizes, invalidates the dep URLs and reloads mid-test. The
-        // stories that lost that race failed with "Failed to fetch dynamically imported module"
-        // pointing at a stale pre-bundle, which reads like a component fault and is not one.
-        // Naming it here is what vitest's own "please add mentioned dependencies" message asks
-        // for; the import is the plugin in `.storybook/rn-classname.ts`, which rewrites every
-        // `from "react-native"` in this repo's files to it.
-        // `@tanstack/react-form` for the same reason: only `radio-group.stories.tsx` reaches it, so
-        // it is discovered mid-run, and the first cold run lost all four of that file's stories.
-        // `@tanstack/react-router` likewise: only the sidebar's router-link story imports it.
-        // `react-markdown` and `remark-gfm` likewise: only the two Markdown story files reach them.
-        optimizeDeps: {
-          include: [
-            "react-native-css/components",
-            "@tanstack/react-form",
-            "@tanstack/react-router",
-            "react-markdown",
-            "remark-gfm",
-          ],
-        },
+        optimizeDeps: OPTIMIZE_DEPS,
         test: {
           name: "storybook",
           // One browser session at a time. Run in parallel, a session drops its websocket partway
@@ -75,17 +82,35 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({
-              launchOptions: {
-                args: [
-                  // Chromium's sandbox needs user namespaces, which containers and most CI images
-                  // do not grant.
-                  "--no-sandbox",
-                  // Chromium sizes its shared memory against /dev/shm, which is 64MB in a default
-                  // container. The renderer dies mid-run without this, and it presents as "browser
-                  // connection was closed" on whichever file was unlucky.
-                  "--disable-dev-shm-usage",
-                ],
-              },
+              launchOptions: { args: CHROMIUM_ARGS },
+            }),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
+      {
+        // The stories tagged `reduced-motion`, again, in a browser that asks for reduced motion:
+        // the one place the tokens stylesheet's `prefers-reduced-motion` rule and the
+        // `motion-safe:` classes are seen to work. A project rather than an emulation inside the
+        // story, because a play function has no hold on the browser's media features.
+        plugins: [
+          storybookTest({
+            configDir: resolve(root, ".storybook"),
+            tags: { include: ["reduced-motion"] },
+          }),
+        ],
+        optimizeDeps: OPTIMIZE_DEPS,
+        test: {
+          name: "reduced-motion",
+          fileParallelism: false,
+          isolate: false,
+          sequence: { groupOrder: 2 },
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({
+              launchOptions: { args: CHROMIUM_ARGS },
+              contextOptions: { reducedMotion: "reduce" },
             }),
             instances: [{ browser: "chromium" }],
           },

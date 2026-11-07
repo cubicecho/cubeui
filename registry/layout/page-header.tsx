@@ -89,7 +89,10 @@ const INK = "text-foreground";
 const SLOT = Platform.select({ web: "block", default: undefined });
 
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("max-w-full rounded-md bg-foreground/10", Platform.OS === "web" && "animate-pulse");
+const BAR = cn(
+  "max-w-full rounded-md bg-foreground/10",
+  Platform.OS === "web" && "motion-safe:animate-pulse",
+);
 
 export type PageHeaderProps = {
   /**

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 111 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 112 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 111 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 112 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  97 on both platforms · 14 web-only · 0 native-only.
+  98 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -626,6 +626,11 @@
           <td>Picks black or white ink for text sitting on a colour the user chose, by WCAG contrast.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/reduced-motion</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>useReducedMotion(): whether the reader's system asks for reduced motion, kept up to date as they change it. The `prefers-reduced-motion` media query on the web, AccessibilityInfo on device, where NativeWind's `motion-safe:` and `motion-reduce:` never match. For an animation written in script; the components already honour it.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/route-error</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>The old name of error-page, kept for one release: RouteError, re-exported from it. Install error-page.</td>
@@ -683,7 +688,7 @@
         <tr>
           <th scope="row"><code>@cubeui/skeleton</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device).</td>
+          <td>shadcn's loading placeholder: a rounded `bg-accent` block the caller sizes, pulsing on both halves (`animate-pulse` on the web, the same opacity curve in `Animated` on device), and still when the reader's system asks for reduced motion.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/spinner</code></th>

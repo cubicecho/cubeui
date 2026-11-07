@@ -178,6 +178,12 @@ to add them.
   ([#436](https://github.com/cubicecho/cubeui/issues/436)). The placeholder sits on the page's
   background, as an input's does. On the tint it was too faint to read. The current line is
   tinted again once there is text.
+- **Nothing moves for a reader who asked for reduced motion**
+  ([#441](https://github.com/cubicecho/cubeui/issues/441)). Dialogs, menus, popovers, selects and
+  tooltips fade without zooming or sliding, skeletons and a pulsing badge dot hold still, and
+  `scrollToEnd()` jumps. The spinner still turns. The rule for `animate-in` and `animate-out` is in
+  the tokens stylesheet, so it reaches the app's own uses of them too. A reinstall also writes
+  `components/ui/reduced-motion.tsx`, which `useReducedMotion()` comes from.
 
 ## Checking the result
 
