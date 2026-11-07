@@ -464,7 +464,7 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `date-picker`, `date-time-field`, `color-picker-field`, `combobox`, `combobox-field`, `segmented-field`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `confirm-button`, `unsaved-changes-guard`, `toast` |
-| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `disclosure`, `disclosure-row`, `description-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `query-state`, `route-error` |
+| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `app-bar`, `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `disclosure`, `disclosure-row`, `description-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `query-state`, `route-error` |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
