@@ -110,7 +110,7 @@ DOM app keeps its `components.json` line. What changes under it:
 
 - **The palette as TypeScript is `@/lib/cubeui-theme`**, not `@/lib/theme`. A `registry:lib`
   lands by basename, and `theme.ts` overwrote an app's own without asking.
-- **`RouteError`'s default title is "Something went wrong"**, not "Failed to load", because a
+- **`ErrorPage`'s default title is "Something went wrong"**, not "Failed to load", because a
   route boundary catches render crashes as well as failed fetches. Pass `title="Failed to load"`
   for the old wording.
 
@@ -148,7 +148,7 @@ react-native-web's `pointer-events` rules on purpose (#134).
 
 **That is tested on Biome 2.5**, the version this repo lints with (`^2.5.11`), and a `biome-ignore`
 is written for what that version reports. An older Biome reports more: 2.4.6 also wants `<output>`
-for the `role="status"` that `query-state` and `combobox` write, and those lines carry no
+for the `role="status"` that `load-state` and `combobox` write, and those lines carry no
 ignore, because on 2.5 an ignore there would itself be reported as unused. So on 2.4.x the note
 above cannot be followed to a clean run, and the fix is to upgrade Biome.
 
@@ -464,7 +464,8 @@ the React Native set.
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
 | forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `date-picker`, `date-time-field`, `color-picker-field`, `combobox`, `combobox-field`, `segmented-field`, `radio-group`, `radio-group-field`, `theme-picker` |
 | feedback | `confirm`, `confirm-dialog`, `confirm-button`, `unsaved-changes-guard`, `toast` |
-| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `app-bar`, `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `disclosure`, `disclosure-row`, `description-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `query-state`, `route-error` |
+| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-card-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `app-bar`, `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `collapsible`, `collapsible-row`, `property-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `load-state`, `error-page` |
+| deprecated, for one release | `query-state` (now `load-state`), `route-error` (now `error-page`), `disclosure` (now `collapsible`), `disclosure-row` (now `collapsible-row`), `description-list` (now `property-list`), `centered-layout` (now `centered-card-layout`) |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became

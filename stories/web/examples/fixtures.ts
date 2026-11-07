@@ -175,7 +175,7 @@ export const TASKS: readonly Task[] = [
 export const projectName = (id: string) =>
   PROJECTS.find((project) => project.id === id)?.name ?? id;
 
-/** A query that has landed, in the shape `QueryState` reads. */
+/** A query that has landed, in the shape `LoadState` reads. */
 export const settledQuery = { isPending: false, isError: false, error: null, refetch: () => {} };
 
 /** The states every list example can be flipped between from the controls panel. */

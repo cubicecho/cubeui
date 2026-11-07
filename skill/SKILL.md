@@ -1,6 +1,6 @@
 ---
 name: cubeui
-description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, AppBar, Sidebar, SidebarSection, SidebarNavItem, BarNavItem, Section, DescriptionList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Disclosure, StatTile, SettingRow, CenteredLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, QueryState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
+description: How to use the cubeui components (PageLayout, GridLayout, HeaderContentFooter, CardLayout, DialogLayout, PageHeader, SplitLayout, SidebarLayout, AppBar, Sidebar, SidebarSection, SidebarItem, AppBarItem, Section, PropertyList, PropertyRow, FormField, FieldRow, useAppForm and its bound fields, ColorPicker, Collapsible, StatTile, SettingRow, CenteredCardLayout, TopBarLayout, Markdown, MarkdownEditor on the web; Menu, Combobox, SegmentedGroup, SegmentedButton, ThemePicker, useThemePreference, usePalettePreference, PaletteProvider, ConfirmButton, CopyButton, DownloadButton, CodeBlock, DatePicker, DateRangePicker, DateTimeInput, SearchInput, PasswordInput, ColorDot, readableTextColor, Command and the icon set on both; Form, ConfirmDialog, LoadState and the React Native primitives in an Expo app) in a project that installs them from the cubeui shadcn registry. Read before building a page shell, a page title block, a card, a sign-in page, a dialog, a two-pane screen, an app's navigation sidebar or top bar, a section heading, a part of a page that shows and hides, a settings row with a switch, select or button at its end, a list of read-only label and value rows, a dashboard's row of figures or the filter tiles over a list, a form, an icon-only button, a popover menu of actions or of on/off rows, or a destructive action with shadcn primitives — it says which component owns the shape and which props carry which node, so hand-written scaffolding is not re-derived per screen.
 ---
 
 # cubeui
@@ -57,13 +57,13 @@ or `scrollbar-color` block is a copy that drifts, so delete it when moving onto 
 that should show none takes `[scrollbar-width:none]`.
 
 **Most items are on both.** `button`, `card`, `input`, `select`, `dialog`, `popover`, `menu`, `command`, `tabs`,
-`tooltip`, `badge`, `calendar`, `field`, `item`, `separator`, `skeleton`, `toast`, `empty`, `query-state` — same item name, same props,
+`tooltip`, `badge`, `calendar`, `field`, `item`, `separator`, `skeleton`, `toast`, `empty`, `load-state` — same item name, same props,
 one written in React Native and one compiled or hand-written for the DOM. That is the point of
 the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `AppBar`, `Sidebar`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Disclosure`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
+`CenteredCardLayout`, `DialogLayout`, `GridLayout`, `Section`, `Collapsible`, `CollapsibleRow`, `PropertyList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -89,29 +89,29 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | Equal cells in rows — a grid of cards or tiles, 1 to 4 to a row by width | `GridLayout` | [layout/pages.md](layout/pages.md#grids) |
 | A navigation column or inspector beside a working surface | `SidebarLayout` | [layout/splits.md](layout/splits.md#splits) |
 | An app shell: the sidebar on a wide screen, a bar with the brand, icon links and buttons on a narrow one | `SidebarLayout sidebarHideBelow` with `brandSlot`, `navSlot`, `status`, `actionSlot` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
-| A place in that bar: an icon link with a name, a tooltip, the current-page tint, a count or a status dot | `BarNavItem` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
+| A place in that bar: an icon link with a name, a tooltip, the current-page tint, a count or a status dot | `AppBarItem` | [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) |
 | An app's bar across the top — brand, places, a status line, actions — on its own | `AppBar` | [layout/app-bar.md](layout/app-bar.md#app-bar) |
 | An app shell with no sidebar — a bar across the top with the brand, a few links and the account, the page below | `HeaderContentFooter` with an `AppBar` in `headerSlot` | [layout/app-bar.md](layout/app-bar.md#an-app-with-no-sidebar) |
-| The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarNavItem` | [layout/sidebar.md](layout/sidebar.md#sidebar) |
+| The app's sidebar itself — brand, titled lists of links, settings and sign out at the bottom | `Sidebar`, `SidebarSection`, `SidebarItem` | [layout/sidebar.md](layout/sidebar.md#sidebar) |
 | A sidebar the reader folds down to a rail of icons and opens again | `Sidebar collapsed onCollapsedChange`, `SidebarCollapseButton`, `useSidebar` | [layout/sidebar.md](layout/sidebar.md#folded-to-a-rail-of-icons) |
 | Two comparable panes side by side — a diff, a form beside its preview | `SplitLayout` | [layout/splits.md](layout/splits.md#splits) |
 | A list beside the detail for the selected row | `SidebarLayout`, or two routes | [layout/splits.md](layout/splits.md#list-and-detail) |
 | A panel with a title, a body, and buttons at the bottom | `CardLayout` | [layout/cards.md](layout/cards.md#cards) |
 | A page that is one card — a sign-in, a token gate — so its title is the page's `<h1>` | `CardLayout level={1}` | [layout/cards.md](layout/cards.md#cards) |
-| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredLayout` | [layout/pages.md](layout/pages.md#centered-pages) |
+| A page that is one card in the middle of the screen — a sign-in, a token gate, "check your email" | `CenteredCardLayout` | [layout/pages.md](layout/pages.md#centered-pages) |
 | A modal with a title, a body that scrolls, buttons at the bottom | `DialogLayout` | [layout/dialogs.md](layout/dialogs.md#dialogs) |
 | A heading over a group of fields or rows | `Section` | [layout/cards.md](layout/cards.md#sections) |
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout/facts.md](layout/facts.md#setting-rows) |
-| Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `DescriptionList`, `PropertyRow` | [layout/facts.md](layout/facts.md#description-lists) |
+| Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `PropertyList`, `PropertyRow` | [layout/facts.md](layout/facts.md#property-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout/facts.md](layout/facts.md#stat-tiles) |
-| A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found | `QueryState` | [layout/lists.md](layout/lists.md#querystate) |
+| A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found | `LoadState` | [layout/lists.md](layout/lists.md#loadstate) |
 | The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout/lists.md](layout/lists.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/lists.md](layout/lists.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout/lists.md](layout/lists.md#empty-states) |
-| A list row that opens onto detail | `DisclosureRow` | [layout/lists.md](layout/lists.md#disclosurerow) |
-| A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Disclosure` | [layout/cards.md](layout/cards.md#disclosure) |
-| Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `DescriptionList`) | `Table` and its parts | [layout/trees-and-tables.md](layout/trees-and-tables.md#table) |
+| A list row that opens onto detail | `CollapsibleRow` | [layout/lists.md](layout/lists.md#collapsiblerow) |
+| A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Collapsible` | [layout/cards.md](layout/cards.md#collapsible) |
+| Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `PropertyList`) | `Table` and its parts | [layout/trees-and-tables.md](layout/trees-and-tables.md#table) |
 | A form of any size | `useAppForm` and the bound fields | [forms/app-form.md](forms/app-form.md#a-form) |
 | A label, a control, a hint under it, and an error | `FormField` | [forms/form-field.md](forms/form-field.md#formfield-on-its-own) |
 | Two or three fields that belong on one line | `FieldRow` | [forms/app-form.md](forms/app-form.md#fields-on-one-row) |

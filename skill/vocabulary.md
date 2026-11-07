@@ -27,7 +27,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`wrapperSlot`** — a function `(parts, { className }) => …` that wraps the header, body and
   footer together, inside the shell: a `<form>`, so the submit in `footerActionsSlot` is in the form
   it submits and Enter in a field submits it. The element it returns takes `className`. On
-  `DialogLayout`, `CardLayout` and `CenteredLayout`.
+  `DialogLayout`, `CardLayout` and `CenteredCardLayout`.
 - **`emptySlot`** — what the body says when `contentSlot` comes back empty. Not a slot you place.
 - **`loading`** — a boolean. On, the shell substitutes a skeleton for the part of itself that
   the request was going to fill, and `emptySlot` is not consulted.
@@ -53,11 +53,11 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
   `AppBar`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
   is hidden — so there pass what the sidebar's header shows.
-- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `BarNavItem`s —
+- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `AppBarItem`s —
   or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
-- **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
+- **`cardClassName`** — on `CenteredCardLayout`, the card; `className` is the page around it. Pass
   `max-w-md` here for a wider card than the default `max-w-sm`.
 - **`as`** — not a slot: which landmark a part is, when it can be one. `as="nav"` on a
   `SidebarSection` makes it the navigation landmark, named by its `title` or a `label`. A value,
@@ -76,10 +76,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`triggerSlot`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
-  because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
+  because `DialogLayout` is the first thing that takes it, not the last: `CollapsibleRow` takes it,
   and so does `Combobox`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
-- **`defaultOpen`** — where it starts, when the thing holds its own open state: `Disclosure`, and
+- **`defaultOpen`** — where it starts, when the thing holds its own open state: `Collapsible`, and
   the `Dialog`, `Popover` and `Menu` primitives. Pass it instead of `open`, never beside it.
 - **`hasUnsavedChanges`** — on `DialogLayout`. On, closing asks first. A boolean, or a function
   called at the click: `() => !form.state.isDefaultValue`. Take the function form when the answer
@@ -129,13 +129,13 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   an `iconSlot` draws the icon alone. Its label is still its name. On `SegmentedGroup`, for every pill
   in the row.
 
-**List rows and query states add:**
+**List rows and load states add:**
 
 - **`badgesSlot`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
 - **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
-  title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
+  title and the rows (a `<LoadState compact />`). On `SidebarItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
-  given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
+  given, is what is seen instead of it — decorative, never read. On `AppBarItem`, the same object,
   drawn as a dot on the icon. On `AppBar` (and so `SidebarLayout`'s bar), a node: one line of the app's own state
   ("3/5 servers running") between `navSlot` and `actionSlot`, the first part of the bar to give way.
 - **`leadingSlot`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
@@ -152,12 +152,12 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`what`** — what could not be fetched, in the reader's words: "your agents", "the archive".
 - **`count`** — how many rows the page is *about to draw*, which is not what came back.
 - **`record`** — the one record a detail screen asked for, once its query has answered; `null` or
-  `undefined` is one that is not there. On `QueryState`, in place of `count`.
+  `undefined` is one that is not there. On `LoadState`, in place of `count`.
 - **`notFoundLabel`** — what a detail screen says when its `record` is not there: "Project not
   found". Drawn as the screen's heading, at `level` (`1` unless the screen already has its title).
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
   the DOM attribute of that name and is not this word.
-- **`layout`** — on `DescriptionList`: `inline` (label beside value, stacking by itself when
+- **`layout`** — on `PropertyList`: `inline` (label beside value, stacking by itself when
   narrow) or `stacked`. Its rows reuse `label`, `hint` and `actionSlot`, and their `value` is the fact
   on display — a node, not a control's held value.
 

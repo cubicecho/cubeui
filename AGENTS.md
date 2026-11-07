@@ -550,25 +550,26 @@ Recorded so the next pass does not re-derive them:
   icon nav over a rail hidden below `md` — is `SidebarLayout`'s `sidebarHideBelow` with `brandSlot`,
   `navSlot`, `status` and `actionSlot`, a widening rather than a new `app-shell` item, which would also
   have collided with mcp-ragdown's own `components/app-shell.tsx` on install. The links in that
-  bar are `@cubeui/sidebar`'s `BarNavItem` — the rail's row with only the icon drawn — so the
+  bar are `@cubeui/sidebar`'s `AppBarItem` — the rail's row with only the icon drawn — so the
   apps' own link classes, and the counts they dropped on the bar, go with it. The bar itself is
   `@cubeui/app-bar`'s `AppBar`, which an app with no sidebar puts over its page on its own.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
   `flex items-start justify-between` across 8 projects. Settled: once kanban installed
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than
   upstreamed — `dim` is one `className` on `ItemContent`, which is not a component. What `Item`
-  had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
+  had no answer for was the row that **opens**, so `DisclosureRow`, now `CollapsibleRow`, is what
+  shipped.
   `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`). `DisclosureRow` is a `ListItem` that opens, built on
-  `ListItem`'s box and words and `Disclosure`'s button, so the row that opens is on both halves
+  shared through `item-base.ts`). `CollapsibleRow` is a `ListItem` that opens, built on
+  `ListItem`'s box and words and `Collapsible`'s button, so the row that opens is on both halves
   too and looks like the rows beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
   `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of
-  `contentSlot` itself, as `GridLayout` does, and has no empty or loading state: `QueryState` sits
+  `contentSlot` itself, as `GridLayout` does, and has no empty or loading state: `LoadState` sits
   above it.
 - **`FileTree`** (#226). mcp-skills-manager drew a skill's files on raw `<li>` and `<button>`,
   and mcp-ragdown then carried a second copy for its notes, each with its own `buildTree`.
@@ -586,9 +587,9 @@ Recorded so the next pass does not re-derive them:
 - **`FactGrid`** (private project 1's is excellent — it replaced 10 hand-rolled `<dl>`s and 5
   copies of a `Fact` helper, one of which had lost its `<dt>`/`<dd>`). Fails rule 1's two-project
   bar: cubicecho has 4 `<dl>` files and they are all in one app. Superseded by
-  `@cubeui/description-list` (#135), once mcp-ragdown's settings page became the second app with a
-  hand-built label / value / hint row — as a list of rows rather than a grid, because the rows
-  are what those settings pages are made of.
+  `@cubeui/description-list` (#135), now `property-list`, once mcp-ragdown's settings page became
+  the second app with a hand-built label / value / hint row — as a list of rows rather than a
+  grid, because the rows are what those settings pages are made of.
 - **Inline edits — never add them back.** `InlineTextEdit` and `InlineNumberEdit` (a value
   shown as text that became an input on press, committing on blur) were removed. Every form and
   input in this set is explicit: a field is always drawn as a field, and an edit goes through a

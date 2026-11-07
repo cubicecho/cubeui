@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, within } from "storybook/test";
-import { QueryState as Compiled } from "../compiled/query-state";
-import { QueryState as Native } from "../registry/layout/query-state";
+import { LoadState as Compiled } from "../compiled/load-state";
+import { LoadState as Native } from "../registry/layout/load-state";
 import { SideBySide } from "./side-by-side";
 
 /**
- * `QueryState` in front of one record, on both halves. Loading is rows that pulse where the record
+ * `LoadState` in front of one record, on both halves. Loading is rows that pulse where the record
  * will be; not found is the centred empty block, its title the page's h1 — not a lone grey line.
  */
 const meta = {
-  title: "RN Parity/QueryState",
+  title: "RN Parity/LoadState",
 } satisfies Meta;
 
 export default meta;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
-import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "@/components/sidebar";
 
 /**
  * `Sidebar`, as installed beside it by `@cubeui/sidebar-stories`. It is a `registry:component`, so
@@ -33,13 +33,13 @@ export const Default: Story = {
       <SidebarSection
         title="Projects"
         contentSlot={[
-          <SidebarNavItem key="inbox" href="#/inbox" label="Inbox" count={12} />,
-          <SidebarNavItem key="launch" href="#/launch" label="Launch plan" count={3} active />,
-          <SidebarNavItem key="garden" href="#/garden" label="Garden" />,
+          <SidebarItem key="inbox" href="#/inbox" label="Inbox" count={12} />,
+          <SidebarItem key="launch" href="#/launch" label="Launch plan" count={3} active />,
+          <SidebarItem key="garden" href="#/garden" label="Garden" />,
         ]}
       />
     ),
-    footerSlot: <SidebarNavItem href="#/settings" label="Settings" />,
+    footerSlot: <SidebarItem href="#/settings" label="Settings" />,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

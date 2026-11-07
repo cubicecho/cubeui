@@ -52,11 +52,11 @@ second answer.
   `focus-visible:text-foreground`. A chosen thing needs none of it: its ink is `foreground` already.
 - **The colour is not the whole of chosen.** Say it as well: `aria-current="page"` on the link to
   the current place, `aria-selected` on an option in a listbox or a tab, `aria-pressed` on a
-  toggle, `aria-checked` on a box or a switch. `ListItem`, `SidebarNavItem`, `Tabs`,
+  toggle, `aria-checked` on a box or a switch. `ListItem`, `SidebarItem`, `Tabs`,
   `SegmentedGroup` and `ToggleChip` set theirs. On `Item` the link is yours, so `aria-current`
   goes on it yourself.
 - **Use the prop before the class.** `selected` on `Item`, `ListItem`, `ToggleChip` and
-  `StatTile`, `active` on `SidebarNavItem` and `BarNavItem`, `data-state="selected"` on a
+  `StatTile`, `active` on `SidebarItem` and `AppBarItem`, `data-state="selected"` on a
   `TableRow`. The classes above are for a row that is none of those.
 
 ### Elevation

@@ -20,10 +20,10 @@ import {
   Search as CompiledSearch,
   Settings as CompiledSettings,
 } from "../compiled/icons";
-import { BarNavItem as CompiledBarNavItem, Sidebar as CompiledSidebar } from "../compiled/sidebar";
+import { AppBarItem as CompiledAppBarItem, Sidebar as CompiledSidebar } from "../compiled/sidebar";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import {
-  BarNavItem as NativeBarNavItem,
+  AppBarItem as NativeAppBarItem,
   Sidebar as NativeSidebar,
 } from "../registry/layout/sidebar";
 import { SidebarLayout as NativeLayout } from "../registry/layout/split-layout";
@@ -38,7 +38,7 @@ import {
 } from "../registry/ui/icons";
 
 /**
- * What goes in `SidebarLayout`'s bar: `BarNavItem`, the rail's row with only its icon drawn, and
+ * What goes in `SidebarLayout`'s bar: `AppBarItem`, the rail's row with only its icon drawn, and
  * the `status` slot, the bar's one line of words.
  *
  * The bar is where every app drew its own links, and what the copies lost is what these check: an
@@ -113,7 +113,7 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
           sidebarSlot={<NativeSidebar label="Native rail" contentSlot={null} />}
           brandSlot={<Text className="font-semibold text-base text-foreground">Router</Text>}
           navSlot={places.map((p) => (
-            <NativeBarNavItem
+            <NativeAppBarItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
@@ -155,7 +155,7 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
           sidebarSlot={<CompiledSidebar label="Compiled rail" contentSlot={null} />}
           brandSlot={<span className="font-semibold text-base text-foreground">Router</span>}
           navSlot={places.map((p) => (
-            <CompiledBarNavItem
+            <CompiledAppBarItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
@@ -447,8 +447,8 @@ export const BottomBar: Story = {
   },
 };
 
-const CompiledBarLink = createLink(CompiledBarNavItem);
-const NativeBarLink = createLink(NativeBarNavItem);
+const CompiledBarLink = createLink(CompiledAppBarItem);
+const NativeBarLink = createLink(NativeAppBarItem);
 
 const routes = [
   { to: "/", label: "Servers" },

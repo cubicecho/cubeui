@@ -118,7 +118,7 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 </Table>
 ```
 
-- It is a primitive, so it takes `children` like shadcn's. The `QueryState` ladder goes above it
+- It is a primitive, so it takes `children` like shadcn's. The `LoadState` ladder goes above it
   exactly as it does above a list of rows.
 - **`TableHead` scopes itself**: `scope="col"` inside `TableHeader`, `scope="row"` anywhere else.
   So the first cell of a body row — the thing the row is *about* — is a `TableHead`, not a
@@ -135,4 +135,4 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 - No sorting, filtering or pagination: nothing here uses them. Sort the array you map.
 - **Web only — no native twin.** React Native has no table element, and a phone has no width for
   columns. On native, draw the same data as rows: `ListItem`s for many records, and
-  `DescriptionList` / `PropertyRow` for one record's facts.
+  `PropertyList` / `PropertyRow` for one record's facts.

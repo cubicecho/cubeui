@@ -147,7 +147,7 @@ type ListItemTextProps = Pick<
 
 /**
  * A row's words as `ListItem` draws them: the title over its description, then `meta`. For a
- * row that is a `ListItem` with a press of its own, as `DisclosureRow` is.
+ * row that is a `ListItem` with a press of its own, as `CollapsibleRow` is.
  */
 export function ListItemText({
   title,

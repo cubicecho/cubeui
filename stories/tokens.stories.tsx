@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { CardLayout } from "../registry/layout/card-layout";
+import { ErrorPage } from "../registry/layout/error-page";
 import { PageHeader } from "../registry/layout/page-header";
-import { RouteError } from "../registry/layout/route-error";
 import { Section } from "../registry/layout/section";
 import { Button } from "../registry/ui/button";
 import { Card, CardContent } from "../registry/ui/card";
@@ -329,7 +329,7 @@ async function inDark(check: () => Promise<void>) {
 /**
  * react-native-web's base `View` class is `border: 0 solid black`, and a class beats the
  * `* { border-color: var(--border) }` a web stylesheet relies on. So a bare `border` drew black on
- * Expo web — `card`, the divider of `section`, and `route-error`'s details box
+ * Expo web — `card`, the divider of `section`, and `error-page`'s details box
  * (#78). Each now names `border-foreground/10`, which is what `registry:check` rule 14 holds.
  */
 export const BordersNameTheirColour: Story = {
@@ -341,7 +341,7 @@ export const BordersNameTheirColour: Story = {
         </CardContent>
       </Card>
       <Section title="Profile" divider contentSlot={<Button content="Save" />} />
-      <RouteError
+      <ErrorPage
         error={new Error("It broke")}
         reset={() => {}}
         describe={() => "This is a bug, not something you did."}
@@ -358,7 +358,7 @@ export const BordersNameTheirColour: Story = {
       getComputedStyle(canvas.getByTestId(testId))[`border${side}Color`];
     await expect(colour("card")).toBe(border);
     await expect(colour("section-heading", "Bottom")).toBe(border);
-    await expect(colour("route-error-details")).toBe(border);
+    await expect(colour("error-page-details")).toBe(border);
   },
 };
 

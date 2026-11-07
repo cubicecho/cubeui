@@ -5,9 +5,9 @@ import { InputField, useAppForm } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
 import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
 import { PageLayout } from "@/components/page-layout";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { SettingRow } from "@/components/setting-row";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -129,7 +129,7 @@ function GeneralTab() {
         title="Workspace"
         level={2}
         contentSlot={
-          <DescriptionList
+          <PropertyList
             contentSlot={[
               <PropertyRow
                 key="name"

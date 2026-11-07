@@ -3,13 +3,15 @@ import type { ComponentType, ReactElement, ReactNode } from "react";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import {
-  DescriptionList as Compiled,
-  PropertyRow as CompiledRow,
+  DescriptionList as CompiledOld,
+  PropertyRow as CompiledOldRow,
 } from "../compiled/description-list";
+import { PropertyList as Compiled, PropertyRow as CompiledRow } from "../compiled/property-list";
 import {
-  DescriptionList as Native,
-  PropertyRow as NativeRow,
+  DescriptionList as NativeOld,
+  PropertyRow as NativeOldRow,
 } from "../registry/layout/description-list";
+import { PropertyList as Native, PropertyRow as NativeRow } from "../registry/layout/property-list";
 import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
@@ -21,7 +23,7 @@ import { SideBySide } from "./side-by-side";
  * on every story here, so each one is also that audit.
  */
 const meta = {
-  title: "RN Parity/DescriptionList",
+  title: "RN Parity/PropertyList",
   component: Native,
 } satisfies Meta<typeof Native>;
 
@@ -275,5 +277,31 @@ export const MonospaceValueWhenNarrow: Story = {
       // More than one line of `text-sm`, so it wrapped rather than being clipped.
       await expect(pathBox.height).toBeGreaterThan(30);
     }
+  },
+};
+
+/**
+ * The old name and its old item, kept for one release: `DescriptionList` and `PropertyRow` from
+ * `description-list` draw what `PropertyList` draws, so an app moves its call sites across one at
+ * a time.
+ */
+export const OldName: Story = {
+  render: () => (
+    <SideBySide
+      native={<NativeOld className="native-root" contentSlot={rows(NativeOldRow, nativeCopy)} />}
+      compiled={
+        <CompiledOld className="compiled-root" contentSlot={rows(CompiledOldRow, compiledCopy)} />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const native = canvasElement.querySelector<HTMLElement>(".native-root");
+    const compiled = canvasElement.querySelector<HTMLElement>(".compiled-root");
+    if (!native || !compiled) {
+      throw new Error("both halves should render");
+    }
+    await expect(within(native).getAllByRole("listitem")).toHaveLength(3);
+    await expect(compiled.tagName).toBe("DL");
+    await expect(within(compiled).getByText("bge-small")).toBeVisible();
   },
 };

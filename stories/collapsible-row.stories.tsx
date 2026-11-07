@@ -4,8 +4,10 @@ import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Badge as CompiledBadge } from "../compiled/badge";
 import { Button as CompiledButton } from "../compiled/button";
-import { DisclosureRow as Compiled } from "../compiled/disclosure-row";
-import { DisclosureRow as Native } from "../registry/layout/disclosure-row";
+import { CollapsibleRow as Compiled } from "../compiled/collapsible-row";
+import { DisclosureRow as CompiledOld } from "../compiled/disclosure-row";
+import { CollapsibleRow as Native } from "../registry/layout/collapsible-row";
+import { DisclosureRow as NativeOld } from "../registry/layout/disclosure-row";
 import { Badge as NativeBadge } from "../registry/ui/badge";
 import { Button as NativeButton } from "../registry/ui/button";
 import { isTurned } from "./chevron";
@@ -17,19 +19,19 @@ import { SideBySide } from "./side-by-side";
  * one button, toggled by click and by Space, `aria-expanded` follows it, the body is Item's footer
  * and is mounted only while open, and the action sits outside the button.
  */
-const meta = { title: "RN Parity/DisclosureRow" } satisfies Meta;
+const meta = { title: "RN Parity/CollapsibleRow" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-type DisclosureRowComponent = typeof Native;
+type CollapsibleRowComponent = typeof Native;
 
 function Example({
-  DisclosureRow,
+  CollapsibleRow,
   badge,
   action,
   body,
 }: {
-  DisclosureRow: DisclosureRowComponent;
+  CollapsibleRow: CollapsibleRowComponent;
   badge: ReactElement;
   action: (onPress: () => void) => ReactElement;
   body: (text: string) => ReactElement;
@@ -38,7 +40,7 @@ function Example({
   const [deleted, setDeleted] = useState(0);
   return (
     <div style={{ width: 420 }}>
-      <DisclosureRow
+      <CollapsibleRow
         open={open}
         onOpenChange={setOpen}
         badgesSlot={badge}
@@ -57,7 +59,7 @@ export const Default: Story = {
     <SideBySide
       native={
         <Example
-          DisclosureRow={Native}
+          CollapsibleRow={Native}
           badge={<NativeBadge variant="secondary">done</NativeBadge>}
           action={(onPress) => (
             <NativeButton size="sm" variant="outline" onPress={onPress} content="Delete" />
@@ -67,7 +69,7 @@ export const Default: Story = {
       }
       compiled={
         <Example
-          DisclosureRow={Compiled as DisclosureRowComponent}
+          CollapsibleRow={Compiled as CollapsibleRowComponent}
           badge={<CompiledBadge variant="secondary">done</CompiledBadge>}
           action={(onPress) => (
             // `onClick` on this half; see the note in `card.stories.tsx`.
@@ -89,14 +91,14 @@ export const Default: Story = {
       // The row is what the example's frame holds. Asked that way, and not by its slot, because
       // under Storybook a native layout's `@/components/ui/*` import resolves to the web twin, so
       // a part drawn with one does not turn its `testID` into `data-testid` — it does on a device
-      // and under react-native-web proper. The compiled half says `data-slot="disclosure-row"`.
+      // and under react-native-web proper. The compiled half says `data-slot="collapsible-row"`.
       const row = half.querySelector<HTMLElement>('div[style*="width: 420px"]')?.firstElementChild;
       if (row instanceof HTMLElement === false) {
         throw new Error("the row should render");
       }
       await expect(row.contains(header)).toBe(true);
       if (index === 1) {
-        await expect(row).toHaveAttribute("data-slot", "disclosure-row");
+        await expect(row).toHaveAttribute("data-slot", "collapsible-row");
       }
 
       // Shut: no body, and no `aria-controls` pointing at one.
@@ -160,5 +162,37 @@ export const Default: Story = {
       throw new Error("both rows should measure");
     }
     await expect(Math.abs(native.height - compiled.height)).toBeLessThan(3);
+  },
+};
+
+/** The old name with the state a caller holds, on whichever half it is handed. */
+function OldRow({ Row, body }: { Row: typeof NativeOld; body: ReactElement }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Row open={open} onOpenChange={setOpen} title="Rename the settings page" contentSlot={body} />
+  );
+}
+
+/**
+ * The old name and its old item, kept for one release: `DisclosureRow` from `disclosure-row` opens
+ * as `CollapsibleRow` does, so an app moves its call sites across one at a time.
+ */
+export const OldName: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <OldRow Row={NativeOld} body={<Text className="text-foreground">146 passed.</Text>} />
+      }
+      compiled={<OldRow Row={CompiledOld as typeof NativeOld} body={<p>146 passed.</p>} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const button of canvas.getAllByRole("button", { name: /Rename the settings page/ })) {
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+      await userEvent.click(button);
+      await expect(button).toHaveAttribute("aria-expanded", "true");
+    }
+    await expect(canvas.getAllByText("146 passed.")).toHaveLength(2);
   },
 };

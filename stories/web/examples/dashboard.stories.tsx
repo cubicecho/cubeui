@@ -4,13 +4,13 @@ import { expect, userEvent, within } from "storybook/test";
 import { InputField, SelectField, TextareaField, useAppForm } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
 import { ColorField } from "@/components/color-field";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
 import { EmptyState } from "@/components/empty-state";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadError, LoadState } from "@/components/load-state";
 import { PageLayout } from "@/components/page-layout";
-import { QueryError, QueryState } from "@/components/query-state";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { StatTile } from "@/components/stat-tile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -290,7 +290,7 @@ function Dashboard({ state }: Args) {
               }
               contentSlot={
                 <>
-                  <QueryState
+                  <LoadState
                     query={query}
                     what="this week's tasks"
                     count={shown.length}
@@ -329,17 +329,12 @@ function Dashboard({ state }: Args) {
               loading={loading}
               contentClassName="gap-4"
               emptySlot={
-                <QueryError
-                  compact
-                  error={query.error}
-                  onRetry={query.refetch}
-                  what="the project"
-                />
+                <LoadError compact error={query.error} onRetry={query.refetch} what="the project" />
               }
               contentSlot={
                 state === "ready" || state === "empty" ? (
                   <>
-                    <DescriptionList
+                    <PropertyList
                       contentSlot={[
                         <PropertyRow key="lead" label="Lead" value="Inès Duval" />,
                         <PropertyRow
@@ -385,7 +380,7 @@ function Dashboard({ state }: Args) {
             // handed no rows: a `List` element is never empty, even when it draws nothing.
             emptySlot={
               state === "error" ? (
-                <QueryError compact error={query.error} onRetry={query.refetch} what="the team" />
+                <LoadError compact error={query.error} onRetry={query.refetch} what="the team" />
               ) : (
                 <EmptyState compact title="Nobody has closed anything this week." />
               )

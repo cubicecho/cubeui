@@ -1,5 +1,5 @@
 /**
- * The half of `SidebarNavItem` a rendered story cannot check: a row is a link, a link whose router
+ * The half of `SidebarItem` a rendered story cannot check: a row is a link, a link whose router
  * supplies the `href`, or a button, and the props of a button are a type error on a link — on both
  * halves, where the button's handler is `onPress` on device and `onClick` once compiled.
  *
@@ -8,8 +8,16 @@
  */
 
 import { createLink } from "@tanstack/react-router";
-import { SidebarNavItem as Compiled, BarNavItem as CompiledBar } from "../compiled/sidebar";
-import { SidebarNavItem as Native, BarNavItem as NativeBar } from "../registry/layout/sidebar";
+import { SidebarItem as Compiled, AppBarItem as CompiledBar } from "../compiled/sidebar";
+import {
+  BarNavItem,
+  type BarNavItemProps,
+  SidebarItem as Native,
+  AppBarItem as NativeBar,
+  type SidebarItemProps,
+  SidebarNavItem,
+  type SidebarNavItemProps,
+} from "../registry/layout/sidebar";
 
 /** A slot takes an element, never a bare string: any one will do here. */
 const node = <i />;
@@ -27,7 +35,7 @@ const NativeBarLink = createLink(NativeBar);
 /** One place, written once, spread into the row and into the bar's item. */
 const place = { label: "Skills", iconSlot: node, count: 12, status: { label: "MCP on" } };
 
-export function SidebarNavItemTypeAssertions() {
+export function SidebarItemTypeAssertions() {
   return (
     <>
       <Native href="/inbox" label="Inbox" active />
@@ -74,6 +82,23 @@ export function SidebarNavItemTypeAssertions() {
       <NativeBar href="/skills" label="Skills" iconSlot={node} status="MCP on" />
       {/* @ts-expect-error the item's own props are still checked through the router's link */}
       <CompiledBarLink to="/" label="Skills" />
+    </>
+  );
+}
+
+/** The old names, kept for one release, are the new ones: the same components, the same props. */
+export const oldNames: [typeof Native, typeof NativeBar] = [SidebarNavItem, BarNavItem];
+const oldRowProps: SidebarItemProps = {
+  href: "/inbox",
+  label: "Inbox",
+} satisfies SidebarNavItemProps;
+const oldBarProps: BarNavItemProps = { href: "/skills", label: "Skills", iconSlot: node };
+
+export function OldNameTypeAssertions() {
+  return (
+    <>
+      <SidebarNavItem {...oldRowProps} active />
+      <BarNavItem {...oldBarProps} />
     </>
   );
 }

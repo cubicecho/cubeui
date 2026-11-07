@@ -6,8 +6,8 @@ Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections, disclosures, sidebars and the app bar are written once in React Native and compiled to
 the web, so the same item installs in a Vite app and an Expo app with the same props. The
-list-page parts ([lists.md](lists.md), [trees-and-tables.md](trees-and-tables.md)) are the exception: `Table` is web-only, and `QueryState` is its own
-item on each half; `DisclosureRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
+list-page parts ([lists.md](lists.md), [trees-and-tables.md](trees-and-tables.md)) are the exception: `Table` is web-only, and `LoadState` is its own
+item on each half; `CollapsibleRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
 four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -37,14 +37,14 @@ lay their children out the same way on both halves, so one class list is right f
 
 | File | What is in it |
 | --- | --- |
-| [pages.md](pages.md) | `PageLayout`, `HeaderContentFooter`, `PageHeader`, `GridLayout`, `CenteredLayout` |
+| [pages.md](pages.md) | `PageLayout`, `HeaderContentFooter`, `PageHeader`, `GridLayout`, `CenteredCardLayout` |
 | [splits.md](splits.md) | `SplitLayout`, `SidebarLayout`, list-and-detail |
-| [sidebar.md](sidebar.md) | `Sidebar`, `SidebarSection`, `SidebarNavItem`, the rail of icons, `SidebarLayout`'s bar and `BarNavItem` |
+| [sidebar.md](sidebar.md) | `Sidebar`, `SidebarSection`, `SidebarItem`, the rail of icons, `SidebarLayout`'s bar and `AppBarItem` |
 | [app-bar.md](app-bar.md) | `AppBar`, and the app with no sidebar |
-| [cards.md](cards.md) | `CardLayout`, `Section`, `Disclosure` |
-| [facts.md](facts.md) | `DescriptionList`, `PropertyRow`, `SettingRow`, `StatTile` |
+| [cards.md](cards.md) | `CardLayout`, `Section`, `Collapsible` |
+| [facts.md](facts.md) | `PropertyList`, `PropertyRow`, `SettingRow`, `StatTile` |
 | [dialogs.md](dialogs.md) | `DialogLayout`, the unsaved-changes guard, Cmd/Ctrl+S |
-| [lists.md](lists.md) | `QueryState`, `EmptyState`, `DisclosureRow`, `List`, `ListItem` |
+| [lists.md](lists.md) | `LoadState`, `EmptyState`, `CollapsibleRow`, `List`, `ListItem` |
 | [trees-and-tables.md](trees-and-tables.md) | `FileTree`, `Table` |
 
 ## What does not belong in a shell

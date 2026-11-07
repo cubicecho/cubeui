@@ -6,10 +6,10 @@ import { AppBar as CompiledAppBar } from "../compiled/app-bar";
 import { Button as CompiledButton } from "../compiled/button";
 import { HeaderContentFooter as CompiledHeaderContentFooter } from "../compiled/header-content-footer";
 import { Search as CompiledSearch } from "../compiled/icons";
-import { BarNavItem as CompiledBarNavItem } from "../compiled/sidebar";
+import { AppBarItem as CompiledAppBarItem } from "../compiled/sidebar";
 import { AppBar as NativeAppBar } from "../registry/layout/app-bar";
 import { HeaderContentFooter as NativeHeaderContentFooter } from "../registry/layout/header-content-footer";
-import { BarNavItem as NativeBarNavItem } from "../registry/layout/sidebar";
+import { AppBarItem as NativeAppBarItem } from "../registry/layout/sidebar";
 import { Button as NativeButton } from "../registry/ui/button";
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
@@ -213,7 +213,7 @@ export const Narrow: Story = {
           <NativeAppBar
             brandSlot={<Text className="font-semibold text-foreground">eunomia</Text>}
             navSlot={LINKS.map((label, index) => (
-              <NativeBarNavItem
+              <NativeAppBarItem
                 key={label}
                 href={`#/${label.toLowerCase()}`}
                 label={label}
@@ -233,7 +233,7 @@ export const Narrow: Story = {
           <CompiledAppBar
             brandSlot={<span className="font-semibold text-foreground">eunomia</span>}
             navSlot={LINKS.map((label, index) => (
-              <CompiledBarNavItem
+              <CompiledAppBarItem
                 key={label}
                 href={`#/${label.toLowerCase()}`}
                 label={label}

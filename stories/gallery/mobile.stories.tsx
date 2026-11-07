@@ -4,25 +4,25 @@ import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
-import { CenteredLayout } from "../../registry/layout/centered-layout";
-import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
+import { CenteredCardLayout } from "../../registry/layout/centered-card-layout";
+import { Collapsible } from "../../registry/layout/collapsible";
+import { CollapsibleRow } from "../../registry/layout/collapsible-row";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
-import { Disclosure } from "../../registry/layout/disclosure";
-import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { EmptyState } from "../../registry/layout/empty-state";
+import { ErrorPage } from "../../registry/layout/error-page";
 import { FileTree } from "../../registry/layout/file-tree";
 import { GridLayout } from "../../registry/layout/grid-layout";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
+import { LoadError, LoadState, RowSkeleton } from "../../registry/layout/load-state";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
-import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
-import { RouteError } from "../../registry/layout/route-error";
+import { PropertyList, PropertyRow } from "../../registry/layout/property-list";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
 import { SettingRow } from "../../registry/layout/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "../../registry/layout/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "../../registry/layout/sidebar";
 import { SidebarLayout, SplitLayout } from "../../registry/layout/split-layout";
 import { StatTile } from "../../registry/layout/stat-tile";
 import { Alert } from "../../registry/ui/alert";
@@ -230,6 +230,18 @@ const NOT_SHOWN: Record<string, string> = {
     "The native source imports expo-clipboard, which this repo only declares in types/, so it cannot run in a browser.",
   "download-button":
     "The native source imports expo-file-system and expo-sharing, which this repo only declares in types/, so it cannot run in a browser.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
+  disclosure:
+    "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const onButtonPress = fn();
@@ -668,7 +680,7 @@ function Rows() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Dana Whitfield" />
@@ -677,12 +689,12 @@ function Rows() {
           </>
         }
       />
-      <Disclosure
+      <Collapsible
         title="Advanced"
         description="Rarely needed."
         contentSlot={<Text className="text-foreground text-sm">Retention is ninety days.</Text>}
       />
-      <DisclosureRow
+      <CollapsibleRow
         open={open}
         onOpenChange={setOpen}
         title="Deploy 482"
@@ -1060,7 +1072,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Sections and rows",
-    items: ["section", "setting-row", "description-list", "disclosure", "disclosure-row"],
+    items: ["section", "setting-row", "property-list", "collapsible", "collapsible-row"],
     content: <Rows />,
   },
   {
@@ -1117,32 +1129,28 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Query state and route error",
-    items: ["query-state", "route-error"],
+    title: "Load state and error page",
+    items: ["load-state", "error-page"],
     description:
       "Loading, failed, empty, a record not found, then the screen a route shows when it throws.",
     content: (
       <Stack>
         <RowSkeleton rows={2} />
-        <QueryError
-          error={new Error("The server did not answer.")}
-          onRetry={noop}
-          what="projects"
-        />
-        <QueryState
+        <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="projects" />
+        <LoadState
           query={idleQuery}
           what="projects"
           count={0}
           emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
         />
-        <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
-        <QueryState
+        <LoadState query={pendingQuery} what="members" count={0} rows={1} compact />
+        <LoadState
           query={idleQuery}
           what="this project"
           record={null}
           notFoundLabel="Project not found."
         />
-        <RouteError error={new Error("Project not found.")} reset={noop} />
+        <ErrorPage error={new Error("Project not found.")} reset={noop} />
       </Stack>
     ),
   },
@@ -1227,7 +1235,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Card layout and centred layout",
-    items: ["card-layout", "centered-layout"],
+    items: ["card-layout", "centered-card-layout"],
     description: "A card with named parts, then the same card centred on a screen.",
     content: (
       <Stack>
@@ -1240,7 +1248,7 @@ const sections: GallerySection[] = [
           footerSlot={<Caption>Seats are billed monthly</Caption>}
         />
         <Screen>
-          <CenteredLayout
+          <CenteredCardLayout
             level={3}
             title="Sign in"
             description="Use your work email."
@@ -1282,15 +1290,9 @@ const sections: GallerySection[] = [
               title="Workspace"
               contentSlot={
                 <>
-                  <SidebarNavItem
-                    label="Projects"
-                    iconSlot={<Folder />}
-                    count={12}
-                    active
-                    href="#"
-                  />
-                  <SidebarNavItem label="Documents" iconSlot={<FileText />} href="#" />
-                  <SidebarNavItem label="Settings" iconSlot={<Settings />} href="#" />
+                  <SidebarItem label="Projects" iconSlot={<Folder />} count={12} active href="#" />
+                  <SidebarItem label="Documents" iconSlot={<FileText />} href="#" />
+                  <SidebarItem label="Settings" iconSlot={<Settings />} href="#" />
                 </>
               }
             />

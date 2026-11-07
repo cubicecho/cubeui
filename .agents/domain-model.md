@@ -74,18 +74,18 @@ editing --leave asked, unsaved--> asking --discard--> left
 
 On the web a browser unload also asks (`beforeunload`).
 
-### A disclosure (`Disclosure`, `DisclosureRow`, a `FileTree` folder)
+### A collapsible (`Collapsible`, `CollapsibleRow`, a `FileTree` folder)
 
 ```
 shut --pressed--> open --pressed--> shut
 ```
 
-`Disclosure` keeps the state itself or takes it from the caller; `DisclosureRow` and `FileTree`
+`Collapsible` keeps the state itself or takes it from the caller; `CollapsibleRow` and `FileTree`
 folders can also be controlled. A shut body is not mounted. All three are pressed through the same
-button, `DisclosureTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
+button, `CollapsibleTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
 while the body is there.
 
-### A list's state (`QueryState`)
+### A list's state (`LoadState`)
 
 ```
 failed | loading | empty | has rows          (a list: `count`)
@@ -93,7 +93,7 @@ failed | loading | not found | found        (one record: `record`)
 ```
 
 Exactly one at a time, in that order of precedence; once there are rows, or the record is there,
-`QueryState` draws nothing and the screen draws them. A record that is not found is a rung of the
+`LoadState` draws nothing and the screen draws them. A record that is not found is a rung of the
 same ladder, so the guard works inside any shell.
 
 ### A sidebar's fold (`Sidebar`)
@@ -190,8 +190,9 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. It is the title `Section` and `SidebarSection` draw. Owner:
   `registry/layout/section-heading.tsx`; takes `children`.
-- **`CenteredLayout`:** a page that is one card in the middle of the screen, such
-  as a sign-in. Owner: `registry/layout/centered-layout.tsx`; composes `CardLayout`.
+- **`CenteredCardLayout`:** a page that is one card in the middle of the screen, such
+  as a sign-in. Owner: `registry/layout/centered-card-layout.tsx`; composes `CardLayout`.
+  `CenteredLayout` and the `centered-layout` item are its old names, deprecated for one release.
 
 ### App frames
 
@@ -204,10 +205,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   narrow), one line of its state (which gives way first) and its actions; the banner landmark.
   Owner: `registry/layout/app-bar.tsx`.
 - **`Sidebar`:** the app's navigation column, with sections of rows, that can fold to a
-  rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarNavItem`,
-  `SidebarCollapseButton`, `useSidebar`.
-- **`BarNavItem`:** a place in an app bar, drawn as its icon. Owner:
-  `registry/layout/sidebar.tsx`.
+  rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarItem`,
+  `SidebarCollapseButton`, `useSidebar`. `SidebarNavItem` is `SidebarItem`'s old name, deprecated
+  for one release.
+- **`AppBarItem`:** a place in an app bar, drawn as its icon. Owner:
+  `registry/layout/sidebar.tsx`. `BarNavItem` is its old name, deprecated for one release.
 
 ### Blocks on a page
 
@@ -224,9 +226,10 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   and `Section` all draw it. Owner: `registry/layout/card-layout.tsx`.
 - **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
   titled card is `CardLayout`. Owner: `registry/layout/section.tsx`; composes `HeadingRow`.
-- **`Disclosure`:** a titled block whose body shows and hides. Owner:
-  `registry/layout/disclosure.tsx`, with `DisclosureTrigger`, the button `DisclosureRow` and
-  `FileTree`'s folders open with too.
+- **`Collapsible`:** a titled block whose body shows and hides. Owner:
+  `registry/layout/collapsible.tsx`, with `CollapsibleTrigger`, the button `CollapsibleRow` and
+  `FileTree`'s folders open with too. `Disclosure`, `DisclosureTrigger` and the `disclosure` item
+  are its old names, deprecated for one release.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
   `registry/ui/dialog.tsx` and `dialog.web.tsx`.
 - **`DialogLayout`:** a `CardLayout` on the floating surface: the modal, a size, and a
@@ -248,13 +251,15 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   rows share: `ListItemText`, `rowFillClass` (the chosen tint and the hovered fill) and `rowLink`.
 - **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. Owner:
   `registry/ui/item.tsx`.
-- **`DisclosureRow`:** a `ListItem` that opens onto more below it, with no surface
-  of its own. Owner: `registry/layout/disclosure-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
-  and `ListItemText`, and `DisclosureTrigger`.
+- **`CollapsibleRow`:** a `ListItem` that opens onto more below it, with no surface
+  of its own. Owner: `registry/layout/collapsible-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
+  and `ListItemText`, and `CollapsibleTrigger`. `DisclosureRow` and the `disclosure-row` item are
+  its old names, deprecated for one release.
 - **`FileTree`:** a foldable tree of folders and files built from a list of paths,
   with dragging a row onto a folder on the web. Owner: `registry/layout/file-tree.tsx`.
-- **`DescriptionList`, `PropertyRow`:** read-only label-and-value facts. Owner:
-  `registry/layout/description-list.tsx`.
+- **`PropertyList`, `PropertyRow`:** read-only label-and-value facts. Owner:
+  `registry/layout/property-list.tsx`. `DescriptionList` and the `description-list` item are its
+  old names, deprecated for one release.
 - **`SettingRow`:** what a setting is on one side, its control on the other.
   Owner: `registry/layout/setting-row.tsx`.
 - **`StatTile`:** one headline number with its label on a card, optionally a filter to
@@ -265,11 +270,14 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`EmptyState`:** what a list says when it has nothing in it: an icon, a title,
   a line, an action, or one compact line. Owner: `registry/layout/empty-state.tsx`; composes
   `Empty` (`registry/ui/empty.tsx`).
-- **`QueryState`:** the failed, loading or empty state in front of a list until it
+- **`LoadState`:** the failed, loading or empty state in front of a list until it
   has rows, or the failed, loading or not-found state in front of one record until it is
-  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
-- **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
-  Try again. Owner: `registry/layout/route-error.tsx`.
+  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/load-state.tsx`, with `LoadError` and `RowSkeleton`.
+  `QueryState`, `QueryError` and the `query-state` item are its old names, deprecated for one
+  release.
+- **`ErrorPage`:** the whole-screen panel shown when a page fails to draw, with
+  Try again. Owner: `registry/layout/error-page.tsx`. `RouteError` and the `route-error` item are
+  its old names, deprecated for one release.
 
 ### Internals
 
@@ -290,4 +298,4 @@ the controls and surfaces, and components build one job from them. Shells place 
 hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout`, or under an
 `AppBar` in a `HeaderContentFooter`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
 each with its empty, loading and failed states. Bound fields wire a control to a form field. A shell keeps only the state of its own
-interaction (a dialog's discard question, a disclosure's open body), never the app's data.
+interaction (a dialog's discard question, a collapsible's open body), never the app's data.

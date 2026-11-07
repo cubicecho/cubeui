@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
+import { Collapsible } from "@/components/collapsible";
 import { DialogLayout } from "@/components/dialog-layout";
-import { Disclosure } from "@/components/disclosure";
 import { EmptyState } from "@/components/empty-state";
 import { FileTree } from "@/components/file-tree";
 import { HeaderContentFooter } from "@/components/header-content-footer";
@@ -421,7 +421,7 @@ function Docs({ file, longTitle }: Args) {
                     }
                   />
                   <div className="flex flex-col gap-3 border-foreground/10 border-t pt-4">
-                    <Disclosure
+                    <Collapsible
                       title="Front matter"
                       description="What the docs space knows about this file."
                       contentClassName="pt-2"
@@ -434,7 +434,7 @@ function Docs({ file, longTitle }: Args) {
                         />
                       }
                     />
-                    <Disclosure
+                    <Collapsible
                       title="History (3)"
                       contentSlot={
                         <List

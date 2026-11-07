@@ -13,7 +13,7 @@ const NAV_ROW = "flex-row items-center gap-1";
 
 /**
  * Room around the places inside their scroller, taken back by as much margin outside it. A
- * scroller clips on both axes, and a `BarNavItem`'s count sits over its icon's corner, past the
+ * scroller clips on both axes, and an `AppBarItem`'s count sits over its icon's corner, past the
  * item's box: the padding keeps the badge inside what is drawn, and the margin keeps the bar's
  * height and the nav's width what the places alone would make them.
  */
@@ -78,7 +78,7 @@ function Nav({ navSlot, label, className }: NavProps) {
 type AppBarNav =
   | {
       /**
-       * The app's places, usually `BarNavItem`s. Drawn inside a `<nav>` — `role="navigation"` on
+       * The app's places, usually `AppBarItem`s. Drawn inside a `<nav>` — `role="navigation"` on
        * device — named by `navLabel`, which is the landmark every hand-written bar either forgot
        * or spelled differently. Do not wrap them in one yourself.
        */

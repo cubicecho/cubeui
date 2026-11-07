@@ -18,7 +18,7 @@
  * It is hand-written rather than compiled for three reasons the compiler would have to guess at:
  * `ItemDescription` is shadcn's `<p>` taking `<p>` props, `ItemSeparator` is radix's, and the
  * compiled reset (`flex-shrink: 0` on every view) would stop a long title shrinking inside a row
- * that shadcn lets shrink — the thing `DisclosureRow`'s truncating title depends on.
+ * that shadcn lets shrink — the thing `CollapsibleRow`'s truncating title depends on.
  *
  * `ItemSeparator` is radix's `Separator` directly, with the classes shadcn's `Separator` gives it,
  * rather than `@cubeui/separator`: that one is web-only, and the native registry installs this file

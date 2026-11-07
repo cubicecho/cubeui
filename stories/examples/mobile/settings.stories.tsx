@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "../../../registry/layout/card-layout";
-import { DescriptionList, PropertyRow } from "../../../registry/layout/description-list";
 import { DialogLayout } from "../../../registry/layout/dialog-layout";
 import { PageLayout } from "../../../registry/layout/page-layout";
+import { PropertyList, PropertyRow } from "../../../registry/layout/property-list";
 import { SettingRow } from "../../../registry/layout/setting-row";
 import { Button } from "../../../registry/ui/button";
 import { ConfirmButton } from "../../../registry/ui/confirm-button";
@@ -109,7 +109,7 @@ function Settings() {
             title="Account"
             level={2}
             contentSlot={
-              <DescriptionList
+              <PropertyList
                 layout="stacked"
                 contentSlot={[
                   <PropertyRow

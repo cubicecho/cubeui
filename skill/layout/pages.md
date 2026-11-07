@@ -331,7 +331,7 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 
 - The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
   cell `GridLayout` draws, so a card in it carries no width of its own.
-- It has no empty or loading state. `QueryState` goes above it, as it does above a list.
+- It has no empty or loading state. `LoadState` goes above it, as it does above a list.
 - It was `CardGrid` in `@cubeui/page`, an item that is gone; only the import and the name change.
 
 <!-- props:GridLayout -->
@@ -346,13 +346,13 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 ## Centered pages
 
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
-of its own. `CenteredLayout` is that page — full height, centred both ways, `p-4` off the edges —
+of its own. `CenteredCardLayout` is that page — full height, centred both ways, `p-4` off the edges —
 around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under the same names.
 The card is the page here, so its title is the page's: an `h1` at `text-xl`, as `PageHeader`'s
 level 1, not a card title. `level` and `titleClassName` still override it.
 
 ```tsx
-<CenteredLayout
+<CenteredCardLayout
   iconSlot={<KeyRound />}
   title="Authentication required"
   description="Enter the router token from settings.json."
@@ -367,8 +367,8 @@ level 1, not a card title. `level` and `titleClassName` still override it.
 />
 ```
 
-<!-- props:CenteredLayout -->
-`CenteredLayout`'s props, from the TSDoc in `registry/layout/centered-layout.tsx`:
+<!-- props:CenteredCardLayout -->
+`CenteredCardLayout`'s props, from the TSDoc in `registry/layout/centered-card-layout.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -378,7 +378,11 @@ level 1, not a card title. `level` and `titleClassName` still override it.
 It also takes the props declared in `registry/layout/card-layout.tsx`: `actionSlot`, `contentClassName`, `contentSlot`, `description`, `descriptionIconSlot`, `descriptionPlacement`, `emptySlot`, `footerActionsSlot`, `footerClassName`, `footerSlot`, `headerClassName`, `iconSlot`, `level`, `loading`, `title`, `titleClassName`, `wrapperSlot`.
 <!-- /props -->
 
-`CenteredLayout` hands `wrapperSlot` to its card as it does every other slot, so a sign-in of
+**It was `CenteredLayout`.** `CenteredLayout`, and the `@cubeui/centered-layout` item that
+re-exports it, stay for one release as deprecated aliases; import `CenteredCardLayout` from
+`@/components/centered-card-layout` in new code.
+
+`CenteredCardLayout` hands `wrapperSlot` to its card as it does every other slot, so a sign-in of
 two fields — an email and a password — puts its `<form>` there and its submit in
 `footerActionsSlot`, as [a card does](cards.md#cards). The `form="token"` above is the other way,
 for a form that is already written: the button names the form it submits.

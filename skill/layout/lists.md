@@ -5,9 +5,9 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 **Contents**
 
 - [List pages](#list-pages)
-  - [QueryState](#querystate)
+  - [LoadState](#loadstate)
   - [Empty states](#empty-states)
-  - [DisclosureRow](#disclosurerow)
+  - [CollapsibleRow](#collapsiblerow)
   - [List](#list)
   - [ListItem](#listitem)
 
@@ -16,7 +16,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 The shells for the shape every list route is: a ladder of states, then a list of rows.
 
 ```tsx
-<QueryState
+<LoadState
   query={roles}
   what="your roles"
   count={shown.length}
@@ -25,7 +25,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
 <List
   label="Roles"
   contentSlot={shown.map((role) => (
-  <DisclosureRow
+  <CollapsibleRow
     key={role.id}
     open={open === role.id}
     onOpenChange={(next) => setOpen(next ? role.id : null)}
@@ -40,8 +40,11 @@ The shells for the shape every list route is: a ladder of states, then a list of
 />
 ```
 
-### QueryState
+### LoadState
 
+- **It was `QueryState`.** `QueryState` and `QueryError`, and the `@cubeui/query-state` item that
+  re-exports them, stay for one release as deprecated aliases; import `LoadState` and `LoadError`
+  from `@/components/load-state` in new code.
 - **`emptySlot` takes an `EmptyState`** (`@cubeui/empty-state`): the centred block when the list is
   the page, `compact` when it sits inside a card. Not the `@cubeui/empty` parts assembled by hand.
 - The three rungs a list climbs before it is a list: the request **failed**, it has **not
@@ -57,8 +60,8 @@ The shells for the shape every list route is: a ladder of states, then a list of
   Without it the line under the heading is the error's own `message`, which is the transport's
   wording ("Failed to fetch", "Received status code 401"), or "The server did not answer." when
   there is none. An app with a `describeError` helper passes it here instead of keeping its own
-  failure card: `<QueryState describe={describeError} … />`. `QueryError` takes it too.
-- **Try again awaits the retry.** When `onRetry` (on `QueryState`, the query's `refetch`) returns a
+  failure card: `<LoadState describe={describeError} … />`. `LoadError` takes it too.
+- **Try again awaits the retry.** When `onRetry` (on `LoadState`, the query's `refetch`) returns a
   promise, the button is disabled and reads "Retrying…" until it settles, so a second press does
   not stack requests. A rejected retry is caught — Apollo's `refetch` rejects when it fails again
   — so it never surfaces as an unhandled rejection; the query's own error is what gets shown.
@@ -71,7 +74,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
   the record's name, the not-found title is the page's `h1` — the default, `level={1}`:
 
   ```tsx
-  <QueryState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
+  <LoadState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
   {project.data ? <PageLayout title={project.data.name} contentSlot={<ProjectBody project={project.data} />} /> : null}
   ```
 
@@ -83,31 +86,31 @@ The shells for the shape every list route is: a ladder of states, then a list of
     title="Pool"
     contentSlot={
       <>
-        <QueryState query={pool} what="this pool" record={pool.data} notFoundLabel="Pool not found" level={2} />
+        <LoadState query={pool} what="this pool" record={pool.data} notFoundLabel="Pool not found" level={2} />
         {pool.data ? <PoolBody pool={pool.data} /> : null}
       </>
     }
   />
   ```
-- It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
+- It ships `LoadError` and `RowSkeleton` alongside it. Reach for `LoadError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
-  `<QueryError error={error} onRetry={refetch} what="this invoice" describe={describeError} />`.
+  `<LoadError error={error} onRetry={refetch} what="this invoice" describe={describeError} />`.
   It is an `Alert variant="destructive"` with Try again as its action (so the item installs
   `@cubeui/alert`), not a card of its own. Its root is `role="alert"`, full and `compact` alike,
   because it replaces what the reader was waiting for — so do not wrap it in another alert.
 - `RowSkeleton` draws `rows` placeholder rows — a title bar over a shorter line, no card round
-  them — the shape a list row is, so the page does not change shape when the answer lands. `rows` is 3 by default and `QueryState` passes it through. Use it on
+  them — the shape a list row is, so the page does not change shape when the answer lands. `rows` is 3 by default and `LoadState` passes it through. Use it on
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
   The placeholders are `aria-hidden` inside one `role="status"` wrapper announcing "Loading", so
   three placeholder rows are not three rows of nothing to read out.
 - **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
   small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
-  it in a `SidebarSection`'s `status`; `QueryError` and `RowSkeleton` take it too.
+  it in a `SidebarSection`'s `status`; `LoadError` and `RowSkeleton` take it too.
 
 
-<!-- props:QueryState -->
-`QueryState`'s props, from the TSDoc in `registry/layout/query-state.tsx`:
+<!-- props:LoadState -->
+`LoadState`'s props, from the TSDoc in `registry/layout/load-state.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -115,7 +118,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
 | `what` (required) | `string` |  | What could not be fetched, in the reader's words: "your agents", "the archive". |
 | `rows` | `number` | `3` | How many placeholder rows stand in for the list while it loads. |
 | `compact` | `boolean` | `false` | The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row rather than cards. For a list that lives in a sidebar, where a card-sized error would be taller than the list it replaced. |
-| `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `QueryError`. |
+| `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `LoadError`. |
 | `className` | `string` |  |  |
 | `count` | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
 | `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
@@ -156,7 +159,7 @@ and which one is a question of **where the list is**, not how much there is to s
 | `title` (required) | `string` |  |  |
 | `actionSlot` | `SlotNode` |  |  |
 | `className` | `string` |  | The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. |
-| `compact` | `false` |  | The one muted line that stands in for a short list *inside* something else — a card, a sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line inside a region that already has its heading is never what a screen reader lands on. The same word, for the same place, as `QueryState`'s `compact` — whose `emptySlot` it usually is. |
+| `compact` | `false` |  | The one muted line that stands in for a short list *inside* something else — a card, a sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line inside a region that already has its heading is never what a screen reader lands on. The same word, for the same place, as `LoadState`'s `compact` — whose `emptySlot` it usually is. |
 | `description` | `ReactNode` |  |  |
 | `level` | `1 \| 2 \| 3` |  | Makes the title a heading of this rank. Leave it off for an empty list inside a page that already has its heading. Set it when the empty state *is* the page — a first run, a record that was not found, a link that did not work — so a screen reader has a heading to land on: `1` for a whole screen, `2` or `3` under a title that is already there. The text is the same size at every level, as on `Section`: pick the rank by where it sits, not by how it looks. |
 <!-- /props -->
@@ -174,7 +177,7 @@ and which one is a question of **where the list is**, not how much there is to s
   centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
   never a heading, so `level` is a **type error** with `compact`, and so is `description`: the
   whole sentence goes in `title` ("No servers yet. Add one to give the agent some tools.").
-  Use it for `CardLayout`'s `emptySlot`, a compact `QueryState`'s `emptySlot`, and the empty body of a
+  Use it for `CardLayout`'s `emptySlot`, a compact `LoadState`'s `emptySlot`, and the empty body of a
   popover or picker. In a `Sidebar`, `className="px-2"` lines it up with the rows.
 - Do not hand-write either: not `<Text className="text-foreground/60 text-sm">No labels
   yet.</Text>`, and not an `Empty` helper in the app. Four apps wrote that line with as many
@@ -189,8 +192,11 @@ and which one is a question of **where the list is**, not how much there is to s
   `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
   screen.
 
-### DisclosureRow
+### CollapsibleRow
 
+- **It was `DisclosureRow`.** `DisclosureRow`, and the `@cubeui/disclosure-row` item that
+  re-exports it, stay for one release as deprecated aliases; import `CollapsibleRow` from
+  `@/components/collapsible-row` in new code.
 - The **whole heading is the button**, so a row is never opened by hitting a 16-pixel chevron and
   is operable with Space. `aria-expanded` is on it, and `aria-controls` while the body is there.
 - **`actionSlot` sits outside that button.** A control nested inside a button is invalid HTML and, in
@@ -202,14 +208,14 @@ and which one is a question of **where the list is**, not how much there is to s
   surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
   frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
   is `ListItem`, below.
-- One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
+- One source for both halves: `@cubeui/collapsible-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
 
-<!-- props:DisclosureRow -->
-`DisclosureRow`'s props, from the TSDoc in `registry/layout/disclosure-row.tsx`:
+<!-- props:CollapsibleRow -->
+`CollapsibleRow`'s props, from the TSDoc in `registry/layout/collapsible-row.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -219,7 +225,7 @@ and which one is a question of **where the list is**, not how much there is to s
 | `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
 | `meta` | `ReactNode` |  | The grey line of facts beside the title — a name, a time, a count. |
 | `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
-| `actionSlot` | `SlotNode` |  | Buttons, outside the disclosure: a row is opened by its heading and acted on by these. |
+| `actionSlot` | `SlotNode` |  | Buttons, outside the collapsible: a row is opened by its heading and acted on by these. |
 | `contentSlot` | `SlotNode` |  | What the row opens onto. |
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
@@ -243,7 +249,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `DisclosureRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
+| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `CollapsibleRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
 | `label` | `string` |  | What the list is a list of, in the reader's words: "Workspaces". Its accessible name. |
 | `divided` | `boolean` | `true` | A rule between rows. On unless turned off, for rows that are cards of their own. |
 | `className` | `string` |  |  |
@@ -261,7 +267,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   pass `divided={false}`, for rows that are cards of their own.
 - The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
   row, or `divide-y` on a parent.
-- It takes any row: `ListItem`, `DisclosureRow`, composed `Item` parts, a row of your own.
+- It takes any row: `ListItem`, `CollapsibleRow`, composed `Item` parts, a row of your own.
 - **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
   exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
   steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge
@@ -282,7 +288,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   Do **not** write `marginLeft`, `pl-…` or `border-l` on a row yourself. It is still a list, not
   `role="tree"`: nothing here opens, closes or takes arrow keys, which is what a tree promises. A
   tree of paths is `FileTree`. A row with no `ListRow` around it is a plain row with no level.
-- **No `emptySlot` and no `loading`.** Those rungs are `QueryState`'s, drawn above the list. With no
+- **No `emptySlot` and no `loading`.** Those rungs are `LoadState`'s, drawn above the list. With no
   rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items" — and a
   `CardLayout` whose `contentSlot` is that list shows its `emptySlot`.
 - It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in

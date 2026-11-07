@@ -3,31 +3,33 @@ import { useState } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
-import { Disclosure as Compiled } from "../compiled/disclosure";
-import { Disclosure as Native } from "../registry/layout/disclosure";
+import { Collapsible as Compiled } from "../compiled/collapsible";
+import { Disclosure as CompiledOld } from "../compiled/disclosure";
+import { Collapsible as Native } from "../registry/layout/collapsible";
+import { Disclosure as NativeOld } from "../registry/layout/disclosure";
 import { Button as NativeButton } from "../registry/ui/button";
 import { isTurned } from "./chevron";
 import { SideBySide } from "./side-by-side";
 
 /**
- * The disclosure on both halves: an uncontrolled "Raw output" block with an action beside its
+ * The collapsible on both halves: an uncontrolled "Raw output" block with an action beside its
  * header, and a controlled "Show completed" toggle whose title flips with the state it is handed.
- * The play test is what holds `DisclosureRow`'s guarantees here — one button, toggled by click,
+ * The play test is what holds `CollapsibleRow`'s guarantees here — one button, toggled by click,
  * Enter and Space, `aria-expanded` following it, the body mounted only while open, and the action
  * outside the button so pressing it leaves the section as it was.
  */
-const meta = { title: "RN Parity/Disclosure" } satisfies Meta;
+const meta = { title: "RN Parity/Collapsible" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-type DisclosureComponent = typeof Native;
+type CollapsibleComponent = typeof Native;
 
 function Examples({
-  Disclosure,
+  Collapsible,
   action,
   body,
 }: {
-  Disclosure: DisclosureComponent;
+  Collapsible: CollapsibleComponent;
   action: (onPress: () => void) => React.ReactElement;
   body: (text: string) => React.ReactElement;
 }) {
@@ -35,19 +37,19 @@ function Examples({
   const [showCompleted, setShowCompleted] = useState(false);
   return (
     <div className="flex flex-col gap-6">
-      <Disclosure
+      <Collapsible
         title="Raw output"
         description={`Copied ${copied} times`}
         actionSlot={action(() => setCopied((n) => n + 1))}
         contentSlot={body('{ "exitCode": 0 }')}
       />
-      <Disclosure
+      <Collapsible
         title={`${showCompleted ? "Hide" : "Show"} completed (3)`}
         open={showCompleted}
         onOpenChange={setShowCompleted}
         contentSlot={body("Water the plants")}
       />
-      <Disclosure title="No output" />
+      <Collapsible title="No output" />
     </div>
   );
 }
@@ -57,7 +59,7 @@ export const Default: Story = {
     <SideBySide
       native={
         <Examples
-          Disclosure={Native}
+          Collapsible={Native}
           action={(onPress) => (
             <NativeButton size="sm" variant="outline" onPress={onPress} content="Copy" />
           )}
@@ -66,7 +68,7 @@ export const Default: Story = {
       }
       compiled={
         <Examples
-          Disclosure={Compiled as DisclosureComponent}
+          Collapsible={Compiled as CollapsibleComponent}
           action={(onPress) => (
             // `onClick` on this half; see the note in `card.stories.tsx`.
             <CompiledButton size="sm" variant="outline" onClick={onPress} content="Copy" />
@@ -143,5 +145,29 @@ export const Default: Story = {
     // Waited for, since the web turns it with a transition.
     await waitFor(() => expect(isTurned(nativeChevron)).toBe(true));
     await waitFor(() => expect(isTurned(compiledChevron)).toBe(true));
+  },
+};
+
+/**
+ * The old name and its old item, kept for one release: `Disclosure` from `disclosure` opens and
+ * shuts as `Collapsible` does, so an app moves its call sites across one at a time.
+ */
+export const OldName: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <NativeOld title="Raw output" contentSlot={<Text className="text-foreground">Body</Text>} />
+      }
+      compiled={<CompiledOld title="Raw output" contentSlot={<span>Body</span>} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const button of canvas.getAllByRole("button", { name: /Raw output/ })) {
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+      await userEvent.click(button);
+      await expect(button).toHaveAttribute("aria-expanded", "true");
+    }
+    await expect(canvas.getAllByText("Body")).toHaveLength(2);
   },
 };

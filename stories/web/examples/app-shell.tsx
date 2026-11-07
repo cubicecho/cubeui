@@ -1,10 +1,10 @@
 import { BookOpen, CalendarDays, Inbox, LayoutDashboard, ListTodo, LogOut } from "lucide-react";
 import { type ReactElement, useState } from "react";
 import {
-  BarNavItem,
+  AppBarItem,
   Sidebar,
   SidebarCollapseButton,
-  SidebarNavItem,
+  SidebarItem,
   SidebarSection,
   useSidebar,
 } from "@/components/sidebar";
@@ -92,7 +92,7 @@ export function AppShell({ current, page }: { current: Place; page: ReactElement
                 as="nav"
                 title="Workspace"
                 contentSlot={PLACES.map((place) => (
-                  <SidebarNavItem
+                  <SidebarItem
                     key={place.id}
                     href={`#${place.id}`}
                     label={place.label}
@@ -113,7 +113,7 @@ export function AppShell({ current, page }: { current: Place; page: ReactElement
                   />
                 }
                 contentSlot={PROJECTS.map((project) => (
-                  <SidebarNavItem
+                  <SidebarItem
                     key={project.id}
                     href={`#projects/${project.id}`}
                     label={project.name}
@@ -127,13 +127,13 @@ export function AppShell({ current, page }: { current: Place; page: ReactElement
           }
           footerSlot={
             <>
-              <SidebarNavItem
+              <SidebarItem
                 href="#settings"
                 label="Settings"
                 iconSlot={<Settings />}
                 active={current === "settings"}
               />
-              <SidebarNavItem label="Sign out" iconSlot={<LogOut />} onClick={() => {}} />
+              <SidebarItem label="Sign out" iconSlot={<LogOut />} onClick={() => {}} />
               <SidebarCollapseButton />
             </>
           }
@@ -142,7 +142,7 @@ export function AppShell({ current, page }: { current: Place; page: ReactElement
       brandSlot={<BarBrand />}
       navLabel="Main"
       navSlot={PLACES.map((place) => (
-        <BarNavItem
+        <AppBarItem
           key={place.id}
           href={`#${place.id}`}
           label={place.label}

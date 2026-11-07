@@ -33,10 +33,10 @@ and `<GridLayout contentSlot={cards} />`, where the cards are an array or a frag
 gets a cell.
 
 A screen is `PageLayout`, on the phone as on the web: its title block pinned over a body that
-scrolls. A detail screen for one record puts `QueryState` in front of it, with `record` and
+scrolls. A detail screen for one record puts `LoadState` in front of it, with `record` and
 `notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
 record is not found (`level={2}` when the guard is inside a screen that has its own title), and
-nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
+nothing once it is there — see [layout/lists.md](layout/lists.md#loadstate).
 A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`, a colour dot in
 `iconSlot`, the record's name as `title`, and its badges with the buttons in `actionSlot`.
 
@@ -47,18 +47,18 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | The title block at the top of a screen | `PageHeader` | `@cubeui/page-header` |
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |
-| A place in that bar: an icon link named by `label`, with a count badge or a status dot | `BarNavItem` | `@cubeui/sidebar` |
+| A place in that bar: an icon link named by `label`, with a count badge or a status dot | `AppBarItem` | `@cubeui/sidebar` |
 | An app's bar across the top — brand, places, a status line, actions — on its own; with no sidebar, in a `HeaderContentFooter`'s `headerSlot` over the screen — see [layout/app-bar.md](layout/app-bar.md#app-bar) | `AppBar` | `@cubeui/app-bar` |
-| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
+| An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
-| A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredLayout` | `@cubeui/centered-layout` |
+| A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
-| A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#disclosure) | `Disclosure` | `@cubeui/disclosure` |
-| Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#description-lists) | `DescriptionList`, `PropertyRow` | `@cubeui/description-list` |
+| A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#collapsible) | `Collapsible` | `@cubeui/collapsible` |
+| Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#property-lists) | `PropertyList`, `PropertyRow` | `@cubeui/property-list` |
 | One figure on a card, or a pressable filter tile with a pressed state — see [layout/facts.md](layout/facts.md#stat-tiles) | `StatTile` | `@cubeui/stat-tile` |
 | A grid of cards or tiles, 1 to 4 to a row by width — see [layout/pages.md](layout/pages.md#grids) | `GridLayout` | `@cubeui/grid-layout` |
 | What an empty list says | `EmptyState` | `@cubeui/empty-state` |
@@ -104,9 +104,9 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout/lists.md](layout/lists.md#list) | `List` | `@cubeui/list` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/lists.md](layout/lists.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
-| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
-| A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `QueryState` | `@cubeui/query-state` |
-| A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `RouteError` | `@cubeui/route-error` |
+| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#collapsiblerow) | `CollapsibleRow` | `@cubeui/collapsible-row` |
+| A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `LoadState` | `@cubeui/load-state` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `ErrorPage` (once `RouteError`, deprecated) | `@cubeui/error-page` |
 
 One name means different things across the halves, and it is worth knowing before you grep:
 
@@ -127,7 +127,7 @@ take the props the web ones take, with four conversions that are the same everyw
 - **`onPress` on a device, `onClick` on the web.** Every pressable in the native set takes
   `onPress`; its compiled web half renders a real `<button>` and takes `onClick`, with the rest of
   the `<button>` props. So a DOM app writes `onClick` on `Button`, `Card`, `ListItem`, `StatTile`,
-  `SidebarNavItem` and the rest, and the examples in these files that say `onPress` read as
+  `SidebarItem` and the rest, and the examples in these files that say `onPress` read as
   `onClick` there. Code shared between the halves has no one name to write; keep the handler and
   pass it under each half's name.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.

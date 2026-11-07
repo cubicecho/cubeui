@@ -12,17 +12,17 @@ import {
   useAppForm,
 } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
-import { CenteredLayout } from "@/components/centered-layout";
+import { CenteredCardLayout } from "@/components/centered-card-layout";
+import { Collapsible } from "@/components/collapsible";
+import { CollapsibleRow } from "@/components/collapsible-row";
 import { ColorField } from "@/components/color-field";
 import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
-import { Disclosure } from "@/components/disclosure";
-import { DisclosureRow } from "@/components/disclosure-row";
 import { EmptyState } from "@/components/empty-state";
+import { ErrorPage } from "@/components/error-page";
 import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
@@ -30,18 +30,18 @@ import { GridLayout } from "@/components/grid-layout";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadError, LoadState, RowSkeleton } from "@/components/load-state";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
-import { QueryError, QueryState, RowSkeleton } from "@/components/query-state";
-import { RouteError } from "@/components/route-error";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { SettingRow } from "@/components/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "@/components/sidebar";
 import { SidebarLayout, SplitLayout } from "@/components/split-layout";
 import { StatTile } from "@/components/stat-tile";
 import { Alert } from "@/components/ui/alert";
@@ -267,6 +267,18 @@ const NOT_SHOWN: Record<string, string> = {
   "sidebar-stories": "A story file a consumer installs beside `sidebar`.",
   "theme-picker-stories": "A story file a consumer installs beside `theme-picker`.",
   "toggle-chip-stories": "A story file a consumer installs beside `toggle-chip`.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
+  disclosure:
+    "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const noop = () => {};
@@ -1350,25 +1362,25 @@ function FileTrees() {
   );
 }
 
-function Disclosures() {
+function Collapsibles() {
   const [open, setOpen] = useState(false);
   return (
     <Stack
       content={
         <>
-          <Disclosure
+          <Collapsible
             title="Advanced"
             description="Timeouts and retries."
             contentSlot={
               <p className="text-foreground text-sm">Retries: 3. Timeout: 30 seconds.</p>
             }
           />
-          <Disclosure
+          <Collapsible
             title="Open from the start"
             defaultOpen
             contentSlot={<p className="text-foreground text-sm">This one begins open.</p>}
           />
-          <DisclosureRow
+          <CollapsibleRow
             open={open}
             onOpenChange={setOpen}
             title="atlas"
@@ -1383,10 +1395,10 @@ function Disclosures() {
   );
 }
 
-function Descriptions() {
+function Properties() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Ada Lovelace" />
@@ -1399,7 +1411,7 @@ function Descriptions() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         layout="stacked"
         contentSlot={
           <>
@@ -1461,12 +1473,12 @@ function StatTiles() {
 
 const idle = { isPending: false, isError: false, error: null, refetch: noop };
 
-function QueryStates() {
+function LoadStates() {
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <RowSkeleton rows={3} />
-      <QueryError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
-      <QueryState
+      <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
+      <LoadState
         query={idle}
         what="servers"
         count={0}
@@ -1556,7 +1568,7 @@ function SidebarSample({ label }: { label: string }) {
           title="Workspace"
           level={3}
           contentSlot={PLACES.map((place) => (
-            <SidebarNavItem
+            <SidebarItem
               key={place}
               href={`#${place.toLowerCase()}`}
               label={place}
@@ -1693,21 +1705,21 @@ const sections: GallerySection[] = [
   { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
-    title: "Disclosure and disclosure row",
-    items: ["disclosure", "disclosure-row"],
-    content: <Disclosures />,
+    title: "Collapsible and its row",
+    items: ["collapsible", "collapsible-row"],
+    content: <Collapsibles />,
   },
-  { title: "Description list", items: ["description-list"], content: <Descriptions /> },
+  { title: "Property list", items: ["property-list"], content: <Properties /> },
   { title: "Setting row", items: ["setting-row"], content: <SettingRows /> },
   { title: "Stat tile", items: ["stat-tile"], content: <StatTiles /> },
-  { title: "Query state", items: ["query-state"], content: <QueryStates /> },
+  { title: "Load state", items: ["load-state"], content: <LoadStates /> },
   {
-    title: "Route error",
-    items: ["route-error"],
+    title: "Error page",
+    items: ["error-page"],
     content: (
       <Frame
         height="h-[320px]"
-        content={<RouteError error={new Error("Project not found")} reset={noop} />}
+        content={<ErrorPage error={new Error("Project not found")} reset={noop} />}
       />
     ),
   },
@@ -1716,12 +1728,12 @@ const sections: GallerySection[] = [
   // Shells
   { title: "Card layout", items: ["card-layout"], content: <CardLayouts /> },
   {
-    title: "Centered layout",
-    items: ["centered-layout"],
+    title: "Centered card layout",
+    items: ["centered-card-layout"],
     content: (
       <Frame
         content={
-          <CenteredLayout
+          <CenteredCardLayout
             className="h-full min-h-0"
             level={3}
             title="Sign in"

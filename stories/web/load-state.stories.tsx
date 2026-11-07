@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
+import { LoadState } from "@/components/load-state";
 import { QueryState } from "@/components/query-state";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 
 const meta = {
-  title: "Layout/QueryState",
-  component: QueryState,
+  title: "Layout/LoadState",
+  component: LoadState,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof QueryState>;
+} satisfies Meta<typeof LoadState>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -183,7 +184,7 @@ export const OutOfTheWay: Story = {
   args: { query: settled, what: "your roles", count: 3, emptySlot: NoRoles },
   render: (args) => (
     <>
-      <QueryState {...args} />
+      <LoadState {...args} />
       <Rows />
     </>
   ),
@@ -253,12 +254,24 @@ export const RecordFound: Story = {
   },
   render: (args) => (
     <>
-      <QueryState {...args} />
+      <LoadState {...args} />
       <p>Telos</p>
     </>
   ),
   play: async ({ canvas }) => {
     expect(canvas.queryByRole("heading", { name: "Project not found" })).toBeNull();
     expect(canvas.getByText("Telos")).toBeVisible();
+  },
+};
+
+/**
+ * The old name and its old item, kept for one release: `QueryState` from `query-state` draws
+ * what `LoadState` draws, so an app moves its call sites across one at a time.
+ */
+export const OldName: Story = {
+  args: { query: settled, what: "your roles", count: 0, emptySlot: NoRoles },
+  render: (args) => <QueryState {...args} />,
+  play: async ({ canvas }) => {
+    expect(canvas.getByText("No roles yet")).toBeVisible();
   },
 };
