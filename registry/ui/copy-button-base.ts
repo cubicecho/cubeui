@@ -51,7 +51,11 @@ export type CopyButtonProps = {
    * @defaultValue true
    */
   tooltip?: ButtonProps["tooltip"] | undefined;
-  /** The button's class: its position, say `absolute top-2 right-2` over a snippet. */
+  /**
+   * The button's class, for its place in a row: `ml-auto`, `self-end`. Beside a block of text it
+   * goes in the block's `actionSlot` — `CodeBlock`, `CardLayout`, `Section`, `PropertyRow`,
+   * `ListItem` — not in an `absolute` corner over the block, where it covers the text.
+   */
   className?: string | undefined;
 };
 
