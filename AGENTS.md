@@ -557,12 +557,13 @@ Recorded so the next pass does not re-derive them:
   `flex items-start justify-between` across 8 projects. Settled: once kanban installed
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than
   upstreamed — `dim` is one `className` on `ItemContent`, which is not a component. What `Item`
-  had no answer for was the row that **opens**, so `DisclosureRow` is what shipped.
+  had no answer for was the row that **opens**, so `DisclosureRow`, now `CollapsibleRow`, is what
+  shipped.
   `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
   has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`). `DisclosureRow` is a `ListItem` that opens, built on
+  shared through `item-base.ts`). `CollapsibleRow` is a `ListItem` that opens, built on
   `ListItem`'s box and words and `Collapsible`'s button, so the row that opens is on both halves
   too and looks like the rows beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of

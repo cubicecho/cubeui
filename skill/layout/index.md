@@ -7,7 +7,7 @@ Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
 sections, disclosures, sidebars and the app bar are written once in React Native and compiled to
 the web, so the same item installs in a Vite app and an Expo app with the same props. The
 list-page parts ([lists.md](lists.md), [trees-and-tables.md](trees-and-tables.md)) are the exception: `Table` is web-only, and `LoadState` is its own
-item on each half; `DisclosureRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
+item on each half; `CollapsibleRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
 four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
@@ -44,7 +44,7 @@ lay their children out the same way on both halves, so one class list is right f
 | [cards.md](cards.md) | `CardLayout`, `Section`, `Collapsible` |
 | [facts.md](facts.md) | `DescriptionList`, `PropertyRow`, `SettingRow`, `StatTile` |
 | [dialogs.md](dialogs.md) | `DialogLayout`, the unsaved-changes guard, Cmd/Ctrl+S |
-| [lists.md](lists.md) | `LoadState`, `EmptyState`, `DisclosureRow`, `List`, `ListItem` |
+| [lists.md](lists.md) | `LoadState`, `EmptyState`, `CollapsibleRow`, `List`, `ListItem` |
 | [trees-and-tables.md](trees-and-tables.md) | `FileTree`, `Table` |
 
 ## What does not belong in a shell

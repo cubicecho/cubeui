@@ -277,5 +277,5 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
   collapsible is the heading of its part of the page; `contentClassName` to indent the body.
   An element as `title` or `description` is placed as it is and styles itself.
-- A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
+- A row in a list that opens onto its detail is `CollapsibleRow`, which adds the row's `badgesSlot`,
   `meta` and `ListItem`'s box.

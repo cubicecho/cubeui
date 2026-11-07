@@ -79,7 +79,7 @@ type CollapsibleTriggerProps = {
 };
 
 /**
- * The button that opens and shuts something, for `Collapsible`, `DisclosureRow` and `FileTree`'s
+ * The button that opens and shuts something, for `Collapsible`, `CollapsibleRow` and `FileTree`'s
  * folders: a chevron that turns down while open, then `contentSlot`, with `aria-expanded` and,
  * while the body is there, `aria-controls`. Anything else on the row sits beside it, because a
  * button in a button is invalid.

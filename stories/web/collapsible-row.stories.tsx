@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { expect, fn, userEvent } from "storybook/test";
-import { DisclosureRow } from "@/components/disclosure-row";
+import { CollapsibleRow } from "@/components/collapsible-row";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const meta = {
-  title: "Layout/DisclosureRow",
-  component: DisclosureRow,
+  title: "Layout/CollapsibleRow",
+  component: CollapsibleRow,
   parameters: { layout: "padded" },
-} satisfies Meta<typeof DisclosureRow>;
+} satisfies Meta<typeof CollapsibleRow>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -19,13 +19,13 @@ type Story = StoryObj<typeof meta>;
 const Controlled = ({
   onOpenChange,
   ...props
-}: Omit<Parameters<typeof DisclosureRow>[0], "open" | "onOpenChange"> & {
+}: Omit<Parameters<typeof CollapsibleRow>[0], "open" | "onOpenChange"> & {
   onOpenChange?: (open: boolean) => void;
 }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="w-[560px]">
-      <DisclosureRow
+      <CollapsibleRow
         {...props}
         open={open}
         onOpenChange={(next) => {
@@ -94,7 +94,7 @@ export const OpensWithTheKeyboard: Story = {
 };
 
 /**
- * The action sits outside the disclosure. A control nested inside a button is invalid HTML and, in
+ * The action sits outside the collapsible. A control nested inside a button is invalid HTML and, in
  * practice, a delete that cannot be clicked — so opening the row and acting on it are two
  * separate targets.
  */

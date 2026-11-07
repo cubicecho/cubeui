@@ -6,9 +6,9 @@ import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { Collapsible } from "../../registry/layout/collapsible";
+import { CollapsibleRow } from "../../registry/layout/collapsible-row";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
-import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { EmptyState } from "../../registry/layout/empty-state";
 import { ErrorPage } from "../../registry/layout/error-page";
 import { FileTree } from "../../registry/layout/file-tree";
@@ -236,6 +236,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
   disclosure:
     "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
 };
 
 const onButtonPress = fn();
@@ -688,7 +690,7 @@ function Rows() {
         description="Rarely needed."
         contentSlot={<Text className="text-foreground text-sm">Retention is ninety days.</Text>}
       />
-      <DisclosureRow
+      <CollapsibleRow
         open={open}
         onOpenChange={setOpen}
         title="Deploy 482"
@@ -1066,7 +1068,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Sections and rows",
-    items: ["section", "setting-row", "description-list", "collapsible", "disclosure-row"],
+    items: ["section", "setting-row", "description-list", "collapsible", "collapsible-row"],
     content: <Rows />,
   },
   {

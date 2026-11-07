@@ -76,7 +76,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`triggerSlot`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
-  because `DialogLayout` is the first thing that takes it, not the last: `DisclosureRow` takes it,
+  because `DialogLayout` is the first thing that takes it, not the last: `CollapsibleRow` takes it,
   and so does `Combobox`, whose menu is often filled *by* the opening. Pass `onOpenChange`
   alone to be told without taking over.
 - **`defaultOpen`** — where it starts, when the thing holds its own open state: `Collapsible`, and

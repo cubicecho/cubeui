@@ -63,7 +63,7 @@ the layout: a call site moves between the two halves unchanged.
 
 **So are the layout shells.** `HeaderContentFooter`, `PageHeader`,
 `PageLayout`, `SplitLayout`, `SidebarLayout`, `AppBar`, `Sidebar`, `CardLayout`,
-`CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Collapsible`, `DisclosureRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
+`CenteredLayout`, `DialogLayout`, `GridLayout`, `Section`, `Collapsible`, `CollapsibleRow`, `DescriptionList`, `List`, `ListItem`, `FileTree`, `StatTile`
 and `SettingRow` are written once in
 React Native and compiled to the web, so `@cubeui/page-layout` installs in an Expo project and a
 Vite one alike, with the same props.
@@ -109,7 +109,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/lists.md](layout/lists.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout/lists.md](layout/lists.md#empty-states) |
-| A list row that opens onto detail | `DisclosureRow` | [layout/lists.md](layout/lists.md#disclosurerow) |
+| A list row that opens onto detail | `CollapsibleRow` | [layout/lists.md](layout/lists.md#collapsiblerow) |
 | A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Collapsible` | [layout/cards.md](layout/cards.md#collapsible) |
 | Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `DescriptionList`) | `Table` and its parts | [layout/trees-and-tables.md](layout/trees-and-tables.md#table) |
 | A form of any size | `useAppForm` and the bound fields | [forms/app-form.md](forms/app-form.md#a-form) |

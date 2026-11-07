@@ -14,7 +14,7 @@ import { SideBySide } from "./side-by-side";
 /**
  * The collapsible on both halves: an uncontrolled "Raw output" block with an action beside its
  * header, and a controlled "Show completed" toggle whose title flips with the state it is handed.
- * The play test is what holds `DisclosureRow`'s guarantees here — one button, toggled by click,
+ * The play test is what holds `CollapsibleRow`'s guarantees here — one button, toggled by click,
  * Enter and Space, `aria-expanded` following it, the body mounted only while open, and the action
  * outside the button so pressing it leaves the section as it was.
  */

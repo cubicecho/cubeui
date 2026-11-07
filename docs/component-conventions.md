@@ -109,7 +109,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
 | `size` | Not a slot: `lg` / `md` / `sm`, how large `PageHeader`'s title is drawn, following `level` unless given. A word apart from the level because min-agent's chat took `level={3}` on a top-level route only to get a small title, and lost its `h1`. |
 | `triggerSlot` | What opens a dialog, when the dialog owns its own open state. |
-| `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
+| `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a collapsible row takes it, and so does a select whose menu is filled by the opening. |
 | `defaultOpen` | Where a thing that opens starts, when it holds its own open state. The primitives' word already (`Dialog`, `Popover`, `Menu`), taken by a shell once `Collapsible` held its own: an uncontrolled shell with no starting state is a `useState` the caller writes anyway. |
 | `hasUnsavedChanges` | Closing asks first. A boolean the caller is asked for, never one a shell computes — rule 8. |
 | `requireText` | Confirming asks for a name first: the text to type before the destructive button unlocks, matched exactly. On `ConfirmDialog`, `confirm()` and `ConfirmButton`; its label is `requireTextLabel`, by prefix. The caller hands over the name, as it hands over `hasUnsavedChanges` — whether the typed text matches is the dialog's own interaction, so the dialog holds it. |
@@ -197,7 +197,7 @@ Notes on why the layering is where it is:
   row, and the function is how one prop reaches each of them. Its `selected` is the open file's
   path and its `open` the open folders' paths for the same reason — the same words as a row's
   boolean, said once for the whole tree.
-- **`DisclosureRow` and `ListItem` take `actionSlot`, not `actionsSlot`,** though each usually holds three buttons. The
+- **`CollapsibleRow` and `ListItem` take `actionSlot`, not `actionsSlot`,** though each usually holds three buttons. The
   core word already says "one control, or a fragment of them", and a second word for the same
   place would only ever be a plural.
 - **`PropertyRow` reuses `label`, `hint`, `actionSlot` and `value` rather than growing words of its

@@ -14,6 +14,7 @@ import {
 import { CardLayout } from "@/components/card-layout";
 import { CenteredLayout } from "@/components/centered-layout";
 import { Collapsible } from "@/components/collapsible";
+import { CollapsibleRow } from "@/components/collapsible-row";
 import { ColorField } from "@/components/color-field";
 import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -21,7 +22,6 @@ import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
 import { DescriptionList, PropertyRow } from "@/components/description-list";
 import { DialogLayout } from "@/components/dialog-layout";
-import { DisclosureRow } from "@/components/disclosure-row";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorPage } from "@/components/error-page";
 import { FieldRow } from "@/components/field-row";
@@ -273,6 +273,8 @@ const NOT_SHOWN: Record<string, string> = {
     "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
   disclosure:
     "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
 };
 
 const noop = () => {};
@@ -1374,7 +1376,7 @@ function Collapsibles() {
             defaultOpen
             contentSlot={<p className="text-foreground text-sm">This one begins open.</p>}
           />
-          <DisclosureRow
+          <CollapsibleRow
             open={open}
             onOpenChange={setOpen}
             title="atlas"
@@ -1699,8 +1701,8 @@ const sections: GallerySection[] = [
   { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
-    title: "Collapsible and disclosure row",
-    items: ["collapsible", "disclosure-row"],
+    title: "Collapsible and its row",
+    items: ["collapsible", "collapsible-row"],
     content: <Collapsibles />,
   },
   { title: "Description list", items: ["description-list"], content: <Descriptions /> },

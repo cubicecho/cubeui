@@ -795,11 +795,24 @@
       ]
     },
     {
-      "name": "disclosure-row",
+      "name": "collapsible-row",
       "type": "registry:component",
-      "title": "Disclosure Row",
+      "title": "Collapsible Row",
       "description": "A list row that opens: a `ListItem` whose whole heading is `Disclosure`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": ["@cubeui/list-item", "@cubeui/collapsible", "@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/collapsible-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "disclosure-row",
+      "type": "registry:component",
+      "title": "Disclosure Row (deprecated)",
+      "description": "The old name of collapsible-row, kept for one release: DisclosureRow, re-exported from it. Install collapsible-row.",
+      "registryDependencies": ["@cubeui/collapsible-row"],
       "files": [
         {
           "path": "registry/layout/disclosure-row.tsx",

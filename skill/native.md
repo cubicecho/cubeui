@@ -104,7 +104,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout/lists.md](layout/lists.md#list) | `List` | `@cubeui/list` |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/lists.md](layout/lists.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
-| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#disclosurerow) | `DisclosureRow` | `@cubeui/disclosure-row` |
+| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#collapsiblerow) | `CollapsibleRow` | `@cubeui/collapsible-row` |
 | A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `LoadState` | `@cubeui/load-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `ErrorPage` (once `RouteError`, deprecated) | `@cubeui/error-page` |
 

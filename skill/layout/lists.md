@@ -7,7 +7,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - [List pages](#list-pages)
   - [LoadState](#loadstate)
   - [Empty states](#empty-states)
-  - [DisclosureRow](#disclosurerow)
+  - [CollapsibleRow](#collapsiblerow)
   - [List](#list)
   - [ListItem](#listitem)
 
@@ -25,7 +25,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
 <List
   label="Roles"
   contentSlot={shown.map((role) => (
-  <DisclosureRow
+  <CollapsibleRow
     key={role.id}
     open={open === role.id}
     onOpenChange={(next) => setOpen(next ? role.id : null)}
@@ -192,8 +192,11 @@ and which one is a question of **where the list is**, not how much there is to s
   `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
   screen.
 
-### DisclosureRow
+### CollapsibleRow
 
+- **It was `DisclosureRow`.** `DisclosureRow`, and the `@cubeui/disclosure-row` item that
+  re-exports it, stay for one release as deprecated aliases; import `CollapsibleRow` from
+  `@/components/collapsible-row` in new code.
 - The **whole heading is the button**, so a row is never opened by hitting a 16-pixel chevron and
   is operable with Space. `aria-expanded` is on it, and `aria-controls` while the body is there.
 - **`actionSlot` sits outside that button.** A control nested inside a button is invalid HTML and, in
@@ -205,14 +208,14 @@ and which one is a question of **where the list is**, not how much there is to s
   surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
   frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
   is `ListItem`, below.
-- One source for both halves: `@cubeui/disclosure-row`. On a device the heading is a
+- One source for both halves: `@cubeui/collapsible-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
   string `meta` is wrapped in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
 
-<!-- props:DisclosureRow -->
-`DisclosureRow`'s props, from the TSDoc in `registry/layout/disclosure-row.tsx`:
+<!-- props:CollapsibleRow -->
+`CollapsibleRow`'s props, from the TSDoc in `registry/layout/collapsible-row.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -222,7 +225,7 @@ and which one is a question of **where the list is**, not how much there is to s
 | `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
 | `meta` | `ReactNode` |  | The grey line of facts beside the title — a name, a time, a count. |
 | `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
-| `actionSlot` | `SlotNode` |  | Buttons, outside the disclosure: a row is opened by its heading and acted on by these. |
+| `actionSlot` | `SlotNode` |  | Buttons, outside the collapsible: a row is opened by its heading and acted on by these. |
 | `contentSlot` | `SlotNode` |  | What the row opens onto. |
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
@@ -246,7 +249,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `DisclosureRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
+| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `CollapsibleRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
 | `label` | `string` |  | What the list is a list of, in the reader's words: "Workspaces". Its accessible name. |
 | `divided` | `boolean` | `true` | A rule between rows. On unless turned off, for rows that are cards of their own. |
 | `className` | `string` |  |  |
@@ -264,7 +267,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   pass `divided={false}`, for rows that are cards of their own.
 - The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
   row, or `divide-y` on a parent.
-- It takes any row: `ListItem`, `DisclosureRow`, composed `Item` parts, a row of your own.
+- It takes any row: `ListItem`, `CollapsibleRow`, composed `Item` parts, a row of your own.
 - **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
   exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
   steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge

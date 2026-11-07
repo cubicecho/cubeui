@@ -74,13 +74,13 @@ editing --leave asked, unsaved--> asking --discard--> left
 
 On the web a browser unload also asks (`beforeunload`).
 
-### A collapsible (`Collapsible`, `DisclosureRow`, a `FileTree` folder)
+### A collapsible (`Collapsible`, `CollapsibleRow`, a `FileTree` folder)
 
 ```
 shut --pressed--> open --pressed--> shut
 ```
 
-`Collapsible` keeps the state itself or takes it from the caller; `DisclosureRow` and `FileTree`
+`Collapsible` keeps the state itself or takes it from the caller; `CollapsibleRow` and `FileTree`
 folders can also be controlled. A shut body is not mounted. All three are pressed through the same
 button, `CollapsibleTrigger`: the turning chevron, `aria-expanded`, and `aria-controls` on the web
 while the body is there.
@@ -225,7 +225,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
   titled card is `CardLayout`. Owner: `registry/layout/section.tsx`; composes `HeadingRow`.
 - **`Collapsible`:** a titled block whose body shows and hides. Owner:
-  `registry/layout/collapsible.tsx`, with `CollapsibleTrigger`, the button `DisclosureRow` and
+  `registry/layout/collapsible.tsx`, with `CollapsibleTrigger`, the button `CollapsibleRow` and
   `FileTree`'s folders open with too. `Disclosure`, `DisclosureTrigger` and the `disclosure` item
   are its old names, deprecated for one release.
 - **`Dialog`:** a window over a dimmed page that holds focus until it closes. Owner:
@@ -249,9 +249,10 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   rows share: `ListItemText`, `rowFillClass` (the chosen tint and the hovered fill) and `rowLink`.
 - **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. Owner:
   `registry/ui/item.tsx`.
-- **`DisclosureRow`:** a `ListItem` that opens onto more below it, with no surface
-  of its own. Owner: `registry/layout/disclosure-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
-  and `ListItemText`, and `CollapsibleTrigger`.
+- **`CollapsibleRow`:** a `ListItem` that opens onto more below it, with no surface
+  of its own. Owner: `registry/layout/collapsible-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
+  and `ListItemText`, and `CollapsibleTrigger`. `DisclosureRow` and the `disclosure-row` item are
+  its old names, deprecated for one release.
 - **`FileTree`:** a foldable tree of folders and files built from a list of paths,
   with dragging a row onto a folder on the web. Owner: `registry/layout/file-tree.tsx`.
 - **`DescriptionList`, `PropertyRow`:** read-only label-and-value facts. Owner:
