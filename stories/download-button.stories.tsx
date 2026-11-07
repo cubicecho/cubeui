@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, spyOn, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, screen, spyOn, userEvent, waitFor, within } from "storybook/test";
 import { DownloadButton as Compiled } from "../compiled/download-button";
 import { DownloadButton as Native } from "../registry/ui/download-button";
 import { SideBySide } from "./side-by-side";
@@ -208,6 +208,49 @@ export const WithLabel: Story = {
     await expect(icons).toHaveLength(2);
     for (const button of icons) {
       await expect(button).not.toHaveTextContent("Export");
+    }
+  },
+};
+
+/** How long a hover is given to open a tooltip that should not open. */
+const NO_TOOLTIP_MS = 200;
+
+/**
+ * `tooltip={false}` turns the name tooltip off (#424), as on `Button`. Without it an app had no
+ * way to, since every icon `Button` shows its name on hover (#419).
+ */
+export const TheNameTooltipCanBeTurnedOff: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-row gap-2">
+          <Native filename="note.md" source="# Note" label="Native with a tooltip" />
+          <Native filename="note.md" source="# Note" label="Native without" tooltip={false} />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-row gap-2">
+          <Compiled filename="note.md" source="# Note" label="Compiled with a tooltip" />
+          <Compiled filename="note.md" source="# Note" label="Compiled without" tooltip={false} />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Native", "Compiled"] as const) {
+      const shown = canvas.getByRole("button", { name: `${half} with a tooltip` });
+      await userEvent.hover(shown);
+      await expect(await screen.findByRole("tooltip")).toHaveTextContent(`${half} with a tooltip`);
+      await userEvent.unhover(shown);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+
+      await userEvent.hover(canvas.getByRole("button", { name: `${half} without` }));
+      await new Promise((resolve) => setTimeout(resolve, NO_TOOLTIP_MS));
+      await expect({ half, tooltip: screen.queryByRole("tooltip") }).toEqual({
+        half,
+        tooltip: null,
+      });
     }
   },
 };

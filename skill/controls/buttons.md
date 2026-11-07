@@ -152,6 +152,8 @@ device, `onClick` on the web.
 - On device the tooltip, the name or the `hint`, opens on a **long press**, and a `disabled` one
   with a `hint` still hears it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
   announce the button as unavailable.
+- The tooltip draws no element around the button, on device or on the web, so `className`
+  places the button in its parent: `absolute top-2 right-2`, `ml-auto`, `self-end`.
 - A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
 - `type` and `aria-describedby` are web only. A device has no form to submit.
@@ -194,6 +196,7 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 | `onError` | `((error: unknown) => void)` |  | Called when the clipboard refused the text — an insecure origin, a denied permission. The button does not turn into a tick, so it never claims a copy that did not happen; this is where the caller says so, since a shell holds no toasts. |
 | `disabled` | `boolean` |  | Off: a press copies nothing and calls neither `onCopied` nor `onError`. Say why with `hint`, as on `Button` — "Give the webhook an id first". |
 | `hint` | `ButtonProps["hint"]` |  | The button's tooltip, as on `Button`. With `disabled` it keeps the button focusable and hoverable (`aria-disabled`), so the reason it is off can still be read. |
+| `tooltip` | `ButtonProps["tooltip"]` |  | Whether the tooltip is drawn: the `hint`, or with none at an `icon*` size the name, `label` and then `Copied`. Off, a `hint` is still the button's description. Turn it off where the icon already explains itself. |
 | `className` | `string` |  | The button's class: its position, say `absolute top-2 right-2` over a snippet. |
 <!-- /props -->
 
@@ -217,7 +220,7 @@ an `absolute` corner over it.
   the native item installs; a DOM app installs nothing extra.
 - It is `type="button"` on the web, so it never submits the form it sits in.
 - At an `icon*` size its name is its tooltip, as on `Button`: `label`, then `Copied` while the
-  tick shows. A `hint` takes its place.
+  tick shows. A `hint` takes its place, and `tooltip={false}` turns it off.
 - When there is nothing to copy yet, pass `disabled` and a `hint` saying why, as on `Button`:
   `<CopyButton value={url} label="Copy the URL" disabled={!id} hint="Give the webhook an id first" />`.
   With the hint it stays focusable (`aria-disabled`), and a press copies nothing and calls neither
@@ -252,6 +255,7 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 | `size` | `ButtonProps["size"]` | `"icon-sm"` | The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text size draws `label` beside the icon. |
 | `destination` | `DownloadDestination` | `"ask"` | Device only: where the file goes. The default is `ask`, which leaves it to the person pressing. The browser has one answer, its own downloads, and ignores this. |
 | `disabled` | `boolean` |  |  |
+| `tooltip` | `ButtonProps["tooltip"]` |  | Whether the tooltip is drawn: at an `icon*` size, `label`. A text size draws its label and has no tooltip. Turn it off where the icon already explains itself. |
 | `onDownloaded` | `(() => void)` |  | Called once the file has been handed over — a toast, an analytics event. |
 | `onError` | `((error: unknown) => void)` |  | Called when `source` or `href` threw or the platform refused the file. The button holds no toasts, so this is where the caller says so. |
 | `className` | `string` |  | The button's class. |
@@ -280,6 +284,7 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
   glyph was. A `source` or `href` that throws calls `onError` and leaves the button as it was;
   `onDownloaded` runs after a good one.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
+  At an `icon*` size `label` is its tooltip, as on `Button`, and `tooltip={false}` turns it off.
 - On the web the file goes to the browser's downloads. **On a device there is no downloads
   folder**, so `destination` says where: `"share"` opens the share sheet, `"files"` asks for a
   folder and writes into it, and `"ask"`, the default, puts both in a menu on the button so the

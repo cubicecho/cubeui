@@ -153,9 +153,15 @@ to add them.
 - **Icon-only buttons show their name on hover again**
   ([#419](https://github.com/cubicecho/cubeui/issues/419)). A `Button` at an `icon*` size, and so
   `CopyButton`, `DownloadButton` and `ConfirmButton` at one, shows its `aria-label` as its tooltip,
-  as `ActionButton` did. A `hint` still replaces it. Pass `tooltip={false}` to a `Button` or
-  `ConfirmButton` to turn it off, and remove any `Tooltip` you wrapped around an icon button by
-  hand, or it shows two.
+  as `ActionButton` did. A `hint` still replaces it. Pass `tooltip={false}` to a `Button`,
+  `ConfirmButton`, `CopyButton` or `DownloadButton` to turn it off
+  ([#424](https://github.com/cubicecho/cubeui/issues/424)), and remove any `Tooltip` you wrapped
+  around an icon button by hand, or it shows two.
+- **On device a tooltip no longer wraps its trigger in a `View`**
+  ([#423](https://github.com/cubicecho/cubeui/issues/423)). The classes on a button, switch or
+  row with a tooltip place it in its parent again: `absolute top-2 right-2`, `ml-auto`,
+  `self-end` and `flex-1` work as they do on the web. A class you moved onto a `View` of your own
+  to get round the wrapper can come back to the button.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
