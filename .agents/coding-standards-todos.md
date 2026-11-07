@@ -95,8 +95,8 @@ that makes it true.
 | A9 | API change | Removes the `detail-header` item; stories use `PageHeader`. | M4; no app installs it. | A8 | done (`09f88d3`) |
 | F3 | Feature | `AppBar`: one bar item (brand, places, status, actions) from `SidebarLayout`'s phone bar, with `TopBarLayout`'s sideways-scrolling places. `SidebarLayout` draws it. | M5. | — | done (`e0d0c13`) |
 | A10 | API change | Removes the `top-bar-layout` item. | M5; no app uses it. | F3 | done (`2b4ff2e`) |
-| R20 | Refactor [consistency] | Moves `confirm-button`, `combobox`, `unsaved-changes-guard` and `radio-group-field` from `registry/layout/` to `registry/ui/`. Their type decides where they install, so apps are unaffected. | M10. | — | approved |
-| A11 | API change | Retypes `radio-group-field` as `registry:ui`, like the other bound fields. Moves it from `components/` to `components/ui/`: 12 app sites in 5 apps. | M10, fully: the bound fields install in one place. | R20 | approved |
+| R20 | Refactor [consistency] | Moves `confirm-button`, `combobox`, `unsaved-changes-guard` and `radio-group-field` from `registry/layout/` to `registry/ui/`. Their type decides where they install, so apps are unaffected. | M10. | — | done (`98e0aaa`) |
+| A11 | API change | Retypes `radio-group-field` as `registry:ui`, like the other bound fields. Moves it from `components/` to `components/ui/`: 12 app sites in 5 apps. | M10, fully: the bound fields install in one place. | R20 | done (`90e4337`) |
 | A12 | API change | `RouteError`'s `actionsSlot` becomes `actionSlot`, the name every other item uses. | One name for one slot. | — | done (`28580df`) |
 | A13 | API change | The discard question's "keep" button is `keepLabel` in `DialogLayout` and `stayLabel` in `UnsavedChangesDialog`; one name, and the default words in one place. | Two copies of one question. | — | done (`e336f61`) |
 | B5 | Question | The `layout` bundle leaves out `list`, `file-tree`, `page` and `route-error`, among others. Answered: the bundle lists every layout. | Decides what "every layout" installs. | — | done (`1a43836`) |
@@ -114,7 +114,7 @@ that makes it true.
 | D8 | Docs | The README's "React Native set" table (about `README.md:458-466`) is out of date: it lists none of `list`, `list-item`, `file-tree`, `disclosure`. | The README is what a new consumer reads. | — | done (`d971822`) |
 | B8 | Question | Sidebar rows (`SidebarNavItem`, `BarNavItem`) stay solid when current: AGENTS.md files the current sidebar row with the controls, "the one of its group", not with rows among many. Tint them too? | Finishes B3 or confirms the exception. | — | answered: tinted everywhere (option C). Every chosen thing is `bg-active/40`, `/60` under the pointer, `text-foreground`; controls and sidebar included. In progress on `layouts/tint`. |
 | R21 | Refactor [reuse] · low value | `RouteError`'s `friendlyMessage` may be able to share `lib/error-message`. (unverified) | A third error-to-text helper. | — | open |
-| M11 | Model | Proposes plainer layout names once the A and F items above land, each with what it says that the old name did not. | M11. | the A and F items | approved |
+| M11 | Model | Proposes plainer layout names once the A and F items above land, each with what it says that the old name did not. | M11. | the A and F items | approved: `QueryState` → `LoadState`, `RouteError` → `ErrorPage`, `Disclosure` / `DisclosureRow` → `Collapsible` / `CollapsibleRow`, `DescriptionList` → `PropertyList`, `CenteredLayout` → `CenteredCardLayout`, `SidebarNavItem` / `BarNavItem` → `SidebarItem` / `AppBarItem`; each old name a deprecated alias for one release. After `layouts/tint` merges. |
 
 ## Conventions
 
