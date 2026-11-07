@@ -95,7 +95,7 @@ const INK = "text-foreground";
 const SLOT = "block";
 
 /** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("max-w-full rounded-md bg-foreground/10", "animate-pulse");
+const BAR = cn("max-w-full rounded-md bg-foreground/10", "motion-safe:animate-pulse");
 
 export type PageHeaderProps = {
   /**

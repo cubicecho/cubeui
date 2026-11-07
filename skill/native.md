@@ -108,6 +108,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A callout — a warning, a note, the last error — see [controls/display.md](controls/display.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls/display.md](controls/display.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | A pulsing placeholder block — see [controls/display.md](controls/display.md#skeleton) | `Skeleton` | `@cubeui/skeleton` |
+| Whether the reader asked for reduced motion, for an `Animated` loop or a scroll of your own — see [controls/index.md](controls/index.md#motion) | `useReducedMotion` | `@cubeui/reduced-motion` |
 | A one-pixel rule between groups — see [controls/display.md](controls/display.md#separator) | `Separator` | `@cubeui/separator` |
 | An icon — see [controls/icons.md](controls/icons.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal, with the unsaved-changes guard — see [forms/app-form.md](forms/app-form.md#forms-in-dialogs) | `DialogLayout hasUnsavedChanges` | `@cubeui/dialog-layout` |

@@ -71,3 +71,34 @@ A shadow says how far a thing floats, and there are three:
 | Modal | `shadow-lg` | `Dialog`, `AlertDialog` |
 
 Do not give a card in the page a shadow to lift it: its edge and fill do that.
+
+### Motion
+
+The components honour the reader's reduced-motion setting on both halves (WCAG 2.3.3). Under it:
+
+- **A dialog, menu, popover, select or tooltip fades and does not move.** The zoom and the slide go;
+  the short fade stays, because it says the thing arrived, and a dialog still unmounts when closed.
+- **A loop that only decorates holds still:** `Skeleton`, the `loading` bars of the shells, a
+  `Badge` dot with `pulse`.
+- **A chevron turns, a switch's thumb moves and `Progress` fills at once**, without a transition.
+- **`scrollToEnd()` jumps instead of gliding**, on `HeaderContentFooter`, `PageLayout` and a
+  following `CodeBlock`.
+- **`Spinner` keeps turning.** It is the message that work is going on, not decoration.
+- A colour changing under the pointer is not motion, and keeps its transition.
+
+An animation of your own does the same:
+
+- **On the web, movement goes behind `motion-safe:`**: `motion-safe:transition-transform`,
+  `motion-safe:animate-bounce`. An `animate-in` or `animate-out` from tw-animate-css needs nothing:
+  the tokens stylesheet takes the movement out of every one under reduced motion and keeps the fade.
+- **On device, ask `useReducedMotion()`** from `@cubeui/reduced-motion` and skip the `Animated` loop
+  or pass `animated: false`. `motion-safe:` and `motion-reduce:` never match on device, so a class
+  cannot do it there.
+
+```tsx
+import { useReducedMotion } from "@/components/ui/reduced-motion";
+
+const reduced = useReducedMotion();
+listRef.current?.scrollToOffset({ offset: 0, animated: reduced === false });
+```
+

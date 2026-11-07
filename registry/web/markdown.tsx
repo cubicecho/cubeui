@@ -150,7 +150,10 @@ function Heading({
       >
         <ChevronRight
           aria-hidden
-          className={cn("size-4 transition-transform", section.open && "rotate-90")}
+          className={cn(
+            "size-4 transition-transform motion-reduce:transition-none",
+            section.open && "rotate-90",
+          )}
         />
       </button>
       {heading}

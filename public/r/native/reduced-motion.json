@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reduced-motion",
+  "title": "Reduced Motion",
+  "description": "useReducedMotion(): whether the reader's system asks for reduced motion, kept up to date as they change it. The `prefers-reduced-motion` media query on the web, AccessibilityInfo on device, where NativeWind's `motion-safe:` and `motion-reduce:` never match. For an animation written in script; the components already honour it.",
+  "files": [
+    {
+      "path": "registry/ui/reduced-motion.tsx",
+      "content": "/**\n * Whether the reader asked the system for reduced motion, on device. `reduced-motion.web.tsx` is\n * the web half.\n *\n * NativeWind cannot answer this with a class: react-native-css has no `prefers-reduced-motion`\n * feature, so `motion-safe:` and `motion-reduce:` are both false on device and an animation\n * written behind either never runs or never stops. A component that animates with `Animated`\n * reads this hook instead.\n *\n * One listener for the app rather than one per caller: every skeleton on a loading screen asks,\n * and they all hear the same answer when the setting changes.\n */\nimport { useSyncExternalStore } from \"react\";\nimport { AccessibilityInfo } from \"react-native\";\n\nlet reduced = false;\nconst listeners = new Set<() => void>();\nlet subscription: { remove: () => void } | null = null;\n\nfunction publish(value: boolean) {\n  reduced = value;\n  for (const listener of listeners) {\n    listener();\n  }\n}\n\nfunction subscribe(listener: () => void) {\n  listeners.add(listener);\n  if (subscription === null) {\n    subscription = AccessibilityInfo.addEventListener(\"reduceMotionChanged\", publish);\n    // Asked again on every first subscriber: the setting may have changed while nothing listened.\n    AccessibilityInfo.isReduceMotionEnabled().then(publish);\n  }\n  return () => {\n    listeners.delete(listener);\n    if (listeners.size === 0) {\n      subscription?.remove();\n      subscription = null;\n    }\n  };\n}\n\n/**\n * `true` when the reader has turned on Reduce Motion (iOS) or Remove animations (Android), kept up\n * to date as they change it. `false` until the system has answered, a frame or so after mount.\n */\nexport function useReducedMotion(): boolean {\n  return useSyncExternalStore(\n    subscribe,\n    () => reduced,\n    () => false,\n  );\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/ui/reduced-motion.web.tsx",
+      "content": "/**\n * Whether the reader asked the system for reduced motion, on the web: the\n * `(prefers-reduced-motion: reduce)` media query. `reduced-motion.tsx` is the device half.\n *\n * The components here honour the query in CSS, through the tokens stylesheet and `motion-safe:`\n * classes, and need no hook. This is for what CSS cannot reach — a `scrollTo` that would glide —\n * and for an app's own animation in script.\n *\n * Nothing touches `window` at import, and a server render answers `false`.\n */\nimport { useSyncExternalStore } from \"react\";\n\nconst QUERY = \"(prefers-reduced-motion: reduce)\";\n\nfunction subscribe(listener: () => void) {\n  if (typeof window.matchMedia !== \"function\") {\n    return () => {};\n  }\n  const query = window.matchMedia(QUERY);\n  query.addEventListener(\"change\", listener);\n  return () => query.removeEventListener(\"change\", listener);\n}\n\nfunction read() {\n  return typeof window.matchMedia === \"function\" && window.matchMedia(QUERY).matches;\n}\n\n/** `true` when the reader's system asks for reduced motion, kept up to date as they change it. */\nexport function useReducedMotion(): boolean {\n  return useSyncExternalStore(subscribe, read, () => false);\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}

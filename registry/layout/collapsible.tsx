@@ -109,7 +109,10 @@ export function CollapsibleTrigger({
         aria-hidden
         className={cn(
           "mt-0.5 size-4 shrink-0 text-foreground/60",
-          Platform.select({ web: "transition-transform", default: undefined }),
+          Platform.select({
+            web: "transition-transform motion-reduce:transition-none",
+            default: undefined,
+          }),
           open && "rotate-90",
           chevronClassName,
         )}
