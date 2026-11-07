@@ -196,8 +196,9 @@ function Scrolling({ half }: { half: "native" | "compiled" }) {
 }
 
 /**
- * Tabbed to, the scrolling body draws no ring: its edge turns `active`, as a focused field's
- * border does (#448). Focused by a click, it shows neither.
+ * Tabbed to, the scrolling body draws no ring: an `active` line inside its edge, as a focused
+ * field's border is, drawn as an inset shadow so it takes no room (#448). Focused by a click, it
+ * shows neither.
  */
 export const KeyboardFocus: Story = {
   args: { contentSlot: null },
@@ -213,7 +214,7 @@ export const KeyboardFocus: Story = {
     await expect(bodies).toHaveLength(2);
     for (const body of bodies) {
       await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
-      await expectFocusEdge(body, canvasElement);
+      await expectFocusEdge(body, canvasElement, "inset");
     }
   },
 };

@@ -191,11 +191,11 @@ to add them.
   click on it shows nothing. While it can scroll, it has a transparent 1px edge, so its rows sit
   1px further in.
 - **A focused `CodeBlock` or scrolling page body no longer draws the browser's focus ring**
-  ([#448](https://github.com/cubicecho/cubeui/issues/448)). Both look as a focused `Table` does.
-  Tabbed to, the edge turns `active`; a click shows nothing. A block that scrolls, and the body of
-  a `HeaderContentFooter` with `scroll` (so `PageLayout`, `DialogLayout` and `Sidebar` too), has a
-  transparent 1px edge, so what is in it sits 1px further in. A code block that does not wrap,
-  and has no `maxHeight`, is 2px taller.
+  ([#448](https://github.com/cubicecho/cubeui/issues/448)). Both look as a focused `Table` does:
+  tabbed to, the edge turns `active`, and a click shows nothing. That covers the body of a
+  `HeaderContentFooter` with `scroll`, so `PageLayout`, `DialogLayout` and `Sidebar` too. The body's
+  line is drawn inside it and takes no room. A block that scrolls has a transparent 1px edge, so
+  its text sits 1px further in, and one that does not wrap and has no `maxHeight` is 2px taller.
 
 ## Checking the result
 

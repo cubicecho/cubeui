@@ -19,7 +19,7 @@
 import { type ElementRef, type Ref, useImperativeHandle, useRef } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { useReducedMotion } from "@/components/ui/reduced-motion";
-import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode } from "@/lib/utils";
 
 /**
  * The column a page's chrome and its content share.
@@ -198,6 +198,15 @@ const BODY = cn(
 );
 
 /**
+ * How the scrolling body shows keyboard focus: the line `FOCUS_EDGE` draws around a table or a code
+ * block, in `active`, drawn as an inset shadow rather than a border so it takes no room. A border
+ * would push the body 1px off the header's column and add a pixel to every gap measured from its
+ * edge, including a caller's `py-0`. The shadow is a rule, not elevation, as a pinned table header's
+ * is. Something with a fill laid against the body's edge covers that side of it.
+ */
+const BODY_FOCUS_EDGE = "outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--active)]";
+
+/**
  * The body, which is the one part that is a different element on each platform.
  *
  * Written as statements rather than a ternary because the two arms are different elements, and
@@ -251,7 +260,13 @@ function Body({
                 }),
             }
           : {})}
-        className={cn(BODY, scroll && "overflow-y-auto", scroll && FOCUS_EDGE, column, className)}
+        className={cn(
+          BODY,
+          scroll && "overflow-y-auto",
+          scroll && BODY_FOCUS_EDGE,
+          column,
+          className,
+        )}
       >
         {contentSlot}
       </View>

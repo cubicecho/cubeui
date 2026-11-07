@@ -31,8 +31,9 @@ export const HOVER_REVEAL =
 
 /**
  * How a box that is a tab stop only so a keyboard can scroll it shows focus: a table too wide for
- * its column, a code block, a page's scrolling body. Its edge turns `active`, as a focused field's
- * border does, and no ring is drawn. It cannot look hovered, the rule for everything else, because
+ * its column, a code block. Its edge turns `active`, as a focused field's border does, and no ring
+ * is drawn. A page's scrolling body draws the same line as an inset shadow (`HeaderContentFooter`),
+ * because the pixel this takes would move it off the header's column. It cannot look hovered, the rule for everything else, because
  * a scroll box looks the same under the pointer. `active` is 3:1 from every surface (WCAG 1.4.11),
  * held by `palette-contrast.test.mjs`.
  *

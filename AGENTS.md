@@ -223,7 +223,7 @@ chosen over `bg-hover`, which is no closer to 3:1 and made a focused chosen thin
 A box that is a tab stop only so a keyboard can scroll it — an overflowing `Table`, a `CodeBlock`,
 `HeaderContentFooter`'s scrolling body — has no hover look, so it shows focus as a field does,
 with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns `active` under
-`focus-visible:`.
+`focus-visible:`. The page body draws that line as a 1px inset shadow, which takes no room.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
 current sidebar row, toggle chip, a calendar's picked day, a selected stat tile, a checked menu row,
