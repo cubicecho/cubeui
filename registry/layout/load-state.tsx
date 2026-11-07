@@ -186,7 +186,7 @@ export function LoadState({
       />
     ) : (
       <EmptyState
-        icon={Search}
+        iconSlot={<Search />}
         title={notFoundLabel}
         level={level}
         {...(className === undefined ? {} : { className })}
