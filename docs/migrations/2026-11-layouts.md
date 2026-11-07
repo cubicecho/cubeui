@@ -184,6 +184,12 @@ to add them.
   container is a tab stop. Tabbed to, its edge turns `active`, as a focused field's border does. A
   click on it shows nothing. While it can scroll, it has a transparent 1px edge, so its rows sit
   1px further in.
+- **A focused `CodeBlock` or scrolling page body no longer draws the browser's focus ring**
+  ([#448](https://github.com/cubicecho/cubeui/issues/448)). Both look as a focused `Table` does.
+  Tabbed to, the edge turns `active`; a click shows nothing. A block that scrolls, and the body of
+  a `HeaderContentFooter` with `scroll` (so `PageLayout`, `DialogLayout` and `Sidebar` too), has a
+  transparent 1px edge, so what is in it sits 1px further in. A code block that does not wrap,
+  and has no `maxHeight`, is 2px taller.
 
 ## Checking the result
 

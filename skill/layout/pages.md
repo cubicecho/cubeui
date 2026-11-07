@@ -195,6 +195,9 @@ dialog body.
   not stay. `StickyHeaderContentFooter`, the preset that set `scroll` and `h-full`, is gone; write
   the two out.
 - Without `scroll` it is the same three zones with the whole thing scrolling with the page.
+- On the web a scrolling body is a tab stop, so a keyboard can scroll it. Tabbed to, its edge turns
+  `active`, as a focused field's border does, and no ring is drawn; a click on it shows nothing. It
+  keeps a transparent 1px edge, so what is in it sits 1px in from the header.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
 - `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
   pixels, the same on both halves. A list that follows its newest row is at the end when

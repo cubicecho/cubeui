@@ -18,7 +18,7 @@
  */
 import { type ElementRef, type Ref, useImperativeHandle, useRef } from "react";
 import { Platform, ScrollView, View } from "react-native";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /**
  * The column a page's chrome and its content share.
@@ -248,7 +248,7 @@ function Body({
                 }),
             }
           : {})}
-        className={cn(BODY, scroll && "overflow-y-auto", column, className)}
+        className={cn(BODY, scroll && "overflow-y-auto", scroll && FOCUS_EDGE, column, className)}
       >
         {contentSlot}
       </View>

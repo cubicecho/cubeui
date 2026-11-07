@@ -22,7 +22,7 @@
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /** Monospaced text inline in a sentence. */
 export function Code({
@@ -148,7 +148,7 @@ type Following = {
   onGrow: () => void;
 };
 
-type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight"> & {
+type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight" | "title"> & {
   following?: Following | undefined;
 };
 
@@ -163,18 +163,19 @@ type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight">
  * the compiler refuses an element chosen at runtime — it folds `Platform.OS === "web"` to `true`,
  * keeps the first arm, and drops the `ScrollView`s below it as unreachable.
  */
-function CodeBlockText({ content, wrap, maxHeight, following }: CodeBlockTextProps) {
+function CodeBlockText({ content, wrap, maxHeight, title, following }: CodeBlockTextProps) {
   const height = maxHeight ? MAX_HEIGHTS[maxHeight] : undefined;
 
   if (Platform.OS === "web") {
+    // A block that wraps and has no cap cannot scroll, so it takes no tab stop — which is what
+    // keeps a one-line value beside its copy button from being two stops.
+    const scrolls = wrap !== true || maxHeight !== undefined;
     return (
       <View
         testID="code-block-content"
         // A region that scrolls has to be reachable by keyboard, or only a mouse wheel can read
-        // the end of the line (axe `scrollable-region-focusable`). A block that wraps and has no
-        // cap cannot scroll, so it takes no tab stop — which is what keeps a one-line value
-        // beside its copy button from being two stops.
-        tabIndex={wrap && !maxHeight ? undefined : 0}
+        // the end of the line (axe `scrollable-region-focusable`).
+        tabIndex={scrolls ? 0 : undefined}
         // A view's own props have no scroll event (on device a view does not scroll), so the
         // listener and the ref go on as a spread, untyped. The element under it is a `<div>`.
         {...(following
@@ -187,7 +188,13 @@ function CodeBlockText({ content, wrap, maxHeight, following }: CodeBlockTextPro
                 following.onAtEnd(box.scrollHeight - box.scrollTop - box.clientHeight <= END_SLACK),
             }
           : {})}
-        className={cn("min-w-0 flex-1 overflow-auto p-3", height)}
+        className={cn(
+          "min-w-0 flex-1 overflow-auto p-3",
+          height,
+          scrolls && FOCUS_EDGE,
+          // The edge follows the block's corners, which are its own only where no header sits.
+          scrolls && (title === undefined ? "rounded-md" : "rounded-b-md"),
+        )}
       >
         <Text
           webAs="pre"
@@ -310,7 +317,13 @@ export function CodeBlock({
     </View>
   ) : null;
   const text = (
-    <CodeBlockText content={content} wrap={wrap} maxHeight={maxHeight} following={following} />
+    <CodeBlockText
+      content={content}
+      wrap={wrap}
+      maxHeight={maxHeight}
+      title={title}
+      following={following}
+    />
   );
   const jump =
     follow && atEnd === false ? (

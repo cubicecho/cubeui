@@ -27,7 +27,7 @@
  * its class prop rather than by reaching into the tree.
  */
 import { type Ref, useImperativeHandle, useRef } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /**
  * The column a page's chrome and its content share.
@@ -246,7 +246,14 @@ function Body({
               }),
           }
         : {})}
-      className={cn("cube-rn-view", BODY, scroll && "overflow-y-auto", column, className)}
+      className={cn(
+        "cube-rn-view",
+        BODY,
+        scroll && "overflow-y-auto",
+        scroll && FOCUS_EDGE,
+        column,
+        className,
+      )}
     >
       {contentSlot}
     </div>
