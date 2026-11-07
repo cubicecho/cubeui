@@ -26,6 +26,7 @@ export function CopyButtonView({
   onError,
   disabled,
   hint,
+  tooltip,
   className,
 }: CopyButtonViewProps) {
   const { copied, copy } = useCopy(write, { value, onCopied, onError });
@@ -42,6 +43,7 @@ export function CopyButtonView({
       className={className}
       disabled={disabled}
       hint={hint}
+      tooltip={tooltip}
       onPress={() => {
         // `Button` already refuses the press; this keeps a disabled copy from writing regardless.
         if (disabled === true) {

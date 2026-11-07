@@ -125,6 +125,7 @@ export function DownloadButton({
   size = "icon-sm",
   destination = "ask",
   disabled,
+  tooltip,
   onDownloaded,
   onError,
   className,
@@ -146,6 +147,7 @@ export function DownloadButton({
       {...(isIconSize(size) ? {} : { content: label })}
       loading={pending}
       disabled={disabled}
+      tooltip={tooltip}
       className={className}
       {...(destination === "ask" ? {} : { onPress: () => save(destination) })}
       iconSlot={<Download aria-hidden />}
