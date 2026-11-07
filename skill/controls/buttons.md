@@ -345,7 +345,9 @@ written against props that have gone:
 - **`ConfirmButton`'s `label` is gone.** Write `content="Delete project"` at a text size, and
   `aria-label="Delete lane"` at an `icon*` size.
 - **`ActionButton` is gone.** It is a `Button` at an `icon*` size with `aria-label` and
-  `iconSlot`. The tooltip no longer comes from the name: pass `hint` for one.
+  `iconSlot`. The tooltip no longer comes from the name: pass `hint` for one. `disabled` changes
+  with it. With a `hint`, a disabled button is `aria-disabled`: it keeps its focus and tooltip, so
+  it can say why. Without one, it is plainly `disabled` and leaves the tab order.
 - **`OptionSelect` is gone.** It is `Combobox`.
 
 ### Type the name to confirm
