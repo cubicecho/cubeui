@@ -131,6 +131,12 @@ type DescribedTitleProps = {
   descriptionSlot?: SlotNode | undefined;
   /** The id the shell's `aria-describedby` points at, while folded. */
   descriptionId?: string | undefined;
+  /**
+   * What is read in the description's place while it is folded, when the shell has its own
+   * element for that: a dialog's `DialogDescription`, which the dialog is described by. Absent, a
+   * {@link DescriptionHintText} with `descriptionId`.
+   */
+  foldedDescriptionSlot?: SlotNode | undefined;
   /** Whether the description is behind the button. {@link foldsDescription} decides it. */
   folded: boolean;
   /** The button's name when `label` is not a string: "About this card". */
@@ -155,6 +161,7 @@ function DescribedTitle({
   description,
   descriptionSlot,
   descriptionId,
+  foldedDescriptionSlot,
   folded,
   fallbackName,
   iconSlot,
@@ -183,7 +190,11 @@ function DescribedTitle({
       ) : (
         titleSlot
       )}
-      {folded ? <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText> : null}
+      {folded
+        ? (foldedDescriptionSlot ?? (
+            <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
+          ))
+        : null}
       {folded ? null : descriptionSlot}
     </>
   );

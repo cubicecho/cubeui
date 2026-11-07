@@ -15,6 +15,7 @@
 
 import type { LucideIcon, LucideProps } from "lucide-react-native";
 import ActivitySource from "lucide-react-native/icons/activity";
+import ArchiveSource from "lucide-react-native/icons/archive";
 import ArchiveRestoreSource from "lucide-react-native/icons/archive-restore";
 import ArrowDownWideNarrowSource from "lucide-react-native/icons/arrow-down-wide-narrow";
 import ArrowLeftSource from "lucide-react-native/icons/arrow-left";
@@ -97,10 +98,10 @@ export type IconProps = Omit<LucideProps, "className"> & {
  *
  * ```tsx
  * // app-icons.tsx
- * import ArchiveSource from "lucide-react-native/icons/archive";
+ * import StarSource from "lucide-react-native/icons/star";
  * import { icon } from "@/components/ui/icons";
  *
- * export const Archive = icon(ArchiveSource);
+ * export const Star = icon(StarSource);
  * ```
  *
  * `icons.web.tsx` exports an `icon` that hands its argument back, so the
@@ -129,6 +130,7 @@ export function icon(Source: LucideIcon) {
 }
 
 export const Activity = icon(ActivitySource);
+export const Archive = icon(ArchiveSource);
 export const ArchiveRestore = icon(ArchiveRestoreSource);
 export const ArrowDownWideNarrow = icon(ArrowDownWideNarrowSource);
 export const ArrowLeft = icon(ArrowLeftSource);

@@ -15,8 +15,8 @@ The set, on both halves — check it before wrapping a glyph in the app:
 - **Arrows and chevrons:** `ArrowLeft`, `ArrowRight`, `ChevronDown`, `ChevronLeft`,
   `ChevronRight`, `ChevronUp`, `ChevronsUpDown`, `ArrowDownWideNarrow` (a sort menu's trigger)
 - **Actions:** `Plus`, `Pencil`, `Trash2`, `Copy`, `Download`, `Upload`, `RefreshCw`, `Undo2`,
-  `Search`, `ScanSearch`, `Settings`, `ArchiveRestore`, `LogOut`, `Ellipsis` (a ⋯ menu's
-  trigger), `X`
+  `Search`, `ScanSearch`, `Settings`, `Archive`, `ArchiveRestore`, `LogOut`, `Ellipsis` (a ⋯
+  menu's trigger), `X`
 - **Status:** `Check`, `CircleCheck`, `CircleAlert`, `TriangleAlert`, `Info`, `CircleQuestionMark`
   (the button a folded description sits behind), `LoaderCircle`, `Activity`, `Sparkles`, `Zap`
 - **Files, lists and labels:** `File`, `FileText`, `Folder`, `Tag`, `Library`, `FilePen` and
@@ -44,18 +44,18 @@ picks the `.web.tsx` on web the same way it does for `icons`:
 
 ```tsx
 // components/app-icons.tsx — native: the per-icon path, since Metro does not tree-shake
-import ArchiveSource from "lucide-react-native/icons/archive";
+import StarSource from "lucide-react-native/icons/star";
 import { icon } from "@/components/ui/icons";
 
-export const Archive = icon(ArchiveSource);
+export const Star = icon(StarSource);
 ```
 
 ```tsx
 // components/app-icons.web.tsx — web: the barrel, from lucide-react
-import { Archive as ArchiveSource } from "lucide-react";
+import { Star as StarSource } from "lucide-react";
 import { icon } from "@/components/ui/icons";
 
-export const Archive = icon(ArchiveSource);
+export const Star = icon(StarSource);
 ```
 
 On native `icon` is the same wrapper every icon in the set goes through — `className` sizing, the

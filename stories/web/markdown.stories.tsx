@@ -137,14 +137,60 @@ export const EveryElement: Story = {
     await expect(todo).not.toBeChecked();
     await expect(done).toBeDisabled();
     await expect(todo).toBeDisabled();
-    // The boxes are the markers, so the list draws none of its own and keeps no indent for them.
-    // The quotation is flush too: neither leans on the page's stylesheet to have zeroed a margin.
+    // The boxes are the markers: a task item draws no bullet, and its box hangs in the list's
+    // indent, flush with the document's edge. The quotation is flush too: neither leans on the
+    // page's stylesheet to have zeroed a margin.
     const edge = root(canvasElement)?.getBoundingClientRect().left;
     await expect(done.getBoundingClientRect().left).toBe(edge);
     await expect(canvasElement.querySelector("blockquote")?.getBoundingClientRect().left).toBe(
       edge,
     );
-    await expect(getComputedStyle(done.closest("ul") as Element).listStyleType).toBe("none");
+    await expect(getComputedStyle(done.closest("li") as Element).listStyleType).toBe("none");
+  },
+};
+
+/**
+ * A list that mixes task items with plain ones, as GitHub draws it: the plain items keep their
+ * bullets, each task item's box sits where its bullet would be, and every item's text starts at
+ * the same place.
+ */
+export const MixedTaskList: Story = {
+  args: {
+    content: `- [x] Write the renderer
+- A plain note between the tasks
+- [ ] Port the apps
+- Another plain note
+`,
+  },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas }) => {
+    const items = canvas.getAllByRole("listitem");
+    const plain = items.filter((item) => item.querySelector("[role=checkbox]") === null);
+    const tasks = items.filter((item) => item.querySelector("[role=checkbox]") !== null);
+    await expect(plain).toHaveLength(2);
+    await expect(tasks).toHaveLength(2);
+    for (const item of plain) {
+      await expect(getComputedStyle(item).listStyleType).not.toBe("none");
+    }
+    for (const item of tasks) {
+      await expect(getComputedStyle(item).listStyleType).toBe("none");
+    }
+
+    // The text of every item starts at one edge, and each box sits in the indent before it.
+    const textStart = (item: HTMLElement) => {
+      const range = document.createRange();
+      const text = [...item.childNodes].find(
+        (child) => child.nodeType === Node.TEXT_NODE && child.textContent?.trim(),
+      );
+      range.selectNodeContents(text as Node);
+      return range.getBoundingClientRect().left;
+    };
+    const edge = textStart(plain[0] as HTMLElement);
+    for (const item of items) {
+      await expect(textStart(item)).toBeCloseTo(edge, 0);
+    }
+    const box = canvas.getByRole("checkbox", { name: "Port the apps" });
+    await expect(box.getBoundingClientRect().right).toBeLessThan(edge);
   },
 };
 
@@ -314,6 +360,35 @@ export const Collapsible: Story = {
     // Opening the parent leaves a folded child folded.
     await expect(canvas.getByText("Intro.")).toBeVisible();
     await expect(canvas.getByText("Run it.")).not.toBeVisible();
+  },
+};
+
+/** A collapsible section at every level, each with a body so each heading has a toggle. */
+const EVERY_LEVEL = [1, 2, 3, 4, 5, 6]
+  .map((level) => `${"#".repeat(level)} Level ${level}\n\nUnder level ${level}.\n`)
+  .join("\n");
+
+/**
+ * The toggle beside a heading is level with the heading's text, at every size: the heading sheds
+ * its top margin beside a toggle, because the section above it already holds that room.
+ */
+export const CollapsibleEveryLevel: Story = {
+  args: { content: `Before any heading.\n\n${EVERY_LEVEL}`, collapsible: true },
+  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  play: async ({ canvas }) => {
+    for (const level of [1, 2, 3, 4, 5, 6]) {
+      const name = `Level ${level}`;
+      const heading = canvas.getByRole("heading", { name, level });
+      const toggle = canvas.getByRole("button", { name });
+      const range = document.createRange();
+      range.selectNodeContents(heading);
+      const text = range.getBoundingClientRect();
+      const box = toggle.getBoundingClientRect();
+      // Within a pixel: the text's box is the font's, which rounds apart from the line's.
+      await expect(
+        Math.abs(box.top + box.height / 2 - (text.top + text.height / 2)),
+      ).toBeLessThanOrEqual(1);
+    }
   },
 };
 

@@ -123,7 +123,10 @@ function Heading({
       className={cn(
         // More room above than below, so a heading belongs to what follows it. `scroll-mt` is for
         // the heading that is a link's target: it lands clear of the edge rather than under it.
-        "mt-3 mb-0 min-w-0 scroll-mt-4 font-semibold tracking-tight first:mt-0",
+        // Beside a toggle the section holds that room instead: the heading is the second child of
+        // the toggle's row, where `first:mt-0` never applies, and would sit a margin below it.
+        "mb-0 min-w-0 scroll-mt-4 font-semibold tracking-tight",
+        section ? "mt-0" : "mt-3 first:mt-0",
         HEADINGS[level],
       )}
     >
@@ -233,25 +236,23 @@ function DocumentDiv({ node, children, ...rest }: ComponentPropsWithoutRef<"div"
 }
 
 /**
- * A list. A task list drops its bullets and its indent: the checkboxes are the markers.
- * `contains-task-list` is the class remark-gfm puts on a list that holds one.
+ * A list. Every list keeps its bullets and its indent, a task list too: a task item drops its own
+ * bullet and its box hangs in the indent where the bullet was (`ListItem`, `TaskBox`), so a list
+ * that mixes task items and plain ones keeps the plain ones' bullets, as GitHub draws it.
  */
 function List({
   ordered,
-  className,
   start,
   children,
 }: {
   ordered: boolean;
-  className: string | undefined;
   start?: number | undefined;
   children?: ReactNode;
 }) {
-  const tasks = className?.includes("contains-task-list");
   const look = cn(
     // A list stops at about 65 characters a line, however wide the pane, as a paragraph does.
-    "m-0 max-w-prose",
-    tasks ? "list-none pl-0" : ["pl-6", ordered ? "list-decimal" : "list-disc"],
+    "m-0 max-w-prose pl-6",
+    ordered ? "list-decimal" : "list-disc",
   );
   return ordered ? (
     <ol start={start} className={look}>
@@ -272,7 +273,7 @@ function ListItem({ className, children }: ComponentPropsWithoutRef<"li">) {
     return <li className={look}>{children}</li>;
   }
   return (
-    <li id={id} className={look}>
+    <li id={id} className={cn(look, "relative list-none")}>
       <TaskItemContext.Provider value={id}>{children}</TaskItemContext.Provider>
     </li>
   );
@@ -282,16 +283,19 @@ function ListItem({ className, children }: ComponentPropsWithoutRef<"li">) {
  * A task item's box. Markdown writes it as `- [x]`, and it is drawn as the registry's `Checkbox`
  * so a rendered checklist matches a form's — disabled, because the document is being read, not
  * filled in: ticking it here would change nothing in the source.
+ *
+ * It hangs in the list's indent, centred on the item's first line, where a bullet would be, so the
+ * item's text starts where every other item's does, wrapped lines too. It is taken out of the line
+ * rather than pulled back with a negative margin: Markdown writes a space after `[x]`, and beside
+ * an inline box that space is drawn, while a line drops the spaces it starts with. The `span`
+ * makes `1lh` the item's line height rather than the button's.
  */
 function TaskBox({ checked }: ComponentPropsWithoutRef<"input">) {
   const item = useContext(TaskItemContext);
   return (
-    <Checkbox
-      checked={Boolean(checked)}
-      disabled
-      aria-labelledby={item}
-      className="mr-2 inline-flex align-text-bottom"
-    />
+    <span className="-left-6 absolute top-0 flex h-[1lh] items-center">
+      <Checkbox checked={Boolean(checked)} disabled aria-labelledby={item} />
+    </span>
   );
 }
 
@@ -739,13 +743,9 @@ const ELEMENTS: Components = {
   // Text blocks stop at `max-w-prose` (65ch): at a page's width a paragraph ran to 160
   // characters a line. Tables, code and images are not capped and keep the full width.
   p: ({ children }) => <p className="m-0 max-w-prose">{children}</p>,
-  ul: ({ className, children }) => (
-    <List ordered={false} className={className}>
-      {children}
-    </List>
-  ),
-  ol: ({ className, start, children }) => (
-    <List ordered className={className} start={start}>
+  ul: ({ children }) => <List ordered={false}>{children}</List>,
+  ol: ({ start, children }) => (
+    <List ordered start={start}>
       {children}
     </List>
   ),

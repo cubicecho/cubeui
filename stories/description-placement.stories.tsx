@@ -3,12 +3,14 @@ import type { ReactElement } from "react";
 import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout as CompiledCardLayout } from "../compiled/card-layout";
+import { DialogLayout as CompiledDialogLayout } from "../compiled/dialog-layout";
 import { Form as CompiledForm, createAppForm as compiledCreateAppForm } from "../compiled/form";
 import { Info as CompiledInfo } from "../compiled/icons";
 import { Section as CompiledSection } from "../compiled/section";
 import { SettingRow as CompiledSettingRow } from "../compiled/setting-row";
 import { Switch as CompiledSwitch } from "../compiled/switch";
 import { CardLayout as NativeCardLayout } from "../registry/layout/card-layout";
+import { DialogLayout as NativeDialogLayout } from "../registry/layout/dialog-layout";
 import { Section as NativeSection } from "../registry/layout/section";
 import { SettingRow as NativeSettingRow } from "../registry/layout/setting-row";
 import { Form as NativeForm, createAppForm as nativeCreateAppForm } from "../registry/ui/form";
@@ -17,8 +19,8 @@ import { Switch as NativeSwitch } from "../registry/ui/switch";
 import { SideBySide } from "./side-by-side";
 
 /**
- * `descriptionPlacement="popover"` on the four shells that draw a description: a bound field,
- * `CardLayout`, `Section` and `SettingRow` — issue #319. The sentence goes behind a button beside
+ * `descriptionPlacement="popover"` on the shells that draw a description: a bound field,
+ * `CardLayout`, `Section`, `SettingRow` (#319) and `DialogLayout` (#417). The sentence goes behind a button beside
  * the title, named "About <title>", on both halves: react-native-web on the left, the compiled
  * DOM on the right.
  *
@@ -326,3 +328,71 @@ export const Setting: Story = {
     await expect(toggle).toHaveAccessibleDescription(HELP);
   },
 };
+
+const dialogBody = <Text className="text-foreground text-sm">Paste the app's address.</Text>;
+
+/**
+ * A `DialogLayout` on one half, with the description where `placement` puts it. One half per
+ * story, because two modal dialogs open at once would each hide the other from a screen reader.
+ */
+function dialogStory(half: "native" | "compiled", placement: "inline" | "popover"): Story {
+  const Dialog = half === "native" ? NativeDialogLayout : CompiledDialogLayout;
+  return {
+    render: () => (
+      <Dialog
+        open
+        title="Add an app"
+        description={HELP}
+        descriptionPlacement={placement}
+        contentSlot={dialogBody}
+      />
+    ),
+    play: async () => {
+      const dialog = await body().findByRole("dialog", { name: "Add an app" });
+      // Either way the dialog is described by the sentence, so it is read on opening.
+      await expect(dialog).toHaveAccessibleDescription(HELP);
+      const copy = within(dialog).getByText(HELP);
+      const trigger = within(dialog).queryByRole("button", { name: "About Add an app" });
+      if (placement === "inline") {
+        await expect(trigger).toBeNull();
+        // The dialog fades in, and is not visible until it has.
+        await waitFor(() => expect(copy).toBeVisible());
+        await expect(getComputedStyle(copy).position).not.toBe("absolute");
+        return;
+      }
+
+      // Folded: on the page once, clipped, and behind the button beside the title.
+      await expect(within(dialog).getAllByText(HELP)).toHaveLength(1);
+      await expect(getComputedStyle(copy).position).toBe("absolute");
+      await expect(getComputedStyle(copy).width).toBe("1px");
+      if (trigger === null) {
+        throw new Error("the folded description should have a button");
+      }
+      await userEvent.click(trigger);
+      const pane = await body().findByRole("dialog", { name: "About Add an app" });
+      await waitFor(() => expect(pane).toBeVisible());
+      await expect(pane).toHaveTextContent(HELP);
+      // Escape shuts the pane and leaves the dialog it was opened from.
+      await userEvent.keyboard("{Escape}");
+      await waitFor(() =>
+        expect(body().queryByRole("dialog", { name: "About Add an app" })).toBeNull(),
+      );
+      await expect(body().getByRole("dialog", { name: "Add an app" })).toBeVisible();
+    },
+  };
+}
+
+/** `DialogLayout` from the React Native source, with nothing passed: the description is inline. */
+export const NativeDialog: Story = dialogStory("native", "inline");
+
+/**
+ * `DialogLayout` from the React Native source, folded. On the web the hidden copy is still the
+ * dialog's description, so a screen reader reads it as the dialog opens.
+ */
+export const NativeDialogFolded: Story = dialogStory("native", "popover");
+
+/** The compiled `DialogLayout`, with the description inline. */
+export const CompiledDialog: Story = dialogStory("compiled", "inline");
+
+/** The compiled `DialogLayout`, folded. */
+export const CompiledDialogFolded: Story = dialogStory("compiled", "popover");

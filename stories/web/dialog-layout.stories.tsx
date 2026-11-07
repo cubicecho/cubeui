@@ -489,6 +489,38 @@ export const IconAndHeaderAction: Story = {
   },
 };
 
+/**
+ * `actionPlacement="inline"` on a dialog (#416): a title too long for a small dialog keeps the
+ * badge on its line and is cut short instead, and the badge stays clear of the close button.
+ */
+export const InlineActionTruncatesTheTitle: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      size="sm"
+      title="skills/ticket-workflow/references/checkpoint-template.md"
+      actionSlot={<Badge variant="info">Draft</Badge>}
+      actionPlacement="inline"
+      contentSlot={<p>The file's contents.</p>}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: /checkpoint-template/ });
+    await settled(dialog);
+    const heading = within(dialog).getByRole("heading", { name: /checkpoint-template/ });
+    const title = heading.getBoundingClientRect();
+    const badge = within(dialog).getByText("Draft").getBoundingClientRect();
+    const close = within(dialog).getByRole("button", { name: /close/i }).getBoundingClientRect();
+    await expect({
+      onTheTitlesLine: badge.top < title.bottom && title.top < badge.bottom,
+      afterTitle: badge.left >= title.right,
+      clearOfClose: badge.right <= close.left,
+      truncated: heading.scrollWidth > heading.clientWidth,
+    }).toEqual({ onTheTitlesLine: true, afterTitle: true, clearOfClose: true, truncated: true });
+  },
+};
+
 /** `loading` stands a skeleton in for the body, and keeps the title and the footer. */
 export const Loading: Story = {
   args: { unsaved: false },

@@ -20,8 +20,8 @@ export type IconProps = LucideProps;
 /**
  * The web half of `icons.tsx`'s `icon`: there is nothing to wrap, so it hands
  * the glyph back. It exists so an app's extra glyph is the same line on both
- * platforms — `export const Archive = icon(ArchiveSource)` — in an `app-icons.tsx` that
- * imports the source from `lucide-react-native/icons/archive` and an
+ * platforms — `export const Star = icon(StarSource)` — in an `app-icons.tsx` that
+ * imports the source from `lucide-react-native/icons/star` and an
  * `app-icons.web.tsx` beside it that imports it from `lucide-react`.
  */
 export function icon(Source: LucideIcon): LucideIcon {
@@ -30,6 +30,7 @@ export function icon(Source: LucideIcon): LucideIcon {
 
 export {
   Activity,
+  Archive,
   ArchiveRestore,
   ArrowDownWideNarrow,
   ArrowLeft,

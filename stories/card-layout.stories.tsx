@@ -4,8 +4,10 @@ import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
 import { List as CompiledList } from "../compiled/list";
+import { Section as CompiledSection } from "../compiled/section";
 import { CardLayout as Native } from "../registry/layout/card-layout";
 import { List as NativeList } from "../registry/layout/list";
+import { Section as NativeSection } from "../registry/layout/section";
 import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
 
@@ -241,6 +243,89 @@ export const LongTitleWithAction: Story = {
           // The two controls stay on one line, in the order they were passed.
           together: Math.abs(preview.top - save.top) < 1 && preview.right <= save.left,
         }).toEqual({ half, width, apart: true, titleShown: true, inside: true, together: true });
+      }
+    }
+  },
+};
+
+/** The long title and its two controls, at a width that would wrap them, held on one line. */
+function InlineActionCards({ half }: { half: "native" | "compiled" }) {
+  const Card = half === "native" ? Native : Compiled;
+  const Shell = half === "native" ? NativeSection : CompiledSection;
+  const action = (
+    <>
+      <HalfButton half={half} variant="outline" content="Preview" />
+      <HalfButton half={half} content="Save" />
+    </>
+  );
+  return (
+    <div className="flex flex-col gap-4">
+      <div data-testid={`${half}-card`} style={{ width: 280 }}>
+        <Card title={longTitle} actionSlot={action} actionPlacement="inline" />
+      </div>
+      <div data-testid={`${half}-section`} style={{ width: 280 }}>
+        <Shell title={longTitle} actionSlot={action} actionPlacement="inline" />
+      </div>
+      {/* The same controls with room to spare: how wide they are when nothing presses on them. */}
+      <div data-testid={`${half}-wide`} style={{ width: 900 }}>
+        <Card title="Notes" actionSlot={action} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * `actionPlacement="inline"` (#416): at 280px, where `wrap` moves the two controls under the
+ * title, they stay on the title's line and the title is cut short with an ellipsis, on a card and
+ * on a `Section`, on both halves. The controls are as wide as they are with room to spare.
+ */
+export const InlineActionTruncatesTheTitle: Story = {
+  args: { title: longTitle },
+  render: () => (
+    <SideBySide
+      native={<InlineActionCards half="native" />}
+      compiled={<InlineActionCards half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["native", "compiled"] as const) {
+      const wide = within(canvas.getByTestId(`${half}-wide`));
+      const unpressed = ["Preview", "Save"].map(
+        (name) => wide.getByRole("button", { name }).getBoundingClientRect().width,
+      );
+      for (const shell of ["card", "section"] as const) {
+        const frame = canvas.getByTestId(`${half}-${shell}`);
+        const scope = within(frame);
+        const heading = scope.getByRole("heading", { name: longTitle });
+        const title = heading.getBoundingClientRect();
+        const buttons = ["Preview", "Save"].map((name) =>
+          scope.getByRole("button", { name }).getBoundingClientRect(),
+        );
+        const box = frame.getBoundingClientRect();
+        // `half` and `shell` ride along so a failure names which case broke.
+        await expect({
+          half,
+          shell,
+          // On the title's line: each control overlaps the title's height and sits after it.
+          onTheTitlesLine: buttons.every(
+            (b) => b.top < title.bottom && title.top < b.bottom && title.right <= b.left,
+          ),
+          // Cut short: the text runs past the box it is drawn in, and is on one line.
+          truncated: heading.scrollWidth > heading.clientWidth,
+          oneLine: title.height < 2 * Number.parseFloat(getComputedStyle(heading).lineHeight),
+          // Never shrunk, and inside the block.
+          unshrunk: buttons.every((b, i) => Math.abs(b.width - (unpressed[i] ?? 0)) < 1),
+          inside: buttons.every((b) => b.right <= box.right),
+        }).toEqual({
+          half,
+          shell,
+          onTheTitlesLine: true,
+          truncated: true,
+          oneLine: true,
+          unshrunk: true,
+          inside: true,
+        });
       }
     }
   },
