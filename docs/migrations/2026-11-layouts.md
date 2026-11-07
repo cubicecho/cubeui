@@ -91,13 +91,13 @@ test that finds them by name needs changing:
 
 | Item | Change |
 |---|---|
-| `Section` | `surface` is gone. Replace `<Section surface="card" …>` with `<CardLayout level={2} …>`, keeping `title`, `description`, `actionSlot` and `contentSlot`. A `divider`, or a `level` above 3, has no `CardLayout` counterpart. |
+| `Section` | `surface` is gone. Replace `<Section surface="card" …>` with `<CardLayout level={2} …>`, keeping `title`, `description`, `actionSlot` and `contentSlot`. A `divider`, or a `level` above 3, has no `CardLayout` counterpart. New: `actionPlacement`, as `CardLayout` has. |
 | `PageHeader`, `PageLayout` | `breadcrumbsSlot` is now `backSlot` (the old name still works, deprecated). A back button put in `iconSlot` moves to `backSlot`; `iconSlot` is the page's own icon. New: `size` (`"lg" \| "md" \| "sm"`) sets the title size apart from `level`; `headerBarSlot` adds full-width bars under the title. |
 | `PageLayout` | `headerClassName` now lands on the whole header, which runs the full width, not on the `PageHeader` inside it. The rule under the title runs the pane's width. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
-| `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. |
+| `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
@@ -132,10 +132,11 @@ to add them.
 - **`Section`'s heading looks like a card's:** the action sits level with the top of the title,
   16px from the text.
 - **`CardLayout`'s `headerClassName`** lands on the header around the title row: padding, border
-  and fill classes work as before, but a flex class there no longer reaches the row. The usual one
-  was a `flex-nowrap` that kept the action on the title's line, and it has no replacement yet
-  ([#416](https://github.com/cubicecho/cubeui/issues/416)). The row now wraps the action under the
-  title when the title would get narrower than 10rem.
+  and fill classes work as before, but a flex class there no longer reaches the row. The row now
+  wraps the action under the title when the title would get narrower than 10rem. The usual flex
+  class was a `flex-nowrap` that kept the action on the title's line: drop it and pass
+  `actionPlacement="inline"`, which keeps the action there and truncates the title instead
+  ([#416](https://github.com/cubicecho/cubeui/issues/416)). `Section` and `DialogLayout` take it too.
 - **`PageHeader`'s `contentSlot` (`PageLayout`'s `headerContentSlot`) no longer stretches what you
   put in it.** Each node sits at its own width from the start of the line, so a tab list is as wide as
   its tabs instead of running the page's width

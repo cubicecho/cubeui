@@ -28,9 +28,12 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `contentSlot` (required) | `SlotNode` |  | The body. It is the only part that scrolls. |
 | `title` (required) | `ReactNode` |  | Required, because a dialog without a title is one no screen reader can announce. A dialog whose design has no room for a heading passes `hideTitle` and keeps this. |
 | `description` | `ReactNode` |  | Read to the same people the title is. Absent, the dialog is described by its body. |
+| `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button after the title, named "About <title>", and on the web the dialog is still described by it. It stays inline on a dialog with no body and no footer, where the description is all the dialog says. `CardLayout`'s prop, passed to the card on the panel. |
+| `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
 | `hideTitle` | `boolean` | `false` | Keeps the title for assistive technology and takes it off the screen. |
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end, clear of the close button: a menu, a status badge, a switch. |
+| `actionPlacement` | `ActionPlacement` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title; `inline` keeps it beside the title and cuts the title short with an ellipsis instead. `CardLayout`'s prop, passed to the card on the panel. |
 | `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element, or a `List` with no rows — `CardLayout`'s rule. |
 | `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted. The title and the footer stay. |
 | `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
@@ -69,8 +72,12 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   and `p-6` inset, and the card's parts sit on it: the title is the dialog's `text-lg` title and
   names it, the body is the one part that scrolls, and the footer stacks below `sm`. So a dialog
   takes the card's `iconSlot` before the title, an `actionSlot` at the header's far end (kept
-  clear of the close button), `loading` and `emptySlot`, with the card's rules for each — see
-  [Cards](cards.md#cards). A `CardLayout` in the dialog's body is drawn as a card again.
+  clear of the close button), `actionPlacement`, `descriptionPlacement`, `loading` and
+  `emptySlot`, with the card's rules for each — see [Cards](cards.md#cards). A `CardLayout` in the
+  dialog's body is drawn as a card again.
+- **`descriptionPlacement="popover"` folds the description behind a button after the title**, as
+  on a card, on both halves. On the web the dialog is still described by the sentence, so a screen
+  reader reads it as the dialog opens. Pass the same placement your app's cards and fields use.
 - **The header and footer look the same on both platforms.** The title and description are
   left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
   on top, below `sm`. Do not centre the header or reverse the buttons yourself.

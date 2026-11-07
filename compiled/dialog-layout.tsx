@@ -29,8 +29,14 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
-import { CardLayout, type FloatingSurface, FloatingSurfaceContext } from "./card-layout";
+import {
+  type ActionPlacement,
+  CardLayout,
+  type FloatingSurface,
+  FloatingSurfaceContext,
+} from "./card-layout";
 import { ConfirmDialog, DISCARD_QUESTION } from "./confirm-dialog";
+import type { DescriptionPlacement } from "./description-hint";
 import {
   Dialog,
   DialogContent,
@@ -83,6 +89,12 @@ const WRAPPER = "flex min-h-0 flex-1 flex-col";
 const DIALOG_SURFACE: FloatingSurface = {
   drawTitle: (title, className) => <DialogTitle className={className}>{title}</DialogTitle>,
   drawDescription: (description) => <DialogDescription>{description}</DialogDescription>,
+  // Still the dialog's own description on the web, so radix points the dialog's
+  // `aria-describedby` at it. A device has no `aria-describedby`, and hidden text there is text
+  // VoiceOver stops on.
+  drawFoldedDescription: (description) => (
+    <DialogDescription className="sr-only">{description}</DialogDescription>
+  ),
   drawParts: ({
     headerSlot,
     contentSlot,
@@ -119,6 +131,16 @@ export type DialogLayoutProps = {
   title: ReactNode;
   /** Read to the same people the title is. Absent, the dialog is described by its body. */
   description?: ReactNode | undefined;
+  /**
+   * Where the description is drawn. `inline` (the default) puts it under the title; `popover`
+   * puts it behind a small button after the title, named "About <title>", and on the web the
+   * dialog is still described by it. It stays inline on a dialog with no body and no footer,
+   * where the description is all the dialog says. `CardLayout`'s prop, passed to the card on the
+   * panel.
+   */
+  descriptionPlacement?: DescriptionPlacement | undefined;
+  /** The `popover` button's glyph. A question mark by default. */
+  descriptionIconSlot?: SlotNode | undefined;
   /** Keeps the title for assistive technology and takes it off the screen. */
   hideTitle?: boolean | undefined;
   /**
@@ -128,6 +150,12 @@ export type DialogLayoutProps = {
   iconSlot?: SlotNode | undefined;
   /** The header's far end, clear of the close button: a menu, a status badge, a switch. */
   actionSlot?: SlotNode | undefined;
+  /**
+   * Where the action goes when the title and the action do not both fit on one line. `wrap` (the
+   * default) moves the action under the title; `inline` keeps it beside the title and cuts the
+   * title short with an ellipsis instead. `CardLayout`'s prop, passed to the card on the panel.
+   */
+  actionPlacement?: ActionPlacement | undefined;
   /**
    * Shown instead of `contentSlot` when there is nothing in it: no element, or a `List` with no
    * rows — `CardLayout`'s rule.
@@ -257,9 +285,12 @@ export function DialogLayout({
   contentSlot,
   title,
   description,
+  descriptionPlacement = "inline",
+  descriptionIconSlot,
   hideTitle = false,
   iconSlot,
   actionSlot,
+  actionPlacement = "wrap",
   emptySlot,
   loading = false,
   triggerSlot,
@@ -332,8 +363,11 @@ export function DialogLayout({
       <CardLayout
         title={title}
         description={description}
+        descriptionPlacement={descriptionPlacement}
+        descriptionIconSlot={descriptionIconSlot}
         iconSlot={iconSlot}
         actionSlot={actionSlot}
+        actionPlacement={actionPlacement}
         contentSlot={contentSlot}
         emptySlot={emptySlot}
         loading={loading}
