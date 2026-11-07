@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "@/components/app-bar";
 import {
   SwitchField as BoundSwitchField,
   ComboboxField,
@@ -1871,6 +1872,41 @@ const sections: GallerySection[] = [
             className="h-full"
             sidebarWidth="auto"
             sidebarSlot={<SidebarSample label="Gallery sidebar" />}
+            contentSlot={<div className="p-4">{paragraphs(20)}</div>}
+          />
+        }
+      />
+    ),
+  },
+  {
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
+    content: (
+      <Frame
+        height="h-[320px]"
+        content={
+          <HeaderContentFooter
+            scroll
+            className="h-full"
+            headerSlot={
+              <AppBar
+                brandSlot={<span className="font-semibold text-foreground">Router</span>}
+                navLabel="Gallery app bar"
+                navSlot={PLACES.map((place) => (
+                  <a
+                    key={place}
+                    href={`#${place.toLowerCase()}`}
+                    className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
+                  >
+                    {place}
+                  </a>
+                ))}
+                status="3 of 5 running"
+                actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+              />
+            }
             contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }

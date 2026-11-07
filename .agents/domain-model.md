@@ -191,8 +191,11 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`SplitLayout`:** two panes side by side that stack below a width. Owner:
   `registry/layout/split-layout.tsx`.
 - **`SidebarLayout`:** a split whose panes are the page and a sidebar; below a
-  width the sidebar is replaced by an app bar at the top, with its places optionally at the
-  bottom. Owner: the same file; composes `SplitLayout`.
+  width the sidebar is replaced by an `AppBar` at the top, with its places optionally in a bar of
+  their own at the bottom. Owner: the same file; composes `SplitLayout` and `AppBar`.
+- **`AppBar`:** an app's bar across the top: its brand, its places (which scroll sideways when
+  narrow), one line of its state (which gives way first) and its actions; the banner landmark.
+  Owner: `registry/layout/app-bar.tsx`.
 - **`Sidebar`:** the app's navigation column, with sections of rows, that can fold to a
   rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarNavItem`,
   `SidebarCollapseButton`, `useSidebar`.

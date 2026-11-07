@@ -217,7 +217,8 @@ function Brand() {
 ### On a phone, a bar instead of the rail
 
 A rail does not stack; under a narrow width it goes, and a bar over the page stands in for it.
-That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is four slots:
+That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is an [`AppBar`](app-bar.md#app-bar) of four slots,
+passed to the layout:
 
 ```tsx
 <SidebarLayout
@@ -272,9 +273,9 @@ is the copy this replaces.
 - **It binds to a router as the row does**: `createLink(BarNavItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
 - **It is always a link.** A button in the bar is an icon `Button` in `actionSlot`.
-- **Size the list to the bar.** Each item is 32px and the `navSlot` neither scrolls nor wraps; a phone
-  fits about five beside a brand mark and two actions. An app with more places than that picks the
-  ones the bar shows.
+- **Size the list to the bar.** Each item is 32px; a phone fits about five beside a brand mark and
+  two actions. Past that the places scroll sideways rather than wrap, once `status` has given up
+  its width, so an app with more places than fit picks the ones the bar shows.
 
 **`status` is one line saying what state the app is in** — "3/5 servers running", "128 turns in 9
 sessions" — drawn between the `navSlot` and the `actionSlot`, against the action. It takes the width the
@@ -304,7 +305,7 @@ there pushes the buttons off the screen.
   component; this is not it.
 - **On device** NativeWind reads the same breakpoint off the window: a phone draws the bar and a
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
-- `headerClassName` is on the bar. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
+- `headerClassName` is on the `AppBar`, whose parts are `app-bar-*`. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
   `sidebarHideBelow` still hides the rail and draws nothing in its place.
 - **`barPosition="bottom"` draws the places along the bottom**, where a phone's thumb is and where
   Android and iOS apps put them. The `navSlot` leaves the top bar for a bar of its own under
@@ -344,7 +345,7 @@ there pushes the buttons off the screen.
     `SafeAreaView`'s fill, not the bar's.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
-  - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
+  - **About five places**: each item is 32px, and this bar neither scrolls nor wraps.
   - **A toast sits above the bar.** The layout tells `@cubeui/toast` it draws one, and under
     `sidebarHideBelow` the stack rises by the bar's height instead of covering the places. Do not
     offset the `ToastProvider` yourself. A bar of your own that does the same calls

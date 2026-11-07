@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 105 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 106 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 105 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 106 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  91 on both platforms · 14 web-only · 0 native-only.
+  92 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -219,6 +219,11 @@
           <th scope="row"><code>@cubeui/alert-dialog</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>shadcn's modal that interrupts to ask, with the same part names on both halves: radix's `AlertDialog` on the web, the native `Dialog` as an `alertdialog` with no close button on device.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/app-bar</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An app's bar across the top: brand at the start, its places in a named navigation landmark that scrolls sideways when narrow, one line of the app's state that gives way first, and actions at the end. The bar SidebarLayout draws on a phone, and the header of an app with no sidebar.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
@@ -658,7 +663,7 @@
         <tr>
           <th scope="row"><code>@cubeui/split-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition="bottom".</td>
+          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, an AppBar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition="bottom".</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/stat-tile</code></th>

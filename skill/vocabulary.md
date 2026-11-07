@@ -48,10 +48,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place;
   `barPosition="bottom"` puts that bar's `navSlot` along the bottom of the page.
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
-  `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
-  so there pass what the sidebar's header shows.
-- **`navSlot`** — an app bar's navigation, after the brand: the primary links on `TopBarLayout`, the
-  places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the `<nav>` and
+  `AppBar`, on `TopBarLayout`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
+  is hidden — so there pass what the sidebar's header shows.
+- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `BarNavItem`s —
+  on `AppBar` and `SidebarLayout`'s bar, the primary links on `TopBarLayout`. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
 - **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
@@ -131,7 +131,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
   given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
-  drawn as a dot on the icon. On `SidebarLayout`'s bar, a node: one line of the app's own state
+  drawn as a dot on the icon. On `AppBar` (and so `SidebarLayout`'s bar), a node: one line of the app's own state
   ("3/5 servers running") between `navSlot` and `actionSlot`, the first part of the bar to give way.
 - **`leadingSlot`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
   given, not sized like `iconSlot`, and never inside the row's pressed area. On `ListItem`.

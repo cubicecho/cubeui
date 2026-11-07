@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { Combobox } from "../../registry/layout/combobox";
@@ -1337,6 +1338,43 @@ const sections: GallerySection[] = [
           />
         </Screen>
       </Stack>
+    ),
+  },
+  {
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
+    content: (
+      <Screen>
+        <HeaderContentFooter
+          scroll
+          className="h-full"
+          headerSlot={
+            <AppBar
+              brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
+              navLabel="App pages"
+              navSlot={
+                <>
+                  <Text role="link" className={navLink}>
+                    Projects
+                  </Text>
+                  <Text role="link" className={navLink}>
+                    Team
+                  </Text>
+                </>
+              }
+              status="2 online"
+              actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            />
+          }
+          contentSlot={
+            <View className="p-3">
+              <Lines count={5} />
+            </View>
+          }
+        />
+      </Screen>
     ),
   },
   {

@@ -47,6 +47,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | Two panes side by side, stacked when narrow | `SplitLayout`, `SidebarLayout` | `@cubeui/split-layout` |
 | The app's sidebar on a tablet, a bar with the brand and icon links on a phone — see [layout/sidebar.md](layout/sidebar.md#on-a-phone-a-bar-instead-of-the-rail) | `SidebarLayout sidebarHideBelow` | `@cubeui/split-layout` |
 | A place in that bar: an icon link named by `label`, with a count badge or a status dot | `BarNavItem` | `@cubeui/sidebar` |
+| An app's bar across the top — brand, places, a status line, actions — on its own; with no sidebar, in a `HeaderContentFooter`'s `headerSlot` over the screen — see [layout/app-bar.md](layout/app-bar.md#app-bar) | `AppBar` | `@cubeui/app-bar` |
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarNavItem` | `@cubeui/sidebar` |
 | An app with no sidebar: a bar across the top — brand, links, actions — over a screen that scrolls — see [layout/top-bar.md](layout/top-bar.md#top-bar) | `TopBarLayout` | `@cubeui/top-bar-layout` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |

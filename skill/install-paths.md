@@ -33,6 +33,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `alert` | both | `components/ui/alert.tsx` | `import { AlertTitle, AlertDescription, Alert } from "@/components/ui/alert"` |
 | `alert-dialog` | web | `components/ui/alert-dialog.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
 | `alert-dialog` | native | `components/ui/alert-dialog.tsx`; also `alert-dialog.web.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
+| `app-bar` | both | `components/app-bar.tsx` | `import { AppBar } from "@/components/app-bar"` |
 | `app-form` | web | `components/app-form.tsx` | `import { splitProps, useFieldError, SubmitButton, bindToForm, InputField, NumberField, … 7 more } from "@/components/app-form"` |
 | `badge` | web | `components/ui/badge.tsx`; also `badge-base.ts` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
 | `badge` | native | `components/ui/badge.tsx`; also `badge-base.ts`, `badge.web.tsx` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |

@@ -1478,11 +1478,24 @@
       ]
     },
     {
+      "name": "app-bar",
+      "type": "registry:component",
+      "title": "App Bar",
+      "description": "An app's bar across the top: brand at the start, its places in a named navigation landmark that scrolls sideways when narrow, one line of the app's state that gives way first, and actions at the end. The bar SidebarLayout draws on a phone, and the header of an app with no sidebar.",
+      "registryDependencies": ["@cubeui/utils"],
+      "files": [
+        {
+          "path": "registry/layout/app-bar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar"],
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, an AppBar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar", "@cubeui/app-bar"],
       "files": [
         {
           "path": "registry/layout/split-layout.tsx",
