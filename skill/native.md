@@ -10,6 +10,7 @@ the web:
 ```jsonc
 // package.json
 "scripts": { "postinstall": "patch-package" },
+"dependencies": { "nativewind": "5.0.0-rc.0", "react-native-css": "3.1.0-rc.0" },
 "devDependencies": { "patch-package": "^8.0.1" },
 "overrides": { "react-native-css": { "lightningcss": "1.30.1" } }
 ```
@@ -33,6 +34,10 @@ one new native build.
   `package-lock.json` and run `npm install` again.
 - **A root `"overrides": { "lightningcss": "1.30.1" }` works too.** It pins Tailwind's copy as
   well, and Tailwind builds with 1.30.1.
+- **Pin `nativewind` and `react-native-css` exactly, by hand.** The install asks npm for
+  exactly these versions, but npm saves them with a caret. A caret takes `nativewind` rc.1, which
+  needs `react-native-css` rc.1, and the patch is written for rc.0. The lockfile holds rc.0 until
+  something resolves again without it.
 
 ## Shapes on React Native
 
