@@ -35,6 +35,8 @@ export type PageLayoutProps = {
    * The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot`
    * slot, named for the part it belongs to because this component's own `contentSlot` is the page.
    *
+   * Each node keeps its own width; a filter row passes `self-stretch` to fill the line.
+   *
    * Passing it also removes the rule under the header, as it does on `PageHeader`.
    */
   headerContentSlot?: SlotNode | undefined;

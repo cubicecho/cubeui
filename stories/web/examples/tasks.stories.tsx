@@ -415,7 +415,7 @@ function Tasks({ state }: Args) {
           />
         }
         headerContentSlot={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 self-stretch">
             <SearchInput
               label="Search tasks"
               placeholder="Search tasks"

@@ -399,7 +399,7 @@ function Schedule({ empty }: Args) {
           </>
         }
         headerContentSlot={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 self-stretch">
             <DateRangePicker
               aria-label="Dates shown"
               className="w-72"
