@@ -23,6 +23,11 @@ move them out of the cubeui file first.
   ([#408](https://github.com/cubicecho/cubeui/issues/408)): remove it, or put the app's own entry
   back in `devDependencies`. Only an Expo app with `menu` still gets it, because `menu`'s web half
   needs React DOM's types and the CLI can't add a dev dependency to an Expo app; leave it there.
+  In an Expo app, change `"nativewind": "^5.0.0-rc.0"` to `"5.0.0-rc.0"`, and pin
+  `react-native-css` at `3.1.0-rc.0` the same way. npm saves both with a caret. The caret takes
+  5.0.0-rc.1 the next time the lockfile is rebuilt, which needs a newer `react-native-css` than
+  cubeui's patch is for, and the install fails
+  ([#429](https://github.com/cubicecho/cubeui/issues/429)).
 - **shadcn's own files.** `@cubeui/table` (web), `@cubeui/separator` and `@cubeui/alert-dialog`
   install to the same `components/ui/` paths as shadcn's components of those names. In an app that
   had shadcn's, cubeui's replaces it, so check the call sites.
@@ -94,6 +99,7 @@ test that finds them by name needs changing:
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
+| `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. |
 
 ## Moved installs
 

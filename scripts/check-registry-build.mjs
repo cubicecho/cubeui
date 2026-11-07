@@ -40,6 +40,12 @@
 // the item's range over the app's. `^` there rewrote an app's `~57.0.7` pin on `expo-file-system`
 // to a caret that lets npm take a version the SDK does not support (#409).
 //
+// A prerelease is pinned exactly. A range on one follows every later prerelease of that version,
+// and prereleases break each other freely: `nativewind@^5.0.0-rc.0` took 5.0.0-rc.1 the day it was
+// published, which wants `react-native-css@3.1.0-rc.1` exactly, and every fresh native install
+// failed to resolve against the item's own `react-native-css@3.1.0-rc.0` (#429). The two move
+// together, by hand, with the patch every native app carries for the second.
+//
 // ## 4. Every file in a built registry item arrives with its content in it
 //
 // `shadcn build` inlines each source file into the item's JSON. A *missing* path fails the build
@@ -797,10 +803,14 @@ for (const built of BUILT) {
         unpinned.push(`${item.name} declares \`${dependency}\` with no version range`);
       }
       const name = packageName(dependency);
-      if (/^(expo|react-native)-/.test(name) && dependency.slice(name.length + 1).startsWith("^")) {
+      const range = dependency.slice(name.length + 1);
+      if (/^(expo|react-native)-/.test(name) && range.startsWith("^")) {
         unpinned.push(
           `${item.name} declares \`${dependency}\` with \`^\`, where an Expo app pins with \`~\``,
         );
+      }
+      if (range.includes("-") && /^\d/.test(range) === false) {
+        unpinned.push(`${item.name} declares \`${dependency}\`, a range on a prerelease`);
       }
       const seenRange = pinned.get(name);
       if (seenRange && seenRange.spec !== dependency) {
@@ -1035,9 +1045,10 @@ if (unpinned.length > 0) {
   console.error(
     "\nThe CLI runs `npm install <name>`, which takes the latest stable. `nativewind` alone" +
       "\ninstalls 4 into an app whose components are written against 5, and the app fails at" +
-      "\nimport time in a file it did not write. Spell the range: `nativewind@^5.0.0-rc.0`." +
+      "\nimport time in a file it did not write. Spell the range: `lucide-react-native@^1.41.0`." +
       "\nAn `expo-*` or `react-native-*` package takes `~` on the minor its Expo SDK bundles:" +
-      "\nthe CLI writes the item's range over the app's pin, and `^` lets npm leave the SDK.",
+      "\nthe CLI writes the item's range over the app's pin, and `^` lets npm leave the SDK." +
+      "\nA prerelease is an exact version, `nativewind@5.0.0-rc.0`: a range takes the next rc.",
   );
 }
 
@@ -1284,7 +1295,7 @@ console.log(
   `${checked} built files across ${BUILT.length} registries all carry content and hold distinct ` +
     `basenames within each; ${pairs} items across ${dirs.length} source directories hold distinct ` +
     "names, every platform pair exports the same set, every npm dependency carries a version " +
-    "range (`~` on an Expo package), " +
+    "range (`~` on an Expo package, exact on a prerelease), " +
     `every cross-item dependency names ${NAMESPACE} and an item its own registry holds, ` +
     "every built item file is still listed by the index beside it, and every item declares exactly " +
     "the packages its own files import plus their required peers, at one range per package, " +
