@@ -103,8 +103,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
 | `grid-layout` | both | `components/grid-layout.tsx` | `import { GridLayout } from "@/components/grid-layout"` |
 | `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, COLUMNS, HeaderContentFooter } from "@/components/header-content-footer"` |
-| `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
-| `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
+| `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, Activity, ArchiveRestore, ArrowDownWideNarrow, ArrowLeft, ArrowRight, … 59 more } from "@/components/ui/icons"` |
+| `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, Activity, ArchiveRestore, ArrowDownWideNarrow, ArrowLeft, ArrowRight, … 59 more } from "@/components/ui/icons"` |
 | `input` | web | `components/ui/input.tsx`; also `input-base.ts` | `import { Input } from "@/components/ui/input"` |
 | `input` | native | `components/ui/input.tsx`; also `input-base.ts`, `input.web.tsx` | `import { Input } from "@/components/ui/input"` |
 | `item` | web | `components/ui/item.tsx`; also `item-base.ts` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
