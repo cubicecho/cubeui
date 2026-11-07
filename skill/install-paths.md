@@ -33,6 +33,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `alert` | both | `components/ui/alert.tsx` | `import { AlertTitle, AlertDescription, Alert } from "@/components/ui/alert"` |
 | `alert-dialog` | web | `components/ui/alert-dialog.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
 | `alert-dialog` | native | `components/ui/alert-dialog.tsx`; also `alert-dialog.web.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
+| `app-bar` | both | `components/app-bar.tsx` | `import { AppBar } from "@/components/app-bar"` |
 | `app-form` | web | `components/app-form.tsx` | `import { splitProps, useFieldError, SubmitButton, bindToForm, InputField, NumberField, … 7 more } from "@/components/app-form"` |
 | `badge` | web | `components/ui/badge.tsx`; also `badge-base.ts` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
 | `badge` | native | `components/ui/badge.tsx`; also `badge-base.ts`, `badge.web.tsx` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
@@ -95,7 +96,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `format` | both | `lib/format.ts` | `import { formatBytes, formatCount, joinStats, formatDuration, formatDate, formatDateTime, … 1 more } from "@/lib/format"` |
 | `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
 | `grid-layout` | both | `components/grid-layout.tsx` | `import { GridLayout } from "@/components/grid-layout"` |
-| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, HeaderContentFooter } from "@/components/header-content-footer"` |
+| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, COLUMNS, HeaderContentFooter } from "@/components/header-content-footer"` |
 | `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `input` | web | `components/ui/input.tsx`; also `input-base.ts` | `import { Input } from "@/components/ui/input"` |
@@ -166,7 +167,6 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tokens` | native | `lib/cubeui-theme.ts`; also `cubeui-tokens.css` | `import { light, dark, palettes, paletteFor, cssVariables } from "@/lib/cubeui-theme"` |
 | `tooltip` | web | `components/ui/tooltip.tsx`; also `tooltip-base.ts` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
-| `top-bar-layout` | both | `components/top-bar-layout.tsx` | `import { TopBarLayout } from "@/components/top-bar-layout"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
 | `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |

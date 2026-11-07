@@ -538,7 +538,8 @@ Recorded so the next pass does not re-derive them:
   `navSlot`, `status` and `actionSlot`, a widening rather than a new `app-shell` item, which would also
   have collided with mcp-ragdown's own `components/app-shell.tsx` on install. The links in that
   bar are `@cubeui/sidebar`'s `BarNavItem` — the rail's row with only the icon drawn — so the
-  apps' own link classes, and the counts they dropped on the bar, go with it.
+  apps' own link classes, and the counts they dropped on the bar, go with it. The bar itself is
+  `@cubeui/app-bar`'s `AppBar`, which an app with no sidebar puts over its page on its own.
 - **The list row** (`badges`, `title`, `meta`, `actions`, `dim`). 99 instances of
   `flex items-start justify-between` across 8 projects. Settled: once kanban installed
   `@cubeui/item`, the plain row *was* `Item` and its `row-card.tsx` was deleted rather than

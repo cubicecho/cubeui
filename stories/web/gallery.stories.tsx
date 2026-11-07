@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "@/components/app-bar";
 import {
   SwitchField as BoundSwitchField,
   ComboboxField,
@@ -44,7 +45,6 @@ import { SettingRow } from "@/components/setting-row";
 import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
 import { SidebarLayout, SplitLayout } from "@/components/split-layout";
 import { StatTile } from "@/components/stat-tile";
-import { TopBarLayout } from "@/components/top-bar-layout";
 import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -1878,26 +1878,34 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
     content: (
       <Frame
         height="h-[320px]"
         content={
-          <TopBarLayout
+          <HeaderContentFooter
+            scroll
             className="h-full"
-            brandSlot={<span className="font-semibold text-foreground">Router</span>}
-            navLabel="Gallery top bar"
-            navSlot={PLACES.map((place) => (
-              <a
-                key={place}
-                href={`#${place.toLowerCase()}`}
-                className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
-              >
-                {place}
-              </a>
-            ))}
-            actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            headerSlot={
+              <AppBar
+                brandSlot={<span className="font-semibold text-foreground">Router</span>}
+                navLabel="Gallery app bar"
+                navSlot={PLACES.map((place) => (
+                  <a
+                    key={place}
+                    href={`#${place.toLowerCase()}`}
+                    className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
+                  >
+                    {place}
+                  </a>
+                ))}
+                status="3 of 5 running"
+                actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+              />
+            }
             contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }

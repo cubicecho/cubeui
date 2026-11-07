@@ -95,17 +95,19 @@ field — because data that has not arrived is not data that came back empty or 
 | --- | --- |
 | `backSlot` | The way back, on the line above the title: a back link, or a breadcrumb trail. Nodes, never a route. Not `iconSlot`, which is the page's own icon. `breadcrumbsSlot` is its deprecated name. |
 | `headerContentSlot` | The row under the title: search, filters, tabs. `PageHeader` calls it `contentSlot`, because it has no body of its own. |
+| `headerBarSlot` | Bars under the title that run the full width while the title keeps its column: a second toolbar, a pinned notice. On `PageLayout`, a slot of the header, so it wears the header's prefix; a bar because it spans the page, where `headerContentSlot` sits in the column. Two apps wrote the page out by hand for it. |
 | `firstSlot`, `secondSlot` | The two panes of a `SplitLayout`, as equals. Numbered because a role pair lies about an even split and a side pair lies once the panes stack or the page is read right-to-left. |
 | `firstWidth`, `secondWidth` | Which pane carries the width. One or the other, never both. |
 | `sidebarSlot` | The second surface in a `SidebarLayout`. `contentSlot` stays the main one. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarHideBelow`, `sidebarClassName` | The sidebar's, by prefix. `sidebarHideBelow` is `Sidebar`'s `hideBelow` said once on the layout, so the rail and the bar that stands in for it read one breakpoint. |
-| `brandSlot` | The start of an app's bar: the logo and the app's name. On `TopBarLayout`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and on `SidebarLayout`'s bar, drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
-| `navSlot` | An app bar's navigation: the primary links on `TopBarLayout`, the places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
+| `brandSlot` | The start of an app's bar: the logo and the app's name. On `AppBar`, where the bar has no title — an app's name is not a page's, and a `title` there would be a second `h1` on every page — and so on `SidebarLayout`'s bar, an `AppBar` drawn only where the sidebar is not, so it carries what the sidebar's header shows. |
+| `navSlot` | An app bar's navigation: the places as icon links — `BarNavItem`s — or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the navigation landmark around them, for the same reason `as="nav"` exists — the hand-written one is the one that went unnamed; `navLabel` names it by prefix. |
 | `sidebarPosition`, `sidebarWidth`, `sidebarClassName` | The sidebar's, by prefix. |
 | `cardClassName` | On `CenteredLayout`, the card, where `className` is the page around it. The card is not a slot the caller fills, so it takes its prefix from the shell it is: the one page shell whose root is not the thing it draws. |
 | `as` | Not a slot: which landmark a part is. `as="nav"` on `SidebarSection`, named by its `title` or a `label`. A prop rather than a wrapper the caller writes, because the hand-written `<nav>` is the one every app forgot. |
 | `width` | `page` / `prose` / `full` — the column, not a number. |
 | `level` | Not a slot: `1 \| 2 \| 3`, which heading element the title is. |
+| `size` | Not a slot: `lg` / `md` / `sm`, how large `PageHeader`'s title is drawn, following `level` unless given. A word apart from the level because min-agent's chat took `level={3}` on a top-level route only to get a small title, and lost its `h1`. |
 | `triggerSlot` | What opens a dialog, when the dialog owns its own open state. |
 | `open`, `onOpenChange` | Anything that opens, and being told when it does. Filed here because `DialogLayout` is the first thing that takes it, not the last: a disclosure row takes it, and so does a select whose menu is filled by the opening. |
 | `defaultOpen` | Where a thing that opens starts, when it holds its own open state. The primitives' word already (`Dialog`, `Popover`, `Menu`), taken by a shell once `Disclosure` held its own: an uncontrolled shell with no starting state is a `useState` the caller writes anyway. |
@@ -146,7 +148,7 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badgesSlot` | What a row is wearing: a status, a kind, a state. Before the title. |
-| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `SidebarLayout`'s bar a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
+| `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `QueryState compact` rungs. On `SidebarNavItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `BarNavItem` the same object, drawn as a dot on the icon. On `AppBar`, and so `SidebarLayout`'s bar, a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
 | `leadingSlot` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `iconSlot` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badgesSlot` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `actionSlot` — still facts about the title, placed where a list scans them. |
 | `entries` | The things a tree is built from: a flat list of `{ path, type }`, in any order, each carrying whatever else the caller's rows hold. On `FileTree`, which nests and sorts them. Not `items` or `options`: those are rows drawn as given, and these are rearranged. |
@@ -155,7 +157,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `what` | What could not be fetched, in the reader's words. |
 | `count` | How many rows the page is about to draw, which is not what came back. |
 | `record` | The one record a detail screen asked for, once its query has answered; `null` or `undefined` is one that is not there. On `QueryState`, in place of `count`. |
-| `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading. |
+| `notFoundLabel` | What a detail screen says when its `record` is not there. Drawn as the screen's heading, at `level`: `2` when the guard sits inside a page that already has its title, so there is one `h1`. |
 | `rows` | How many placeholder rows stand in for a list while it loads. |
 | `layout` | On `DescriptionList`: `inline`, label beside value until the list is too narrow, or `stacked`. |
 

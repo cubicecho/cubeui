@@ -192,12 +192,11 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
 
 const slotOf = (el: Element) => el.getAttribute("data-testid") ?? el.getAttribute("data-slot");
 
+/** The bar `SidebarLayout` draws under its breakpoint: an `AppBar`. */
+const BAR = '[data-testid="app-bar"], [data-slot="app-bar"]';
+
 function barsOf(canvasElement: HTMLElement) {
-  const headers = Array.from(
-    canvasElement.querySelectorAll<HTMLElement>(
-      '[data-testid="sidebar-layout-header"], [data-slot="sidebar-layout-header"]',
-    ),
-  );
+  const headers = Array.from(canvasElement.querySelectorAll<HTMLElement>(BAR));
   return headers.map((header) => {
     const part = (slot: string) => {
       const el = Array.from(header.children).find((child) => slotOf(child) === slot);
@@ -208,10 +207,10 @@ function barsOf(canvasElement: HTMLElement) {
     };
     return {
       header,
-      brand: part("sidebar-layout-brand"),
-      nav: part("sidebar-layout-nav"),
-      status: part("sidebar-layout-status"),
-      action: part("sidebar-layout-action"),
+      brand: part("app-bar-brand"),
+      nav: part("app-bar-nav"),
+      status: part("app-bar-status"),
+      action: part("app-bar-action"),
     };
   });
 }
@@ -234,10 +233,10 @@ export const Phone390: Story = {
 
       // Brand, places, status, actions — in that order, the status between the nav and the action.
       await expect(Array.from(header.children).map(slotOf)).toEqual([
-        "sidebar-layout-brand",
-        "sidebar-layout-nav",
-        "sidebar-layout-status",
-        "sidebar-layout-action",
+        "app-bar-brand",
+        "app-bar-nav",
+        "app-bar-status",
+        "app-bar-action",
       ]);
 
       // Nothing leaves the bar: every part starts and ends inside it, one after the other.
@@ -337,7 +336,16 @@ export const Phone320: Story = {
     for (const { header, nav, status, action } of bars) {
       const edge = header.getBoundingClientRect();
       await expect(edge.width).toBe(320);
-      await expect(nav.getBoundingClientRect().width).toBe(140);
+      // The status is gone, and the places give the last few pixels by scrolling: the bar keeps
+      // its inset, so the actions stop 16px short of its edge.
+      await expect(nav.getBoundingClientRect().width).toBeGreaterThan(120);
+      await expect(nav.getBoundingClientRect().width).toBeLessThan(140);
+      const places = nav.firstElementChild;
+      if (places instanceof HTMLElement === false) {
+        throw new Error("the places should be in a scroller");
+      }
+      await expect(places.scrollWidth).toBeGreaterThan(places.clientWidth);
+      await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right - 16 + 0.5);
       await expect(status.getBoundingClientRect().width).toBeLessThan(40);
       await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right + 0.5);
       await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
@@ -380,9 +388,9 @@ export const BottomBar: Story = {
       // The top bar keeps the brand, the status and the actions, in that order.
       const header = within(phone).getByRole("banner");
       await expect(Array.from(header.children).map(slotOf)).toEqual([
-        "sidebar-layout-brand",
-        "sidebar-layout-status",
-        "sidebar-layout-action",
+        "app-bar-brand",
+        "app-bar-status",
+        "app-bar-action",
       ]);
       await expect(within(header).getByText(STATUS)).toBeVisible();
       await expect(canvas.getByRole("button", { name: `${half} settings` })).toBeVisible();

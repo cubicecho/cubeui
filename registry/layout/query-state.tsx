@@ -106,6 +106,7 @@ type QueryStateList = {
   emptySlot?: SlotNode | undefined;
   record?: never;
   notFoundLabel?: never;
+  level?: never;
 };
 
 /** A detail screen: the last rung is a record that is not there. */
@@ -117,10 +118,16 @@ type QueryStateRecord = {
   record: unknown;
   /**
    * What the screen says when `record` is not there: "Project not found". It is drawn as the
-   * screen's own heading — a level-1 `EmptyState` with the Search icon — because the whole screen
+   * screen's heading — an `EmptyState` with the Search icon, at `level` — because the whole screen
    * is that state.
    */
   notFoundLabel: string;
+  /**
+   * Which heading `notFoundLabel` is. `1`, the default, is a guard that is the whole screen. `2` is
+   * a guard inside a page that already has its level-1 title — a `PageLayout`'s body — so the
+   * page does not have two `h1`s. The size is the same at every level.
+   */
+  level?: 1 | 2 | 3 | undefined;
   count?: never;
   emptySlot?: never;
 };
@@ -140,6 +147,7 @@ export function QueryState({
   emptySlot,
   record,
   notFoundLabel,
+  level = 1,
   rows = 3,
   compact = false,
   describe,
@@ -180,7 +188,7 @@ export function QueryState({
       <EmptyState
         icon={Search}
         title={notFoundLabel}
-        level={1}
+        level={level}
         {...(className === undefined ? {} : { className })}
       />
     );

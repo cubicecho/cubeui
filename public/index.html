@@ -221,6 +221,11 @@
           <td>shadcn's modal that interrupts to ask, with the same part names on both halves: radix's `AlertDialog` on the web, the native `Dialog` as an `alertdialog` with no close button on device.</td>
         </tr>
         <tr>
+          <th scope="row"><code>@cubeui/app-bar</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>An app's bar across the top: brand at the start, its places in a named navigation landmark that scrolls sideways when narrow, one line of the app's state that gives way first, and actions at the end. The bar SidebarLayout draws on a phone, and the header of an app with no sidebar.</td>
+        </tr>
+        <tr>
           <th scope="row"><code>@cubeui/app-form</code></th>
           <td><span class="tag tag-web" title="No React Native half — DOM only">web</span></td>
           <td>The TanStack Form binding: useAppForm, plus one-element fields — InputField, NumberField, TextareaField, SelectField, ComboboxField, CheckboxField, SwitchField, PasswordField — that take the form and a checked field name instead of a render prop, and SubmitButton.</td>
@@ -658,7 +663,7 @@
         <tr>
           <th scope="row"><code>@cubeui/split-layout</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition="bottom".</td>
+          <td>Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, an AppBar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition="bottom".</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/stat-tile</code></th>
@@ -714,11 +719,6 @@
           <th scope="row"><code>@cubeui/tooltip</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.</td>
-        </tr>
-        <tr>
-          <th scope="row"><code>@cubeui/top-bar-layout</code></th>
-          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>An app shell with a bar across the top and no sidebar: brand at the start, navigation after it that scrolls sideways when narrow, actions at the end, and the page below — a banner and a main landmark, the bar sticky on the web.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/tree</code></th>

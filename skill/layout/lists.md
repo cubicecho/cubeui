@@ -64,15 +64,30 @@ The shells for the shape every list route is: a ladder of states, then a list of
   — so it never surfaces as an unhandled rejection; the query's own error is what gets shown.
 - **A detail page passes `record` instead of `count`.** The ladder is then failed, loading, **not
   found**: `record` is what the query returned (`null` or `undefined` is not there), and
-  `notFoundLabel` is what the page says then, drawn as a level-1 `EmptyState` with the Search icon,
+  `notFoundLabel` is what the page says then, drawn as an `EmptyState` with the Search icon,
   because the whole page is that state. Once the record is there it renders `null`, as it does for
   rows. Pass one of `count` and `record`, never both; `emptySlot` goes with `count`.
-- Since the not-found title is the page's `h1`, it stands in front of the page rather than inside
-  one that already has a title:
+- **Where the guard goes decides its `level`.** In front of the page, where the page's title is
+  the record's name, the not-found title is the page's `h1` — the default, `level={1}`:
 
   ```tsx
   <QueryState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
   {project.data ? <PageLayout title={project.data.name} contentSlot={<ProjectBody project={project.data} />} /> : null}
+  ```
+
+  Inside a page that already has its level-1 title — one named before the record arrives — pass
+  `level={2}`, so the page does not have two `h1`s. The size is the same at every level:
+
+  ```tsx
+  <PageLayout
+    title="Pool"
+    contentSlot={
+      <>
+        <QueryState query={pool} what="this pool" record={pool.data} notFoundLabel="Pool not found" level={2} />
+        {pool.data ? <PoolBody pool={pool.data} /> : null}
+      </>
+    }
+  />
   ```
 - It ships `QueryError` and `RowSkeleton` alongside it. Reach for `QueryError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
@@ -106,6 +121,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
 | `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
 | `record` | `never` |  |  |
 | `notFoundLabel` | `never` |  |  |
+| `level` | `never` | `1` |  |
 <!-- /props -->
 ### Empty states
 

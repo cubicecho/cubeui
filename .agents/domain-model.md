@@ -169,17 +169,19 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 ### Pages
 
 - **`PageLayout`:** a whole page: its title block pinned above a scrolling body,
-  with an optional footer, at a named column width. Owner: `registry/layout/page-layout.tsx`;
-  composes `HeaderContentFooter` and `PageHeader`.
+  with an optional footer, at a named column width. Its header runs the full width, with the
+  rule under it and any full-width bars (`headerBarSlot`), while the title keeps the column.
+  Owner: `registry/layout/page-layout.tsx`; composes `HeaderContentFooter` and `PageHeader`.
 - **`GridLayout`:** equal cells in rows, one to four to a row by the window's width, one cell
   per element of its body, for any content. Owner: `registry/layout/grid-layout.tsx`.
 - **`HeaderContentFooter`:** the frame most shells build on: a header
-  and footer around a body, where either the whole frame or only the body scrolls. Owner:
+  and footer around a body, where either the whole frame or only the body scrolls, and the
+  header may run wider than the body's column (`headerWidth`). Owner:
   `registry/layout/header-content-footer.tsx`; also the column widths `PAGE_COLUMN`,
-  `PROSE_COLUMN`.
+  `PROSE_COLUMN` and `COLUMNS`.
 - **`PageHeader`:** a page's icon, title, description, actions, the way back (one
   slot, `backSlot`, for a back link or a breadcrumb trail), and a row for search, filters or tabs,
-  at heading level 1 to 3. Owner: `registry/layout/page-header.tsx`.
+  at heading level 1 to 3; its title's `size` follows the level unless set apart from it. Owner: `registry/layout/page-header.tsx`.
 - **`SectionHeading`:** a small muted label over a block, a heading only when
   given a level. It is the title `Section` and `SidebarSection` draw. Owner:
   `registry/layout/section-heading.tsx`; takes `children`.
@@ -191,16 +193,16 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`SplitLayout`:** two panes side by side that stack below a width. Owner:
   `registry/layout/split-layout.tsx`.
 - **`SidebarLayout`:** a split whose panes are the page and a sidebar; below a
-  width the sidebar is replaced by an app bar at the top, with its places optionally at the
-  bottom. Owner: the same file; composes `SplitLayout`.
+  width the sidebar is replaced by an `AppBar` at the top, with its places optionally in a bar of
+  their own at the bottom. Owner: the same file; composes `SplitLayout` and `AppBar`.
+- **`AppBar`:** an app's bar across the top: its brand, its places (which scroll sideways when
+  narrow), one line of its state (which gives way first) and its actions; the banner landmark.
+  Owner: `registry/layout/app-bar.tsx`.
 - **`Sidebar`:** the app's navigation column, with sections of rows, that can fold to a
   rail of icons. Owner: `registry/layout/sidebar.tsx`, with `SidebarSection`, `SidebarNavItem`,
   `SidebarCollapseButton`, `useSidebar`.
 - **`BarNavItem`:** a place in an app bar, drawn as its icon. Owner:
   `registry/layout/sidebar.tsx`.
-- **`TopBarLayout`:** an app frame with a bar across the top (brand, places,
-  actions) and no sidebar. Owner: `registry/layout/top-bar-layout.tsx`; composes
-  `HeaderContentFooter`.
 
 ### Blocks on a page
 
@@ -260,7 +262,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `Empty` (`registry/ui/empty.tsx`).
 - **`QueryState`:** the failed, loading or empty state in front of a list until it
   has rows, or the failed, loading or not-found state in front of one record until it is
-  there. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
+  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
 - **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
   Try again. Owner: `registry/layout/route-error.tsx`.
 
@@ -280,7 +282,7 @@ An author writes an item once in React Native; the compiler makes its web half, 
 build turns the palette into the token sheets every item draws with. Each push to `main`
 publishes the registry, and an app installs an item by name as its own files. Primitives are
 the controls and surfaces, and components build one job from them. Shells place the nodes an app
-hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout` or a
-`TopBarLayout`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
+hands them into a fixed shape: a `PageLayout` inside a `SidebarLayout`, or under an
+`AppBar` in a `HeaderContentFooter`, and on it `CardLayout`s, `Section`s, `DialogLayout`s, `List`s of rows and facts,
 each with its empty, loading and failed states. Bound fields wire a control to a form field. A shell keeps only the state of its own
 interaction (a dialog's discard question, a disclosure's open body), never the app's data.

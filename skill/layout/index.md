@@ -4,7 +4,7 @@ Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
 [vocabulary.md](../vocabulary.md) for the slot vocabulary. Neither is repeated here.
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
-sections, disclosures, sidebars and the top bar are written once in React Native and compiled to
+sections, disclosures, sidebars and the app bar are written once in React Native and compiled to
 the web, so the same item installs in a Vite app and an Expo app with the same props. The
 list-page parts ([lists.md](lists.md), [trees-and-tables.md](trees-and-tables.md)) are the exception: `Table` is web-only, and `QueryState` is its own
 item on each half; `DisclosureRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
@@ -20,7 +20,7 @@ four things differ, and none of them changes a call site:
   `description`, `label`) are wrapped in a `Text` for you.
 
 **A slot is a flex column, on the web and on a device.** The body slots of `CardLayout`,
-`HeaderContentFooter` (and so `PageLayout`), `SplitLayout`, `SidebarLayout` and `TopBarLayout`
+`HeaderContentFooter` (and so `PageLayout`), `SplitLayout` and `SidebarLayout`
 lay their children out the same way on both halves, so one class list is right for both:
 
 - **`gap-*` on a slot spaces its children**: `contentClassName="gap-4"`, with no `flex flex-col`
@@ -40,7 +40,7 @@ lay their children out the same way on both halves, so one class list is right f
 | [pages.md](pages.md) | `PageLayout`, `HeaderContentFooter`, `PageHeader`, `GridLayout`, `CenteredLayout` |
 | [splits.md](splits.md) | `SplitLayout`, `SidebarLayout`, list-and-detail |
 | [sidebar.md](sidebar.md) | `Sidebar`, `SidebarSection`, `SidebarNavItem`, the rail of icons, `SidebarLayout`'s bar and `BarNavItem` |
-| [top-bar.md](top-bar.md) | `TopBarLayout` |
+| [app-bar.md](app-bar.md) | `AppBar`, and the app with no sidebar |
 | [cards.md](cards.md) | `CardLayout`, `Section`, `Disclosure` |
 | [facts.md](facts.md) | `DescriptionList`, `PropertyRow`, `SettingRow`, `StatTile` |
 | [dialogs.md](dialogs.md) | `DialogLayout`, the unsaved-changes guard, Cmd/Ctrl+S |

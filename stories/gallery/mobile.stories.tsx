@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
 import { Combobox } from "../../registry/layout/combobox";
@@ -27,7 +28,6 @@ import { SettingRow } from "../../registry/layout/setting-row";
 import { Sidebar, SidebarNavItem, SidebarSection } from "../../registry/layout/sidebar";
 import { SidebarLayout, SplitLayout } from "../../registry/layout/split-layout";
 import { StatTile } from "../../registry/layout/stat-tile";
-import { TopBarLayout } from "../../registry/layout/top-bar-layout";
 import { Alert } from "../../registry/ui/alert";
 import {
   AlertDialog,
@@ -1340,24 +1340,33 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
     content: (
       <Screen>
-        <TopBarLayout
-          brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
-          navLabel="Site pages"
-          navSlot={
-            <>
-              <Text role="link" className={navLink}>
-                Projects
-              </Text>
-              <Text role="link" className={navLink}>
-                Team
-              </Text>
-            </>
+        <HeaderContentFooter
+          scroll
+          className="h-full"
+          headerSlot={
+            <AppBar
+              brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
+              navLabel="App pages"
+              navSlot={
+                <>
+                  <Text role="link" className={navLink}>
+                    Projects
+                  </Text>
+                  <Text role="link" className={navLink}>
+                    Team
+                  </Text>
+                </>
+              }
+              status="2 online"
+              actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            />
           }
-          actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
           contentSlot={
             <View className="p-3">
               <Lines count={5} />

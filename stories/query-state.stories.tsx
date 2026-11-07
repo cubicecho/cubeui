@@ -34,6 +34,26 @@ export const NotFound: Story = {
   },
 };
 
+/**
+ * The guard inside a page that already has its title: `level={2}`, so the page keeps one `h1`
+ * and the not-found title is the heading under it, at the same size.
+ */
+export const NotFoundInsideAPage: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native query={answered} {...shared} level={2} />}
+      compiled={<Compiled query={answered} {...shared} level={2} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryAllByRole("heading", { level: 1 })).toHaveLength(0);
+    await expect(
+      canvas.getAllByRole("heading", { level: 2, name: "Project not found" }),
+    ).toHaveLength(2);
+  },
+};
+
 export const Loading: Story = {
   render: () => (
     <SideBySide

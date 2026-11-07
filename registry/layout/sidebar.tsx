@@ -746,7 +746,7 @@ export type BarNavItemProps = Omit<PressableProps, "children" | "className" | "s
 
 /**
  * A place in the bar: `SidebarNavItem` with only its icon drawn, for `SidebarLayout`'s `navSlot`
- * (and `TopBarLayout`'s). It takes the row's props and binds to a router as the row does, so one
+ * (and any `AppBar`'s). It takes the row's props and binds to a router as the row does, so one
  * array of places renders both:
  *
  * ```tsx

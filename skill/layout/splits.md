@@ -52,7 +52,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
 | `sidebarClassName` | `string` |  |  |
-| `headerClassName` | `string` |  | On the bar, when `sidebarHideBelow` draws one. |
+| `headerClassName` | `string` |  | On the `AppBar`, when `sidebarHideBelow` draws one. |
 | `bottomBarClassName` | `string` |  | On the bar along the bottom, when `barPosition="bottom"` draws one. |
 <!-- /props -->
 

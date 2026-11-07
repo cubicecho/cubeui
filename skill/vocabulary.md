@@ -40,7 +40,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`backSlot`** — the way back, on the line above the title: a back link, or a breadcrumb trail.
   Nodes, never a route. `breadcrumbsSlot` is its old name, still read for one release.
 - **`headerContentSlot`** — the row under the title: search, filters, tabs. Stacked in the order
-  you pass them.
+  you pass them, in the title's column.
+- **`headerBarSlot`** — bars under the title that run the full width of the page while the title
+  keeps its column: a second toolbar, a pinned notice. On `PageLayout`; each bar draws its own fill
+  and inset.
 - **`sidebarSlot`** — the second surface in a `SidebarLayout`. `contentSlot` is still the main one, so the
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the
@@ -48,10 +51,10 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   its own. `sidebarHideBelow="md"` hides the sidebar under `md` and draws the bar in its place;
   `barPosition="bottom"` puts that bar's `navSlot` along the bottom of the page.
 - **`brandSlot`** — the start of an app's bar: the logo and the app's name, usually a link home. On
-  `TopBarLayout`, and on `SidebarLayout`'s bar, which is drawn only where the sidebar is hidden —
-  so there pass what the sidebar's header shows.
-- **`navSlot`** — an app bar's navigation, after the brand: the primary links on `TopBarLayout`, the
-  places as icon links — `BarNavItem`s — on `SidebarLayout`'s bar. The shell draws the `<nav>` and
+  `AppBar`, and on `SidebarLayout`, whose `AppBar` is drawn only where the sidebar
+  is hidden — so there pass what the sidebar's header shows.
+- **`navSlot`** — an app bar's navigation, after the brand: the places as icon links — `BarNavItem`s —
+  or text links, on `AppBar` and so on `SidebarLayout`'s bar. The shell draws the `<nav>` and
   `navLabel` names it, by prefix — do not wrap it in one yourself. The bar's far end is the core
   `actionSlot`.
 - **`cardClassName`** — on `CenteredLayout`, the card; `className` is the page around it. Pass
@@ -67,7 +70,9 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`width`** — on a page shell, its column: `page`, `prose` or `full`. A named column rather than
   a number, so every page in an app is one of three widths instead of eleven.
 - **`level`** — not a slot: `1 | 2 | 3`, which heading element the title is. The size follows the
-  element, so you never set both.
+  element unless `size` says otherwise.
+- **`size`** — on `PageHeader` and `PageLayout`, how large the title is drawn apart from its
+  `level`: `lg`, `md` or `sm`. For a compact title on a page that is still the `h1`.
 - **`triggerSlot`** — what opens a `DialogLayout`, when the dialog owns its own open state. Passing it
   is the alternative to holding `open` yourself, not an addition to it.
 - **`open`**, **`onOpenChange`** — anything that opens, and being told when it does. Filed here
@@ -131,7 +136,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   title and the rows (a `<QueryState compact />`). On `SidebarNavItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
   given, is what is seen instead of it — decorative, never read. On `BarNavItem`, the same object,
-  drawn as a dot on the icon. On `SidebarLayout`'s bar, a node: one line of the app's own state
+  drawn as a dot on the icon. On `AppBar` (and so `SidebarLayout`'s bar), a node: one line of the app's own state
   ("3/5 servers running") between `navSlot` and `actionSlot`, the first part of the bar to give way.
 - **`leadingSlot`** — the start of a row, before the title: an avatar, a checkbox, an icon. Placed as
   given, not sized like `iconSlot`, and never inside the row's pressed area. On `ListItem`.
@@ -149,7 +154,7 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`record`** — the one record a detail screen asked for, once its query has answered; `null` or
   `undefined` is one that is not there. On `QueryState`, in place of `count`.
 - **`notFoundLabel`** — what a detail screen says when its `record` is not there: "Project not
-  found". Drawn as the screen's heading.
+  found". Drawn as the screen's heading, at `level` (`1` unless the screen already has its title).
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
   the DOM attribute of that name and is not this word.
 - **`layout`** — on `DescriptionList`: `inline` (label beside value, stacking by itself when
