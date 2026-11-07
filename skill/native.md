@@ -95,7 +95,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A search or filter box — see [controls/inputs.md](controls/inputs.md#search) | `SearchInput` | `@cubeui/search-input` |
 | A search box over rows that filter as you type, each chosen by a press — see [controls/menus.md](controls/menus.md#command) | `Command` and its parts | `@cubeui/command` |
 | A tag or filter chip the user can take off — see [controls/display.md](controls/display.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
-| An icon-only button, with a `hint` tooltip and a reason that survives `disabled` — see [controls/buttons.md](controls/buttons.md#icon-buttons) | `Button` in an `icon*` size | `@cubeui/button` |
+| An icon-only button, its name as its tooltip, and a `hint` with a reason that survives `disabled` — see [controls/buttons.md](controls/buttons.md#icon-buttons) | `Button` in an `icon*` size | `@cubeui/button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls/buttons.md](controls/buttons.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
 | A button that copies a value and ticks when it has — see [controls/buttons.md](controls/buttons.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
 | A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls/buttons.md](controls/buttons.md#download-button) | `DownloadButton` | `@cubeui/download-button` |

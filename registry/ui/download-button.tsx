@@ -10,12 +10,11 @@
  */
 import { Directory, File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { Button } from "@/components/ui/button";
+import { Button, isIconSize } from "@/components/ui/button";
 import {
   type DownloadButtonProps,
   type DownloadContent,
   type DownloadDestination,
-  isIconSize,
   useDownload,
 } from "@/components/ui/download-button-base";
 import { Download, Folder, Upload } from "@/components/ui/icons";

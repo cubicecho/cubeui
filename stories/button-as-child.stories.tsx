@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentType, ReactElement, ReactNode } from "react";
+import type { ComponentType, MouseEvent, ReactElement, ReactNode } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { Button as Compiled } from "../compiled/button";
 import { Button as Native } from "../registry/ui/button";
@@ -22,6 +22,8 @@ type ButtonLike = ComponentType<{
   content?: ReactNode;
   linkSlot?: ReactElement;
   variant?: "default" | "outline" | "destructive";
+  disabled?: boolean;
+  hint?: string;
 }>;
 
 function Pair({ Button, name }: { Button: ButtonLike; name: string }) {
@@ -141,5 +143,114 @@ export const PressReachesADomLink: Story = {
       await userEvent.click(canvas.getByRole("link", { name: `${name} pressed link` }));
       await expect(pressed[name]).toHaveBeenCalledTimes(1);
     }
+  },
+};
+
+const navigated = fn();
+
+type RouterLinkProps = {
+  to: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  onPress?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  children?: ReactNode;
+};
+
+/**
+ * A stand-in for a router's link, built the way React Router's, TanStack Router's and
+ * expo-router's are: an `<a>` that takes every prop it does not know, and navigates on a click
+ * nobody cancelled. The native half hands a component `onPress`, the compiled half `onClick`.
+ */
+function RouterLink({ to, onClick, onPress, ...props }: RouterLinkProps) {
+  return (
+    <a
+      {...props}
+      href={to}
+      onClick={(event) => {
+        onClick?.(event);
+        onPress?.(event);
+        if (event.defaultPrevented) {
+          return;
+        }
+        event.preventDefault();
+        navigated(to);
+      }}
+    />
+  );
+}
+
+const FOLLOWED = "#followed";
+
+function DisabledLinks({ Button, name }: { Button: ButtonLike; name: string }) {
+  return (
+    <div className="flex flex-row flex-wrap items-center gap-2">
+      <Button disabled linkSlot={<a href={FOLLOWED} />} content={`${name} disabled link`} />
+      <Button
+        disabled
+        hint="Publish the page first"
+        linkSlot={<a href={FOLLOWED} />}
+        content={`${name} hinted link`}
+      />
+      <Button
+        disabled
+        linkSlot={<RouterLink to="/docs" />}
+        content={`${name} disabled router link`}
+      />
+    </div>
+  );
+}
+
+/** Whether the browser would open the link in a new tab on a middle-button click. */
+function middleClickOpens(link: HTMLElement) {
+  return link.dispatchEvent(
+    new globalThis.MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 }),
+  );
+}
+
+/**
+ * A disabled link button is not followed (#410). It was handed `disabled` through `Slot`, which an
+ * `<a>` ignores, so a click still navigated and the attribute was written on the link for nothing.
+ * Now it is `aria-disabled`, its click and middle click are cancelled, and it leaves the tab order
+ * unless a `hint` keeps it there to be asked why, as a hinted disabled button does. A router's
+ * link is handed no `disabled` either, since one that passes its props to its `<a>` would write it.
+ */
+export const DisabledLinksAreNotFollowed: Story = {
+  render: () => (
+    <SideBySide
+      native={<DisabledLinks Button={Native as unknown as ButtonLike} name="Native" />}
+      compiled={<DisabledLinks Button={Compiled as unknown as ButtonLike} name="Compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const stayPut = () =>
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    for (const name of ["Native", "Compiled"] as const) {
+      navigated.mockClear();
+      stayPut();
+
+      const plain = canvas.getByRole("link", { name: `${name} disabled link` });
+      await expect(plain).toHaveAttribute("aria-disabled", "true");
+      await expect(plain).not.toHaveAttribute("disabled");
+      await expect(plain).toHaveAttribute("tabindex", "-1");
+      await userEvent.click(plain);
+      await expect({ name, hash: window.location.hash }).toEqual({ name, hash: "" });
+      await expect(middleClickOpens(plain)).toBe(false);
+
+      const hinted = canvas.getByRole("link", { name: `${name} hinted link` });
+      await expect(hinted).toHaveAttribute("aria-disabled", "true");
+      await expect(hinted).not.toHaveAttribute("disabled");
+      hinted.focus();
+      await expect(hinted).toHaveFocus();
+      await userEvent.click(hinted);
+      await expect({ name, hash: window.location.hash }).toEqual({ name, hash: "" });
+
+      const routed = canvas.getByRole("link", { name: `${name} disabled router link` });
+      await expect(routed).toHaveAttribute("aria-disabled", "true");
+      await expect(routed).not.toHaveAttribute("disabled");
+      await expect(routed).toHaveAttribute("tabindex", "-1");
+      await userEvent.click(routed);
+      await expect(navigated).not.toHaveBeenCalled();
+    }
+    stayPut();
   },
 };
