@@ -84,7 +84,7 @@ export function Progress({
         className={cn(
           "cube-rn-view",
           "h-full bg-neutral",
-          "transition-[width]",
+          "transition-[width] motion-reduce:transition-none",
           indicatorClassName,
         )}
         style={{ width: `${percent}%` }}

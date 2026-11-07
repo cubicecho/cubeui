@@ -1,5 +1,6 @@
 /**
  * The web skeleton: shadcn's, a `<div>` with `animate-pulse`, every `<div>` prop passed through.
+ * `motion-safe:` keeps it still for a reader whose system asks for reduced motion.
  * `skeleton.tsx` is the native counterpart and says why this half is hand-written; `skeleton-base.ts`
  * holds what they share.
  */
@@ -14,7 +15,7 @@ function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
       data-slot="skeleton"
-      className={cn("animate-pulse", skeletonClass, className)}
+      className={cn("motion-safe:animate-pulse", skeletonClass, className)}
       {...props}
     />
   );

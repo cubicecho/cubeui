@@ -22,6 +22,7 @@ import {
 } from "react";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
+import { useReducedMotion } from "@/components/ui/reduced-motion";
 import {
   TABS_LIST_CLASS,
   TABS_LIST_INSET,
@@ -73,6 +74,7 @@ function TabsList({
   const viewport = useRef(0);
   const offset = useRef(0);
   const selected = useRef<Span | undefined>(undefined);
+  const animated = useReducedMotion() === false;
 
   const reveal = () => {
     const tab = selected.current;
@@ -82,9 +84,9 @@ function TabsList({
     }
     const end = tab.x + tab.width;
     if (tab.x < offset.current) {
-      scroller.current?.scrollTo({ x: Math.max(0, tab.x - TABS_LIST_INSET) });
+      scroller.current?.scrollTo({ x: Math.max(0, tab.x - TABS_LIST_INSET), animated });
     } else if (end > offset.current + viewport.current) {
-      scroller.current?.scrollTo({ x: end - viewport.current + TABS_LIST_INSET });
+      scroller.current?.scrollTo({ x: end - viewport.current + TABS_LIST_INSET, animated });
     }
   };
 

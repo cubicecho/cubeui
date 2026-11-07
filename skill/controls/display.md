@@ -245,6 +245,8 @@ A loading indicator is `Spinner`, on both halves. Do not import `Loader2` / `Loa
   `currentColor`; on native it takes a `Button`'s ink the way any icon there does.
 - Both halves draw the same `LoaderCircle`, one turn a second. `ActivityIndicator` is the
   platform's own spinner, a different shape on each.
+- It keeps turning under reduced motion: it is how the screen says work is going on. See
+  [Motion](index.md#motion).
 - A list screen's loading rung is `LoadState`'s `loading`, not a spinner in the middle of it.
 
 ## Toast
@@ -290,7 +292,8 @@ toast(`Moved ${item.title} to ${page.title}.`, "positive", {
 while what it stands in for loads. `className` is its size.
 
 - It pulses on both halves: `animate-pulse` on the web, and on device the same opacity curve
-  (down to half and back, two seconds) run by `Animated`. No Reanimated needed.
+  (down to half and back, two seconds) run by `Animated`. No Reanimated needed. Under reduced motion it
+  holds still on both. See [Motion](index.md#motion).
 - It says nothing to assistive tech itself, as shadcn's does not. Hide each block with
   `aria-hidden` and put them in a `role="status"` named for what is loading.
 - Reach for a shell's `loading` first. `CardLayout`, `LoadState`, `StatTile`, `PageHeader` and

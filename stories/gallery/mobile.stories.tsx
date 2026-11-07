@@ -224,6 +224,8 @@ const NOT_SHOWN: Record<string, string> = {
   "select-options":
     "The types a select's options list holds, and the walk into groups. Not a component.",
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
+  "reduced-motion":
+    "A hook: whether the reader asked for reduced motion. The skeleton and the badge's dot hold still by it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   "copy-button":

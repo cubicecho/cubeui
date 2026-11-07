@@ -354,7 +354,7 @@ export function RowSkeleton({
             key={index}
             data-slot="row-skeleton"
             aria-hidden
-            className="cube-rn-view h-8 animate-pulse rounded-md bg-foreground/10"
+            className="cube-rn-view h-8 motion-safe:animate-pulse rounded-md bg-foreground/10"
           />
         ))}
       </div>
@@ -373,9 +373,10 @@ export function RowSkeleton({
           aria-hidden
           className="cube-rn-view gap-2 py-2"
         >
-          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it. */}
-          <div className="cube-rn-view h-4 w-1/3 animate-pulse rounded-md bg-foreground/10" />
-          <div className="cube-rn-view h-3 w-2/3 animate-pulse rounded-md bg-foreground/10" />
+          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it, and
+              `motion-safe:` keeps it still under reduced motion. */}
+          <div className="cube-rn-view h-4 w-1/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
+          <div className="cube-rn-view h-3 w-2/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
         </div>
       ))}
     </div>

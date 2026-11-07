@@ -70,7 +70,8 @@ const declarations = (css, selector) => {
 
 /**
  * The rules that exist for Expo *web* and nothing else: the `box-sizing`, `<button>`, form-field,
- * heading-margin and page-font resets raw DOM controls need, the scrollbar colours, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
+ * heading-margin and page-font resets raw DOM controls need, the scrollbar colours, the
+ * reduced-motion rule for tw-animate-css, and the `:is(html.dark)` / `:is(html.light)` override a theme picker needs. Both are only
  * safe to ship in the one stylesheet because the native compiler drops them — and the spellings
  * that look equivalent do not get dropped: `:root.dark` fails the compile, `html.dark` becomes a
  * class style. So what is asserted is the compiler's own output, with and without them.
@@ -82,6 +83,7 @@ const WEB_ONLY = [
   /^:where\((button|html|input, select, textarea|h1, h2, h3, h4, h5, h6, p)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html\.(dark|light)\) \{[\s\S]*?\n\}/gm,
   /^:is\(html(\.dark)?\[data-palette="[\w-]+"\]\) \{[\s\S]*?\n\}/gm,
+  /^@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\n {2}\}\n\}/m,
 ];
 
 test("the web-only rules compile to nothing on native", async () => {
@@ -100,6 +102,10 @@ test("the web-only rules compile to nothing on native", async () => {
   assert.match(css, /^:where\(h1, h2, h3, h4, h5, h6, p\) \{\n {2}margin: 0;\n\}/m);
   assert.match(css, /^:where\(html\) \{\n {2}font-family: [^;]+;\n\}/m);
   assert.match(css, /^\* \{\n {2}scrollbar-width: thin;\n\}/m);
+  assert.match(
+    css,
+    /^@media \(prefers-reduced-motion: reduce\) \{\n[\s\S]*?--tw-enter-scale: 1 !important;/m,
+  );
   // One thumb colour beside every block that sets `--foreground`: the root, the system's dark,
   // the picker's two, and each palette mode.
   const paletteModes = Object.values(palettes).flatMap((modes) => Object.keys(modes)).length;
@@ -113,7 +119,7 @@ test("the web-only rules compile to nothing on native", async () => {
     2 * paletteModes,
   );
   assert.equal(
-    /box-sizing|scrollbar|:where\(|:is\(html/.test(without),
+    /box-sizing|scrollbar|:where\(|:is\(html|reduced-motion/.test(without),
     false,
     "the strip missed something",
   );
@@ -140,6 +146,7 @@ test("an element selector is dropped on native, as `*` is", async () => {
     ":where(input, select, textarea) { color: inherit; font: inherit; }",
     ":where(h1, h2, h3, h4, h5, h6, p) { margin: 0; }",
     ":where(html) { font-family: Arial, sans-serif; }",
+    "@media (prefers-reduced-motion: reduce) { *, ::before, ::after { --tw-enter-scale: 1 !important; } }",
   ]) {
     assert.deepEqual(await stylesheet(`${probe}\n${rule}`), alone, rule);
   }

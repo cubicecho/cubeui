@@ -8,8 +8,8 @@
  * under 4.5:1. Each string child is wrapped in a `Text` carrying the label colour, since native
  * does not inherit it. `onRemove` adds a trailing ✕ in its own `Pressable`.
  */
-import { Children, useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, Animated, Easing, Pressable, Text, View } from "react-native";
+import { Children, useEffect, useRef } from "react";
+import { Animated, Easing, Pressable, Text, View } from "react-native";
 import {
   BADGE_PULSE_LOW,
   BADGE_PULSE_MS,
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/badge-base";
 import { X } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
+import { useReducedMotion } from "@/components/ui/reduced-motion";
 import { cn } from "@/lib/utils";
 
 /** A 12px glyph grown to about 28 by 28 of touch, without growing the pill. */
@@ -40,25 +41,6 @@ const PULSE_EASING = Easing.bezier(PULSE_EASE_IN, 0, PULSE_EASE_OUT, 1);
 
 /** `View`, which NativeWind hands a `className` to, able to take an animated `opacity`. */
 const PulsingView = Animated.createAnimatedComponent(View);
-
-/** Whether the reader asked the system for reduced motion, kept up to date as they change it. */
-function useReduceMotion(): boolean {
-  const [reduce, setReduce] = useState(false);
-  useEffect(() => {
-    let live = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((value) => {
-      if (live) {
-        setReduce(value);
-      }
-    });
-    const subscription = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduce);
-    return () => {
-      live = false;
-      subscription.remove();
-    };
-  }, []);
-  return reduce;
-}
 
 /**
  * The dot's opacity for `pulse`: a loop on the native driver while it runs, still at 1 otherwise.
@@ -101,8 +83,8 @@ export function Badge({
   children,
 }: BadgeProps) {
   const shape = badgeHasLabel(children) ? "pill" : "dot";
-  const reduceMotion = useReduceMotion();
-  const pulsing = pulse && shape === "dot" && reduceMotion === false;
+  const reducedMotion = useReducedMotion();
+  const pulsing = pulse && shape === "dot" && reducedMotion === false;
   const opacity = usePulse(pulsing);
   const textClass = backgroundColor
     ? badgeTextFallback(mono)

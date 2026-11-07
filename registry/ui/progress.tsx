@@ -70,7 +70,10 @@ export function Progress({
         testID="progress-indicator"
         className={cn(
           "h-full bg-neutral",
-          Platform.select({ web: "transition-[width]", default: undefined }),
+          Platform.select({
+            web: "transition-[width] motion-reduce:transition-none",
+            default: undefined,
+          }),
           indicatorClassName,
         )}
         style={{ width: `${percent}%` }}

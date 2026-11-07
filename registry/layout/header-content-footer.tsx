@@ -18,6 +18,7 @@
  */
 import { type ElementRef, type Ref, useImperativeHandle, useRef } from "react";
 import { Platform, ScrollView, View } from "react-native";
+import { useReducedMotion } from "@/components/ui/reduced-motion";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -77,9 +78,9 @@ export type ScrollPosition = {
  */
 export type ScrollHandle = {
   /**
-   * Scrolls to the last row. Animated unless told otherwise; a list following a row that is
-   * still streaming in passes `{ animated: false }`, or each new line starts a glide the next
-   * one interrupts.
+   * Scrolls to the last row. Animated unless told otherwise, or unless the reader's system asks
+   * for reduced motion; a list following a row that is still streaming in passes
+   * `{ animated: false }`, or each new line starts a glide the next one interrupts.
    */
   scrollToEnd: (options?: { animated?: boolean }) => void;
 };
@@ -214,10 +215,12 @@ function Body({
 }: BodyProps) {
   // The scroller is kept here as well as handed to `contentRef`, for `scrollToEnd` to move.
   const scroller = useRef<unknown>(null);
+  const reducedMotion = useReducedMotion();
   useImperativeHandle<ScrollHandle, ScrollHandle>(scrollRef, () => ({
     scrollToEnd: ({ animated = true } = {}) => {
       if (scroll && scroller.current) {
-        toEnd(scroller.current, animated);
+        // A glide is motion; under reduced motion the body jumps, whatever the caller asked.
+        toEnd(scroller.current, animated && reducedMotion === false);
       }
     },
   }));

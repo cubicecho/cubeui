@@ -32,6 +32,7 @@
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
+import { useReducedMotion } from "./reduced-motion";
 
 /** Monospaced text inline in a sentence. */
 export function Code({
@@ -234,6 +235,7 @@ export function CodeBlock({
   className,
 }: CodeBlockProps) {
   const scroller = useRef<unknown>(null);
+  const reducedMotion = useReducedMotion();
   // Whether the reader is at the end, which is whether the block follows. It starts there.
   const [atEnd, setAtEnd] = useState(true);
 
@@ -276,7 +278,7 @@ export function CodeBlock({
         onClick={() => {
           setAtEnd(true);
           if (scroller.current) {
-            toEnd(scroller.current, true);
+            toEnd(scroller.current, reducedMotion === false);
           }
         }}
         className="cube-rn-view cube-rn-pressable absolute right-2 bottom-2 rounded-md border border-foreground/10 bg-background px-2 py-1 shadow-sm"
