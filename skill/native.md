@@ -35,7 +35,8 @@ gets a cell.
 A screen is `PageLayout`, on the phone as on the web: its title block pinned over a body that
 scrolls. A detail screen for one record puts `QueryState` in front of it, with `record` and
 `notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
-record is not found, and nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
+record is not found (`level={2}` when the guard is inside a screen that has its own title), and
+nothing once it is there — see [layout/lists.md](layout/lists.md#querystate).
 A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`, a colour dot in
 `iconSlot`, the record's name as `title`, and its badges with the buttons in `actionSlot`.
 

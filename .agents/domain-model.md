@@ -255,7 +255,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
   `Empty` (`registry/ui/empty.tsx`).
 - **`QueryState`:** the failed, loading or empty state in front of a list until it
   has rows, or the failed, loading or not-found state in front of one record until it is
-  there. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
+  there. The not-found title is a heading at `level`, 1 unless the page already has its title. Owner: `registry/layout/query-state.tsx`, with `QueryError` and `RowSkeleton`.
 - **`RouteError`:** the whole-screen panel shown when a page fails to draw, with
   Try again. Owner: `registry/layout/route-error.tsx`.
 
