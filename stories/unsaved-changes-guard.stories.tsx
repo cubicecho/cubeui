@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import * as Compiled from "../compiled/unsaved-changes-guard";
-import * as Native from "../registry/layout/unsaved-changes-guard";
+import * as Native from "../registry/ui/unsaved-changes-guard";
 import { SideBySide } from "./side-by-side";
 
 /**

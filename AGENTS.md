@@ -343,7 +343,7 @@ The binding lives in two places, one per tier:
   primitive.
   `registry/ui/date-time-field.tsx` and `registry/ui/color-picker-field.tsx` are its heavy fields,
   added to `field.*` with `createAppForm`; `combobox-field.tsx` and `segmented-field.tsx` join
-  the same way. `registry/layout/radio-group-field.tsx`
+  the same way. `registry/ui/radio-group-field.tsx`
   binds the same way beside it.
 - **`registry/web/app-form.tsx`** (`@cubeui/app-form`) is the web-only one: the contexts,
   `useAppForm`, and `InputField`, `NumberField`, `TextareaField`, `SelectField`, `ComboboxField`,

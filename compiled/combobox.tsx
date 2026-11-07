@@ -1,5 +1,5 @@
 /**
- * Compiled from `registry/layout/combobox.tsx` by `scripts/rn2web`.
+ * Compiled from `registry/ui/combobox.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
  * The prose below is the source's own, carried across untouched, which is the property that makes

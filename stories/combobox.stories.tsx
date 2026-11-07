@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Combobox, type ComboboxSingleProps, type SelectEntry } from "../compiled/combobox";
-import { Combobox as Native, type SelectOption } from "../registry/layout/combobox";
+import { Combobox as Native, type SelectOption } from "../registry/ui/combobox";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
 

@@ -5,8 +5,6 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
 import { CenteredLayout } from "../../registry/layout/centered-layout";
-import { Combobox } from "../../registry/layout/combobox";
-import { ConfirmButton } from "../../registry/layout/confirm-button";
 import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
 import { Disclosure } from "../../registry/layout/disclosure";
@@ -20,7 +18,6 @@ import { ListItem } from "../../registry/layout/list-item";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
 import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
-import { RadioGroupField } from "../../registry/layout/radio-group-field";
 import { RouteError } from "../../registry/layout/route-error";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
@@ -57,6 +54,7 @@ import { ColorBar } from "../../registry/ui/color-bar";
 import { ColorDot } from "../../registry/ui/color-dot";
 import { ColorPicker } from "../../registry/ui/color-picker";
 import { ColorField } from "../../registry/ui/color-picker-field";
+import { Combobox } from "../../registry/ui/combobox";
 import { ComboboxField } from "../../registry/ui/combobox-field";
 import {
   CommandDialog,
@@ -67,6 +65,7 @@ import {
   CommandList,
 } from "../../registry/ui/command.tsx";
 import { ConfirmProvider, useConfirm } from "../../registry/ui/confirm";
+import { ConfirmButton } from "../../registry/ui/confirm-button";
 import { ConfirmDialog } from "../../registry/ui/confirm-dialog";
 import { DatePicker } from "../../registry/ui/date-picker";
 import { DateTimeField } from "../../registry/ui/date-time-field";
@@ -142,6 +141,7 @@ import {
 } from "../../registry/ui/popover.tsx";
 import { Progress } from "../../registry/ui/progress";
 import { RadioGroup, RadioGroupItem } from "../../registry/ui/radio-group";
+import { RadioGroupField } from "../../registry/ui/radio-group-field";
 import { SearchInput } from "../../registry/ui/search-input.tsx";
 import { SegmentedButton, SegmentedGroup } from "../../registry/ui/segmented";
 import { SegmentedField } from "../../registry/ui/segmented-field";

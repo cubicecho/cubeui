@@ -146,7 +146,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **Bound field:** a control already wired to a TanStack form field, with its label, description
   and error. Where a bound field ends and a small form layout begins is not sharp:
   `RadioGroupField` also lays out a title and an explanation per option. Owner: `registry/ui/form.tsx` (`useAppForm`), `registry/ui/*-field.tsx`,
-  `registry/layout/radio-group-field.tsx`, and on the web `registry/web/app-form.tsx`.
+  `registry/ui/radio-group-field.tsx`, and on the web `registry/web/app-form.tsx`.
 - **Web half:** the DOM version of an item. Compiled from the native source, or hand-written as
   `<name>.web.tsx` with the shared part in `<name>-base.ts` (26 items). Owner: `compiled/`,
   `registry/ui/*.web.tsx`.
@@ -232,7 +232,7 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`ConfirmDialog`:** an "are you sure?" window with Cancel and one destructive
   button. Owner: `registry/ui/confirm-dialog.tsx`; `useConfirm` in `registry/ui/confirm.tsx`.
 - **`ConfirmButton`:** a destructive button that asks first. Owner:
-  `registry/layout/confirm-button.tsx`.
+  `registry/ui/confirm-button.tsx`.
 
 ### Lists and facts
 

@@ -634,7 +634,7 @@
       ],
       "files": [
         {
-          "path": "registry/layout/radio-group-field.tsx",
+          "path": "registry/ui/radio-group-field.tsx",
           "type": "registry:component"
         }
       ]
@@ -658,7 +658,7 @@
       ],
       "files": [
         {
-          "path": "registry/layout/combobox.tsx",
+          "path": "registry/ui/combobox.tsx",
           "type": "registry:component"
         }
       ]
@@ -841,7 +841,7 @@
       "registryDependencies": ["@cubeui/button", "@cubeui/confirm-dialog"],
       "files": [
         {
-          "path": "registry/layout/confirm-button.tsx",
+          "path": "registry/ui/confirm-button.tsx",
           "type": "registry:component"
         }
       ]
@@ -1125,7 +1125,7 @@
       "registryDependencies": ["@cubeui/confirm-dialog"],
       "files": [
         {
-          "path": "registry/layout/unsaved-changes-guard.tsx",
+          "path": "registry/ui/unsaved-changes-guard.tsx",
           "type": "registry:component"
         }
       ]

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { ConfirmButton as Compiled } from "../compiled/confirm-button";
 import { Trash2 as CompiledTrash } from "../compiled/icons";
-import { ConfirmButton as Native } from "../registry/layout/confirm-button";
+import { ConfirmButton as Native } from "../registry/ui/confirm-button";
 import { Trash2 as NativeTrash } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 
