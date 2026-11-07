@@ -44,9 +44,11 @@ export type FloatingSurface = {
   drawDescription: (description: ReactNode) => SlotNode;
   /**
    * The description while `descriptionPlacement="popover"` folds it: off the screen, and still
-   * what describes the panel, so a dialog is announced with it when it opens.
+   * what describes the panel, so a dialog is announced with it when it opens. Present, it takes
+   * the place of the hidden copy a card draws; absent, the card draws that copy as on the page.
+   * Optional, so a `card-layout` and a `dialog-layout` installed at different times still agree.
    */
-  drawFoldedDescription: (description: ReactNode) => SlotNode;
+  drawFoldedDescription?: ((description: ReactNode) => SlotNode) | undefined;
   /** The card's header, body and footer, placed on the panel. */
   drawParts: (parts: FloatingCardParts) => SlotNode;
 };
@@ -439,9 +441,7 @@ export function CardLayout({
       // hang on: folded, the text is only read where it was. A panel is a dialog, which its
       // description describes, so it draws the folded copy itself.
       descriptionSlot={descriptionSlot}
-      foldedDescriptionSlot={
-        surface && folded ? surface.drawFoldedDescription(description) : undefined
-      }
+      foldedDescriptionSlot={folded ? surface?.drawFoldedDescription?.(description) : undefined}
       folded={folded}
       fallbackName="About this card"
       iconSlot={descriptionIconSlot}
