@@ -130,6 +130,16 @@ to add them.
   was a `flex-nowrap` that kept the action on the title's line, and it has no replacement yet
   ([#416](https://github.com/cubicecho/cubeui/issues/416)). The row now wraps the action under the
   title when the title would get narrower than 10rem.
+- **`PageHeader`'s `contentSlot` (`PageLayout`'s `headerContentSlot`) no longer stretches what you
+  put in it.** Each node sits at its own width from the start of the line, so a tab list is as wide as
+  its tabs instead of running the page's width
+  ([#414](https://github.com/cubicecho/cubeui/issues/414)). `Input` and `SearchInput` still fill
+  the line. A `div` or `View` of your own that should fill it, such as a row of filters, passes
+  `self-stretch`.
+- **A page header with a back button is shorter.** The title row under `backSlot` is a button's
+  height, with the title at its top, so a lone title no longer has an empty band above and below it
+  ([#413](https://github.com/cubicecho/cubeui/issues/413)). Without a description, the header is
+  20px shorter at `lg`, 12px at `md` and 4px at `sm`, and the body under it moves up by as much.
 - **`SidebarLayout`'s phone bar is `AppBar`.** Its parts are `data-slot` `app-bar`,
   `app-bar-brand`, `app-bar-nav`, `app-bar-status` and `app-bar-action`. They were
   `sidebar-layout-header`, `-brand`, `-nav`, `-status` and `-action`. `sidebar-layout-main`,

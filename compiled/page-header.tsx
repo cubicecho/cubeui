@@ -31,8 +31,9 @@ import { cn, type SlotNode } from "@/lib/utils";
  * (see {@link LEVEL_SIZE}), so a page can keep its `h1` and still have a compact title.
  *
  * `row` is the floor under the title row, so `contentSlot` starts at the same place on every
- * page. `bar` is the height of one line of `title`, so a loading header is as tall as the header
- * it becomes. The tag is not in the map: {@link Heading} spells each one out for the compiler.
+ * page; under a back row it is {@link FLOOR_UNDER_BACK} instead. `bar` is the height of one line
+ * of `title`, so a loading header is as tall as the header it becomes. The tag is not in the map:
+ * {@link Heading} spells each one out for the compiler.
  */
 const SIZES = {
   lg: {
@@ -54,6 +55,18 @@ const SIZES = {
     bar: "h-6",
   },
 } as const;
+
+/**
+ * The title row's floor and alignment under a back row: as tall as a header's buttons
+ * (`size="sm"`), with the title at the top of it.
+ *
+ * The back row has already moved the body down, so a page with one never lines up with a page
+ * without it, and {@link SIZES}' floor only bought an empty band. Centred, half of it sat between
+ * the way back and the title it belongs to: 26px under a back button at `lg`, against the 12px
+ * gap (#413). A button's height still holds the action, so a detail page with buttons and one
+ * without line up with each other, and the title sits the same 12px under the way back on both.
+ */
+const FLOOR_UNDER_BACK = "min-h-9 content-start";
 
 /** The heading levels a {@link PageHeader} can be. */
 export type PageHeaderLevel = 1 | 2 | 3;
@@ -88,6 +101,9 @@ export type PageHeaderProps = {
   /**
    * The row under the title block: a search field, a filter row, a set of tabs — stacked, each
    * on its own line, in the order they are passed.
+   *
+   * Each sits at its own width, from the start: a tab list is as wide as its tabs. A search field
+   * fills the line, and a filter row that should passes `self-stretch`.
    *
    * One slot rather than `search`, `filters` and `tabs`. The prior art grew all three, plus a
    * `searchZone` and an `actionsZone` escape hatch beside two of them, and three of those five
@@ -305,8 +321,8 @@ export function PageHeader({
         // floating between the title and the description under it.
         className={cn(
           "cube-rn-view",
-          "flex-row flex-wrap content-center items-start justify-between gap-x-4 gap-y-2",
-          rowFloor,
+          "flex-row flex-wrap items-start justify-between gap-x-4 gap-y-2",
+          back ? FLOOR_UNDER_BACK : cn("content-center", rowFloor),
         )}
       >
         {/* `basis-40` is the threshold, and the only number here that is a judgement rather than
@@ -368,9 +384,13 @@ export function PageHeader({
       </div>
 
       {contentSlot ? (
+        // `items-start`: tabs or a segmented control sit at their own width, at the start, as they
+        // do everywhere else. Stretched, a tab list ran the page's width with its tabs centred in
+        // it (#414). `Input` and `SearchInput` are `w-full` and still fill; a row of filters
+        // passes `self-stretch`.
         <div
           data-slot="page-header-content"
-          className={cn("cube-rn-view", "min-w-0 flex-col gap-2", contentClassName)}
+          className={cn("cube-rn-view", "min-w-0 flex-col items-start gap-2", contentClassName)}
         >
           {contentSlot}
         </div>

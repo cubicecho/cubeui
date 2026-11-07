@@ -289,7 +289,7 @@ function Today({ state }: Args) {
           />
         }
         headerContentSlot={
-          <View className="gap-2">
+          <View className="gap-2 self-stretch">
             <SegmentedGroup aria-label="Show" value={filter} onValueChange={setFilter}>
               <SegmentedButton value="all">All</SegmentedButton>
               <SegmentedButton value="today">Due today</SegmentedButton>
