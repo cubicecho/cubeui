@@ -29,6 +29,7 @@ import { cn, type SlotNode } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { hasRows, List } from "./list";
+import { Skeleton } from "./skeleton";
 
 /**
  * The parts a floating panel draws a card with, handed down by the panel that already draws the
@@ -178,9 +179,6 @@ export type CardLayoutProps = {
 
 /** Sized from outside on the web; see the file comment for the device. */
 const ICON = "[&_svg]:size-4";
-
-/** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("h-4 rounded-md bg-foreground/10", "motion-safe:animate-pulse");
 
 /**
  * The heading row: the title and description in one column, the action after it. `CardLayout`,
@@ -541,9 +539,9 @@ export function CardLayout({
 function CardLayoutSkeleton() {
   return (
     <div data-slot="card-layout-skeleton" className="cube-rn-view gap-2" aria-hidden>
-      <div className={cn("cube-rn-view", BAR, "w-2/3")} />
-      <div className={cn("cube-rn-view", BAR, "w-full")} />
-      <div className={cn("cube-rn-view", BAR, "w-1/2")} />
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-1/2" />
     </div>
   );
 }

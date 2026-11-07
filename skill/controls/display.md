@@ -297,8 +297,8 @@ while what it stands in for loads. `className` is its size.
 - It says nothing to assistive tech itself, as shadcn's does not. Hide each block with
   `aria-hidden` and put them in a `role="status"` named for what is loading.
 - Reach for a shell's `loading` first. `CardLayout`, `LoadState`, `StatTile`, `PageHeader` and
-  the form fields each draw their own skeleton for the part the request fills. `Skeleton` is for a
-  part no shell covers.
+  the form fields each draw `Skeleton` for the part the request fills, so they install it and
+  pulse on device too. `Skeleton` on its own is for a part no shell covers.
 
 ## Separator
 

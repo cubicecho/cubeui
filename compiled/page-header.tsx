@@ -25,6 +25,7 @@
  */
 import type { ReactNode } from "react";
 import { cn, type SlotNode } from "@/lib/utils";
+import { Skeleton } from "./skeleton";
 
 /**
  * How large a title is drawn. Each heading level has a size it takes unless `size` names another
@@ -93,9 +94,6 @@ const INK = "text-foreground";
  * view would otherwise be a flex column and lay a sentence and its link out as two rows.
  */
 const SLOT = "block";
-
-/** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn("max-w-full rounded-md bg-foreground/10", "motion-safe:animate-pulse");
 
 export type PageHeaderProps = {
   /**
@@ -283,11 +281,10 @@ export function PageHeader({
   const rule = level === 1 && !contentSlot ? "border-b border-foreground/10" : undefined;
 
   const descriptionLine = loading ? (
-    <div
-      data-slot="page-header-description"
-      aria-hidden
-      className={cn("cube-rn-view", BAR, "h-5 w-72")}
-    />
+    // The part's name on a box round the bar, as in `StatTile`, so the bar keeps `Skeleton`'s.
+    <div data-slot="page-header-description" aria-hidden className="cube-rn-view">
+      <Skeleton className="h-5 w-72 max-w-full" />
+    </div>
   ) : (
     // `max-w-prose`: under a page-wide header a description could run to 200 characters a line.
     <p
@@ -351,7 +348,9 @@ export function PageHeader({
                 <Heading level={level} className={SR_ONLY}>
                   Loading…
                 </Heading>
-                <div aria-hidden className={cn("cube-rn-view", BAR, "w-48", barHeight)} />
+                {/* `shrink-0`: a compiled view does not shrink, and the web `Skeleton` is a bare
+                    `<div>`, which would give way to the icon beside it. */}
+                <Skeleton aria-hidden className={cn("w-48 max-w-full shrink-0", barHeight)} />
               </>
             ) : (
               // `break-words` is what a title does when it runs out of room — an unbroken id or

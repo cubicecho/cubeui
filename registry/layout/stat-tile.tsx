@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import { Platform, Text, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { IconClassContext } from "@/components/ui/icons-base";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn, type SlotNode } from "@/lib/utils";
 
 type StatTileProps = {
@@ -51,12 +52,6 @@ type StatTileProps = {
 const ICON_BOX = cn(
   "shrink-0",
   Platform.select({ web: "[&_svg]:size-4 [&_svg]:shrink-0", default: undefined }),
-);
-
-/** A bar standing in for the figure — `Skeleton`'s look, on both platforms, at one line of it. */
-const BAR = cn(
-  "h-8 w-20 rounded-md bg-foreground/10",
-  Platform.OS === "web" && "motion-safe:animate-pulse",
 );
 
 /**
@@ -140,7 +135,15 @@ export function StatTile({
           {label}
         </Text>
       </View>
-      {loading ? <View testID="stat-tile-skeleton" aria-hidden className={BAR} /> : figure}
+      {loading ? (
+        // One line of the figure. The tile's name for it goes on a box round the bar: a `testID`
+        // on `Skeleton` would replace the primitive's own.
+        <View testID="stat-tile-skeleton" aria-hidden>
+          <Skeleton className="h-8 w-20" />
+        </View>
+      ) : (
+        figure
+      )}
       {hint ? (
         <Text testID="stat-tile-hint" className={cn("text-xs", ink)}>
           {hint}

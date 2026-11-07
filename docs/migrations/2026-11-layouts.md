@@ -185,6 +185,10 @@ to add them.
   `scrollToEnd()` jumps. The spinner still turns. The rule for `animate-in` and `animate-out` is in
   the tokens stylesheet, so it reaches the app's own uses of them too. A reinstall also writes
   `components/ui/reduced-motion.tsx`, which `useReducedMotion()` comes from.
+- **The loading bars of `CardLayout`, `PageHeader`, `StatTile` and `LoadState` pulse on device**
+  ([#449](https://github.com/cubicecho/cubeui/issues/449)). They are `Skeleton` now, and held
+  still there before. On the web they look the same. A reinstall of any of the four also writes
+  `components/ui/skeleton.tsx` and `skeleton-base.ts`.
 - **A focused `Table` no longer draws the browser's focus ring**
   ([#445](https://github.com/cubicecho/cubeui/issues/445)). A table too wide or too tall for its
   container is a tab stop. Tabbed to, its edge turns `active`, as a focused field's border does. A
