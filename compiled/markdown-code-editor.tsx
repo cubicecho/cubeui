@@ -47,6 +47,10 @@ const theme = EditorView.theme({
   "&.cm-focused .cm-activeLine": {
     backgroundColor: "color-mix(in oklab, var(--active) 40%, transparent)",
   },
+  // Except the placeholder's line. The placeholder is `/60`, an input's, and on the tint it is
+  // 4.24:1, under the 4.5:1 text floor. An empty document has one line, so there is no current
+  // line to pick out until there is text.
+  "&.cm-focused .cm-activeLine:has(.cm-placeholder)": { backgroundColor: "transparent" },
   ".cm-placeholder": { color: "color-mix(in oklab, var(--foreground) 60%, transparent)" },
   // What an app's own completion or lint extension draws: a popover, in the popover's colours.
   ".cm-tooltip": {

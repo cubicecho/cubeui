@@ -66,7 +66,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | An app's navigation sidebar: a header, titled lists of link rows, a footer of link or button rows | `Sidebar`, `SidebarSection`, `SidebarItem` | `@cubeui/sidebar` |
 | A card with a title, actions and a footer | `CardLayout` | `@cubeui/card-layout` |
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
-| A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
+| A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/centered-pages.md](layout/centered-pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A heading over a group of fields or rows; on a card it is `CardLayout level={2}` | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |

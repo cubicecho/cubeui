@@ -31,6 +31,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: an add button, a menu, a switch. |
+| `actionPlacement` | `ActionPlacement` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title once the title would have less than 10rem, so the whole title stays readable. `inline` keeps the action beside the title on every width and cuts the title short with an ellipsis instead: for a narrow card whose action belongs on the title's line, such as a switch that turns the card's subject on. |
 | `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element (`[]`, `null`, `false`), or a `List` with no rows. A body of any other element is drawn as it is, even one that turns out to render nothing — pass `emptySlot` the case, or decide it yourself. |
 | `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted — data that has not arrived is not data that came back empty, and a card that says "no members yet" for half a second before showing four of them is worse than one that waits. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A timestamp, a note, a destructive action held away from the rest. Words come in a `<Text>` of the caller's, as in every slot. |
@@ -87,8 +88,8 @@ a small button after the title, named "About <title>" — for a page of cards wh
 are each a paragraph. `descriptionIconSlot` is the button's glyph, a question mark by default. On
 the web a screen reader still reads the sentence under the title. It stays inline on a card with
 no `title`, and on a card with no body and no footer, where the description is all the card says —
-so pass the prop on every card of a page and leave that case alone. `Section`, `SettingRow` and the
-form fields take the same two props. Do not wrap the title in a `Popover` of your own.
+so pass the prop on every card of a page and leave that case alone. `Section`, `SettingRow`,
+`DialogLayout` and the form fields take the same two props. Do not wrap the title in a `Popover` of your own.
 
 The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the
 title, while the title has room beside it; the title truncates short of it rather than running
@@ -96,6 +97,13 @@ underneath; and when the card is too narrow for both, the action goes on a line 
 the title. One control or a fragment of them — `actionSlot={<><ViewToggle /><Button content="Save" /></>}`
 is laid out as a row. So a long title with two controls is still a `CardLayout`: do not compose
 `Card` by hand with `CardAction`, which is absolute and reserves no room.
+
+`actionPlacement="inline"` keeps the action beside the title at every width and cuts the title
+short with an ellipsis instead, on both halves; the action is never shrunk. Use it for a narrow
+card whose action belongs on the title's line, such as a switch that turns the card's subject on,
+and keep `wrap` (the default) where the whole title has to be read. Do not reach the row through
+`headerClassName` with `[&>div]:flex-nowrap`: that class lands on `CardHeader`, not the row, and
+on device a child selector is nothing. `Section` and `DialogLayout` take the same prop.
 
 **A card's status goes in `actionSlot` too.** `CardLayout` has no `badgesSlot` (that word is a
 list row's), and does not need one: the header's far end takes any element, a `Badge` as well as
@@ -181,6 +189,7 @@ A heading over a group of fields or rows, inside a page or a card.
 | `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button beside the title, named "About <title>", and on the web the section is still described by it. A section with no title has nothing to put the button beside, so its description stays inline. |
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
 | `actionSlot` | `SlotNode` |  | The heading row's far end: an add button, a count, a switch that disables the group. |
+| `actionPlacement` | `ActionPlacement` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title; `inline` keeps it beside the title and cuts the title short with an ellipsis instead. `CardLayout`'s, so a section and a card agree. |
 | `divider` | `boolean` | `false` | A hairline under the heading. Off by default; on, the group reads as one block. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default, because a page's `PageHeader` owns the one `h1` and these are the sections under it. A section nested in a section is `3`; a section in a dialog whose title is the `h2` is `3` as well. Pick it by where the section sits, never by how big the text should look — the text is the same size at every level. |
 | `className` | `string` |  |  |
@@ -210,7 +219,8 @@ A heading over a group of fields or rows, inside a page or a card.
   keeps its description inline.
 - The heading row is **`CardLayout`'s**, and **wraps**. An `actionSlot` sits at the far end, level
   with the top of the title, while the title and description have room beside it, and drops under
-  them — at the start, as `SettingRow`'s does — when they do not. Installing `section` installs
+  them — at the start, as `SettingRow`'s does — when they do not; `actionPlacement="inline"` keeps
+  it beside the title and truncates the title instead, as on a card. Installing `section` installs
   `card-layout` too, for that row (`HeadingRow`); a section draws no card.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
   and wrap inside the section. Do not move a wide toolbar into the top of `contentSlot` to keep the

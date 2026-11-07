@@ -1,15 +1,14 @@
-# cubeui layout: Pages, page shells and page headers
+# cubeui layout: Pages, page shells and grids
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
+The title block on its own is in [page-headers.md](page-headers.md#page-headers), and a page that is
+one card in the middle of the screen is in [centered-pages.md](centered-pages.md#centered-pages).
 
 **Contents**
 
 - [Pages](#pages)
 - [Page shells](#page-shells)
-- [Page headers](#page-headers)
-  - [What it does not have](#what-it-does-not-have)
 - [Grids](#grids)
-- [Centered pages](#centered-pages)
 
 ## Pages
 
@@ -222,104 +221,6 @@ dialog body.
   )}
   ```
 
-## Page headers
-
-`PageHeader` is the title block on its own, for when it goes in another shell's `headerSlot`.
-It is not a page.
-
-```tsx
-<PageHeader
-  title="Workspaces"
-  description="Each one exposes the servers you choose."
-  actionSlot={
-    <>
-      <Button size="sm" variant="outline" iconSlot={<Download />} content="Export" />
-      <Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />
-    </>
-  }
-  contentSlot={<SearchInput value={query} onChange={setQuery} />}
-/>
-```
-
-<!-- props:PageHeader -->
-`PageHeader`'s props, from the TSDoc in `registry/layout/page-header.tsx`:
-
-| Prop | Type | Default | What it is |
-| --- | --- | --- | --- |
-| `contentSlot` | `SlotNode` |  | The row under the title block: a search field, a filter row, a set of tabs — stacked, each on its own line, in the order they are passed. |
-| `title` (required) | `ReactNode` |  | What the page is called. Required, because a header with no title is a toolbar, and a toolbar is a row of nodes the caller can place without help. It is also the heading assistive technology navigates the page by. |
-| `description` | `ReactNode` |  | One line on what the page is for. It wraps; it is not clipped. |
-| `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized with the title — pass a bare `<Users />`, not a sized one. On device an icon cannot be sized from outside it, so pass it at the size you want. |
-| `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. A fragment of them is fine — the shell rows and gaps them, so two pages never disagree about the space between New and Import, and a caller never has to know whether this slot wraps its children (in one app it does and in its sibling it does not, which is why their spacing differs by 4px). |
-| `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
-| `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
-| `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
-| `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. The size follows it unless `size` says otherwise. |
-| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the header follows `level`, not this. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-<!-- /props -->
-
-- **The header brings its own inset, and the shell around it knows.** `HeaderContentFooter` leaves its
-  `headerSlot` unpadded on purpose and gives the body `px-4` to match, so the title lands above
-  the body's first column. Do not pad the header slot, and do not wrap a `PageHeader` in a `div`
-  to inset it — that seam is already joined, in one file.
-
-  Dropped into something that already pads its children (a `<main className="p-6">`), pass
-  `className="px-0"` so exactly one of the two owns the inset. That is the only case that needs a
-  word from you.
-
-- **`contentSlot` here is the row under the title** — a search field, a filter row, tabs; stacked, in
-  the order you pass them. (`PageLayout` calls the same slot `headerContentSlot`, because its own
-  `contentSlot` is the page body.) There is no `search` prop, no `filters` prop and no `tabs` prop.
-
-- **`actionSlot` is the far end, and it is one slot for all of them.** Pass a fragment of buttons; a
-  status pill goes here too. The shell rows and gaps them, so two pages never disagree about the
-  space between Export and New.
-
-- **`backSlot` is the way back, above the title**: a back link, or a breadcrumb trail. Put a back
-  button here, not in `iconSlot`: that is the page's own icon, and a back button beside the title
-  takes width from the page's name. `breadcrumbsSlot` is the old name, still read when `backSlot`
-  is not passed, for one release. Under it, the title row is a button's height.
-
-- **`level` picks the heading**, `1` by default. A header inside a card, a pane of a split, or
-  anything already under a page title passes `level={2}`. Do not pass `title={<h1>Workspaces</h1>}`
-  and do not restyle the title — the level carries the size.
-- **`size` is the title's size apart from its heading**: `lg`, `md` or `sm`, following `level` when
-  left out. A page whose header is mostly controls (a chat with a model picker) stays `level={1}`
-  and passes `size="sm"`; do not take `level={3}` for a small title. The rule follows `level`.
-  `PageLayout` takes `size` too.
-
-- **`loading` stands in for the title**, at the title's exact height, so the page below does not
-  jump when the name lands. Everything that did not come from that request — the trail, the
-  buttons, the search field — stays put and stays usable.
-
-  ```tsx
-  <PageHeader backSlot={<Link to="/workspaces">Workspaces</Link>} loading={isPending}
-    title={workspace?.name} actionSlot={<Button content="Edit" />} />
-  ```
-
-- **The rule under the header is not a prop.** At level 1 it is drawn when there is no
-  `contentSlot` and not drawn when there is, because a search row already separates the header from the body and a
-  second divider under it is one too many. A screen that disagrees says so in one class:
-  `className="border-b-0"`.
-
-- **A long title wraps; it never truncates**, and the buttons drop to their own line before the
-  title is squeezed under `10rem`. That is driven by the header's real width against the action's
-  real width, not by a viewport breakpoint, so it also holds for a narrow pane on a wide screen,
-  and a short title keeps its button beside it on a phone.
-- **The action lines up with the title**, not with the middle of the title and description, as a
-  `CardLayout`'s does. The description stops at `max-w-prose` (about 65 characters a line), however
-  wide the page is.
-
-### What it does not have
-
-`search`, `filters`, `tabs` — pass them as `contentSlot`. A count or status badge — put it in
-`actionSlot`, or compose it into the `title` node. A back button *beside* the title, or in `iconSlot` —
-it goes in `backSlot`. A description that expands behind a popover — that is state, and state is the
-caller's.
-
 ## Grids
 
 `GridLayout` (`@cubeui/grid-layout`) lays out equal cells in rows: one to a row on a phone, two
@@ -343,58 +244,3 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 | `contentSlot` (required) | `SlotNode` |  | The cells, as an array or a fragment: cards, tiles, anything of one kind. Both are opened, so a fragment of three cards is three cells and not one. |
 | `className` | `string` |  |  |
 <!-- /props -->
-
-## Centered pages
-
-The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
-of its own. `CenteredCardLayout` is that page — full height, centred both ways, `p-4` off the edges —
-around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under the same names.
-The card is the page here, so its title is the page's: an `h1` at `text-xl`, as `PageHeader`'s
-level 1, not a card title. `level` and `titleClassName` still override it.
-
-```tsx
-<CenteredCardLayout
-  iconSlot={<KeyRound />}
-  title="Authentication required"
-  description="Enter the router token from settings.json."
-  contentSlot={
-    <form id="token" onSubmit={submit}>
-      <FormField label="Token" controlSlot={<Input type="password" value={token} onChangeText={setToken} />} />
-    </form>
-  }
-  footerActionsSlot={
-    <Button type="submit" form="token" disabled={!token.trim()} content="Unlock" />
-  }
-/>
-```
-
-<!-- props:CenteredCardLayout -->
-`CenteredCardLayout`'s props, from the TSDoc in `registry/layout/centered-card-layout.tsx`:
-
-| Prop | Type | Default | What it is |
-| --- | --- | --- | --- |
-| `className` | `string` |  | The root — the full-height box the card is centred in. A background, or a different padding. On device it styles the scroll view's content container, which is the box that fills the screen and does the centring. |
-| `cardClassName` | `string` |  | The card. It is `w-full max-w-sm`; pass `max-w-md` here for a wider one, which replaces the cap rather than competing with it. |
-
-It also takes the props declared in `registry/layout/card-layout.tsx`: `actionSlot`, `contentClassName`, `contentSlot`, `description`, `descriptionIconSlot`, `descriptionPlacement`, `emptySlot`, `footerActionsSlot`, `footerClassName`, `footerSlot`, `headerClassName`, `iconSlot`, `level`, `loading`, `title`, `titleClassName`, `wrapperSlot`.
-<!-- /props -->
-
-**It was `CenteredLayout`.** `CenteredLayout`, and the `@cubeui/centered-layout` item that
-re-exports it, stay for one release as deprecated aliases; import `CenteredCardLayout` from
-`@/components/centered-card-layout` in new code.
-
-`CenteredCardLayout` hands `wrapperSlot` to its card as it does every other slot, so a sign-in of
-two fields — an email and a password — puts its `<form>` there and its submit in
-`footerActionsSlot`, as [a card does](cards.md#cards). The `form="token"` above is the other way,
-for a form that is already written: the button names the form it submits.
-
-Render it *instead of* the app shell, not inside it: on the web its root is the page's `<main>`,
-and `min-h-svh` tall. `className` is that page — a `bg-background`, a different padding.
-`cardClassName` is the card: `cardClassName="max-w-md"` for a wider one, which replaces the cap.
-
-On device the root is a `ScrollView` filling the screen, so a form in the card stays reachable
-when the keyboard comes up, and a tap on the submit button is not spent dismissing the keyboard.
-Do not wrap it in a `KeyboardAvoidingView` or a `ScrollView` of your own.
-
-A sign-in with no card — a heading and a form on the bare background — is not this shape; lay
-that out with `PageLayout` or by hand rather than stripping the card with `cardClassName`.
