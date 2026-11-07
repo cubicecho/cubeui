@@ -192,7 +192,8 @@ function IconRow({
 }
 
 /**
- * An icon button: an icon and nothing else, still a named button, and with no `hint` no tooltip.
+ * An icon button: an icon and nothing else, still a named button, and with no `hint` its name is
+ * the tooltip (#419), without also being its description.
  * Storybook resolves `tooltip.web.tsx` the way Metro does, so the tooltip is radix on both
  * halves. The device's long press and accessibility hint have no browser to run in, and are
  * typechecked, not played.
@@ -207,11 +208,13 @@ export const IconButtons: Story = {
       const frame = within(within(canvasElement).getByTestId(half));
 
       const edit = frame.getByRole("button", { name: "Edit workspace" });
+      await userEvent.hover(edit);
+      await expect(await screen.findByRole("tooltip")).toHaveTextContent("Edit workspace");
       await expect(edit).not.toHaveAttribute("aria-describedby");
+      await userEvent.unhover(edit);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
 
-      await expect(edit).not.toHaveAttribute("data-slot", "tooltip-trigger");
-
-      // The one with a hint shows it.
+      // The one with a hint shows the hint instead.
       const remove = frame.getByRole("button", { name: "Delete lane" });
       await userEvent.hover(remove);
       await expect(await screen.findByRole("tooltip")).toHaveTextContent("Empty the lane first");

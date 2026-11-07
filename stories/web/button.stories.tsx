@@ -5,8 +5,8 @@ import { Button, type ButtonProps } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 /**
- * `Button` as an icon button: the name it must be given, and the `hint` that is its tooltip —
- * including why it is unavailable. `stories/web/published/` holds the
+ * `Button` as an icon button: the name it must be given and shows on hover, and the `hint` that
+ * takes the name's place in the tooltip — including why it is unavailable. `stories/web/published/` holds the
  * text button; these are the parts that came over from the icon-button component `Button`
  * replaced.
  */
@@ -54,12 +54,42 @@ export const ItHasAName: Story = {
 };
 
 /**
- * A tooltip is only ever a `hint`. The name is not shown as one by default: a button that wants
- * its name on hover says so, and the rest stay as quiet as a text button.
+ * An icon tells a pointer nothing of what it does, so with no `hint` the tooltip is the name
+ * (#419). It is not also the description: the name would be read twice, "Edit workspace, Edit
+ * workspace", and radix points its trigger at the open bubble unless the button says otherwise.
  */
-export const NoHintMeansNoTooltip: Story = {
+export const AnIconButtonShowsItsName: Story = {
   play: async ({ canvas }) => {
     const button = canvas.getByRole("button", { name: "Edit workspace" });
+
+    await userEvent.hover(button);
+    const tooltip = await screen.findByRole("tooltip");
+    expect(tooltip).toHaveTextContent("Edit workspace");
+    await waitFor(() => expect(tooltip).toBeVisible());
+
+    expect(button).not.toHaveAttribute("aria-describedby");
+    expect(button).toHaveAccessibleDescription("");
+  },
+};
+
+/** `tooltip={false}` turns the name off, for an icon that already explains itself. */
+export const TheNameTooltipCanBeTurnedOff: Story = {
+  args: { tooltip: false },
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole("button", { name: "Edit workspace" });
+    expect(button).not.toHaveAttribute("data-slot", "tooltip-trigger");
+
+    await userEvent.hover(button);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(screen.queryByRole("tooltip")).toBeNull();
+  },
+};
+
+/** A text button's label is on screen already, so with no `hint` it has no tooltip. */
+export const ATextButtonWithNoHintHasNoTooltip: Story = {
+  args: { size: "default", "aria-label": undefined, iconSlot: undefined, content: "Publish" },
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole("button", { name: "Publish" });
     expect(button).not.toHaveAttribute("data-slot", "tooltip-trigger");
 
     await userEvent.hover(button);
@@ -111,13 +141,14 @@ export const DisabledWithNoHintIsReallyDisabled: Story = {
   },
 };
 
-/** `hint` is what the tooltip says; the name stays the name. */
+/** `hint` is what the tooltip says, in place of the name; the name stays the name. */
 export const TheHintIsTheTooltip: Story = {
   args: { hint: "Rename this workspace and every alias pointing at it" },
   play: async ({ canvas }) => {
     await userEvent.hover(canvas.getByRole("button", { name: "Edit workspace" }));
     const tip = await within(document.body).findByRole("tooltip");
     expect(tip).toHaveTextContent("Rename this workspace and every alias pointing at it");
+    expect(tip).not.toHaveTextContent("Edit workspace");
   },
 };
 
