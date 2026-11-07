@@ -37,7 +37,7 @@ that makes it true.
 | M8 | One row, `ListItem`. `DisclosureRow` is a `ListItem` that opens, with `Disclosure`'s toggle, which `FileTree`'s folders share. `Item` stays as shadcn's parts only. | Two parallel row systems and three copies of the toggle. | approved |
 | M9 | `SectionHeading` is the small heading that `Section` and `SidebarSection` draw. | Its classes are re-spelled in both. | approved |
 | M10 | `ConfirmButton`, `Combobox` and `useUnsavedChangesGuard` are components, and `RadioGroupField` is a bound field; none lives in `registry/layout/`. | They are not shells. | approved |
-| M11 | Layout names say more plainly what each one places. | Proposed after the merges, so each item is named once. | approved; names to propose |
+| M11 | Layout names say more plainly what each one places. | Proposed after the merges, so each item is named once. | done |
 
 ## Summary
 
@@ -114,7 +114,7 @@ that makes it true.
 | D8 | Docs | The README's "React Native set" table (about `README.md:458-466`) is out of date: it lists none of `list`, `list-item`, `file-tree`, `disclosure`. | The README is what a new consumer reads. | — | done (`d971822`) |
 | B8 | Question | Sidebar rows (`SidebarNavItem`, `BarNavItem`) stay solid when current: AGENTS.md files the current sidebar row with the controls, "the one of its group", not with rows among many. Tint them too? | Finishes B3 or confirms the exception. | — | done: tinted everywhere (option C), in `2942f56` and `d8e2751`; the comparison story served its purpose and was removed (`3f8d0d0`). |
 | R21 | Refactor [reuse] · low value | `RouteError`'s `friendlyMessage` may be able to share `lib/error-message`. (unverified) | A third error-to-text helper. | — | open |
-| M11 | Model | Proposes plainer layout names once the A and F items above land, each with what it says that the old name did not. | M11. | the A and F items | approved: `QueryState` → `LoadState`, `RouteError` → `ErrorPage`, `Disclosure` / `DisclosureRow` → `Collapsible` / `CollapsibleRow`, `DescriptionList` → `PropertyList`, `CenteredLayout` → `CenteredCardLayout`, `SidebarNavItem` / `BarNavItem` → `SidebarItem` / `AppBarItem`; each old name a deprecated alias for one release. After `layouts/tint` merges. |
+| M11 | Model | Proposes plainer layout names once the A and F items above land, each with what it says that the old name did not. | M11. | the A and F items | done (`layouts/renames`): `QueryState` → `LoadState`, `RouteError` → `ErrorPage`, `Disclosure` / `DisclosureRow` → `Collapsible` / `CollapsibleRow`, `DescriptionList` → `PropertyList`, `CenteredLayout` → `CenteredCardLayout`, `SidebarNavItem` / `BarNavItem` → `SidebarItem` / `AppBarItem`; each old name a deprecated alias for one release, and each old item a one-file shim over the new one. |
 
 ## Conventions
 

@@ -21,6 +21,40 @@ move them out of the cubeui file first.
 | `StickyHeaderContentFooter` (from `header-content-footer`) | `<HeaderContentFooter scroll className="h-full …" />`, or `PageLayout` when the header is a `PageHeader`. |
 | `PageInsetContext` (from `page-header`) | A `PageHeader` inside a padded column of your own takes `className="px-0 pt-0"`. |
 
+## Renamed items
+
+Each old name still works for one release: the old item installs as a one-file shim that
+re-exports the new item under the old names, marked `@deprecated`. Move to the new names now:
+install the new item, change the import and the names, and delete the old file.
+
+| Old item (`Old` name) | New item (`New` name) |
+|---|---|
+| `query-state` (`QueryState`, `QueryStateProps`) | `load-state` (`LoadState`, `LoadStateProps`) |
+| `route-error` (`RouteError`) | `error-page` (`ErrorPage`) |
+| `disclosure` (`Disclosure`) | `collapsible` (`Collapsible`) |
+| `disclosure-row` (`DisclosureRow`) | `collapsible-row` (`CollapsibleRow`) |
+| `description-list` (`DescriptionList`; `PropertyRow` keeps its name) | `property-list` (`PropertyList`) |
+| `centered-layout` (`CenteredLayout`, `CenteredLayoutProps`) | `centered-card-layout` (`CenteredCardLayout`, `CenteredCardLayoutProps`) |
+| `SidebarNavItem`, `SidebarNavItemProps`, `SidebarNavItemStatus` (in `sidebar`) | `SidebarItem`, `SidebarItemProps`, `SidebarItemStatus` |
+| `BarNavItem`, `BarNavItemProps` (in `sidebar`) | `AppBarItem`, `AppBarItemProps` |
+
+`Collapsible` installs to `components/collapsible.tsx`. An app that also has shadcn's own
+`components/ui/collapsible.tsx` has two exports by that name; import ours by its path.
+
+The parts' `data-slot` (web) and `testID` (native) names follow the new names. Only a selector or
+test that finds them by name needs changing:
+
+| Old | New |
+|---|---|
+| `query-error` | `load-error` (`row-skeleton` stays) |
+| `route-error`, `route-error-title`, `route-error-details` | `error-page`, `error-page-title`, `error-page-details` |
+| `disclosure`, `disclosure-*` | `collapsible`, `collapsible-*` |
+| `disclosure-row`, `disclosure-row-*` | `collapsible-row`, `collapsible-row-*` |
+| `description-list` | `property-list` (`property-row-*` stays) |
+| `centered-layout` | `centered-card-layout` |
+| `sidebar-nav-item-*` | `sidebar-item-*` |
+| `bar-nav-item` | `app-bar-item` |
+
 ## Changed props
 
 | Item | Change |
@@ -65,4 +99,6 @@ move them out of the cubeui file first.
 - Typecheck finds every removed item and prop.
 - Search for `surface="card"`, `StickyHeaderContentFooter`, `breadcrumbsSlot`, `actionsSlot`,
   `stayLabel`, `text-active-foreground`, `sidebar-layout-` and the removed items' names.
+- Search for the old names in the renamed items' table, and their old `data-slot` / `testID`
+  names; your editor marks each deprecated name that is left.
 - Look at every screen with a chosen row, tab, checkbox or sidebar in both themes.
