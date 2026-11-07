@@ -1,14 +1,5 @@
 import { expect, userEvent } from "storybook/test";
-
-/** What `var(--<token>)` resolves to right now, in the colour syntax the browser reports. */
-export function tokenColor(token: string) {
-  const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
-  document.body.append(probe);
-  const color = getComputedStyle(probe).color;
-  probe.remove();
-  return color;
-}
+import { tokenColor } from "./token-color";
 
 /** What a 1px inset line in `var(--<token>)` computes to, in the syntax the browser reports. */
 function insetLine(token: string) {

@@ -12,6 +12,7 @@ import { Trash2 as NativeTrash } from "../registry/ui/icons";
 import { isTurned } from "./chevron";
 import { deferredSave } from "./deferred-save";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * A skill's files as mcp-skills-manager lists them — its own Markdown pinned above the tree, a size
@@ -501,14 +502,6 @@ export const Move: Story = {
 };
 
 /** A token's colour as the browser resolves it, for comparing with a computed `color`. */
-function tokenColor(token: string) {
-  const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
-  document.body.append(probe);
-  const color = getComputedStyle(probe).color;
-  probe.remove();
-  return color;
-}
 
 // What a consumer passed: an outline Badge with its own muted colour class, which on the selected
 // row's fill stayed grey.

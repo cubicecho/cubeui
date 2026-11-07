@@ -3,6 +3,7 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { Badge as Compiled } from "../compiled/badge";
 import { Badge as Native } from "../registry/ui/badge";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * A removable badge on both halves: the ✕ is a button of its own, named `Remove <text>`, drawn in
@@ -186,18 +187,6 @@ export const Removable: Story = {
   },
 };
 
-/** A token as the browser resolves it, so an assertion compares like with like. */
-function resolved(token: string, inside: Element) {
-  const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
-  inside.appendChild(probe);
-  try {
-    return getComputedStyle(probe).color;
-  } finally {
-    probe.remove();
-  }
-}
-
 /**
  * The `-soft` forms (#346): a tint, an edge and a dot in the hue, with the words in the
  * foreground — the hue on its own tint is under 4.5:1 for three of the four in the default light
@@ -232,8 +221,8 @@ export const Soft: Story = {
     for (const half of sections) {
       const scope = within(half);
       const words = scope.getByText("Failed");
-      const negative = resolved("negative", half);
-      await expect(getComputedStyle(words).color).toBe(resolved("foreground", half));
+      const negative = tokenColor("negative", half);
+      await expect(getComputedStyle(words).color).toBe(tokenColor("foreground", half));
 
       // The pill is the word's box on the web and its parent on device.
       const pill = words.closest("[data-slot='badge']") ?? (words.parentElement as HTMLElement);

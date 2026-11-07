@@ -23,6 +23,7 @@ import { Switch } from "../registry/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * Every chosen thing is tinted: `bg-active/40` with `foreground` ink, and a step further,
@@ -45,7 +46,6 @@ function resolved(property: "color" | "backgroundColor", value: string) {
   probe.remove();
   return color;
 }
-const token = (name: string) => resolved("color", `var(--${name})`);
 /** `bg-active/40`, which Tailwind compiles to this mix. */
 const tint = (percent: number) =>
   resolved("backgroundColor", `color-mix(in oklab, var(--active) ${percent}%, transparent)`);
@@ -125,8 +125,8 @@ export const TintedAtRest: Story = {
     const canvas = within(canvasElement);
     const style = (el: Element) => getComputedStyle(el);
     const rest = tint(40);
-    const active = token("active");
-    const foreground = token("foreground");
+    const active = tokenColor("active");
+    const foreground = tokenColor("foreground");
 
     for (const half of ["Native", "Compiled"]) {
       const group = within(canvas.getByRole("region", { name: half }));
