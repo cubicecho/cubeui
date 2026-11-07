@@ -376,7 +376,7 @@ children and closed without asking, and it was removed. An app that vendored it 
   form from context without a second `<form.AppForm>` around it.
 - Cancel and every other `Button` are `type="button"`, so they sit in the form without
   submitting it. A hand-written `<button>` in the footer needs `type="button"` said.
-- `CardLayout` and `CenteredLayout` take the same `wrapperSlot` — a sign-in card, a settings card
+- `CardLayout` and `CenteredCardLayout` take the same `wrapperSlot` — a sign-in card, a settings card
   with Save in its footer.
 
 - Without a wrapper or a named form the submit lives outside the `<form>` and a click still

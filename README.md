@@ -110,7 +110,7 @@ DOM app keeps its `components.json` line. What changes under it:
 
 - **The palette as TypeScript is `@/lib/cubeui-theme`**, not `@/lib/theme`. A `registry:lib`
   lands by basename, and `theme.ts` overwrote an app's own without asking.
-- **`RouteError`'s default title is "Something went wrong"**, not "Failed to load", because a
+- **`ErrorPage`'s default title is "Something went wrong"**, not "Failed to load", because a
   route boundary catches render crashes as well as failed fetches. Pass `title="Failed to load"`
   for the old wording.
 
@@ -148,7 +148,7 @@ react-native-web's `pointer-events` rules on purpose (#134).
 
 **That is tested on Biome 2.5**, the version this repo lints with (`^2.5.11`), and a `biome-ignore`
 is written for what that version reports. An older Biome reports more: 2.4.6 also wants `<output>`
-for the `role="status"` that `query-state` and `combobox` write, and those lines carry no
+for the `role="status"` that `load-state` and `combobox` write, and those lines carry no
 ignore, because on 2.5 an ignore there would itself be reported as unused. So on 2.4.x the note
 above cannot be followed to a clean run, and the fix is to upgrade Biome.
 
@@ -202,7 +202,8 @@ The shells take no children. The body is `contentSlot`, exactly like `headerSlot
 are props:
 
 ```tsx
-<StickyHeaderContentFooter
+<HeaderContentFooter
+  scroll
   width="page"
   headerSlot={<PageHeader title="Workspaces" />}
   contentSlot={<DataTable columns={columns} data={rows} />}
@@ -309,8 +310,8 @@ Stage 0 is numbered before stage 3 and was run after stage 2 on purpose: it was 
 3, and it needed a real component set to have anything to compile. In the write-ups below,
 "cubeui" on its own in a historical passage means that pre-native registry.
 
-Today the native registry holds 60 items and the web registry 91: 83 components and 8 story
-items. 23 of the web items are web-only, and every native item has a web half.
+Today the native registry holds 93 items and the web registry 115: 107 items and 8 story items.
+14 of the web items are web-only, four of them bundles, and every native item has a web half.
 
 
 ## Stage 1 — tokens
@@ -457,14 +458,14 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft` |
-| primitives | `icons`, `button`, `card`, `code`, `input`, `label`, `textarea`, `switch` |
-| platform-split | `checkbox`, `dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
+| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft`, `select-options`, `tree`, `bottom-bar`, `frame-focus-guard` |
+| primitives | `icons`, `button`, `card`, `code`, `input`, `search-input`, `password-input`, `label`, `textarea`, `switch`, `alert`, `empty`, `item`, `separator`, `progress`, `skeleton`, `spinner`, `copy-button`, `download-button` |
+| platform-split | `checkbox`, `dialog`, `alert-dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |
-| forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `radio-group`, `radio-group-field`, `theme-picker` |
-| feedback | `confirm`, `confirm-dialog`, `toast`, `query-state`, `route-error` |
-| layout | `header-content-footer`, `page-header`, `page-layout`, `split-layout`, `sidebar`, `card-layout`, `dialog-layout`, `page`, `detail-page`, `detail-header`, `section-heading`, `section`, `setting-row`, `description-list`, `stat-tile`, `centered-layout` |
-| docs | `skill` |
+| forms | `field`, `form`, `description-hint`, `switch-field`, `date-time-input`, `date-picker`, `date-time-field`, `color-picker-field`, `combobox`, `combobox-field`, `segmented-field`, `radio-group`, `radio-group-field`, `theme-picker` |
+| feedback | `confirm`, `confirm-dialog`, `confirm-button`, `unsaved-changes-guard`, `toast` |
+| layout | `page-layout`, `header-content-footer`, `page-header`, `centered-card-layout`, `grid-layout`, `split-layout` (`SplitLayout` and `SidebarLayout`), `app-bar`, `sidebar`, `card-layout`, `dialog-layout`, `section`, `section-heading`, `collapsible`, `collapsible-row`, `property-list`, `setting-row`, `stat-tile`, `list`, `list-item`, `file-tree`, `empty-state`, `load-state`, `error-page` |
+| deprecated, for one release | `query-state` (now `load-state`), `route-error` (now `error-page`), `disclosure` (now `collapsible`), `disclosure-row` (now `collapsible-row`), `description-list` (now `property-list`), `centered-layout` (now `centered-card-layout`) |
 
 Everything generic in `auto-cal/client/src/components/ui` is now here. What was left behind was
 left behind on purpose: its vocabulary was the app's, not the set's. `inline-length-edit` became
@@ -472,8 +473,8 @@ left behind on purpose: its vocabulary was the app's, not the set's. `inline-len
 edits), and `status-chip` stopped naming a project's three lifecycle states — first as a tone, and then, in
 open decision 4, as `badge`.
 
-**`file-picker` is web-only.** Its native half draws the zone and says so on screen; it does not
-pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
+**`file-picker` works on the web only.** It ships in `registry.json` with both halves, but its
+native half is a placeholder: it draws the zone and says so on screen, and does not pick a file. Doing that needs `expo-document-picker` plus a file-system read, which is an app-level
 choice with its own permission flow, so the registry ships the contract and the working web half
 rather than a control that silently opens nothing. The contract stays one a native half can
 implement: a picked file is a name, a path, a type, a size, its text and — with `read="bytes"` — a
@@ -753,9 +754,9 @@ gets retried.
 ## Stage 3 — `rn2web`, the compiler
 
 `npm run compile` reads `registry/` and writes `compiled/`: the same components as plain DOM, with no
-react-native-web anywhere in the output. **Every file has a web half — 57 generated, 36
+react-native-web anywhere in the output. **Every file has a web half — 58 generated, 36
 hand-written** (26 `.web.tsx` halves and the 10 web-only files) — and `registry.web.json`, derived
-from `registry.json` and `registry.web-only.json` in the same run, publishes **all 104 items**, plus
+from `registry.json` and `registry.web-only.json` in the same run, publishes **all 107 items**, plus
 the 8 story items. `scripts/rn2web/` is about 2700 lines, of which
 `tables.mjs` is all of the judgement and `compile.mjs`, with one module per pass in `passes/`, is the
 ts-morph that applies it.

@@ -52,9 +52,9 @@ Empty means no element (`[]`, `null`, `false`), or a `List` with no rows —
 other element is drawn as it is, even one that renders nothing, so a body wrapped in a `View` or a
 component of your own decides the empty case itself.
 
-**`false` counts as empty.** The test keeps only elements, so `contentSlot={hasStats && <DescriptionList … />}`
+**`false` counts as empty.** The test keeps only elements, so `contentSlot={hasStats && <PropertyList … />}`
 shows `emptySlot` while `hasStats` is false, the same as `[]` or `null`. When `hasStats` is true
-the `DescriptionList` is an element and is drawn, even with no rows: only a `List` is looked
+the `PropertyList` is an element and is drawn, even with no rows: only a `List` is looked
 inside. So pass the condition that means "nothing to show", not a component that happens to draw
 nothing.
 
@@ -69,8 +69,7 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 A card with no `title`, `description` or `actionSlot` draws no header, and its body starts 16px
 down from the card's top edge like its other three sides. Do not add `contentClassName="pt-4"`.
 
-A card in the page pads `p-4`: `Card`, `CardLayout`, `Section surface="card"` and `StatTile` share
-that one inset. A dialog keeps `p-6`, because it is the only thing on the screen. Do not pass
+A card in the page pads `p-4`: `Card`, `CardLayout` and `StatTile` share that one inset. A dialog keeps `p-6`, because it is the only thing on the screen. Do not pass
 `className="p-6"` to make a card match a dialog. Neither draws a shadow in the page's flow: only a
 thing that floats does.
 
@@ -95,9 +94,8 @@ The header `actionSlot` **is in the header's flow, and wraps**. It sits at the f
 title, while the title has room beside it; the title truncates short of it rather than running
 underneath; and when the card is too narrow for both, the action goes on a line of its own under
 the title. One control or a fragment of them — `actionSlot={<><ViewToggle /><Button content="Save" /></>}`
-is laid out as a row. So a long title with two controls is still a `CardLayout`: do not switch to
-`Section surface="card"` to get a header that holds both, and do not compose `Card` by hand with
-`CardAction`, which is absolute and reserves no room.
+is laid out as a row. So a long title with two controls is still a `CardLayout`: do not compose
+`Card` by hand with `CardAction`, which is absolute and reserves no room.
 
 **A card's status goes in `actionSlot` too.** `CardLayout` has no `badgesSlot` (that word is a
 list row's), and does not need one: the header's far end takes any element, a `Badge` as well as
@@ -122,7 +120,7 @@ dot, and `label` is only that dot's accessible name.
 
 The `footerActionsSlot` row **wraps when the card is narrow**: three buttons in a phone-width card
 put the last one on a second line, still against the right edge, rather than running the first
-out past the card's left edge. `CenteredLayout` and `DialogLayout` draw the same row. Do not
+out past the card's left edge. `CenteredCardLayout` and `DialogLayout` draw the same row. Do not
 reach into it with `footerClassName="[&>div]:flex-wrap …"`, and do not wrap the buttons in a
 `<div>` of your own to get it.
 
@@ -185,7 +183,6 @@ A heading over a group of fields or rows, inside a page or a card.
 | `actionSlot` | `SlotNode` |  | The heading row's far end: an add button, a count, a switch that disables the group. |
 | `divider` | `boolean` | `false` | A hairline under the heading. Off by default; on, the group reads as one block. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default, because a page's `PageHeader` owns the one `h1` and these are the sections under it. A section nested in a section is `3`; a section in a dialog whose title is the `h2` is `3` as well. Pick it by where the section sits, never by how big the text should look — the text is the same size at every level. |
-| `surface` | `"none" \| "card"` | `"none"` | `card` draws the group on a card: the border and background `Card` has, with the padding inside it. `none` (the default) is a label and a gap and nothing else. |
 | `className` | `string` |  |  |
 | `titleClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
@@ -202,17 +199,19 @@ A heading over a group of fields or rows, inside a page or a card.
   landmark. There is nothing to add for that — do not wrap it in another `role="region"`.
 - The title is a small uppercase overline in full `foreground`, so it leads the muted, larger
   description under it by ink and weight rather than size.
-- It draws **no surface** by default. `surface="card"` puts the whole group on a card (border,
-  background, `p-4`) drawn from `Card`'s own classes, so the item installs `@cubeui/card` — use that
-  instead of wrapping it in a `Card` yourself. `CardLayout` is still
-  the component for a card with a header and footer of its own.
+- It draws **no surface**: it is a label and a gap. A titled group on a card is a `CardLayout`,
+  not a `Section` inside a `Card`. The `surface="card"` prop was removed; move each
+  `<Section surface="card" …>` to `<CardLayout level={2} …>` with the same `title`, `description`,
+  `actionSlot` and `contentSlot`.
 - `divider` adds a hairline under the heading. Off by default.
 - `descriptionPlacement="popover"` puts the description behind a small button beside the title,
   named "About <title>", with `descriptionIconSlot` for its glyph. The heading keeps its name and
   rank, and on the web the region is still described by the sentence. A section with no `title`
   keeps its description inline.
-- The heading row **wraps**. An `actionSlot` sits at the far end while the title and description have
-  room beside it, and drops under them — at the start, as `SettingRow`'s does — when they do not.
+- The heading row is **`CardLayout`'s**, and **wraps**. An `actionSlot` sits at the far end, level
+  with the top of the title, while the title and description have room beside it, and drops under
+  them — at the start, as `SettingRow`'s does — when they do not. Installing `section` installs
+  `card-layout` too, for that row (`HeadingRow`); a section draws no card.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
   and wrap inside the section. Do not move a wide toolbar into the top of `contentSlot` to keep the
   description readable, and do not wrap it in a `flex flex-wrap` `<div>` of your own.
@@ -221,20 +220,20 @@ A heading over a group of fields or rows, inside a page or a card.
   token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
   answer for that, because the value being retyped *is* a class list.
 
-## Disclosure
+## Collapsible
 
 A part of a page whose body shows and hides — "Show completed (3)" under a list, "Raw output"
 over a payload nobody reads in passing. Use it instead of a `<details>`, which has no React Native
 counterpart, and instead of a chevron `<button>` or a `Button` with a `useState` beside it.
 
 ```tsx
-<Disclosure
+<Collapsible
   title="Raw output"
   actionSlot={<Button size="sm" variant="outline" onPress={copy} content="Copy" />}
   contentSlot={<CodeBlock content={json} />}
 />
 
-<Disclosure
+<Collapsible
   title={`${showCompleted ? "Hide" : "Show"} completed (${completed.length})`}
   open={showCompleted}
   onOpenChange={setShowCompleted}
@@ -242,8 +241,8 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 />
 ```
 
-<!-- props:Disclosure -->
-`Disclosure`'s props, from the TSDoc in `registry/layout/disclosure.tsx`:
+<!-- props:Collapsible -->
+`Collapsible`'s props, from the TSDoc in `registry/layout/collapsible.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -251,16 +250,19 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 | `description` | `ReactNode` |  | One line under the title, inside the button, drawn whether open or shut. |
 | `actionSlot` | `SlotNode` |  | The header's far end, **outside** the button: a copy button, a count, a clear-all. A control nested in a button is invalid HTML and, in practice, a click that also toggles the section. |
 | `contentSlot` | `SlotNode` |  | What opening shows. Not mounted while shut, so a long list behind it costs nothing. |
-| `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the disclosure holds its own. |
+| `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the collapsible holds its own. |
 | `onOpenChange` | `((open: boolean) => void)` |  | Told on every toggle, controlled or not. Given alone, it listens without taking over. |
-| `defaultOpen` | `boolean` | `false` | Where an uncontrolled disclosure starts. Shut by default, the way `<details>` is. |
+| `defaultOpen` | `boolean` | `false` | Where an uncontrolled collapsible starts. Shut by default, the way `<details>` is. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
 | `titleClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
 <!-- /props -->
 
-- One source for both platforms: `@cubeui/disclosure` in `/r` and `/r/native`.
+- One source for both platforms: `@cubeui/collapsible` in `/r` and `/r/native`.
+- **It was `Disclosure`.** `Disclosure` and `DisclosureTrigger`, and the `@cubeui/disclosure` item
+  that re-exports them, stay for one release as deprecated aliases; import `Collapsible` from
+  `@/components/collapsible` in new code.
 - The **whole header is one button** with a chevron that turns, so it is reached by Tab and
   toggled by Enter and Space. `aria-expanded` is on it, and on the web `aria-controls` names the
   body while the body is there.
@@ -273,7 +275,7 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
   failure" button elsewhere on the page. `onOpenChange` alone listens without taking over.
 - The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
   under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
-  disclosure is the heading of its part of the page; `contentClassName` to indent the body.
+  collapsible is the heading of its part of the page; `contentClassName` to indent the body.
   An element as `title` or `description` is placed as it is and styles itself.
-- A row in a list that opens onto its detail is `DisclosureRow`, which adds the row's `badgesSlot`,
-  `meta` and surface.
+- A row in a list that opens onto its detail is `CollapsibleRow`, which adds the row's `badgesSlot`,
+  `meta` and `ListItem`'s box.

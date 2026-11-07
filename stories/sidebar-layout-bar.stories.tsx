@@ -20,10 +20,10 @@ import {
   Search as CompiledSearch,
   Settings as CompiledSettings,
 } from "../compiled/icons";
-import { BarNavItem as CompiledBarNavItem, Sidebar as CompiledSidebar } from "../compiled/sidebar";
+import { AppBarItem as CompiledAppBarItem, Sidebar as CompiledSidebar } from "../compiled/sidebar";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import {
-  BarNavItem as NativeBarNavItem,
+  AppBarItem as NativeAppBarItem,
   Sidebar as NativeSidebar,
 } from "../registry/layout/sidebar";
 import { SidebarLayout as NativeLayout } from "../registry/layout/split-layout";
@@ -38,7 +38,7 @@ import {
 } from "../registry/ui/icons";
 
 /**
- * What goes in `SidebarLayout`'s bar: `BarNavItem`, the rail's row with only its icon drawn, and
+ * What goes in `SidebarLayout`'s bar: `AppBarItem`, the rail's row with only its icon drawn, and
  * the `status` slot, the bar's one line of words.
  *
  * The bar is where every app drew its own links, and what the copies lost is what these check: an
@@ -113,7 +113,7 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
           sidebarSlot={<NativeSidebar label="Native rail" contentSlot={null} />}
           brandSlot={<Text className="font-semibold text-base text-foreground">Router</Text>}
           navSlot={places.map((p) => (
-            <NativeBarNavItem
+            <NativeAppBarItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
@@ -155,7 +155,7 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
           sidebarSlot={<CompiledSidebar label="Compiled rail" contentSlot={null} />}
           brandSlot={<span className="font-semibold text-base text-foreground">Router</span>}
           navSlot={places.map((p) => (
-            <CompiledBarNavItem
+            <CompiledAppBarItem
               key={p.id}
               href={`#/${p.id}`}
               label={p.label}
@@ -192,12 +192,11 @@ function Bars({ width, barPosition = "top" }: { width: number; barPosition?: "to
 
 const slotOf = (el: Element) => el.getAttribute("data-testid") ?? el.getAttribute("data-slot");
 
+/** The bar `SidebarLayout` draws under its breakpoint: an `AppBar`. */
+const BAR = '[data-testid="app-bar"], [data-slot="app-bar"]';
+
 function barsOf(canvasElement: HTMLElement) {
-  const headers = Array.from(
-    canvasElement.querySelectorAll<HTMLElement>(
-      '[data-testid="sidebar-layout-header"], [data-slot="sidebar-layout-header"]',
-    ),
-  );
+  const headers = Array.from(canvasElement.querySelectorAll<HTMLElement>(BAR));
   return headers.map((header) => {
     const part = (slot: string) => {
       const el = Array.from(header.children).find((child) => slotOf(child) === slot);
@@ -208,10 +207,10 @@ function barsOf(canvasElement: HTMLElement) {
     };
     return {
       header,
-      brand: part("sidebar-layout-brand"),
-      nav: part("sidebar-layout-nav"),
-      status: part("sidebar-layout-status"),
-      action: part("sidebar-layout-action"),
+      brand: part("app-bar-brand"),
+      nav: part("app-bar-nav"),
+      status: part("app-bar-status"),
+      action: part("app-bar-action"),
     };
   });
 }
@@ -234,10 +233,10 @@ export const Phone390: Story = {
 
       // Brand, places, status, actions — in that order, the status between the nav and the action.
       await expect(Array.from(header.children).map(slotOf)).toEqual([
-        "sidebar-layout-brand",
-        "sidebar-layout-nav",
-        "sidebar-layout-status",
-        "sidebar-layout-action",
+        "app-bar-brand",
+        "app-bar-nav",
+        "app-bar-status",
+        "app-bar-action",
       ]);
 
       // Nothing leaves the bar: every part starts and ends inside it, one after the other.
@@ -337,7 +336,16 @@ export const Phone320: Story = {
     for (const { header, nav, status, action } of bars) {
       const edge = header.getBoundingClientRect();
       await expect(edge.width).toBe(320);
-      await expect(nav.getBoundingClientRect().width).toBe(140);
+      // The status is gone, and the places give the last few pixels by scrolling: the bar keeps
+      // its inset, so the actions stop 16px short of its edge.
+      await expect(nav.getBoundingClientRect().width).toBeGreaterThan(120);
+      await expect(nav.getBoundingClientRect().width).toBeLessThan(140);
+      const places = nav.firstElementChild;
+      if (places instanceof HTMLElement === false) {
+        throw new Error("the places should be in a scroller");
+      }
+      await expect(places.scrollWidth).toBeGreaterThan(places.clientWidth);
+      await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right - 16 + 0.5);
       await expect(status.getBoundingClientRect().width).toBeLessThan(40);
       await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right + 0.5);
       await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
@@ -380,9 +388,9 @@ export const BottomBar: Story = {
       // The top bar keeps the brand, the status and the actions, in that order.
       const header = within(phone).getByRole("banner");
       await expect(Array.from(header.children).map(slotOf)).toEqual([
-        "sidebar-layout-brand",
-        "sidebar-layout-status",
-        "sidebar-layout-action",
+        "app-bar-brand",
+        "app-bar-status",
+        "app-bar-action",
       ]);
       await expect(within(header).getByText(STATUS)).toBeVisible();
       await expect(canvas.getByRole("button", { name: `${half} settings` })).toBeVisible();
@@ -439,8 +447,8 @@ export const BottomBar: Story = {
   },
 };
 
-const CompiledBarLink = createLink(CompiledBarNavItem);
-const NativeBarLink = createLink(NativeBarNavItem);
+const CompiledBarLink = createLink(CompiledAppBarItem);
+const NativeBarLink = createLink(NativeAppBarItem);
 
 const routes = [
   { to: "/", label: "Servers" },

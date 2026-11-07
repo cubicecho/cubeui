@@ -1,7 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
-import { ChevronRight, File, Folder } from "@/components/ui/icons";
+import { CollapsibleTrigger } from "@/components/collapsible";
+import { rowFillClass, rowLink } from "@/components/list-item";
+import { File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
 import { cn, type SlotNode } from "@/lib/utils";
@@ -20,7 +22,10 @@ type FileTreeProps<T extends TreeEntry> = {
    * `actionSlot` as any other file does.
    */
   pinned?: readonly T[] | undefined;
-  /** The open file's path. Its row is filled, and its link or button says it is the current one. */
+  /**
+   * The open file's path. Its row is tinted, a step further under the pointer, and its link or
+   * button says it is the current one.
+   */
   selected?: string | undefined;
   /**
    * The router's link to a file, as an element with no children — `<Link to="/notes/$" />` — which
@@ -132,6 +137,9 @@ export function FileTree<T extends TreeEntry>({
   className,
 }: FileTreeProps<T>) {
   const tree = React.useMemo(() => buildTree(entries), [entries]);
+  const treeId = React.useId();
+  // What a folder's `aria-controls` names. A path may hold a space, which would split the id list.
+  const childrenId = (path: string) => `${treeId}${encodeURIComponent(path)}`;
   const folders = React.useMemo(() => folderPaths(tree), [tree]);
   // What has been pressed, rather than what is open: a folder that arrives later still starts as
   // `defaultOpen` says, which a list of the open ones taken at mount would get wrong.
@@ -268,15 +276,11 @@ export function FileTree<T extends TreeEntry>({
 
   const renderRow = (node: TreeNode<T>, depth: number, isFile: boolean, isPinned = false) => {
     const isSelected = isFile && selected === node.path;
-    const ink = isSelected ? "text-active-foreground" : "text-foreground";
-    // Inside the folder a drag is over, the row sits on the drop tint, where /60 is under 4.5:1.
+    // On the chosen tint, and inside the folder a drag is over (the same tint), /60 is under 4.5:1.
     const inDrop =
       dropInto !== null &&
       (dropInto === "" || node.path === dropInto || node.path.startsWith(`${dropInto}/`));
-    let muted = inDrop ? "text-foreground" : "text-foreground/60";
-    if (isSelected) {
-      muted = "text-active-foreground";
-    }
+    const muted = inDrop || isSelected ? "text-foreground" : "text-foreground/60";
     const indent = { paddingLeft: depth * INDENT + EDGE };
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
@@ -291,18 +295,8 @@ export function FileTree<T extends TreeEntry>({
             <File aria-hidden className={cn("size-4 shrink-0", muted)} />
           </>
         ) : (
-          <>
-            <ChevronRight
-              aria-hidden
-              className={cn(
-                "size-4 shrink-0",
-                muted,
-                Platform.select({ web: "transition-transform", default: undefined }),
-                isOpen(node.path) && "rotate-90",
-              )}
-            />
-            <Folder aria-hidden className={cn("size-4 shrink-0", muted)} />
-          </>
+          // The chevron before it is the trigger's own.
+          <Folder aria-hidden className={cn("size-4 shrink-0", muted)} />
         )}
         <Text
           testID="file-tree-name"
@@ -311,7 +305,7 @@ export function FileTree<T extends TreeEntry>({
             // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
             // what `line-clamp-1` becomes and what `truncate` does not.
             Platform.select({ web: "truncate", default: "line-clamp-1" }),
-            ink,
+            "text-foreground",
           )}
         >
           {node.name}
@@ -321,14 +315,14 @@ export function FileTree<T extends TreeEntry>({
             testID="file-tree-meta"
             className={cn(
               "shrink-0 flex-row items-center gap-1",
-              // On the chosen row's fill everything in the meta takes the row's ink, over a
-              // caller's own colour classes: a muted outline Badge stayed grey on the fill. Its
+              // On the chosen row's tint everything in the meta takes the row's ink, over a
+              // caller's own colour classes: a muted outline Badge's grey is under 4.5:1 there. Its
               // edges go to the ink at /50, so an outline still reads. Web only — a device has no
               // descendant selector, so there icons follow through the context below and a node's
               // own text keeps its colour (see `meta`).
               isSelected &&
                 Platform.select({
-                  web: "text-active-foreground [&_*]:text-active-foreground! [&_*]:border-active-foreground/50!",
+                  web: "text-foreground [&_*]:text-foreground! [&_*]:border-foreground/50!",
                   default: "",
                 }),
             )}
@@ -345,21 +339,33 @@ export function FileTree<T extends TreeEntry>({
     if (isFile === false) {
       const expanded = isOpen(node.path);
       row = (
-        <Pressable
+        <CollapsibleTrigger
           testID="file-tree-folder"
-          role="button"
-          aria-expanded={expanded}
-          accessibilityState={{ expanded }}
+          open={expanded}
           onPress={() => toggle(node.path)}
+          controls={expanded && node.children.length > 0 ? childrenId(node.path) : undefined}
           className={ROW_CLASS}
+          // Centred on the row rather than set down to a first line of text, and muted as the
+          // folder's icon is.
+          chevronClassName={cn("mt-0", muted)}
           style={indent}
-          {...drag}
-        >
-          {inside}
-        </Pressable>
+          webProps={drag}
+          contentSlot={inside}
+        />
       );
     } else if (linkSlot) {
-      row = fileLink(linkSlot(node), isSelected, indent, inside, drag);
+      // `drag` is what picks the row up, which only the web has.
+      row = rowLink(
+        linkSlot(node),
+        {
+          slot: "file-tree-file",
+          className: ROW_CLASS,
+          selected: isSelected,
+          style: indent,
+          webProps: drag,
+        },
+        inside,
+      );
     } else if (onSelect) {
       row = (
         <Pressable
@@ -388,16 +394,7 @@ export function FileTree<T extends TreeEntry>({
         className={cn(
           "min-w-0 flex-row items-center gap-1 rounded-md",
           Platform.select({ web: "group", default: undefined }),
-          isSelected
-            ? cn(
-                "bg-active",
-                Platform.select({ web: "has-[:focus-visible]:bg-active/90", default: undefined }),
-              )
-            : pressable &&
-                Platform.select({
-                  web: "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover",
-                  default: undefined,
-                }),
+          rowFillClass(isSelected, pressable),
           // A slow move is not a failed one: the row waits where it was, drawn as unavailable.
           moving.has(node.path) && "opacity-50",
         )}
@@ -434,7 +431,12 @@ export function FileTree<T extends TreeEntry>({
       >
         {renderRow(node, depth, node.type === "file")}
         {node.type === "dir" && node.children.length > 0 && isOpen(node.path) ? (
-          <View role="list" testID="file-tree-children" className="min-w-0 gap-0.5">
+          <View
+            role="list"
+            testID="file-tree-children"
+            nativeID={childrenId(node.path)}
+            className="min-w-0 gap-0.5"
+          >
             {renderItems(node.children, depth + 1)}
           </View>
         ) : null}
@@ -471,49 +473,6 @@ export function FileTree<T extends TreeEntry>({
       ))}
       {renderItems(tree, 0)}
     </View>
-  );
-}
-
-/**
- * A file's row as the router's link. On the web the caller's element *is* the row — it is cloned
- * with the row's classes and what is inside it, so it stays the router's own `<a>`. On device a
- * link is expo-router's, which takes the row the other way round: it is given `asChild` and wraps
- * the `Pressable`. `drag` is what picks the row up, which only the web has.
- */
-function fileLink(
-  link: ReactElement,
-  isSelected: boolean,
-  indent: { paddingLeft: number },
-  inside: ReactNode,
-  drag: object,
-) {
-  if (Platform.OS !== "web") {
-    return React.cloneElement(
-      link as ReactElement<{ asChild?: boolean }>,
-      { asChild: true },
-      <Pressable
-        testID="file-tree-file"
-        role="link"
-        accessibilityState={{ selected: isSelected }}
-        className={ROW_CLASS}
-        style={indent}
-      >
-        {inside}
-      </Pressable>,
-    );
-  }
-
-  const element = link as ReactElement<Record<string, unknown>>;
-  return React.cloneElement(
-    element,
-    {
-      "data-slot": "file-tree-file",
-      className: cn("flex", ROW_CLASS, element.props.className as string | undefined),
-      style: indent,
-      "aria-current": isSelected ? "page" : undefined,
-      ...drag,
-    },
-    inside,
   );
 }
 

@@ -1,8 +1,8 @@
-# cubeui layout: Description lists, setting rows and stat tiles
+# cubeui layout: Property lists, setting rows and stat tiles
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
-## Description lists
+## Property lists
 
 Read-only facts — a label, a value, a line under the value — which is most of a settings page or an
 "about this server" page.
@@ -11,7 +11,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
 <Section
   title="Index"
   contentSlot={
-    <DescriptionList
+    <PropertyList
       contentSlot={[
         <PropertyRow key="e" label="Embedder" value="bge-small" hint="Set with RAGDOWN_EMBEDDER" />,
         <PropertyRow
@@ -28,8 +28,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
 />
 ```
 
-<!-- props:DescriptionList -->
-`DescriptionList`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+<!-- props:PropertyList -->
+`PropertyList`'s props, from the TSDoc in `registry/layout/property-list.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
 <!-- /props -->
 
 <!-- props:PropertyRow -->
-`PropertyRow`'s props, from the TSDoc in `registry/layout/description-list.tsx`:
+`PropertyRow`'s props, from the TSDoc in `registry/layout/property-list.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
@@ -52,9 +52,12 @@ Read-only facts — a label, a value, a line under the value — which is most o
 | `valueClassName` | `string` |  | A string or number value's own `Text`, so a path, a version or an id is `value={path} valueClassName="font-mono"` rather than a node written to carry the font. On the text and not on the wrapper around it, because on device a `Text` inherits nothing: from the wrapper a `font-mono` reached the string on the web, with the hint and the action, and none of them on a phone. |
 <!-- /props -->
 
-- One source for both platforms: `@cubeui/description-list` in `/r/web` and `/r/native`, exporting
-  `DescriptionList` and `PropertyRow`.
-- `DescriptionList` takes the rows as `contentSlot` — `PropertyRow`s and nothing else, as an array
+- One source for both platforms: `@cubeui/property-list` in `/r/web` and `/r/native`, exporting
+  `PropertyList` and `PropertyRow`.
+- **It was `DescriptionList`.** `DescriptionList`, and the `@cubeui/description-list` item that
+  re-exports it with `PropertyRow`, stay for one release as deprecated aliases; import
+  `PropertyList` from `@/components/property-list` in new code.
+- `PropertyList` takes the rows as `contentSlot` — `PropertyRow`s and nothing else, as an array
   with keys or a fragment. Do not wrap a row in a `<div>`: on the web the list is a `<dl>`, which may
   hold only its term-and-description groups.
 - `PropertyRow` is `label` (what the fact is called), `value` (the fact: a string, or a node such
@@ -76,11 +79,11 @@ Read-only facts — a label, a value, a line under the value — which is most o
   in, and **falls back to stacked by itself** when the list is too narrow for both — it follows the
   width the list is given, not the window. `layout="stacked"` puts the label above the value at
   every width. There is no breakpoint prop.
-- A `PropertyRow` only renders inside a `DescriptionList`. A row the user *edits* is not this — it
+- A `PropertyRow` only renders inside a `PropertyList`. A row the user *edits* is not this — it
   is a field in a form (`FormField`, or a `DialogLayout` with a form in it, opened from the row), never a value that
   turns into an input where it sits.
-- It draws no surface and no heading: put it in a `Section` (or `surface="card"`) or `CardLayout`
-  `contentSlot` for those.
+- It draws no surface and no heading: put it in a `Section` or `CardLayout` `contentSlot` for
+  those.
 
 ## Setting rows
 
@@ -88,9 +91,9 @@ One row of a settings page: what the setting is called and what it does at the s
 that changes it at the end.
 
 ```tsx
-<Section
+<CardLayout
   title="Appearance"
-  surface="card"
+  level={2}
   contentSlot={
     <>
       <SettingRow
@@ -146,8 +149,8 @@ that changes it at the end.
   and drops under it, at the start, when they do not — following the width the row is given, not
   the window. A switch stays beside its title on a phone; a select or a wide button goes under.
   There is no breakpoint prop.
-- It draws no surface, no border and no heading. Put the rows in a `Section` (`surface="card"`) or
-  `CardLayout` `contentSlot`; the gap between them is the parent's.
+- It draws no surface, no border and no heading. Put the rows in a `Section` or `CardLayout`
+  `contentSlot`; the gap between them is the parent's.
 - **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
   the switch with its caption beside it, the whole row one hit target. It takes a `description`
   under the caption and `disabled`, so a switch that cannot be changed can say why. Take
@@ -206,13 +209,14 @@ import { formatCount, formatDuration } from "@/lib/format";
   under it. The label is a muted line at normal weight, so the figure is the one bold thing on the
   tile. `iconSlot` sits before the label; pass a bare `<Clock />`, the tile sizes and mutes it.
 - `onPress` makes the whole tile one button, named by its text. **Add `selected` and it is a
-  toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn with
-  an `active` border; its fill stays the card's, so chosen does not look like hovered. Without `selected` it is a plain button (a tile that opens a
+  toggle**: `aria-pressed` on the web, `selected` in the accessibility state on device, drawn as
+  the chosen tint inside an `active` border, a step stronger under the pointer; its label, hint
+  and icon turn `foreground` on the tint. Without `selected` it is a plain button (a tile that opens a
   page); without `onPress`, `selected` is ignored.
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.
 - `valueClassName` is for the figure's colour — a count worth noticing in `text-negative`.
   There is no `tone` or `size` prop.
 - It lays out one tile, not the row: the grid is the caller's, since the column count is the
-  page's decision. A label-over-number pair with no card around it is a `DescriptionList` with
+  page's decision. A label-over-number pair with no card around it is a `PropertyList` with
   `layout="stacked"`, not this.

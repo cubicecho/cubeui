@@ -81,7 +81,7 @@ on both platforms:
   `<Link to prefetch="intent" />`, Next's `<Link href />`. `href` alone is a plain `<a href>`, for
   a URL no router owns. The row looks exactly like the others, `onSelect` still runs first, and a
   `disabled` row renders no link at all, so nothing follows it. It is `linkSlot={…}` and not
-  `<Link asChild><MenuItem /></Link>` as for `SidebarNavItem`: a menu handed the router's click
+  `<Link asChild><MenuItem /></Link>` as for `SidebarItem`: a menu handed the router's click
   would see it cancel the browser's navigation and take that as "keep the menu open". On device,
   `linkSlot` takes the row `asChild` — expo-router's `<Link href="/x" />` — and navigates beside
   `onSelect`; `href` alone there only runs `onSelect`, because there is no URL to open.

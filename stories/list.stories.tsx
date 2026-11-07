@@ -168,7 +168,7 @@ export const Undivided: Story = {
   },
 };
 
-/** No rows is no list: the empty rung is `QueryState`'s, and "list, 0 items" says nothing. */
+/** No rows is no list: the empty rung is `LoadState`'s, and "list, 0 items" says nothing. */
 export const NoRows: Story = {
   args: { label: "Workspaces" },
   render: () => (

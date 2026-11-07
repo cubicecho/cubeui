@@ -125,10 +125,20 @@ function tokenColor(token: string) {
   return color;
 }
 
+/** `bg-active/<percent>` as the browser reports it: the mix Tailwind compiles the class to. */
+function activeTint(percent: number) {
+  const probe = document.createElement("span");
+  probe.style.backgroundColor = `color-mix(in oklab, var(--active) ${percent}%, transparent)`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+  return color;
+}
+
 /**
  * react-day-picker's stylesheet ships its accent as `blue`, so the chevrons and the selected ring
- * ignored the theme (#102). The picked day is filled from `--selection` now and the chevrons are
- * ink, and both follow the theme into dark mode.
+ * ignored the theme (#102). The picked day is the chosen tint, ringed in `active`, with its text in
+ * `foreground`; the chevrons are ink; and all of it follows the theme into dark mode.
  */
 export const TheCalendarFollowsTheTheme: Story = {
   args: { initial: JUNE_10 },
@@ -141,12 +151,13 @@ export const TheCalendarFollowsTheTheme: Story = {
       throw new Error("no react-day-picker root or chevron");
     }
 
-    // The picked day is filled in the chosen colour, with its text on it; the arrows are ink, not
-    // the chosen colour, and never the library's own blue.
+    // The picked day is the chosen tint inside an `active` ring, with its text in `foreground`;
+    // the arrows are ink, not the chosen colour, and never the library's own blue.
     const check = async () => {
       await waitFor(() => expect(getComputedStyle(chevron).fill).toBe(tokenColor("foreground")));
-      expect(getComputedStyle(day).backgroundColor).toBe(tokenColor("selection"));
-      expect(getComputedStyle(day).color).toBe(tokenColor("selection-foreground"));
+      expect(getComputedStyle(day).backgroundColor).toBe(activeTint(40));
+      expect(getComputedStyle(day).borderTopColor).toBe(tokenColor("active"));
+      expect(getComputedStyle(day).color).toBe(tokenColor("foreground"));
       expect(getComputedStyle(chevron).fill).not.toBe("rgb(0, 0, 255)");
     };
 

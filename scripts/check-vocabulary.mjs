@@ -24,7 +24,7 @@ const LAYERS = [
   ["Page, split and dialog shells add:", "Page, split and dialog shells add:"],
   ["Form components add:", "Form components add:"],
   ["Controls add:", "Controls add:"],
-  ["List rows and query states add:", "List rows and query states add:"],
+  ["List rows and load states add:", "List rows and load states add:"],
 ];
 
 const between = (text, start, end) => {

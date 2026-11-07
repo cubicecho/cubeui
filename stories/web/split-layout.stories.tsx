@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, waitFor } from "storybook/test";
 
-import { StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { SidebarLayout, SplitLayout, type SplitWidth } from "@/components/split-layout";
 
 const meta = {
@@ -306,7 +306,7 @@ export const DividedByALine: SidebarStory = {
  * Nothing here drags — the width is a prop, not stored state — so the rule is `aria-hidden` with
  * no role and no tab stop. A separator that takes focus and then does nothing when you press an
  * arrow key satisfies axe and leaves a keyboard user in a dead end. The access that is owed is
- * owed by whatever *behaves*, and here that is a scrolling pane: `StickyHeaderContentFooter`
+ * owed by whatever *behaves*, and here that is a scrolling pane: `HeaderContentFooter scroll`
  * takes the tab stop, inside the split, exactly as it does outside one.
  */
 export const DividerIsNotAControl: SidebarStory = {
@@ -322,7 +322,9 @@ export const DividerIsNotAControl: SidebarStory = {
     divider: "line",
     sidebarSlot: <Nav />,
     contentSlot: (
-      <StickyHeaderContentFooter
+      <HeaderContentFooter
+        scroll
+        className="h-full"
         headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">Servers</div>}
         contentSlot={
           <ul className="divide-y">
@@ -467,7 +469,9 @@ export const StacksWhenNarrow: SidebarStory = {
 };
 
 const Pane = ({ title }: { title: string }) => (
-  <StickyHeaderContentFooter
+  <HeaderContentFooter
+    scroll
+    className="h-full"
     headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">{title}</div>}
     contentSlot={
       <ul className="divide-y">
@@ -482,7 +486,7 @@ const Pane = ({ title }: { title: string }) => (
 );
 
 /**
- * Stacked on a phone, two `StickyHeaderContentFooter` panes are taller than the screen together.
+ * Stacked on a phone, two scrolling `HeaderContentFooter` panes are taller than the screen together.
  * The split scrolls them as one column, so the last row of the second pane can be reached; side
  * by side, from `lg` up, each pane scrolls inside itself and the split has nothing to scroll.
  */

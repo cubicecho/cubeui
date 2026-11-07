@@ -89,9 +89,8 @@ export const HeaderStaysWhileTheBodyScrolls: Story = {
 export const WidthIsAWordNotANumber: Story = {
   args: { title: "Settings", width: "prose", contentSlot: <Rows count={12} /> },
   play: async ({ canvasElement }) => {
-    const header = canvasElement.querySelector(
-      "[data-slot=header-content-footer-header]",
-    ) as HTMLElement;
+    // The title block, not the header around it: the column is what the two share.
+    const header = canvasElement.querySelector("[data-slot=page-header]") as HTMLElement;
     const body = canvasElement.querySelector(
       "[data-slot=header-content-footer-content]",
     ) as HTMLElement;

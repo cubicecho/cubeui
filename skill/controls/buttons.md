@@ -297,7 +297,7 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 ```
 
 <!-- props:ConfirmButton -->
-`ConfirmButton`'s props, from the TSDoc in `registry/layout/confirm-button.tsx`:
+`ConfirmButton`'s props, from the TSDoc in `registry/ui/confirm-button.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |

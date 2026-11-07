@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, within } from "storybook/test";
+import { Collapsible } from "@/components/collapsible";
 import { DialogLayout } from "@/components/dialog-layout";
-import { Disclosure } from "@/components/disclosure";
 import { EmptyState } from "@/components/empty-state";
 import { FileTree } from "@/components/file-tree";
-import { StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Markdown } from "@/components/markdown";
@@ -293,7 +293,9 @@ function Docs({ file, longTitle }: Args) {
         stackBelow="lg"
         divider="line"
         firstSlot={
-          <StickyHeaderContentFooter
+          <HeaderContentFooter
+            scroll
+            className="h-full"
             headerSlot={
               <div className="flex items-center gap-2 p-3">
                 <SearchInput
@@ -359,12 +361,14 @@ function Docs({ file, longTitle }: Args) {
         }
         secondSlot={
           doc ? (
-            <StickyHeaderContentFooter
+            <HeaderContentFooter
+              scroll
+              className="h-full"
               width="prose"
               headerSlot={
                 <PageHeader
                   level={2}
-                  breadcrumbsSlot={
+                  backSlot={
                     <span className="font-mono text-foreground/60 text-xs">{doc.path}</span>
                   }
                   iconSlot={<FileText />}
@@ -417,7 +421,7 @@ function Docs({ file, longTitle }: Args) {
                     }
                   />
                   <div className="flex flex-col gap-3 border-foreground/10 border-t pt-4">
-                    <Disclosure
+                    <Collapsible
                       title="Front matter"
                       description="What the docs space knows about this file."
                       contentClassName="pt-2"
@@ -430,7 +434,7 @@ function Docs({ file, longTitle }: Args) {
                         />
                       }
                     />
-                    <Disclosure
+                    <Collapsible
                       title="History (3)"
                       contentSlot={
                         <List

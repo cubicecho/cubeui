@@ -245,6 +245,16 @@ function CompiledViews({ labelHideBelow }: { labelHideBelow?: LabelHideBelow }) 
 
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 
+/** `bg-active/<percent>` as the browser reports it: the mix Tailwind compiles the class to. */
+function activeTint(percent: number) {
+  const probe = document.createElement("span");
+  probe.style.backgroundColor = `color-mix(in oklab, var(--active) ${percent}%, transparent)`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+  return color;
+}
+
 /** The pill's icon, which is the only `<svg>` in it. */
 function iconOf(pill: HTMLElement) {
   const svg = pill.querySelector("svg");
@@ -287,8 +297,9 @@ function hoverFill() {
  * An icon beside the label, at rest, hovered and chosen, on both halves.
  *
  * What the pill owns and a call site used to write: the row and its gap, the icon's size, and the
- * icon's colour — the label's, so a chosen pill's icon is `selection-foreground` with it. Hover is
- * the grey `accent` fill on a pill at rest and nothing on the chosen one; chosen is `selection`.
+ * icon's colour — the label's, so a chosen pill's icon is `foreground` with it. Hover is the grey
+ * `hover` fill on a pill at rest and the tint a step further, `/60`, on the chosen one; chosen is
+ * the `active` tint, `/40`.
  */
 export const IconAndLabel: Story = {
   render: () => <SideBySide native={<NativeViews />} compiled={<CompiledViews />} />,
@@ -331,15 +342,16 @@ export const IconAndLabel: Story = {
         await expect(color(iconOf(edit))).not.toBe(color(iconOf(preview)));
       });
 
-      await step(`${half}: at rest no fill, hovered grey, chosen the selection`, async () => {
+      await step(`${half}: at rest no fill, hovered grey, chosen the tint`, async () => {
         await expect(background(preview)).toBe(TRANSPARENT);
-        await expect(background(edit)).not.toBe(TRANSPARENT);
+        await expect(background(edit)).toBe(activeTint(40));
 
-        // The hovered fill is the `accent` token, on a pill at rest only: the chosen pill has no
-        // hover rule, so a pointer over it does not turn it grey.
+        // The hovered fill is the `hover` token, on a pill at rest only: a pointer over the chosen
+        // pill tints it a step further rather than turning it grey.
         await expect(hoverFill()).toBe("var(--hover)");
         await expect(preview.matches(".hover\\:bg-hover")).toBe(true);
         await expect(edit.matches(".hover\\:bg-hover")).toBe(false);
+        await expect(edit.matches(".hover\\:bg-active\\/60")).toBe(true);
         const tokens = getComputedStyle(preview);
         await expect(tokens.getPropertyValue("--accent")).not.toBe(
           tokens.getPropertyValue("--selection"),
@@ -354,11 +366,11 @@ export const IconAndLabel: Story = {
           await userEvent.click(preview);
           await expect(preview).toHaveAttribute("aria-pressed", "true");
           await expect(edit).toHaveAttribute("aria-pressed", "false");
-          // The press leaves the pill focused, and a focused pill looks hovered — label and icon
-          // in `foreground` together. Off it, it is the chosen colour this step is about.
+          // The press leaves the pill focused, and a focused chosen pill looks hovered: the tint
+          // a step further, its label and icon in the chosen ink still.
           if (preview.matches(":focus-visible")) {
-            await expect(color(iconOf(preview))).toBe(color(within(preview).getByText("Preview")));
-            await expect(color(iconOf(preview))).not.toBe(chosen);
+            await expect(background(preview)).toBe(activeTint(60));
+            await expect(color(iconOf(preview))).toBe(chosen);
           }
           preview.blur();
           await waitFor(() => expect(color(iconOf(preview))).toBe(chosen));
@@ -514,13 +526,13 @@ export const IconColourOnDevice: Story = {
 
     // Sized by the pill, and coloured as its label is: chosen, and at rest.
     await expect(classes("edit")).toEqual(
-      expect.arrayContaining(["size-4", "shrink-0", "text-active-foreground"]),
+      expect.arrayContaining(["size-4", "shrink-0", "text-foreground"]),
     );
     await expect(classes("edit")).not.toContain("text-foreground/60");
     await expect(classes("preview")).toEqual(
       expect.arrayContaining(["size-4", "shrink-0", "text-foreground/60"]),
     );
-    await expect(classes("preview")).not.toContain("text-active-foreground");
+    await expect(classes("preview")).not.toContain("text-foreground");
 
     // In the pill's row, before the label, not inside the label's text element.
     const edit = canvas.getByRole("button", { name: "Edit" });

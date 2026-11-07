@@ -14,8 +14,8 @@ import { DateField } from "@/components/date-field";
 import { DialogLayout } from "@/components/dialog-layout";
 import { EmptyState } from "@/components/empty-state";
 import { FieldRow } from "@/components/field-row";
+import { LoadState } from "@/components/load-state";
 import { PageLayout } from "@/components/page-layout";
-import { QueryState } from "@/components/query-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -507,7 +507,7 @@ function Tasks({ state }: Args) {
                 </Menu>
               </div>
             </div>
-            <QueryState
+            <LoadState
               query={queryFor(state)}
               what="your tasks"
               count={filtered.length}

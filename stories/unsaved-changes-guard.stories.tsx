@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import * as Compiled from "../compiled/unsaved-changes-guard";
-import * as Native from "../registry/layout/unsaved-changes-guard";
+import * as Native from "../registry/ui/unsaved-changes-guard";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -120,5 +120,32 @@ export const Default: Story = {
       await userEvent.click(canvas.getByRole("button", { name: `${name} edited` }));
       await waitFor(() => expect(asksBeforeUnload()).toBe(false));
     }
+  },
+};
+
+/** A guard that is asking, for a story about the question's words alone. */
+const ASKING: Native.UnsavedChangesGuard = {
+  leave: () => {},
+  asking: true,
+  discard: () => {},
+  keep: () => {},
+  stay: () => {},
+};
+
+/** `keepLabel` names the button that goes back, as on `DialogLayout`. */
+export const KeepLabel: Story = {
+  render: () => <Compiled.UnsavedChangesDialog guard={ASKING} keepLabel="Stay here" />,
+  play: async () => {
+    await expect(await body().findByRole("button", { name: "Stay here" })).toBeInTheDocument();
+  },
+};
+
+/** `stayLabel`, its old name, still does for one release. */
+export const StayLabelStillNamesIt: Story = {
+  render: () => <Compiled.UnsavedChangesDialog guard={ASKING} stayLabel="Back to the form" />,
+  play: async () => {
+    await expect(
+      await body().findByRole("button", { name: "Back to the form" }),
+    ).toBeInTheDocument();
   },
 };

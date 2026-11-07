@@ -84,7 +84,7 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 ```
 
 <!-- props:Combobox -->
-`Combobox`'s props, from the TSDoc in `registry/layout/combobox.tsx`:
+`Combobox`'s props, from the TSDoc in `registry/ui/combobox.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |

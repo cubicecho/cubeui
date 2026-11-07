@@ -18,7 +18,7 @@
  * It is hand-written rather than compiled for three reasons the compiler would have to guess at:
  * `ItemDescription` is shadcn's `<p>` taking `<p>` props, `ItemSeparator` is radix's, and the
  * compiled reset (`flex-shrink: 0` on every view) would stop a long title shrinking inside a row
- * that shadcn lets shrink — the thing `DisclosureRow`'s truncating title depends on.
+ * that shadcn lets shrink — the thing `CollapsibleRow`'s truncating title depends on.
  *
  * `ItemSeparator` is radix's `Separator` directly, with the classes shadcn's `Separator` gives it,
  * rather than `@cubeui/separator`: that one is web-only, and the native registry installs this file
@@ -99,8 +99,8 @@ function Item({
   VariantProps<typeof itemVariants> & {
     asChild?: boolean;
     /**
-     * The chosen row: the one open beside the list. Tinted in `active`, and it stays that under
-     * the pointer. Set `aria-current` or `aria-selected` on the row or the link inside as well.
+     * The chosen row: the one open beside the list. Tinted in `active`, a step further under the
+     * pointer. Set `aria-current` or `aria-selected` on the row or the link inside as well.
      */
     selected?: boolean | undefined;
   }) {
@@ -115,7 +115,7 @@ function Item({
         ITEM_WEB,
         itemVariants({ variant, size }),
         selected && ITEM_SELECTED_CLASS,
-        selected && "[a]:hover:bg-active/40 [a]:focus-visible:bg-hover",
+        selected && "[a]:hover:bg-active/60 [a]:focus-visible:bg-active/60",
         className,
       )}
       {...props}

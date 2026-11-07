@@ -2,34 +2,29 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useState } from "react";
 import { Text, View } from "react-native";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "../../registry/layout/app-bar";
 import { CardLayout } from "../../registry/layout/card-layout";
-import { CenteredLayout } from "../../registry/layout/centered-layout";
-import { Combobox } from "../../registry/layout/combobox";
-import { ConfirmButton } from "../../registry/layout/confirm-button";
-import { DescriptionList, PropertyRow } from "../../registry/layout/description-list";
-import { DetailHeader } from "../../registry/layout/detail-header";
-import { DetailPage } from "../../registry/layout/detail-page";
+import { CenteredCardLayout } from "../../registry/layout/centered-card-layout";
+import { Collapsible } from "../../registry/layout/collapsible";
+import { CollapsibleRow } from "../../registry/layout/collapsible-row";
 import { DialogLayout } from "../../registry/layout/dialog-layout";
-import { Disclosure } from "../../registry/layout/disclosure";
-import { DisclosureRow } from "../../registry/layout/disclosure-row";
 import { EmptyState } from "../../registry/layout/empty-state";
+import { ErrorPage } from "../../registry/layout/error-page";
 import { FileTree } from "../../registry/layout/file-tree";
+import { GridLayout } from "../../registry/layout/grid-layout";
 import { HeaderContentFooter } from "../../registry/layout/header-content-footer";
 import { List } from "../../registry/layout/list";
 import { ListItem } from "../../registry/layout/list-item";
-import { CardGrid, Page } from "../../registry/layout/page";
+import { LoadError, LoadState, RowSkeleton } from "../../registry/layout/load-state";
 import { PageHeader } from "../../registry/layout/page-header";
 import { PageLayout } from "../../registry/layout/page-layout";
-import { QueryError, QueryState, RowSkeleton } from "../../registry/layout/query-state";
-import { RadioGroupField } from "../../registry/layout/radio-group-field";
-import { RouteError } from "../../registry/layout/route-error";
+import { PropertyList, PropertyRow } from "../../registry/layout/property-list";
 import { Section } from "../../registry/layout/section";
 import { SectionHeading } from "../../registry/layout/section-heading";
 import { SettingRow } from "../../registry/layout/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "../../registry/layout/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "../../registry/layout/sidebar";
 import { SidebarLayout, SplitLayout } from "../../registry/layout/split-layout";
 import { StatTile } from "../../registry/layout/stat-tile";
-import { TopBarLayout } from "../../registry/layout/top-bar-layout";
 import { Alert } from "../../registry/ui/alert";
 import {
   AlertDialog,
@@ -59,6 +54,7 @@ import { ColorBar } from "../../registry/ui/color-bar";
 import { ColorDot } from "../../registry/ui/color-dot";
 import { ColorPicker } from "../../registry/ui/color-picker";
 import { ColorField } from "../../registry/ui/color-picker-field";
+import { Combobox } from "../../registry/ui/combobox";
 import { ComboboxField } from "../../registry/ui/combobox-field";
 import {
   CommandDialog,
@@ -69,6 +65,7 @@ import {
   CommandList,
 } from "../../registry/ui/command.tsx";
 import { ConfirmProvider, useConfirm } from "../../registry/ui/confirm";
+import { ConfirmButton } from "../../registry/ui/confirm-button";
 import { ConfirmDialog } from "../../registry/ui/confirm-dialog";
 import { DatePicker } from "../../registry/ui/date-picker";
 import { DateTimeField } from "../../registry/ui/date-time-field";
@@ -99,6 +96,7 @@ import { FilePicker, FilePickerButton } from "../../registry/ui/file-picker.tsx"
 import { createAppForm, Form } from "../../registry/ui/form";
 import { FormElement } from "../../registry/ui/form-element.tsx";
 import {
+  ArrowLeft,
   CircleCheck,
   Download,
   FileText,
@@ -143,6 +141,7 @@ import {
 } from "../../registry/ui/popover.tsx";
 import { Progress } from "../../registry/ui/progress";
 import { RadioGroup, RadioGroupItem } from "../../registry/ui/radio-group";
+import { RadioGroupField } from "../../registry/ui/radio-group-field";
 import { SearchInput } from "../../registry/ui/search-input.tsx";
 import { SegmentedButton, SegmentedGroup } from "../../registry/ui/segmented";
 import { SegmentedField } from "../../registry/ui/segmented-field";
@@ -231,6 +230,18 @@ const NOT_SHOWN: Record<string, string> = {
     "The native source imports expo-clipboard, which this repo only declares in types/, so it cannot run in a browser.",
   "download-button":
     "The native source imports expo-file-system and expo-sharing, which this repo only declares in types/, so it cannot run in a browser.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
+  disclosure:
+    "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const onButtonPress = fn();
@@ -655,7 +666,6 @@ function Rows() {
       <Section
         title="Notifications"
         description="What reaches your inbox."
-        surface="card"
         contentSlot={
           <>
             <SettingRow
@@ -670,7 +680,7 @@ function Rows() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Dana Whitfield" />
@@ -679,12 +689,12 @@ function Rows() {
           </>
         }
       />
-      <Disclosure
+      <Collapsible
         title="Advanced"
         description="Rarely needed."
         contentSlot={<Text className="text-foreground text-sm">Retention is ninety days.</Text>}
       />
-      <DisclosureRow
+      <CollapsibleRow
         open={open}
         onOpenChange={setOpen}
         title="Deploy 482"
@@ -698,9 +708,6 @@ function Rows() {
 
 const idleQuery = { isPending: false, isError: false, error: null, refetch: noop };
 const pendingQuery = { ...idleQuery, isPending: true };
-
-type Project = { name: string; owner: string };
-const project: Project = { name: "Quarterly review", owner: "Dana Whitfield" };
 
 const navLink = "rounded-md px-3 py-1.5 text-foreground/60 text-sm";
 
@@ -1065,7 +1072,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Sections and rows",
-    items: ["section", "setting-row", "description-list", "disclosure", "disclosure-row"],
+    items: ["section", "setting-row", "property-list", "collapsible", "collapsible-row"],
     content: <Rows />,
   },
   {
@@ -1080,8 +1087,8 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Page and detail headers",
-    items: ["page-header", "detail-header"],
+    title: "Page headers",
+    items: ["page-header"],
     content: (
       <Stack>
         <PageHeader
@@ -1091,61 +1098,76 @@ const sections: GallerySection[] = [
           actionSlot={<Button size="sm" variant="info" content="New project" />}
         />
         <Separator />
-        <DetailHeader
-          onBack={noop}
-          backLabel="Back to projects"
-          color="#16a34a"
-          colorLabel="Green"
-          title="Quarterly review"
-          description="Due on Friday"
-          badgesSlot={<Badge variant="positive">On track</Badge>}
-          actionSlot={
+        <PageHeader
+          level={3}
+          backSlot={
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onPress={noop}
-              iconSlot={<Pencil />}
-              content="Edit"
+              aria-label="Back to projects"
+              iconSlot={<ArrowLeft />}
             />
+          }
+          iconSlot={<ColorDot color="#16a34a" label="Green" />}
+          title="Quarterly review"
+          description="Due on Friday"
+          actionSlot={
+            <>
+              <Badge variant="positive">On track</Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onPress={noop}
+                iconSlot={<Pencil />}
+                content="Edit"
+              />
+            </>
           }
         />
       </Stack>
     ),
   },
   {
-    title: "Query state and route error",
-    items: ["query-state", "route-error"],
-    description: "Loading, failed, empty, then the screen a route shows when it throws.",
+    title: "Load state and error page",
+    items: ["load-state", "error-page"],
+    description:
+      "Loading, failed, empty, a record not found, then the screen a route shows when it throws.",
     content: (
       <Stack>
         <RowSkeleton rows={2} />
-        <QueryError
-          error={new Error("The server did not answer.")}
-          onRetry={noop}
-          what="projects"
-        />
-        <QueryState
+        <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="projects" />
+        <LoadState
           query={idleQuery}
           what="projects"
           count={0}
           emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
         />
-        <QueryState query={pendingQuery} what="members" count={0} rows={1} compact />
-        <RouteError error={new Error("Project not found.")} reset={noop} />
+        <LoadState query={pendingQuery} what="members" count={0} rows={1} compact />
+        <LoadState
+          query={idleQuery}
+          what="this project"
+          record={null}
+          notFoundLabel="Project not found."
+        />
+        <ErrorPage error={new Error("Project not found.")} reset={noop} />
       </Stack>
     ),
   },
   {
-    title: "Page",
-    items: ["page", "empty-state"],
-    description: "A scrolling screen: a header, a grid of cards, an empty state.",
+    title: "Grid layout",
+    items: ["grid-layout", "empty-state"],
+    description: "A screen's grid of cards, and its empty state.",
     content: (
       <Screen>
-        <Page
+        <PageLayout
+          level={3}
+          title="Projects"
+          description="Two active."
+          contentClassName="gap-4"
           contentSlot={
             <>
-              <PageHeader level={3} title="Projects" description="Two active." />
-              <CardGrid
+              <GridLayout
                 contentSlot={
                   <>
                     <Card>
@@ -1189,36 +1211,6 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Detail page",
-    items: ["detail-page"],
-    description: "The record when it has loaded, a line of text when it has not.",
-    content: (
-      <Screen>
-        <DetailPage<Project>
-          entity={project}
-          loading={false}
-          notFoundLabel="Project not found."
-          contentSlot={(found) => (
-            <DescriptionList
-              contentSlot={
-                <>
-                  <PropertyRow label="Name" value={found.name} />
-                  <PropertyRow label="Owner" value={found.owner} />
-                </>
-              }
-            />
-          )}
-        />
-        <DetailPage<Project>
-          entity={null}
-          loading={false}
-          notFoundLabel="Project not found."
-          contentSlot={() => null}
-        />
-      </Screen>
-    ),
-  },
-  {
     title: "Header, content, footer",
     items: ["header-content-footer"],
     description: "The header and footer stay put; the content scrolls between them.",
@@ -1243,7 +1235,7 @@ const sections: GallerySection[] = [
   },
   {
     title: "Card layout and centred layout",
-    items: ["card-layout", "centered-layout"],
+    items: ["card-layout", "centered-card-layout"],
     description: "A card with named parts, then the same card centred on a screen.",
     content: (
       <Stack>
@@ -1256,7 +1248,7 @@ const sections: GallerySection[] = [
           footerSlot={<Caption>Seats are billed monthly</Caption>}
         />
         <Screen>
-          <CenteredLayout
+          <CenteredCardLayout
             level={3}
             title="Sign in"
             description="Use your work email."
@@ -1298,15 +1290,9 @@ const sections: GallerySection[] = [
               title="Workspace"
               contentSlot={
                 <>
-                  <SidebarNavItem
-                    label="Projects"
-                    iconSlot={<Folder />}
-                    count={12}
-                    active
-                    href="#"
-                  />
-                  <SidebarNavItem label="Documents" iconSlot={<FileText />} href="#" />
-                  <SidebarNavItem label="Settings" iconSlot={<Settings />} href="#" />
+                  <SidebarItem label="Projects" iconSlot={<Folder />} count={12} active href="#" />
+                  <SidebarItem label="Documents" iconSlot={<FileText />} href="#" />
+                  <SidebarItem label="Settings" iconSlot={<Settings />} href="#" />
                 </>
               }
             />
@@ -1356,24 +1342,33 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
     content: (
       <Screen>
-        <TopBarLayout
-          brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
-          navLabel="Site pages"
-          navSlot={
-            <>
-              <Text role="link" className={navLink}>
-                Projects
-              </Text>
-              <Text role="link" className={navLink}>
-                Team
-              </Text>
-            </>
+        <HeaderContentFooter
+          scroll
+          className="h-full"
+          headerSlot={
+            <AppBar
+              brandSlot={<Text className="font-semibold text-foreground">Acme</Text>}
+              navLabel="App pages"
+              navSlot={
+                <>
+                  <Text role="link" className={navLink}>
+                    Projects
+                  </Text>
+                  <Text role="link" className={navLink}>
+                    Team
+                  </Text>
+                </>
+              }
+              status="2 online"
+              actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            />
           }
-          actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
           contentSlot={
             <View className="p-3">
               <Lines count={5} />

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CheckboxField, InputField, useAppForm } from "@/components/app-form";
-import { CenteredLayout } from "@/components/centered-layout";
+import { CenteredCardLayout } from "@/components/centered-card-layout";
 import { PasswordField } from "@/components/password-field";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -75,7 +75,7 @@ function SignIn({ go }: { go: (screen: Screen) => void }) {
     },
   });
   return (
-    <CenteredLayout
+    <CenteredCardLayout
       level={1}
       iconSlot={<KeyRound />}
       title="Sign in to Acme Studio"
@@ -147,7 +147,7 @@ function SignUp({ go }: { go: (screen: Screen) => void }) {
     },
   });
   return (
-    <CenteredLayout
+    <CenteredCardLayout
       level={1}
       iconSlot={<UserRound />}
       title="Create your account"
@@ -254,7 +254,7 @@ function CheckEmail({ go }: { go: (screen: Screen) => void }) {
   const toast = useToast();
   const [sending, setSending] = useState(false);
   return (
-    <CenteredLayout
+    <CenteredCardLayout
       level={1}
       title="Check your email"
       description="We sent a link to the address you gave. It works for 30 minutes."

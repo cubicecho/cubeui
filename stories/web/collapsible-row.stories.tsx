@@ -1,0 +1,182 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { expect, fn, userEvent } from "storybook/test";
+import { CollapsibleRow } from "@/components/collapsible-row";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+const meta = {
+  title: "Layout/CollapsibleRow",
+  component: CollapsibleRow,
+  parameters: { layout: "padded" },
+} satisfies Meta<typeof CollapsibleRow>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/** Open is controlled, so a story that is about opening has to hold it. */
+const Controlled = ({
+  onOpenChange,
+  ...props
+}: Omit<Parameters<typeof CollapsibleRow>[0], "open" | "onOpenChange"> & {
+  onOpenChange?: (open: boolean) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="w-[560px]">
+      <CollapsibleRow
+        {...props}
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          onOpenChange?.(next);
+        }}
+      />
+    </div>
+  );
+};
+
+const detail = (
+  <p className="text-foreground/60 text-sm">
+    Read 4 files, wrote 2, and ran the tests. 146 passed.
+  </p>
+);
+
+const args = {
+  open: false,
+  onOpenChange: fn(),
+  title: "Rename the settings page",
+  badgesSlot: <Badge variant="secondary">done</Badge>,
+  meta: <span className="text-foreground/60 text-xs">local llama · 2 minutes ago</span>,
+  contentSlot: detail,
+};
+
+export const Default: Story = {
+  args,
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas, args: { onOpenChange } }) => {
+    // Closed, the row still shows what it is about: the title, its badge and the meta line.
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    expect(header).toHaveAttribute("aria-expanded", "false");
+    expect(canvas.getByText("done")).toBeVisible();
+    expect(canvas.getByText(/2 minutes ago/)).toBeVisible();
+    expect(onOpenChange).not.toHaveBeenCalled();
+  },
+};
+
+/**
+ * The whole heading is the button — not the chevron. A row opened by a 16-pixel target is the
+ * failure mode of every hand-written version of this, and it is the same failure by keyboard.
+ */
+export const TheHeadingIsTheButton: Story = {
+  args,
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    expect(header).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(header);
+    expect(header).toHaveAttribute("aria-expanded", "true");
+    expect(canvas.getByText(/146 passed/)).toBeVisible();
+  },
+};
+
+/** And by keyboard, which is what a real `<button>` buys and a `<div onClick>` does not. */
+export const OpensWithTheKeyboard: Story = {
+  args,
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    header.focus();
+    await userEvent.keyboard(" ");
+    expect(header).toHaveAttribute("aria-expanded", "true");
+  },
+};
+
+/**
+ * The action sits outside the collapsible. A control nested inside a button is invalid HTML and, in
+ * practice, a delete that cannot be clicked — so opening the row and acting on it are two
+ * separate targets.
+ */
+export const WithAnAction: Story = {
+  args: {
+    ...args,
+    actionSlot: (
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={fn()}
+        aria-label="Delete this run"
+        iconSlot={<Trash2 />}
+      />
+    ),
+  },
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    const remove = canvas.getByRole("button", { name: "Delete this run" });
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    expect(header.contains(remove)).toBe(false);
+    await userEvent.click(remove);
+    expect(header).toHaveAttribute("aria-expanded", "false");
+  },
+};
+
+/** A line that shows whether the row is open or shut — usually what the thing said about itself. */
+export const WithADescription: Story = {
+  args: {
+    ...args,
+    badgesSlot: <Badge variant="destructive">error</Badge>,
+    description: "The endpoint refused the request: context length exceeded.",
+  },
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    // The description is read without opening the row.
+    expect(canvas.getByRole("button", { name: /Rename the settings page/ })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(canvas.getByText(/context length exceeded/)).toBeVisible();
+    expect(canvas.getByText("error")).toBeVisible();
+  },
+};
+
+/** A row with nothing to open still draws, and does not claim it controls anything. */
+export const NothingToOpen: Story = {
+  args: { ...args, contentSlot: undefined },
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas }) => {
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    await userEvent.click(header);
+    expect(header).not.toHaveAttribute("aria-controls");
+  },
+};
+
+/**
+ * The opened part is a flex item in a wrapping row, so without `min-w-0` it cannot get narrower
+ * than its content: one unbroken line of output would widen it past the row, and the card with it.
+ */
+export const LongContentStaysInTheRow: Story = {
+  args: {
+    ...args,
+    contentSlot: (
+      <pre className="overflow-hidden text-ellipsis text-xs">
+        {`$ run --verbose ${"a-very-long-unbroken-token-".repeat(20)}`}
+      </pre>
+    ),
+  },
+  render: (props) => <Controlled {...props} />,
+  play: async ({ canvas, canvasElement }) => {
+    const header = canvas.getByRole("button", { name: /Rename the settings page/ });
+    await userEvent.click(header);
+    const row = canvasElement.querySelector('[data-slot="collapsible-row"]') as HTMLElement;
+    // What opened, found by the id the heading names rather than by the part that draws it.
+    const opened = document.getElementById(header.getAttribute("aria-controls") ?? "");
+    if (!opened) {
+      throw new Error("the heading should name what it opened");
+    }
+    expect(row.contains(opened)).toBe(true);
+    expect(opened.getBoundingClientRect().width).toBeLessThanOrEqual(
+      row.getBoundingClientRect().width,
+    );
+  },
+};

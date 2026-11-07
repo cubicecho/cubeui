@@ -427,3 +427,40 @@ export const EmptyList: Story = {
     await expect(canvas.queryByRole("list")).toBeNull();
   },
 };
+
+/**
+ * `loading` on both halves: the skeleton where the body goes, the title kept, and `emptySlot` not
+ * consulted for a body that has not arrived.
+ */
+export const Loading: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          title="Members"
+          loading
+          contentSlot={NO_ROWS.map((name) => <Text key={name}>{name}</Text>)}
+          emptySlot={<Text className="text-sm text-foreground/60">No members yet.</Text>}
+        />
+      }
+      compiled={
+        <Compiled
+          title="Members"
+          loading
+          contentSlot={NO_ROWS.map((name) => <span key={name}>{name}</span>)}
+          emptySlot={<p className="text-sm text-foreground/60">No members yet.</p>}
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const skeletons = canvasElement.querySelectorAll(
+      '[data-testid="card-layout-skeleton"], [data-slot="card-layout-skeleton"]',
+    );
+    await expect(skeletons).toHaveLength(2);
+    await expect(canvas.getAllByRole("heading", { name: "Members" })).toHaveLength(2);
+    await expect(canvas.queryByText("No members yet.")).toBeNull();
+  },
+};

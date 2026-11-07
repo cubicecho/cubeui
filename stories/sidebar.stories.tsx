@@ -16,20 +16,20 @@ import {
   CircleCheck as CompiledCircleCheck,
   Settings as CompiledSettings,
 } from "../compiled/icons";
-import { QueryState as CompiledQueryState } from "../compiled/query-state";
+import { LoadState as CompiledLoadState } from "../compiled/load-state";
 import {
   SidebarCollapseButton as CompiledCollapseButton,
-  SidebarNavItem as CompiledNavItem,
   SidebarSection as CompiledSection,
   Sidebar as CompiledSidebar,
+  SidebarItem as CompiledSidebarItem,
   useSidebar as useCompiledSidebar,
 } from "../compiled/sidebar";
-import { QueryState as NativeQueryState } from "../registry/layout/query-state";
+import { LoadState as NativeLoadState } from "../registry/layout/load-state";
 import {
   SidebarCollapseButton as NativeCollapseButton,
-  SidebarNavItem as NativeNavItem,
   SidebarSection as NativeSection,
   Sidebar as NativeSidebar,
+  SidebarItem as NativeSidebarItem,
   useSidebar as useNativeSidebar,
 } from "../registry/layout/sidebar";
 import {
@@ -74,7 +74,7 @@ export const Default: Story = {
               <NativeSection
                 title="Projects"
                 contentSlot={projects.map((p) => (
-                  <NativeNavItem
+                  <NativeSidebarItem
                     key={p.id}
                     href={`#/projects/${p.id}`}
                     label={p.name}
@@ -84,7 +84,7 @@ export const Default: Story = {
                 ))}
               />
             }
-            footerSlot={<NativeNavItem href="#/settings" label="Settings" />}
+            footerSlot={<NativeSidebarItem href="#/settings" label="Settings" />}
           />
         </Frame>
       }
@@ -97,7 +97,7 @@ export const Default: Story = {
               <CompiledSection
                 title="Projects"
                 contentSlot={projects.map((p) => (
-                  <CompiledNavItem
+                  <CompiledSidebarItem
                     key={p.id}
                     href={`#/projects/${p.id}`}
                     label={p.name}
@@ -107,7 +107,7 @@ export const Default: Story = {
                 ))}
               />
             }
-            footerSlot={<CompiledNavItem href="#/settings" label="Settings" />}
+            footerSlot={<CompiledSidebarItem href="#/settings" label="Settings" />}
           />
         </Frame>
       }
@@ -179,11 +179,11 @@ export const HiddenBelow: Story = {
           <NativeSidebar
             label="Native rail"
             hideBelow="md"
-            contentSlot={<NativeNavItem href="#/inbox" label="Inbox" active />}
+            contentSlot={<NativeSidebarItem href="#/inbox" label="Inbox" active />}
           />
           <NativeSidebar
             label="Native always"
-            contentSlot={<NativeNavItem href="#/inbox" label="Inbox" />}
+            contentSlot={<NativeSidebarItem href="#/inbox" label="Inbox" />}
           />
         </Frame>
       }
@@ -192,11 +192,11 @@ export const HiddenBelow: Story = {
           <CompiledSidebar
             label="Compiled rail"
             hideBelow="md"
-            contentSlot={<CompiledNavItem href="#/inbox" label="Inbox" active />}
+            contentSlot={<CompiledSidebarItem href="#/inbox" label="Inbox" active />}
           />
           <CompiledSidebar
             label="Compiled always"
-            contentSlot={<CompiledNavItem href="#/inbox" label="Inbox" />}
+            contentSlot={<CompiledSidebarItem href="#/inbox" label="Inbox" />}
           />
         </Frame>
       }
@@ -258,21 +258,21 @@ export const NavigationLandmark: Story = {
                   as="nav"
                   label="Native main"
                   contentSlot={[
-                    <NativeNavItem key="home" href="#/" label="Home" active />,
-                    <NativeNavItem key="inbox" href="#/inbox" label="Inbox" />,
+                    <NativeSidebarItem key="home" href="#/" label="Home" active />,
+                    <NativeSidebarItem key="inbox" href="#/inbox" label="Inbox" />,
                   ]}
                 />
                 <NativeSection
                   as="nav"
                   title="Native projects"
                   contentSlot={projects.map((p) => (
-                    <NativeNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
+                    <NativeSidebarItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
                   ))}
                 />
                 <NativeSection
                   title="Native recent"
                   contentSlot={recent.map((name) => (
-                    <NativeNavItem key={name} href={`#/recent/${name}`} label={name} />
+                    <NativeSidebarItem key={name} href={`#/recent/${name}`} label={name} />
                   ))}
                 />
               </>
@@ -290,21 +290,21 @@ export const NavigationLandmark: Story = {
                   as="nav"
                   label="Compiled main"
                   contentSlot={[
-                    <CompiledNavItem key="home" href="#/" label="Home" active />,
-                    <CompiledNavItem key="inbox" href="#/inbox" label="Inbox" />,
+                    <CompiledSidebarItem key="home" href="#/" label="Home" active />,
+                    <CompiledSidebarItem key="inbox" href="#/inbox" label="Inbox" />,
                   ]}
                 />
                 <CompiledSection
                   as="nav"
                   title="Compiled projects"
                   contentSlot={projects.map((p) => (
-                    <CompiledNavItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
+                    <CompiledSidebarItem key={p.id} href={`#/projects/${p.id}`} label={p.name} />
                   ))}
                 />
                 <CompiledSection
                   title="Compiled recent"
                   contentSlot={recent.map((name) => (
-                    <CompiledNavItem key={name} href={`#/recent/${name}`} label={name} />
+                    <CompiledSidebarItem key={name} href={`#/recent/${name}`} label={name} />
                   ))}
                 />
               </>
@@ -373,8 +373,12 @@ export const ActionRow: Story = {
             contentSlot={null}
             footerSlot={
               <>
-                <NativeNavItem href="#/settings" label="Settings" iconSlot={<NativeSettings />} />
-                <NativeNavItem
+                <NativeSidebarItem
+                  href="#/settings"
+                  label="Settings"
+                  iconSlot={<NativeSettings />}
+                />
+                <NativeSidebarItem
                   label="Sign out"
                   iconSlot={<NativeArrowRight />}
                   onPress={onSignOut}
@@ -391,12 +395,12 @@ export const ActionRow: Story = {
             contentSlot={null}
             footerSlot={
               <>
-                <CompiledNavItem
+                <CompiledSidebarItem
                   href="#/settings"
                   label="Settings"
                   iconSlot={<CompiledSettings />}
                 />
-                <CompiledNavItem
+                <CompiledSidebarItem
                   label="Sign out"
                   iconSlot={<CompiledArrowRight />}
                   onClick={onSignOut}
@@ -462,8 +466,8 @@ export const ActionRow: Story = {
   },
 };
 
-const CompiledRouterLink = createLink(CompiledNavItem);
-const NativeRouterLink = createLink(NativeNavItem);
+const CompiledRouterLink = createLink(CompiledSidebarItem);
+const NativeRouterLink = createLink(NativeSidebarItem);
 
 const routes = [
   { to: "/", label: "Documents" },
@@ -574,7 +578,7 @@ const failed = {
 };
 
 /**
- * A section's loading and failure rungs, drawn by a `compact` `QueryState` in the `status` slot:
+ * A section's loading and failure rungs, drawn by a `compact` `LoadState` in the `status` slot:
  * no list is drawn while there are no rows, so neither half announces an empty one.
  */
 export const States: Story = {
@@ -589,13 +593,13 @@ export const States: Story = {
                 <NativeSection
                   title="Projects"
                   status={
-                    <NativeQueryState compact query={pending} what="projects" count={0} rows={2} />
+                    <NativeLoadState compact query={pending} what="projects" count={0} rows={2} />
                   }
                 />
                 <NativeSection
                   title="Shared"
                   status={
-                    <NativeQueryState compact query={failed} what="shared projects" count={0} />
+                    <NativeLoadState compact query={failed} what="shared projects" count={0} />
                   }
                 />
               </>
@@ -612,19 +616,13 @@ export const States: Story = {
                 <CompiledSection
                   title="Projects"
                   status={
-                    <CompiledQueryState
-                      compact
-                      query={pending}
-                      what="projects"
-                      count={0}
-                      rows={2}
-                    />
+                    <CompiledLoadState compact query={pending} what="projects" count={0} rows={2} />
                   }
                 />
                 <CompiledSection
                   title="Shared"
                   status={
-                    <CompiledQueryState compact query={failed} what="shared projects" count={0} />
+                    <CompiledLoadState compact query={failed} what="shared projects" count={0} />
                   }
                 />
               </>
@@ -679,7 +677,7 @@ export const Status: Story = {
               <NativeSection
                 title="Folders"
                 contentSlot={folders.map((f) => (
-                  <NativeNavItem
+                  <NativeSidebarItem
                     key={f.id}
                     href={`#/folders/${f.id}`}
                     label={f.name}
@@ -704,7 +702,7 @@ export const Status: Story = {
               <CompiledSection
                 title="Folders"
                 contentSlot={folders.map((f) => (
-                  <CompiledNavItem
+                  <CompiledSidebarItem
                     key={f.id}
                     href={`#/folders/${f.id}`}
                     label={f.name}
@@ -776,7 +774,7 @@ function NativeFolding() {
             label="Native projects"
             title="Projects"
             contentSlot={[
-              <NativeNavItem
+              <NativeSidebarItem
                 key="work"
                 href="#/work"
                 label="Work"
@@ -785,7 +783,7 @@ function NativeFolding() {
                 status={{ label: "MCP on" }}
                 active
               />,
-              <NativeNavItem key="garden" href="#/garden" label="Garden" />,
+              <NativeSidebarItem key="garden" href="#/garden" label="Garden" />,
             ]}
           />
         }
@@ -810,7 +808,7 @@ function CompiledFolding() {
             label="Compiled projects"
             title="Projects"
             contentSlot={[
-              <CompiledNavItem
+              <CompiledSidebarItem
                 key="work"
                 href="#/work"
                 label="Work"
@@ -819,7 +817,7 @@ function CompiledFolding() {
                 status={{ label: "MCP on" }}
                 active
               />,
-              <CompiledNavItem key="garden" href="#/garden" label="Garden" />,
+              <CompiledSidebarItem key="garden" href="#/garden" label="Garden" />,
             ]}
           />
         }

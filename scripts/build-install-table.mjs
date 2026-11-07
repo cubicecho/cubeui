@@ -47,16 +47,21 @@ const stem = (path) => basename(path).replace(/(\.web)?\.(tsx|ts)$/, "");
 /** A `-base.ts` or a `.web.tsx` is a half or a shared part: imported through its entry, never by name. */
 const isPart = (path) => /-base\.ts$/.test(path) || /\.web\.tsx$/.test(path);
 
-/** The value exports of one file: components, hooks, functions and constants. Types are left out. */
+/**
+ * The value exports of one file: components, hooks, functions and constants. Types are left out,
+ * and so is a name declared `@deprecated` here: it is an old name kept for a release, and the
+ * import line teaches the new one.
+ */
 function valueExports(path) {
   if (existsSync(new URL(path, root)) === false) {
     return [];
   }
-  const source = ts.createSourceFile(path, read(path), ts.ScriptTarget.Latest, false);
+  const source = ts.createSourceFile(path, read(path), ts.ScriptTarget.Latest, true);
   const names = [];
   const exported = (node) =>
     ts.canHaveModifiers(node) &&
-    (ts.getModifiers(node) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
+    (ts.getModifiers(node) ?? []).some((m) => m.kind === ts.SyntaxKind.ExportKeyword) &&
+    ts.getJSDocDeprecatedTag(node) === undefined;
   for (const statement of source.statements) {
     if (ts.isExportDeclaration(statement)) {
       if (statement.isTypeOnly || statement.exportClause === undefined) {
@@ -223,6 +228,8 @@ ${Object.entries(DIRECTORY)
   \`@import "../cubeui-tokens.css";\` in the app's CSS entry (see SKILL.md, "Which half you are in").
 - The import line names the value exports: components, hooks, functions and constants. The types
   are exported beside them: each \`<Name>Props\`, and \`SlotNode\` from \`@/lib/utils\`.
+- A name kept for one release under its old spelling is left out of its new item's line. Its old
+  item is listed as it was, re-exporting the old names from the new one.
 
 | Item | On | Lands at | Import |
 | --- | --- | --- | --- |

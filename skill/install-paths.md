@@ -27,12 +27,15 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
   `@import "../cubeui-tokens.css";` in the app's CSS entry (see SKILL.md, "Which half you are in").
 - The import line names the value exports: components, hooks, functions and constants. The types
   are exported beside them: each `<Name>Props`, and `SlotNode` from `@/lib/utils`.
+- A name kept for one release under its old spelling is left out of its new item's line. Its old
+  item is listed as it was, re-exporting the old names from the new one.
 
 | Item | On | Lands at | Import |
 | --- | --- | --- | --- |
 | `alert` | both | `components/ui/alert.tsx` | `import { AlertTitle, AlertDescription, Alert } from "@/components/ui/alert"` |
 | `alert-dialog` | web | `components/ui/alert-dialog.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
 | `alert-dialog` | native | `components/ui/alert-dialog.tsx`; also `alert-dialog.web.tsx` | `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, … 6 more } from "@/components/ui/alert-dialog"` |
+| `app-bar` | both | `components/app-bar.tsx` | `import { AppBar } from "@/components/app-bar"` |
 | `app-form` | web | `components/app-form.tsx` | `import { splitProps, useFieldError, SubmitButton, bindToForm, InputField, NumberField, … 7 more } from "@/components/app-form"` |
 | `badge` | web | `components/ui/badge.tsx`; also `badge-base.ts` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
 | `badge` | native | `components/ui/badge.tsx`; also `badge-base.ts`, `badge.web.tsx` | `import { Badge, badgeVariants } from "@/components/ui/badge"` |
@@ -43,12 +46,15 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `calendar` | web | `components/ui/calendar.tsx`; also `calendar-base.ts` | `import { Calendar } from "@/components/ui/calendar"` |
 | `calendar` | native | `components/ui/calendar.tsx`; also `calendar-base.ts`, `calendar.web.tsx` | `import { Calendar } from "@/components/ui/calendar"` |
 | `card` | both | `components/ui/card.tsx` | `import { CARD_SURFACE_CLASS, Card, CardAction, CardContent, CardDescription, CardFooter, … 2 more } from "@/components/ui/card"` |
-| `card-layout` | both | `components/card-layout.tsx` | `import { CardLayout } from "@/components/card-layout"` |
+| `card-layout` | both | `components/card-layout.tsx` | `import { FloatingSurfaceContext, HeadingRow, CardLayout } from "@/components/card-layout"` |
 | `card-stories` | web | `components/ui/card.stories.tsx` | — (stories) |
+| `centered-card-layout` | both | `components/centered-card-layout.tsx` | `import { CenteredCardLayout } from "@/components/centered-card-layout"` |
 | `centered-layout` | both | `components/centered-layout.tsx` | `import { CenteredLayout } from "@/components/centered-layout"` |
 | `checkbox` | web | `components/ui/checkbox.tsx`; also `checkbox-base.ts` | `import { Checkbox } from "@/components/ui/checkbox"` |
 | `checkbox` | native | `components/ui/checkbox.tsx`; also `checkbox-base.ts`, `checkbox.web.tsx` | `import { Checkbox } from "@/components/ui/checkbox"` |
 | `code` | both | `components/ui/code.tsx` | `import { Code, CodeBlockTitleContext, CodeBlock } from "@/components/ui/code"` |
+| `collapsible` | both | `components/collapsible.tsx` | `import { CollapsibleTrigger, Collapsible } from "@/components/collapsible"` |
+| `collapsible-row` | both | `components/collapsible-row.tsx` | `import { CollapsibleRow } from "@/components/collapsible-row"` |
 | `color` | both | `lib/color.ts` | `import { hexToHsl, hexToAccent, hexToDesaturated } from "@/lib/color"` |
 | `color-bar` | both | `components/ui/color-bar.tsx` | `import { ColorBar } from "@/components/ui/color-bar"` |
 | `color-dot` | both | `components/ui/color-dot.tsx` | `import { ColorDot } from "@/components/ui/color-dot"` |
@@ -61,7 +67,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `command` | native | `components/ui/command.tsx`; also `command-base.ts`, `command.web.tsx` | `import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, … 3 more } from "@/components/ui/command"` |
 | `confirm` | both | `components/ui/confirm.tsx` | `import { ConfirmProvider, useConfirm } from "@/components/ui/confirm"` |
 | `confirm-button` | both | `components/confirm-button.tsx` | `import { ConfirmButton } from "@/components/confirm-button"` |
-| `confirm-dialog` | both | `components/ui/confirm-dialog.tsx` | `import { ConfirmDialog } from "@/components/ui/confirm-dialog"` |
+| `confirm-dialog` | both | `components/ui/confirm-dialog.tsx` | `import { DISCARD_QUESTION, ConfirmDialog } from "@/components/ui/confirm-dialog"` |
 | `control` | web | a set: `color-picker`, `confirm-button`, `copy-button`, `date-picker`, `menu`, `combobox`, `password-input` | — (import from each item) |
 | `copy-button` | web | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
 | `copy-button` | native | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx`, `copy-button.web.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
@@ -69,20 +75,19 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `date-picker` | both | `components/date-picker.tsx` | `import { combineDateAndTime, setTime, PickerTrigger, ClearRow, DatePicker, DateRangePicker } from "@/components/date-picker"` |
 | `date-time-field` | both | `components/ui/date-time-field.tsx` | `import { DateTimeField } from "@/components/ui/date-time-field"` |
 | `date-time-input` | both | `components/ui/date-time-input.tsx` | `import { DateTimeInput } from "@/components/ui/date-time-input"` |
-| `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescriptionHint, DescriptionHintText } from "@/components/ui/description-hint"` |
+| `description-hint` | both | `components/ui/description-hint.tsx` | `import { DescribedTitle, DescriptionHint, DescriptionHintText, foldsDescription } from "@/components/ui/description-hint"` |
 | `description-list` | both | `components/description-list.tsx` | `import { DescriptionList, PropertyRow } from "@/components/description-list"` |
-| `detail-header` | both | `components/detail-header.tsx` | `import { DetailHeader } from "@/components/detail-header"` |
-| `detail-page` | both | `components/detail-page.tsx` | `import { DetailPage } from "@/components/detail-page"` |
 | `dialog` | web | `components/ui/dialog.tsx`; also `dialog-base.ts` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog` | native | `components/ui/dialog.tsx`; also `dialog-base.ts`, `dialog.web.tsx` | `import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, … 4 more } from "@/components/ui/dialog"` |
 | `dialog-layout` | both | `components/dialog-layout.tsx` | `import { DialogLayout } from "@/components/dialog-layout"` |
-| `disclosure` | both | `components/disclosure.tsx` | `import { Disclosure } from "@/components/disclosure"` |
+| `disclosure` | both | `components/disclosure.tsx` | `import { Disclosure, DisclosureTrigger } from "@/components/disclosure"` |
 | `disclosure-row` | both | `components/disclosure-row.tsx` | `import { DisclosureRow } from "@/components/disclosure-row"` |
 | `download-button` | web | `components/ui/download-button.tsx`; also `download-button-base.ts` | `import { downloadBlob, downloadUrl, DownloadButton } from "@/components/ui/download-button"` |
 | `download-button` | native | `components/ui/download-button.tsx`; also `download-button-base.ts`, `download-button.web.tsx` | `import { downloadBlob, downloadUrl, DownloadButton } from "@/components/ui/download-button"` |
 | `empty` | both | `components/ui/empty.tsx` | `import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"` |
 | `empty-state` | both | `components/empty-state.tsx` | `import { EmptyState } from "@/components/empty-state"` |
 | `error-message` | both | `lib/error-message.ts` | `import { messageOf } from "@/lib/error-message"` |
+| `error-page` | both | `components/error-page.tsx` | `import { ErrorPage } from "@/components/error-page"` |
 | `field` | both | `components/ui/field.tsx` | `import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, … 4 more } from "@/components/ui/field"` |
 | `field-row` | web | `components/field-row.tsx` | `import { FieldRow } from "@/components/field-row"` |
 | `file-picker` | web | `components/ui/file-picker.tsx`; also `file-picker-base.ts` | `import { FilePicker, FilePickerButton } from "@/components/ui/file-picker"` |
@@ -96,7 +101,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `form-set` | web | a set: `app-form`, `color-field`, `date-field`, `field-row`, `form-field`, `password-field`, `radio-group-field` | — (import from each item) |
 | `format` | both | `lib/format.ts` | `import { formatBytes, formatCount, joinStats, formatDuration, formatDate, formatDateTime, … 1 more } from "@/lib/format"` |
 | `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
-| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, HeaderContentFooter, StickyHeaderContentFooter } from "@/components/header-content-footer"` |
+| `grid-layout` | both | `components/grid-layout.tsx` | `import { GridLayout } from "@/components/grid-layout"` |
+| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, COLUMNS, HeaderContentFooter } from "@/components/header-content-footer"` |
 | `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, ArrowDownWideNarrow, ArrowLeft, ArrowRight, Calendar, Check, … 43 more } from "@/components/ui/icons"` |
 | `input` | web | `components/ui/input.tsx`; also `input-base.ts` | `import { Input } from "@/components/ui/input"` |
@@ -105,17 +111,17 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `item` | native | `components/ui/item.tsx`; also `item-base.ts`, `item.web.tsx` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
 | `label` | web | `components/ui/label.tsx`; also `label-base.ts` | `import { Label } from "@/components/ui/label"` |
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
-| `layout` | web | a set: `card-layout`, `centered-layout`, `description-list`, `dialog-layout`, `disclosure`, `disclosure-row`, `header-content-footer`, `list-item`, `page-header`, `page-layout`, `query-state`, `section`, `setting-row`, `sidebar`, `split-layout`, `stat-tile`, `top-bar-layout` | — (import from each item) |
+| `layout` | web | a set: `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
-| `list-item` | both | `components/list-item.tsx` | `import { ListItem } from "@/components/list-item"` |
+| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
+| `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |
 | `markdown` | web | `components/markdown.tsx` | `import { Markdown } from "@/components/markdown"` |
 | `markdown-code-editor` | web | `components/markdown-code-editor.tsx` | `import { MarkdownCodeEditor } from "@/components/markdown-code-editor"` |
 | `markdown-editor` | web | `components/markdown-editor.tsx` | `import { MarkdownEditor } from "@/components/markdown-editor"` |
 | `menu` | web | `components/ui/menu.tsx`; also `menu-base.ts` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `menu` | native | `components/ui/menu.tsx`; also `menu-base.ts`, `menu.web.tsx` | `import { Menu, MenuCheckboxItem, MenuContent, MenuItem, MenuRadioGroup, MenuRadioItem, … 2 more } from "@/components/ui/menu"` |
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
-| `page` | both | `components/page.tsx` | `import { Page, PageHeader, CardGrid, EmptyState } from "@/components/page"` |
-| `page-header` | both | `components/page-header.tsx` | `import { PageInsetContext, PageHeader } from "@/components/page-header"` |
+| `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
 | `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
 | `password-input` | both | `components/password-input.tsx` | `import { revealLabelsFor, PasswordInput } from "@/components/password-input"` |
@@ -123,9 +129,10 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `popover` | native | `components/ui/popover.tsx`; also `popover-base.ts`, `popover.web.tsx` | `import { Popover, PopoverAnchor, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, … 2 more } from "@/components/ui/popover"` |
 | `primitive` | web | a set: `empty`, `item`, `table` | — (import from each item) |
 | `progress` | both | `components/ui/progress.tsx` | `import { Progress } from "@/components/ui/progress"` |
-| `query-state` | both | `components/query-state.tsx` | `import { QueryState, QueryError, RowSkeleton } from "@/components/query-state"` |
+| `property-list` | both | `components/property-list.tsx` | `import { PropertyList, PropertyRow } from "@/components/property-list"` |
+| `query-state` | both | `components/query-state.tsx` | `import { QueryError, QueryState, RowSkeleton } from "@/components/query-state"` |
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
-| `radio-group-field` | both | `components/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/radio-group-field"` |
+| `radio-group-field` | both | `components/ui/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/ui/radio-group-field"` |
 | `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, readableTextColor } from "@/lib/readable-text-color"` |
 | `route-error` | both | `components/route-error.tsx` | `import { RouteError } from "@/components/route-error"` |
 | `search-input` | web | `components/ui/search-input.tsx`; also `search-input-base.ts` | `import { SearchInput } from "@/components/ui/search-input"` |
@@ -141,7 +148,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `select-options` | both | `lib/select-options.ts` | `import { isSeparator, isNote, blocksOf, optionText, withOrphanOptions, isAddableOptionName, … 3 more } from "@/lib/select-options"` |
 | `separator` | both | `components/ui/separator.tsx` | `import { Separator } from "@/components/ui/separator"` |
 | `setting-row` | both | `components/setting-row.tsx` | `import { SettingRow } from "@/components/setting-row"` |
-| `sidebar` | both | `components/sidebar.tsx` | `import { useSidebar, Sidebar, SidebarSection, SidebarCollapseButton, BarNavItem, SidebarNavItem } from "@/components/sidebar"` |
+| `sidebar` | both | `components/sidebar.tsx` | `import { useSidebar, Sidebar, SidebarSection, SidebarCollapseButton, AppBarItem, SidebarItem } from "@/components/sidebar"` |
 | `sidebar-stories` | web | `components/sidebar.stories.tsx` | — (stories) |
 | `skeleton` | web | `components/ui/skeleton.tsx`; also `skeleton-base.ts` | `import { Skeleton } from "@/components/ui/skeleton"` |
 | `skeleton` | native | `components/ui/skeleton.tsx`; also `skeleton-base.ts`, `skeleton.web.tsx` | `import { Skeleton } from "@/components/ui/skeleton"` |
@@ -168,7 +175,6 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tokens` | native | `lib/cubeui-theme.ts`; also `cubeui-tokens.css` | `import { light, dark, palettes, paletteFor, cssVariables } from "@/lib/cubeui-theme"` |
 | `tooltip` | web | `components/ui/tooltip.tsx`; also `tooltip-base.ts` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
-| `top-bar-layout` | both | `components/top-bar-layout.tsx` | `import { TopBarLayout } from "@/components/top-bar-layout"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
 | `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FIELD_INVALID_CLASS, isInvalid, bridgePress } from "@/lib/utils"` |

@@ -549,7 +549,7 @@
     },
     {
       "name": "radio-group-field",
-      "type": "registry:component",
+      "type": "registry:ui",
       "title": "Radio Group Field",
       "description": "A set of exclusive choices bound to a TanStack form field, the options on the page and each able to carry a line saying what it means. The group is named by its title through aria-labelledby.",
       "dependencies": ["@tanstack/react-form@^1.33.5"],
@@ -565,7 +565,7 @@
       "files": [
         {
           "path": "compiled/radio-group-field.tsx",
-          "type": "registry:component"
+          "type": "registry:ui"
         }
       ]
     },
@@ -624,11 +624,12 @@
       "name": "section",
       "type": "registry:component",
       "title": "Section",
-      "description": "A heading over a group of fields or rows: title, description, an action at the far end, an optional rule and an optional card surface. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
+      "description": "A heading over a group of fields or rows: title, description, an action at the far end and an optional rule. The title is a heading of rank `level` (2 by default), so a long settings page is navigable. `descriptionPlacement=\"popover\"` folds the description behind a button beside the title.",
       "registryDependencies": [
         "@cubeui/utils",
+        "@cubeui/card-layout",
         "@cubeui/description-hint",
-        "@cubeui/card",
+        "@cubeui/section-heading",
         "@cubeui/tokens"
       ],
       "files": [
@@ -680,8 +681,15 @@
       "name": "file-tree",
       "type": "registry:component",
       "title": "File Tree",
-      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), filled when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, `pinned` keeps a file above the tree, and `onMove` lets a row be dragged onto a folder in a browser.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tree", "@cubeui/tokens"],
+      "description": "A nested list of files and folders from a flat list of paths. A folder is a button that folds what is under it; a file is a router link (`linkSlot`) or a button (`onSelect`), tinted when it is `selected`. `meta` puts a size or a badge after a name, `actionSlot` puts rename and delete beside the row rather than inside it, `pinned` keeps a file above the tree, and `onMove` lets a row be dragged onto a folder in a browser.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/tree",
+        "@cubeui/list-item",
+        "@cubeui/collapsible",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/file-tree.tsx",
@@ -690,11 +698,24 @@
       ]
     },
     {
-      "name": "disclosure",
+      "name": "collapsible",
       "type": "registry:component",
-      "title": "Disclosure",
+      "title": "Collapsible",
       "description": "A titled part of a screen whose body shows and hides: \"Show completed (3)\", \"Raw output\". The header is one button with a turning chevron and `aria-expanded`, an optional `actionSlot` sits beside it rather than inside it, and `contentSlot` is mounted only while open. Uncontrolled with `defaultOpen`, or controlled with `open`/`onOpenChange`.",
       "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/collapsible.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "disclosure",
+      "type": "registry:component",
+      "title": "Disclosure (deprecated)",
+      "description": "The old name of collapsible, kept for one release: Disclosure and DisclosureTrigger, re-exported from it. Install collapsible.",
+      "registryDependencies": ["@cubeui/collapsible"],
       "files": [
         {
           "path": "compiled/disclosure.tsx",
@@ -703,11 +724,29 @@
       ]
     },
     {
+      "name": "collapsible-row",
+      "type": "registry:component",
+      "title": "Collapsible Row",
+      "description": "A list row that opens: a `ListItem` whose whole heading is `Collapsible`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
+      "registryDependencies": [
+        "@cubeui/list-item",
+        "@cubeui/collapsible",
+        "@cubeui/utils",
+        "@cubeui/tokens"
+      ],
+      "files": [
+        {
+          "path": "compiled/collapsible-row.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "disclosure-row",
       "type": "registry:component",
-      "title": "Disclosure Row",
-      "description": "A list row that opens: the whole heading is the button, the actions sit outside it, and the body is Item's footer. Built on the same Item every other row in the list is, with `Disclosure`'s button: `aria-expanded`, a turning chevron, and `contentSlot` mounted only while open. Controlled with `open`/`onOpenChange`.",
-      "registryDependencies": ["@cubeui/item", "@cubeui/icons", "@cubeui/utils", "@cubeui/tokens"],
+      "title": "Disclosure Row (deprecated)",
+      "description": "The old name of collapsible-row, kept for one release: DisclosureRow, re-exported from it. Install collapsible-row.",
+      "registryDependencies": ["@cubeui/collapsible-row"],
       "files": [
         {
           "path": "compiled/disclosure-row.tsx",
@@ -716,11 +755,24 @@
       ]
     },
     {
+      "name": "property-list",
+      "type": "registry:component",
+      "title": "Property List",
+      "description": "Read-only facts: `PropertyList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/property-list.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "description-list",
       "type": "registry:component",
-      "title": "Description List",
-      "description": "Read-only facts: `DescriptionList` over `PropertyRow`s, each a label, a value, an optional hint under the value and an optional action beside it. A `<dl>` of `<dt>`/`<dd>` groups on the web, `role=\"list\"` on device; `layout=\"inline\"` puts labels beside values and wraps to stacked when narrow.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "title": "Description List (deprecated)",
+      "description": "The old name of property-list, kept for one release: DescriptionList and PropertyRow, re-exported from it. Install property-list.",
+      "registryDependencies": ["@cubeui/property-list"],
       "files": [
         {
           "path": "compiled/description-list.tsx",
@@ -1276,17 +1328,31 @@
       ]
     },
     {
-      "name": "query-state",
+      "name": "load-state",
       "type": "registry:component",
-      "title": "Query State",
-      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — with the error card and the row placeholders exported on their own.",
+      "title": "Load State",
+      "description": "The three rungs a list of rows climbs before it is a list of rows — failed, pending, empty — or a detail screen before its record — failed, pending, not found — with the error card and the row placeholders exported on their own.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/button",
         "@cubeui/alert",
         "@cubeui/icons",
+        "@cubeui/empty-state",
         "@cubeui/tokens"
       ],
+      "files": [
+        {
+          "path": "compiled/load-state.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "query-state",
+      "type": "registry:component",
+      "title": "Query State (deprecated)",
+      "description": "The old name of load-state, kept for one release: QueryState, QueryError and RowSkeleton, re-exported from it. Install load-state.",
+      "registryDependencies": ["@cubeui/load-state"],
       "files": [
         {
           "path": "compiled/query-state.tsx",
@@ -1308,58 +1374,32 @@
       ]
     },
     {
-      "name": "page",
+      "name": "grid-layout",
       "type": "registry:component",
-      "title": "Page",
-      "description": "The page shell, its header, the card grid and the empty state — the four pieces every route repeats. The empty state is `@cubeui/empty-state`, re-exported here.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/empty-state",
-        "@cubeui/page-header",
-        "@cubeui/header-content-footer",
-        "@cubeui/tokens"
-      ],
+      "title": "Grid Layout",
+      "description": "Equal cells in rows, one to four to a row by the window's width, for cards, tiles or anything of one kind.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
-          "path": "compiled/page.tsx",
+          "path": "compiled/grid-layout.tsx",
           "type": "registry:component"
         }
       ]
     },
     {
-      "name": "detail-page",
+      "name": "error-page",
       "type": "registry:component",
-      "title": "Detail Page",
-      "description": "The page shell plus a loading / not-found guard that narrows the entity for its `contentSlot`.",
-      "registryDependencies": [
-        "@cubeui/utils",
-        "@cubeui/page",
-        "@cubeui/empty-state",
-        "@cubeui/query-state",
-        "@cubeui/icons"
-      ],
-      "files": [
-        {
-          "path": "compiled/detail-page.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
-      "name": "detail-header",
-      "type": "registry:component",
-      "title": "Detail Header",
-      "description": "The header row of a detail view: back, colour dot, title (a heading level 1-3), badges, description, actions.",
+      "title": "Error Page",
+      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).",
       "registryDependencies": [
         "@cubeui/button",
-        "@cubeui/color-dot",
         "@cubeui/icons",
         "@cubeui/utils",
         "@cubeui/tokens"
       ],
       "files": [
         {
-          "path": "compiled/detail-header.tsx",
+          "path": "compiled/error-page.tsx",
           "type": "registry:component"
         }
       ]
@@ -1367,14 +1407,9 @@
     {
       "name": "route-error",
       "type": "registry:component",
-      "title": "Route Error",
-      "description": "What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionsSlot`).",
-      "registryDependencies": [
-        "@cubeui/button",
-        "@cubeui/icons",
-        "@cubeui/utils",
-        "@cubeui/tokens"
-      ],
+      "title": "Route Error (deprecated)",
+      "description": "The old name of error-page, kept for one release: RouteError, re-exported from it. Install error-page.",
+      "registryDependencies": ["@cubeui/error-page"],
       "files": [
         {
           "path": "compiled/route-error.tsx",
@@ -1426,11 +1461,29 @@
       ]
     },
     {
+      "name": "app-bar",
+      "type": "registry:component",
+      "title": "App Bar",
+      "description": "An app's bar across the top: brand at the start, its places in a named navigation landmark that scrolls sideways when narrow, one line of the app's state that gives way first, and actions at the end. The bar SidebarLayout draws on a phone, and the header of an app with no sidebar.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/app-bar.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "split-layout",
       "type": "registry:component",
       "title": "Split Layout",
-      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, the app bar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/bottom-bar", "@cubeui/tokens"],
+      "description": "Two panes side by side on a named width scale, with the floors that keep one wide child from pushing the other off the screen. Ships SidebarLayout, the preset for the common case where one pane is the screen and the other is beside it — and, with sidebarHideBelow, an AppBar (brand, nav, status, action) that stands in for a navigation rail on a narrow screen, with the nav along the bottom of the page under barPosition=\"bottom\".",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/bottom-bar",
+        "@cubeui/app-bar",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/split-layout.tsx",
@@ -1439,23 +1492,10 @@
       ]
     },
     {
-      "name": "top-bar-layout",
-      "type": "registry:component",
-      "title": "Top Bar Layout",
-      "description": "An app shell with a bar across the top and no sidebar: brand at the start, navigation after it that scrolls sideways when narrow, actions at the end, and the page below — a banner and a main landmark, the bar sticky on the web.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/header-content-footer", "@cubeui/tokens"],
-      "files": [
-        {
-          "path": "compiled/top-bar-layout.tsx",
-          "type": "registry:component"
-        }
-      ]
-    },
-    {
       "name": "sidebar",
       "type": "registry:component",
       "title": "Sidebar",
-      "description": "An app's sidebar: a header, a body that scrolls and a footer on the page colour behind a rule, at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships BarNavItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.",
+      "description": "An app's sidebar: a header, a body that scrolls and a footer on the page colour behind a rule, at a fixed width, with an optional titled list of rows and the nav row itself — a link with an icon, a truncating label, a count and aria-current on the active page. Ships AppBarItem, the same place as an icon-only link for an app bar: a required name that is also its tooltip, the count as a badge on the icon and a status as a dot. A controlled collapsed state folds the sidebar to a rail of icons, with SidebarCollapseButton and useSidebar for what the app puts in it.",
       "registryDependencies": [
         "@cubeui/utils",
         "@cubeui/icons",
@@ -1463,6 +1503,7 @@
         "@cubeui/tooltip",
         "@cubeui/header-content-footer",
         "@cubeui/split-layout",
+        "@cubeui/section-heading",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1492,11 +1533,24 @@
       ]
     },
     {
-      "name": "centered-layout",
+      "name": "centered-card-layout",
       "type": "registry:component",
-      "title": "Centered Layout",
+      "title": "Centered Card Layout",
       "description": "A page that is one card, centred both ways: a sign-in, a token gate, a check-your-email screen. Full height, padded off the edges, a `max-w-sm` `CardLayout` taking every card slot; on device a scroll view that keeps the form above the keyboard.",
       "registryDependencies": ["@cubeui/card-layout", "@cubeui/utils", "@cubeui/tokens"],
+      "files": [
+        {
+          "path": "compiled/centered-card-layout.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
+      "name": "centered-layout",
+      "type": "registry:component",
+      "title": "Centered Layout (deprecated)",
+      "description": "The old name of centered-card-layout, kept for one release: CenteredLayout, re-exported from it. Install centered-card-layout.",
+      "registryDependencies": ["@cubeui/centered-card-layout"],
       "files": [
         {
           "path": "compiled/centered-layout.tsx",
@@ -1511,10 +1565,10 @@
       "description": "A dialog whose body scrolls under a header that does not, and which asks before closing on unsaved work. Composes the header/content/footer chassis rather than owning a second copy.",
       "registryDependencies": [
         "@cubeui/dialog",
-        "@cubeui/header-content-footer",
         "@cubeui/utils",
         "@cubeui/confirm-dialog",
-        "@cubeui/tokens"
+        "@cubeui/card-layout",
+        "@cubeui/header-content-footer"
       ],
       "files": [
         {
@@ -1645,22 +1699,26 @@
       "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
         "@cubeui/card-layout",
-        "@cubeui/centered-layout",
-        "@cubeui/description-list",
+        "@cubeui/centered-card-layout",
+        "@cubeui/collapsible",
+        "@cubeui/collapsible-row",
         "@cubeui/dialog-layout",
-        "@cubeui/disclosure",
-        "@cubeui/disclosure-row",
+        "@cubeui/empty-state",
+        "@cubeui/error-page",
+        "@cubeui/file-tree",
         "@cubeui/header-content-footer",
+        "@cubeui/list",
         "@cubeui/list-item",
+        "@cubeui/load-state",
         "@cubeui/page-header",
         "@cubeui/page-layout",
-        "@cubeui/query-state",
+        "@cubeui/property-list",
         "@cubeui/section",
+        "@cubeui/section-heading",
         "@cubeui/setting-row",
         "@cubeui/sidebar",
         "@cubeui/split-layout",
-        "@cubeui/stat-tile",
-        "@cubeui/top-bar-layout"
+        "@cubeui/stat-tile"
       ],
       "files": []
     },

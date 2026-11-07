@@ -2,6 +2,66 @@ import { Node, SyntaxKind } from "ts-morph";
 import { FOLDED_IMPORTS } from "../tables.mjs";
 
 /**
+ * Expressions that bind as tightly as the call they replace, so they can stand where it stood.
+ * Anything else — a ternary, a `&&`, an arrow — binds looser, and in an operand's place it takes
+ * the operator beside it into itself: `on && Platform.select({ web: a ? b : c })` read back as
+ * `on && a ? b : c` is `(on && a) ? b : c`.
+ */
+const TIGHT = new Set([
+  SyntaxKind.Identifier,
+  SyntaxKind.StringLiteral,
+  SyntaxKind.NumericLiteral,
+  SyntaxKind.NoSubstitutionTemplateLiteral,
+  SyntaxKind.TemplateExpression,
+  SyntaxKind.TrueKeyword,
+  SyntaxKind.FalseKeyword,
+  SyntaxKind.NullKeyword,
+  SyntaxKind.ThisKeyword,
+  SyntaxKind.CallExpression,
+  SyntaxKind.PropertyAccessExpression,
+  SyntaxKind.ElementAccessExpression,
+  SyntaxKind.NonNullExpression,
+  SyntaxKind.ParenthesizedExpression,
+  SyntaxKind.ObjectLiteralExpression,
+  SyntaxKind.ArrayLiteralExpression,
+  SyntaxKind.JsxElement,
+  SyntaxKind.JsxSelfClosingElement,
+  SyntaxKind.JsxFragment,
+]);
+
+/**
+ * Places that take any expression whole, where a looser one needs no parentheses: an argument, a
+ * property's value, an initializer, a JSX expression, a return.
+ */
+const WHOLE = new Set([
+  SyntaxKind.PropertyAssignment,
+  SyntaxKind.VariableDeclaration,
+  SyntaxKind.JsxExpression,
+  SyntaxKind.ReturnStatement,
+  SyntaxKind.ExpressionStatement,
+  SyntaxKind.ParenthesizedExpression,
+  SyntaxKind.ArrayLiteralExpression,
+  SyntaxKind.TemplateSpan,
+  SyntaxKind.SpreadElement,
+  SyntaxKind.SpreadAssignment,
+]);
+
+/** `replacement`'s text, in parentheses where it would not read back as one operand. */
+function asOperand(replacement, node) {
+  const text = replacement.getText();
+  const parent = node.getParent();
+  // An object as an arrow's body would read back as a block.
+  if (Node.isArrowFunction(parent) && Node.isObjectLiteralExpression(replacement)) {
+    return `(${text})`;
+  }
+  if (TIGHT.has(replacement.getKind())) {
+    return text;
+  }
+  const argument = Node.isCallExpression(parent) && parent.getExpression() !== node;
+  return argument || WHOLE.has(parent.getKind()) ? text : `(${text})`;
+}
+
+/**
  * `Platform.OS` is `"web"` in a file that only ever runs on the web, so the compiler substitutes
  * it and lets the branches collapse.
  *
@@ -53,7 +113,7 @@ export function foldPlatform(sourceFile) {
       if (!pick || Node.isPropertyAssignment(pick) === false) {
         continue;
       }
-      call.replaceWithText(pick.getInitializer().getText());
+      call.replaceWithText(asOperand(pick.getInitializer(), call));
       changed = true;
     }
   }

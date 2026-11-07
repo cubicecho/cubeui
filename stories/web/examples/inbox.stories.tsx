@@ -4,20 +4,20 @@ import { useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { TextareaField, useAppForm } from "@/components/app-form";
 import { ConfirmButton } from "@/components/confirm-button";
-import { DetailHeader } from "@/components/detail-header";
-import { DetailPage } from "@/components/detail-page";
 import { EmptyState } from "@/components/empty-state";
-import { StickyHeaderContentFooter } from "@/components/header-content-footer";
+import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadState } from "@/components/load-state";
 import { PageHeader } from "@/components/page-header";
+import { PageLayout } from "@/components/page-layout";
 import { SplitLayout } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code";
 import { CopyButton } from "@/components/ui/copy-button";
 import { FormElement } from "@/components/ui/form-element";
-import { Trash2 } from "@/components/ui/icons";
+import { ArrowLeft, Trash2 } from "@/components/ui/icons";
 import { SearchInput } from "@/components/ui/search-input";
 import { Separator } from "@/components/ui/separator";
 import { ToastProvider, useToast } from "@/components/ui/toast";
@@ -28,8 +28,8 @@ import { TODAY } from "./fixtures";
 
 /**
  * An inbox as two panes: the messages as list rows, the chosen one tinted, and the message open
- * beside them with its header, its body, an attachment and a reply box. The detail pane is a
- * `DetailPage`, so it has a loading and a not-found branch of its own.
+ * beside them with its header, its body, an attachment and a reply box. The detail pane opens
+ * behind a `LoadState`, so it has a loading and a not-found branch of its own.
  */
 type Args = { detail: "ready" | "loading" | "missing" };
 
@@ -177,7 +177,9 @@ function Inbox({ detail }: Args) {
       stackBelow="lg"
       divider="line"
       firstSlot={
-        <StickyHeaderContentFooter
+        <HeaderContentFooter
+          scroll
+          className="h-full"
           headerSlot={
             <PageHeader
               title="Inbox"
@@ -234,73 +236,83 @@ function Inbox({ detail }: Args) {
         />
       }
       secondSlot={
-        <StickyHeaderContentFooter
-          width="prose"
-          contentClassName="py-4"
-          contentSlot={
-            <DetailPage<Message>
-              entity={open}
-              loading={detail === "loading"}
-              notFoundLabel="That message was moved or deleted."
-              contentSlot={(message) => (
-                <div className="flex flex-col gap-4">
-                  <DetailHeader
-                    onBack={() => setOpenId(null)}
-                    backLabel="Back to the inbox"
-                    title={message.subject}
-                    subtitle={`${message.from} · ${formatAgo(message.at, TODAY)}`}
-                    badgeSlot={
-                      message.label ? (
-                        <Badge variant={LABEL_BADGE[message.label]}>{message.label}</Badge>
-                      ) : null
-                    }
-                    actionsSlot={
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon-sm"
-                          aria-label="Archive"
-                          hint="Archive: out of the inbox, still searchable"
-                          iconSlot={<Archive />}
-                          onClick={() => {
-                            remove(message.id);
-                            toast("Archived.", "info");
-                          }}
-                        />
-                        <ConfirmButton
-                          variant="destructive-outline"
-                          size="icon-sm"
-                          aria-label="Delete"
-                          iconSlot={<Trash2 />}
-                          title="Delete this message?"
-                          description={`“${message.subject}” is deleted for you. ${message.from} still has their copy.`}
-                          onConfirm={() => remove(message.id)}
-                        />
-                      </div>
-                    }
+        <>
+          <LoadState
+            query={{
+              isPending: detail === "loading",
+              isError: false,
+              error: null,
+              refetch: () => {},
+            }}
+            what="this message"
+            record={open}
+            notFoundLabel="That message was moved or deleted."
+            className="p-4"
+          />
+          {open && detail !== "loading" ? (
+            <PageLayout
+              width="prose"
+              backSlot={
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Back to the inbox"
+                  iconSlot={<ArrowLeft />}
+                  onClick={() => setOpenId(null)}
+                />
+              }
+              title={open.subject}
+              description={`${open.from} · ${formatAgo(open.at, TODAY)}`}
+              actionSlot={
+                <div className="flex items-center gap-2">
+                  {open.label ? (
+                    <Badge variant={LABEL_BADGE[open.label]}>{open.label}</Badge>
+                  ) : null}
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Archive"
+                    hint="Archive: out of the inbox, still searchable"
+                    iconSlot={<Archive />}
+                    onClick={() => {
+                      remove(open.id);
+                      toast("Archived.", "info");
+                    }}
                   />
-                  <Separator />
-                  {message.body.split("\n\n").map((paragraph) => (
+                  <ConfirmButton
+                    variant="destructive-outline"
+                    size="icon-sm"
+                    aria-label="Delete"
+                    iconSlot={<Trash2 />}
+                    title="Delete this message?"
+                    description={`“${open.subject}” is deleted for you. ${open.from} still has their copy.`}
+                    onConfirm={() => remove(open.id)}
+                  />
+                </div>
+              }
+              contentSlot={
+                <>
+                  {open.body.split("\n\n").map((paragraph) => (
                     <p key={paragraph} className="text-foreground text-sm leading-relaxed">
                       {paragraph}
                     </p>
                   ))}
-                  {message.attachment ? (
+                  {open.attachment ? (
                     <CodeBlock
-                      content={message.attachment}
+                      content={open.attachment}
                       wrap
                       actionSlot={
-                        <CopyButton value={message.attachment} label="Copy the webhook URL" />
+                        <CopyButton value={open.attachment} label="Copy the webhook URL" />
                       }
                     />
                   ) : null}
                   <Separator />
-                  <Reply to={message.from} />
-                </div>
-              )}
+                  <Reply to={open.from} />
+                </>
+              }
             />
-          }
-        />
+          ) : null}
+        </>
       }
     />
   );

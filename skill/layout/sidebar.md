@@ -25,7 +25,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
           title="Projects"
           actionSlot={<Button variant="outline" size="xs" aria-label="New project" iconSlot={<Plus />} />}
           status={
-            <QueryState
+            <LoadState
               compact
               query={projects}
               what="projects"
@@ -35,7 +35,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
           }
           contentSlot={rows.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} asChild>
-              <SidebarNavItem
+              <SidebarItem
                 label={p.name}
                 iconSlot={<Folder />}
                 count={p.open}
@@ -48,8 +48,8 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
       }
       footerSlot={
         <>
-          <SidebarNavItem href="/settings" label="Settings" iconSlot={<Settings />} />
-          <SidebarNavItem label="Sign out" iconSlot={<LogOut />} onPress={signOut} />
+          <SidebarItem href="/settings" label="Settings" iconSlot={<Settings />} />
+          <SidebarItem label="Sign out" iconSlot={<LogOut />} onPress={signOut} />
         </>
       }
     />
@@ -87,36 +87,38 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `label` | `string` |  | What the landmark is called — "Main", "Projects". Absent, the `title` names it; give one when there is no title, or when two navigation sections would otherwise share a name. |
 | `title` | `ReactNode` |  | The overline over the rows. A short noun — "Projects", "Pinned". |
 | `contentSlot` | `SlotNode` |  | The rows, as an array — `projects.map(…)`, each with its `key`. Each one becomes an item of the list, so pass the rows themselves rather than a fragment or a wrapper around them: a wrapper would be one item holding every row. |
-| `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<QueryState compact … />`, which renders nothing once there are rows. |
+| `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<LoadState compact … />`, which renders nothing once there are rows. |
 | `actionSlot` | `SlotNode` |  | The title row's far end: an add button, a filter. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default — the sidebar sits beside the page, not under its `h1`. Pick it by structure, never by size; the text is the same at every level. |
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  | On the list the rows are items of. |
 <!-- /props -->
 
-<!-- props:SidebarNavItem -->
-`SidebarNavItem`'s props, from the TSDoc in `registry/layout/sidebar.tsx`:
+<!-- props:SidebarItem -->
+`SidebarItem`'s props, from the TSDoc in `registry/layout/sidebar.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `label` (required) | `string` |  | What the row is called. Truncated to one line, never wrapped. |
 | `iconSlot` | `SlotNode` |  | Before the label. Pass a bare `<Folder />`; the row sizes and colours it. |
 | `count` | `number \| string` |  | At the far end: how many things are behind the row. |
-| `status` | `SidebarNavItemStatus` |  | What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`. `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With an `iconSlot` the icon is what is seen and the label is read only; without one the label is drawn, small and muted. `SidebarSection`'s `status` is the same word for the section's own state. |
+| `status` | `SidebarItemStatus` |  | What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`. `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With an `iconSlot` the icon is what is seen and the label is read only; without one the label is drawn, small and muted. `SidebarSection`'s `status` is the same word for the section's own state. |
 | `className` | `string` |  |  |
 | `href` | `string` |  | Where the row goes. The `<a href>` on the web. |
-| `active` | `boolean` | `false` | The row for the page on screen — filled, and `aria-current="page"`. |
+| `active` | `boolean` | `false` | The row for the page on screen — tinted, and `aria-current="page"`. |
 <!-- /props -->
 
 `@cubeui/sidebar` is the navigation column itself, where `SidebarLayout` is only where it sits.
-Three parts, and only `Sidebar` is required (a fourth, `BarNavItem`, is the row drawn for the bar
+Three parts, and only `Sidebar` is required (a fourth, `AppBarItem`, is the row drawn for the bar
 that replaces the rail on a phone, and a fifth, `SidebarCollapseButton`, folds the sidebar to a
-rail of icons — both below):
+rail of icons — both below). `SidebarItem` and `AppBarItem` were `SidebarNavItem` and
+`BarNavItem`, which stay for one release as deprecated aliases, as do `SidebarNavItemProps`,
+`SidebarNavItemStatus` and `BarNavItemProps`:
 
 - **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on the page's
   own `bg-background` at a fixed `w-64`, set apart by a `border-foreground/10` rule on the edge
-  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a `StickyHeaderContentFooter` inside, so it needs a height from above, like any
-  sticky chassis. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
+  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a scrolling `HeaderContentFooter` inside, so it needs a height from above, like any
+  chassis whose body scrolls. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
   different width is one `w-*` in `className`. `sidebarHideBelow` on the layout removes it
   under a width and draws a bar in its place (see below).
@@ -124,7 +126,7 @@ rail of icons — both below):
   `role="listitem"` per row, named by the title. Pass the rows as an **array** (`rows.map(…)`,
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
   holding everything. `status` sits between the title and the list and is where a
-  `<QueryState compact …/>` goes; no list is drawn while there are no rows. `level` is the
+  `<LoadState compact …/>` goes; no list is drawn while there are no rows. `level` is the
   title's heading rank, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
   `<nav>` on the web, `role="navigation"` on device — named by its `title`, or by `label` when it
   has none or two would share one. `Sidebar` is a complementary `<aside>`, so without it the rows
@@ -132,7 +134,7 @@ rail of icons — both below):
   `<nav aria-label>`. Leave it off the sections that are not navigation — recent items, pinned
   searches — so the landmark holds only the app's own places. `label` without `as="nav"` is a
   type error.
-- **`SidebarNavItem`** — the row: `href` (left off when a router link supplies it), `label` (one
+- **`SidebarItem`** — the row: `href` (left off when a router link supplies it), `label` (one
   line, truncated), `iconSlot?`, `count?`, `status?`, `active`. It is `role="link"` — an `<a href>` on
   the web — and `active` fills it with `active` and sets `aria-current="page"`. Hover fills it
   with `hover`, so the current page never looks like the row under the pointer. **`status={{ label, iconSlot? }}` marks the row's state** — "MCP on", "offline",
@@ -150,10 +152,10 @@ rail of icons — both below):
 
 ```tsx
 <Link href="/settings" asChild>                 {/* expo-router */}
-  <SidebarNavItem label="Settings" active={isSettings} />
+  <SidebarItem label="Settings" active={isSettings} />
 </Link>
 
-const SidebarLink = createLink(SidebarNavItem); // TanStack Router
+const SidebarLink = createLink(SidebarItem); // TanStack Router
 <SidebarLink to="/settings" label="Settings" active={isSettings} />
 ```
 
@@ -181,7 +183,7 @@ const [collapsed, setCollapsed] = useState(false); // or wherever the app rememb
   contentSlot={sections}
   footerSlot={
     <>
-      <SidebarNavItem href="/settings" label="Settings" iconSlot={<Settings />} />
+      <SidebarItem href="/settings" label="Settings" iconSlot={<Settings />} />
       <SidebarCollapseButton />
     </>
   }
@@ -198,7 +200,7 @@ function Brand() {
   with nothing passed to the layout. It is controlled and keeps no state; store the choice where
   the app stores preferences.
 - **The rows and sections fold themselves.** Do not pass them anything and do not branch on the
-  state to draw a second set of rows. A `SidebarNavItem` becomes its icon, with its label as the
+  state to draw a second set of rows. A `SidebarItem` becomes its icon, with its label as the
   accessible name and a tooltip, its `count` a badge on the icon and its `status` a dot — all
   three still in the name. Give every row in a sidebar that folds an `iconSlot`; one without is
   drawn as its first letter. A `SidebarSection` keeps its `title` for screen readers and draws
@@ -217,7 +219,8 @@ function Brand() {
 ### On a phone, a bar instead of the rail
 
 A rail does not stack; under a narrow width it goes, and a bar over the page stands in for it.
-That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is four slots:
+That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is an [`AppBar`](app-bar.md#app-bar) of four slots,
+passed to the layout:
 
 ```tsx
 <SidebarLayout
@@ -237,30 +240,30 @@ That is `SidebarLayout`'s `sidebarHideBelow`, and the bar is four slots:
   contentSlot={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
 />
 
-const BarLink = createLink(BarNavItem);         // beside createLink(SidebarNavItem)
+const BarLink = createLink(AppBarItem);         // beside createLink(SidebarItem)
 ```
 
-<!-- props:BarNavItem -->
-`BarNavItem`'s props, from the TSDoc in `registry/layout/sidebar.tsx`:
+<!-- props:AppBarItem -->
+`AppBarItem`'s props, from the TSDoc in `registry/layout/sidebar.tsx`:
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `label` (required) | `string` |  | What the place is called. Nothing draws it, so it is the link's accessible name — an icon with no name is announced as "link" — and the tooltip a pointer or a long press brings up. |
 | `iconSlot` (required) | `SlotNode` |  | The whole of what is drawn. Pass a bare `<Folder />`; the item sizes and colours it. |
 | `href` | `string` |  | Where it goes — the `<a href>` on the web. Left out when a router's link names it: TanStack's `createLink`, or expo-router's `<Link href asChild>`, both of which hand it the `href`. |
-| `active` | `boolean` | `false` | The item for the page on screen — filled, and `aria-current="page"`. |
+| `active` | `boolean` | `false` | The item for the page on screen — tinted, and `aria-current="page"`. |
 | `count` | `number \| string` |  | How many things are behind the place, as a small badge on the icon's corner and in the name: "Skills, 12". The badge has a corner to fit in, so cap a long one where it is passed — `"99+"`. |
-| `status` | `SidebarNavItemStatus` |  | What state the place's thing is in, as a dot on the icon's other corner and in the name: "Servers, 2 failing". The same object `SidebarNavItem` takes, so one array feeds both; the bar has room for neither its words nor its `iconSlot`, so the dot is all that is drawn and the `label` is what is read. |
+| `status` | `SidebarItemStatus` |  | What state the place's thing is in, as a dot on the icon's other corner and in the name: "Servers, 2 failing". The same object `SidebarItem` takes, so one array feeds both; the bar has room for neither its words nor its `iconSlot`, so the dot is all that is drawn and the `label` is what is read. |
 | `className` | `string` |  |  |
 <!-- /props -->
 
-**`BarNavItem` is the bar's link** — `SidebarNavItem` with only the icon drawn, from
+**`AppBarItem` is the bar's link** — `SidebarItem` with only the icon drawn, from
 `@cubeui/sidebar`. Do not hand-write the bar's links as router `<Link>`s with a class string: that
 is the copy this replaces.
 
 - **The same props as the row** — `label`, `iconSlot`, `active`, `count?`, `status?`, `href?` — so the
-  app's list of places is one array, mapped once into `SidebarSection` with `SidebarNavItem` and
-  once into `navSlot` with `BarNavItem`. A count on a sidebar row is then on the bar too.
+  app's list of places is one array, mapped once into `SidebarSection` with `SidebarItem` and
+  once into `navSlot` with `AppBarItem`. A count on a sidebar row is then on the bar too.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
   (hover or focus on the web, a long press on device). **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
@@ -269,12 +272,12 @@ is the copy this replaces.
 - **`count`** is a small badge on the icon's corner and **`status={{ label }}`** a dot on the other;
   both are in the name the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
   fit in, so pass a long count already capped (`"99+"`). The status's `iconSlot` is not drawn here.
-- **It binds to a router as the row does**: `createLink(BarNavItem)`, `<Link href asChild>` around
+- **It binds to a router as the row does**: `createLink(AppBarItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
 - **It is always a link.** A button in the bar is an icon `Button` in `actionSlot`.
-- **Size the list to the bar.** Each item is 32px and the `navSlot` neither scrolls nor wraps; a phone
-  fits about five beside a brand mark and two actions. An app with more places than that picks the
-  ones the bar shows.
+- **Size the list to the bar.** Each item is 32px; a phone fits about five beside a brand mark and
+  two actions. Past that the places scroll sideways rather than wrap, once `status` has given up
+  its width, so an app with more places than fit picks the ones the bar shows.
 
 **`status` is one line saying what state the app is in** — "3/5 servers running", "128 turns in 9
 sessions" — drawn between the `navSlot` and the `actionSlot`, against the action. It takes the width the
@@ -304,11 +307,11 @@ there pushes the buttons off the screen.
   component; this is not it.
 - **On device** NativeWind reads the same breakpoint off the window: a phone draws the bar and a
   tablet the rail, which is what `Sidebar`'s `hideBelow` already does there.
-- `headerClassName` is on the bar. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
+- `headerClassName` is on the `AppBar`, whose parts are `app-bar-*`. With no `brandSlot`, `navSlot`, `status` or `actionSlot`,
   `sidebarHideBelow` still hides the rail and draws nothing in its place.
 - **`barPosition="bottom"` draws the places along the bottom**, where a phone's thumb is and where
   Android and iOS apps put them. The `navSlot` leaves the top bar for a bar of its own under
-  `contentSlot`: that bar is the `<nav>` named by `navLabel`, the same `BarNavItem`s spread evenly
+  `contentSlot`: that bar is the `<nav>` named by `navLabel`, the same `AppBarItem`s spread evenly
   across it, and each still `aria-current` on its own page. `brandSlot`, `status` and `actionSlot`
   stay in the bar at the top; with none of them, no top bar is drawn. The default is `"top"`, and
   from `sidebarHideBelow` up neither bar is drawn either way.
@@ -344,7 +347,7 @@ there pushes the buttons off the screen.
     `SafeAreaView`'s fill, not the bar's.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
-  - **About five places**, as at the top: each item is 32px and the bar neither scrolls nor wraps.
+  - **About five places**: each item is 32px, and this bar neither scrolls nor wraps.
   - **A toast sits above the bar.** The layout tells `@cubeui/toast` it draws one, and under
     `sidebarHideBelow` the stack rises by the bar's height instead of covering the places. Do not
     offset the `ToastProvider` yourself. A bar of your own that does the same calls

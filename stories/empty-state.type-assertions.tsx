@@ -6,9 +6,9 @@
  * `@ts-expect-error` in it fails the build if the error it expects stops happening.
  */
 
+import { EmptyState as Compiled } from "../compiled/empty-state";
 import { Search as CompiledSearch } from "../compiled/icons";
-import { EmptyState as Compiled } from "../compiled/page";
-import { EmptyState as Native } from "../registry/layout/page";
+import { EmptyState as Native } from "../registry/layout/empty-state";
 import { Search as NativeSearch } from "../registry/ui/icons";
 
 export function EmptyStateTypeAssertions() {

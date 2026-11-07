@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, type ReactNode, Suspense, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
+import { AppBar } from "@/components/app-bar";
 import {
   SwitchField as BoundSwitchField,
   ComboboxField,
@@ -11,42 +12,38 @@ import {
   useAppForm,
 } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
-import { CenteredLayout } from "@/components/centered-layout";
+import { CenteredCardLayout } from "@/components/centered-card-layout";
+import { Collapsible } from "@/components/collapsible";
+import { CollapsibleRow } from "@/components/collapsible-row";
 import { ColorField } from "@/components/color-field";
 import { Combobox } from "@/components/combobox";
 import { ConfirmButton } from "@/components/confirm-button";
 import { DateField } from "@/components/date-field";
 import { DatePicker, type DateRange, DateRangePicker } from "@/components/date-picker";
-import { DescriptionList, PropertyRow } from "@/components/description-list";
-import { DetailHeader } from "@/components/detail-header";
-import { DetailPage } from "@/components/detail-page";
 import { DialogLayout } from "@/components/dialog-layout";
-import { Disclosure } from "@/components/disclosure";
-import { DisclosureRow } from "@/components/disclosure-row";
 import { EmptyState } from "@/components/empty-state";
+import { ErrorPage } from "@/components/error-page";
 import { FieldRow } from "@/components/field-row";
 import { FileTree } from "@/components/file-tree";
 import { FormField } from "@/components/form-field";
+import { GridLayout } from "@/components/grid-layout";
 import { HeaderContentFooter } from "@/components/header-content-footer";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
+import { LoadError, LoadState, RowSkeleton } from "@/components/load-state";
 import { Markdown } from "@/components/markdown";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { CardGrid, Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
 import { PageLayout } from "@/components/page-layout";
 import { PasswordField } from "@/components/password-field";
 import { PasswordInput } from "@/components/password-input";
-import { QueryError, QueryState, RowSkeleton } from "@/components/query-state";
-import { RadioGroupField } from "@/components/radio-group-field";
-import { RouteError } from "@/components/route-error";
+import { PropertyList, PropertyRow } from "@/components/property-list";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
 import { SettingRow } from "@/components/setting-row";
-import { Sidebar, SidebarNavItem, SidebarSection } from "@/components/sidebar";
+import { Sidebar, SidebarItem, SidebarSection } from "@/components/sidebar";
 import { SidebarLayout, SplitLayout } from "@/components/split-layout";
 import { StatTile } from "@/components/stat-tile";
-import { TopBarLayout } from "@/components/top-bar-layout";
 import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -124,6 +121,7 @@ import { FilePicker, FilePickerButton } from "@/components/ui/file-picker";
 import { createAppForm, Form } from "@/components/ui/form";
 import { FormElement } from "@/components/ui/form-element";
 import {
+  ArrowLeft,
   Calendar as CalendarIcon,
   Check,
   Copy,
@@ -172,6 +170,7 @@ import {
 } from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroupField } from "@/components/ui/radio-group-field";
 import { SearchInput } from "@/components/ui/search-input";
 import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 import { SegmentedField } from "@/components/ui/segmented-field";
@@ -268,6 +267,18 @@ const NOT_SHOWN: Record<string, string> = {
   "sidebar-stories": "A story file a consumer installs beside `sidebar`.",
   "theme-picker-stories": "A story file a consumer installs beside `theme-picker`.",
   "toggle-chip-stories": "A story file a consumer installs beside `toggle-chip`.",
+  "query-state":
+    "The old name of `load-state`, kept for one release. It draws what `load-state` draws.",
+  "route-error":
+    "The old name of `error-page`, kept for one release. It draws what `error-page` draws.",
+  disclosure:
+    "The old name of `collapsible`, kept for one release. It draws what `collapsible` draws.",
+  "disclosure-row":
+    "The old name of `collapsible-row`, kept for one release. It draws what `collapsible-row` draws.",
+  "description-list":
+    "The old name of `property-list`, kept for one release. It draws what `property-list` draws.",
+  "centered-layout":
+    "The old name of `centered-card-layout`, kept for one release. It draws what `centered-card-layout` draws.",
 };
 
 const noop = () => {};
@@ -303,6 +314,9 @@ const SERVERS = [
   { name: "borealis", transport: "stdio", tools: 4, status: "Stopped" },
   { name: "cygnus", transport: "http", tools: 31, status: "Running" },
 ];
+
+/** The one server a detail specimen shows. */
+const SERVER = { name: "atlas", transport: "http", tools: 12, status: "Running" };
 
 const PRIORITIES = [
   { value: "low", label: "Low" },
@@ -1283,13 +1297,6 @@ function Sections() {
             actionSlot={<Button size="sm" variant="outline" content="Invite" />}
             contentSlot={<p className="text-foreground text-sm">Ada, Grace and Edsger.</p>}
           />
-          <Section
-            level={3}
-            surface="card"
-            title="Billing"
-            description="A section drawn on a card."
-            contentSlot={<p className="text-foreground text-sm">Team plan, ten seats.</p>}
-          />
         </>
       }
     />
@@ -1355,25 +1362,25 @@ function FileTrees() {
   );
 }
 
-function Disclosures() {
+function Collapsibles() {
   const [open, setOpen] = useState(false);
   return (
     <Stack
       content={
         <>
-          <Disclosure
+          <Collapsible
             title="Advanced"
             description="Timeouts and retries."
             contentSlot={
               <p className="text-foreground text-sm">Retries: 3. Timeout: 30 seconds.</p>
             }
           />
-          <Disclosure
+          <Collapsible
             title="Open from the start"
             defaultOpen
             contentSlot={<p className="text-foreground text-sm">This one begins open.</p>}
           />
-          <DisclosureRow
+          <CollapsibleRow
             open={open}
             onOpenChange={setOpen}
             title="atlas"
@@ -1388,10 +1395,10 @@ function Disclosures() {
   );
 }
 
-function Descriptions() {
+function Properties() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <DescriptionList
+      <PropertyList
         contentSlot={
           <>
             <PropertyRow label="Owner" value="Ada Lovelace" />
@@ -1404,7 +1411,7 @@ function Descriptions() {
           </>
         }
       />
-      <DescriptionList
+      <PropertyList
         layout="stacked"
         contentSlot={
           <>
@@ -1466,12 +1473,12 @@ function StatTiles() {
 
 const idle = { isPending: false, isError: false, error: null, refetch: noop };
 
-function QueryStates() {
+function LoadStates() {
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <RowSkeleton rows={3} />
-      <QueryError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
-      <QueryState
+      <LoadError error={new Error("The server did not answer.")} onRetry={noop} what="servers" />
+      <LoadState
         query={idle}
         what="servers"
         count={0}
@@ -1561,7 +1568,7 @@ function SidebarSample({ label }: { label: string }) {
           title="Workspace"
           level={3}
           contentSlot={PLACES.map((place) => (
-            <SidebarNavItem
+            <SidebarItem
               key={place}
               href={`#${place.toLowerCase()}`}
               label={place}
@@ -1575,8 +1582,6 @@ function SidebarSample({ label }: { label: string }) {
     />
   );
 }
-
-type Server = (typeof SERVERS)[number];
 
 const sections: GallerySection[] = [
   // Primitives
@@ -1700,21 +1705,21 @@ const sections: GallerySection[] = [
   { title: "List", items: ["list", "list-item"], content: <ListItems /> },
   { title: "File tree", items: ["file-tree"], content: <FileTrees /> },
   {
-    title: "Disclosure and disclosure row",
-    items: ["disclosure", "disclosure-row"],
-    content: <Disclosures />,
+    title: "Collapsible and its row",
+    items: ["collapsible", "collapsible-row"],
+    content: <Collapsibles />,
   },
-  { title: "Description list", items: ["description-list"], content: <Descriptions /> },
+  { title: "Property list", items: ["property-list"], content: <Properties /> },
   { title: "Setting row", items: ["setting-row"], content: <SettingRows /> },
   { title: "Stat tile", items: ["stat-tile"], content: <StatTiles /> },
-  { title: "Query state", items: ["query-state"], content: <QueryStates /> },
+  { title: "Load state", items: ["load-state"], content: <LoadStates /> },
   {
-    title: "Route error",
-    items: ["route-error"],
+    title: "Error page",
+    items: ["error-page"],
     content: (
       <Frame
         height="h-[320px]"
-        content={<RouteError error={new Error("Project not found")} reset={noop} />}
+        content={<ErrorPage error={new Error("Project not found")} reset={noop} />}
       />
     ),
   },
@@ -1723,12 +1728,12 @@ const sections: GallerySection[] = [
   // Shells
   { title: "Card layout", items: ["card-layout"], content: <CardLayouts /> },
   {
-    title: "Centered layout",
-    items: ["centered-layout"],
+    title: "Centered card layout",
+    items: ["centered-card-layout"],
     content: (
       <Frame
         content={
-          <CenteredLayout
+          <CenteredCardLayout
             className="h-full min-h-0"
             level={3}
             title="Sign in"
@@ -1787,60 +1792,63 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Page, detail page and detail header",
-    items: ["page", "empty-state", "detail-page", "detail-header"],
+    title: "Grid and a detail page's header",
+    items: ["grid-layout", "empty-state"],
     content: (
       <div className="grid gap-4 md:grid-cols-2">
         <Frame
           content={
-            <Page
+            <PageLayout
+              level={3}
+              title="Projects"
               contentSlot={
-                <>
-                  <PageHeader level={3} title="Projects" />
-                  <CardGrid
-                    contentSlot={SERVERS.map((server) => (
-                      <Card key={server.name}>
-                        <CardHeader>
-                          <CardTitle>{server.name}</CardTitle>
-                          <CardDescription>{server.status}</CardDescription>
-                        </CardHeader>
-                      </Card>
-                    ))}
-                  />
-                </>
+                <GridLayout
+                  contentSlot={SERVERS.map((server) => (
+                    <Card key={server.name}>
+                      <CardHeader>
+                        <CardTitle>{server.name}</CardTitle>
+                        <CardDescription>{server.status}</CardDescription>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                />
               }
             />
           }
         />
         <Frame
           content={
-            <DetailPage<Server>
-              entity={SERVERS[0]}
-              notFoundLabel="Server not found"
-              contentSlot={(server) => (
-                <>
-                  <DetailHeader
-                    onBack={noop}
-                    backLabel="Back to servers"
-                    color="#1d4ed8"
-                    colorLabel="Blue"
-                    title={server.name}
-                    description={`${server.tools} tools over ${server.transport}`}
-                    badgesSlot={<Badge variant="secondary">{server.status}</Badge>}
-                    actionSlot={
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={noop}
-                        iconSlot={<Pencil />}
-                        content="Edit the server"
-                      />
-                    }
+            <div className="flex flex-col gap-4 p-4">
+              <PageHeader
+                level={3}
+                className="px-0 pt-0"
+                backSlot={
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={noop}
+                    aria-label="Back to servers"
+                    iconSlot={<ArrowLeft />}
                   />
-                  <p className="text-foreground text-sm">The body of the detail page.</p>
-                </>
-              )}
-            />
+                }
+                iconSlot={<ColorDot color="#1d4ed8" label="Blue" />}
+                title={SERVER.name}
+                description={`${SERVER.tools} tools over ${SERVER.transport}`}
+                actionSlot={
+                  <>
+                    <Badge variant="secondary">{SERVER.status}</Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={noop}
+                      iconSlot={<Pencil />}
+                      content="Edit the server"
+                    />
+                  </>
+                }
+              />
+              <p className="text-foreground text-sm">The body of the detail page.</p>
+            </div>
           }
         />
       </div>
@@ -1882,26 +1890,34 @@ const sections: GallerySection[] = [
     ),
   },
   {
-    title: "Top bar layout",
-    items: ["top-bar-layout"],
+    title: "App bar",
+    items: ["app-bar"],
+    description:
+      "An app with no sidebar: the bar in a HeaderContentFooter's header, the page under it.",
     content: (
       <Frame
         height="h-[320px]"
         content={
-          <TopBarLayout
+          <HeaderContentFooter
+            scroll
             className="h-full"
-            brandSlot={<span className="font-semibold text-foreground">Router</span>}
-            navLabel="Gallery top bar"
-            navSlot={PLACES.map((place) => (
-              <a
-                key={place}
-                href={`#${place.toLowerCase()}`}
-                className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
-              >
-                {place}
-              </a>
-            ))}
-            actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+            headerSlot={
+              <AppBar
+                brandSlot={<span className="font-semibold text-foreground">Router</span>}
+                navLabel="Gallery app bar"
+                navSlot={PLACES.map((place) => (
+                  <a
+                    key={place}
+                    href={`#${place.toLowerCase()}`}
+                    className="shrink-0 rounded-md px-3 py-1.5 text-foreground text-sm"
+                  >
+                    {place}
+                  </a>
+                ))}
+                status="3 of 5 running"
+                actionSlot={<Button size="sm" variant="outline" content="Sign out" />}
+              />
+            }
             contentSlot={<div className="p-4">{paragraphs(20)}</div>}
           />
         }
