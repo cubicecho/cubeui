@@ -151,14 +151,22 @@ const SEND_ON_MOD_ENTER = [
   ]),
 ];
 
-/** An empty document shows its placeholder, and an app's own extension is in the editor. */
+/**
+ * An empty document shows its placeholder, and an app's own extension is in the editor.
+ *
+ * The run ends focused, so the a11y check reads the placeholder on the focused editor's line.
+ */
 export const EmptyWithAnExtension: Story = {
   render: () => <Held initial="" placeholder="Write Markdown…" extensions={SEND_ON_MOD_ENTER} />,
   play: async ({ canvas }) => {
     const textbox = await canvas.findByRole("textbox", { name: "Notes" }, { timeout: 10_000 });
     await expect(canvas.getByText("Write Markdown…")).toBeVisible();
     onSend.mockClear();
-    EditorView.findFromDOM(textbox)?.focus();
+    const view = EditorView.findFromDOM(textbox);
+    view?.focus();
+    // CodeMirror marks itself focused on a 10ms timer after the focus event. Without this wait the
+    // a11y check measured whichever state won that race, and failed only when focus won (#436).
+    await waitFor(() => expect(view?.dom).toHaveClass("cm-focused"));
     await userEvent.keyboard("{Control>}{Enter}{/Control}");
     await expect(onSend).toHaveBeenCalledTimes(1);
   },

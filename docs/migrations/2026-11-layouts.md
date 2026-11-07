@@ -174,6 +174,10 @@ to add them.
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
   nothing. It no longer writes `disabled` on the `<a>`.
+- **An empty `MarkdownCodeEditor` no longer tints its line while focused**
+  ([#436](https://github.com/cubicecho/cubeui/issues/436)). The placeholder sits on the page's
+  background, as an input's does. On the tint it was too faint to read. The current line is
+  tinted again once there is text.
 
 ## Checking the result
 
