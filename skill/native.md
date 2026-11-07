@@ -25,6 +25,15 @@ and cubeui's `patches/react-native-css+3.1.0-rc.0.patch` in the app's `patches/`
 A `postinstall` and a `patches/` file both change an Expo runtime fingerprint, so adding them means
 one new native build.
 
+- **A Dockerfile that installs with `npm ci --omit=dev`** has no `patch-package`, so the
+  `postinstall` fails. Add `--ignore-scripts` to that install. The patch is needed only where the
+  native bundle is built.
+- **An existing lockfile can keep its newer lightningcss.** If `npm ls lightningcss` shows it
+  `invalid` after you add the override, delete the `lightningcss*` entries from
+  `package-lock.json` and run `npm install` again.
+- **A root `"overrides": { "lightningcss": "1.30.1" }` works too.** It pins Tailwind's copy as
+  well, and Tailwind builds with 1.30.1.
+
 ## Shapes on React Native
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They
@@ -54,7 +63,7 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A screen that is one card — a sign-in, a token gate — so its title is the heading: `level` 1–3, same size | `CardLayout level={1}` | `@cubeui/card-layout` |
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/pages.md](layout/pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
-| A heading over a group of fields or rows, optionally on a card | `Section` | `@cubeui/section` |
+| A heading over a group of fields or rows; on a card it is `CardLayout level={2}` | `Section` | `@cubeui/section` |
 | Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
 | A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#collapsible) | `Collapsible` | `@cubeui/collapsible` |

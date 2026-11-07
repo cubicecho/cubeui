@@ -527,6 +527,17 @@ and `patches/react-native-css+3.1.0-rc.0.patch` copied from this repo.
   uses these classes about 270 times. The web is unaffected, because the browser mixes the colour
   itself. The patch drops the empty arguments before parsing, and 3.1.0-rc.1 still needs it.
 
+Three things the apps ran into adding them:
+
+- An `npm ci --omit=dev` install, usual in a Dockerfile, has no `patch-package`, so the
+  `postinstall` fails. Add `--ignore-scripts` there. The patch only matters where the native bundle
+  is built.
+- An existing lockfile can keep its newer lightningcss under the override (`npm ls lightningcss`
+  shows it `invalid`). Delete the `lightningcss*` entries from `package-lock.json` and install
+  again.
+- A root-level `"overrides": { "lightningcss": "1.30.1" }` works as well as the nested one. It
+  also pins Tailwind's copy, which builds with 1.30.1.
+
 `scripts/native-color-mix.test.mjs` compiles real opacity classes, makes Metro's JSON round trip and
 resolves them with the real runtime function. Without the patch its three class assertions fail. It
 also fails when the compiler stops writing the gap, which is the sign the patch can go.
