@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
+import { CardLayout } from "@/components/card-layout";
 import { HeaderContentFooter, type ScrollHandle } from "@/components/header-content-footer";
+import { LoadState } from "@/components/load-state";
+import { PageHeader } from "@/components/page-header";
+import { StatTile } from "@/components/stat-tile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -89,6 +93,34 @@ export const LoopsStopButTheSpinnerTurns: Story = {
     const spinner = canvas.getByRole("status", { name: "Saving" });
     await expect(spinner).toBeVisible();
     await expect(getComputedStyle(spinner).animationName).toBe("spin");
+  },
+};
+
+/**
+ * The shells' loading bars are `Skeleton` (#449), so they pulse and hold still by the same rule
+ * rather than each carrying its own copy of it.
+ */
+export const ShellLoadingBarsFollowSkeleton: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <PageHeader title="Projects" description="Everything this workspace builds." loading />
+      <CardLayout title="Members" level={2} loading contentSlot={<span>Ada</span>} />
+      <StatTile label="Embeddings" value="" loading />
+      <LoadState
+        query={{ isPending: true, isError: false, error: null, refetch: () => undefined }}
+        what="these projects"
+        count={0}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const pulse = reduced() ? "none" : "pulse";
+    const bars = canvasElement.querySelectorAll('[data-slot="skeleton"]');
+    // Two in the header, three in the card, one in the tile, two in each of three rows.
+    await expect(bars).toHaveLength(12);
+    for (const bar of bars) {
+      await expect(getComputedStyle(bar).animationName).toBe(pulse);
+    }
   },
 };
 

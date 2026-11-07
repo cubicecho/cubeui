@@ -15,6 +15,7 @@
  */
 import type { ReactNode } from "react";
 import { Platform, Text, View } from "react-native";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /**
@@ -87,12 +88,6 @@ const INK = "text-foreground";
  * view would otherwise be a flex column and lay a sentence and its link out as two rows.
  */
 const SLOT = Platform.select({ web: "block", default: undefined });
-
-/** A bar standing in for text that has not arrived — `Skeleton`'s look, on both platforms. */
-const BAR = cn(
-  "max-w-full rounded-md bg-foreground/10",
-  Platform.OS === "web" && "motion-safe:animate-pulse",
-);
 
 export type PageHeaderProps = {
   /**
@@ -280,7 +275,10 @@ export function PageHeader({
   const rule = level === 1 && !contentSlot ? "border-b border-foreground/10" : undefined;
 
   const descriptionLine = loading ? (
-    <View testID="page-header-description" aria-hidden className={cn(BAR, "h-5 w-72")} />
+    // The part's name on a box round the bar, as in `StatTile`, so the bar keeps `Skeleton`'s.
+    <View testID="page-header-description" aria-hidden>
+      <Skeleton className="h-5 w-72 max-w-full" />
+    </View>
   ) : (
     // `max-w-prose`: under a page-wide header a description could run to 200 characters a line.
     <Text
@@ -339,7 +337,9 @@ export function PageHeader({
                 <Heading level={level} className={SR_ONLY}>
                   Loading…
                 </Heading>
-                <View aria-hidden className={cn(BAR, "w-48", barHeight)} />
+                {/* `shrink-0`: a compiled view does not shrink, and the web `Skeleton` is a bare
+                    `<div>`, which would give way to the icon beside it. */}
+                <Skeleton aria-hidden className={cn("w-48 max-w-full shrink-0", barHeight)} />
               </>
             ) : (
               // `break-words` is what a title does when it runs out of room — an unbroken id or

@@ -32,6 +32,7 @@ import { EmptyState } from "@/components/empty-state";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Search, TriangleAlert } from "@/components/ui/icons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn, type SlotNode } from "@/lib/utils";
 
 /** What a list screen needs off its query, and nothing more. */
@@ -336,13 +337,15 @@ export function RowSkeleton({
     return (
       <View role="status" aria-label="Loading" className={cn("gap-1", className)}>
         {Array.from({ length: rows }, (_, index) => (
+          // The row's name on a box round the bar, as in `StatTile`, so the bar keeps `Skeleton`'s.
           <View
             // biome-ignore lint/suspicious/noArrayIndexKey: placeholders, in a list with no identity
             key={index}
             testID="row-skeleton"
             aria-hidden
-            className="h-8 motion-safe:animate-pulse rounded-md bg-foreground/10"
-          />
+          >
+            <Skeleton className="h-8" />
+          </View>
         ))}
       </View>
     );
@@ -360,10 +363,8 @@ export function RowSkeleton({
           aria-hidden
           className="gap-2 py-2"
         >
-          {/* `animate-pulse` resolves to nothing on device; the compiled web half needs it, and
-              `motion-safe:` keeps it still under reduced motion. */}
-          <View className="h-4 w-1/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
-          <View className="h-3 w-2/3 motion-safe:animate-pulse rounded-md bg-foreground/10" />
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-3 w-2/3" />
         </View>
       ))}
     </View>

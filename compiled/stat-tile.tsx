@@ -20,6 +20,7 @@ import type { ReactNode } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Card } from "./card";
+import { Skeleton } from "./skeleton";
 
 type StatTileProps = {
   /** What the figure is called: "Turns", "Daily average". Drawn above it, muted. */
@@ -58,9 +59,6 @@ type StatTileProps = {
 
 /** The icon's box: sized from outside on the web, and by `IconClassContext` on device. */
 const ICON_BOX = cn("shrink-0", "[&_svg]:size-4 [&_svg]:shrink-0");
-
-/** A bar standing in for the figure — `Skeleton`'s look, on both platforms, at one line of it. */
-const BAR = cn("h-8 w-20 rounded-md bg-foreground/10", "motion-safe:animate-pulse");
 
 /**
  * What a pressable tile adds on the web: a compiled `Pressable` is a `<button>`, which centres its
@@ -151,7 +149,11 @@ export function StatTile({
         </span>
       </div>
       {loading ? (
-        <div data-slot="stat-tile-skeleton" aria-hidden className={cn("cube-rn-view", BAR)} />
+        // One line of the figure. The tile's name for it goes on a box round the bar: a `testID`
+        // on `Skeleton` would replace the primitive's own.
+        <div data-slot="stat-tile-skeleton" aria-hidden className="cube-rn-view">
+          <Skeleton className="h-8 w-20" />
+        </div>
       ) : (
         figure
       )}
