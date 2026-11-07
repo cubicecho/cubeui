@@ -140,6 +140,8 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
   heading saying what it is; `className="sr-only"` keeps the name without the line.
 - Too wide for its column, it scrolls sideways inside its own container rather than widening the
   page, and the container becomes a tab stop while it does so a keyboard can scroll it too.
+  Tabbed to, its edge turns `active`, as a focused field's border does, and no ring is drawn; a
+  click on it shows nothing. It keeps a transparent 1px edge for as long as it is a tab stop.
 - **A long table keeps its column names in view with `maxHeight`.** The table becomes its own
   scroll box, capped at `sm` (20rem), `md` (32rem) or `lg` (70% of the screen's height), and the
   header row stays pinned at its top while the rows scroll under it. Sideways, the header moves
