@@ -23,6 +23,11 @@ move them out of the cubeui file first.
   ([#408](https://github.com/cubicecho/cubeui/issues/408)): remove it, or put the app's own entry
   back in `devDependencies`. Only an Expo app with `menu` still gets it, because `menu`'s web half
   needs React DOM's types and the CLI can't add a dev dependency to an Expo app; leave it there.
+  In an Expo app, change `"nativewind": "^5.0.0-rc.0"` to `"5.0.0-rc.0"`, and pin
+  `react-native-css` at `3.1.0-rc.0` the same way. npm saves both with a caret. The caret takes
+  5.0.0-rc.1 the next time the lockfile is rebuilt, which needs a newer `react-native-css` than
+  cubeui's patch is for, and the install fails
+  ([#429](https://github.com/cubicecho/cubeui/issues/429)).
 - **shadcn's own files.** `@cubeui/table` (web), `@cubeui/separator` and `@cubeui/alert-dialog`
   install to the same `components/ui/` paths as shadcn's components of those names. In an app that
   had shadcn's, cubeui's replaces it, so check the call sites.

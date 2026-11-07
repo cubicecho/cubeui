@@ -499,7 +499,10 @@ deprecations — the old names are **gone**, so an app still on 4 cannot take th
 
 The `placeholder:` variant is the better spelling regardless: react-native-css compiles it to the
 `placeholderTextColor` prop on device and to a real `::placeholder` rule on web, so one class covers
-both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed.
+both. NativeWind installs as **`5.0.0-rc.0`**, not the preview the plan assumed. It is pinned
+exactly, with `react-native-css@3.1.0-rc.0` beside it: the two prereleases move together, and the
+patch below is written against that `react-native-css`. npm saves both into the app with a caret
+all the same, so an app pins them in its own `package.json` too.
 
 ### Two things an Expo app has to add
 
@@ -510,6 +513,7 @@ installs from `public/r/native`:
 ```jsonc
 // package.json
 "scripts": { "postinstall": "patch-package" },
+"dependencies": { "nativewind": "5.0.0-rc.0", "react-native-css": "3.1.0-rc.0" },
 "devDependencies": { "patch-package": "^8.0.1" },
 "overrides": { "react-native-css": { "lightningcss": "1.30.1" } }
 ```
@@ -557,7 +561,9 @@ each one is a failure that otherwise ships silently. The first six:
    run `npm install nativewind`, which takes the latest *stable* — 4.2.7 — into an app whose
    components are written against 5, where `cssInterop` is gone and `styled` does not exist. This
    was a real bug, found by installing into a throwaway app and reading the `package.json` that
-   came out; the check is what stops it coming back.
+   came out; the check is what stops it coming back. A prerelease is pinned exactly, because a
+   range on one takes the next: `nativewind@^5.0.0-rc.0` took rc.1 when it was published, which
+   wants a `react-native-css` the item does not pin, and every fresh native install failed (#429).
 4. **Every built file carries content.** `shadcn build` writes `content: ""` for an empty file and
    reports success.
 5. **Every cross-item dependency names `@cubeui`, and an item its own registry holds.** A
