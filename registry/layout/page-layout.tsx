@@ -11,7 +11,7 @@ import {
   type HeaderContentFooterProps,
 } from "@/components/header-content-footer";
 import { PageHeader, type PageHeaderLevel, type PageHeaderSize } from "@/components/page-header";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, PageLoadingContext, type SlotNode } from "@/lib/utils";
 
 /** The line under a page's header, the colour `PageHeader` draws it in. */
 const HEADER_RULE = "border-b border-foreground/10";
@@ -48,7 +48,12 @@ export type PageLayoutProps = {
    * the title go in `headerContentSlot` instead.
    */
   headerBarSlot?: SlotNode | undefined;
-  /** Whether the *title* is still being fetched. The body is the caller's to place. */
+  /**
+   * Whether the *title* is still being fetched: a bar of its height stands in for it. A detail
+   * page sets it while the record loads and puts `LoadState` in the body, which then draws no
+   * placeholder rows of its own, so the page shows its wait once. The body is otherwise the
+   * caller's to place.
+   */
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
   level?: PageHeaderLevel | undefined;
@@ -162,7 +167,9 @@ export function PageLayout({
           {headerBarSlot}
         </>
       }
-      contentSlot={contentSlot}
+      contentSlot={
+        <PageLoadingContext.Provider value={loading}>{contentSlot}</PageLoadingContext.Provider>
+      }
       footerSlot={footerSlot}
     />
   );

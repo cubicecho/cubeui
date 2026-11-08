@@ -6,6 +6,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 - [List pages](#list-pages)
   - [LoadState](#loadstate)
+  - [Detail pages](#detail-pages)
   - [Empty states](#empty-states)
 
 ## List pages
@@ -64,31 +65,10 @@ The shells for the shape every list route is: a ladder of states, then a list of
   — so it never surfaces as an unhandled rejection; the query's own error is what gets shown.
 - **A detail page passes `record` instead of `count`.** The ladder is then failed, loading, **not
   found**: `record` is what the query returned (`null` or `undefined` is not there), and
-  `notFoundLabel` is what the page says then, drawn as an `EmptyState` with the Search icon,
-  because the whole page is that state. Once the record is there it renders `null`, as it does for
-  rows. Pass one of `count` and `record`, never both; `emptySlot` goes with `count`.
-- **Where the guard goes decides its `level`.** In front of the page, where the page's title is
-  the record's name, the not-found title is the page's `h1` — the default, `level={1}`:
-
-  ```tsx
-  <LoadState query={project} what="this project" record={project.data} notFoundLabel="Project not found" className="p-4" />
-  {project.data ? <PageLayout title={project.data.name} contentSlot={<ProjectBody project={project.data} />} /> : null}
-  ```
-
-  Inside a page that already has its level-1 title — one named before the record arrives — pass
-  `level={2}`, so the page does not have two `h1`s. The size is the same at every level:
-
-  ```tsx
-  <PageLayout
-    title="Pool"
-    contentSlot={
-      <>
-        <LoadState query={pool} what="this pool" record={pool.data} notFoundLabel="Pool not found" level={2} />
-        {pool.data ? <PoolBody pool={pool.data} /> : null}
-      </>
-    }
-  />
-  ```
+  `notFoundLabel` is what the page says then, drawn as an `EmptyState` with the Search icon.
+  Once the record is there it renders `null`, as it does for rows. Pass one of `count` and
+  `record`, never both; `emptySlot` goes with `count`. The page around it is
+  [Detail pages](#detail-pages) below.
 - It ships `LoadError` and `RowSkeleton` alongside it. Reach for `LoadError` on a page that
   draws one object rather than a list — it is the rung most often left out, and a page that draws
   a failure as an absence tells somebody whose server went away that they have no data.
@@ -101,9 +81,15 @@ The shells for the shape every list route is: a ladder of states, then a list of
   `isPending` only: behind `isFetching` it flashes a skeleton over a list that is perfectly good.
   The placeholders are `aria-hidden` inside one `role="status"` wrapper announcing "Loading", so
   three placeholder rows are not three rows of nothing to read out.
-- **`compact`** draws the rungs small enough for a sidebar: the failure as two lines of text and a
-  small "Try again" instead of a card, and the placeholders as bars the height of a nav row. Use
-  it in a `SidebarSection`'s `status`; `LoadError` and `RowSkeleton` take it too.
+- **`compact`** draws the rungs small enough for a sidebar or a card: the failure as two lines of
+  text and a small "Try again" instead of an alert box, and the placeholders as bars the height of
+  a nav row. Use it in a `SidebarSection`'s `status` and inside a card; `LoadError` and
+  `RowSkeleton` take it too. **A compact rung has no side inset**, like `EmptyState`'s `compact`
+  line: both are `text-sm` with `py-2`, and keep the left edge of what they sit in, so in a card
+  they line up with the card's text. In a sidebar, pass `className="px-2"` to both the
+  `LoadState` and its `emptySlot`'s `EmptyState`, to line them up with the rows' labels.
+- **The full failure is capped and centred** (`max-w-xl`), as the empty and not-found blocks are
+  centred: on a wide page, Try again stays beside the words it answers.
 
 
 <!-- props:LoadState -->
@@ -114,15 +100,63 @@ The shells for the shape every list route is: a ladder of states, then a list of
 | `query` (required) | `QueryLike` |  |  |
 | `what` (required) | `string` |  | What could not be fetched, in the reader's words: "your agents", "the archive". |
 | `rows` | `number` | `3` | How many placeholder rows stand in for the list while it loads. |
-| `compact` | `boolean` | `false` | The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row rather than cards. For a list that lives in a sidebar, where a card-sized error would be taller than the list it replaced. |
+| `compact` | `boolean` | `false` | The rungs drawn small enough for a rail or a card: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row. For a list that lives in a sidebar or inside a card, where an alert box would be taller than the list it replaced. Like `EmptyState`'s `compact` line, each rung keeps the left edge of what it sits in; in a sidebar, pass `className="px-2"` to line it up with the rows' text. |
 | `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `LoadError`. |
 | `className` | `string` |  |  |
 | `count` (instead of `record`) | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
 | `emptySlot` (with `count`) | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
 | `record` (instead of `count`) | `unknown` |  | The one record the screen asked for, once the query has answered. `null` or `undefined` is a record that is not there. Pass this or `count`. |
 | `notFoundLabel` (required with `record`) | `string` |  | What the screen says when `record` is not there: "Project not found". It is drawn as the screen's heading — an `EmptyState` with the Search icon, at `level` — because the whole screen is that state. |
-| `level` (with `record`) | `1 \| 2 \| 3` | `1` | Which heading `notFoundLabel` is. `1`, the default, is a guard that is the whole screen. `2` is a guard inside a page that already has its level-1 title — a `PageLayout`'s body — so the page does not have two `h1`s. The size is the same at every level. |
+| `level` (with `record`) | `1 \| 2 \| 3` | `1` | Which heading `notFoundLabel` is. `2` in a detail page's body, under the `PageLayout` title that is already its `h1`, so the page does not have two. `1`, the default, is for a guard that is the whole screen, with no page around it. The size is the same at every level. |
+| `description` (with `record`) | `ReactNode` |  | One line under `notFoundLabel` on what probably happened: "It may have been archived, or the link is old." Not drawn at `compact`, which is one line. |
+| `actionSlot` (with `record`) | `SlotNode` |  | The way on from a record that is not there: a "Back to projects" button. Under the words, as on `EmptyState`; a screen that is only "not found" is otherwise a dead end. |
 <!-- /props -->
+### Detail pages
+
+A page that shows one record is a `PageLayout` that is always drawn, and a `LoadState` in its
+body. The page owns the loading: its header's `loading` puts a bar where the title will be, and
+the back button and the page's frame stay where they are. The title falls back to the kind of
+thing while there is no record, so the page is never headless when the record failed or is gone:
+
+```tsx
+const p = project.data;
+
+<PageLayout
+  backSlot={<Button variant="outline" size="icon" aria-label="Back to projects" iconSlot={<ArrowLeft />} … />}
+  title={p?.name ?? "Project"}
+  loading={project.isPending}
+  actionSlot={p ? <ProjectActions project={p} /> : null}
+  contentSlot={
+    <>
+      <LoadState
+        query={project}
+        what="this project"
+        record={p}
+        notFoundLabel="Project not found"
+        description="It may have been archived, or the link is old."
+        actionSlot={<Button variant="outline" content="Back to projects" … />}
+        level={2}
+      />
+      {p ? <ProjectBody project={p} /> : null}
+    </>
+  }
+/>
+```
+
+- **Loading is the title's bar, and only that.** Inside a `PageLayout` whose `loading` is on,
+  `LoadState` draws no placeholder rows: rows shaped like a list's under a title bar are a second
+  loading state, in a shape the page will not have. Nothing to pass; `PageLayout` tells it.
+- **Failed** is the page's title (the fallback) over the `LoadError` in the body, with Try again.
+- **Not found** is the page's title over the not-found block: `level={2}`, since the page's title
+  is the `h1`, with `description` saying what probably happened and `actionSlot` the way on —
+  "Back to projects" — so the screen is not a dead end. At `compact` the action is drawn after the
+  one line and `description` is not drawn.
+- Do not put the `LoadState` in front of the page, with the `PageLayout` drawn only once the
+  record is there. That screen has no title while it loads or fails, and its list-row placeholders
+  give way to a page of another shape when the record lands.
+- A page whose title does not come from the record ("Pool settings") leaves `loading` off, and
+  `LoadState` draws its rows in the body as it does on a list page.
+
 ### Empty states
 
 `EmptyState` (`@cubeui/empty-state`, on both halves) is what an

@@ -104,7 +104,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A settings row — a title and a line on what it does, then a switch, select or button at the far end | `SettingRow` (a lone boolean with its caption: `SwitchField`) | [layout/facts.md](layout/facts.md#setting-rows) |
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `PropertyList`, `PropertyRow` | [layout/facts.md](layout/facts.md#property-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout/facts.md](layout/facts.md#stat-tiles) |
-| A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found | `LoadState` | [layout/lists.md](layout/lists.md#loadstate) |
+| A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found, in its `PageLayout`'s body | `LoadState` | [layout/lists.md](layout/lists.md#loadstate), [the detail page](layout/lists.md#detail-pages) |
 | The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout/list-rows.md](layout/list-rows.md#list) |
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/list-rows.md](layout/list-rows.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |

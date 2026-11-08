@@ -37,7 +37,7 @@ move them out of the cubeui file first.
 | Item | Replace with |
 |---|---|
 | `page` (`Page`, `CardGrid`) | `PageLayout` (`@cubeui/page-layout`); for a body with no title block, `HeaderContentFooter`. `CardGrid` becomes `GridLayout` (`@cubeui/grid-layout`). `PageHeader` and `EmptyState` are imported from their own items, so install `@cubeui/page-header` and `@cubeui/empty-state` if the app does not have them. Delete `components/page.tsx`. |
-| `detail-page` (`DetailPage`) | `<LoadState query={q} what="…" record={q.data} notFoundLabel="…" />` (`@cubeui/load-state`), then the page once `q.data` is there. Inside a page that already has its level-1 title, pass `level={2}`. The not-found state comes from an empty answer (`record` is `null` or `undefined`). A query that throws on a 404, as a REST fetch under TanStack Query usually does, shows the error instead: have the query function return `null` for a 404. Delete `components/detail-page.tsx`. |
+| `detail-page` (`DetailPage`) | A `PageLayout` that is always drawn, with `title={q.data?.name ?? "Project"}` and `loading={q.isPending}`, and in its body `<LoadState query={q} what="…" record={q.data} notFoundLabel="…" description="…" actionSlot={<Button content="Back to projects" … />} level={2} />` (`@cubeui/load-state`), then the record's body once `q.data` is there ([#476](https://github.com/cubicecho/cubeui/issues/476)). The title's bar is the only loading state: `LoadState` draws no rows inside a loading `PageLayout`. The not-found state comes from an empty answer (`record` is `null` or `undefined`). A query that throws on a 404, as a REST fetch under TanStack Query usually does, shows the error instead: have the query function return `null` for a 404. Delete `components/detail-page.tsx`. |
 | `detail-header` (`DetailHeader`) | `<PageHeader backSlot={<Button aria-label="Back" onPress={f} … />} iconSlot={<ColorDot color={c} />} title={t} description={d} actionSlot={<>{badges}{actions}</>} />`, or the same props on `PageLayout`. Delete `components/detail-header.tsx`. |
 | `top-bar-layout` (`TopBarLayout`) | `<HeaderContentFooter className="h-full" headerSlot={<AppBar brandSlot={…} navSlot={…} navLabel="Main" actionSlot={…} />} contentSlot={<main>…</main>} />`, installing `@cubeui/app-bar`. Delete `components/top-bar-layout.tsx`. |
 | `StickyHeaderContentFooter` (from `header-content-footer`) | `<HeaderContentFooter scroll className="h-full …" />`, or `PageLayout` when the header is a `PageHeader`. `PageLayout` lays its body out differently: it adds `gap-4 py-4`, and `width` defaults to `page`, a centred column with `px-4`, where the old body ran the full width. For the old body pass `width="full"` and `contentClassName="gap-0 py-0"`. |
@@ -97,7 +97,7 @@ test that finds them by name needs changing:
 | `Table` | New: `maxHeight` (`"sm" \| "md" \| "lg"`) caps the table's height and pins its header row while the rows scroll inside it ([#415](https://github.com/cubicecho/cubeui/issues/415)). An app whose own `table.tsx` had a `sticky` prop loses it on reinstall: use `maxHeight` instead, and remove the scrolling box and `max-h-*` the app put around the table for it. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
-| `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
+| `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
 | `FormField`, `Field`, the bound fields | New: `disabled` on `FormField` and `Field`, and as a field prop on every bound field on both halves, fades the label and the description with the control ([#466](https://github.com/cubicecho/cubeui/issues/466)). On a bound field it was already passed to the control, and still is. |
@@ -197,6 +197,13 @@ to add them.
   `scrollToEnd()` jumps. The spinner still turns. The rule for `animate-in` and `animate-out` is in
   the tokens stylesheet, so it reaches the app's own uses of them too. A reinstall also writes
   `components/ui/reduced-motion.tsx`, which `useReducedMotion()` comes from.
+- **`LoadError`'s full alert is capped and centred** ([#476](https://github.com/cubicecho/cubeui/issues/476)). It is at most
+  `max-w-xl` wide, in the middle of what it sits in, like the empty and not-found blocks. On a
+  wide page Try again is beside its words, not at the far edge.
+- **The compact failure has no side inset, and is `text-sm`** ([#476](https://github.com/cubicecho/cubeui/issues/476)). `LoadError compact`
+  and `LoadState compact`'s failure lost their own `px-2`, and their `text-xs`, to match
+  `EmptyState compact`. In a card they now line up with the card's text. In a sidebar, pass
+  `className="px-2"` to the `LoadState`, as its `EmptyState` already takes.
 - **The loading bars of `CardLayout`, `PageHeader`, `StatTile` and `LoadState` pulse on device**
   ([#449](https://github.com/cubicecho/cubeui/issues/449)). They are `Skeleton` now, and held
   still there before. On the web they look the same. A reinstall of any of the four also writes
