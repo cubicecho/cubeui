@@ -6,6 +6,7 @@ import { StatTile as Compiled } from "../compiled/stat-tile";
 import { StatTile as Native } from "../registry/layout/stat-tile";
 import { Clock as NativeClock } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * The stat tile on both halves: a row of read-only figures, the way mcp-zeromem's overview draws
@@ -66,7 +67,10 @@ function Filters({ Tile }: { Tile: Tile }) {
             value={heap.count}
             selected={shown === heap.key}
             press={() => setShown(shown === heap.key ? null : heap.key)}
+            // The colour is not the only thing that says this heap matters: chosen, the figure is
+            // `foreground`, and the hint is what still says so.
             valueClassName={heap.key === "attention" ? "text-negative" : undefined}
+            {...(heap.key === "attention" ? { hint: "Waiting on you" } : {})}
           />
         ))}
       </div>
@@ -177,10 +181,20 @@ export const Filter: Story = {
       // does not look like a hovered one.
       await waitFor(() => expect(getComputedStyle(needsYou).borderColor).not.toBe(idle));
 
+      // Chosen, the figure is `foreground`, as the label is, over the caller's `text-negative`:
+      // a status colour on the tint is under 3:1 (#471). Unchosen, it keeps the colour.
+      const figureOf = (tile: HTMLElement) =>
+        getComputedStyle(within(tile).getByText(/^\d+$/)).color;
+      await waitFor(() => expect(figureOf(needsYou)).toBe(tokenColor("foreground")));
+      await expect(figureOf(needsYou)).toBe(
+        getComputedStyle(within(needsYou).getByText("Needs you")).color,
+      );
+
       // Another moves it; pressing that one again turns the filter off.
       await userEvent.click(running);
       await expect(running).toHaveAttribute("aria-pressed", "true");
       await expect(needsYou).toHaveAttribute("aria-pressed", "false");
+      await waitFor(() => expect(figureOf(needsYou)).toBe(tokenColor("negative")));
       // Waited for, since the web half changes it with a transition.
       await waitFor(() => expect(getComputedStyle(running).borderColor).not.toBe(idle));
       await userEvent.click(running);

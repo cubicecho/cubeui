@@ -75,8 +75,11 @@ const BLUE_WEIGHT = 0.0722;
 /** WCAG's allowance for flare, added to both luminances so black on black is 1 and not 0 / 0. */
 const FLARE = 0.05;
 
-/** WCAG 2.x relative luminance. The piecewise curve is the standard sRGB transfer function. */
-function luminance([r, g, b]: [number, number, number]): number {
+/**
+ * WCAG 2.x relative luminance of red, green and blue as 0–1, from 0 (black) to 1 (white). The
+ * piecewise curve is the standard sRGB transfer function. `lib/color` reads it too.
+ */
+export function luminance([r, g, b]: [number, number, number]): number {
   const linear = ([r, g, b] as const).map((channel) =>
     channel <= SRGB_LINEAR_BELOW
       ? channel / SRGB_LINEAR_DIVISOR

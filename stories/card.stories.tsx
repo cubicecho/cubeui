@@ -17,6 +17,7 @@ import {
   CardTitle as NativeTitle,
 } from "../registry/ui/card";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * The component the spike is really about: nested `View`/`Text`, a `forwardRef`, a container that
@@ -202,5 +203,119 @@ export const Accent: Story = {
 
     await expect(inside(nativeBar, canvas.getByTestId("native-card"))).toBe(true);
     await expect(inside(compiledBar, canvas.getByTestId("compiled-card"))).toBe(true);
+  },
+};
+
+/** The picks the old lightness clamp lost: yellow and cyan on the light page, navy on the dark. */
+const PICKS = [
+  ["Yellow", "#ffff00"],
+  ["Cyan", "#00ffff"],
+  ["Lime", "#00ff00"],
+  ["Navy", "#000080"],
+] as const;
+
+/** A CSS colour as 8-bit sRGB, read back off a canvas so any notation the browser takes works. */
+function srgb(color: string): [number, number, number] {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1;
+  canvas.height = 1;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) {
+    throw new Error("no 2D canvas to read a colour with");
+  }
+  context.fillStyle = color;
+  context.fillRect(0, 0, 1, 1);
+  const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data;
+  return [r, g, b];
+}
+
+/** WCAG contrast between two CSS colours. */
+function contrast(a: string, b: string) {
+  const luminance = (color: string) => {
+    const [r, g, b] = srgb(color).map((c) => {
+      const v = c / 255;
+      return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    }) as [number, number, number];
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/**
+ * A stripe has to be seen, so it is 3:1 (WCAG 1.4.11) from the card it is drawn on and from the
+ * page beyond the card's edge, in every theme, with no idea which is on. The old clamp, HSL
+ * lightness 0.38–0.62, drew a yellow at 1.07:1 on the light page and a navy at 1.68:1 on the dark
+ * one (#471). The stripe now keeps its hue and is moved into the band of luminance that is 3:1
+ * from every page and card the tokens ship: a yellow is an olive, a navy a mid blue.
+ */
+export const AccentPicks: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col gap-2">
+          {PICKS.map(([name, hex]) => (
+            <Native key={name} accentColor={hex} accentLabel={name}>
+              <NativeHeader>
+                <NativeTitle>{name}</NativeTitle>
+              </NativeHeader>
+            </Native>
+          ))}
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col gap-2">
+          {PICKS.map(([name, hex]) => (
+            <Compiled key={name} accentColor={hex} accentLabel={name}>
+              <CompiledHeader>
+                <CompiledTitle>{name}</CompiledTitle>
+              </CompiledHeader>
+            </Compiled>
+          ))}
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const html = document.documentElement;
+    const had = {
+      dark: html.classList.contains("dark"),
+      light: html.classList.contains("light"),
+      palette: html.getAttribute("data-palette"),
+    };
+    const themes = [
+      ["light", () => html.classList.add("light")],
+      ["dark", () => html.classList.add("dark")],
+      ["monokai", () => html.setAttribute("data-palette", "monokai")],
+    ] as const;
+    try {
+      for (const [theme, apply] of themes) {
+        html.classList.remove("dark", "light");
+        html.removeAttribute("data-palette");
+        apply();
+        await step(`${theme}: every stripe is 3:1 from the page and the card`, async () => {
+          const page = tokenColor("background");
+          const card = tokenColor("secondary");
+          for (const [name] of PICKS) {
+            const bars = canvas.getAllByRole("img", { name });
+            await expect(bars).toHaveLength(2);
+            for (const bar of bars) {
+              const stripe = getComputedStyle(bar).backgroundColor;
+              await expect(contrast(stripe, page)).toBeGreaterThanOrEqual(3);
+              await expect(contrast(stripe, card)).toBeGreaterThanOrEqual(3);
+            }
+          }
+        });
+      }
+    } finally {
+      html.classList.remove("dark", "light");
+      html.removeAttribute("data-palette");
+      html.classList.toggle("dark", had.dark);
+      html.classList.toggle("light", had.light);
+      if (had.palette !== null) {
+        html.setAttribute("data-palette", had.palette);
+      }
+    }
   },
 };

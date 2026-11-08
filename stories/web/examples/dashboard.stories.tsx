@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { InputField, SelectField, TextareaField, useAppForm } from "@/components/app-form";
 import { CardLayout } from "@/components/card-layout";
 import { ColorField } from "@/components/color-field";
@@ -263,6 +263,8 @@ function Dashboard({ state }: Args) {
                         ? "Waiting on a reviewer"
                         : "Since Monday"
                 }
+                // The warning icon and the hint say the count matters; the colour only adds to
+                // it, and a chosen tile draws its figure in foreground (#471).
                 {...(which === "overdue" && count(which) > 0
                   ? { valueClassName: "text-negative" }
                   : {})}
@@ -419,6 +421,13 @@ export const Default: Story = {
     await userEvent.click(overdue);
     await expect(overdue).toHaveAttribute("aria-pressed", "true");
     await expect(canvas.getByRole("heading", { name: "Overdue" })).toBeVisible();
+    // Chosen, its figure is the label's colour, not the red it has unchosen: red on the chosen
+    // tint was under 3:1.
+    const figure = overdue.querySelector<HTMLElement>("[data-slot=stat-tile-value]");
+    const label = overdue.querySelector<HTMLElement>("[data-slot=stat-tile-label]");
+    await waitFor(() =>
+      expect(figure && getComputedStyle(figure).color).toBe(label && getComputedStyle(label).color),
+    );
     await userEvent.unhover(overdue);
   },
 };

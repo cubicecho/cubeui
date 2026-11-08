@@ -9,7 +9,7 @@
  * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
  */
 
-import { ChevronRight, Image as ImageIcon, ImageOff } from "lucide-react";
+import { Check, ChevronRight, Image as ImageIcon, ImageOff } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { createContext, useContext, useEffect, useId, useMemo, useState } from "react";
 import ReactMarkdown, {
@@ -20,8 +20,8 @@ import ReactMarkdown, {
   type UrlTransform,
 } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { CHECKBOX_CLASS } from "@/components/ui/checkbox-base";
 import { cn, type SlotNode } from "@/lib/utils";
-import { Checkbox } from "./checkbox";
 import { Code, CodeBlock } from "./code";
 import { Separator } from "./separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
@@ -283,9 +283,16 @@ function ListItem({ className, children }: ComponentPropsWithoutRef<"li">) {
 }
 
 /**
- * A task item's box. Markdown writes it as `- [x]`, and it is drawn as the registry's `Checkbox`
- * so a rendered checklist matches a form's — disabled, because the document is being read, not
- * filled in: ticking it here would change nothing in the source.
+ * A task item's box. Markdown writes it as `- [x]`, and it is drawn in the registry's `Checkbox`
+ * look, so a rendered checklist matches a form's: an empty box edged `foreground/50`, or the
+ * chosen tint edged in `active` with a `foreground` check. Each mark is 3:1 or more on the page
+ * and on a card, which `palette-contrast.test.mjs` holds for the checkbox.
+ *
+ * It is not a `Checkbox`. The document is being read, not filled in, and ticking a box here would
+ * change nothing in the source, so it is no control: not a button, not in the tab order. It was a
+ * disabled `Checkbox`, and disabled is drawn at half opacity, where the tick was 2.8:1 and a ticked
+ * box hard to tell from an empty one (#471). It is a read-only `checkbox` role instead, so a
+ * screen reader still says checked or not checked, named by its item.
  *
  * It hangs in the list's indent, centred on the item's first line, where a bullet would be, so the
  * item's text starts where every other item's does, wrapped lines too. It is taken out of the line
@@ -295,9 +302,25 @@ function ListItem({ className, children }: ComponentPropsWithoutRef<"li">) {
  */
 function TaskBox({ checked }: ComponentPropsWithoutRef<"input">) {
   const item = useContext(TaskItemContext);
+  const done = Boolean(checked);
   return (
     <span className="-left-6 absolute top-0 flex h-[1lh] items-center">
-      <Checkbox checked={Boolean(checked)} disabled aria-labelledby={item} />
+      {/* biome-ignore lint/a11y/useFocusableInteractive: read-only, in a document: a tab stop would offer an edit that changes nothing */}
+      {/* biome-ignore lint/a11y/useSemanticElements: `<input type="checkbox">` is a control, which `readonly` does not stop and `disabled` dims */}
+      <span
+        role="checkbox"
+        aria-checked={done}
+        aria-readonly
+        aria-labelledby={item}
+        data-slot="markdown-task-box"
+        className={cn(
+          CHECKBOX_CLASS,
+          "flex text-foreground",
+          done ? "border-active bg-active/40" : "border-foreground/50 bg-background",
+        )}
+      >
+        {done ? <Check aria-hidden className="h-3 w-3" /> : null}
+      </span>
     </span>
   );
 }
@@ -869,8 +892,8 @@ export type MarkdownProps = {
 
 /**
  * A Markdown string, rendered with GitHub-flavoured Markdown on. Every element is drawn from the
- * registry's own primitives (`CodeBlock`, `Code`, `Table`, `Separator`, `Checkbox`), so a rendered
- * document matches the page around it.
+ * registry's own primitives (`CodeBlock`, `Code`, `Table`, `Separator`), and a task item's box in
+ * `Checkbox`'s look, so a rendered document matches the page around it.
  *
  * Raw HTML is never rendered and no prop turns it on, because the content is as often someone
  * else's as the caller's. URLs are filtered by {@link MarkdownProps.urlTransform}. Links between

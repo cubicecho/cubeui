@@ -5,6 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import type { MarkdownCodeEditorProps } from "@/components/markdown-code-editor";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { tokenColor } from "../token-color";
 
 // The documented way in: CodeMirror is its own chunk, and a skeleton holds the editor's place
 // while it arrives.
@@ -109,6 +110,36 @@ export const Default: Story = {
 };
 
 /**
+ * The caret's line, focused, is drawn in `hover`, as anything focused is, and not in the chosen
+ * tint: the link, code and quiet markup on it were 3.1–4.2:1 on the tint (#471), and they are
+ * 4.5:1 or more on `hover` in every palette (`palette-contrast.test.mjs`). Unfocused, no line is
+ * picked out.
+ */
+export const CursorLine: Story = {
+  render: () => <Held />,
+  play: async ({ canvas, canvasElement }) => {
+    const textbox = await canvas.findByRole("textbox", { name: "Notes" }, { timeout: 10_000 });
+    const view = EditorView.findFromDOM(textbox);
+    const linkLine = SOURCE.indexOf("What changed");
+    view?.focus();
+    view?.dispatch({ selection: { anchor: linkLine } });
+    await waitFor(() => expect(view?.dom).toHaveClass("cm-focused"));
+    const line = () => canvasElement.querySelector<HTMLElement>(".cm-activeLine");
+    await waitFor(() => expect(line()).toHaveTextContent(/^What changed/));
+    await expect(getComputedStyle(line() as HTMLElement).backgroundColor).toBe(tokenColor("hover"));
+    // The address on it keeps its colour: the pair the palette test measures is the one drawn.
+    const url = [...(line()?.querySelectorAll<HTMLElement>("span") ?? [])].find(
+      (span) => span.textContent === "https://example.com",
+    );
+    await expect(url && getComputedStyle(url).color).toBe(tokenColor("info"));
+
+    textbox.blur();
+    await waitFor(() => expect(view?.dom).not.toHaveClass("cm-focused"));
+    await expect(getComputedStyle(line() as HTMLElement).backgroundColor).toBe("rgba(0, 0, 0, 0)");
+  },
+};
+
+/**
  * Opening another file is handing the editor another `value`. It replaces the document and is
  * not reported back as an edit, which would mark the file just opened as changed.
  */
@@ -158,7 +189,7 @@ const SEND_ON_MOD_ENTER = [
  */
 export const EmptyWithAnExtension: Story = {
   render: () => <Held initial="" placeholder="Write Markdown…" extensions={SEND_ON_MOD_ENTER} />,
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     const textbox = await canvas.findByRole("textbox", { name: "Notes" }, { timeout: 10_000 });
     await expect(canvas.getByText("Write Markdown…")).toBeVisible();
     onSend.mockClear();
@@ -167,6 +198,9 @@ export const EmptyWithAnExtension: Story = {
     // CodeMirror marks itself focused on a 10ms timer after the focus event. Without this wait the
     // a11y check measured whichever state won that race, and failed only when focus won (#436).
     await waitFor(() => expect(view?.dom).toHaveClass("cm-focused"));
+    // The placeholder's line is not picked out: there is no text on it to be the current line of.
+    const line = canvasElement.querySelector<HTMLElement>(".cm-activeLine");
+    await expect(line && getComputedStyle(line).backgroundColor).toBe("rgba(0, 0, 0, 0)");
     await userEvent.keyboard("{Control>}{Enter}{/Control}");
     await expect(onSend).toHaveBeenCalledTimes(1);
   },
