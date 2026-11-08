@@ -40,7 +40,8 @@
       "name": "color",
       "type": "registry:lib",
       "title": "Color Helpers",
-      "description": "Derives an accent and a desaturated tint from a user-chosen hex colour.",
+      "description": "Derives an accent that shows on light and dark cards from a user-chosen hex colour.",
+      "registryDependencies": ["@cubeui/readable-text-color"],
       "files": [
         {
           "path": "registry/lib/color.ts",

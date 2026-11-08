@@ -6,17 +6,12 @@
  * text. These keep the hue someone chose and constrain everything else.
  *
  * Separate from `lib/utils` because these are the only functions here that a
- * component might not want, and the registry installs whole files.
+ * component might not want, and the registry installs whole files. The hex is
+ * read by `lib/readable-text-color`'s parser, so `#f80` and `ff8800` are the
+ * colours they spell here too.
  */
 
-const HEX_RADIX = 16;
-/** The largest value of one `rr` channel. */
-const CHANNEL_MAX = 255;
-/** Where each channel's two digits start in `#rrggbb`. */
-const RED = 1;
-const GREEN = 3;
-const BLUE = 5;
-const CHANNEL_DIGITS = 2;
+import { hexChannels } from "@/lib/readable-text-color";
 
 /** The colour wheel is six sectors of sixty degrees, and each channel leads two of them. */
 const HUE_SECTORS = 6;
@@ -29,15 +24,18 @@ const PERCENT = 100;
 const ACCENT_MIN_LIGHTNESS = 0.38;
 const ACCENT_MAX_LIGHTNESS = 0.62;
 
-function channel(hex: string, start: number): number {
-  return Number.parseInt(hex.slice(start, start + CHANNEL_DIGITS), HEX_RADIX) / CHANNEL_MAX;
-}
-
-/** Parses a `#rrggbb` colour into hue (0–360), saturation and lightness (0–1). */
-export function hexToHsl(hex: string): { h: number; s: number; l: number } {
-  const r = channel(hex, RED);
-  const g = channel(hex, GREEN);
-  const b = channel(hex, BLUE);
+/**
+ * Hue (0–360), saturation and lightness (0–1) of a hex colour.
+ *
+ * @param hex - `#rgb` or `#rrggbb`, with or without the `#`; an alpha digit is dropped.
+ * @returns The three, or `undefined` for anything that is not a hex colour.
+ */
+export function hexToHsl(hex: string): { h: number; s: number; l: number } | undefined {
+  const rgb = hexChannels(hex);
+  if (!rgb) {
+    return undefined;
+  }
+  const [r, g, b] = rgb;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
@@ -63,15 +61,15 @@ export function hexToHsl(hex: string): { h: number; s: number; l: number } {
 /**
  * Keeps the hue but clamps lightness to a mid range, so a near-white or
  * near-black pick cannot disappear against either the light or the dark card.
+ *
+ * @param hex - `#rgb` or `#rrggbb`, with or without the `#`.
+ * @returns An `hsl()` colour, or `undefined` for anything that is not a hex colour.
  */
-export function hexToAccent(hex: string): string {
-  const { h, s, l } = hexToHsl(hex);
-  const clampedL = Math.min(ACCENT_MAX_LIGHTNESS, Math.max(ACCENT_MIN_LIGHTNESS, l));
-  return `hsl(${h}, ${Math.round(s * PERCENT)}%, ${Math.round(clampedL * PERCENT)}%)`;
-}
-
-/** A desaturated, high-lightness tint of a colour, for a background behind text. */
-export function hexToDesaturated(hex: string): string {
-  const { h } = hexToHsl(hex);
-  return `hsl(${h}, 25%, 88%)`;
+export function hexToAccent(hex: string): string | undefined {
+  const hsl = hexToHsl(hex);
+  if (!hsl) {
+    return undefined;
+  }
+  const clampedL = Math.min(ACCENT_MAX_LIGHTNESS, Math.max(ACCENT_MIN_LIGHTNESS, hsl.l));
+  return `hsl(${hsl.h}, ${Math.round(hsl.s * PERCENT)}%, ${Math.round(clampedL * PERCENT)}%)`;
 }

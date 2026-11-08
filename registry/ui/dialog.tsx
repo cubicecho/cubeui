@@ -12,16 +12,7 @@
  * openings exactly as it does on web.
  */
 
-import {
-  Children,
-  cloneElement,
-  createContext,
-  isValidElement,
-  type ReactElement,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { Children, createContext, isValidElement, useContext, useRef, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,7 +32,7 @@ import {
   type DialogTriggerProps,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { addHandlers, cn } from "@/lib/utils";
 
 /** The open side of the same problem, read by `DialogTrigger`. */
 const DialogOpenContext = createContext<(open: boolean) => void>(() => {});
@@ -113,18 +104,6 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
   );
 }
 
-type Pressed = ReactElement<{ onPress?: (() => void) | undefined }>;
-
-/** The child with `action` added to its own press rather than swapped in for it. */
-function addPress(child: Pressed, action: () => void) {
-  return cloneElement(child, {
-    onPress: () => {
-      child.props.onPress?.();
-      action();
-    },
-  });
-}
-
 /**
  * A trigger, so a dialog can own its own open state at the call site.
  *
@@ -136,7 +115,7 @@ function DialogTrigger({ asChild, children }: DialogTriggerProps) {
   const open = useContext(DialogOpenContext);
   const show = () => open(true);
   if (asChild && isValidElement(children)) {
-    return addPress(children as Pressed, show);
+    return addHandlers(children, { onPress: show });
   }
   return (
     <Pressable onPress={show} role="button">
@@ -152,7 +131,7 @@ function DialogTrigger({ asChild, children }: DialogTriggerProps) {
 function DialogClose({ asChild, className, children }: DialogCloseProps) {
   const close = useContext(DialogCloseContext);
   if (asChild && isValidElement(children)) {
-    return addPress(children as Pressed, close);
+    return addHandlers(children, { onPress: close });
   }
   return (
     // The `role` is hand-written because a `<button>` has no native counterpart.
