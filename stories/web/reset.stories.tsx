@@ -43,7 +43,7 @@ export const BareBorderTakesTheAppsColour: Story = {
       <Section className="rounded-md border p-4" title="All sides" contentSlot={<p>A view</p>} />
       <Section className="border-t pt-4" title="Top" contentSlot={<p>A view</p>} />
       <Section title="Body" contentClassName="border-b pb-4" contentSlot={<p>A slot</p>} />
-      <SectionHeading className="border-b pb-1">A text</SectionHeading>
+      <SectionHeading className="border-b pb-1" title="A text" />
     </div>
   ),
   play: async ({ canvasElement }) => {

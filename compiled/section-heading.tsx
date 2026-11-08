@@ -12,6 +12,11 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type SectionHeadingProps = {
+  /**
+   * The words of the label: "Upcoming", "Workspaces". The component puts the `Text` around them,
+   * as every shell does with a `title`.
+   */
+  title?: ReactNode;
   /** `overline` is the smaller uppercase label; `default` is a plain section label. */
   variant?: "default" | "overline" | undefined;
   /**
@@ -28,12 +33,22 @@ type SectionHeadingProps = {
   id?: string | undefined;
   /** The heading's `testID` / `data-slot`, so the shell drawing it can tell its own apart. */
   "data-slot"?: string | undefined;
+  /** On the label's own `Text`: its size, a `truncate`. */
   className?: string | undefined;
-  children: ReactNode;
+  /** @deprecated Use `title`; this name goes in the next release. `title` wins. */
+  children?: ReactNode;
 };
 
-/** A small muted heading above a section of content. */
+/**
+ * A small label over a group of content: a sidebar's group of rows, a run of cards.
+ *
+ * It is grey, the `/60` step, in both variants. It labels a group rather than titling a block, so
+ * it stays quieter than the titles of the rows under it, which are in full ink (the heading
+ * rhythm, #473). `Section` draws its title through this component and gives it the rhythm's
+ * full-ink title instead.
+ */
 export function SectionHeading({
+  title,
   variant = "default",
   level,
   id,
@@ -41,6 +56,7 @@ export function SectionHeading({
   className,
   children,
 }: SectionHeadingProps) {
+  const label = title ?? children;
   const classes = cn(
     "font-semibold text-foreground/60",
     variant === "overline" ? "text-xs uppercase tracking-wide" : "text-sm",
@@ -52,7 +68,7 @@ export function SectionHeading({
   if (level === undefined) {
     return (
       <span data-slot={testID} id={id} className={cn("cube-rn-text", classes)}>
-        {children}
+        {label}
       </span>
     );
   }
@@ -65,7 +81,7 @@ export function SectionHeading({
       aria-level={level}
       className={cn("cube-rn-text", classes)}
     >
-      {children}
+      {label}
     </span>
   );
 }

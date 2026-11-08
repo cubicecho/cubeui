@@ -519,7 +519,8 @@ export const EmptyList: Story = {
 
 /**
  * `loading` on both halves: the skeleton where the body goes, the title kept, and `emptySlot` not
- * consulted for a body that has not arrived.
+ * consulted for a body that has not arrived. The skeleton says "Loading" as a status, as
+ * `RowSkeleton` does, and its bars say nothing.
  */
 export const Loading: Story = {
   args: {},
@@ -551,6 +552,15 @@ export const Loading: Story = {
     await expect(skeletons).toHaveLength(2);
     await expect(canvas.getAllByRole("heading", { name: "Members" })).toHaveLength(2);
     await expect(canvas.queryByText("No members yet.")).toBeNull();
+
+    const statuses = canvas.getAllByRole("status", { name: "Loading" });
+    await expect(statuses).toHaveLength(2);
+    for (const status of statuses) {
+      await expect(Array.from(skeletons)).toContain(status);
+      for (const bar of Array.from(status.children)) {
+        await expect(bar).toHaveAttribute("aria-hidden", "true");
+      }
+    }
   },
 };
 

@@ -560,13 +560,23 @@ export function CardLayout({
 /**
  * Three bars at the widths a paragraph or a short list settles at, so the card holds roughly the
  * height its content will and the page does not jump when the data lands.
+ *
+ * The bars are `aria-hidden` under one `role="status"` saying "Loading", as `RowSkeleton`'s are.
+ * Hidden as a whole, the body said nothing while it waited, and a screen reader heard a title
+ * over an empty card. The status is the wrapper and its name the `aria-label`, because on device
+ * there is no `sr-only` text for a live region to read.
  */
 function CardLayoutSkeleton() {
   return (
-    <div data-slot="card-layout-skeleton" className="cube-rn-view gap-2" aria-hidden>
-      <Skeleton className="h-4 w-2/3" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-1/2" />
+    <div
+      data-slot="card-layout-skeleton"
+      role="status"
+      aria-label="Loading"
+      className="cube-rn-view gap-2"
+    >
+      <Skeleton aria-hidden className="h-4 w-2/3" />
+      <Skeleton aria-hidden className="h-4 w-full" />
+      <Skeleton aria-hidden className="h-4 w-1/2" />
     </div>
   );
 }

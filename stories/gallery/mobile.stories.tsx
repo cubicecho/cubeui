@@ -825,10 +825,8 @@ const sections: GallerySection[] = [
     items: ["label", "code", "separator", "section-heading"],
     content: (
       <Stack>
-        <SectionHeading level={3}>Section heading</SectionHeading>
-        <SectionHeading variant="overline" level={3}>
-          Overline heading
-        </SectionHeading>
+        <SectionHeading level={3} title="Section heading" />
+        <SectionHeading variant="overline" level={3} title="Overline heading" />
         <Label>A label</Label>
         <Separator />
         <Text className="text-foreground text-sm">

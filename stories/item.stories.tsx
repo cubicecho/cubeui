@@ -28,6 +28,7 @@ import {
   ItemTitle,
 } from "../registry/ui/item.tsx";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * shadcn's `Item` parts drawn by either half: the native source under react-native-web on the
@@ -386,5 +387,46 @@ export const SmallIsListItem: Story = {
       }
       await expect(Math.abs(item.button.right - listItem.button.right)).toBeLessThan(0.5);
     }
+  },
+};
+
+/**
+ * A link in a description is `info` at rest, as every link is, and not only under the pointer
+ * (#484). On a chosen row it is `foreground`, as the line around it is: `info` on the `active`
+ * tint is about 3.3:1. The underline marks it either way.
+ *
+ * The web half only: a descendant selector is the web's, and on device the link is the caller's
+ * own `Text`, which carries its colour itself.
+ */
+export const LinkInDescription: Story = {
+  render: () => (
+    <div className="compiled-root flex flex-col gap-2" style={{ width: 360 }}>
+      <CompiledItem size="sm">
+        <CompiledItemContent>
+          <CompiledItemTitle>Nightly backup</CompiledItemTitle>
+          <CompiledItemDescription>
+            Failed at 02:00. <a href="#logs">Read the logs</a>
+          </CompiledItemDescription>
+        </CompiledItemContent>
+      </CompiledItem>
+      <CompiledItem size="sm" selected>
+        <CompiledItemContent>
+          <CompiledItemTitle>Weekly backup</CompiledItemTitle>
+          <CompiledItemDescription>
+            Ran on Sunday. <a href="#report">Open the report</a>
+          </CompiledItemDescription>
+        </CompiledItemContent>
+      </CompiledItem>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const root = within(rootOf(canvasElement, ".compiled-root"));
+    const atRest = root.getByRole("link", { name: "Read the logs" });
+    await expect(getComputedStyle(atRest).color).toBe(tokenColor("info"));
+    await expect(getComputedStyle(atRest).textDecorationLine).toBe("underline");
+
+    const onChosen = root.getByRole("link", { name: "Open the report" });
+    await expect(getComputedStyle(onChosen).color).toBe(tokenColor("foreground"));
+    await expect(getComputedStyle(onChosen).textDecorationLine).toBe("underline");
   },
 };

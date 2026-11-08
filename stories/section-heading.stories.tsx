@@ -28,7 +28,7 @@ type Story = StoryObj<typeof meta>;
  * failure loud, so the comparison the rest of these stories make is worth something.
  */
 export const Default: Story = {
-  args: { children: "Upcoming" },
+  args: { title: "Upcoming" },
   render: (args) => <SideBySide native={<Native {...args} />} compiled={<Compiled {...args} />} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -50,7 +50,7 @@ export const Default: Story = {
 };
 
 export const Overline: Story = {
-  args: { variant: "overline", children: "This week" },
+  args: { variant: "overline", title: "This week" },
   render: (args) => <SideBySide native={<Native {...args} />} compiled={<Compiled {...args} />} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -63,5 +63,39 @@ export const Overline: Story = {
       getComputedStyle(native).textTransform,
     );
     await expect(getComputedStyle(compiled).textTransform).toBe("uppercase");
+  },
+};
+
+/**
+ * `children` is the old name for `title`, kept for one release so a call site written before the
+ * rename still draws its label on both halves. Given both, `title` is the one drawn.
+ */
+export const DeprecatedChildren: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root">
+          <Native>Upcoming</Native>
+          <Native title="This week">Ignored</Native>
+        </div>
+      }
+      compiled={
+        <div className="compiled-root">
+          <Compiled>Upcoming</Compiled>
+          <Compiled title="This week">Ignored</Compiled>
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const root of [".native-root", ".compiled-root"]) {
+      const half = canvasElement.querySelector<HTMLElement>(root);
+      if (!half) {
+        throw new Error(`${root} should render`);
+      }
+      await expect(within(half).getByText("Upcoming")).toBeTruthy();
+      await expect(within(half).getByText("This week")).toBeTruthy();
+      await expect(within(half).queryByText("Ignored")).toBeNull();
+    }
   },
 };
