@@ -221,8 +221,8 @@ export const Soft: Story = {
     for (const half of sections) {
       const scope = within(half);
       const words = scope.getByText("Failed");
-      const negative = tokenColor("negative", half);
-      await expect(getComputedStyle(words).color).toBe(tokenColor("foreground", half));
+      const negative = tokenColor("negative", { inside: half });
+      await expect(getComputedStyle(words).color).toBe(tokenColor("foreground", { inside: half }));
 
       // The pill is the word's box on the web and its parent on device.
       const pill = words.closest("[data-slot='badge']") ?? (words.parentElement as HTMLElement);
