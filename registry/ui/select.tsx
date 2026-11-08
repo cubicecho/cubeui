@@ -33,7 +33,7 @@ import {
   type SelectTriggerProps,
   type SelectValueProps,
 } from "@/components/ui/select-base";
-import { cn, FIELD_INVALID_CLASS, isInvalid, touchRowClass } from "@/lib/utils";
+import { CardBodyContext, cn, FIELD_INVALID_CLASS, isInvalid, touchRowClass } from "@/lib/utils";
 
 type SelectState = {
   disabled: boolean;
@@ -152,7 +152,9 @@ function SelectContent({ className, children }: SelectContentProps) {
         />
         <View className={cn(SELECT_CONTENT_CLASS, "max-h-96 w-full max-w-sm p-1", className)}>
           {/* `list`, because React Native's roles stop short of radix's `listbox`. */}
-          <ScrollView role="list">{children}</ScrollView>
+          <ScrollView role="list">
+            <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
+          </ScrollView>
         </View>
       </View>
     </Modal>

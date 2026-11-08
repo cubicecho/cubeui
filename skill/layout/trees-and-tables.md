@@ -217,7 +217,9 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 - **In a card it lines up with the card's text.** Inside `CardContent` — `CardLayout`'s body, or a
   `Card` you compose — the table reaches out by its cells' own `px-2`, so the first column's text
   starts where the card's title does and the last column ends where the card's action does, as a
-  `List` there does. Its rules run nearly edge to edge. Do not add a negative margin of your own.
+  `List` there does. Its rules run nearly edge to edge, and it stays lined up while it scrolls
+  sideways. A `DialogLayout`'s body counts as a card's; a dialog or popover opened from inside a
+  card does not, and a table there keeps its place. Do not add a negative margin of your own.
 - **Web only — no native twin.** React Native has no table element, and a phone has no width for
   columns. On native, draw the same data as rows: `ListItem`s for many records, and
   `PropertyList` / `PropertyRow` for one record's facts.

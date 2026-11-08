@@ -20,7 +20,7 @@ import {
   DIALOG_TITLE_CLASS,
 } from "@/components/ui/dialog-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { bridgePress, cn } from "@/lib/utils";
+import { bridgePress, CardBodyContext, cn } from "@/lib/utils";
 import { type ButtonProps, buttonVariants } from "./button";
 
 /** The root of a dialog that must be answered: it holds the open state. */
@@ -92,7 +92,7 @@ function AlertDialogContent({
         )}
         {...props}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {/* A framed app focusing itself would take the focus out of the confirm. */}
         <FrameFocusGuard />
       </AlertDialogPrimitive.Content>
