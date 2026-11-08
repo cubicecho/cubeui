@@ -37,6 +37,7 @@
  * app cannot install.
  */
 import { type ReactNode, useContext, useState } from "react";
+import { describeError } from "@/lib/error-message";
 import { cn, PageLoadingContext, type SlotNode } from "@/lib/utils";
 import { Alert } from "./alert";
 import { Button } from "./button";
@@ -55,29 +56,6 @@ type QueryLike = {
   error: unknown;
   refetch: () => unknown;
 };
-
-/** What a failure says when neither the caller nor the error has anything to say. */
-const FALLBACK = "The server did not answer.";
-
-/**
- * The error's own `message`, which is the transport's wording rather than the app's. Empty when it
- * has none, so the caller's `|| FALLBACK` speaks; the forms' `messageOf` prints the value instead.
- */
-function messageOf(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (typeof error === "object" && error !== null && "message" in error) {
-    const { message } = error as { message: unknown };
-    if (typeof message === "string") {
-      return message;
-    }
-  }
-  return "";
-}
 
 const settles = (value: unknown): value is PromiseLike<unknown> =>
   typeof value === "object" &&
@@ -270,9 +248,10 @@ export function LoadError({
   /** No box, no inset of its own, a small outline retry — see `LoadState`'s `compact`. */
   compact?: boolean | undefined;
   /**
-   * What the failure means, in the app's words. Without it the line under the heading is the
-   * error's own `message` — the transport's wording, "Failed to fetch" or "Received status code
-   * 401" — which is right for a bug report and wrong for somebody whose session has expired.
+   * What the failure means, in the app's words. Without it the line under the heading is
+   * `describeError`'s (`@cubeui/error-message`), the one `ErrorPage` shows: "Could not reach the
+   * server…" for a failed fetch, an expired session said as one, and otherwise the error's own
+   * message. An empty answer hands the error to `describeError`.
    */
   describe?: ((error: unknown) => string) | undefined;
   className?: string | undefined;
@@ -288,7 +267,7 @@ export function LoadError({
       .catch(() => {})
       .finally(() => setRetrying(false));
   };
-  const reason = (describe ?? messageOf)(error) || FALLBACK;
+  const reason = describe?.(error) || describeError(error);
   const label = retrying ? "Retrying…" : "Try again";
 
   // The same three parts — what failed, why, try again — at the size of a nav row. No box, since a

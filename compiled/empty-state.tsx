@@ -95,17 +95,21 @@ export type EmptyStateProps = {
     }
 );
 
+// The web's descendant class; on device the context below sizes the glyph.
+const COMPACT_ICON = "[&_svg]:size-4";
+
 /**
  * The centred icon / title / description / action shown when a list is empty — or, at
  * `compact`, the one muted line shown when a short list inside a card or sidebar is.
  *
  * The block is drawn by `@cubeui/empty`'s parts, so shadcn's compound `Empty` and this one-line
- * form are the same empty state. The compact line is its own: it has none of their parts.
+ * form are the same empty state. The compact line is its own and uses none of their parts, but
+ * its parts carry their names (`empty`, `empty-icon`, `empty-title`), so a selector reaching an
+ * empty state from outside finds either form.
  *
- * The heading is `role="heading"` + `aria-level`, the same as `Section`'s: a heading on device,
- * where VoiceOver and TalkBack navigate by it, and on the web a `<span>` carrying the rank, since
- * the rank is a prop and the compiler writes the tag once. Two arms rather than a spread `role`,
- * so a title with no `level` stays plain text on both platforms.
+ * The heading is `EmptyTitle`'s `level`: a heading on device, where VoiceOver and TalkBack
+ * navigate by it, and an `<h1>`–`<h3>` on the web. With no `level` the title stays plain text on
+ * both platforms.
  *
  * The compact line wraps rather than truncates: "No servers yet. Add one to give the agent some
  * tools." is a sentence someone has to read, and the action drops under it on a narrow column.
@@ -124,6 +128,7 @@ export function EmptyState({
   if (compact) {
     return (
       <div
+        data-slot="empty"
         className={cn(
           "cube-rn-view",
           "w-full flex-row flex-wrap items-center gap-x-2 gap-y-1 py-2",
@@ -133,13 +138,19 @@ export function EmptyState({
         {glyph == null ? null : (
           // At the text's size and ink: the context on device, the descendant class on the web,
           // where an icon takes `currentColor` and ignores the context.
-          <div aria-hidden className="cube-rn-view shrink-0 text-foreground/60 [&_svg]:size-4">
+          <div
+            data-slot="empty-icon"
+            aria-hidden
+            className={cn("cube-rn-view", "shrink-0 text-foreground/60", COMPACT_ICON)}
+          >
             <IconClassContext.Provider value="h-4 w-4 text-foreground/60">
               {glyph}
             </IconClassContext.Provider>
           </div>
         )}
-        <span className="cube-rn-text shrink text-sm text-foreground/60">{title}</span>
+        <span data-slot="empty-title" className="cube-rn-text shrink text-sm text-foreground/60">
+          {title}
+        </span>
         {actionSlot}
       </div>
     );
@@ -148,13 +159,7 @@ export function EmptyState({
     <Empty className={className}>
       <EmptyHeader>
         <EmptyMedia variant="icon">{glyph}</EmptyMedia>
-        {level === undefined ? (
-          <EmptyTitle>{title}</EmptyTitle>
-        ) : (
-          <EmptyTitle role="heading" aria-level={level}>
-            {title}
-          </EmptyTitle>
-        )}
+        <EmptyTitle level={level}>{title}</EmptyTitle>
         {description ? <EmptyDescription>{description}</EmptyDescription> : null}
       </EmptyHeader>
       {actionSlot}

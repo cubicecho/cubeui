@@ -109,6 +109,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/list-rows.md](layout/list-rows.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout/lists.md](layout/lists.md#empty-states) |
+| What an error boundary renders when a route threw: the whole screen, `role="alert"`, Try again, the raw message for a bug report — instead of a fallback of your own | `ErrorPage` | [layout/lists.md](layout/lists.md#errorpage) |
 | A list row that opens onto detail | `CollapsibleRow` | [layout/list-rows.md](layout/list-rows.md#collapsiblerow) |
 | A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Collapsible` | [layout/cards.md](layout/cards.md#collapsible) |
 | Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `PropertyList`) | `Table` and its parts | [layout/trees-and-tables.md](layout/trees-and-tables.md#table) |

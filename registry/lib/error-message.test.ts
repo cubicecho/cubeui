@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { messageOf } from "./error-message";
+import { describeError, messageOf } from "./error-message";
 
 describe("messageOf", () => {
   it("answers nothing for no error", () => {
@@ -21,5 +21,35 @@ describe("messageOf", () => {
   it("falls back to String for anything else", () => {
     expect(messageOf(false)).toBe("false");
     expect(messageOf(7)).toBe("7");
+  });
+});
+
+describe("describeError", () => {
+  it("says the server could not be reached, in each runtime's spelling of it", () => {
+    const reach = "Could not reach the server. Check your connection and try again.";
+    expect(describeError(new TypeError("Failed to fetch"))).toBe(reach);
+    expect(describeError(new TypeError("NetworkError when attempting to fetch resource."))).toBe(
+      reach,
+    );
+    expect(describeError(new TypeError("Network request failed"))).toBe(reach);
+    expect(describeError(new TypeError("Load failed"))).toBe(reach);
+    expect(describeError("Failed to fetch")).toBe(reach);
+  });
+
+  it("says an expired session is one", () => {
+    expect(describeError(new Error("Not authenticated"))).toBe(
+      "Your session has expired. Please sign in again.",
+    );
+  });
+
+  it("shows any other message as it is", () => {
+    expect(describeError(new Error("Row 12 is locked."))).toBe("Row 12 is locked.");
+    expect(describeError({ message: "Received status code 500" })).toBe("Received status code 500");
+  });
+
+  it("is never empty", () => {
+    for (const error of [undefined, null, "", new Error(""), { message: 404 }, 7]) {
+      expect(describeError(error)).toBe("An unexpected error occurred.");
+    }
   });
 });
