@@ -98,15 +98,18 @@ export function parentPath(path: string): string {
 }
 
 /**
- * Whether moving `from` into the folder `into` is a move at all: not onto itself, not a folder
- * into something under it, and not into the folder it is already in.
+ * Whether moving `from` into the folder `into` is a move at all: not a folder onto itself or into
+ * something under it, and not into the folder it is already in. A file shares no path with what
+ * is under a folder, so the file `logs` may go into the folder `logs`, beside it (see `buildTree`).
  *
  * @param from the path being moved.
  * @param into the folder it would land in, `""` for the top level.
+ * @param type whether `from` is a file or a folder. Left out, it is read as a folder, the stricter
+ * of the two.
  * @returns `false` for a move that would change nothing or cannot be made.
  */
-export function isValidMove(from: string, into: string): boolean {
-  if (into === from || into.startsWith(`${from}/`)) {
+export function isValidMove(from: string, into: string, type: "file" | "dir" = "dir"): boolean {
+  if (type === "dir" && (into === from || into.startsWith(`${from}/`))) {
     return false;
   }
   return parentPath(from) !== into;

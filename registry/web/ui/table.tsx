@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import { useOverflows } from "@/components/ui/overflows";
-import { cn, FOCUS_EDGE } from "@/lib/utils";
+import { CardBodyContext, cn, FOCUS_EDGE } from "@/lib/utils";
 
 /**
  * Whether a `TableHead` sits in the header row group, so it can default its `scope` to the
@@ -73,12 +73,22 @@ const EDGE_FADE =
   "[--table-fade-start:0px] [--table-fade-end:0px] data-more-start:[--table-fade-start:2rem] data-more-end:[--table-fade-end:2rem] [--table-fade-to:to_right] rtl:[--table-fade-to:to_left] [mask-image:linear-gradient(var(--table-fade-to),transparent,#000_var(--table-fade-start),#000_calc(100%_-_var(--table-fade-end)),transparent),linear-gradient(#000_0_0),linear-gradient(#000_0_0)] [mask-clip:padding-box,padding-box,border-box] [mask-composite:add,exclude]";
 
 /**
+ * In a card's body the table reaches out by its cells' own `px-2`, so the first column's text
+ * starts where the card's title does and the last column ends where the card's action does, as a
+ * `List` there reaches out by a row's inset. Its rules run nearly edge to edge. The width is
+ * spelled out rather than left to the margins, so it holds in a parent that does not stretch it.
+ */
+const IN_CARD = "-mx-2 w-[calc(100%+1rem)]";
+
+/**
  * A table inside a container that scrolls sideways when it is too wide, and up and down as well
  * when it is given a `maxHeight`. The edge with more columns past it fades while it does. A
  * `TableCaption` written straight inside it is drawn under the container rather than in it, so it
- * stays in view however the rows are scrolled, and still names the table.
+ * stays in view however the rows are scrolled, and still names the table. In a card's body it
+ * lines its cells up with the card's title.
  */
 function Table({ className, maxHeight, children, ...props }: TableProps) {
+  const inCard = React.useContext(CardBodyContext);
   const [ref, overflows, edges] = useOverflows();
   const captionId = React.useId();
   const isCapped = maxHeight !== undefined;
@@ -100,6 +110,7 @@ function Table({ className, maxHeight, children, ...props }: TableProps) {
       tabIndex={overflows ? 0 : undefined}
       className={cn(
         "relative w-full overflow-x-auto",
+        caption === undefined && inCard && IN_CARD,
         // Not tinted as hovered: a tinted container would hide the row under the pointer.
         overflows && FOCUS_EDGE,
         isCapped && "overflow-y-auto",
@@ -125,7 +136,7 @@ function Table({ className, maxHeight, children, ...props }: TableProps) {
       {caption === undefined ? (
         container
       ) : (
-        <div data-slot="table-frame" className="w-full">
+        <div data-slot="table-frame" className={cn("w-full", inCard && IN_CARD)}>
           {container}
           <LiftedCaption.Provider
             value={{ id: caption.props.id ?? captionId, names: namedByCaption }}
