@@ -57,6 +57,8 @@ export const Loading: Story = {
   },
 };
 
+const REACH = "Could not reach the server. Check your connection and try again.";
+
 /**
  * The rung most often left out. With retries off a failed query stays failed, and a page that
  * draws the failure as an absence tells somebody whose server went away that they have no data.
@@ -73,9 +75,11 @@ export const Failed: Story = {
     // counterpart of the loading rung's `status` — and the whole card is that alert.
     const alert = canvas.getByRole("alert");
     expect(alert).toHaveTextContent("Could not load your roles");
-    expect(alert).toHaveTextContent("Failed to fetch");
+    // A failed fetch is said the way `ErrorPage` says it, not in the browser's words (#482).
+    expect(alert).toHaveTextContent(REACH);
     expect(canvas.getByText("Could not load your roles")).toBeVisible();
-    expect(canvas.getByText("Failed to fetch")).toBeVisible();
+    expect(canvas.getByText(REACH)).toBeVisible();
+    expect(canvas.queryByText("Failed to fetch")).toBeNull();
     await userEvent.click(canvas.getByRole("button", { name: "Try again" }));
     expect(args.query.refetch).toHaveBeenCalled();
   },
@@ -113,7 +117,7 @@ export const NotAnError: Story = {
     count: 0,
   },
   play: async ({ canvas }) => {
-    expect(canvas.getByText("The server did not answer.")).toBeVisible();
+    expect(canvas.getByText("An unexpected error occurred.")).toBeVisible();
   },
 };
 

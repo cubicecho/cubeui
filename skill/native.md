@@ -123,7 +123,7 @@ its badges with the buttons in `actionSlot`.
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
 | A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/list-rows.md](layout/list-rows.md#collapsiblerow) | `CollapsibleRow` | `@cubeui/collapsible-row` |
 | A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `LoadState` | `@cubeui/load-state` |
-| A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `ErrorPage` (once `RouteError`, deprecated) | `@cubeui/error-page` |
+| A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), drawn as `Empty`'s block with a red bubble and a 16px title, its line from `describeError` as `LoadError`'s is — see [layout/lists.md](layout/lists.md#errorpage) | `ErrorPage` (once `RouteError`, deprecated) | `@cubeui/error-page` |
 
 One name means different things across the halves, and it is worth knowing before you grep:
 

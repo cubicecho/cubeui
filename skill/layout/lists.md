@@ -8,6 +8,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   - [LoadState](#loadstate)
   - [Detail pages](#detail-pages)
   - [Empty states](#empty-states)
+  - [ErrorPage](#errorpage)
 
 ## List pages
 
@@ -55,10 +56,13 @@ The shells for the shape every list route is: a ladder of states, then a list of
   shell names no data library. The same line `FormField` holds against form libraries.
   `error` is `unknown` — an Apollo error, a TanStack `Error | null` and a thrown string all fit.
 - **`describe`** — `(error: unknown) => string` — is what the failure means in the app's words.
-  Without it the line under the heading is the error's own `message`, which is the transport's
-  wording ("Failed to fetch", "Received status code 401"), or "The server did not answer." when
-  there is none. An app with a `describeError` helper passes it here instead of keeping its own
-  failure card: `<LoadState describe={describeError} … />`. `LoadError` takes it too.
+  Without it the line under the heading is `describeError`'s (`@cubeui/error-message`), the same
+  line `ErrorPage` shows: "Could not reach the server. Check your connection and try again." for a
+  failed fetch in any runtime's wording, "Your session has expired…" for `Not authenticated`, and
+  otherwise the error's own message, or "An unexpected error occurred." when there is none. An app
+  with failures of its own answers those and hands the rest on:
+  `describe={(e) => (isQuota(e) ? "You are out of space." : describeError(e))}`. An empty answer
+  hands the error to `describeError` too. `LoadError` takes it as well.
 - **Try again awaits the retry.** When `onRetry` (on `LoadState`, the query's `refetch`) returns a
   promise, the button is disabled and reads "Retrying…" until it settles, so a second press does
   not stack requests. A rejected retry is caught — Apollo's `refetch` rejects when it fails again
@@ -203,6 +207,14 @@ and which one is a question of **where the list is**, not how much there is to s
 - **`level`** (1–3) makes the title a heading of that rank, at the same size. Set it only when the
   empty state *is* the screen — a first run, a record not found, a dead link — so a screen reader
   has a heading to land on. Otherwise leave it off; the page already has its heading.
+- **A whole-screen heading is the size of what draws it.** An empty, not-found or error block's
+  title is 16px at every rank, its `h1` included, on both halves: `EmptyState level={1}`,
+  `LoadState`'s `notFoundLabel` and `ErrorPage` are one block. A page's title is 20px —
+  `PageHeader`, and `CenteredCardLayout`, whose card is the page. Do not size a block's title up
+  because it is the `h1`.
+- The title is centred, so a long one wraps over the bubble; the description sits 4px under it
+  and is capped at `max-w-sm` (384px), so it wraps into a column about as wide as its actions. A
+  link in the description is `text-info` on the web; on device, give the link's `Text` the class.
 - **`compact`** is one muted `text-sm` line: an optional small `iconSlot` inline before the words, the
   `title`, then the `actionSlot` on the same line (it wraps under on a narrow column). No bubble, no
   centring, nothing but a `py-2` — it keeps the left edge of what it sits in. It is plain text,
@@ -220,5 +232,51 @@ and which one is a question of **where the list is**, not how much there is to s
   `text-base`, not `text-lg`, and there is no `flex-1` or `p-6 md:p-12` unless a `className` asks.
   Write `EmptyState` in new code; the parts are there so a shadcn call site ports unchanged, and
   for the rare empty state that needs a second button or an image where the icon goes.
-  `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
-  screen.
+  `EmptyTitle` is plain text unless given a `level` (1–3), which makes it an `<h1>`–`<h3>` on the
+  web and a heading on device, at the same size. Every part has its `data-slot` (`empty`,
+  `empty-header`, `empty-icon`, `empty-title`, `empty-description`, `empty-content`), and
+  `EmptyState`'s `compact` line carries the same names on its root, icon and text.
+
+### ErrorPage
+
+`ErrorPage` (`@cubeui/error-page`, on both halves) is what an error boundary renders when the tree
+below a route has thrown. It is the whole screen and says all of it, so the boundary renders it and
+nothing around it: the root is `role="alert"`, the title is the screen's `h1`, Try again calls
+`reset`, and the raw message for a bug report is `details`.
+
+```tsx
+<ErrorPage
+  error={error}
+  reset={retry}
+  details
+  actionSlot={<Button variant="outline" size="sm" onPress={reload} content="Reload" />}
+/>
+```
+
+<!-- props:ErrorPage -->
+`ErrorPage`'s props, from the TSDoc in `registry/layout/error-page.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `error` (required) | `unknown` |  | What was thrown, as the boundary caught it: an `Error`, a string, anything at all. |
+| `reset` (required) | `(() => void)` |  | What Try again calls: the boundary's reset, which draws the tree below it again. |
+| `describe` | `((error: unknown) => string)` |  | Turns a thrown value into a line worth reading. Without it the line is `describeError`'s (`@cubeui/error-message`), the same as `LoadError`'s: it knows the two failures every networked app has. Extend it with the ones yours has, handing the rest to `describeError`, rather than letting a stack-trace message reach the screen. An empty answer hands the error on. |
+| `title` | `string` | `"Something went wrong"` | The heading, and the screen's `h1`. The default fits a failed fetch and a render crash alike, which is why it is not "Failed to load" — a boundary catches both. 16px, as every empty block's title is at any rank. |
+| `details` | `ReactNode \| boolean` |  | The raw message, in a muted monospace block the user can select and paste into a bug report. `true` shows `error.message`; a node replaces the block's contents. Left out when it would say exactly what `describe` already said. Selectable on device too (`selectable`), where text is not by default. The block is bordered rather than filled: muted text on `bg-foreground/10` fails contrast. |
+| `actionSlot` | `SlotNode` |  | More buttons beside "Try again" — a reload is the usual one. |
+| `actionsSlot` | `SlotNode` |  | **Deprecated.** Use `actionSlot`; this name goes in the next release. `actionSlot` wins. |
+<!-- /props -->
+
+- **It is `Empty`'s block with a red bubble.** The same 48px bubble, 24px glyph, 16px title and
+  muted line as an empty or not-found screen, so a failed screen and an empty one are one shape;
+  the details and the buttons sit under it in `EmptyContent`'s column. It adds `flex-1` and a
+  `px-4` side inset, because nothing around it gives it either.
+- **The line under the title is `describeError`'s**, the same as `LoadError`'s, so a failed fetch
+  reads "Could not reach the server…" on both. Pass `describe` for your own failures, handing the
+  rest to `describeError`.
+- **`details`** — `true` prints `error.message` in a bordered monospace block a user can select
+  (on device too) and paste into a bug report; a node replaces the block's contents. It is left
+  out when it would repeat the line above it.
+- **It depends on nothing that could have failed**: no data client, router or theme state. Do not
+  wrap it in a `PageLayout` or read the app's state from it.
+- A failed *fetch* on a screen that still stands is `LoadState`'s rung, not this.

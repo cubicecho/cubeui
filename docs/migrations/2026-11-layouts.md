@@ -96,6 +96,8 @@ test that finds them by name needs changing:
 | `PageLayout` | `headerClassName` now lands on the whole header, which runs the full width, not on the `PageHeader` inside it. The rule under the title runs the pane's width. |
 | `Table` | New: `maxHeight` (`"sm" \| "md" \| "lg"`) caps the table's height and pins its header row while the rows scroll inside it ([#415](https://github.com/cubicecho/cubeui/issues/415)). An app whose own `table.tsx` had a `sticky` prop loses it on reinstall: use `maxHeight` instead, and remove the scrolling box and `max-h-*` the app put around the table for it. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
+| `ErrorPage`, `LoadError` | Without `describe`, the line under the title is `describeError`'s, from `@cubeui/error-message`. A `describe` that returns `""` hands the error to it. To add your own failures, answer those and return `describeError(error)` for the rest ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
+| `EmptyTitle` | New: `level` (`1 \| 2 \| 3`) makes it a heading of that rank, at the same size. It replaces passing `role="heading"` and `aria-level` yourself, which still works ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
@@ -257,6 +259,31 @@ to add them.
 - **A refused checkbox or switch is red when checked**
   ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
   box's or an on switch's `active` one, and the device halves draw it.
+- **`ErrorPage` is drawn as an empty state with a red bubble**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). It is `Empty`'s block now, so it matches an empty or not-found
+  screen: a 48px bubble with a 24px icon (it was 60px and 28px), 12px between its parts (16px),
+  `py-10` (`py-20`) and a `px-4` side inset (`px-8`). The title is 16px on both halves, where it was
+  14px on device. The line under it, the details and the buttons are capped at 384px (448px). Its
+  `data-slot`s keep their names, and the parts inside it carry `Empty`'s.
+- **`LoadError` and `ErrorPage` word a failure the same way**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). Both use `describeError`, from `@cubeui/error-message`, unless
+  given a `describe`. A failed fetch now reads "Could not reach the server. Check your connection
+  and try again." on `LoadError` too, where it showed the browser's "Failed to fetch". "Not
+  authenticated" reads "Your session has expired. Please sign in again." A failure with no message
+  reads "An unexpected error occurred.", where `LoadError` said "The server did not answer." A test
+  that expects the raw wording expects the new line. `ErrorPage` now also knows React Native's
+  "Network request failed" and Safari's "Load failed". A reinstall of `load-state` or
+  `error-page` also writes `lib/error-message.ts`.
+- **An empty state's title is centred, with a gap under it**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). A title that wraps stays centred over the bubble. The line under it
+  starts 4px lower and is capped at 384px, so on a wide page it wraps rather than running across
+  it. A link in that line is `text-info` at rest, not only under the pointer. The bubble's 12px is
+  unchanged: `EmptyHeader` has a 4px gap now and `EmptyMedia`'s margin went from 12px to 8px, so
+  an `EmptyMedia` of yours outside an `EmptyHeader` sits 4px closer to what follows.
+- **`EmptyState`'s heading is a real heading element on the web**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). With `level`, its title is an `<h1>`–`<h3>`, where it was a `<span>`
+  with `role="heading"`. The compact line now carries `data-slot` `empty`, `empty-icon` and
+  `empty-title`, like the block, so a selector of yours on `[data-slot=empty]` finds it too.
 
 ## Checking the result
 
