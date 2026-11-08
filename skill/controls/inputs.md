@@ -261,7 +261,7 @@ hidden `<input type="file">` and a `Button` that clicks it, for a `.zip` or a fo
     read="none"
     onPickMany={([file]) => {
       if (!file?.blob) return;
-      if (file.size > MAX_BYTES) return toast.error("That file is over 100 MB");
+      if (file.size > MAX_BYTES) return toast("That file is over 100 MB");
       xhr.send(file.blob); // a presigned PUT, with `xhr.upload.onprogress` for the bar
     }}
   />

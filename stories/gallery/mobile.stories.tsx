@@ -529,7 +529,7 @@ function ConfirmAndToastButtons() {
             description: "They lose access straight away.",
             confirmLabel: "Remove",
           });
-          toast(ok ? "Teammate removed" : "Nothing changed", ok ? "positive" : "error");
+          toast(ok ? "Teammate removed" : "Nothing changed", ok ? "positive" : "negative");
         }}
         content="Ask, then toast the answer"
       />

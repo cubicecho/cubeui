@@ -138,8 +138,8 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 
 - `variant` is shadcn's six (`default`, `secondary`, `destructive`, `outline`, `ghost`, `link`)
   and three meanings of cubeui's own: `positive`, `warning` and `info`. There is no `success`: the
-  word is `positive`, as on `Button` and in the tokens. A toast's tone is the same word:
-  `toast("Saved", "positive")`, beside `error`, `warning` and `info`.
+  word is `positive`, as on `Button` and in the tokens. A toast's tone is the token's word too:
+  `toast("Saved", "positive")`, beside `negative`, `warning` and `info`.
 - Each coloured meaning has a `-soft` form: `destructive-soft`, `positive-soft`, `warning-soft` and
   `info-soft`. Use it for a badge that is not the main thing on its row, such as a status in a
   long list, where a solid fill on every row drowns the titles. It is a tint and an edge in the
@@ -257,8 +257,8 @@ move. `ToastProvider` once near the root, then `useToast()` anywhere under it, o
 
 ```tsx
 const toast = useToast();
-toast("Could not save the order.");                 // error, the default
-toast("Saved.", "positive");                         // error | warning | positive | info
+toast("Could not save the order.");                 // negative, the default
+toast("Saved.", "positive");                         // negative | warning | positive | info
 toast(`Moved ${item.title} to ${page.title}.`, "positive", {
   actionSlot: (dismiss) => (
     <Button variant="link" size="sm" className="h-auto px-0" content={`Go to ${page.title}`}
@@ -273,10 +273,22 @@ toast(`Moved ${item.title} to ${page.title}.`, "positive", {
 - **Pressing what is in it does not dismiss the toast.** Pass a function `(dismiss) => …` and call
   `dismiss` from what should close it — a link that navigates away usually should.
 - **A toast with an `actionSlot` stays up for at least ten seconds**, whatever its tone: a
-  confirmation's three are enough to read "Moved." and not to reach "Go to Media". The ✕ still
-  closes it at once.
+  confirmation's five are enough to read "Moved." and not always to reach "Go to Media". The ✕
+  still closes it at once.
+- **Failures and warnings stay six seconds, confirmations and notes five.** The clock stops while
+  the pointer is over the stack or focus is in it, and goes on when it leaves.
+- **Only a failure interrupts.** A `negative` toast is an `alert`; `positive`, `info` and `warning`
+  are a polite `status`. The stack is an `aria-live="polite"` region from the first render.
+- **Three are drawn at most**, the newest. An older one keeps its clock and comes back if the
+  newer go first, so a burst of toasts is three on screen and not a column up the page.
+- **On the web the stack is drawn over an open dialog**, outside what the dialog hides from a
+  screen reader, and a press on it does not close the dialog. Put `ToastProvider` near the root,
+  outside any element that starts a stacking context (`isolate`, a `transform`, a `z-*` with a
+  position), which would hold it under the dialog. On device a native `Modal` covers it, so a
+  failure inside a dialog is said in the dialog.
+- `"error"` is the old name of `"negative"`. It still works and is deprecated.
 - The tone is a glyph as well as a hue; the box is the raised surface, not a block of the tone's
-  colour. Errors and warnings stay six seconds, confirmations three.
+  colour, with a floating surface's `rounded-md` corners.
 - A shell never raises a toast; a toast is the caller's, raised where the mutation is.
 
 ## Skeleton

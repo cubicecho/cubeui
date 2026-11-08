@@ -96,6 +96,7 @@ test that finds them by name needs changing:
 | `PageLayout` | `headerClassName` now lands on the whole header, which runs the full width, not on the `PageHeader` inside it. The rule under the title runs the pane's width. |
 | `Table` | New: `maxHeight` (`"sm" \| "md" \| "lg"`) caps the table's height and pins its header row while the rows scroll inside it ([#415](https://github.com/cubicecho/cubeui/issues/415)). An app whose own `table.tsx` had a `sticky` prop loses it on reinstall: use `maxHeight` instead, and remove the scrolling box and `max-h-*` the app put around the table for it. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
+| `useToast` | The tone `"error"` is now `"negative"`, the colour token's name (the old name still works, deprecated). It is still the default ([#477](https://github.com/cubicecho/cubeui/issues/477)). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
@@ -244,6 +245,25 @@ to add them.
   of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
   counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
   `bottomBarClassName` for it.
+- **`DialogLayout`'s footer stacks full width on a phone**
+  ([#465](https://github.com/cubicecho/cubeui/issues/465)). Below `sm` its buttons are a column,
+  each the footer's width, with the main one on top, as `ConfirmDialog`'s are. Before, they kept
+  their labels' width at the right. A `footerSlot` given alone sits at the footer's start, not its
+  end. Buttons you wrapped in a `div` or `View` in `footerActionsSlot` keep that wrapper's layout:
+  pass them as a fragment.
+- **Toasts stay up longer, and wait while you read them**
+  ([#477](https://github.com/cubicecho/cubeui/issues/477)). A confirmation or a note stays five
+  seconds, not three, and no toast goes while the pointer is over the stack or focus is in it.
+  Only a `negative` toast is an `alert` now; the rest are a polite `status`, so a test of yours
+  that found a confirmation by `role="alert"` finds it by `status`. Three are drawn at most. The
+  corners are `rounded-md`, as a popover's and a menu's are.
+- **On the web a toast is drawn over an open dialog**
+  ([#477](https://github.com/cubicecho/cubeui/issues/477)). It is announced, its Undo and ✕ can
+  be pressed, and pressing them leaves the dialog open. The stack is in the page while it is
+  empty, as `data-slot="toast-viewport"`, and is drawn at `z-index` 60, over the dialog's 50.
+- **A toast clears a bottom bar on a phone with a home indicator**
+  ([#460](https://github.com/cubicecho/cubeui/issues/460)). Over `SidebarLayout`'s
+  `barPosition="bottom"` the stack rises by the bottom safe-area inset as well as the bar.
 - **A disabled field fades its label and its description**
   ([#466](https://github.com/cubicecho/cubeui/issues/466)). They used to stay at full ink over a faded
   control. `FormField` reads the control's own `disabled` too, so a
