@@ -110,6 +110,7 @@ test that finds them by name needs changing:
 | `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
 | `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
 | `CodeBlock` | New: `jumpLabel`, the words of the "Jump to latest" button on a `follow` block, for your translation. That button is now an outline `Button`, so `code` installs `button` ([#469](https://github.com/cubicecho/cubeui/issues/469)). |
+| `FieldWrapper` (`form`) | New: `onLabelPress`, what a press on the caption does on device. `CheckboxField` and `SwitchField` pass it, so a toggle of your own built on `FieldWrapper` can too ([#470](https://github.com/cubicecho/cubeui/issues/470)). |
 | `RadioGroupItem` | `hint` is a `Tooltip` and the option's description, on both halves, where it was the web's `title` attribute ([#472](https://github.com/cubicecho/cubeui/issues/472)). A test that read the `title` reads the description instead. `radio-group` now installs `tooltip`. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
@@ -516,6 +517,25 @@ to add them.
   - On device, the backdrop of a dialog that a press beside it does not close — `ConfirmDialog`,
     `AlertDialog`, `DialogLayout` with `dismissible={false}` — is no longer a button named Close
     for a screen reader.
+
+- **On device, a finger's 44pt** ([#470](https://github.com/cubicecho/cubeui/issues/470)). Nothing
+  changes on the web, except that a pressable row's padding now opens it too.
+  - A pressable `ListItem` and a `CollapsibleRow` open from anywhere on the row that lights up, its
+    padding included. The row looks as it did.
+  - `ListItem`'s middle, `CollapsibleRow`, `Collapsible`'s header, `FileTree` rows, `SidebarItem`,
+    menu rows, a select's options and a `RadioGroup` row are at least 44pt tall on device. A
+    `Collapsible` with no description centres its title in that height.
+  - `Checkbox`, `Switch`, the bare radio, a toast's ✕, a badge's ✕, `ToggleChip`,
+    `SegmentedButton`, a radio segment and every `Button` size reach 44pt with a `hitSlop` and look
+    as they did. `icon-xs` reaches 36 by 44. A `hitSlop` you added to one of these can go.
+  - `AppBarItem` is a 44pt box on device with its 36pt look inside (36px since #483), and the
+    top bar puts no gap between the boxes there, so the looks sit 8pt apart, as on the web. Along
+    the bottom bar each place takes its share of the bar.
+  - A bound `CheckboxField` or `SwitchField` toggles when its caption is pressed.
+  - A pressed `Collapsible` header, `SidebarItem`, `AppBarItem`, `SegmentedButton` and select
+    option look hovered, as other rows and controls already did.
+  - New in `@/lib/utils`: `touchTarget` and `touchRowClass`, for a pressable of your own. See the
+    skill's `native.md`, "Touch targets".
 
 ## Checking the result
 

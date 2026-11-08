@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchRowClass } from "@/lib/utils";
 
 /**
  * Hidden under the breakpoint, shown from it up. `flex` is what the root is on both platforms: a
@@ -438,13 +438,15 @@ export type SidebarItemProps = SidebarItemBaseProps &
 function rowClassName(active: boolean, className: string | undefined) {
   return cn(
     "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
+    // A finger's 44pt on device, where rows stack too close for a `hitSlop` (#470).
+    touchRowClass(),
     "focus-visible:outline-none",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-    // The current place is the chosen tint, a step further under the pointer and focused.
+    // The current place is the chosen tint, a step further under the pointer, focused and pressed.
     active
-      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-      : "text-foreground hover:bg-hover focus-visible:bg-hover",
+      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+      : "text-foreground hover:bg-hover focus-visible:bg-hover active:bg-hover",
     className,
   );
 }
@@ -779,46 +781,87 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
     const text = "text-foreground";
     const name = rowName(label, status, count);
     const edge = React.useContext(AppBarEdgeContext);
-
-    return (
+    const inside = (
+      <>
+        <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
+          {iconSlot}
+        </IconClassContext.Provider>
+        <IconMarkers count={count} status={status} ring="border-background" />
+      </>
+    );
+    const placeTooltip = (place: React.ReactElement) => (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Pressable
-              ref={ref}
-              role="link"
-              testID="app-bar-item"
-              // Nothing inside is text, so the name is written out on both platforms — joined the
-              // way the row's is, and before `props`, so a caller's own label still wins. The
-              // tooltip says the same, so it describes nothing: see `withTooltip`.
-              aria-label={name}
-              {...{ "aria-describedby": undefined }}
-              accessibilityState={{ selected: active }}
-              // React Native has no `href` and no `aria-current`; the web has both, and needs both.
-              {...(Platform.OS === "web"
-                ? ({ href, "aria-current": active ? "page" : undefined } as const)
-                : {})}
-              className={cn(
-                // 36px, an `icon-sm` button's square, so a place and the bar's actions are one size.
-                "relative size-9 shrink-0 items-center justify-center rounded-md transition-colors",
-                "focus-visible:outline-none",
-                "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-                active
-                  ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-                  : "text-foreground hover:bg-hover focus-visible:bg-hover",
-                className,
-              )}
-              {...props}
-            >
-              <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
-                {iconSlot}
-              </IconClassContext.Provider>
-              <IconMarkers count={count} status={status} ring="border-background" />
-            </Pressable>
-          </TooltipTrigger>
+          <TooltipTrigger asChild>{place}</TooltipTrigger>
           <TooltipContent side={edge === "bottom" ? "top" : "bottom"}>{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
+    );
+
+    if (Platform.OS !== "web") {
+      // A finger's 44pt on device (#470), with the 36pt look drawn inside it: a `hitSlop` would
+      // overlap the next place's, and the later of two overlapping places wins. The bar puts no
+      // gap between the boxes on device, so the looks sit 8pt apart, the bar's `gap-2`. Along the
+      // bottom a place takes its whole share of the bar. The look shows the press.
+      return placeTooltip(
+        <Pressable
+          ref={ref}
+          role="link"
+          testID="app-bar-item"
+          aria-label={name}
+          accessibilityState={{ selected: active }}
+          className={cn(
+            "items-center justify-center",
+            edge === "bottom" ? "h-11 min-w-0 flex-1" : "size-11 shrink-0",
+            className,
+          )}
+          {...props}
+        >
+          {({ pressed }) => (
+            <View
+              testID="app-bar-item-look"
+              className={cn(
+                "relative size-9 items-center justify-center rounded-md",
+                active && (pressed ? "bg-active/60" : "bg-active/40"),
+                active === false && pressed && "bg-hover",
+              )}
+            >
+              {inside}
+            </View>
+          )}
+        </Pressable>,
+      );
+    }
+
+    return placeTooltip(
+      <Pressable
+        ref={ref}
+        role="link"
+        testID="app-bar-item"
+        // Nothing inside is text, so the name is written out on both platforms — joined the way
+        // the row's is, and before `props`, so a caller's own label still wins. The tooltip says
+        // the same, so it describes nothing: see `withTooltip`.
+        aria-label={name}
+        {...{ "aria-describedby": undefined }}
+        accessibilityState={{ selected: active }}
+        // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+        {...(Platform.OS === "web"
+          ? ({ href, "aria-current": active ? "page" : undefined } as const)
+          : {})}
+        className={cn(
+          // 36px, an `icon-sm` button's square, so a place and the bar's actions are one size.
+          "relative size-9 shrink-0 items-center justify-center rounded-md transition-colors",
+          "focus-visible:outline-none",
+          "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+          active
+            ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
+            : "text-foreground hover:bg-hover focus-visible:bg-hover",
+          className,
+        )}
+        {...props}
+      >
+        {inside}
+      </Pressable>,
     );
   },
 );

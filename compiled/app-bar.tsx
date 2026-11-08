@@ -18,10 +18,11 @@ import type { ReactNode } from "react";
 import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
- * The places' row, the same in the scroller on both platforms. Its gap is the bar's own and the
- * actions', `PageHeader`'s `gap-2`, so a place and an action sit as far apart as two actions do.
+ * The places' row. Its gap is the bar's own and the actions', `PageHeader`'s `gap-2`, so a place
+ * and an action sit as far apart as two actions do. On device an `AppBarItem` is a 44pt box round
+ * its 36pt look (#470), which already puts 8pt between two looks, so the row adds none there.
  */
-const NAV_ROW = "flex-row items-center gap-2";
+const NAV_ROW = cn("flex-row items-center", "gap-2");
 
 /**
  * The status line's floor, below which the places scroll rather than the status narrowing further.

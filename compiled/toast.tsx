@@ -33,8 +33,11 @@ import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { type BottomBarUntil, useBottomBar } from "@/lib/bottom-bar";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchTarget } from "@/lib/utils";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "./icons";
+
+/** The dismiss ✕'s drawn box, a 16px glyph in `p-1`, grown to a finger's 44pt on device (#470). */
+const DISMISS_DRAWN = { width: 24, height: 24 } as const;
 
 /**
  * What kind of message a toast is, which picks its colour, how long it stays and how it is
@@ -319,6 +322,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 type="button"
                 onClick={() => dismiss(toast.id)}
                 aria-label="Dismiss"
+                {...touchTarget(DISMISS_DRAWN)}
                 // The ink is on the press target too, not only in the context: the glyph draws in
                 // `currentColor`, and a `<button>` resets that to the UA's black.
                 // Under the pointer, the keyboard and a finger it looks the same: hovered.

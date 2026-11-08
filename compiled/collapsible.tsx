@@ -20,6 +20,7 @@ import {
   HEADING_WRAP_GAP,
   hasSlot,
   type SlotNode,
+  touchRowClass,
 } from "@/lib/utils";
 import { ChevronRight } from "./icons";
 
@@ -173,6 +174,10 @@ export function Collapsible({
     onOpenChange?.(!open);
   };
 
+  // On device the button is a finger's 44pt tall (#470). A title alone is one line, which sits in
+  // the middle of that, and the action with it; a title over a description already fills it.
+  const centred = false;
+
   return (
     <div data-slot="collapsible" className={cn("cube-rn-view", "min-w-0 gap-2", className)}>
       <div
@@ -182,13 +187,14 @@ export function Collapsible({
         className={cn(
           "cube-rn-view",
           "min-w-0 flex-row flex-wrap items-start gap-x-2",
+          centred && "items-center",
           HEADING_WRAP_GAP,
           headerClassName,
         )}
       >
         <CollapsibleTrigger
           data-slot="collapsible-trigger"
-          className={HEADING_WRAP_FLOOR}
+          className={cn(HEADING_WRAP_FLOOR, touchRowClass(), centred && "items-center")}
           open={open}
           onClick={toggle}
           controls={shown ? contentId : undefined}

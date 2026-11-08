@@ -50,7 +50,7 @@ import {
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { Popover, PopoverContent } from "@/components/ui/popover";
-import { addHandlers, cn } from "@/lib/utils";
+import { addHandlers, cn, touchRowClass } from "@/lib/utils";
 
 type MenuState = {
   open: boolean;
@@ -209,6 +209,8 @@ function MenuItem({
       }}
       className={cn(
         MENU_ITEM_CLASS,
+        // A finger's 44pt on device, rather than the web's 32px row (#470).
+        touchRowClass(),
         destructive ? "active:bg-negative/10" : "active:bg-hover",
         disabled && "opacity-50",
         className,
@@ -296,6 +298,7 @@ function ToggleRow({
       onPress={onPress}
       className={cn(
         MENU_ITEM_CLASS,
+        touchRowClass(),
         // On, the row is the chosen tint, a step further while pressed.
         checked ? "bg-active/40 active:bg-active/60" : "active:bg-hover",
         disabled && "opacity-50",

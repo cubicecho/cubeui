@@ -13,7 +13,7 @@ import * as React from "react";
 import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 import { CollapsibleTrigger } from "./collapsible";
 import { Item, ItemActions } from "./item";
-import { ListItemText, rowFillClass } from "./list-item";
+import { ListItemText, rowFillClass, rowPressInsetClass } from "./list-item";
 
 type CollapsibleRowProps = {
   /**
@@ -100,8 +100,13 @@ export function CollapsibleRow({
       >
         <CollapsibleTrigger
           data-slot="collapsible-row-trigger"
-          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap.
-          className={HEADING_WRAP_FLOOR}
+          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap. Out to
+          // the row's edges, as that middle is, so the whole lit heading opens the row.
+          className={cn(
+            HEADING_WRAP_FLOOR,
+            "rounded-md",
+            rowPressInsetClass({ leading: false, action: Boolean(actionSlot) }),
+          )}
           open={open}
           onClick={() => onOpenChange(!open)}
           // Only while it is open: the body is unmounted when closed, which is what keeps a list

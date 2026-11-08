@@ -176,4 +176,6 @@ It also takes the props declared in `registry/ui/button.tsx`: `aria-describedby`
 <!-- /props -->
 
 `useFieldError`, `splitProps`, `FieldWrapper` and `bindToForm` are exported for a field the
-registry does not ship, as on the web. `bindToForm` makes the one-line `form`/`name` spelling.
+registry does not ship, as on the web. `bindToForm` makes the one-line `form`/`name` spelling. A
+toggle of your own built on `FieldWrapper` passes `onLabelPress`, so its caption presses it on
+device, as `CheckboxField`'s does.

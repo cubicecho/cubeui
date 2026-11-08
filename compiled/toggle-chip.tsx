@@ -27,7 +27,13 @@
  * this file had not thought to list.
  */
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, touchTarget } from "@/lib/utils";
+
+/**
+ * Each size's drawn height, `h-7` and `h-9`, grown to a finger's 44pt by a `hitSlop` on device
+ * (#470). Only the height: chips sit side by side, where a wider target would take a neighbour's.
+ */
+const DRAWN = { sm: { height: 28 }, default: { height: 36 } } as const;
 
 export type ToggleChipProps = Omit<
   React.ComponentPropsWithoutRef<"button">,
@@ -99,6 +105,7 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
         className,
       )}
       {...(backgroundColor ? { style: { backgroundColor } } : {})}
+      {...touchTarget(DRAWN[size])}
       {...(props as React.ComponentPropsWithoutRef<"button">)}
     >
       {typeof children === "string" || typeof children === "number" ? (

@@ -12,6 +12,7 @@ import {
   HEADING_WRAP_GAP,
   hasSlot,
   type SlotNode,
+  touchRowClass,
 } from "@/lib/utils";
 
 type CollapsibleProps = {
@@ -113,7 +114,8 @@ export function CollapsibleTrigger({
         Platform.select({
           // Under the pointer as focused: hovered, and no ring.
           web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
-          default: undefined,
+          // Pressed looks hovered, as a row's pressed part does.
+          default: "active:bg-hover",
         }),
         className,
       )}
@@ -171,6 +173,10 @@ export function Collapsible({
     onOpenChange?.(!open);
   };
 
+  // On device the button is a finger's 44pt tall (#470). A title alone is one line, which sits in
+  // the middle of that, and the action with it; a title over a description already fills it.
+  const centred = Platform.OS !== "web" && (description === undefined || description === null);
+
   return (
     <View testID="collapsible" className={cn("min-w-0 gap-2", className)}>
       <View
@@ -179,13 +185,14 @@ export function Collapsible({
         // than the floor beside it.
         className={cn(
           "min-w-0 flex-row flex-wrap items-start gap-x-2",
+          centred && "items-center",
           HEADING_WRAP_GAP,
           headerClassName,
         )}
       >
         <CollapsibleTrigger
           testID="collapsible-trigger"
-          className={HEADING_WRAP_FLOOR}
+          className={cn(HEADING_WRAP_FLOOR, touchRowClass(), centred && "items-center")}
           open={open}
           onPress={toggle}
           controls={shown ? contentId : undefined}

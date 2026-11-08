@@ -12,7 +12,7 @@ import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
-import { actionGap, cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode, touchRowClass } from "@/lib/utils";
 import { CollapsibleTrigger } from "./collapsible";
 import { File, Folder } from "./icons";
 import { rowFillClass, rowLink } from "./list-item";
@@ -290,6 +290,8 @@ export function FileTree<T extends TreeEntry>({
         node.path.startsWith(`${dropInto}/`));
     const muted = inDrop || isSelected ? "text-foreground" : "text-foreground/60";
     const indent = { paddingLeft: depth * INDENT + EDGE };
+    // A finger's 44pt on device, where the web's 32px row is too small to aim at (#470).
+    const rowClass = cn(ROW_CLASS, touchRowClass());
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
     const actions = actionSlot?.(node);
@@ -350,7 +352,7 @@ export function FileTree<T extends TreeEntry>({
           open={expanded}
           onClick={() => toggle(node.path)}
           controls={expanded && node.children.length > 0 ? childrenId(node.path) : undefined}
-          className={ROW_CLASS}
+          className={rowClass}
           // Centred on the row rather than set down to a first line of text, and muted as the
           // folder's icon is.
           chevronClassName={cn("mt-0", muted)}
@@ -365,7 +367,7 @@ export function FileTree<T extends TreeEntry>({
         linkSlot(node),
         {
           slot: "file-tree-file",
-          className: ROW_CLASS,
+          className: rowClass,
           selected: isSelected,
           style: indent,
           webProps: drag,
@@ -379,7 +381,7 @@ export function FileTree<T extends TreeEntry>({
           data-slot="file-tree-file"
           aria-current={isSelected ? true : undefined}
           onClick={() => onSelect(node.path)}
-          className={cn("cube-rn-view cube-rn-pressable", ROW_CLASS)}
+          className={cn("cube-rn-view cube-rn-pressable", rowClass)}
           style={indent}
           {...(drag as React.ComponentPropsWithoutRef<"button">)}
         >
@@ -390,7 +392,7 @@ export function FileTree<T extends TreeEntry>({
       row = (
         <div
           data-slot="file-tree-file"
-          className={cn("cube-rn-view", ROW_CLASS)}
+          className={cn("cube-rn-view", rowClass)}
           style={indent}
           {...(drag as React.ComponentPropsWithoutRef<"div">)}
         >

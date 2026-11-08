@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
 import { CollapsibleTrigger } from "@/components/collapsible";
-import { ListItemText, rowFillClass } from "@/components/list-item";
+import { ListItemText, rowFillClass, rowPressInsetClass } from "@/components/list-item";
 import { Item, ItemActions } from "@/components/ui/item";
 import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 
@@ -90,8 +90,13 @@ export function CollapsibleRow({
       >
         <CollapsibleTrigger
           testID="collapsible-row-trigger"
-          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap.
-          className={HEADING_WRAP_FLOOR}
+          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap. Out to
+          // the row's edges, as that middle is, so the whole lit heading opens the row.
+          className={cn(
+            HEADING_WRAP_FLOOR,
+            "rounded-md",
+            rowPressInsetClass({ leading: false, action: Boolean(actionSlot) }),
+          )}
           open={open}
           onPress={() => onOpenChange(!open)}
           // Only while it is open: the body is unmounted when closed, which is what keeps a list

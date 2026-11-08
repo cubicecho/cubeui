@@ -33,7 +33,7 @@ import {
   type SelectTriggerProps,
   type SelectValueProps,
 } from "@/components/ui/select-base";
-import { cn, FIELD_INVALID_CLASS, isInvalid } from "@/lib/utils";
+import { cn, FIELD_INVALID_CLASS, isInvalid, touchRowClass } from "@/lib/utils";
 
 type SelectState = {
   disabled: boolean;
@@ -173,10 +173,12 @@ function SelectItem({ value, disabled = false, className, children }: SelectItem
         select.onValueChange(value);
         select.setOpen(false);
       }}
-      // The chosen option is the chosen tint.
+      // The chosen option is the chosen tint, and a pressed one looks hovered, or a step further
+      // on the tint. A finger's 44pt on device, rather than the web's 32px row (#470).
       className={cn(
         SELECT_ITEM_CLASS,
-        selected && "bg-active/40",
+        touchRowClass(),
+        selected ? "bg-active/40 active:bg-active/60" : "active:bg-hover",
         disabled && "opacity-50",
         className,
       )}
