@@ -14,7 +14,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** One choice. `description` is the line under it — what picking this one means. */
 export type RadioOption = {
@@ -113,7 +113,7 @@ function RadioGroupFieldBody({
   return (
     // `Field`, so the title and the description fade with the options when it is `disabled`.
     <Field testID="radio-group-field" disabled={disabled} className={cn("min-w-0", className)}>
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <View className="min-w-0 flex-row items-center gap-2">
           {title}
           <View className="ml-auto shrink-0">{actionSlot}</View>

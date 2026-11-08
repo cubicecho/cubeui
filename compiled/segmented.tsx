@@ -29,7 +29,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode, touchTarget } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchTarget } from "@/lib/utils";
 
 /**
  * A pill's drawn height, its label's 20px line and its padding: 28px in the frame and 32px out of
@@ -276,7 +276,7 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
     // The pill's own ink, for the container and the icon.
     const ink = current ? "text-foreground" : "text-foreground/60";
     // Only a pill with an icon has something left to draw once its label is gone.
-    const labelHideBelow = iconSlot ? group?.labelHideBelow : undefined;
+    const labelHideBelow = hasSlot(iconSlot) ? group?.labelHideBelow : undefined;
     const iconOnlyHeight = group?.framed ? "min-h-7" : "min-h-8";
     return (
       <button
@@ -318,18 +318,18 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
           // colour can only come from inheriting it here.
           ink,
           current ? undefined : CONTAINER_HOVER_INK,
-          iconSlot ? WITH_ICON : undefined,
+          hasSlot(iconSlot) ? WITH_ICON : undefined,
           // The label's line is what gives a pill its height, and an icon is
           // shorter than it: with the label hidden the pill would shrink, so it
           // is held at the height a labelled pill beside it has.
-          iconSlot ? iconOnlyHeight : undefined,
+          hasSlot(iconSlot) ? iconOnlyHeight : undefined,
           className,
         )}
         {...touchTarget(group?.framed ? DRAWN.framed : DRAWN.bare)}
         {...(props as React.ComponentPropsWithoutRef<"button">)}
       >
         {/* Colour does not inherit on device, so the icon is handed the label's. */}
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <IconClassContext.Provider
             value={cn("size-4 shrink-0", ink, current ? undefined : HOVER_INK)}
           >

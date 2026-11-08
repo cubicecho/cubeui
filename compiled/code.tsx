@@ -31,7 +31,7 @@
  */
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
-import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
+import { cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { useOverflows } from "./overflows";
 import { useReducedMotion } from "./reduced-motion";
@@ -279,7 +279,7 @@ export function CodeBlock({
       }
     : undefined;
 
-  const action = actionSlot ? (
+  const action = hasSlot(actionSlot) ? (
     // `p-0.5` and not the text's `p-3`: an icon button is as tall as a line of text and its
     // padding together, so a one-line block stays one line tall with the button in it.
     <div data-slot="code-block-action" className="cube-rn-view shrink-0 p-0.5">

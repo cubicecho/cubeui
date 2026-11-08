@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn, type SlotNode, touchRowClass } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchRowClass } from "@/lib/utils";
 
 /**
  * Hidden under the breakpoint, shown from it up. `flex` is what the root is on both platforms: a
@@ -171,8 +171,10 @@ export function Sidebar({
           // `flex-1` beside `h-full`, not `h-full` alone: the frame's own border is inside its
           // height, and a percentage height would overflow it by the border's width.
           className="h-full min-h-0 flex-1"
-          // Folded, the header's inset is the rows', so what is in it lines up with their icons.
-          headerClassName={cn("gap-2", collapsed ? "p-2" : "p-3", headerClassName)}
+          // The header's inset is the rows' own: 16px open, the body's `p-2` and a row's `px-2`, so
+          // the brand starts where the row icons and the section titles do. Folded, it is the
+          // body's alone, so what is in it centres over the icons.
+          headerClassName={cn("gap-2", collapsed ? "p-2" : "px-4 py-3", headerClassName)}
           contentClassName={cn("gap-4 p-2", contentClassName)}
           footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
         />
@@ -222,7 +224,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * The title's heading rank. `2` by default — the sidebar sits beside the page, not under its
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
    */
-  level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  level?: 1 | 2 | 3 | undefined;
   /** On the whole section, the title row and its list together. */
   className?: string | undefined;
   /** On the list the rows are items of. */
@@ -269,7 +271,7 @@ export function SidebarSection({
   const sectionClassName = cn("min-w-0 gap-1", className);
 
   // Folded, the action is gone, so only a title is worth a heading row.
-  const headed = Boolean(collapsed ? title : title || actionSlot);
+  const headed = collapsed ? hasSlot(title) : hasSlot(title) || hasSlot(actionSlot);
 
   const body = (
     <>
@@ -280,7 +282,7 @@ export function SidebarSection({
           className={collapsed ? SR_ONLY : "min-h-8 min-w-0 flex-row items-center gap-2 px-2"}
         >
           <View className="min-w-0 flex-1">
-            {title ? (
+            {hasSlot(title) ? (
               <SectionHeading
                 testID="sidebar-section-title"
                 id={titleId}
@@ -292,7 +294,7 @@ export function SidebarSection({
               </SectionHeading>
             ) : null}
           </View>
-          {actionSlot && collapsed === false ? (
+          {hasSlot(actionSlot) && collapsed === false ? (
             <View testID="sidebar-section-action" className="shrink-0">
               {actionSlot}
             </View>
@@ -306,7 +308,7 @@ export function SidebarSection({
         <View
           role="list"
           testID="sidebar-section-list"
-          {...(title ? { "aria-labelledby": titleId } : {})}
+          {...(hasSlot(title) ? { "aria-labelledby": titleId } : {})}
           className={cn("min-w-0 gap-0.5", contentClassName)}
         >
           {rows.map((row, index) => (
@@ -328,7 +330,7 @@ export function SidebarSection({
   // Two roots written out rather than one with a chosen role: the compiler picks the tag from the
   // role, and a role it cannot read is one it refuses.
   if (as === "nav") {
-    const titled = title ? { "aria-labelledby": titleId } : {};
+    const titled = hasSlot(title) ? { "aria-labelledby": titleId } : {};
     return (
       <View
         role="navigation"
@@ -547,7 +549,7 @@ function SidebarItemBody({
     // it is still something to aim at rather than a gap in the rail.
     return (
       <>
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
             {iconSlot}
           </IconClassContext.Provider>
@@ -567,7 +569,7 @@ function SidebarItemBody({
 
   return (
     <>
-      {iconSlot ? (
+      {hasSlot(iconSlot) ? (
         <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
           {iconSlot}
         </IconClassContext.Provider>
@@ -578,7 +580,7 @@ function SidebarItemBody({
       >
         {label}
       </Text>
-      {status?.iconSlot ? (
+      {status !== undefined && hasSlot(status.iconSlot) ? (
         <View testID="sidebar-item-status-icon" aria-hidden className="shrink-0">
           <IconClassContext.Provider value={cn("size-4 shrink-0", muted)}>
             {status.iconSlot}
@@ -589,7 +591,7 @@ function SidebarItemBody({
       {status ? (
         <Text
           testID="sidebar-item-status"
-          className={cn("shrink-0 text-xs", status.iconSlot ? SR_ONLY : muted)}
+          className={cn("shrink-0 text-xs", hasSlot(status.iconSlot) ? SR_ONLY : muted)}
         >
           {status.label}
         </Text>
@@ -775,7 +777,8 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
 const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active ? "text-foreground" : "text-foreground/60";
+    // Full ink whether current or not, as a sidebar row is: the current place is the tint.
+    const text = "text-foreground";
     const name = rowName(label, status, count);
     const edge = React.useContext(AppBarEdgeContext);
     const inside = (
@@ -796,8 +799,9 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
     );
 
     if (Platform.OS !== "web") {
-      // A finger's 44pt on device (#470), with the 32pt look drawn inside it: places sit 4px apart,
-      // too close for a `hitSlop`, which the later of two overlapping places would win. Along the
+      // A finger's 44pt on device (#470), with the 36pt look drawn inside it: a `hitSlop` would
+      // overlap the next place's, and the later of two overlapping places wins. The bar puts no
+      // gap between the boxes on device, so the looks sit 8pt apart, the bar's `gap-2`. Along the
       // bottom a place takes its whole share of the bar. The look shows the press.
       return placeTooltip(
         <Pressable
@@ -817,7 +821,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
             <View
               testID="app-bar-item-look"
               className={cn(
-                "relative size-8 items-center justify-center rounded-md",
+                "relative size-9 items-center justify-center rounded-md",
                 active && (pressed ? "bg-active/60" : "bg-active/40"),
                 active === false && pressed && "bg-hover",
               )}
@@ -845,12 +849,13 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
           ? ({ href, "aria-current": active ? "page" : undefined } as const)
           : {})}
         className={cn(
-          "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
+          // 36px, an `icon-sm` button's square, so a place and the bar's actions are one size.
+          "relative size-9 shrink-0 items-center justify-center rounded-md transition-colors",
           "focus-visible:outline-none",
           "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
           active
             ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-            : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
+            : "text-foreground hover:bg-hover focus-visible:bg-hover",
           className,
         )}
         {...props}

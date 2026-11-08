@@ -280,3 +280,96 @@ export const Narrow: Story = {
     }
   },
 };
+
+/** "3 of 5 servers running", in a right-to-left script, as a page set `dir="rtl"` would say it. */
+const RTL_STATUS = "3 מתוך 5 שרתים פועלים";
+
+/**
+ * Right to left, the bar runs the other way: the actions keep the far end, which is the left, and
+ * the status's lines end against them. Both are written as start and end (`ms-auto`, `text-end`)
+ * rather than left and right, as the rest of the family is (#483).
+ */
+export const RightToLeft: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div dir="rtl" className="w-96 bg-background">
+          <NativeAppBar
+            brandSlot={<Text className="font-semibold text-foreground">eunomia</Text>}
+            status={RTL_STATUS}
+            actionSlot={
+              <NativeButton size="sm" variant="outline" onPress={signOut} content="Sign out" />
+            }
+          />
+        </div>
+      }
+      compiled={
+        <div dir="rtl" className="w-96 bg-background">
+          <CompiledAppBar
+            brandSlot={<span className="font-semibold text-foreground">eunomia</span>}
+            status={RTL_STATUS}
+            actionSlot={
+              <CompiledButton size="sm" variant="outline" onClick={signOut} content="Sign out" />
+            }
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const banners = within(canvasElement).getAllByRole("banner");
+    await expect(banners).toHaveLength(2);
+    for (const banner of banners) {
+      const bar = banner.getBoundingClientRect();
+      const brand = within(banner).getByText("eunomia").getBoundingClientRect();
+      const action = within(banner)
+        .getByRole("button", { name: "Sign out" })
+        .getBoundingClientRect();
+      const status = within(banner).getByText(RTL_STATUS);
+      // The brand at the start, on the right; the action at the end, on the left, 16px in.
+      await expect(bar.right - brand.right).toBeCloseTo(16, 0);
+      await expect(action.left - bar.left).toBeCloseTo(16, 0);
+      await expect(getComputedStyle(status).textAlign).toBe("end");
+      await expect(status.getBoundingClientRect().left - action.right).toBeCloseTo(8, 0);
+    }
+  },
+};
+
+/**
+ * A `navSlot` of no places — `places.map(…)` over none — is no slot (#483): no empty navigation
+ * landmark, and no gap spent on one.
+ */
+export const NoPlaces: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="w-96 bg-background">
+          <NativeAppBar
+            brandSlot={<Text className="font-semibold text-foreground">eunomia</Text>}
+            navSlot={[]}
+            navLabel="Native main"
+            actionSlot={[]}
+          />
+        </div>
+      }
+      compiled={
+        <div className="w-96 bg-background">
+          <CompiledAppBar
+            brandSlot={<span className="font-semibold text-foreground">eunomia</span>}
+            navSlot={[]}
+            navLabel="Compiled main"
+            actionSlot={[]}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.queryAllByRole("navigation")).toHaveLength(0);
+    for (const banner of canvas.getAllByRole("banner")) {
+      // The brand alone: nothing drawn after it.
+      await expect(banner.children).toHaveLength(1);
+    }
+  },
+};

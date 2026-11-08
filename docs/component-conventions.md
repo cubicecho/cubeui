@@ -291,6 +291,12 @@ No empty wrapper `<div>`s. An empty slot in a gapped container spends the gap; a
 fixed grid-row chassis pushes the body into the wrong row. Conditionally render, and prefer flex
 over fixed grid tracks where slots are optional.
 
+**Ask `hasSlot`, not truthiness.** `hasSlot` (`registry/lib/utils.ts`) is the one test of whether a
+slot holds anything: an array is present when something in it is, and `false`, `null`,
+`undefined` and `""` are absent. `filters.map(…)` over no filters is `[]`, which is truthy, so a
+`PageHeader` that asked `contentSlot ?` drew an empty row and dropped its rule (#483), and two
+files spelled the check two ways. A function slot is not a node; test it with `typeof`.
+
 ## 6. `data-slot` on every part
 
 Matching shadcn's own convention, so a consumer can reach a part from the outside

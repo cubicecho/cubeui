@@ -37,6 +37,7 @@ import {
   HEADING_GAP,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
+  hasSlot,
   type SlotNode,
 } from "@/lib/utils";
 
@@ -287,16 +288,16 @@ export function HeadingRow({
       className={cn(
         HEADING_ROW,
         ROW_WRAP[actionPlacement],
-        textSlot ? undefined : "justify-end",
+        hasSlot(textSlot) ? undefined : "justify-end",
         className,
       )}
     >
-      {textSlot ? (
+      {hasSlot(textSlot) ? (
         <View className={cn(HEADING_TEXT, actionPlacement === "inline" && "shrink", textClassName)}>
           {textSlot}
         </View>
       ) : null}
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <View testID={actionTestID} className={cn(HEADING_ACTION, actionGap(actionSlot))}>
           {actionSlot}
         </View>
@@ -398,17 +399,18 @@ export function CardLayout({
 }: CardLayoutProps) {
   const surface = useContext(FloatingSurfaceContext);
   const isEmpty = isEmptyBody(contentSlot);
-  const settled = isEmpty && emptySlot ? emptySlot : contentSlot;
+  const settled = isEmpty && hasSlot(emptySlot) ? emptySlot : contentSlot;
   const body = loading ? <CardLayoutSkeleton /> : settled;
 
-  const hasText = Boolean(title || description);
-  const hasHeader = Boolean(hasText || actionSlot);
-  const hasFooter = Boolean(footerSlot || footerActionsSlot);
+  const hasText = hasSlot(title) || hasSlot(description);
+  const hasHeader = hasText || hasSlot(actionSlot);
+  const hasFooter = hasSlot(footerSlot) || hasSlot(footerActionsSlot);
+  const hasBody = hasSlot(body);
 
   // A card that is only its title and description keeps the description: folded, it would be a
   // heading on an empty card.
   const folded =
-    foldsDescription(title, description, descriptionPlacement) && Boolean(body || hasFooter);
+    foldsDescription(title, description, descriptionPlacement) && (hasBody || hasFooter);
   const oneLineTitle = actionPlacement === "inline" ? ONE_LINE_TITLE : undefined;
 
   const titleSlot = title ? (
@@ -438,7 +440,7 @@ export function CardLayout({
       titleSlot={titleSlot}
       label={title}
       leadingSlot={
-        iconSlot ? (
+        hasSlot(iconSlot) ? (
           // Sized here rather than by the caller, so an icon passed as `<Plus />` and one passed
           // as `<Plus className="size-4" />` land at the same size.
           <View className={cn("shrink-0 text-foreground/60", ICON)}>{iconSlot}</View>
@@ -462,13 +464,13 @@ export function CardLayout({
   // buttons with the main one on top. In a row of their own they kept their labels' width (#465).
   const footerParts = surface ? (
     <>
-      {footerSlot ? <View className={FLOATING_FOOTER_START}>{footerSlot}</View> : null}
+      {hasSlot(footerSlot) ? <View className={FLOATING_FOOTER_START}>{footerSlot}</View> : null}
       {footerActionsSlot}
     </>
   ) : (
     <>
-      {footerSlot ? <View className={FOOTER_START}>{footerSlot}</View> : null}
-      {footerActionsSlot ? <View className={ACTIONS}>{footerActionsSlot}</View> : null}
+      {hasSlot(footerSlot) ? <View className={FOOTER_START}>{footerSlot}</View> : null}
+      {hasSlot(footerActionsSlot) ? <View className={ACTIONS}>{footerActionsSlot}</View> : null}
     </>
   );
 
@@ -507,7 +509,7 @@ export function CardLayout({
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? (
+      {hasBody ? (
         // `CardContent` is `pt-0` because a header above it brings the top padding. With no
         // header the body is the first thing in the card and sat on its top edge.
         // `gap-4` spaces what the body holds, as `Section`'s body does: rows handed to a card
@@ -522,10 +524,10 @@ export function CardLayout({
       {hasFooter ? (
         <CardFooter
           className={cn(
-            footerSlot && footerActionsSlot && "justify-between",
-            !footerSlot && "justify-end",
+            hasSlot(footerSlot) && hasSlot(footerActionsSlot) && "justify-between",
+            hasSlot(footerSlot) === false && "justify-end",
             // The same, for a footer with neither a header nor a body over it.
-            hasHeader === false && !body && "pt-4",
+            hasHeader === false && hasBody === false && "pt-4",
             footerClassName,
           )}
         >

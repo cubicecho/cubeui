@@ -10,7 +10,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
  * The box the absent control leaves behind while it is loading, per orientation: a `vertical`
@@ -363,11 +363,11 @@ export function FormField({
 
   // Only drawn when there is a second thing on the row. A label on its own is the row.
   const header =
-    help || actionSlot ? (
+    help || hasSlot(actionSlot) ? (
       <div data-slot="form-field-label-row" className="flex min-w-0 items-center gap-2">
         {labelNode}
         {help}
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <div data-slot="form-field-action" className="ml-auto shrink-0">
             {actionSlot}
           </div>

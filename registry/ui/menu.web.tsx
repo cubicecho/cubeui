@@ -36,7 +36,7 @@ import {
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { cn } from "@/lib/utils";
+import { cn, hasSlot } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -141,7 +141,7 @@ function RowIcon({
   iconSlot: MenuItemProps["iconSlot"];
   className: string;
 }) {
-  if (iconSlot) {
+  if (hasSlot(iconSlot)) {
     return (
       <span data-slot="menu-item-icon" className={cn("flex shrink-0", className)}>
         {iconSlot}

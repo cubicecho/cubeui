@@ -24,7 +24,7 @@
  * does not inherit it either.
  */
 import type { ReactNode } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Skeleton } from "./skeleton";
 
 /**
@@ -281,7 +281,8 @@ export function PageHeader({
   //
   // Level 1 only. A section heading inside a card sits above a body the card has already fenced,
   // and not one of the section headings in these apps draws a second line.
-  const rule = level === 1 && !contentSlot ? "border-b border-foreground/10" : undefined;
+  const rule =
+    level === 1 && hasSlot(contentSlot) === false ? "border-b border-foreground/10" : undefined;
 
   const descriptionLine = loading ? (
     // The part's name on a box round the bar, as in `StatTile`, so the bar keeps `Skeleton`'s.
@@ -306,7 +307,7 @@ export function PageHeader({
       aria-busy={loading || undefined}
       className={cn("cube-rn-view", "min-w-0 flex-col gap-3 px-4 py-4", rule, className)}
     >
-      {back ? (
+      {hasSlot(back) ? (
         // The slot keeps its old name: a `data-slot` is public, and a selector on it still matches.
         <div data-slot="page-header-breadcrumbs" className={cn("cube-rn-view", SLOT, "min-w-0")}>
           {back}
@@ -335,7 +336,7 @@ export function PageHeader({
           className="cube-rn-view min-w-0 flex-1 basis-40 flex-col gap-1"
         >
           <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
-            {iconSlot ? (
+            {hasSlot(iconSlot) ? (
               // Sized here on the web rather than by the caller, so an icon passed as `<Users />`
               // and one passed as `<Users className="size-6" />` land at the same size — and so the
               // size follows the title instead of being guessed once per page.
@@ -372,10 +373,10 @@ export function PageHeader({
             )}
           </div>
 
-          {description ? descriptionLine : null}
+          {hasSlot(description) ? descriptionLine : null}
         </div>
 
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <div
             data-slot="page-header-action"
             className="cube-rn-view shrink-0 flex-row flex-wrap items-center gap-2"
@@ -385,7 +386,7 @@ export function PageHeader({
         ) : null}
       </div>
 
-      {contentSlot ? (
+      {hasSlot(contentSlot) ? (
         // `items-start`: tabs or a segmented control sit at their own width, at the start, as they
         // do everywhere else. Stretched, a tab list ran the page's width with its tabs centred in
         // it (#414). `Input` and `SearchInput` are `w-full` and still fill; a row of filters

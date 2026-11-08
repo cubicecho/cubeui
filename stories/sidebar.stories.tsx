@@ -124,6 +124,15 @@ export const Default: Story = {
     for (const half of [native, compiled]) {
       const side = within(half);
 
+      // The brand starts where the section title and the rows' labels do: 16px in (#483).
+      const edge = half.getBoundingClientRect().left;
+      const brandLeft = side.getByText("Telos").getBoundingClientRect().left - edge;
+      const titleLeft =
+        side.getByRole("heading", { name: "Projects" }).getBoundingClientRect().left - edge;
+      await expect(brandLeft).toBeCloseTo(16, 0);
+      await expect(titleLeft).toBeCloseTo(16, 0);
+      await expect(side.getByText("Inbox").getBoundingClientRect().left - edge).toBeCloseTo(16, 0);
+
       // The rows are a list named by the section title, one item per row.
       const list = side.getByRole("list", { name: "Projects" });
       await expect(list.tagName).toBe("UL");

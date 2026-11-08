@@ -203,8 +203,9 @@ are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24p
   `icon`, `icon-sm` and `icon-lg` are 44pt square. `icon-xs` is 36 by 44: it sits 4px from the next
   button, and where two targets overlap the later one takes the press. On a phone, use `icon-sm`
   for an icon button that stands alone.
-- **`AppBarItem` is a 44pt box with its 32pt look inside**, and along the bottom bar each place
-  takes its whole share of the bar.
+- **`AppBarItem` is a 44pt box with its 36pt look inside**, an `icon-sm` action's square. The top
+  bar sets no gap between the boxes on device, so the looks sit 8pt apart as on the web; along the
+  bottom bar each place takes its whole share of the bar.
 - **A bound `CheckboxField` or `SwitchField`'s caption presses its control** on device too, as a
   `<label>` does on the web.
 - **A tab is not there yet.** The list scrolls, and a scroller clips a touch to its 40pt frame, so

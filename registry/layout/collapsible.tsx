@@ -10,6 +10,7 @@ import {
   HEADING_TITLE,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
+  hasSlot,
   type SlotNode,
   touchRowClass,
 } from "@/lib/utils";
@@ -163,7 +164,7 @@ export function Collapsible({
   const [ownOpen, setOwnOpen] = React.useState(defaultOpen);
   const open = openProp ?? ownOpen;
   const contentId = React.useId();
-  const shown = open && contentSlot !== undefined && contentSlot !== null && contentSlot !== false;
+  const shown = open && hasSlot(contentSlot);
 
   const toggle = () => {
     if (openProp === undefined) {
@@ -204,7 +205,7 @@ export function Collapsible({
             </View>
           }
         />
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <View
             testID="collapsible-action"
             className={cn("shrink-0 flex-row items-center", actionGap(actionSlot))}

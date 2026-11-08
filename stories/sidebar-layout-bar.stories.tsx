@@ -43,7 +43,8 @@ import {
  *
  * The bar is where every app drew its own links, and what the copies lost is what these check: an
  * icon-only link has a name, the current one is `aria-current="page"`, a count on the row is on
- * the bar too and in the name, and a status line shortens before anything else in the bar moves.
+ * the bar too and in the name, and a status line narrows before anything else in the bar moves,
+ * wrapping rather than cutting a word off.
  * Both halves are drawn at a phone's width rather than side by side — two 390px bars do not fit
  * beside each other under the breakpoint that draws them.
  */
@@ -249,19 +250,41 @@ export const Phone390: Story = {
         from = box.right;
       }
 
-      // Four places at their full size: four 32px items and three 4px gaps.
-      await expect(nav.getBoundingClientRect().width).toBe(140);
-
-      // The status is the part that gave way: it holds less than its line needs, and says so with
-      // an ellipsis rather than by wrapping or by pushing the actions out.
+      // The status is the part that gave way: it holds less than its line needs, and wraps onto
+      // more lines rather than cutting a word off (#483), so every word of it is on screen.
       const line = status.firstElementChild;
       if (line instanceof HTMLElement === false) {
         throw new Error("a string status is drawn as text");
       }
       await expect(line).toHaveTextContent(STATUS);
-      await expect(line.scrollWidth).toBeGreaterThan(line.clientWidth);
-      await expect(getComputedStyle(line).textOverflow).toBe("ellipsis");
+      await expect(line.scrollWidth).toBeLessThanOrEqual(line.clientWidth);
+      await expect(getComputedStyle(line).textOverflow).not.toBe("ellipsis");
+      await expect(line.getBoundingClientRect().height).toBeGreaterThan(20);
       await expect(status.getBoundingClientRect().width).toBeGreaterThan(40);
+      // Its lines end at the end, by the actions.
+      await expect(getComputedStyle(line).textAlign).toBe("end");
+
+      // Past its longest word the status gives no more, and the places scroll for the rest.
+      const placesRow = nav.firstElementChild;
+      if (placesRow instanceof HTMLElement === false) {
+        throw new Error("the places should be in a scroller");
+      }
+      await expect(placesRow.scrollWidth).toBeGreaterThan(placesRow.clientWidth);
+
+      // One size, one gap: a place is an `icon-sm` action's 36px square, and the places sit 8px
+      // apart, as the actions do.
+      const [first, second] = Array.from(placesRow.children).map((el) =>
+        el.getBoundingClientRect(),
+      );
+      const buttons = Array.from(action.querySelectorAll("button")).map((el) =>
+        el.getBoundingClientRect(),
+      );
+      if (!first || !second || buttons.length !== 2) {
+        throw new Error("the bar should draw its places and its two actions");
+      }
+      await expect(first.height).toBe(buttons[0]?.height);
+      await expect(second.left - first.right).toBe(8);
+      await expect((buttons[1]?.left ?? 0) - (buttons[0]?.right ?? 0)).toBe(8);
     }
 
     for (const half of ["Native", "Compiled"]) {
@@ -276,8 +299,15 @@ export const Phone390: Story = {
         await expect(link).toHaveAccessibleName(names[index] as string);
         await expect(link).toHaveAttribute("href", `#/${places[index]?.id}`);
         const box = link.getBoundingClientRect();
-        await expect([box.width, box.height]).toEqual([32, 32]);
+        await expect([box.width, box.height]).toEqual([36, 36]);
       }
+
+      // A place that is not the current one is in full ink, as a sidebar row is: the tint is
+      // what marks the current one, not a fainter icon on the rest.
+      const ink = getComputedStyle(links[0] as HTMLElement).color;
+      const brand = within(nav.closest("header") as HTMLElement).getByText("Router");
+      await expect(ink).toBe(getComputedStyle(brand).color);
+      await expect(ink).toBe(getComputedStyle(links[1] as HTMLElement).color);
 
       // One current place, and it is the one the page is on.
       const current = within(nav).getAllByRole("link", { current: "page" });
@@ -325,9 +355,9 @@ export const Phone390: Story = {
 };
 
 /**
- * A narrower bar still: the status is what is lost. The brand, the four places and both actions
- * keep their width and stay inside the bar, which is the whole reason the line has a slot of its
- * own rather than sitting in `actionSlot`.
+ * A narrower bar still. The status keeps its longest word and wraps, and the places scroll for
+ * the rest: the brand and both actions keep their width and stay inside the bar, which is the
+ * whole reason the line has a slot of its own rather than sitting in `actionSlot`.
  */
 export const Phone320: Story = {
   render: () => <Bars width={320} />,
@@ -339,17 +369,22 @@ export const Phone320: Story = {
     for (const { header, nav, status, action } of bars) {
       const edge = header.getBoundingClientRect();
       await expect(edge.width).toBe(320);
-      // The status is gone, and the places give the last few pixels by scrolling: the bar keeps
-      // its inset, so the actions stop 16px short of its edge.
-      await expect(nav.getBoundingClientRect().width).toBeGreaterThan(120);
-      await expect(nav.getBoundingClientRect().width).toBeLessThan(140);
+      // The status is at its floor, its longest word, and every word of it is still drawn; the
+      // places give the rest by scrolling. The bar keeps its inset, so the actions stop 16px
+      // short of its edge.
+      const line = status.firstElementChild;
+      if (line instanceof HTMLElement === false) {
+        throw new Error("a string status is drawn as text");
+      }
+      await expect(line.scrollWidth).toBeLessThanOrEqual(line.clientWidth);
+      await expect(status.getBoundingClientRect().width).toBeGreaterThan(30);
+      await expect(nav.getBoundingClientRect().width).toBeGreaterThan(36);
       const places = nav.firstElementChild;
       if (places instanceof HTMLElement === false) {
         throw new Error("the places should be in a scroller");
       }
       await expect(places.scrollWidth).toBeGreaterThan(places.clientWidth);
       await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right - 16 + 0.5);
-      await expect(status.getBoundingClientRect().width).toBeLessThan(40);
       await expect(action.getBoundingClientRect().right).toBeLessThanOrEqual(edge.right + 0.5);
       await expect(header.scrollWidth).toBeLessThanOrEqual(header.clientWidth);
     }
@@ -455,7 +490,7 @@ export const BottomBar: Story = {
       for (const [index, link] of links.entries()) {
         await expect(link).toHaveAccessibleName(names[index] as string);
         const box = link.getBoundingClientRect();
-        await expect([box.width, box.height]).toEqual([32, 32]);
+        await expect([box.width, box.height]).toEqual([36, 36]);
         await expect(box.left).toBeGreaterThanOrEqual(edge.left);
         await expect(box.right).toBeLessThanOrEqual(edge.right);
         // Above the home indicator, not under it.
@@ -465,7 +500,7 @@ export const BottomBar: Story = {
       await expect(current).toHaveLength(1);
       await expect(current[0]).toHaveAccessibleName("Search, 12");
 
-      // Spread over the width rather than bunched at the start: more than the top bar's 4px
+      // Spread over the width rather than bunched at the start: more than the top bar's 8px
       // between two places, and as much room before the first as after the last.
       const [first, second] = links.map((link) => link.getBoundingClientRect());
       const last = links.at(-1)?.getBoundingClientRect();

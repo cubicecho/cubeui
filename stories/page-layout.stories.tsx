@@ -255,3 +255,97 @@ export const CompactTitle: Story = {
     }
   },
 };
+
+/**
+ * The footer is drawn as the header is: its rule runs the width of the page, and what is in it
+ * keeps the body's column. At `prose` the rule was clipped to the 768px column while the header's
+ * ran the full width over it (#483).
+ */
+export const FooterRuleRunsFullWidth: Story = {
+  render: () => (
+    <div>
+      <Frame name="native">
+        <NativePageLayout
+          title="Settings"
+          width="prose"
+          contentSlot={<Text className="text-foreground">The agent panel.</Text>}
+          footerSlot={
+            <Text testID="saved" className="text-foreground/60 text-sm">
+              Last saved 2 minutes ago
+            </Text>
+          }
+        />
+      </Frame>
+      <Frame name="compiled">
+        <CompiledPageLayout
+          title="Settings"
+          width="prose"
+          contentSlot={<p className="text-foreground">The agent panel.</p>}
+          footerSlot={
+            <p data-testid="saved" className="text-foreground/60 text-sm">
+              Last saved 2 minutes ago
+            </p>
+          }
+        />
+      </Frame>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const frame of frames(canvasElement)) {
+      const header = part(frame, "header-content-footer-header");
+      const footer = part(frame, "header-content-footer-footer");
+      const body = part(frame, "header-content-footer-column");
+
+      // Both rules are the frame's width.
+      await expect(getComputedStyle(footer).borderTopWidth).toBe("1px");
+      await expect(footer.getBoundingClientRect().width).toBeCloseTo(FRAME, 0);
+      await expect(header.getBoundingClientRect().width).toBeCloseTo(FRAME, 0);
+
+      // What is in the footer starts where the body's text does, in the reading column.
+      const saved = part(frame, "saved").getBoundingClientRect();
+      const column = part(frame, "page-layout-footer").getBoundingClientRect();
+      await expect(column.width).toBeCloseTo(PROSE, 0);
+      await expect(column.left).toBeCloseTo(body.getBoundingClientRect().left, 0);
+      await expect(saved.left).toBeCloseTo(
+        part(frame, "page-header-title").getBoundingClientRect().left,
+        0,
+      );
+    }
+  },
+};
+
+/**
+ * A `headerContentSlot` of no elements — `filters.map(…)` over no filters — is no slot: the rule
+ * under the title stays, as it does with nothing passed, rather than going with an empty row.
+ */
+export const EmptyHeaderContent: Story = {
+  render: () => (
+    <div>
+      <Frame name="native">
+        <NativePageLayout
+          title="Servers"
+          headerContentSlot={[]}
+          contentSlot={<Text className="text-foreground">No filters.</Text>}
+        />
+      </Frame>
+      <Frame name="compiled">
+        <CompiledPageLayout
+          title="Servers"
+          headerContentSlot={[]}
+          contentSlot={<p className="text-foreground">No filters.</p>}
+        />
+      </Frame>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const frame of frames(canvasElement)) {
+      const header = part(frame, "header-content-footer-header");
+      await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");
+      await expect(
+        frame.querySelector(
+          '[data-slot="page-header-content"], [data-testid="page-header-content"]',
+        ),
+      ).toBeNull();
+    }
+  },
+};

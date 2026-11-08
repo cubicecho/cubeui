@@ -19,7 +19,7 @@
  */
 import type { ReactNode } from "react";
 import { IconClassContext, type IconComponent } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./empty";
 
 /**
@@ -135,7 +135,7 @@ export function EmptyState({
           className,
         )}
       >
-        {glyph == null ? null : (
+        {hasSlot(glyph) === false ? null : (
           // At the text's size and ink: the context on device, the descendant class on the web,
           // where an icon takes `currentColor` and ignores the context.
           <div

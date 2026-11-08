@@ -18,7 +18,7 @@
  */
 import type { ReactNode } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Card } from "./card";
 import { Skeleton } from "./skeleton";
 
@@ -133,7 +133,7 @@ export function StatTile({
         data-slot="stat-tile-label-row"
         className="cube-rn-view min-w-0 flex-row items-center gap-2"
       >
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <div data-slot="stat-tile-icon" aria-hidden className={cn("cube-rn-view", ICON_BOX, ink)}>
             <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
               {iconSlot}

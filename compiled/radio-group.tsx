@@ -27,7 +27,7 @@ import {
   useRovingFocus,
   useRovingItem,
 } from "@/lib/roving-focus";
-import { cn, type SlotNode, touchRowClass, touchTarget } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchRowClass, touchTarget } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 /**
@@ -317,7 +317,7 @@ function RadioGroupItem({
     if (segmented) {
       return (
         <>
-          {iconSlot ? (
+          {hasSlot(iconSlot) ? (
             // Colour does not inherit on device, so the glyph is handed the label's ink, as a
             // `SegmentedButton`'s is; on the web it takes `currentColor` from the segment.
             <IconClassContext.Provider value={cn("size-4 shrink-0", segmentInk)}>
@@ -338,7 +338,7 @@ function RadioGroupItem({
     if (card) {
       return (
         <>
-          {iconSlot ? (
+          {hasSlot(iconSlot) ? (
             <div className="cube-rn-view items-center justify-center">{iconSlot}</div>
           ) : null}
           {/* The radio's own dot beside the label: a 1px edge in another colour was the only

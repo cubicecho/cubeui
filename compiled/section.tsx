@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn, HEADING_DESCRIPTION, HEADING_TITLE, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_DESCRIPTION, HEADING_TITLE, hasSlot, type SlotNode } from "@/lib/utils";
 import { type ActionPlacement, HeadingRow } from "./card-layout";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { SectionHeading } from "./section-heading";
@@ -110,8 +110,8 @@ export function Section({
       {title}
     </SectionHeading>
   ) : null;
-  const hasText = Boolean(title || description);
-  const hasHeading = Boolean(hasText || actionSlot);
+  const hasText = hasSlot(title) || hasSlot(description);
+  const hasHeading = hasText || hasSlot(actionSlot);
 
   return (
     <section
@@ -156,7 +156,7 @@ export function Section({
         />
       ) : null}
 
-      {contentSlot ? (
+      {hasSlot(contentSlot) ? (
         <div
           data-slot="section-content"
           className={cn("cube-rn-view", "min-w-0 gap-4", contentClassName)}

@@ -244,6 +244,28 @@ export function fieldTriggerClass(
 export type SlotNode = ReactElement | readonly SlotNode[] | false | null | undefined;
 
 /**
+ * Whether a slot holds anything to draw: the test every shell asks before it draws a slot's box,
+ * a gap for it or the rule it stands in for (conventions rule 5).
+ *
+ * Not truthiness. `filters.map(…)` over no filters is `[]`, which is truthy and draws nothing, so
+ * a header tested that way drew an empty row and dropped the rule under the title. An array is
+ * present when anything in it is; `false`, `null`, `undefined`, `true` and `""` are what React
+ * draws nothing for, and are absent.
+ *
+ * @param node - What the caller passed for the slot, or for a prop of words such as `status`.
+ * @returns `true` when the slot has something in it.
+ */
+export function hasSlot(node: ReactNode): boolean {
+  if (node === null || node === undefined || typeof node === "boolean" || node === "") {
+    return false;
+  }
+  if (Array.isArray(node)) {
+    return node.some(hasSlot);
+  }
+  return true;
+}
+
+/**
  * Whether the page this sits in is showing that it is still loading — `PageLayout`'s `loading`,
  * provided over its body. `LoadState` reads it and draws no placeholder rows of its own while it
  * is on, so a detail screen shows its wait once, as the title's bar, rather than a title bar with
@@ -251,6 +273,15 @@ export type SlotNode = ReactElement | readonly SlotNode[] | false | null | undef
  * has to install the other.
  */
 export const PageLoadingContext = createContext(false);
+
+/**
+ * Whether this is drawn in a card's body, `CardContent`, which `CardLayout` draws its body in.
+ * `List` reads it and reaches its rows out into the card's padding by a row's own inset, so a
+ * row's title starts where the card's title does and its rules run nearly edge to edge, rather
+ * than the rows' text sitting 12px inside the card's. Here rather than in either item so neither
+ * has to install the other.
+ */
+export const CardBodyContext = createContext(false);
 
 /** A handler cloned onto a child: one event of whatever kind its prop hands it, or none. */
 type AddedHandler = (event: never) => void;

@@ -90,7 +90,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `contentSlot` | `SlotNode` |  | The rows, as an array — `projects.map(…)`, each with its `key`. Each one becomes an item of the list, so pass the rows themselves rather than a fragment or a wrapper around them: a wrapper would be one item holding every row. |
 | `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<LoadState compact … />`, which renders nothing once there are rows. |
 | `actionSlot` | `SlotNode` |  | The title row's far end: an add button, a filter. |
-| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default — the sidebar sits beside the page, not under its `h1`. Pick it by structure, never by size; the text is the same at every level. |
+| `level` | `1 \| 2 \| 3` | `2` | The title's heading rank. `2` by default — the sidebar sits beside the page, not under its `h1`. Pick it by structure, never by size; the text is the same at every level. |
 | `className` | `string` |  | On the whole section, the title row and its list together. |
 | `contentClassName` | `string` |  | On the list the rows are items of. |
 <!-- /props -->
@@ -118,7 +118,8 @@ rail of icons — both below). `SidebarItem` and `AppBarItem` were `SidebarNavIt
 
 - **`Sidebar`** — the frame: `headerSlot`, a `contentSlot` that scrolls, `footerSlot`, on the page's
   own `bg-background` at a fixed `w-64`, set apart by a `border-foreground/10` rule on the edge
-  facing the page, as a top bar is (`side="end"` moves it; `SidebarLayout` passes its own side). It is a scrolling `HeaderContentFooter` inside, so it needs a height from above, like any
+  facing the page, as a top bar is. The header is inset 16px, as the rows' labels and the section
+  titles are, so a brand passed bare lines up with them (`side="end"` moves it; `SidebarLayout` passes its own side). It is a scrolling `HeaderContentFooter` inside, so it needs a height from above, like any
   chassis whose body scrolls. `label` names it — an `<aside>` on the web, a complementary landmark. Put it in a
   `SidebarLayout` with `sidebarWidth="auto"`, and `divider="none"` because it draws its own rule; a
   different width is one `w-*` in `className`. `sidebarHideBelow` on the layout removes it
@@ -128,7 +129,7 @@ rail of icons — both below). `SidebarItem` and `AppBarItem` were `SidebarNavIt
   keyed); each element becomes one item, so a fragment or a wrapper around them is one item
   holding everything. `status` sits between the title and the list and is where a
   `<LoadState compact …/>` goes; no list is drawn while there are no rows. `level` is the
-  title's heading rank, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
+  title's heading rank, `1 | 2 | 3`, 2 by default. **`as="nav"` makes the section a navigation landmark** — a
   `<nav>` on the web, `role="navigation"` on device — named by its `title`, or by `label` when it
   has none or two would share one. `Sidebar` is a complementary `<aside>`, so without it the rows
   are in no navigation landmark at all; do not wrap the section in a hand-written
@@ -278,16 +279,20 @@ is the copy this replaces.
 - **It binds to a router as the row does**: `createLink(AppBarItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
 - **It is always a link.** A button in the bar is an icon `Button` in `actionSlot`.
-- **Size the list to the bar.** Each item is 32px; a phone fits about five beside a brand mark and
-  two actions. Past that the places scroll sideways rather than wrap, once `status` has given up
-  its width, so an app with more places than fit picks the ones the bar shows.
+- **Size the list to the bar.** Each item is 36px, an `icon-sm` button's square, and the bar's
+  parts sit `gap-2` apart; a 390px phone fits four beside a brand mark, two actions and a short
+  status. Past that the places scroll sideways rather than wrap, once `status` is down to its
+  longest word, so an app with more places than fit picks the ones the bar shows.
+- **Not the current place is full ink**, as a sidebar row is: the `active` tint is what marks the
+  current one, not a fainter icon on the rest.
 
 **`status` is one line saying what state the app is in** — "3/5 servers running", "128 turns in 9
 sessions" — drawn between the `navSlot` and the `actionSlot`, against the action. It takes the width the
-rest of the bar leaves and nothing more, so it is the first thing to give way: a string is cut
-short with an ellipsis, then gone, before the brand, a place or an action moves. Pass a string
-where you can; a node (a `Skeleton` while it loads, a figure in bold) is clipped to the same box
-and lays itself out. Do not put the line in `actionSlot` — that slot never shrinks, and a long status
+rest of the bar leaves and nothing more, so it is the first thing to give way: a string wraps onto
+a second line, and more, down to its longest word, and is never cut short; then the places
+scroll. Pass a short string where you can, since each line it wraps onto makes the bar taller; a
+node (a `Skeleton` while it loads, a figure in bold) is clipped to the width left over and lays
+itself out. Do not put the line in `actionSlot` — that slot never shrinks, and a long status
 there pushes the buttons off the screen.
 
 - **Under `md`** the sidebar pane is `display: none` — off the screen and out of the accessibility
@@ -349,7 +354,7 @@ there pushes the buttons off the screen.
     `viewport-fit=cover` and 0 anywhere else. Pass no inset class in `bottomBarClassName`.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
-  - **About five places**: each item is 32px, and this bar neither scrolls nor wraps.
+  - **About five places**: each item is 36px, and this bar neither scrolls nor wraps.
   - **A toast sits above the bar.** The layout tells `@cubeui/toast` it draws one, and under
     `sidebarHideBelow` the stack rises by the bar's height instead of covering the places. Do not
     offset the `ToastProvider` yourself. A bar of your own that does the same calls

@@ -267,9 +267,9 @@ export const OnDevice: Story = {
       await expectReach(place);
       await expect(place.getBoundingClientRect().width).toBeGreaterThan(share - TOUCH / 2);
     }
-    // The look inside each stays the 32pt square.
+    // The look inside each stays the 36pt square, an `icon-sm` action's (#483).
     for (const look of canvas.getAllByTestId("app-bar-item-look")) {
-      await expect(Math.round(look.getBoundingClientRect().width)).toBe(32);
+      await expect(Math.round(look.getBoundingClientRect().width)).toBe(36);
     }
 
     // Rows stack too close for a `hitSlop`: each is 44pt tall itself.

@@ -85,6 +85,11 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
 - The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
   row, or `divide-y` on a parent.
 - It takes any row: `ListItem`, `CollapsibleRow`, composed `Item` parts, a row of your own.
+- **In a card it reaches into the card's padding.** Inside `CardContent` — `CardLayout`'s body, or
+  a `Card` you compose — the list pulls out by a row's own `px-3`, so each row's title starts where
+  the card's title does and its far end lines up with the card's action, and the rules run nearly
+  edge to edge. Inset twice, the rows' text sat 12px in from every other edge in the card. Do not
+  add a negative margin of your own; a row of your own brings `ListItem`'s `px-3` to line up.
 - **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
   exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
   steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge
