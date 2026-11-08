@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Badge as CompiledBadge } from "../compiled/badge";
 import { ColorDot as Compiled } from "../compiled/color-dot";
-import { Badge as NativeBadge } from "../registry/ui/badge";
+import { Badge as NativeBadge } from "../registry/ui/badge.tsx";
 import { ColorDot as Native } from "../registry/ui/color-dot";
 import { SideBySide } from "./side-by-side";
 

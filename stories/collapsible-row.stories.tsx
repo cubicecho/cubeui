@@ -8,7 +8,7 @@ import { CollapsibleRow as Compiled } from "../compiled/collapsible-row";
 import { DisclosureRow as CompiledOld } from "../compiled/disclosure-row";
 import { CollapsibleRow as Native } from "../registry/layout/collapsible-row";
 import { DisclosureRow as NativeOld } from "../registry/layout/disclosure-row";
-import { Badge as NativeBadge } from "../registry/ui/badge";
+import { Badge as NativeBadge } from "../registry/ui/badge.tsx";
 import { Button as NativeButton } from "../registry/ui/button";
 import { isTurned } from "./chevron";
 import { SideBySide } from "./side-by-side";

@@ -25,6 +25,7 @@ import {
 } from "../registry/layout/sidebar";
 import { SidebarLayout as NativeLayout } from "../registry/layout/split-layout";
 import { Button as NativeButton } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import {
   Folder as NativeFolder,
   Moon as NativeMoon,

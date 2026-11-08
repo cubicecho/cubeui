@@ -706,8 +706,8 @@ export const Default: Story = {
     await userEvent.keyboard("{Escape}");
     await userEvent.click(await body.findByRole("button", { name: /Keep editing/ }));
     await expect(dialog).toBeVisible();
-    // Gone before the next Escape, which the closing question would otherwise take (#489).
-    await waitFor(() => expect(body.queryByRole("alertdialog")).toBeNull());
+    // At once, as a person backing out does: an Escape during the question's exit is the
+    // dialog's, which asks again (#532).
     await userEvent.keyboard("{Escape}");
     await userEvent.click(await body.findByRole("button", { name: /Discard/ }));
     // The question is an `alertdialog`, which a `dialog` query does not find (#489).

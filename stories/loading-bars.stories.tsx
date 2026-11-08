@@ -10,6 +10,7 @@ import { CardLayout as NativeCardLayout } from "../registry/layout/card-layout";
 import { LoadState as NativeLoadState } from "../registry/layout/load-state";
 import { PageHeader as NativePageHeader } from "../registry/layout/page-header";
 import { StatTile as NativeStatTile } from "../registry/layout/stat-tile";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Folder as NativeFolder } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 

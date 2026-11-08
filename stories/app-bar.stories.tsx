@@ -11,6 +11,7 @@ import { AppBar as NativeAppBar } from "../registry/layout/app-bar";
 import { HeaderContentFooter as NativeHeaderContentFooter } from "../registry/layout/header-content-footer";
 import { AppBarItem as NativeAppBarItem } from "../registry/layout/sidebar";
 import { Button as NativeButton } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 

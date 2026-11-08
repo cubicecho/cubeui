@@ -9,6 +9,7 @@ import {
   Trash2 as CompiledTrash,
 } from "../compiled/icons";
 import { Button as Native } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import {
   ChevronDown as NativeChevron,
   Pencil as NativePencil,

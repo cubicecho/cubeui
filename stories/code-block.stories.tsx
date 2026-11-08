@@ -4,6 +4,7 @@ import { expect, fn, spyOn, userEvent, waitFor, within } from "storybook/test";
 import { CodeBlock as Compiled } from "../compiled/code";
 import { CopyButton as CompiledCopyButton } from "../compiled/copy-button";
 import { CodeBlock as Native } from "../registry/ui/code";
+// `copy-button.web.tsx`, as an Expo web build runs it: the device half writes through Expo.
 import { CopyButton as NativeCopyButton } from "../registry/ui/copy-button";
 import { expectFocusEdge, tabTo } from "./focus-edge";
 import { monoFamily } from "./mono-family";
