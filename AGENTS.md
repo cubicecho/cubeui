@@ -224,8 +224,8 @@ A box that is a tab stop only so a keyboard can scroll it — an overflowing `Ta
 `HeaderContentFooter`'s scrolling body, a stacked `SplitLayout` — has no hover look, so it shows
 focus as a field does, with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns
 `active` under `focus-visible:`. The page body and the split draw that line as a 1px inset shadow,
-`INSET_FOCUS_EDGE`, which takes no room. The table, the body and the split are tab stops only
-while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it.
+`INSET_FOCUS_EDGE`, which takes no room. The table, the code block, the body and the split are tab
+stops only while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
 current sidebar row, toggle chip, a calendar's picked day, a selected stat tile, a checked menu row,

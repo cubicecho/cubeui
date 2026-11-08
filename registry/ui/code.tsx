@@ -22,6 +22,7 @@
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { useOverflows } from "@/components/ui/overflows";
 import { useReducedMotion } from "@/components/ui/reduced-motion";
 import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
@@ -166,24 +167,27 @@ type CodeBlockTextProps = Pick<CodeBlockProps, "content" | "wrap" | "maxHeight" 
  */
 function CodeBlockText({ content, wrap, maxHeight, title, following }: CodeBlockTextProps) {
   const height = maxHeight ? MAX_HEIGHTS[maxHeight] : undefined;
+  const [measured, overflows] = useOverflows();
 
   if (Platform.OS === "web") {
-    // A block that wraps and has no cap cannot scroll, so it takes no tab stop — which is what
-    // keeps a one-line value beside its copy button from being two stops.
-    const scrolls = wrap !== true || maxHeight !== undefined;
     return (
       <View
         testID="code-block-content"
+        ref={(node) => {
+          measured.current = node;
+          if (following) {
+            following.scroller.current = node;
+          }
+        }}
         // A region that scrolls has to be reachable by keyboard, or only a mouse wheel can read
-        // the end of the line (axe `scrollable-region-focusable`).
-        tabIndex={scrolls ? 0 : undefined}
+        // the end of the line (axe `scrollable-region-focusable`). Only while it has something to
+        // scroll, though: text that fits, as a one-line value beside its copy button does, would
+        // be a stray stop, and a log that grows past the cap becomes one.
+        tabIndex={overflows ? 0 : undefined}
         // A view's own props have no scroll event (on device a view does not scroll), so the
-        // listener and the ref go on as a spread, untyped. The element under it is a `<div>`.
+        // listener goes on as a spread, untyped. The element under it is a `<div>`.
         {...(following
           ? {
-              ref: (node: unknown) => {
-                following.scroller.current = node;
-              },
               "aria-live": "off" as const,
               onScroll: ({ currentTarget: box }: WebScrollEvent) =>
                 following.onAtEnd(box.scrollHeight - box.scrollTop - box.clientHeight <= END_SLACK),
@@ -192,9 +196,9 @@ function CodeBlockText({ content, wrap, maxHeight, title, following }: CodeBlock
         className={cn(
           "min-w-0 flex-1 overflow-auto p-3",
           height,
-          scrolls && FOCUS_EDGE,
+          overflows && FOCUS_EDGE,
           // The edge follows the block's corners, which are its own only where no header sits.
-          scrolls && (title === undefined ? "rounded-md" : "rounded-b-md"),
+          overflows && (title === undefined ? "rounded-md" : "rounded-b-md"),
         )}
       >
         <Text

@@ -326,14 +326,22 @@ export const Titled: Story = {
   },
 };
 
-/** A log that grows by a line on each press, as a run's output does. */
-function GrowingLog({ CodeBlock }: { CodeBlock: CodeBlockComponent }) {
-  const [lines, setLines] = useState(40);
+/** A log that grows by `by` lines on each press, from `start`, as a run's output does. */
+function GrowingLog({
+  CodeBlock,
+  start = 40,
+  by = 1,
+}: {
+  CodeBlock: CodeBlockComponent;
+  start?: number;
+  by?: number;
+}) {
+  const [lines, setLines] = useState(start);
   const text = Array.from({ length: lines }, (_, i) => `step ${i + 1}: ok`).join("\n");
   return (
     <div className="flex flex-col gap-2">
       <CodeBlock content={text} wrap maxHeight="sm" follow />
-      <button type="button" onClick={() => setLines((n) => n + 1)}>
+      <button type="button" onClick={() => setLines((n) => n + by)}>
         Append
       </button>
     </div>
@@ -382,6 +390,53 @@ export const Follow: Story = {
       await userEvent.click(append);
       await waitFor(() => expect(content.textContent).toContain("step 43: ok"));
       await expect(belowView(content)).toBeLessThanOrEqual(4);
+    }
+  },
+};
+
+/** Lines the growing log starts with, and adds on a press: two fit `sm`, forty-two do not. */
+const FEW_LINES = 2;
+const MANY_LINES = 40;
+
+/**
+ * A block is a tab stop, with the focus edge, only while its text overflows (#455): capped or
+ * unwrapped, text that fits has nothing for a keyboard to scroll, and was a stray stop. A log that
+ * grows past its cap becomes one, and axe, which runs on where the play leaves it, holds that a
+ * block that overflows can be reached.
+ */
+export const TabStopOnlyWhileItOverflows: Story = {
+  render: () =>
+    both((CodeBlock) => (
+      <div className="flex flex-col gap-4">
+        <CodeBlock content="ok" wrap maxHeight="sm" />
+        <CodeBlock content="ok" />
+        <CodeBlock content={LOG} wrap maxHeight="sm" />
+        <GrowingLog CodeBlock={CodeBlock} start={FEW_LINES} by={MANY_LINES} />
+      </div>
+    )),
+  play: async ({ canvasElement }) => {
+    for (const half of halvesOf(canvasElement)) {
+      const [shortCapped, shortLine, long, growing] = Array.from(
+        half.querySelectorAll<HTMLElement>(
+          '[data-slot="code-block-content"], [data-testid="code-block-content"]',
+        ),
+      ) as [HTMLElement, HTMLElement, HTMLElement, HTMLElement];
+
+      for (const fits of [shortCapped, shortLine]) {
+        await expect(fits.scrollHeight).toBeLessThanOrEqual(fits.clientHeight);
+        await expect(fits.scrollWidth).toBeLessThanOrEqual(fits.clientWidth);
+        await expect(fits).not.toHaveAttribute("tabindex");
+        await expect(getComputedStyle(fits).borderTopWidth).toBe("0px");
+      }
+
+      await expect(long.scrollHeight).toBeGreaterThan(long.clientHeight);
+      await expect(long).toHaveAttribute("tabindex", "0");
+      await expect(getComputedStyle(long).borderTopWidth).toBe("1px");
+
+      await expect(growing).not.toHaveAttribute("tabindex");
+      await userEvent.click(within(half as HTMLElement).getByRole("button", { name: "Append" }));
+      await waitFor(() => expect(growing).toHaveAttribute("tabindex", "0"));
+      await expect(growing.scrollHeight).toBeGreaterThan(growing.clientHeight);
     }
   },
 };

@@ -3,8 +3,8 @@
  *
  * A box that scrolls has to be a tab stop, or only a mouse wheel can move it: axe reports it as
  * `scrollable-region-focusable`, and a keyboard user cannot read what is past the edge. A box that
- * fits is then a stray stop in every page's tab order, so `Table`'s container and
- * `HeaderContentFooter`'s body take the stop only while this says they overflow.
+ * fits is then a stray stop in every page's tab order, so `Table`'s container, `CodeBlock`'s text
+ * and `HeaderContentFooter`'s body take the stop only while this says they overflow.
  *
  * It also writes the width the box's scrollbar takes to `--scrollbar-width` on the box: a column
  * centred inside a scrolling box is centred on what the scrollbar leaves, half a scrollbar off a
