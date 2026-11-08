@@ -295,6 +295,7 @@ scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold th
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links
 scripts/build-install-table.mjs       skill/install-paths.md, from the two registry indexes
 scripts/build-props-tables.mjs        the skill's props tables, from the TSDoc on each props type
+scripts/props-tables.mjs              one table's rows: a union props type merged, constants expanded
 scripts/build-page.mjs                the landing page, public/index.html
 .github/workflows/ci.yml              `npm run check` and the Storybook tests
 .github/workflows/pages.yml           builds and publishes the registry on `main`
@@ -510,6 +511,12 @@ props type: one row per prop declared in the item's own files, a line naming the
 from another item's. So the TSDoc *is* the props documentation — write each prop's first
 paragraph for a reader choosing it — and a new shell or control gets a marker beside its first
 example. `skill:check` fails on a table that no longer matches.
+
+A union props type is one table. A prop is one row, its type what any member allows, and its text
+from the member that allows it — so the TSDoc goes there, not on a `never`. A prop only some
+members allow says which: `notFoundLabel` (required with `record`). A type written as a constant
+(`keyof typeof SIZES`) or as an alias the file keeps to itself is printed as its values. Both
+modes fail on a row typed `never` or still reading `keyof typeof` (#463).
 
 A new item goes in its topic file **and** gets a row in the choosing table; a new slot word
 goes in `vocabulary.md` and in rule 2 of the conventions doc, because those two are the

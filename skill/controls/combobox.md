@@ -30,8 +30,8 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
 | `value` | `TValue` |  | The current pill's `value`. With it, a `SegmentedButton value="week"` works out whether it is current, so no pill needs `active={x === value}`. |
 | `onValueChange` | `((value: TValue) => void)` |  | Called with a pill's `value` when it is pressed. Typed as the group's `value` is, so a group over a closed set hands back a member of the set and the caller neither looks it up again nor asserts it. |
 | `ref` | `React.Ref<React.ElementRef<typeof View>>` |  |  |
-| `variant` | `keyof typeof SEGMENTED_GROUP_VARIANTS` | `"framed"` | `framed` (the default) draws the input-height box; `plain` draws the row alone. |
-| `labelHideBelow` | `keyof typeof LABEL_HIDE_BELOW` |  | Under this width a pill with an `iconSlot` draws the icon alone; `always` is a row of icons at every width. Said here and not on each pill because the pills in a row should agree. The label is still the pill's name, read by a screen reader, and a pill with no `iconSlot` keeps its label. |
+| `variant` | `"framed" \| "plain"` | `"framed"` | `framed` (the default) draws the input-height box; `plain` draws the row alone. |
+| `labelHideBelow` | `"always" \| "sm" \| "md" \| "lg" \| "xl"` |  | Under this width a pill with an `iconSlot` draws the icon alone; `always` is a row of icons at every width. Said here and not on each pill because the pills in a row should agree. The label is still the pill's name, read by a screen reader, and a pill with no `iconSlot` keeps its label. |
 | `className` | `string` |  |  |
 | `children` (required) | `ReactNode` |  |  |
 <!-- /props -->
@@ -104,12 +104,12 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 | `createLabel` | `string` |  | What the create row says, before the quoted name. |
 | `freeText` | `boolean` |  | Hold what was typed, not only what is listed: the options are suggestions, not a closed set. The create row writes the typed text as the value itself, so no `onCreateOption` is needed (and one passed beside it is not called), and a held value no option covers is drawn as its own text. With `multiple` it is a tag input: each typed value is a chip, and one already held (ignoring case) is refused, with the reason said in the menu. |
 | `duplicateMessage` | `((text: string) => string)` |  | What the menu says when the text typed into a `freeText` `multiple` combobox is already held. |
-| `onRefusalChange` | `((message: string) => void)` |  | Told the refusal's message when the menu starts refusing what was typed, and `undefined` when it stops. What `ComboboxField` puts on the field as its error. |
-| `multiple` | `false` |  |  |
-| `value` | `string` |  |  |
-| `onValueChange` (required) | `(value: string) => void` |  |  |
-| `maxDisplay` | `number` |  | Chips to draw before collapsing to a count. `0` always shows the count. |
-| `clearable` | `boolean` |  | A Clear button at the foot of the menu, while anything is chosen. |
+| `onRefusalChange` | `((message: string \| undefined) => void)` |  | Told the refusal's message when the menu starts refusing what was typed, and `undefined` when it stops. What `ComboboxField` puts on the field as its error. |
+| `multiple` | `boolean` |  |  |
+| `value` | `string \| readonly string[]` |  |  |
+| `onValueChange` (required) | `((value: string) => void) \| ((value: string[]) => void)` |  |  |
+| `maxDisplay` (with `multiple`) | `number` |  | Chips to draw before collapsing to a count. `0` always shows the count. |
+| `clearable` (with `multiple`) | `boolean` |  | A Clear button at the foot of the menu, while anything is chosen. |
 
 It also takes the props declared in `registry/ui/select-base.ts`: `aria-describedby`, `aria-invalid`, `aria-label`, `aria-labelledby`, `aria-required`, `id`, `onBlur`.
 <!-- /props -->

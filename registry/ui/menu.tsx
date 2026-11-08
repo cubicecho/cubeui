@@ -46,7 +46,7 @@ import {
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { Popover, PopoverContent } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { addHandlers, cn } from "@/lib/utils";
 
 type MenuState = {
   open: boolean;
@@ -118,25 +118,18 @@ function MenuTrigger({ asChild, children }: MenuTriggerProps) {
   if (asChild && isValidElement(children)) {
     // The child's own ref still gets the node; the menu only needs to read it too.
     const own = (children.props as { ref?: Ref<View> }).ref;
-    return cloneElement(
-      children as ReactElement<{
-        onPress?: () => void;
-        ref?: Ref<View>;
-        "aria-expanded"?: boolean;
-      }>,
-      {
-        onPress: () => setOpen(true),
-        "aria-expanded": open,
-        ref: (node: View | null) => {
-          triggerRef.current = node;
-          if (typeof own === "function") {
-            own(node);
-          } else if (own) {
-            own.current = node;
-          }
-        },
+    const opens = addHandlers(children, { onPress: () => setOpen(true) });
+    return cloneElement(opens as ReactElement<{ ref?: Ref<View>; "aria-expanded"?: boolean }>, {
+      "aria-expanded": open,
+      ref: (node: View | null) => {
+        triggerRef.current = node;
+        if (typeof own === "function") {
+          own(node);
+        } else if (own) {
+          own.current = node;
+        }
       },
-    );
+    });
   }
   return (
     // The `role` is hand-written because a `<button>` has no native counterpart.

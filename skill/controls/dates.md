@@ -16,11 +16,11 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | --- | --- | --- | --- |
 | `id` | `string` |  |  |
 | `value` | `Date \| null` |  |  |
-| `onValueChange` (required) | `(value: Date \| null) => void` |  |  |
+| `onValueChange` (required) | `((value: Date \| null) => void)` |  |  |
 | `showTime` | `boolean` | `false` | Adds a time box under the calendar and keeps the clock through a day change. |
 | `placeholder` | `string` | `"Pick a date"` |  |
 | `format` | `string` |  | How the chosen date reads on the trigger. Defaults to `PPP`, or `PPP p` with a time. |
-| `disabledDates` | `CalendarProps["disabled"]` |  | Which days cannot be chosen — a `DateMatcher`, so `{ before: new Date() }` works. |
+| `disabledDates` | `DateMatcher \| DateMatcher[]` |  | Which days cannot be chosen — a `DateMatcher`, so `{ before: new Date() }` works. |
 | `clearable` | `boolean` | `true` |  |
 | `disabled` | `boolean` |  |  |
 | `className` | `string` |  |  |
@@ -36,13 +36,13 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `id` | `string` |  |  |
 | `placeholder` | `string` | `"Pick a date range"` |  |
 | `format` | `string` |  | How the chosen date reads on the trigger. Defaults to `PPP`, or `PPP p` with a time. |
-| `disabledDates` | `CalendarProps["disabled"]` |  | Which days cannot be chosen — a `DateMatcher`, so `{ before: new Date() }` works. |
+| `disabledDates` | `DateMatcher \| DateMatcher[]` |  | Which days cannot be chosen — a `DateMatcher`, so `{ before: new Date() }` works. |
 | `clearable` | `boolean` | `true` |  |
 | `disabled` | `boolean` |  |  |
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
 | `value` | `DateRange \| null` |  |  |
-| `onValueChange` (required) | `(value: DateRange \| null) => void` |  |  |
+| `onValueChange` (required) | `((value: DateRange \| null) => void)` |  |  |
 | `numberOfMonths` | `number` | `2` | Months side by side. Two, because a range usually crosses one. |
 | `calendarProps` | `Omit<CalendarProps, "mode" \| "selected" \| "onSelect" \| "disabled">` |  |  |
 <!-- /props -->
@@ -62,9 +62,9 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `aria-describedby` | `string` |  | Web only, on the trigger: native has no description relation. A bound field's hint and error. |
 | `aria-invalid` | `boolean \| "true" \| "false"` |  | The value was refused: the trigger's edge turns `negative` on both halves, as a field's does. The attribute itself is web only, on the trigger. |
 | `aria-required` | `boolean \| "true" \| "false"` |  | Web only, on the trigger. |
-| `clearable` | `false` |  |  |
-| `value` (required) | `Date` |  |  |
-| `onChange` (required) | `(next: Date) => void` |  |  |
+| `clearable` | `boolean` |  | The value may be empty: the trigger shows `placeholder`, and a Clear row commits `null`. |
+| `value` (required) | `Date \| null` |  |  |
+| `onChange` (required) | `((next: Date) => void) \| ((next: Date \| null) => void)` |  |  |
 <!-- /props -->
 
 **On both halves**, from `@cubeui/date-picker` (it installs to `components/date-picker`). The

@@ -34,7 +34,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `contentSlot` | `SlotNode` |  | The rows: `PropertyRow`s, as an array or a fragment. Nothing else belongs here — on the web this is a `<dl>`, which may hold only term-and-description groups. |
-| `layout` | `Layout` | `"inline"` | `inline` (the default) puts each label beside its value, and falls back to `stacked` on its own when the list is too narrow for both. `stacked` puts the label above the value at every width. Not `orientation`: `inline` is not horizontal below the width it wraps at, and a word that is only true on a wide screen is the kind rule 11 renames later. |
+| `layout` | `"inline" \| "stacked"` | `"inline"` | `inline` (the default) puts each label beside its value, and falls back to `stacked` on its own when the list is too narrow for both. `stacked` puts the label above the value at every width. Not `orientation`: `inline` is not horizontal below the width it wraps at, and a word that is only true on a wide screen is the kind rule 11 renames later. |
 | `className` | `string` |  |  |
 <!-- /props -->
 

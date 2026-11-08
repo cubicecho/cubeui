@@ -16,10 +16,8 @@
  */
 
 import {
-  cloneElement,
   createContext,
   isValidElement,
-  type ReactElement,
   type RefObject,
   useContext,
   useEffect,
@@ -36,7 +34,7 @@ import {
   type TooltipProviderProps,
   type TooltipTriggerProps,
 } from "@/components/ui/tooltip-base";
-import { cn } from "@/lib/utils";
+import { addHandlers, cn } from "@/lib/utils";
 
 type TooltipState = {
   open: boolean;
@@ -74,11 +72,6 @@ function Tooltip({ children }: TooltipProps) {
   );
 }
 
-type TriggerChildProps = {
-  onLongPress?: (() => void) | undefined;
-  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
-};
-
 /**
  * The element the tooltip describes: hovered or focused on the web, long-pressed on device.
  *
@@ -93,18 +86,7 @@ function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
     frame.current = event.nativeEvent.layout;
   };
   if (asChild && isValidElement(children)) {
-    // The child's own handlers still run: the tooltip's are added to them, not swapped in.
-    const child = children as ReactElement<TriggerChildProps>;
-    return cloneElement(child, {
-      onLongPress: () => {
-        child.props.onLongPress?.();
-        show();
-      },
-      onLayout: (event: LayoutChangeEvent) => {
-        child.props.onLayout?.(event);
-        measure(event);
-      },
-    });
+    return addHandlers(children, { onLongPress: show, onLayout: measure });
   }
   return (
     <Pressable onLongPress={show} onLayout={measure} className={cn(className)}>

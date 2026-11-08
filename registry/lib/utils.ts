@@ -114,6 +114,35 @@ export function fieldTriggerClass(
  */
 export type SlotNode = ReactElement | readonly SlotNode[] | false | null | undefined;
 
+/** A handler cloned onto a child: one event of whatever kind its prop hands it, or none. */
+type AddedHandler = (event: never) => void;
+
+/**
+ * The child with each handler in `added` run after the child's own handler of that name, rather
+ * than swapped in for it. A native `asChild` trigger hands its child the press that opens or shuts
+ * its sheet, and when that press replaced the child's own, `<PopoverClose asChild><Button
+ * onPress={apply} /></PopoverClose>` shut the pane and never applied anything (#461). Radix's
+ * `Slot` runs both on the web, and this is what makes a device do the same.
+ *
+ * @param child - The caller's element, cloned rather than wrapped.
+ * @param added - The handlers to add, by prop name: `{ onPress: open }`.
+ * @returns The clone, each named handler running the child's own first and then the added one.
+ */
+export function addHandlers<P>(
+  child: ReactElement<P>,
+  added: Record<string, AddedHandler>,
+): ReactElement<P> {
+  const own = child.props as Record<string, AddedHandler | undefined>;
+  const chained: Record<string, AddedHandler> = {};
+  for (const [name, handler] of Object.entries(added)) {
+    chained[name] = (event) => {
+      own[name]?.(event);
+      handler(event);
+    };
+  }
+  return cloneElement(child, chained as Partial<P>);
+}
+
 /** React Native's pressables, by the `displayName` react-native-web gives each. */
 const PRESSABLE_NAMES = new Set([
   "Pressable",

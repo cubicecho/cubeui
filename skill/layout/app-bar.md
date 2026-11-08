@@ -27,7 +27,7 @@ and the header of an app with no sidebar.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `navSlot` | `SlotNode` |  | The app's places, usually `AppBarItem`s. Drawn inside a `<nav>` — `role="navigation"` on device — named by `navLabel`, which is the landmark every hand-written bar either forgot or spelled differently. Do not wrap them in one yourself. |
-| `navLabel` | `string` |  | What the bar's navigation landmark is called — "Main". Required with `navSlot`. |
+| `navLabel` (required with `navSlot`) | `string` |  | What the bar's navigation landmark is called — "Main". Required with `navSlot`. |
 | `brandSlot` | `SlotNode` |  | The bar's start: the app's mark and name, usually a link home. It keeps its width. |
 | `status` | `ReactNode` |  | One line saying what state the app is in — "3/5 servers running" — between the `navSlot` and the `actionSlot`. It gets the width the rest of the bar leaves and no more, so on a narrow bar it is the first thing to give way: a string is cut short with an ellipsis, down to nothing, before the brand, a place or an action loses a pixel. A node is clipped to the same box and truncates itself. |
 | `actionSlot` | `SlotNode` |  | The bar's far end: the theme switch, account, sign out. It keeps its width. |

@@ -102,8 +102,8 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | A tag or filter chip the user can take off — see [controls/display.md](controls/display.md#removable-badge) | `Badge onRemove` | `@cubeui/badge` |
 | An icon-only button, its name as its tooltip, and a `hint` with a reason that survives `disabled` — see [controls/buttons.md](controls/buttons.md#icon-buttons) | `Button` in an `icon*` size | `@cubeui/button` |
 | A button that deletes, discards, revokes or resets and asks first — see [controls/buttons.md](controls/buttons.md#destructive-buttons) | `ConfirmButton` | `@cubeui/confirm-button` |
-| A button that copies a value and ticks when it has — see [controls/buttons.md](controls/buttons.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
-| A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls/buttons.md](controls/buttons.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
+| A button that copies a value and ticks when it has — see [controls/copy-and-download.md](controls/copy-and-download.md#copy-button) | `CopyButton` | `@cubeui/copy-button` |
+| A button that saves a file, `downloadBlob()` and `downloadUrl()` — see [controls/copy-and-download.md](controls/copy-and-download.md#download-button) | `DownloadButton` | `@cubeui/download-button` |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button — see [controls/code-and-markdown.md](controls/code-and-markdown.md#code-block) | `CodeBlock` | `@cubeui/code` |
 | A callout — a warning, a note, the last error — see [controls/display.md](controls/display.md#alert) | `Alert` | `@cubeui/alert` |
 | A loading indicator — see [controls/display.md](controls/display.md#spinner) | `Spinner` | `@cubeui/spinner` |
@@ -116,10 +116,10 @@ A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`,
 | An action that deletes, discards, revokes or resets — `requireText` to ask for its name first, see [controls/buttons.md](controls/buttons.md#type-the-name-to-confirm) | `ConfirmDialog` | `@cubeui/confirm-dialog` |
 | A popover of actions — a ⋯ menu, Rename / Move / Delete on a row — see [controls/menus.md](controls/menus.md#menu) | `Menu`, `MenuItem` | `@cubeui/menu` |
 | A popover of on/off rows that stays open, or a one-of-N filter behind a button — see [controls/menus.md](controls/menus.md#menu) | `MenuCheckboxItem`, `MenuRadioGroup`, `MenuRadioItem` | `@cubeui/menu` |
-| The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout/lists.md](layout/lists.md#list) | `List` | `@cubeui/list` |
-| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/lists.md](layout/lists.md#listitem) | `ListItem` | `@cubeui/list-item` |
+| The list rows sit in: a `<ul>` with a rule between rows and the padding around each — see [layout/list-rows.md](layout/list-rows.md#list) | `List` | `@cubeui/list` |
+| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressable — see [layout/list-rows.md](layout/list-rows.md#listitem) | `ListItem` | `@cubeui/list-item` |
 | Files and folders nested from a flat list of paths, with folding folders, a selected file, row actions and a drag onto a folder — see [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) | `FileTree` (and `buildTree` from `@/lib/tree`) | `@cubeui/file-tree` |
-| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/lists.md](layout/lists.md#collapsiblerow) | `CollapsibleRow` | `@cubeui/collapsible-row` |
+| A list row that opens onto detail: badges, a title, a line of facts, a body under it — see [layout/list-rows.md](layout/list-rows.md#collapsiblerow) | `CollapsibleRow` | `@cubeui/collapsible-row` |
 | A list screen's failed / loading / empty rungs, or a detail screen's failed / loading / not found (`record`, `notFoundLabel`) | `LoadState` | `@cubeui/load-state` |
 | A route that threw — render it as the whole error boundary: `role="alert"`, `title` (the screen's heading), `details` (the raw message, for a bug report), `actionSlot` (a Reload beside Try again; `actionsSlot` is its old name, deprecated), all in one `max-w-md` column | `ErrorPage` (once `RouteError`, deprecated) | `@cubeui/error-page` |
 

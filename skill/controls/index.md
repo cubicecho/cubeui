@@ -16,7 +16,8 @@ component with no React Native half, so it does not install in an Expo project. 
 | File | What is in it |
 | --- | --- |
 | [icons.md](icons.md) | `@cubeui/icons` |
-| [buttons.md](buttons.md) | `Button`, icon buttons, `CopyButton`, `DownloadButton`, `ConfirmButton` |
+| [buttons.md](buttons.md) | `Button`, icon buttons, `ConfirmButton` |
+| [copy-and-download.md](copy-and-download.md) | `CopyButton`, `DownloadButton`, `downloadBlob`, `downloadUrl` |
 | [menus.md](menus.md) | `Menu`, `MenuItem` and its checkbox and radio rows, `Command`, `CommandDialog` |
 | [combobox.md](combobox.md) | `Combobox`, `SegmentedGroup`, `SegmentedButton` |
 | [dates.md](dates.md) | `DatePicker`, `DateRangePicker`, `DateTimeInput`, the `format*` helpers |

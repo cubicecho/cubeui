@@ -201,7 +201,7 @@ type FormFieldProps = {
    * the caller also wrapped the form in a `FieldGroup` — a prop that depends on an ancestor the
    * shell cannot see is a prop that does nothing most of the time it is passed.
    */
-  orientation?: keyof typeof LOADING_BOX | undefined;
+  orientation?: "vertical" | "horizontal" | undefined;
   className?: string | undefined;
   labelClassName?: string | undefined;
   descriptionClassName?: string | undefined;

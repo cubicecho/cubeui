@@ -27,7 +27,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | --- | --- | --- | --- |
 | `className` | `string` |  |  |
 | `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: drawn empty and announced with no value, as Radix's is — not animated. |
-| `max` | `number` | `DEFAULT_MAX` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
+| `max` | `number` | `100` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
 | `label` | `string` |  | What is progressing — "Re-embedding progress". The bar's accessible name. |
 | `valueLabel` | `string` |  | The value in words, read instead of the bare number: "1,204 of 5,880 turns". Without it a screen reader says the percentage, which is right when the number means nothing else. |
 | `indicatorClassName` | `string` |  | The filled part: `bg-negative` for a context window nearly full. |
@@ -63,7 +63,7 @@ with a filled `div` and a `style.width` inside it.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `color` (required) | `string` |  |  |
-| `size` | `keyof typeof SIZES` | `"md"` |  |
+| `size` | `"sm" \| "md"` | `"md"` |  |
 | `className` | `string` |  |  |
 | `label` | `string` |  | What the colour stands for, exposed as the accessible name. |
 <!-- /props -->
@@ -97,7 +97,8 @@ Showing a colour the user picked is three small items, all on both halves:
   tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
   assistive tech; with one, the label is its accessible name.
 - **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), normalised so it
-  stays visible in both themes, and `accentLabel` names it. Pass it on `Card` rather than placing
+  stays visible in both themes, and `accentLabel` names it. It takes `#rgb` or `#rrggbb`, with or
+  without the `#`; anything else draws no stripe. Pass it on `Card` rather than placing
   a `ColorBar` yourself — the card owns the `relative overflow-hidden` the stripe needs.
 - **`readableTextColor(color)`** (`@cubeui/readable-text-color`) — black or white ink for text on
   a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop

@@ -33,7 +33,7 @@ route should reach for first.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `contentSlot` (required) | `SlotNode` |  | The page. The only slot that scrolls, unless `scroll` is off. |
-| `title` (required) | `ReactNode` |  | What the page is called. Required for the same reason it is on {@link PageHeader}. |
+| `title` (required) | `ReactNode` |  | What the page is called. Required for the same reason it is on `PageHeader`. |
 | `description` | `ReactNode` |  | One line on what the page is for. |
 | `iconSlot` | `SlotNode` |  | Sits before the title, sized with it. Pass a bare `<Users />`. |
 | `actionSlot` | `SlotNode` |  | The header's far end: the page's buttons, a status pill, a menu. |
@@ -45,11 +45,11 @@ route should reach for first.
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
 | `size` | `PageHeaderSize` |  | How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when left out. `size="sm"` is a compact title on a page that is still the `h1`. |
 | `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
-| `width` | `HeaderContentFooterProps["width"]` | `"page"` | The column the header and body share. `page` for a list or a board, `prose` for settings, a detail page or a form, `full` for a pane that is already inside someone else's column. |
+| `width` | `"full" \| "page" \| "prose"` | `"page"` | The column the header and body share. `page` for a list or a board, `prose` for settings, a detail page or a form, `full` for a pane that is already inside someone else's column. |
 | `scroll` | `boolean` | `true` | Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a chat's message list over a pinned composer, a framed app, tab panels that each keep their place. Off, the body is the height left under the header and `contentSlot` divides it. |
-| `contentRef` | `HeaderContentFooterProps["contentRef"]` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. |
-| `scrollRef` | `HeaderContentFooterProps["scrollRef"]` |  | A handle that moves the body: `scrollToEnd()`, the same on both halves. |
-| `onScroll` | `HeaderContentFooterProps["onScroll"]` |  | Called as the body scrolls, with where it now is. Never called while `scroll` is off. |
+| `contentRef` | `Ref<ScrollView>` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. |
+| `scrollRef` | `Ref<ScrollHandle>` |  | A handle that moves the body: `scrollToEnd()`, the same on both halves. |
+| `onScroll` | `((position: ScrollPosition) => void)` |  | Called as the body scrolls, with where it now is. Never called while `scroll` is off. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  | On the whole header — the title block and `headerBarSlot` — which runs the full width. The rule under it is here: `border-b-0` removes it, and `border-b border-foreground/10` draws it under a `headerContentSlot`, which otherwise has none. |
 | `contentClassName` | `string` |  | Merged after the body's own `gap-4 py-4`, so `py-0` or `gap-6` replaces just that half. The body's `px-4` comes with `width` and is not here. |
@@ -172,7 +172,7 @@ dialog body.
 | `headerSlot` | `SlotNode` |  | Page title, toolbar, filters — whatever stays above the body. Absent, no row is drawn. |
 | `footerSlot` | `SlotNode` |  | Paging, totals, a save bar. Absent, no row is drawn. |
 | `scroll` | `boolean` | `false` | Whether the body scrolls inside the chassis rather than growing it. |
-| `width` | `HeaderContentFooterWidth` | `"full"` | - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and anything already inside its own column. - `page` — slots share the capped, centred {@link PAGE_COLUMN}, inset to match the header. Every list page, every board. - `prose` — the narrower {@link PROSE_COLUMN}. Settings, a detail page, a form. |
+| `width` | `HeaderContentFooterWidth` | `"full"` | - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and anything already inside its own column. - `page` — slots share the capped, centred `PAGE_COLUMN`, inset to match the header. Every list page, every board. - `prose` — the narrower `PROSE_COLUMN`. Settings, a detail page, a form. |
 | `headerWidth` | `HeaderContentFooterWidth` |  | The header's own column, when it is not the body's: `full` lets a rule under the header, and a bar in it, run the full width over a body held to `page` or `prose`. What in the header should still sit over the body's column holds itself to it, with `COLUMNS[width]`. Absent, the header shares `width`. |
 | `contentRef` | `Ref<ElementRef<typeof ScrollView>>` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. A `<div>` on the web and, while `scroll` is on, the `ScrollView` on device. |
 | `scrollRef` | `Ref<ScrollHandle>` |  | A handle that moves the body: `scrollRef.current?.scrollToEnd()`, the same on both halves. It does nothing while `scroll` is off, when there is no scrolling body to move. |
