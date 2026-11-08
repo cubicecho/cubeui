@@ -2,7 +2,16 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { ChevronRight } from "@/components/ui/icons";
-import { cn, type SlotNode } from "@/lib/utils";
+import {
+  actionGap,
+  cn,
+  HEADING_DESCRIPTION,
+  HEADING_GAP,
+  HEADING_TITLE,
+  HEADING_WRAP_FLOOR,
+  HEADING_WRAP_GAP,
+  type SlotNode,
+} from "@/lib/utils";
 
 type CollapsibleProps = {
   /**
@@ -128,8 +137,8 @@ export function CollapsibleTrigger({
 
 /**
  * A titled part of a screen whose body shows and hides: "Show completed (3)" under a list. The
- * look is a muted `text-sm` line with the chevron before it; `titleClassName` makes the title the
- * foreground where the collapsible is a section's heading.
+ * heading is the rhythm every block and row shares — a 14px semibold title, a quieter line of the
+ * same size under it, the action level with the title's top — with the chevron before it.
  *
  * The whole header is one `CollapsibleTrigger`, and `actionSlot` sits outside it, because a button
  * in a button is invalid. Open is uncontrolled with `defaultOpen` or controlled with `open`, and
@@ -164,28 +173,34 @@ export function Collapsible({
     <View testID="collapsible" className={cn("min-w-0 gap-2", className)}>
       <View
         testID="collapsible-header"
-        className={cn("min-w-0 flex-row items-start gap-2", headerClassName)}
+        // The rhythm's wrap: the action drops under the title once the title would have less
+        // than the floor beside it.
+        className={cn(
+          "min-w-0 flex-row flex-wrap items-start gap-x-2",
+          HEADING_WRAP_GAP,
+          headerClassName,
+        )}
       >
         <CollapsibleTrigger
           testID="collapsible-trigger"
+          className={HEADING_WRAP_FLOOR}
           open={open}
           onPress={toggle}
           controls={shown ? contentId : undefined}
           contentSlot={
-            <View className="min-w-0 flex-1 gap-0.5">
-              {asText(
-                title,
-                cn("font-semibold text-foreground/60 text-sm", titleClassName),
-                "collapsible-title",
-              )}
+            <View className={cn("min-w-0 flex-1", HEADING_GAP)}>
+              {asText(title, cn(HEADING_TITLE, titleClassName), "collapsible-title")}
               {description
-                ? asText(description, "text-foreground/60 text-xs", "collapsible-description")
+                ? asText(description, HEADING_DESCRIPTION, "collapsible-description")
                 : null}
             </View>
           }
         />
         {actionSlot ? (
-          <View testID="collapsible-action" className="shrink-0 flex-row items-center gap-1">
+          <View
+            testID="collapsible-action"
+            className={cn("shrink-0 flex-row items-center", actionGap(actionSlot))}
+          >
             {actionSlot}
           </View>
         ) : null}

@@ -48,12 +48,13 @@ export const Default: Story = {
 
     const nativeStyle = getComputedStyle(native);
     const compiledStyle = getComputedStyle(compiled);
-    // Full ink, not the /60 grey: the overline leads its own description.
+    // A card's title, not an overline (#473): full ink, 14px, as written. It leads the description
+    // under it by weight and ink, at the same size.
     await expect(nativeStyle.color).not.toMatch(/\/ 0\.6\)$/);
     await expect(compiledStyle.color).toBe(nativeStyle.color);
+    await expect(nativeStyle.fontSize).toBe("14px");
     await expect(compiledStyle.fontSize).toBe(nativeStyle.fontSize);
-    await expect(compiledStyle.textTransform).toBe("uppercase");
-    await expect(compiledStyle.letterSpacing).toBe(nativeStyle.letterSpacing);
+    await expect(compiledStyle.textTransform).toBe("none");
   },
 };
 

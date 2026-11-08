@@ -224,8 +224,13 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`HeadingRow`:** the row over a block's body: its title and description at the start, its
   action at the far end, dropping under them when both do not fit. `CardLayout`, its floating form
   and `Section` all draw it. Owner: `registry/layout/card-layout.tsx`.
-- **`Section`:** an overline heading over a group of fields or rows. It draws no surface; a
-  titled card is `CardLayout`. Owner: `registry/layout/section.tsx`; composes `HeadingRow`.
+- **`Section`:** a heading over a group of fields or rows, titled as a card is. It draws no
+  surface; a titled card is `CardLayout`. Owner: `registry/layout/section.tsx`; composes
+  `HeadingRow`.
+- **The heading rhythm:** how every block and row with a title draws it — `Card`, `CardLayout`,
+  `Section`, `SettingRow`, `Item` at `sm`, `ListItem`, `CollapsibleRow` and `Collapsible`. The
+  title, description, gaps, wrap floor and action gap are constants (`HEADING_TITLE` and the rest,
+  and `actionGap`). Owner: `registry/lib/utils.ts`.
 - **`Collapsible`:** a titled block whose body shows and hides. Owner:
   `registry/layout/collapsible.tsx`, with `CollapsibleTrigger`, the button `CollapsibleRow` and
   `FileTree`'s folders open with too. `Disclosure`, `DisclosureTrigger` and the `disclosure` item

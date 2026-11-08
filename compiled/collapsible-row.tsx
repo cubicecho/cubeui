@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
 import { CollapsibleTrigger } from "./collapsible";
 import { Item, ItemActions } from "./item";
 import { ListItemText, rowFillClass } from "./list-item";
@@ -79,7 +79,8 @@ export function CollapsibleRow({
           // and truncates there; sized to its text, it wrapped under them as soon as `meta` took
           // the row's far end.
           "cube-rn-text",
-          "min-w-0 flex-1 basis-24 font-semibold text-foreground text-sm leading-snug",
+          "min-w-0 flex-1 basis-24",
+          HEADING_TITLE,
           // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
           // what `line-clamp-1` becomes and what `truncate` does not.
           "truncate",
@@ -95,10 +96,12 @@ export function CollapsibleRow({
       <Item
         data-slot="collapsible-row-heading"
         size="sm"
-        className={cn("min-w-0 flex-nowrap", rowFillClass(false, true))}
+        className={cn("min-w-0", rowFillClass(false, true))}
       >
         <CollapsibleTrigger
           data-slot="collapsible-row-trigger"
+          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap.
+          className={HEADING_WRAP_FLOOR}
           open={open}
           onClick={() => onOpenChange(!open)}
           // Only while it is open: the body is unmounted when closed, which is what keeps a list

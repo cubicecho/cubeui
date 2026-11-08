@@ -7,7 +7,16 @@ import {
   foldsDescription,
 } from "@/components/ui/description-hint";
 import { FieldDescription, FieldTitle } from "@/components/ui/field";
-import { cn, type SlotNode } from "@/lib/utils";
+import {
+  actionGap,
+  cn,
+  HEADING_DESCRIPTION,
+  HEADING_GAP,
+  HEADING_TITLE,
+  HEADING_WRAP_FLOOR,
+  HEADING_WRAP_GAP,
+  type SlotNode,
+} from "@/lib/utils";
 
 /** What `actionSlot` is handed when it is a function: the ids of the text on the row's left. */
 type SettingRowIds = {
@@ -79,7 +88,7 @@ export function SettingRow({
     <FieldTitle
       testID="setting-row-title"
       id={titleId}
-      className={cn(folded && "min-w-0 shrink", titleClassName)}
+      className={cn(HEADING_TITLE, folded && "min-w-0 shrink", titleClassName)}
     >
       {title}
     </FieldTitle>
@@ -90,13 +99,16 @@ export function SettingRow({
   return (
     <View
       testID="setting-row"
+      // The heading rhythm's row: the control level with the title's top rather than centred on the
+      // text, so a second line of description does not move it, and the one wrap floor.
       className={cn(
-        "min-w-0 flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2",
+        "min-w-0 flex-row flex-wrap items-start justify-between gap-x-4",
+        HEADING_WRAP_GAP,
         className,
       )}
     >
       {title || description ? (
-        <View testID="setting-row-text" className="min-w-48 flex-1 gap-1">
+        <View testID="setting-row-text" className={cn(HEADING_WRAP_FLOOR, HEADING_GAP)}>
           <DescribedTitle
             titleSlot={titleNode}
             label={title}
@@ -106,7 +118,7 @@ export function SettingRow({
                 <FieldDescription
                   testID="setting-row-description"
                   id={descriptionId}
-                  className={descriptionClassName}
+                  className={cn(HEADING_DESCRIPTION, descriptionClassName)}
                 >
                   {description}
                 </FieldDescription>
@@ -124,7 +136,7 @@ export function SettingRow({
       {control ? (
         <View
           testID="setting-row-action"
-          className={cn("shrink-0 flex-row items-center gap-2", actionClassName)}
+          className={cn("shrink-0 flex-row items-center", actionGap(control), actionClassName)}
         >
           {control}
         </View>

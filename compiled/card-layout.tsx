@@ -25,7 +25,14 @@
  */
 import type { ReactNode } from "react";
 import { Children, createContext, isValidElement, useContext } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import {
+  actionGap,
+  cn,
+  HEADING_GAP,
+  HEADING_WRAP_FLOOR,
+  HEADING_WRAP_GAP,
+  type SlotNode,
+} from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { hasRows, List } from "./list";
@@ -175,7 +182,10 @@ export type CardLayoutProps = {
   headerClassName?: string | undefined;
   /** On the title itself: its size, a `line-through`. */
   titleClassName?: string | undefined;
-  /** On the body, the box that holds `contentSlot`. */
+  /**
+   * On the body, the box that holds `contentSlot`. It is a column with `gap-4` between what it
+   * holds, as `Section`'s is; a gap here replaces it, and `gap-0` lets the children touch.
+   */
   contentClassName?: string | undefined;
   /** On the footer: `footerSlot` at its start and `footerActionsSlot` at its end. */
   footerClassName?: string | undefined;
@@ -196,22 +206,23 @@ const ICON = "[&_svg]:size-4";
  * and the primitive stays as it is for a card composed by hand.
  *
  * `items-start` keeps the action in the corner `CardAction` held: level with the top of the
- * title, at the far end. `gap-y-1.5` is `CardHeader`'s own gap, for the action's line once it has
- * wrapped.
+ * title, at the far end, as the heading rhythm puts every action (`HEADING_WRAP_GAP` and the rest,
+ * in `@/lib/utils`). Its description runs beside the action, not under it: under it, a button
+ * taller than the title's line would push the description off the title by the difference, and
+ * the 4px between a title and its line is the rhythm's.
  */
-const HEADING_ROW = "min-w-0 flex-row items-start gap-x-4 gap-y-1.5";
+const HEADING_ROW = cn("min-w-0 flex-row items-start gap-x-4", HEADING_WRAP_GAP);
 
 /** Whether the row wraps, by `actionPlacement`: `inline` holds the action on the title's line. */
 const ROW_WRAP = { wrap: "flex-wrap", inline: "flex-nowrap" } as const;
 
 /**
- * The heading's text. `basis-40` is the floor the row wraps on: the title keeps 10rem beside the
- * action or the action goes under it. A card's title and a section's overline both truncate, so
- * either can give up more before it stops naming its block — and the lower the floor, the narrower
- * the block in which a single button still sits where it always did. A row that does not wrap
- * shrinks the text past the floor instead.
+ * The heading's text: the rhythm's wrap floor, which the title keeps beside the action or the
+ * action goes under it, and the rhythm's gap between the title and its description. The lower
+ * the floor, the narrower the block in which a single button still sits where it always did. A
+ * row that does not wrap shrinks the text past the floor instead.
  */
-const HEADING_TEXT = "min-w-0 flex-1 basis-40 gap-1.5";
+const HEADING_TEXT = cn(HEADING_WRAP_FLOOR, HEADING_GAP);
 
 /**
  * A title held to one line, for a row whose action stays beside it. `truncate` is the ellipsis on
@@ -222,10 +233,11 @@ const ONE_LINE_TITLE = cn("min-w-0 shrink", "truncate");
 
 /**
  * The heading's action, never shrunk and never wider than the row: on a line of its own, a
- * fragment of controls wraps on this row instead of running out of the block.
+ * fragment of controls wraps on this row instead of running out of the block. Its gap is
+ * `actionGap`'s, by what the controls are.
  */
 const HEADING_ACTION = cn(
-  "max-w-full shrink-0 flex-row flex-wrap items-center gap-2",
+  "max-w-full shrink-0 flex-row flex-wrap items-center",
   // The caller's own wrapping row, in a browser: a flex item there is as wide as its content and
   // a react-native-web view does not shrink, so without this it runs out of the block. Yoga
   // measures a child against its parent's width, and NativeWind has no child selector anyway.
@@ -288,7 +300,10 @@ export function HeadingRow({
         </div>
       ) : null}
       {actionSlot ? (
-        <div data-slot={actionTestID} className={cn("cube-rn-view", HEADING_ACTION)}>
+        <div
+          data-slot={actionTestID}
+          className={cn("cube-rn-view", HEADING_ACTION, actionGap(actionSlot))}
+        >
           {actionSlot}
         </div>
       ) : null}
@@ -406,13 +421,9 @@ export function CardLayout({
     surface ? (
       surface.drawTitle(title, cn(oneLineTitle, titleClassName))
     ) : (
-      // The padding is what stops `truncate` clipping the title: `CardTitle` is `leading-none`,
-      // so the line box is exactly 1em and `overflow: hidden` cuts the ascenders and descenders
-      // off it. The negative margin gives the space back, so the header keeps the height shadcn
-      // drew it at.
       <CardTitle
         level={level}
-        className={cn("-my-1 min-w-0 shrink truncate py-1", oneLineTitle, titleClassName)}
+        className={cn("min-w-0 shrink truncate", oneLineTitle, titleClassName)}
       >
         {title}
       </CardTitle>
@@ -481,8 +492,6 @@ export function CardLayout({
               actionSlot={actionSlot}
               actionPlacement={actionPlacement}
               className={headerClassName}
-              // On a floating panel the title and description keep the dialog's own `gap-1`.
-              textClassName="gap-1"
             />
           ) : null,
           contentSlot: body,
@@ -511,7 +520,11 @@ export function CardLayout({
       {body ? (
         // `CardContent` is `pt-0` because a header above it brings the top padding. With no
         // header the body is the first thing in the card and sat on its top edge.
-        <CardContent className={cn("min-w-0", hasHeader === false && "pt-4", contentClassName)}>
+        // `gap-4` spaces what the body holds, as `Section`'s body does: rows handed to a card
+        // otherwise touched (#474). `contentClassName` replaces it.
+        <CardContent
+          className={cn("min-w-0 gap-4", hasHeader === false && "pt-4", contentClassName)}
+        >
           {body}
         </CardContent>
       ) : null}

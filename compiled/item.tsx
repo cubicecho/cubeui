@@ -28,6 +28,7 @@ import { Slot } from "radix-ui";
 import type * as React from "react";
 import {
   ITEM_ACTIONS_CLASS,
+  ITEM_ACTIONS_ICON_GAP_SM_WEB,
   ITEM_ACTIONS_SIZES,
   ITEM_ACTIONS_SM_WEB,
   ITEM_CONTENT_CLASS,
@@ -48,7 +49,7 @@ import {
   itemMediaVariants,
   itemVariants,
 } from "@/components/ui/item-base";
-import { cn } from "@/lib/utils";
+import { actionGap, cn, ICON_ACTION_GAP } from "@/lib/utils";
 import { Separator, type SeparatorProps } from "./separator";
 
 /**
@@ -248,6 +249,7 @@ function ItemDescription({
 function ItemActions({
   className,
   "data-slot": testID,
+  children,
   ...props
 }: React.ComponentProps<"div"> & Named) {
   return (
@@ -258,10 +260,13 @@ function ItemActions({
         ITEM_ACTIONS_CLASS,
         ITEM_ACTIONS_SIZES.default,
         ITEM_ACTIONS_SM_WEB,
+        actionGap(children) === ICON_ACTION_GAP && ITEM_ACTIONS_ICON_GAP_SM_WEB,
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

@@ -39,8 +39,9 @@ function render(props: { level?: 1 | 2 | 3 }) {
 }
 
 /**
- * The two titles, native first — after checking both are drawn at `CardTitle`'s own `text-base`,
- * whatever the rank. The rank says where the card sits, not how big its title looks.
+ * The two titles, native first — after checking both are drawn at `CardTitle`'s own size, the
+ * heading rhythm's 14px, whatever the rank. The rank says where the card sits, not how big its
+ * title looks.
  */
 async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
   const headings = within(canvasElement).getAllByRole("heading", { level, name: "Sign in" });
@@ -50,7 +51,7 @@ async function titles(canvasElement: HTMLElement, level: 1 | 2 | 3) {
   }
   for (const title of [native, compiled]) {
     const style = getComputedStyle(title);
-    await expect(style.fontSize).toBe("16px");
+    await expect(style.fontSize).toBe("14px");
     await expect(style.fontWeight).toBe("600");
   }
   return { native, compiled };
@@ -382,9 +383,10 @@ export const SmallActionStaysInCorner: Story = {
           fromEnd: Math.round(box.right - button.right),
         }).toEqual({ half, form, fromTop: 17, fromEnd: 17 });
         // Beside a title and a description the button is the shorter of the two, so being in
-        // the flow costs the header nothing: the card is as tall as it was.
+        // the flow costs the header nothing: the card is its border, the header's padding and the
+        // heading rhythm's 20px title, 4px gap and 20px description.
         if (form === "described") {
-          await expect(Math.round(box.height)).toBe(76);
+          await expect(Math.round(box.height)).toBe(78);
         }
       }
     }
