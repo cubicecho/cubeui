@@ -98,12 +98,14 @@ test that finds them by name needs changing:
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
 | `ErrorPage`, `LoadError` | Without `describe`, the line under the title is `describeError`'s, from `@cubeui/error-message`. A `describe` that returns `""` hands the error to it. To add your own failures, answer those and return `describeError(error)` for the rest ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
 | `EmptyTitle` | New: `level` (`1 \| 2 \| 3`) makes it a heading of that rank, at the same size. It replaces passing `role="heading"` and `aria-level` yourself, which still works ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
+| `useToast` | The tone `"error"` is now `"negative"`, the colour token's name (the old name still works, deprecated). It is still the default ([#477](https://github.com/cubicecho/cubeui/issues/477)). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
 | `FormField`, `Field`, the bound fields | New: `disabled` on `FormField` and `Field`, and as a field prop on every bound field on both halves, fades the label and the description with the control ([#466](https://github.com/cubicecho/cubeui/issues/466)). On a bound field it was already passed to the control, and still is. |
 | `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
+| `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
 | `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
@@ -245,6 +247,25 @@ to add them.
   of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
   counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
   `bottomBarClassName` for it.
+- **`DialogLayout`'s footer stacks full width on a phone**
+  ([#465](https://github.com/cubicecho/cubeui/issues/465)). Below `sm` its buttons are a column,
+  each the footer's width, with the main one on top, as `ConfirmDialog`'s are. Before, they kept
+  their labels' width at the right. A `footerSlot` given alone sits at the footer's start, not its
+  end. Buttons you wrapped in a `div` or `View` in `footerActionsSlot` keep that wrapper's layout:
+  pass them as a fragment.
+- **Toasts stay up longer, and wait while you read them**
+  ([#477](https://github.com/cubicecho/cubeui/issues/477)). A confirmation or a note stays five
+  seconds, not three, and no toast goes while the pointer is over the stack or focus is in it.
+  Only a `negative` toast is an `alert` now; the rest are a polite `status`, so a test of yours
+  that found a confirmation by `role="alert"` finds it by `status`. Three are drawn at most. The
+  corners are `rounded-md`, as a popover's and a menu's are.
+- **On the web a toast is drawn over an open dialog**
+  ([#477](https://github.com/cubicecho/cubeui/issues/477)). It is announced, its Undo and ✕ can
+  be pressed, and pressing them leaves the dialog open. The stack is in the page while it is
+  empty, as `data-slot="toast-viewport"`, and is drawn at `z-index` 60, over the dialog's 50.
+- **A toast clears a bottom bar on a phone with a home indicator**
+  ([#460](https://github.com/cubicecho/cubeui/issues/460)). Over `SidebarLayout`'s
+  `barPosition="bottom"` the stack rises by the bottom safe-area inset as well as the bar.
 - **A disabled field fades its label and its description**
   ([#466](https://github.com/cubicecho/cubeui/issues/466)). They used to stay at full ink over a faded
   control. `FormField` reads the control's own `disabled` too, so a

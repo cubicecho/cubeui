@@ -314,12 +314,13 @@ const FOOTER_START = "min-w-0 shrink flex-row flex-wrap items-center gap-2";
 
 /**
  * The same row on a floating panel, stacked below `sm` as `DialogFooter` stacks, at the same
- * `gap-2` and stretched to the footer's width, so a phone draws a column of full-width parts.
+ * `gap-2` and stretched to the footer's width, so a phone draws a column of full-width parts. It
+ * wraps only once it is a row: a wrapping column sized its lines to their content, and Archive
+ * drew at its label's width (#465). `sm:mr-auto` holds it at the start, since the buttons beside
+ * it are the footer's own children.
  */
-const FLOATING_FOOTER_START = cn(
-  FOOTER_START,
-  "flex-col-reverse items-stretch sm:flex-row sm:items-center",
-);
+const FLOATING_FOOTER_START =
+  "min-w-0 shrink flex-col-reverse items-stretch gap-2 sm:mr-auto sm:flex-row sm:flex-wrap sm:items-center";
 
 /**
  * Whether a body holds nothing to draw: no element at all, or one `List` with no rows.
@@ -444,11 +445,17 @@ export function CardLayout({
     />
   ) : null;
 
-  const footerParts = (
+  // On a floating panel the buttons are the footer's own children, as `ConfirmDialog`'s are, so
+  // `DialogFooter` is the one rule for both: a row past `sm`, and below it a column of full-width
+  // buttons with the main one on top. In a row of their own they kept their labels' width (#465).
+  const footerParts = surface ? (
     <>
-      {footerSlot ? (
-        <View className={surface ? FLOATING_FOOTER_START : FOOTER_START}>{footerSlot}</View>
-      ) : null}
+      {footerSlot ? <View className={FLOATING_FOOTER_START}>{footerSlot}</View> : null}
+      {footerActionsSlot}
+    </>
+  ) : (
+    <>
+      {footerSlot ? <View className={FOOTER_START}>{footerSlot}</View> : null}
       {footerActionsSlot ? <View className={ACTIONS}>{footerActionsSlot}</View> : null}
     </>
   );
@@ -470,10 +477,7 @@ export function CardLayout({
           contentSlot: body,
           contentClassName,
           footerSlot: hasFooter ? footerParts : null,
-          footerClassName: cn(
-            footerSlot && footerActionsSlot && "sm:justify-between",
-            footerClassName,
-          ),
+          footerClassName,
           wrapperSlot,
         })}
       </FloatingSurfaceContext.Provider>

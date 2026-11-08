@@ -257,7 +257,7 @@ const form = useAppForm({
   />
   <SelectField form={form} name="priority" label="Priority" options={PRIORITIES} />
 
-  <form.AppForm><form.SubmitButton content="Create Todo" /></form.AppForm>
+  <form.AppForm><form.SubmitButton createLabel="Create Todo" /></form.AppForm>
 </form>
 ```
 

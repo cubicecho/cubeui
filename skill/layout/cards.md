@@ -148,7 +148,7 @@ submit button sits outside it:
     </form.AppForm>
   )}
   contentSlot={<div className="grid gap-4">…fields…</div>}
-  footerActionsSlot={<form.SubmitButton content="Save" />}
+  footerActionsSlot={<form.SubmitButton />}
 />
 ```
 

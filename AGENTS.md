@@ -191,7 +191,8 @@ popover, a menu, a select's list, a tooltip, a toast), and `shadow-lg` for a dia
 shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
 and an icon inside a field's own border is `secondary`. An action that adds something (Add, New,
 Create) is `info`, one that keeps the work (Save) is `positive`, and one that destroys is
-`destructive` or `destructive-outline`.
+`destructive` or `destructive-outline`. A form's own submit keeps what was typed, so
+`SubmitButton` is `positive` even when it says Create; `info` is the button that opened the form.
 
 **A link is `info`.** `text-info`, in Markdown, in `Empty` and `Item`'s description, and in the
 `link` variant of Button and Badge. `neutral` is a fill; as text it is green in Monokai.

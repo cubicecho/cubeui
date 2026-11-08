@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentProps, useState } from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { ColorField as CompiledColorField } from "../compiled/color-picker-field";
 import { ComboboxField as CompiledComboboxField } from "../compiled/combobox-field";
@@ -16,11 +16,13 @@ import { DateTimeField as NativeDateTimeField } from "../registry/ui/date-time-f
 import {
   FieldRow as NativeFieldRow,
   Form as NativeForm,
+  type SubmitButton as NativeSubmitButton,
   createAppForm as nativeCreateAppForm,
 } from "../registry/ui/form";
 import { SegmentedField as NativeSegmentedField } from "../registry/ui/segmented-field";
 import { SELECT_SEPARATOR_CLASS } from "../registry/ui/select-base";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * The native form hook — issue #115. `useAppForm` with every bound field on `field.*`, the heavy
@@ -265,6 +267,64 @@ export const RequireChanges: Story = {
 
       await userEvent.click(done);
       await waitFor(() => expect(save).toBeDisabled());
+    }
+  },
+};
+
+function OneSubmit({
+  kit,
+  pending = false,
+  ...submit
+}: { kit: Kit; pending?: boolean } & ComponentProps<typeof NativeSubmitButton>) {
+  const form = kit.useAppForm({
+    defaultValues: { title: "Buy milk", done: false, notify: true, due: null, color: "" },
+    // A submit that never settles holds the button mid-flight for as long as the story looks.
+    onSubmit: () => (pending ? new Promise<void>(() => {}) : undefined),
+  });
+  return (
+    <form.AppForm>
+      <form.SubmitButton {...submit} />
+    </form.AppForm>
+  );
+}
+
+function Submits({ kit }: { kit: Kit }) {
+  return (
+    <div className="flex flex-row flex-wrap gap-2">
+      <OneSubmit kit={kit} />
+      <OneSubmit kit={kit} isEdit={false} />
+      <OneSubmit kit={kit} isEdit />
+      <OneSubmit kit={kit} pending isEdit={false} createLabel="Add task" loadingLabel="Adding…" />
+      <OneSubmit kit={kit} pending createLabel="Rename" savingLabel="Renaming…" />
+    </div>
+  );
+}
+
+/**
+ * One `SubmitButton` API on both halves (#478): `createLabel` and `editLabel` chosen by `isEdit`,
+ * `loadingLabel` while it runs, and `positive` either way, where a create form's was `info`. Left
+ * without `isEdit` it says "Save", true of a create form and an edit form alike; it said "Create".
+ * `savingLabel` still works, for one release.
+ */
+export const CreateAndEditLabels: Story = {
+  render: () => (
+    <SideBySide native={<Submits kit={NATIVE} />} compiled={<Submits kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const sections = Array.from(canvasElement.querySelectorAll("section"));
+    await expect(sections).toHaveLength(2);
+    for (const section of sections) {
+      const half = within(section);
+      const positive = tokenColor("positive", { inside: section });
+      for (const name of ["Save", "Create", "Save changes", "Add task", "Rename"]) {
+        const button = half.getByRole("button", { name });
+        await expect(getComputedStyle(button).backgroundColor).toBe(positive);
+      }
+
+      await userEvent.click(half.getByRole("button", { name: "Add task" }));
+      await waitFor(() => expect(half.getByRole("button", { name: "Adding…" })).toBeDisabled());
+      await userEvent.click(half.getByRole("button", { name: "Rename" }));
+      await waitFor(() => expect(half.getByRole("button", { name: "Renaming…" })).toBeDisabled());
     }
   },
 };

@@ -153,8 +153,27 @@ puts `aria-labelledby` on the control in place of `htmlFor`. Use it for a trigge
 `useFieldIds()` gives `labelId` to a control nested too deep for `FieldControl` to reach.
 
 `SubmitButton`'s `disabled` is OR-ed with `!canSubmit || isSubmitting`. `disabled={false}` never
-enables an invalid form. The label props are `createLabel`, `editLabel` with `isEdit`, and
-`savingLabel`.
+enables an invalid form. Its labels are `createLabel` and `editLabel`, picked by `isEdit`, and
+`loadingLabel` while it runs, as on the web. Without `isEdit` it says "Save". It is `positive`
+whether it creates or edits. `savingLabel` is the old name for `loadingLabel` and still works for
+one release.
+
+<!-- props:SubmitButton -->
+`SubmitButton`'s props, from the TSDoc in `registry/ui/form.tsx`:
+
+| Prop | Type | Default | What it is |
+| --- | --- | --- | --- |
+| `isEdit` | `boolean` |  | Whether the form edits something that exists (`editLabel`) or creates one (`createLabel`). Left out, the form has not said, and the button says "Save", which is true of both. |
+| `createLabel` | `string` |  | The label on a form that creates: "Add task". Defaults to "Create" when `isEdit` is `false`, and to "Save" when `isEdit` is left out. |
+| `editLabel` | `string` | `"Save changes"` | The label when `isEdit` is set. |
+| `loadingLabel` | `string` |  | The label while the submit runs, in place of the other: "Adding…". "Saving…" if left out. |
+| `savingLabel` | `string` |  | **Deprecated.** Use `loadingLabel`, the name `Button` gives it. Kept for one release. |
+| `iconSlot` | `SlotNode` |  | Leading glyph, e.g. `<Plus className="mr-1 h-4 w-4" />`. Before the label, or alone in an `icon*` size, where `aria-label` is required. |
+| `disabled` | `boolean` |  | A third reason not to submit, OR-ed with `!canSubmit` and `isSubmitting` — a mutation in flight elsewhere. It only ever tightens the guard: `disabled={false}` never enables an invalid form. A form that is valid but unchanged is `requireChanges`. |
+| `requireChanges` | `boolean` | `false` | Disabled while every value is still its default, for an edit form whose Save means nothing until something changes. Read from the store's `isDefaultValue`, not `isDirty`, so a value typed and typed back disables it again. Off by default: a create form, or one replaying what is already in the box, is right to submit untouched. |
+
+It also takes the props declared in `registry/ui/button.tsx`: `aria-describedby`, `aria-label`, `className`, `hint`, `linkSlot`, `side`, `size`, `tooltip`, `trailingSlot`, `variant`.
+<!-- /props -->
 
 `useFieldError`, `splitProps`, `FieldWrapper` and `bindToForm` are exported for a field the
 registry does not ship, as on the web. `bindToForm` makes the one-line `form`/`name` spelling.

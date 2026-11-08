@@ -41,7 +41,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `onOpenChange` | `((open: boolean) => void)` |  | Called with `true` when the trigger opens it and `false` when it closes. A close that `hasUnsavedChanges` asks about is reported only once the answer is Discard. With `open`, this is where the caller sets it. |
 | `size` | `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"md"` | How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl` 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the screen allows. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. Several elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end. |
-| `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. |
+| `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm, as a fragment: below `sm` they stack full width, the last on top. Given alone, the footer is simply right-aligned. |
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
@@ -80,7 +80,14 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   reader reads it as the dialog opens. Pass the same placement your app's cards and fields use.
 - **The header and footer look the same on both platforms.** The title and description are
   left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
-  on top, below `sm`. Do not centre the header or reverse the buttons yourself.
+  on top, below `sm`, as `ConfirmDialog`'s does. `footerSlot` sits at the row's start and stacks
+  under the buttons. Do not centre the header or reverse the buttons yourself, and pass the
+  buttons as a fragment, not wrapped in a `View` or `div` of your own, which would hold them at
+  their labels' width.
+- **A toast raised while the dialog is open is drawn over it**, announced and pressable: a press on
+  its Undo or ✕ does not close the dialog or ask `hasUnsavedChanges`. That is on the web. On
+  device a toast raised under an open dialog is not seen until the dialog closes, so say a failure
+  inside the dialog, beside what caused it.
 - **Pass it as a function when the answer is not something you render.** The question is asked
   once, at a click — nothing in the dialog draws the answer — so a boolean makes you keep a value
   in render that only a handler reads, and work held outside the form's fields has to be lifted

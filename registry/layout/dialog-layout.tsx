@@ -195,7 +195,8 @@ export type DialogLayoutProps = {
    */
   footerSlot?: SlotNode | undefined;
   /**
-   * The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned.
+   * The footer's end. Cancel and confirm, as a fragment: below `sm` they stack full width, the
+   * last on top. Given alone, the footer is simply right-aligned.
    *
    * Pass a **function** to get the dialog's own close, guarded the same way Escape and the
    * overlay are. A Cancel wired to the caller's `setOpen(false)` goes around the shell entirely,

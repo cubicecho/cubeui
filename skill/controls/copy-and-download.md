@@ -26,7 +26,7 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
     <CopyButton
       value={snippet}
       label="Copy snippet"
-      onError={() => toast.error("Could not copy. Select the text and copy it by hand.")}
+      onError={() => toast("Could not copy. Select the text and copy it by hand.")}
     />
   }
 />
@@ -86,7 +86,7 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
   filename="note.md"
   mimeType="text/markdown"
   source={() => getFile(path)}
-  onError={(error) => toast.error(String(error))}
+  onError={(error) => toast(String(error))}
 />
 ```
 

@@ -90,7 +90,7 @@ function TaskForm({
       <DateRangeField form={form} name="window" label="Window" loading={loading} />
 
       <form.AppForm>
-        <form.SubmitButton content="Save" />
+        <form.SubmitButton />
       </form.AppForm>
       <Button type="button" variant="outline" content="Cancel" />
     </form>

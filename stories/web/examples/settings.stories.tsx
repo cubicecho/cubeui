@@ -109,7 +109,7 @@ function RenameDialog({
         <>
           <Button variant="outline" onClick={close} content="Cancel" />
           <form.AppForm>
-            <form.SubmitButton variant="positive" requireChanges content="Rename" />
+            <form.SubmitButton requireChanges createLabel="Rename" />
           </form.AppForm>
         </>
       )}

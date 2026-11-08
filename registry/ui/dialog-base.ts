@@ -110,9 +110,11 @@ export const DIALOG_HEADER_CLASS = "flex-col gap-1";
 
 /**
  * The buttons: a right-aligned row, and below `sm` a stack of full-width buttons with the last
- * (the main answer) on top — the same on both platforms (the web half adds `flex`).
+ * (the main answer) on top — the same on both platforms (the web half adds `flex`). The row wraps,
+ * so three buttons in a narrow dialog move the last down rather than run out of its left edge.
+ * `ConfirmDialog` and `DialogLayout` both lay their buttons out with it.
  */
-export const DIALOG_FOOTER_CLASS = "flex-col-reverse gap-2 sm:flex-row sm:justify-end";
+export const DIALOG_FOOTER_CLASS = "flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:justify-end";
 
 /** The sentence under the title, on both platforms and in `alert-dialog`. */
 export const DIALOG_DESCRIPTION_CLASS = "text-sm text-foreground/60";
