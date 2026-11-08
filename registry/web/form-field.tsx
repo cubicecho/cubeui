@@ -10,18 +10,18 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_GAP, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
  * The box the absent control leaves behind while it is loading, per orientation: a `vertical`
- * field holds an `Input`, a `Select` trigger or a `DatePicker`, all of which rest at `h-9`; a
+ * field holds an `Input`, a `Select` trigger or a `DatePicker`, all of which rest at `h-10`; a
  * `horizontal` one holds the 16px box of a checkbox or the 18px pill of a switch.
  *
  * A skeleton that is not the height of what replaces it is a page that jumps when the data lands,
  * which is the whole reason to draw one.
  */
 const LOADING_BOX = {
-  vertical: "h-9 w-full rounded-md",
+  vertical: "h-10 w-full rounded-md",
   horizontal: "size-4 rounded-sm",
 } as const;
 
@@ -377,12 +377,33 @@ export function FormField({
       labelNode
     );
 
+  const inlineDescription =
+    description && descriptionPlacement === "inline" ? (
+      <FieldDescription id={descriptionId} className={descriptionClassName}>
+        {description}
+      </FieldDescription>
+    ) : null;
+  // `FieldError` is already the `role="alert"` this shell used to draw by hand. Announcing matters
+  // more here than in shadcn's own forms: those sit downstream of react-hook-form, which moves
+  // focus to the first invalid field on a failed submit and gets the message read that way, and
+  // nothing in this shell moves focus.
+  const errorNode = shownError ? (
+    <FieldError id={errorId} className={errorClassName}>
+      {shownError}
+    </FieldError>
+  ) : null;
+
   const messages = (
     <>
-      {description && descriptionPlacement === "inline" ? (
-        <FieldDescription id={descriptionId} className={descriptionClassName}>
-          {description}
-        </FieldDescription>
+      {/* One column, so two lines of the field's text are the heading rhythm's 4px apart in both
+          orientations, and only text against the control is `Field`'s 8px. Stacked, the
+          description and the error were 8px apart, and 4px beside a checkbox. Drawn only when
+          there is a line in it: an empty box is still a gap in the column. */}
+      {inlineDescription || errorNode ? (
+        <div data-slot="form-field-messages" className={cn("flex min-w-0 flex-col", HEADING_GAP)}>
+          {inlineDescription}
+          {errorNode}
+        </div>
       ) : null}
       {/* Behind a popover, the text still has to exist somewhere permanent for the control to be
           described by — Radix unmounts popover content on close, so a description living only
@@ -390,15 +411,6 @@ export function FormField({
           only the visible copy comes and goes. */}
       {description && descriptionPlacement === "popover" ? (
         <DescriptionHintText id={descriptionId}>{description}</DescriptionHintText>
-      ) : null}
-      {/* `FieldError` is already the `role="alert"` this shell used to draw by hand. Announcing
-          matters more here than in shadcn's own forms: those sit downstream of react-hook-form,
-          which moves focus to the first invalid field on a failed submit and gets the message
-          read that way, and nothing in this shell moves focus. */}
-      {shownError ? (
-        <FieldError id={errorId} className={errorClassName}>
-          {shownError}
-        </FieldError>
       ) : null}
     </>
   );
@@ -408,8 +420,9 @@ export function FormField({
       orientation={orientation}
       // What fades the label and the description with the control.
       disabled={shownDisabled}
-      // `Field` turns the whole field destructive from this attribute, which is the primitive's
-      // own error state rather than one invented here.
+      // The mark shadcn's `Field` styles its error state from. This `Field` draws nothing from it
+      // (the control's `aria-invalid` and the `FieldError` say it); it is kept for a DOM app's own
+      // selector written against shadcn's.
       data-invalid={shownError ? true : undefined}
       // A checkbox or switch beside a caption with a description lines up with the caption's
       // first line, as on native, not with the middle of the two-line block.

@@ -126,6 +126,11 @@ button: the button ends up inside the label, and the control loses its descripti
 `horizontal` puts the control first and the label beside it — the arrangement whose label is part
 of the control's hit target. Stacked, a 16px box sits on a line of its own above its own caption.
 
+**The spacing is the same in both orientations.** Two lines of the field's text — the label and
+the description beside a checkbox, the description and the error — are 4px apart, the heading
+rhythm's gap; text against the control is 8px. Do not add a `gap-*` or margin to the parts to
+change it.
+
 A **settings row** — a title and a paragraph on the left, a switch, select or button pushed to
 the far right — is not this. That is a row, not a field: use `SettingRow`
 ([layout/facts.md](../layout/facts.md#setting-rows)), inside a `Section` or `CardLayout`. A lone boolean with its

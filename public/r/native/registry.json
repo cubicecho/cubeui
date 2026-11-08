@@ -1411,8 +1411,8 @@
         "@cubeui/utils",
         "@cubeui/roving-focus",
         "@cubeui/button",
+        "@cubeui/icons",
         "@cubeui/input",
-        "@cubeui/label",
         "@cubeui/readable-text-color"
       ],
       "files": [

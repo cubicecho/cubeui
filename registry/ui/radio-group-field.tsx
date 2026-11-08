@@ -14,7 +14,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_GAP, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** One choice. `description` is the line under it — what picking this one means. */
 export type RadioOption = {
@@ -160,15 +160,21 @@ function RadioGroupFieldBody({
           ))}
         </RadioGroup>
       )}
-      {description ? (
-        <FieldDescription id={descriptionId} className={descriptionClassName}>
-          {description}
-        </FieldDescription>
-      ) : null}
-      {error ? (
-        <FieldError id={errorId} className={errorClassName}>
-          {error}
-        </FieldError>
+      {/* One column, so the description and the error are the heading rhythm's 4px apart, as in
+          every other field; only text against the options is `Field`'s 8px. */}
+      {description || error ? (
+        <View className={cn("min-w-0", HEADING_GAP)}>
+          {description ? (
+            <FieldDescription id={descriptionId} className={descriptionClassName}>
+              {description}
+            </FieldDescription>
+          ) : null}
+          {error ? (
+            <FieldError id={errorId} className={errorClassName}>
+              {error}
+            </FieldError>
+          ) : null}
+        </View>
       ) : null}
     </Field>
   );

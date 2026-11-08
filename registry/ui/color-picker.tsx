@@ -13,10 +13,10 @@
  */
 import type * as React from "react";
 import { useId, useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { Button } from "@/components/ui/button";
+import { Check } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { readableTextColor } from "@/lib/readable-text-color";
 import {
   type RovingKeyEvent,
@@ -156,15 +156,9 @@ function Swatch({ color, selected, disabled, roving, onPress }: SwatchProps) {
         style={{ backgroundColor: color }}
       >
         {selected ? (
-          // The tick has to be legible on whatever the caller passed, and
-          // a caller's palette is not known here — a hardcoded white one
-          // disappears on `#eab308`.
-          <Text
-            className="text-base leading-none"
-            style={{ color: readableTextColor(color) ?? "#ffffff" }}
-          >
-            ✓
-          </Text>
+          // `Checkbox`'s tick, in an ink legible on whatever the caller passed: a caller's palette
+          // is not known here, and a hardcoded white one disappears on `#eab308`.
+          <Check className="h-4 w-4" color={readableTextColor(color) ?? "#ffffff"} aria-hidden />
         ) : null}
       </View>
     </Pressable>
@@ -198,8 +192,8 @@ type ColorPickerProps = {
   /** The hex field's placeholder. A format hint by default, for the reason given at the field. */
   placeholder?: string | undefined;
   /**
-   * The hex field's accessible name, drawn only for a screen reader. Web only: it is a `<label>`
-   * pointed at the field, and native has no label/control association to make.
+   * The hex field's accessible name, for a screen reader. It replaces the name a field's label
+   * gives the hex box, so leave it off inside a `FormField` or a bound `ColorField`.
    */
   hexLabel?: string | undefined;
   /** The swatch row's accessible name, when `aria-label` does not already give one. */
@@ -326,19 +320,10 @@ export function ColorPicker({
           />
         ))}
       </View>
-      {/*
-        The hex field's own name, for a screen reader only. It is a `<label>` pointed at the field
-        because `Input` takes no `aria-label`; on native there is no label/control association to
-        make, so nothing is drawn there.
-      */}
-      {Platform.OS === "web" && hexLabel ? (
-        <Label htmlFor={inputId} className="sr-only">
-          {hexLabel}
-        </Label>
-      ) : null}
       <View className="flex-row items-center gap-2">
         <Input
           id={inputId}
+          aria-label={hexLabel}
           // A format hint rather than a colour by default: the field's job is the colour that
           // is *not* in the row above, so showing one of them would mislead.
           placeholder={placeholder}

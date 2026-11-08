@@ -47,7 +47,7 @@ import {
   storedValueOf,
   withEmptyOption,
 } from "@/lib/select-options";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_GAP, type SlotNode } from "@/lib/utils";
 import { Button, type ButtonPropsWithout } from "./button";
 import { Checkbox } from "./checkbox";
 import {
@@ -406,6 +406,7 @@ function FieldWrapper({
   onLabelPress,
 }: FieldWrapperProps) {
   const folded = Boolean(description) && descriptionPlacement === "popover";
+  const hasError = useFieldError() !== undefined;
   // A control handed in `disabled` already fades the field too, as `FormField` reads it on the web.
   const fades =
     disabled === true ||
@@ -445,13 +446,21 @@ function FieldWrapper({
       {controlSlot}
     </FieldControl>
   );
+  const shownDescription = Boolean(description) && folded === false;
+  // One column, so two lines of the field's text are the heading rhythm's 4px apart in both
+  // orientations, as the web `FormField` has them. Drawn only when there is a line in it: an
+  // empty box is still a gap in the field's column.
   const rest = (
     <>
-      {description && folded === false ? (
-        <FieldDescription className={descriptionClassName}>{description}</FieldDescription>
+      {shownDescription || hasError ? (
+        <div data-slot="field-messages" className={cn("cube-rn-view", "min-w-0", HEADING_GAP)}>
+          {shownDescription ? (
+            <FieldDescription className={descriptionClassName}>{description}</FieldDescription>
+          ) : null}
+          <FieldError className={errorClassName} />
+        </div>
       ) : null}
       {folded ? <FieldDescriptionText>{description}</FieldDescriptionText> : null}
-      <FieldError className={errorClassName} />
     </>
   );
 

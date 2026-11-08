@@ -14,7 +14,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { matchesEveryWord } from "@/components/ui/command-base";
-import { Check, ChevronsUpDown, Plus, X } from "@/components/ui/icons";
+import { Check, ChevronDown, Plus, X } from "@/components/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   SelectContent,
@@ -510,7 +510,9 @@ function SearchMenu({
           )}
           content={triggerSlot}
           trailingSlot={
-            <ChevronsUpDown className="size-4 shrink-0 text-foreground/60" aria-hidden />
+            // The select's chevron, not `ChevronsUpDown`: the two triggers are one field look, so
+            // the glyph that says a list opens from them is one glyph too (#485).
+            <ChevronDown className="size-4 shrink-0 text-foreground/60" aria-hidden />
           }
         />
       </PopoverTrigger>

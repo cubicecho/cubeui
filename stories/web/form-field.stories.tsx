@@ -490,6 +490,112 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
 };
 
 /**
+ * The plain loading box is the height of what it stands in for: an input, and a select trigger
+ * beside it. It was `h-9` over 40px controls, so every field jumped 4px when its value landed
+ * (#485).
+ */
+export const LoadingIsInputHeight: Story = {
+  args: { label: "Name", controlSlot: <Input /> },
+  render: (args) => (
+    <div className="flex w-[720px] items-start gap-6">
+      <FormField {...args} className="flex-1" loading />
+      <FormField {...args} className="flex-1" />
+      <FormField
+        {...args}
+        label="List"
+        className="flex-1"
+        controlSlot={(props) => (
+          <Select>
+            <SelectTrigger {...props}>
+              <SelectValue placeholder="Pick one" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inbox">Inbox</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const box = canvasElement.querySelector<HTMLElement>("[data-slot=form-field-skeleton]");
+    const input = canvasElement.querySelector<HTMLElement>("[data-slot=input]");
+    const trigger = canvasElement.querySelector<HTMLElement>("[data-slot=select-trigger]");
+    if (!box || !input || !trigger) {
+      throw new Error("the loading box, the input and the trigger are all drawn");
+    }
+    expect(box.getBoundingClientRect().height).toBeCloseTo(input.getBoundingClientRect().height, 0);
+    expect(box.getBoundingClientRect().height).toBeCloseTo(
+      trigger.getBoundingClientRect().height,
+      0,
+    );
+  },
+};
+
+/**
+ * Two lines of a field's text are 4px apart in both orientations, the heading rhythm's gap, and
+ * text against the control is 8px (#485). Stacked, the description and the error were 8px apart,
+ * while beside a checkbox the label, the description and the error were 4px.
+ */
+export const TextLinesAreFourPxApart: Story = {
+  args: { label: "Email", controlSlot: <Input /> },
+  render: (args) => (
+    <div className="flex w-[720px] items-start gap-6">
+      <FormField
+        {...args}
+        className="flex-1"
+        description="We only use it to send the sign-in link."
+        error="Enter an email address."
+      />
+      <FormField
+        {...args}
+        className="flex-1"
+        orientation="horizontal"
+        label="Email me about releases"
+        description="About one a month."
+        error="Agree to continue."
+        controlSlot={<Checkbox />}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [stacked, beside] = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]"),
+    );
+    if (!stacked || !beside) {
+      throw new Error("both fields are drawn");
+    }
+    const part = (field: HTMLElement, slot: string) => {
+      const found = field.querySelector<HTMLElement>(`[data-slot=${slot}]`);
+      if (!found) {
+        throw new Error(`the field draws its ${slot}`);
+      }
+      return found.getBoundingClientRect();
+    };
+    const between = (above: DOMRect, below: DOMRect) => below.top - above.bottom;
+
+    // Stacked: label, 8, control, 8, description, 4, error.
+    expect(between(part(stacked, "field-label"), part(stacked, "input"))).toBeCloseTo(8, 0);
+    expect(between(part(stacked, "input"), part(stacked, "field-description"))).toBeCloseTo(8, 0);
+    expect(between(part(stacked, "field-description"), part(stacked, "field-error"))).toBeCloseTo(
+      4,
+      0,
+    );
+
+    // Beside a checkbox: the text column 8 from the box, and its lines 4 apart.
+    expect(part(beside, "field-content").left - part(beside, "checkbox").right).toBeCloseTo(8, 0);
+    expect(between(part(beside, "field-label"), part(beside, "field-description"))).toBeCloseTo(
+      4,
+      0,
+    );
+    expect(between(part(beside, "field-description"), part(beside, "field-error"))).toBeCloseTo(
+      4,
+      0,
+    );
+  },
+};
+
+/**
  * Rule 4 — the floors. A field lives in a 12-column form rail in one of the source apps, so one
  * wide control must not grow the field and push its neighbour off the row.
  */
