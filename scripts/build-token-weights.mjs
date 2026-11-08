@@ -8,7 +8,9 @@
  * as `cubeui-theme.ts` is today's palette for a TypeScript importer. Nothing here touches the real
  * token build.
  *
- * Run with `--check` to verify the committed output is current without writing.
+ * Run with `--check` to verify the committed output is current without writing. `tokens:build` and
+ * `tokens:check` run it after `build-tokens.mjs`, because `token-weights.test.mjs` reads what it
+ * writes: a stale file there is a test passing on a palette that has since changed.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -167,7 +169,7 @@ for (const [file, content] of Object.entries(files)) {
   const path = join(out, file);
   if (check) {
     if (!existsSync(path) || readFileSync(path, "utf8") !== content) {
-      console.error(`dist/prototype/${file} is out of date; run npm run tokens:weights`);
+      console.error(`dist/prototype/${file} is out of date; run npm run tokens:build`);
       stale++;
     }
   } else {

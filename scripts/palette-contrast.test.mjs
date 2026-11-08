@@ -63,6 +63,17 @@ const PAIRS = [
       ],
     ]),
   ),
+  // An `Alert`'s description, `/60` on its variant's `/10` tint, as it is on the card (#487).
+  ...["warning", "info", "negative"].flatMap((tint) =>
+    SURFACES.map((surface) => [
+      "foreground",
+      [
+        [surface, 1],
+        [tint, 0.1],
+      ],
+      0.6,
+    ]),
+  ),
   // A chosen thing's text — a row, a tab, a pill, a sidebar place, a toggle chip — on its
   // `bg-active/40` tint, and on `bg-active/60` under the pointer or focused. Its secondary text
   // turns `foreground` when chosen, because `/60` does not clear 4.5:1 there.

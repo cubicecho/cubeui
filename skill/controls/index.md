@@ -83,6 +83,8 @@ The components honour the reader's reduced-motion setting on both halves (WCAG 2
 - **A loop that only decorates holds still:** `Skeleton`, the `loading` bars of the shells, a
   `Badge` dot with `pulse`.
 - **A chevron turns, a switch's thumb moves and `Progress` fills at once**, without a transition.
+- **An indeterminate `Progress` stops sweeping** and rests in the middle of its track. A sweep is a
+  slide across the screen, where a spinner turns in place, and the segment alone says "waiting".
 - **`scrollToEnd()` jumps instead of gliding**, on `HeaderContentFooter`, `PageLayout` and a
   following `CodeBlock`.
 - **`Spinner` keeps turning.** It is the message that work is going on, not decoration.

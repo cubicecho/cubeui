@@ -130,7 +130,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `popover` | web | `components/ui/popover.tsx`; also `popover-base.ts` | `import { Popover, PopoverAnchor, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, … 2 more } from "@/components/ui/popover"` |
 | `popover` | native | `components/ui/popover.tsx`; also `popover-base.ts`, `popover.web.tsx` | `import { Popover, PopoverAnchor, PopoverClose, PopoverContent, PopoverDescription, PopoverHeader, … 2 more } from "@/components/ui/popover"` |
 | `primitive` | web | a set: `empty`, `item`, `table` | — (import from each item) |
-| `progress` | both | `components/ui/progress.tsx` | `import { Progress } from "@/components/ui/progress"` |
+| `progress` | web | `components/ui/progress.tsx`; also `progress-base.ts` | `import { Progress } from "@/components/ui/progress"` |
+| `progress` | native | `components/ui/progress.tsx`; also `progress-base.ts`, `progress.web.tsx` | `import { Progress } from "@/components/ui/progress"` |
 | `property-list` | both | `components/property-list.tsx` | `import { PropertyList, PropertyRow } from "@/components/property-list"` |
 | `query-state` | both | `components/query-state.tsx` | `import { QueryError, QueryState, RowSkeleton } from "@/components/query-state"` |
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
