@@ -13,7 +13,8 @@
  * `file-picker.web.tsx` gives: this file is also what an Expo web app runs, where `Button` is a
  * `Pressable` that takes `onPress`, while the compiled one takes `onClick`. A `<button>` is the same
  * element in both. For the same reason the body touches only what both `Input` halves type —
- * `onChange` passes through untouched rather than being read here.
+ * `onChange` passes through untouched rather than being read here. Not being `Button`, it draws no
+ * name tooltip, and the device half's `tooltip={false}` keeps the two alike (#432).
  */
 import { useCallback, useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";

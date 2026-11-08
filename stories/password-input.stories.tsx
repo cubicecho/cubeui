@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { PasswordInput as Compiled } from "../compiled/password-input";
 import { PasswordInput as Native } from "../registry/ui/password-input";
+import { expectNoTooltipOnHover } from "./no-tooltip";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -96,5 +97,33 @@ export const Default: Story = {
     await step("revealing never submits the form around it", async () => {
       await expect(onSubmit).not.toHaveBeenCalled();
     });
+  },
+};
+
+/**
+ * The eye shows no tooltip on either half (#425). It sits in a field whose label already says what
+ * the box is, and its name is still the accessible name, read once.
+ */
+export const TheEyeHasNoTooltip: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native aria-label="Native token" defaultValue="hunter2" />}
+      compiled={<Compiled aria-label="Compiled token" defaultValue="hunter2" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Native", "Compiled"]) {
+      await step(`${half}: hovering the eye opens nothing`, async () => {
+        const box = canvas.getByLabelText(`${half} token`);
+        const eye = canvas
+          .getAllByRole("button", { name: "Show password" })
+          .find((button) => box.parentElement?.contains(button));
+        if (!eye) {
+          throw new Error("the eye is in the box");
+        }
+        await expectNoTooltipOnHover(eye);
+      });
+    }
   },
 };
