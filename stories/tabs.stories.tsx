@@ -15,7 +15,7 @@ import {
 } from "../compiled/tabs";
 import { PageLayout } from "../registry/layout/page-layout";
 import { Badge } from "../registry/ui/badge.tsx";
-import { Button } from "../registry/ui/button";
+import { Button } from "../registry/ui/button.tsx";
 import { Input } from "../registry/ui/input.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
