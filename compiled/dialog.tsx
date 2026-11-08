@@ -126,6 +126,17 @@ function DialogOverlay({
   );
 }
 
+/**
+ * The toast stack, by its `data-slot`. It is drawn above dialogs so its Undo and its ✕ can be
+ * pressed while one is open (#477), and radix reads a press there as one beside the dialog.
+ */
+const TOAST_STACK = '[data-slot="toast-viewport"]';
+
+/** Whether a press or a focus radix calls "outside" landed on a toast. */
+function isOnToast(event: Event): boolean {
+  return event.target instanceof Element && event.target.closest(TOAST_STACK) !== null;
+}
+
 /** The dialog's card. */
 function DialogContent({
   className,
@@ -145,7 +156,15 @@ function DialogContent({
         // links its own `DialogDescription`, and an `undefined` written here would unlink it.
         {...props}
         {...(onEscapeKeyDown === undefined ? {} : { onEscapeKeyDown })}
-        {...(onInteractOutside === undefined ? {} : { onInteractOutside })}
+        // Pressing Undo on a toast neither closes the dialog nor asks the caller's guard whether
+        // it may: the press was not meant for the dialog at all.
+        onInteractOutside={(event) => {
+          if (isOnToast(event)) {
+            event.preventDefault();
+            return;
+          }
+          onInteractOutside?.(event);
+        }}
         // Spread only when given: radix sets its own `role="dialog"` and an explicit `undefined`
         // would land after it and take the role away.
         {...(role === undefined ? {} : { role })}

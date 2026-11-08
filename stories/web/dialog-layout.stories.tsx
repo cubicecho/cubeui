@@ -422,8 +422,9 @@ export const OnlyTheBodyScrolls: Story = {
 };
 
 /**
- * Below `sm` the footer stacks: the actions over the start group, and the start group's elements
- * one over another. Past `sm` the same footer is one row, which `GroupedFooterStart` holds.
+ * Below `sm` the footer stacks, as `ConfirmDialog`'s does: the actions over the start group, the
+ * main action on top, and every part the footer's full width (#465). Past `sm` the same footer is
+ * one row, which `GroupedFooterStart` holds.
  */
 export const TheFooterStacksOnAPhone: Story = {
   args: { unsaved: false },
@@ -439,19 +440,65 @@ export const TheFooterStacksOnAPhone: Story = {
           <Button variant="destructive-outline" size="sm" content="Archive" />
         </>
       }
-      footerActionsSlot={<Button size="sm" variant="positive" content="Save" />}
+      footerActionsSlot={
+        <>
+          <Button size="sm" variant="outline" content="Cancel" />
+          <Button size="sm" variant="positive" content="Save" />
+        </>
+      }
     />
   ),
   play: async () => {
     const dialog = await screen.findByRole("dialog", { name: "Project settings" });
     await settled(dialog);
+    const footer = dialog.querySelector("[data-slot=dialog-footer]")?.getBoundingClientRect();
+    if (footer === undefined) {
+      throw new Error("expected the dialog's footer");
+    }
     const note = within(dialog).getByText("Synced an hour ago").getBoundingClientRect();
     const archive = within(dialog).getByRole("button", { name: "Archive" }).getBoundingClientRect();
+    const cancel = within(dialog).getByRole("button", { name: "Cancel" }).getBoundingClientRect();
     const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
+    const fullWidth = (box: DOMRect) =>
+      Math.abs(box.left - footer.left) < 1 && Math.abs(box.right - footer.right) < 1;
     await expect({
-      actionsOnTop: save.bottom <= Math.min(note.top, archive.top),
+      saveOnTop: save.bottom <= cancel.top,
+      actionsOverStart: cancel.bottom <= Math.min(note.top, archive.top),
       startStacked: archive.bottom <= note.top || note.bottom <= archive.top,
-    }).toEqual({ actionsOnTop: true, startStacked: true });
+      saveFullWidth: fullWidth(save),
+      cancelFullWidth: fullWidth(cancel),
+      archiveFullWidth: fullWidth(archive),
+    }).toEqual({
+      saveOnTop: true,
+      actionsOverStart: true,
+      startStacked: true,
+      saveFullWidth: true,
+      cancelFullWidth: true,
+      archiveFullWidth: true,
+    });
+  },
+};
+
+/**
+ * A footer of only `footerSlot` holds it at the start past `sm`, where the slot's name puts it,
+ * and leaves the end to the actions a dialog of that kind does not have.
+ */
+export const FooterStartAlone: Story = {
+  args: { unsaved: false },
+  render: () => (
+    <DialogLayout
+      open
+      title="Project settings"
+      contentSlot={<p>Names, owners and the rest.</p>}
+      footerSlot={<Button variant="destructive-outline" size="sm" content="Archive" />}
+    />
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Project settings" });
+    await settled(dialog);
+    const footer = dialog.querySelector("[data-slot=dialog-footer]")?.getBoundingClientRect();
+    const archive = within(dialog).getByRole("button", { name: "Archive" }).getBoundingClientRect();
+    await expect(Math.abs(archive.left - (footer?.left ?? Number.NaN)) < 1).toBe(true);
   },
 };
 
