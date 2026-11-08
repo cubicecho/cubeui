@@ -86,7 +86,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `download-button` | native | `components/ui/download-button.tsx`; also `download-button-base.ts`, `download-button.web.tsx` | `import { downloadBlob, downloadUrl, DownloadButton } from "@/components/ui/download-button"` |
 | `empty` | both | `components/ui/empty.tsx` | `import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"` |
 | `empty-state` | both | `components/empty-state.tsx` | `import { EmptyState } from "@/components/empty-state"` |
-| `error-message` | both | `lib/error-message.ts` | `import { messageOf } from "@/lib/error-message"` |
+| `error-message` | both | `lib/error-message.ts` | `import { messageOf, describeError } from "@/lib/error-message"` |
 | `error-page` | both | `components/error-page.tsx` | `import { ErrorPage } from "@/components/error-page"` |
 | `field` | both | `components/ui/field.tsx` | `import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, … 4 more } from "@/components/ui/field"` |
 | `field-row` | web | `components/field-row.tsx` | `import { FieldRow } from "@/components/field-row"` |

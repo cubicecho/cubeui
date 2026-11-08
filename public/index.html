@@ -428,12 +428,12 @@
         <tr>
           <th scope="row"><code>@cubeui/error-message</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>The text a validator's error shows: a string as it is, an object's `message`, anything else through `String`, and nothing for no error. What the form bindings read a field's first error with.</td>
+          <td>The words an error is shown in: `messageOf`, the text a validator's error shows, which the form bindings read a field's first error with; and `describeError`, a failed request or a thrown value as one line worth reading, which `LoadError` and `ErrorPage` say under their heading.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/error-page</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: an alert with a title, a friendly line, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).</td>
+          <td>What shows when the tree below a route has thrown, with nothing in it that could have been the cause. The whole error boundary in one element: `@cubeui/empty`'s block with a red bubble, a title, the line `describeError` gives, an optional copyable raw message (`details`) and extra buttons beside Try again (`actionSlot`).</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/field</code></th>
