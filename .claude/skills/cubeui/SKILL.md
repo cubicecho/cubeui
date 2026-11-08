@@ -15,8 +15,10 @@ drift.
 - [skill/vocabulary.md](../../../skill/vocabulary.md) — the slot vocabulary: what a `…Slot` prop
   takes and the words every component shares. Read it before writing a slot prop
 - [skill/native.md](../../../skill/native.md) — the same choosing table for an Expo app
-- [skill/install-paths.md](../../../skill/install-paths.md) — where every item lands and what
-  to import from it, generated from the registry
+- [skill/install-paths.md](../../../skill/install-paths.md) and
+  [skill/install-paths-ui.md](../../../skill/install-paths-ui.md) — where every item lands and
+  what to import from it, generated from the registry: the shells, forms, helpers and sets, then
+  the primitives and controls
 - [skill/layout/](../../../skill/layout/index.md) — the shells, one file per group: pages,
   page headers, centered pages, splits, sidebar, app bar, cards, facts, dialogs, lists, list
   rows, trees and tables

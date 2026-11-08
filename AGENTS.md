@@ -365,7 +365,7 @@ scripts/check-registry-build.mjs      `registry:check`: seventeen rules over wha
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links
-scripts/build-install-table.mjs       skill/install-paths.md, from the two registry indexes
+scripts/build-install-table.mjs       skill/install-paths*.md, from the two registry indexes
 scripts/build-props-tables.mjs        the skill's props tables, from the TSDoc on each props type
 scripts/props-tables.mjs              one table's rows: a union props type merged, constants expanded
 scripts/build-page.mjs                the landing page, public/index.html
@@ -532,7 +532,7 @@ network, so it is not in `check`.
 
 `npm run check` is `tokens:check`, `compile:check`, both typechecks, `registry:check`,
 `page:check`, `skill:check`, `docs:check`, Biome and the tests. It is read-only, so a failure in it is either a
-real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`, `skill/install-paths.md`) that
+real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`, `skill/install-paths*.md`) that
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
@@ -581,9 +581,11 @@ over 300 lines opens with a contents list, and every link between the files reso
 that exists. `npm run docs:check` fails on each of those. When a file outgrows its budget, split
 it by component group and update the links, not the budget.
 
-**`skill/install-paths.md` is generated** — every item's half, where it lands and its import
-line, from `registry.json`, `registry.web.json` and `components.json`. `npm run build` rewrites
-it and `npm run skill:check` fails CI on a stale one; never edit it by hand.
+**`skill/install-paths.md` and `install-paths-ui.md` are generated** — every item's half, where
+it lands and its import line, from `registry.json`, `registry.web.json` and `components.json`.
+The `registry:ui` items (the primitives and the controls) are the second file, since one table
+of every item passed 25 KB. `npm run build` rewrites both and `npm run skill:check` fails CI on a
+stale one; never edit them by hand.
 
 **The props tables are generated too.** A `<!-- props:CardLayout -->` … `<!-- /props -->` pair in
 a skill file is filled by `scripts/build-props-tables.mjs` from the TSDoc on that component's
