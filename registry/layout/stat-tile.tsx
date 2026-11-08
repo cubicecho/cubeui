@@ -45,7 +45,12 @@ type StatTileProps = {
   selected?: boolean | undefined;
   /** On the tile itself, the bordered box. */
   className?: string | undefined;
-  /** The figure's class: the colour a count takes when it is one worth noticing. */
+  /**
+   * The figure's class: the colour a count takes when it is one worth noticing, such as
+   * `text-negative`. A chosen filter tile draws its figure in `foreground` whatever this says,
+   * because a status colour on the chosen tint is under 3:1, so a count that matters needs an
+   * `iconSlot` or a `hint` that says so as well.
+   */
   valueClassName?: string | undefined;
 };
 
@@ -93,6 +98,7 @@ export function StatTile({
 
   // A selected tile is the chosen tint inside an `active` edge, a step further under the pointer
   // and focused. Its label, hint and icon turn `foreground` there: muted on the tint is under 4.5:1.
+  // So does the figure, over the caller's colour: `text-negative` on the tint was 2.0–3.6:1 (#471).
   const chosen = toggle && selected === true;
   const ink = chosen ? "text-foreground" : "text-foreground/60";
   const classes = cn(
@@ -107,12 +113,19 @@ export function StatTile({
     typeof value === "string" || typeof value === "number" ? (
       <Text
         testID="stat-tile-value"
-        className={cn("font-semibold text-2xl text-foreground tabular-nums", valueClassName)}
+        className={cn(
+          "font-semibold text-2xl text-foreground tabular-nums",
+          valueClassName,
+          chosen && "text-foreground",
+        )}
       >
         {value}
       </Text>
     ) : (
-      <View testID="stat-tile-value" className={cn(SLOT, "min-w-0", valueClassName)}>
+      <View
+        testID="stat-tile-value"
+        className={cn(SLOT, "min-w-0", valueClassName, chosen && "text-foreground")}
+      >
         {value}
       </View>
     );

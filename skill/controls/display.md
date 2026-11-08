@@ -97,8 +97,11 @@ Showing a colour the user picked is three small items, all on both halves:
   tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
   assistive tech; with one, the label is its accessible name, and on the web its tooltip under
   the pointer. Do not wrap a labelled dot in a `Tooltip` of your own: that draws a second one.
-- **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), normalised so it
-  stays visible in both themes, and `accentLabel` names it. It takes `#rgb` or `#rrggbb`, with or
+- **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), and `accentLabel`
+  names it. The colour keeps its hue and is made light or dark enough to be 3:1 from the page and
+  the card in every theme at once, so a yellow pick is drawn olive and a navy one mid blue; a
+  palette of your own holds that only if its page and card are as light, or as dark, as the
+  shipped ones. It takes `#rgb` or `#rrggbb`, with or
   without the `#`; anything else draws no stripe. Pass it on `Card` rather than placing
   a `ColorBar` yourself — the card owns the `relative overflow-hidden` the stripe needs.
 - **`readableTextColor(color)`** (`@cubeui/readable-text-color`) — black or white ink for text on

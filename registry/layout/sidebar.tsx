@@ -89,8 +89,8 @@ export type SidebarProps = {
    */
   hideBelow?: keyof typeof HIDE_BELOW | undefined;
   /**
-   * Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, and
-   * a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the
+   * Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, its
+   * status and its count ("Servers, 2 failing, 5"), and a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the
    * choice is remembered is the app's.
    */
   collapsed?: boolean | undefined;
@@ -500,13 +500,17 @@ function rowName(
 /**
  * A folded row under its tooltip: the label is nowhere on screen, so a pointer or a long press
  * brings it up, on the side the page is on. Its own provider, as `AppBarItem`'s is.
+ *
+ * The tooltip is the row's whole name, as `rowName` joins it, and not only the label: the count
+ * and the status dot on a folded row are marks with no words, and "2 failing" was only in the
+ * `aria-label`, where a sighted reader never sees it (#471).
  */
-function withTooltip(row: React.ReactElement, label: string, side: "start" | "end") {
+function withTooltip(row: React.ReactElement, name: string, side: "start" | "end") {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>{row}</TooltipTrigger>
-        <TooltipContent side={side === "start" ? "right" : "left"}>{label}</TooltipContent>
+        <TooltipContent side={side === "start" ? "right" : "left"}>{name}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
@@ -613,13 +617,17 @@ function SidebarItemBody({
  * The row forwards its ref and every prop it does not name to the `Pressable`, which is how the
  * router's `href` and press handler land on it. With `onPress` and no `href` it is a button and
  * never carries `aria-current`: the footer's Sign out. In a collapsed `Sidebar` it is its icon,
- * or its first letter, with the label as its name and tooltip.
+ * or its first letter, with its label, status and count as its name and its tooltip.
  */
 const SidebarItem = React.forwardRef<React.ElementRef<typeof Pressable>, SidebarItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     const { collapsed, side } = React.useContext(SidebarContext);
     const name = rowName(label, status, count);
-    const rail = (row: React.ReactElement) => (collapsed ? withTooltip(row, label, side) : row);
+    const rail = (row: React.ReactElement) => (collapsed ? withTooltip(row, name, side) : row);
+    // Folded, the tooltip says what the name says. `aria-describedby` is passed even when empty:
+    // radix points its trigger at the open bubble, `Slot` lets the child's value win, and a row
+    // described by its own name reads it twice.
+    const folded = collapsed ? { "aria-label": name, "aria-describedby": undefined } : {};
     // Folded, the row is a square around its icon, and the markers hang off its corners.
     const box = cn(collapsed && "relative justify-center px-0", className);
 
@@ -633,7 +641,7 @@ const SidebarItem = React.forwardRef<React.ElementRef<typeof Pressable>, Sidebar
           className={rowClassName(false, box)}
           {...(Platform.OS === "web" ? {} : { accessibilityLabel: name })}
           // Nothing inside a folded row is text, so the web's name is written out too.
-          {...(collapsed ? { "aria-label": name } : {})}
+          {...folded}
           {...props}
         >
           <SidebarItemBody
@@ -659,7 +667,7 @@ const SidebarItem = React.forwardRef<React.ElementRef<typeof Pressable>, Sidebar
         {...(Platform.OS === "web"
           ? ({ href, "aria-current": active ? "page" : undefined } as const)
           : { accessibilityLabel: name })}
-        {...(collapsed ? { "aria-label": name } : {})}
+        {...folded}
         className={rowClassName(active, box)}
         {...props}
       >
@@ -715,7 +723,8 @@ export function SidebarCollapseButton({
 export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "style"> & {
   /**
    * What the place is called. Nothing draws it, so it is the link's accessible name — an icon with
-   * no name is announced as "link" — and the tooltip a pointer or a long press brings up.
+   * no name is announced as "link" — and the tooltip a pointer or a long press brings up, with the
+   * status and the count after it.
    */
   label: string;
   /** The whole of what is drawn. Pass a bare `<Folder />`; the item sizes and colours it. */
@@ -757,13 +766,15 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
  * ```
  *
  * `label` is required, because it is the link's only name and its tooltip. The count is a badge on
- * the icon and a `status` is a dot, and both are in the name: "Skills, MCP on, 12". It is always a
- * link; the bar's buttons are icon `Button`s in `actionSlot`.
+ * the icon and a `status` is a dot, and both are in the name and the tooltip: "Skills, MCP on, 12",
+ * so the dot's meaning is on screen and not only read. It is always a link; the bar's buttons are
+ * icon `Button`s in `actionSlot`.
  */
 const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
     const text = active ? "text-foreground" : "text-foreground/60";
+    const name = rowName(label, status, count);
 
     return (
       <TooltipProvider>
@@ -774,8 +785,10 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
               role="link"
               testID="app-bar-item"
               // Nothing inside is text, so the name is written out on both platforms — joined the
-              // way the row's is, and before `props`, so a caller's own label still wins.
-              aria-label={rowName(label, status, count)}
+              // way the row's is, and before `props`, so a caller's own label still wins. The
+              // tooltip says the same, so it describes nothing: see `withTooltip`.
+              aria-label={name}
+              {...{ "aria-describedby": undefined }}
               accessibilityState={{ selected: active }}
               // React Native has no `href` and no `aria-current`; the web has both, and needs both.
               {...(Platform.OS === "web"
@@ -798,7 +811,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
               <IconMarkers count={count} status={status} ring="border-background" />
             </Pressable>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{label}</TooltipContent>
+          <TooltipContent side="bottom">{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );

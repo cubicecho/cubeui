@@ -173,12 +173,14 @@ import { formatCount, formatDuration } from "@/lib/format";
   <StatTile label="Embeddings" value={count} loading={isPending} />
 </div>
 
-// The filter tile: a toggle, one heap shown at a time.
+// The filter tile: a toggle, one heap shown at a time. The icon says which heap needs you; the
+// colour only adds to it, because a chosen tile draws its figure in foreground.
 {HEAPS.map((heap) => (
   <StatTile
     key={heap}
     label={LABELS[heap]}
     value={counts[heap]}
+    iconSlot={ICONS[heap]} // <TriangleAlert /> for "attention"
     selected={shown === heap}
     onPress={() => setShown(shown === heap ? null : heap)}
     valueClassName={heap === "attention" && counts[heap] > 0 ? "text-negative" : undefined}
@@ -199,7 +201,7 @@ import { formatCount, formatDuration } from "@/lib/format";
 | `onPress` | `(() => void)` |  | Makes the whole tile a button: a filter to toggle, a page to open. The tile's text is its accessible name, so a count and its label are read together. |
 | `selected` | `boolean` |  | With `onPress`, the tile is a toggle and this is whether it is on — the filter tile over a list. Left out, the tile is a plain button. Without `onPress` it is ignored. |
 | `className` | `string` |  | On the tile itself, the bordered box. |
-| `valueClassName` | `string` |  | The figure's class: the colour a count takes when it is one worth noticing. |
+| `valueClassName` | `string` |  | The figure's class: the colour a count takes when it is one worth noticing, such as `text-negative`. A chosen filter tile draws its figure in `foreground` whatever this says, because a status colour on the chosen tint is under 3:1, so a count that matters needs an `iconSlot` or a `hint` that says so as well. |
 <!-- /props -->
 
 - One source for both platforms: `@cubeui/stat-tile`, exporting `StatTile`. On the web the press
@@ -216,6 +218,9 @@ import { formatCount, formatDuration } from "@/lib/format";
 - `loading` keeps the label and holds the figure's place with a bar, so a row does not jump when
   the data lands. Drop the four `<Skeleton className="h-28" />`s that stood in for the row.
 - `valueClassName` is for the figure's colour — a count worth noticing in `text-negative`.
+  A chosen filter tile draws its figure in `foreground`, as its label, whatever the class says: a
+  status colour on the chosen tint is under 3:1. So the colour is never the only thing that says a
+  count matters: give that tile an `iconSlot` (`<TriangleAlert />`) or a `hint` that says it too.
   There is no `tone` or `size` prop.
 - It lays out one tile, not the row: the grid is the caller's, since the column count is the
   page's decision. A label-over-number pair with no card around it is a `PropertyList` with

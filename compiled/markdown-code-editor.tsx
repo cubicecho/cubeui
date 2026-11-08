@@ -41,15 +41,14 @@ const theme = EditorView.theme({
   },
   ".cm-content": { caretColor: "var(--foreground)", padding: "0.5rem 0" },
   ".cm-line": { padding: "0 0.75rem" },
-  // The caret's line is current, so it is the chosen-row tint (`bg-active/40`), and only while the
-  // editor has focus: drawn in `hover` at all times, an unfocused editor showed a hover that stuck.
+  // The caret's line is drawn in `hover`, as a focused thing is, and only while the editor has
+  // focus: drawn at all times, an unfocused editor showed a hover that stuck. It was the chosen
+  // tint (`bg-active/40`) until the syntax colours on it measured 3.1–4.2:1 (#471); on `hover`
+  // they are 4.5:1 or more in every palette, which `palette-contrast.test.mjs` holds.
   ".cm-activeLine": { backgroundColor: "transparent" },
-  "&.cm-focused .cm-activeLine": {
-    backgroundColor: "color-mix(in oklab, var(--active) 40%, transparent)",
-  },
-  // Except the placeholder's line. The placeholder is `/60`, an input's, and on the tint it is
-  // 4.24:1, under the 4.5:1 text floor. An empty document has one line, so there is no current
-  // line to pick out until there is text.
+  "&.cm-focused .cm-activeLine": { backgroundColor: "var(--hover)" },
+  // Except the placeholder's line. An empty document has one line, so there is no current line to
+  // pick out until there is text, and a tinted line under the placeholder looked like a value.
   "&.cm-focused .cm-activeLine:has(.cm-placeholder)": { backgroundColor: "transparent" },
   ".cm-placeholder": { color: "color-mix(in oklab, var(--foreground) 60%, transparent)" },
   // What an app's own completion or lint extension draws: a popover, in the popover's colours.
@@ -76,7 +75,11 @@ const theme = EditorView.theme({
 
 const QUIET = "color-mix(in oklab, var(--foreground) 60%, transparent)";
 
-/** Markdown's structure, muted, so the prose stays the thing you read. */
+/**
+ * Markdown's structure, muted, so the prose stays the thing you read. Every colour here is a pair
+ * in `palette-contrast.test.mjs`, on the page, on a card and on `hover` (the caret's line): one
+ * added here goes there too.
+ */
 const HIGHLIGHT_RULES: readonly TagStyle[] = [
   { tag: tags.heading, fontWeight: "600" },
   // A tag takes the one most specific rule, not every rule that fits: without the weight here a

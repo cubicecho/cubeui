@@ -193,7 +193,7 @@ to add them.
 - **An empty `MarkdownCodeEditor` no longer tints its line while focused**
   ([#436](https://github.com/cubicecho/cubeui/issues/436)). The placeholder sits on the page's
   background, as an input's does. On the tint it was too faint to read. The current line is
-  tinted again once there is text.
+  shaded again once there is text, in `hover` now (see #471 below).
 - **Nothing moves for a reader who asked for reduced motion**
   ([#441](https://github.com/cubicecho/cubeui/issues/441)). Dialogs, menus, popovers, selects and
   tooltips fade without zooming or sliding, skeletons and a pulsing badge dot hold still, and
@@ -344,6 +344,22 @@ to add them.
   ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
   `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
   you put on it, or on a `span` inside it, to undo the grey can go.
+- **Marks that were faint, or shown only by colour, are clearer**
+  ([#471](https://github.com/cubicecho/cubeui/issues/471)).
+  - `MarkdownCodeEditor` shades the line the cursor is on in `hover`, not the `active` tint. A
+    link, code or markup on that line was too faint on the tint.
+  - A chosen `StatTile` draws its figure in `foreground`, as its label is, even with a
+    `valueClassName` such as `text-negative`. An unchosen tile keeps the colour. If the colour was
+    how a tile said "this needs you", add an `iconSlot` or a `hint` that says it too.
+  - A `Markdown` task box is drawn at full strength, in a checkbox's colours. A ticked box and an
+    empty one are now easy to tell apart. It is no longer a disabled `<button>`: it is a read-only
+    `checkbox` role, out of the tab order, read as checked or not checked. A test that looked for a
+    disabled checkbox there should look for `aria-readonly` instead.
+  - `Card accentColor` (and `ColorBar`) keeps the hue you pick but makes it light or dark enough to
+    be 3:1 from the page and the card in every theme. Pale picks get darker and deep ones lighter:
+    a yellow is drawn olive, a navy mid blue. `hexToAccent` now returns `#rrggbb`, not `hsl()`.
+  - A folded sidebar row's tooltip, and an `AppBarItem`'s, shows the whole name: "Servers, 2
+    failing, 5", not only "Servers". The count and the status dot are on screen in words too.
 
 ## Checking the result
 

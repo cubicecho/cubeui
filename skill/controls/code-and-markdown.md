@@ -131,7 +131,8 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 - **`content` is the Markdown source, a string.** It is the only required prop.
 - **Every element is one the page already has.** A fenced block is a [`CodeBlock`](#code-block),
   a code span is `Code`, a table is the [`Table`](../layout/trees-and-tables.md#table) with its headers scoped, a
-  rule is a `Separator`, a task item (`- [x]`) is a disabled `Checkbox` named by its item, and
+  rule is a `Separator`, a task item (`- [x]`) is a read-only box in `Checkbox`'s look, named by
+  its item and announced as checked or not, but not in the tab order (it is not a control), and
   the headings are `PageHeader`'s sizes carried down six levels. There is no class to pass per
   element and no `prose` plugin to install.
 - **GitHub-flavoured Markdown is on**: tables, task lists, strikethrough, bare URLs as links.
