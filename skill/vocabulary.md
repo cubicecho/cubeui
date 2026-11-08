@@ -155,7 +155,8 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 - **`record`** — the one record a detail screen asked for, once its query has answered; `null` or
   `undefined` is one that is not there. On `LoadState`, in place of `count`.
 - **`notFoundLabel`** — what a detail screen says when its `record` is not there: "Project not
-  found". Drawn as the screen's heading, at `level` (`1` unless the screen already has its title).
+  found". Drawn as a heading, at `level`: `2` in a detail page's body, under the page's title,
+  where `description` and `actionSlot` go with it.
 - **`rows`** — how many placeholder rows stand in for a list while it loads. `<Textarea rows>` is
   the DOM attribute of that name and is not this word.
 - **`layout`** — on `PropertyList`: `inline` (label beside value, stacking by itself when

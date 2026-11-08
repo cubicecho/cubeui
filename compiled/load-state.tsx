@@ -9,8 +9,8 @@
  */
 
 /**
- * The three things a list of rows can be before it is a list of rows — see `ui/button.tsx` for
- * the conversion rules.
+ * The three things a list of rows can be before it is a list of rows, or one record before it is
+ * a record.
  *
  * Every list screen in every one of these apps opens the same way — the request failed, or it has
  * not landed, or it landed empty, or draw the rows — and every one of them writes that ladder
@@ -28,7 +28,7 @@
  * It returns `null` once there are rows, so a screen reads as the ladder and then the list:
  *
  * ```tsx
- * <LoadState query={roles} what="your roles" count={shown.length} emptySlot={<Empty … />} />
+ * <LoadState query={roles} what="your roles" count={shown.length} emptySlot={<EmptyState … />} />
  * {shown.map(…)}
  * ```
  *
@@ -36,8 +36,8 @@
  * `Form` holds against form libraries. A shell that names one data library is a shell the next
  * app cannot install.
  */
-import { useState } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { type ReactNode, useContext, useState } from "react";
+import { cn, PageLoadingContext, type SlotNode } from "@/lib/utils";
 import { Alert } from "./alert";
 import { Button } from "./button";
 import { EmptyState } from "./empty-state";
@@ -92,9 +92,11 @@ type LoadStateCommon = {
   /** How many placeholder rows stand in for the list while it loads. */
   rows?: number | undefined;
   /**
-   * The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and
-   * the placeholders as bars the height of a nav row rather than cards. For a list that lives in a
-   * sidebar, where a card-sized error would be taller than the list it replaced.
+   * The rungs drawn small enough for a rail or a card: the failure as two lines and a text-sized
+   * retry, and the placeholders as bars the height of a nav row. For a list that lives in a
+   * sidebar or inside a card, where an alert box would be taller than the list it replaced. Like
+   * `EmptyState`'s `compact` line, each rung keeps the left edge of what it sits in; in a sidebar,
+   * pass `className="px-2"` to line it up with the rows' text.
    */
   compact?: boolean | undefined;
   /** What the failure means, in the app's words — handed through to `LoadError`. */
@@ -117,6 +119,8 @@ type LoadStateList = {
   record?: never;
   notFoundLabel?: never;
   level?: never;
+  description?: never;
+  actionSlot?: never;
 };
 
 /** A detail screen: the last rung is a record that is not there. */
@@ -133,11 +137,21 @@ type LoadStateRecord = {
    */
   notFoundLabel: string;
   /**
-   * Which heading `notFoundLabel` is. `1`, the default, is a guard that is the whole screen. `2` is
-   * a guard inside a page that already has its level-1 title — a `PageLayout`'s body — so the
-   * page does not have two `h1`s. The size is the same at every level.
+   * Which heading `notFoundLabel` is. `2` in a detail page's body, under the `PageLayout` title
+   * that is already its `h1`, so the page does not have two. `1`, the default, is for a guard that
+   * is the whole screen, with no page around it. The size is the same at every level.
    */
   level?: 1 | 2 | 3 | undefined;
+  /**
+   * One line under `notFoundLabel` on what probably happened: "It may have been archived, or the
+   * link is old." Not drawn at `compact`, which is one line.
+   */
+  description?: ReactNode | undefined;
+  /**
+   * The way on from a record that is not there: a "Back to projects" button. Under the words, as
+   * on `EmptyState`; a screen that is only "not found" is otherwise a dead end.
+   */
+  actionSlot?: SlotNode;
   count?: never;
   emptySlot?: never;
 };
@@ -149,6 +163,10 @@ export type LoadStateProps = LoadStateCommon & (LoadStateList | LoadStateRecord)
  *
  * A detail screen passes `record` and `notFoundLabel` instead of `count`, and the last rung is
  * then "not found" rather than "empty".
+ *
+ * Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing: the title's bar is
+ * already the page's loading state, and rows shaped like a list's under it would be a second one,
+ * in the wrong shape for a page that shows one record.
  */
 export function LoadState({
   query,
@@ -158,11 +176,14 @@ export function LoadState({
   record,
   notFoundLabel,
   level = 1,
+  description,
+  actionSlot,
   rows = 3,
   compact = false,
   describe,
   className,
 }: LoadStateProps) {
+  const pageLoading = useContext(PageLoadingContext);
   if (query.isError) {
     return (
       <LoadError
@@ -176,6 +197,9 @@ export function LoadState({
     );
   }
   if (query.isPending) {
+    if (pageLoading) {
+      return null;
+    }
     return (
       <RowSkeleton
         rows={rows}
@@ -192,6 +216,7 @@ export function LoadState({
       <EmptyState
         compact
         title={notFoundLabel}
+        actionSlot={actionSlot}
         {...(className === undefined ? {} : { className })}
       />
     ) : (
@@ -199,6 +224,8 @@ export function LoadState({
         iconSlot={<Search />}
         title={notFoundLabel}
         level={level}
+        description={description}
+        actionSlot={actionSlot}
         {...(className === undefined ? {} : { className })}
       />
     );
@@ -240,7 +267,7 @@ export function LoadError({
   /** A promise returned here is awaited — see above. */
   onRetry: () => unknown;
   what: string;
-  /** No card, smaller type, a small outline retry — see `LoadState`'s `compact`. */
+  /** No box, no inset of its own, a small outline retry — see `LoadState`'s `compact`. */
   compact?: boolean | undefined;
   /**
    * What the failure means, in the app's words. Without it the line under the heading is the
@@ -264,23 +291,25 @@ export function LoadError({
   const reason = (describe ?? messageOf)(error) || FALLBACK;
   const label = retrying ? "Retrying…" : "Try again";
 
-  // The same three parts — what failed, why, try again — at the size of a nav row. No card, since a
-  // bordered box inside a rail reads as one more row, and the retry is a small outline button so the rail's
-  // only filled control stays the primary action above it.
+  // The same three parts — what failed, why, try again — at the size of a nav row. No box, since a
+  // bordered box inside a rail reads as one more row, and the retry is a small outline button so
+  // the rail's only filled control stays the primary action above it. The inset and the type are
+  // `EmptyState`'s compact line's, which often stands in the same place: no side inset, so it keeps
+  // the left edge of the card or the rail it is in, `py-2` and `text-sm`.
   if (compact) {
     return (
       <div
         role="alert"
         data-slot="load-error"
-        className={cn("cube-rn-view", "min-w-0 gap-1 px-2 py-1", className)}
+        className={cn("cube-rn-view", "min-w-0 gap-1 py-2", className)}
       >
         <div className="cube-rn-view min-w-0 flex-row items-center gap-1.5">
           <TriangleAlert className="size-4 shrink-0 text-negative" aria-hidden />
-          <span className="cube-rn-text min-w-0 flex-1 font-semibold text-negative text-xs">
+          <span className="cube-rn-text min-w-0 flex-1 font-semibold text-negative text-sm">
             Could not load {what}
           </span>
         </div>
-        <span className="cube-rn-text text-foreground/60 text-xs">{reason}</span>
+        <span className="cube-rn-text text-foreground/60 text-sm">{reason}</span>
         <div className="cube-rn-view flex-row">
           <Button
             variant="outline"
@@ -297,9 +326,13 @@ export function LoadError({
 
   // Alert's destructive callout rather than a second error box of its own: the hue on the tint,
   // the edge and the icon, the words in ink (red text on the red tint is under 4.5:1 in light),
-  // and Alert's own `role="alert"`.
+  // and Alert's own `role="alert"`. Capped and centred like the empty and not-found blocks it
+  // stands in for: across a 1280px page, Try again sat about 1100px from the words it answers.
   return (
-    <div data-slot="load-error" className={cn("cube-rn-view", "min-w-0", className)}>
+    <div
+      data-slot="load-error"
+      className={cn("cube-rn-view", "w-full min-w-0 max-w-xl self-center", className)}
+    >
       <Alert
         variant="destructive"
         title={`Could not load ${what}`}
@@ -327,11 +360,10 @@ export function LoadError({
  * point, rather than which component draws it.
  *
  * The placeholders are `aria-hidden` under one `role="status"` saying "Loading", because three
- * cards' worth of placeholder text is three cards' worth of nothing to a screen reader. `main`
- * hung that status off an `sr-only` sibling in a fragment; a fragment has nothing to attach a
- * live region to on device, so the status is the wrapper itself and the announcement is its
- * `aria-label`. That wrapper is the one structural difference from the DOM version, which is why
- * it carries the `gap` the rows would otherwise have taken from their parent.
+ * cards' worth of placeholder text is three cards' worth of nothing to a screen reader. A fragment
+ * with an `sr-only` sibling has nothing to attach a live region to on device, so the status is
+ * the wrapper itself and the announcement is its `aria-label`, and the wrapper carries the `gap`
+ * the rows would otherwise have taken from their parent.
  *
  * Only ever on `isPending`: a cache-and-network client keeps rendering what it had while it
  * refetches, and putting this behind `isFetching` flashes a skeleton over a perfectly good list.

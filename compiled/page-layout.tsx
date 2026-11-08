@@ -14,7 +14,7 @@
  * differences all live in the chassis and the header.
  */
 import type { ReactNode } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, PageLoadingContext, type SlotNode } from "@/lib/utils";
 import {
   COLUMNS,
   HeaderContentFooter,
@@ -57,7 +57,12 @@ export type PageLayoutProps = {
    * the title go in `headerContentSlot` instead.
    */
   headerBarSlot?: SlotNode | undefined;
-  /** Whether the *title* is still being fetched. The body is the caller's to place. */
+  /**
+   * Whether the *title* is still being fetched: a bar of its height stands in for it. A detail
+   * page sets it while the record loads and puts `LoadState` in the body, which then draws no
+   * placeholder rows of its own, so the page shows its wait once. The body is otherwise the
+   * caller's to place.
+   */
   loading?: boolean | undefined;
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
   level?: PageHeaderLevel | undefined;
@@ -171,7 +176,9 @@ export function PageLayout({
           {headerBarSlot}
         </>
       }
-      contentSlot={contentSlot}
+      contentSlot={
+        <PageLoadingContext.Provider value={loading}>{contentSlot}</PageLoadingContext.Provider>
+      }
       footerSlot={footerSlot}
     />
   );

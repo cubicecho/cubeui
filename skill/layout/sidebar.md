@@ -30,6 +30,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
               query={projects}
               what="projects"
               count={rows.length}
+              className="px-2"
               emptySlot={<EmptyState compact title="No projects yet." className="px-2" />}
             />
           }
