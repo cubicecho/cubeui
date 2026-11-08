@@ -8,8 +8,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { ITEM_TITLE_TEXT } from "@/components/ui/item-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
 
 type ListItemProps = {
   /**
@@ -98,9 +97,16 @@ export function rowFillClass(selected: boolean, pressable: boolean) {
   );
 }
 
+/**
+ * The row's middle, pressed or not: the words and `meta`, down to the rhythm's wrap floor. Below
+ * it the actions go under the words rather than squeezing them to nothing.
+ */
+const MIDDLE_CLASS = cn(HEADING_WRAP_FLOOR, "flex-row items-center gap-3");
+
 /** The pressed part of a row, whichever of a button or a link it is. */
 const BODY_CLASS = cn(
-  "min-w-0 flex-1 flex-row items-center gap-3 rounded-sm",
+  MIDDLE_CLASS,
+  "rounded-sm",
   Platform.select({
     web: "text-left focus-visible:outline-none",
     // Pressed looks hovered, as a menu's or a command's row does: not a fade, which reads disabled.
@@ -193,8 +199,8 @@ export function ListItemText({
             <Text
               testID="list-item-title"
               className={cn(
-                "min-w-0 shrink text-foreground",
-                ITEM_TITLE_TEXT,
+                "min-w-0 shrink",
+                HEADING_TITLE,
                 // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
                 // what `line-clamp-1` becomes and what `truncate` does not.
                 Platform.select({ web: "truncate", default: "line-clamp-1" }),
@@ -229,7 +235,9 @@ export function ListItemText({
 /**
  * One row of a list: something at the start, a title with a line under it, small facts and
  * buttons at the far end. It draws no surface; the list, card or section around it owns the
- * border. It is `Item`'s parts at `size="sm"`, so a row composed from them lines up with it.
+ * border. It is `Item`'s parts at `size="sm"`, so a row composed from them lines up with it, and
+ * its words and buttons are the heading rhythm every block and row shares. A long title
+ * truncates; only once the middle would be under 10rem do the buttons wrap, to the far end.
  *
  * The pressed area is the middle and only the middle, so the row is three siblings
  * (`leadingSlot`, the middle, `actionSlot`) and no button wraps another. `href` or `linkSlot`
@@ -294,7 +302,7 @@ export function ListItem({
       );
     }
     return (
-      <View testID="list-item-body" className="min-w-0 flex-1 flex-row items-center gap-3">
+      <View testID="list-item-body" className={MIDDLE_CLASS}>
         {body}
       </View>
     );
@@ -305,9 +313,9 @@ export function ListItem({
       testID="list-item"
       size="sm"
       selected={selected}
-      // The row never wraps, as `Item` lets a header or footer do: its middle truncates instead.
+      // The middle truncates its title first, and only below the wrap floor do the actions wrap.
       className={cn(
-        "min-w-0 flex-nowrap",
+        "min-w-0",
         rowFillClass(
           selected,
           onPress !== undefined || href !== undefined || linkSlot !== undefined,

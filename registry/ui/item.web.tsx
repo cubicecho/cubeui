@@ -17,6 +17,7 @@ import { Slot } from "radix-ui";
 import type * as React from "react";
 import {
   ITEM_ACTIONS_CLASS,
+  ITEM_ACTIONS_ICON_GAP_SM_WEB,
   ITEM_ACTIONS_SIZES,
   ITEM_ACTIONS_SM_WEB,
   ITEM_CONTENT_CLASS,
@@ -38,7 +39,7 @@ import {
   itemVariants,
 } from "@/components/ui/item-base";
 import { Separator, type SeparatorProps } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { actionGap, cn, ICON_ACTION_GAP } from "@/lib/utils";
 
 /**
  * A part's name in a test. A native source drawn on the web — `ListItem` in an Expo web build,
@@ -218,7 +219,12 @@ function ItemDescription({ className, testID, ...props }: React.ComponentProps<"
 }
 
 /** The buttons at the far end of an item. */
-function ItemActions({ className, testID, ...props }: React.ComponentProps<"div"> & Named) {
+function ItemActions({
+  className,
+  testID,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & Named) {
   return (
     <div
       data-slot={testID ?? "item-actions"}
@@ -227,10 +233,13 @@ function ItemActions({ className, testID, ...props }: React.ComponentProps<"div"
         ITEM_ACTIONS_CLASS,
         ITEM_ACTIONS_SIZES.default,
         ITEM_ACTIONS_SM_WEB,
+        actionGap(children) === ICON_ACTION_GAP && ITEM_ACTIONS_ICON_GAP_SM_WEB,
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

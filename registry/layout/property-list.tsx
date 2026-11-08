@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Text, View } from "react-native";
-import { cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode } from "@/lib/utils";
 
 type Layout = "inline" | "stacked";
 
@@ -193,7 +193,10 @@ export function PropertyRow({
           ) : null}
         </View>
         {actionSlot ? (
-          <View testID="property-row-action" className="shrink-0 flex-row items-center gap-1">
+          <View
+            testID="property-row-action"
+            className={cn("shrink-0 flex-row items-center", actionGap(actionSlot))}
+          >
             {actionSlot}
           </View>
         ) : null}

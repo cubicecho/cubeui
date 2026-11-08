@@ -12,7 +12,7 @@ import type { ReactElement, ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
-import { cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode } from "@/lib/utils";
 import { CollapsibleTrigger } from "./collapsible";
 import { File, Folder } from "./icons";
 import { rowFillClass, rowLink } from "./list-item";
@@ -417,7 +417,9 @@ export function FileTree<T extends TreeEntry>({
             data-slot="file-tree-action"
             className={cn(
               "cube-rn-view",
-              "shrink-0 flex-row items-center gap-0.5 pr-1",
+              "shrink-0 flex-row items-center pr-1",
+              // The rhythm's action gap: 4px between the `icon-xs` buttons a tree row takes.
+              actionGap(actions),
               // Hidden only where a pointer can bring them back. An open menu keeps its trigger on
               // screen after the pointer has left the row for the menu.
               "transition-opacity focus-within:opacity-100 has-[[aria-expanded=true]]:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:opacity-0",

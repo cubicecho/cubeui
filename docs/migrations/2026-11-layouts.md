@@ -305,14 +305,44 @@ to add them.
 - **`Item` at `size="sm"` is `ListItem`'s row**
   ([#475](https://github.com/cubicecho/cubeui/issues/475)). `ListItem` is now built from `Item`'s
   parts at that size, so the two line up. The row is 12px from its edge across and 8px down, with
-  12px between its parts. The description is 12px, under a title on a 20px line. `ItemMedia` stays
-  centred when there is a description, and `ItemActions` puts 4px between its buttons. The row
-  no longer sets `text-sm` on what is inside it, so give a bare word in `ItemActions` its own
-  size. The `default` size is unchanged.
+  12px between its parts. Its title, description and buttons follow the heading rhythm below.
+  `ItemMedia` stays centred when there is a description. The row no longer sets `text-sm` on what
+  is inside it, so give a bare word in `ItemActions` its own size. The `default` size is
+  unchanged.
 - **`CollapsibleRow`'s `meta` is at the far end of the heading**
   ([#475](https://github.com/cubicecho/cubeui/issues/475)), where `ListItem` puts it, and no
   longer straight after the title. Its `data-slot` (`testID` on device) is `list-item-meta`, where
   it was `collapsible-row-meta`.
+- **Cards, sections and rows share one heading rhythm**
+  ([#473](https://github.com/cubicecho/cubeui/issues/473)). `Card` and `CardLayout`, `Section`,
+  `SettingRow`, `Item` at `sm`, `ListItem`, `CollapsibleRow` and `Collapsible` draw a 14px semibold
+  title in full ink, a 14px description in the `/60` grey, 4px between them, and the action level
+  with the top of the title. What moves:
+  - **Card titles get smaller.** A `CardTitle` and a `CardLayout` title are 14px, where they were
+    16px, on a 20px line. A card that should keep a bigger title passes `titleClassName="text-base"`;
+    `CenteredCardLayout`'s title is still 20px. A `-my-1 py-1` you added to stop a truncated title
+    losing its descenders can go.
+  - **`Section`'s title is a title, not an overline.** It is 14px and in sentence case, where it
+    was 12px in capitals. Write the title as you want it read; one written in capitals stays in
+    capitals. `SectionHeading`'s `overline` is unchanged.
+  - **Rows get taller.** On `ListItem`, `CollapsibleRow` and `Item size="sm"` the description is
+    14px, where it was 12px, and 4px under the title, where it was 2px. A row with a one-line
+    description is 6px taller. `meta` stays 12px.
+  - **`Collapsible`'s title is in full ink**, where it was grey, and its description is 14px, 4px
+    under it. A `titleClassName="text-foreground"` you added can go.
+  - **Actions sit level with the title's top** on `SettingRow`, `ListItem` and `CollapsibleRow`,
+    where they were centred on the text. Two actions are 8px apart, or 4px when both are `icon-xs`
+    buttons: `ListItem`'s and `CollapsibleRow`'s were 4px, `FileTree`'s 2px and `PropertyRow`'s
+    4px.
+  - **A heading wraps at one width.** Beside an action, the text keeps 10rem or the action drops
+    under it. `SettingRow` kept 12rem, so its control stays beside a little longer. `ListItem` and
+    `CollapsibleRow` now wrap too, where their middle squeezed to nothing: below 10rem the
+    actions go to a line of their own at the far end. `Collapsible`'s action wraps the same way.
+- **A card's body spaces what it holds**
+  ([#474](https://github.com/cubicecho/cubeui/issues/474)). `CardLayout`'s body has `gap-4`, as
+  `Section`'s has, so rows, fields or blocks handed to it sit 16px apart, where they touched.
+  `contentClassName="gap-4"` can go. A card whose children should touch passes
+  `contentClassName="gap-0"`; a body that is one element (a `List`, a `form`) does not change.
 - **`ErrorPage` is drawn as an empty state with a red bubble**
   ([#482](https://github.com/cubicecho/cubeui/issues/482)). It is `Empty`'s block now, so it matches an empty or not-found
   screen: a 48px bubble with a 24px icon (it was 60px and 28px), 12px between its parts (16px),
@@ -427,3 +457,5 @@ to add them.
   names; your editor marks each deprecated name that is left.
 - Look at every screen with a chosen row, tab, checkbox or sidebar in both themes.
 - Search for `size="sm"` on `Item`, and look at those rows.
+- Look at your cards, sections, setting rows and list rows: titles are smaller, rows are taller and
+  a card's body has gaps.
