@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, userEvent, waitFor } from "storybook/test";
+import { CardLayout } from "@/components/card-layout";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -11,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { expectFocusEdge } from "../focus-edge";
+import { tintsUnderPointer } from "../pointer-tint";
+import { tokenColor } from "../token-color";
 
 const meta = {
   title: "Layout/Table",
@@ -60,7 +65,12 @@ const Servers = () => (
   </Table>
 );
 
-/** A table that fits: every part in its role, and no tab stop on a container with nothing to scroll. */
+/**
+ * A table that fits: every part in its role, and no tab stop on a container with nothing to scroll.
+ * The caption is drawn under the container and names the table. A row of words alone does not
+ * tint under the pointer, and each row's own header is in the data's ink, not the column names'
+ * grey.
+ */
 export const Default: Story = {
   render: () => (
     <div className="w-[640px]">
@@ -69,7 +79,11 @@ export const Default: Story = {
   ),
   play: async ({ canvas }) => {
     const table = canvas.getByRole("table", { name: "Servers in this workspace" });
-    expect(table.querySelector("caption")).toHaveTextContent("Servers in this workspace");
+    const caption = canvas.getByText("Servers in this workspace");
+    expect(caption).toHaveAttribute("data-slot", "table-caption");
+    expect(table).toHaveAttribute("aria-labelledby", caption.id);
+    // Read once, as the table's name, and not again as a line of text after the rows.
+    expect(caption).toHaveAttribute("aria-hidden", "true");
     expect(canvas.getAllByRole("row")).toHaveLength(5);
     expect(canvas.getAllByRole("cell").length).toBeGreaterThan(0);
 
@@ -87,17 +101,44 @@ export const Default: Story = {
       expect(row).toHaveAttribute("scope", "row");
     }
 
+    // The column names are the quiet text; a row's header is the thing the row is about.
+    for (const column of columns) {
+      expect(getComputedStyle(column).color).toBe(tokenColor("foreground", { opacity: MUTED_INK }));
+    }
+    for (const row of rows) {
+      expect(getComputedStyle(row).color).toBe(tokenColor("foreground"));
+    }
+
     const container = table.parentElement as HTMLElement;
     expect(container).toHaveAttribute("data-slot", "table-container");
     expect(container.scrollWidth).toBeLessThanOrEqual(container.clientWidth);
     expect(container).not.toHaveAttribute("tabindex");
+    expect(container.contains(caption)).toBe(false);
+    expect(container.parentElement).toHaveAttribute("data-slot", "table-frame");
+    // Nothing past either end, so nothing fades.
+    expect(container).not.toHaveAttribute("data-more-start");
+    expect(container).not.toHaveAttribute("data-more-end");
+    expect(getComputedStyle(container).maskImage).toBe("none");
+
+    // Nothing in these rows can be pressed, so none of them answers the pointer.
+    for (const row of canvas.getAllByRole("row")) {
+      expect(tintsUnderPointer(row)).toBe(false);
+    }
   },
 };
+
+/** The step `text-foreground/60` is: secondary text. */
+const MUTED_INK = 60;
+
+/** How far apart, in pixels, two edges may be and still count as lined up. */
+const SUBPIXEL = 1;
 
 /**
  * Narrower than its columns, the table scrolls sideways inside its own container instead of
  * pushing the page wider — and the container becomes a tab stop, so a keyboard reaches the
- * columns past the edge (axe's `scrollable-region-focusable`).
+ * columns past the edge (axe's `scrollable-region-focusable`). The end with more columns past it
+ * fades: the far end at first, the near end once scrolled to the last column. The caption stays
+ * under the container, in view, however far it is scrolled.
  */
 export const Narrow: Story = {
   render: () => (
@@ -108,7 +149,8 @@ export const Narrow: Story = {
   play: async ({ canvas, canvasElement }) => {
     const table = canvas.getByRole("table", { name: "Servers in this workspace" });
     const container = table.parentElement as HTMLElement;
-    const frame = container.parentElement as HTMLElement;
+    const frame = container.parentElement?.parentElement as HTMLElement;
+    const caption = canvas.getByText("Servers in this workspace");
 
     expect(container.scrollWidth).toBeGreaterThan(container.clientWidth);
     // The overflow stays inside the container: the frame around it is not pushed wider.
@@ -117,8 +159,29 @@ export const Narrow: Story = {
     );
     await waitFor(() => expect(container).toHaveAttribute("tabindex", "0"));
 
+    // At the start: more past the far end only, and that end fades.
+    await waitFor(() => expect(container).toHaveAttribute("data-more-end"));
+    expect(container).not.toHaveAttribute("data-more-start");
+    expect(getComputedStyle(container).maskImage).not.toBe("none");
+    expect(getComputedStyle(container).getPropertyValue("--table-fade-start")).toBe("0px");
+    expect(getComputedStyle(container).getPropertyValue("--table-fade-end")).not.toBe("0px");
+
     container.scrollLeft = container.scrollWidth;
     await waitFor(() => expect(container.scrollLeft).toBeGreaterThan(0));
+
+    // At the end: the near end fades instead.
+    await waitFor(() => expect(container).toHaveAttribute("data-more-start"));
+    expect(container).not.toHaveAttribute("data-more-end");
+    expect(getComputedStyle(container).getPropertyValue("--table-fade-start")).not.toBe("0px");
+    expect(getComputedStyle(container).getPropertyValue("--table-fade-end")).toBe("0px");
+
+    // The caption did not scroll with the columns: it is under the container, inside its width.
+    expect(container.contains(caption)).toBe(false);
+    const box = container.getBoundingClientRect();
+    const line = caption.getBoundingClientRect();
+    expect(line.top).toBeGreaterThanOrEqual(box.bottom);
+    expect(line.left).toBeGreaterThanOrEqual(box.left - SUBPIXEL);
+    expect(line.right).toBeLessThanOrEqual(box.right + SUBPIXEL);
 
     await userEvent.click(canvasElement);
     await userEvent.tab();
@@ -166,13 +229,11 @@ const Log = () => (
   </Table>
 );
 
-/** How far apart, in pixels, two edges may be and still count as lined up. */
-const SUBPIXEL = 1;
-
 /**
  * Given a `maxHeight`, a long table scrolls inside its own container on both axes, and its header
  * row stays pinned at the top while the rows scroll under it. Sideways, the header moves with the
- * columns it names. The container is a tab stop while it overflows, so a keyboard can scroll it.
+ * columns it names. The container is a tab stop while it overflows, so a keyboard can scroll it,
+ * and the caption stays under it while the rows scroll.
  */
 export const MaxHeight: Story = {
   render: () => (
@@ -204,6 +265,12 @@ export const MaxHeight: Story = {
     expect(firstRow.getBoundingClientRect().top).toBeLessThan(top);
     expect(getComputedStyle(header).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
     expect(getComputedStyle(firstColumn).boxShadow).toContain("inset");
+    // The caption is under the container, not under the last row: in view while the rows scroll.
+    const caption = canvas.getByText("Run log");
+    expect(container.contains(caption)).toBe(false);
+    expect(caption.getBoundingClientRect().top).toBeGreaterThanOrEqual(
+      container.getBoundingClientRect().bottom,
+    );
 
     // Sideways: the header scrolls with the body, so each name stays over its column.
     container.scrollLeft = 100;
@@ -236,5 +303,222 @@ export const KeyboardFocus: Story = {
     const container = table.parentElement as HTMLElement;
     await waitFor(() => expect(container).toHaveAttribute("tabindex", "0"));
     await expectFocusEdge(container, canvasElement);
+  },
+};
+
+const ACTIVITY = [
+  {
+    id: "a1",
+    time: "09:14",
+    who: "Mara Quinn",
+    message:
+      "Moved the release checklist into the shared workspace and asked the reviewers to sign off on the migration notes before Thursday's cut.",
+  },
+  {
+    id: "a2",
+    time: "10:02",
+    who: "Theo Park",
+    message:
+      "Rolled back the search index change after the nightly job timed out twice on the larger tenants; the fix is waiting on a second pair of eyes.",
+  },
+  {
+    id: "a3",
+    time: "11:47",
+    who: "Kofi Mensah",
+    message: "Closed the duplicate reports about the date picker.",
+  },
+];
+
+// An activity feed on a card: the message column is a sentence or two, and the time is one value.
+const Activity = () => (
+  <CardLayout
+    title="Recent activity"
+    description="What changed in the workspace today."
+    contentSlot={
+      <Table>
+        <TableCaption className="sr-only">Recent activity</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Time</TableHead>
+            <TableHead>Who</TableHead>
+            <TableHead>Message</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {ACTIVITY.map((entry) => (
+            <TableRow key={entry.id}>
+              <TableHead className="whitespace-nowrap">{entry.time}</TableHead>
+              <TableCell className="whitespace-nowrap">{entry.who}</TableCell>
+              <TableCell>{entry.message}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    }
+  />
+);
+
+/**
+ * On a card, a long message wraps at the column's width rather than pushing the table past the
+ * card's edge, so there is nothing to scroll and no fade. The column names stay on one line, and a
+ * cell the caller marks `whitespace-nowrap` — the time, a name — keeps its one line too.
+ */
+export const WrapsInACard: Story = {
+  parameters: { layout: "padded" },
+  render: () => (
+    <div className="max-w-5xl">
+      <Activity />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const table = canvas.getByRole("table", { name: "Recent activity" });
+    const container = table.parentElement as HTMLElement;
+    expect(container.scrollWidth).toBeLessThanOrEqual(container.clientWidth);
+    expect(container).not.toHaveAttribute("tabindex");
+    expect(container).not.toHaveAttribute("data-more-end");
+
+    const lineHeight = (cell: HTMLElement) => Number.parseFloat(getComputedStyle(cell).lineHeight);
+    const lines = (cell: HTMLElement) => {
+      const range = document.createRange();
+      range.selectNodeContents(cell);
+      return Math.round(range.getBoundingClientRect().height / lineHeight(cell));
+    };
+    const long = canvas.getByText(/Rolled back the search index/);
+    expect(lines(long)).toBeGreaterThan(1);
+    for (const cell of [...canvas.getAllByRole("columnheader"), canvas.getByText("Kofi Mensah")]) {
+      expect(lines(cell)).toBe(1);
+    }
+  },
+};
+
+/** Which rows of a selectable table tint under the pointer. */
+function Selectable() {
+  const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set(["github"]));
+  const choose = (name: string, on: boolean) => {
+    const next = new Set(chosen);
+    if (on) {
+      next.add(name);
+    } else {
+      next.delete(name);
+    }
+    setChosen(next);
+  };
+  return (
+    <Table>
+      <TableCaption>Servers to restart</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-10">
+            <span className="sr-only">Chosen</span>
+          </TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {SERVERS.map((server) => (
+          <TableRow key={server.name} data-state={chosen.has(server.name) ? "selected" : undefined}>
+            <TableCell>
+              <Checkbox
+                aria-label={`Restart ${server.name}`}
+                checked={chosen.has(server.name)}
+                onCheckedChange={(on) => choose(server.name, on === true)}
+              />
+            </TableCell>
+            <TableHead>{server.name}</TableHead>
+            <TableCell>{server.status}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell />
+          <TableHead>Chosen</TableHead>
+          <TableCell>{chosen.size}</TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
+  );
+}
+
+/**
+ * A row tints under the pointer when it can be acted on: it holds a checkbox, a link or a button,
+ * or it has its own `onClick`. A chosen row is tinted `active` and goes a step further under the
+ * pointer. The header row and the footer's total, with nothing to press, stay still. On the chosen
+ * row's tint the row's header is in `foreground`, as the cells beside it are.
+ */
+export const WhichRowsTint: Story = {
+  render: () => (
+    <div className="max-w-[480px]">
+      <Selectable />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const rowOf = (name: string) =>
+      canvas.getByRole("rowheader", { name }).closest("tr") as Element;
+    const [headerRow] = canvas.getAllByRole("row");
+    expect(headerRow && tintsUnderPointer(headerRow)).toBe(false);
+    expect(tintsUnderPointer(rowOf("filesystem"))).toBe(true);
+    expect(tintsUnderPointer(rowOf("Chosen"))).toBe(false);
+
+    const chosen = rowOf("github");
+    expect(chosen).toHaveAttribute("data-state", "selected");
+    expect(getComputedStyle(chosen).backgroundColor).toBe(
+      tokenColor("active", { opacity: CHOSEN_TINT }),
+    );
+    expect(tintsUnderPointer(chosen)).toBe(true);
+    expect(getComputedStyle(canvas.getByRole("rowheader", { name: "github" })).color).toBe(
+      tokenColor("foreground"),
+    );
+
+    await userEvent.click(canvas.getByRole("checkbox", { name: "Restart postgres" }));
+    await waitFor(() => expect(rowOf("postgres")).toHaveAttribute("data-state", "selected"));
+  },
+};
+
+/** The step `bg-active/40` is: the tint of a chosen thing. */
+const CHOSEN_TINT = 40;
+
+const WEBHOOKS = [
+  {
+    name: "deploy",
+    url: "https://hooks.example.com/services/T024BE7LD/B08S4K5J3/8f2d9c1e7a6b4b0c9e3f5a2d1c8b7e6f",
+  },
+  { name: "alerts", url: "https://alerts.example.com/v1/incoming/3c1f" },
+];
+
+/**
+ * A value with no spaces in it — a URL, a hash, a path — cannot wrap at a word, so it sets its
+ * column's narrowest width and pushes the table wide. `wrap-anywhere` on its cells lets it break
+ * between any two letters instead. It is the column's own class, not the table's: on every cell, a
+ * narrow table would break ordinary words mid-word rather than scroll.
+ */
+export const ALongValue: Story = {
+  render: () => (
+    <div className="max-w-[480px]">
+      <Table>
+        <TableCaption>Webhooks</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Address</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {WEBHOOKS.map((hook) => (
+            <TableRow key={hook.name}>
+              <TableHead>{hook.name}</TableHead>
+              <TableCell className="wrap-anywhere font-mono text-xs">{hook.url}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const table = canvas.getByRole("table", { name: "Webhooks" });
+    const container = table.parentElement as HTMLElement;
+    expect(container.scrollWidth).toBeLessThanOrEqual(container.clientWidth);
+    expect(container).not.toHaveAttribute("tabindex");
   },
 };
