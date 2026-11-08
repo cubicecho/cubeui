@@ -29,9 +29,9 @@ on both platforms:
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `open` | `boolean` |  | Both optional, together, as on `Popover`: pass neither and the menu keeps its own state. |
-| `onOpenChange` | `((open: boolean) => void)` |  |  |
-| `defaultOpen` | `boolean` | `false` |  |
-| `children` (required) | `ReactNode` |  |  |
+| `onOpenChange` | `((open: boolean) => void)` |  | Told when the menu opens or closes. Pass it with `open` to hold that state, or alone to listen. |
+| `defaultOpen` | `boolean` | `false` | Whether a menu that holds its own state starts open. |
+| `children` (required) | `ReactNode` |  | The `MenuTrigger` and the `MenuContent` with its rows. |
 <!-- /props -->
 
 <!-- props:MenuItem -->
@@ -43,10 +43,10 @@ on both platforms:
 | `label` (required) | `string` |  | The row's text, and what typeahead matches on the web. |
 | `trailing` | `ReactNode` |  | After the label, at the far edge: a shortcut, a count, a check. A string is drawn muted. |
 | `destructive` | `boolean` | `false` | Draw the row in the destructive colour, for the action that deletes. |
-| `disabled` | `boolean` | `false` |  |
+| `disabled` | `boolean` | `false` | The row cannot be chosen, and is drawn faded. |
 | `onSelect` | `(() => void)` |  | Runs when the row is chosen. The menu closes itself afterwards; do not close it here. |
 | `focusesElsewhere` | `boolean` | `false` | The row hands focus to something else — a field it reveals with `autoFocus` — so this close must not put focus back on the trigger, which would blur that target (and close it on `onBlur` before anything is typed). Only for the close this row causes: Escape, a click outside and every other row still return focus to the trigger. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the row's own box. |
 | `href` | `string` |  | Where the row goes, with no router: on the web the row is an `<a href>`, so it navigates, opens in a new tab and shows its URL. On device it does nothing more than `onSelect` — a native app navigates through its router, which is `linkSlot`. |
 | `linkSlot` | `ReactElement` |  | The app's router link, as an element with no children — `<Link to="/x" preload="intent" />`. The row is drawn inside it, so on the web the menu item *is* the router's `<a>`, and hover and focus reach the link's own handlers (which is what lets a router preload on intent). On device it is cloned with `asChild` around the row, the `<Link asChild>` convention. Wins over `href`; a `disabled` row renders neither and does not navigate. |
 <!-- /props -->

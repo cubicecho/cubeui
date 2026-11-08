@@ -82,8 +82,17 @@ type ComboboxSharedProps = Omit<
   ComponentProps<typeof SelectTrigger>,
   "value" | "onChange" | "type" | "children" | "className" | "disabled"
 > & {
+  /**
+   * On the trigger, the field-shaped button that opens the menu. The menu's own is
+   * `contentClassName`.
+   */
   className?: string | undefined;
+  /** The trigger cannot be pressed, and the field reads as unavailable. */
   disabled?: boolean | undefined;
+  /**
+   * What can be chosen: options, and the separators and notes between them, in the order they are
+   * listed. Each option's `value` is what `value` holds.
+   */
   options: readonly SelectEntry[];
   /** What the trigger says with nothing chosen. */
   placeholder?: string | undefined;
@@ -95,6 +104,9 @@ type ComboboxSharedProps = Omit<
    * form of twenty fields asks the server nothing for the eighteen the reader never touches.
    */
   open?: boolean | undefined;
+  /**
+   * Told when the menu opens or closes. Pass it with `open` to hold that state, or alone to listen.
+   */
   onOpenChange?: ((open: boolean) => void) | undefined;
   /** The dropdown's class. `className` still goes to the trigger, which is the control. */
   contentClassName?: string | undefined;
@@ -156,15 +168,27 @@ type ComboboxSharedProps = Omit<
 
 /** A combobox holding one value. */
 type ComboboxSingleProps = ComboboxSharedProps & {
+  /**
+   * Leave it out for a combobox that holds one value. `true` holds several, drawn as chips on the
+   * trigger, and makes `value` an array.
+   */
   multiple?: false | undefined;
+  /** The chosen option's `value`, or `undefined` for none. With `multiple`, every chosen value. */
   value?: string | undefined;
+  /**
+   * Told the new value when the reader picks a row. One value closes the menu on a pick; with
+   * `multiple` it is handed the whole new array and the menu stays open.
+   */
   onValueChange: (value: string) => void;
 };
 
 /** A combobox holding several. */
 type ComboboxMultipleProps = ComboboxSharedProps & {
+  /** Holds several values, drawn as chips on the trigger. */
   multiple: true;
+  /** Every chosen value. */
   value: readonly string[];
+  /** Handed the whole new array on every pick or removal; the menu stays open. */
   onValueChange: (value: string[]) => void;
   /**
    * Chips to draw before collapsing to a count. `0` always shows the count.

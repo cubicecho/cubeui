@@ -25,7 +25,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the track, the full-width bar the fill is drawn in. A different height is an `h-*` here. |
 | `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: drawn empty and announced with no value, as Radix's is — not animated. |
 | `max` | `number` | `100` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
 | `label` | `string` |  | What is progressing — "Re-embedding progress". The bar's accessible name. |
@@ -62,9 +62,9 @@ with a filled `div` and a `style.width` inside it.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `color` (required) | `string` |  |  |
-| `size` | `"sm" \| "md"` | `"md"` |  |
-| `className` | `string` |  |  |
+| `color` (required) | `string` |  | The colour to draw, as a CSS colour string: a tag's or a category's own, which the palette does not hold. |
+| `size` | `"sm" \| "md"` | `"md"` | `sm` for a dot inside a line of text or a chip, `md` for one that stands beside a label on its own. |
+| `className` | `string` |  | On the dot itself. |
 | `label` | `string` |  | What the colour stands for: the accessible name, and on the web the tooltip under the pointer. Without it the dot is decoration. |
 <!-- /props -->
 
@@ -125,10 +125,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `variant` | `BadgeVariant` | `"default"` |  |
+| `variant` | `"default" \| "secondary" \| "destructive" \| "outline" \| "ghost" \| "link" \| "positive" \| "warning" \| "info" \| "destructive-soft" \| "positive-soft" \| "warning-soft" \| "info-soft"` | `"default"` | What the badge says, which picks its colours: `default` for a label with nothing to say; `positive`, `warning`, `destructive` and `info` for a status, filled; each `-soft` for the same status as a tint, quieter beside text; `outline` and `secondary` for a quiet tag. `ghost` and `link` are kept for shadcn code. |
 | `backgroundColor` | `string` |  | Overrides the variant's background with a literal colour — for a badge standing in for a user-chosen tag or category. Passing it also drops the variant's label colour, since the caller's background is unknown and `text-neutral-foreground` would be a guess. Pair it with `readableTextColor` when the label has to stay legible on an arbitrary hue. |
 | `textColor` | `string` |  | Overrides the label's colour, for the same case as `backgroundColor`: with an arbitrary hue behind it, neither the variant's label colour nor the `text-foreground` fallback is guaranteed to be legible. `readableTextColor` is what computes the value to pass. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the badge's box, the pill or the dot. |
 | `label` | `string` |  | What the dot stands for: its accessible name, and on the web its tooltip under the pointer. In the pill form the text is already the name, so there it only feeds `removeLabel`'s default when the children hold no text of their own. |
 | `onRemove` | `(() => void)` |  | Draws a trailing ✕, a button of its own, that calls this — a tag or a filter chip the user can take off. The ✕ is in the label's colour, and pressing it reaches nothing else on the badge. Ignored by the dot, which has no room for it, and by the web half's `asChild`, whose one child is the whole badge. |
 | `mono` | `boolean` | `false` | Sets the label in monospace at normal weight, for a machine string: an id, a tool name, a cron expression. It is on the label's type, not the container, so it reaches the `Text` on native. `variant` stays free for colour. |
@@ -192,12 +192,12 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `variant` | `AlertVariant` | `"default"` | What kind of notice it is, which sets the tint, the icon and the role. `destructive` is an error the reader has to hear now and is announced as an `alert`; the others are a `status`. |
+| `variant` | `"default" \| "info" \| "warning" \| "destructive"` | `"default"` | What kind of notice it is, which sets the tint, the icon and the role. `destructive` is an error the reader has to hear now and is announced as an `alert`; the others are a `status`. |
 | `iconSlot` | `SlotNode` |  | Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink. Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all, and the text moves to the edge. |
 | `title` | `ReactNode` |  | What happened, in a few words: "API key generated", "Last error". |
 | `description` | `ReactNode` |  | The line under the title: what it means, or what to do about it. A link may sit inside it. |
 | `actionSlot` | `SlotNode` |  | The far end: one button that deals with it — "Change the embedder", "Retry". |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the alert's box, the tinted surface around the icon, the words and the action. |
 | `children` | `ReactNode` |  | shadcn's compound form: `AlertTitle`, `AlertDescription`, and an icon. See the header for how they are placed. The props are the form to write here; this is the form to port. |
 <!-- /props -->
 

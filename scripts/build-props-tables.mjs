@@ -19,14 +19,15 @@
  *
  * `--check` fails when a committed table is not what this generates. Both modes fail on a row
  * typed `never` or `keyof typeof …`: a table that says a prop cannot be passed, or names a
- * constant the reader cannot see, is what #463 found in five of them.
+ * constant the reader cannot see, is what #463 found in five of them. Both fail on a row with no
+ * description too, which #492 found in a hundred.
  */
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
-import { misleadingRows, propsRows, renderTable } from "./props-tables.mjs";
+import { misleadingRows, propsRows, renderTable, undocumentedRows } from "./props-tables.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILL = join(ROOT, "skill");
@@ -100,11 +101,15 @@ function programFor(config, rootNames) {
 }
 
 const misleading = [];
+const undocumented = [];
 function propsTable(name, roots) {
   const { path, config } = findComponent(name);
   const rows = propsRows(programFor(config, roots.get(config)), path, name, ROOT);
   for (const row of misleadingRows(rows.own)) {
     misleading.push(`${name}'s \`${row.name}\` is typed \`${row.type}\``);
+  }
+  for (const row of undocumentedRows(rows.own)) {
+    undocumented.push(`${name}'s \`${row.name}\` (${row.at})`);
   }
   return renderTable(name, path, ROOT, rows);
 }
@@ -141,6 +146,14 @@ if (misleading.length > 0) {
       "A row typed `never` is a prop no member of the props type allows: take it out, or allow\n" +
       "it in a member. A `keyof typeof` left in a row is one the checker could not spell out:\n" +
       "write the type as its values.",
+  );
+  process.exit(1);
+}
+if (undocumented.length > 0) {
+  console.error(
+    `${undocumented.join(",\n")}\nhave no TSDoc, so their rows say nothing.\n` +
+      "Write each one's first paragraph for a reader choosing the prop. A prop declared in a\n" +
+      "shared type is documented there, once for every component that takes it.",
   );
   process.exit(1);
 }

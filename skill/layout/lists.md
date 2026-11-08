@@ -101,12 +101,12 @@ The shells for the shape every list route is: a ladder of states, then a list of
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `query` (required) | `QueryLike` |  |  |
+| `query` (required) | `QueryLike` |  | The query's state: anything with `isPending`, `isError`, `error` and `refetch`, as TanStack Query's result has. It picks the rung drawn. |
 | `what` (required) | `string` |  | What could not be fetched, in the reader's words: "your agents", "the archive". |
 | `rows` | `number` | `3` | How many placeholder rows stand in for the list while it loads. |
 | `compact` | `boolean` | `false` | The rungs drawn small enough for a rail or a card: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row. For a list that lives in a sidebar or inside a card, where an alert box would be taller than the list it replaced. Like `EmptyState`'s `compact` line, each rung keeps the left edge of what it sits in; in a sidebar, pass `className="px-2"` to line it up with the rows' text. |
 | `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `LoadError`. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the rung drawn in place of the content: the failure, the placeholders, the empty state. The content itself is drawn by the caller, and takes its own. |
 | `count` (instead of `record`) | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
 | `emptySlot` (with `count`) | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
 | `record` (instead of `count`) | `unknown` |  | The one record the screen asked for, once the query has answered. `null` or `undefined` is a record that is not there. Pass this or `count`. |

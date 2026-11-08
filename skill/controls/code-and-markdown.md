@@ -249,9 +249,9 @@ const [body, setBody] = useState(skill.instructions);
 | --- | --- | --- | --- |
 | `value` (required) | `string` |  | The Markdown source. The caller holds it: this component keeps no copy. |
 | `onValueChange` (required) | `((value: string) => void)` |  | Called with the whole source on every edit. |
-| `view` | `MarkdownEditorView` |  | Which view is showing: `edit` is the source alone, `preview` the rendered document alone, `split` the two side by side. Pass it with `onViewChange` to hold the view yourself — to keep it in the URL, or in a preference. Left out, the component holds it. |
+| `view` | `"edit" \| "split" \| "preview"` |  | Which view is showing: `edit` is the source alone, `preview` the rendered document alone, `split` the two side by side. Pass it with `onViewChange` to hold the view yourself — to keep it in the URL, or in a preference. Left out, the component holds it. |
 | `onViewChange` | `((view: MarkdownEditorView) => void)` |  | Called with the view the toggle was moved to. |
-| `defaultView` | `MarkdownEditorView` | `"split"` | The view to start in when the component holds it. `split` unless given. |
+| `defaultView` | `"edit" \| "split" \| "preview"` | `"split"` | The view to start in when the component holds it. `split` unless given. |
 | `emptySlot` | `SlotNode` |  | What the preview draws while the source is blank: "Nothing to preview yet." Left out, the preview is an empty box. |
 
 It also takes the props declared in `registry/ui/textarea-base.ts`: `className`, `maxRows`, `onEscape`, `onSelectionChange`, `onSubmitEditing`, `selection`.

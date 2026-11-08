@@ -530,8 +530,10 @@ example. `skill:check` fails on a table that no longer matches.
 A union props type is one table. A prop is one row, its type what any member allows, and its text
 from the member that allows it — so the TSDoc goes there, not on a `never`. A prop only some
 members allow says which: `notFoundLabel` (required with `record`). A type written as a constant
-(`keyof typeof SIZES`) or as an alias the file keeps to itself is printed as its values. Both
-modes fail on a row typed `never` or still reading `keyof typeof` (#463).
+(`keyof typeof SIZES`) or as an alias of values (`SplitWidth`, exported or not) is printed as its
+values, and cva's `| null` on a variant is left off (#492). Both modes fail on a row typed `never`
+or still reading `keyof typeof` (#463), and on a row with no description: a prop with no TSDoc is
+a prop the reader cannot choose (#492).
 
 A new item goes in its topic file **and** gets a row in the choosing table; a new slot word
 goes in `vocabulary.md` and in rule 2 of the conventions doc, because those two are the

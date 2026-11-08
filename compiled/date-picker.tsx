@@ -99,7 +99,13 @@ const ONE_LINE = "truncate";
 type PickerAria = Pick<
   AriaAttributes,
   "aria-label" | "aria-labelledby" | "aria-describedby" | "aria-invalid" | "aria-required"
-> & { id?: string | undefined };
+> & {
+  /**
+   * The trigger's id: what a `FieldLabel htmlFor` points at on the web, and a target for
+   * `aria-labelledby` on device.
+   */
+  id?: string | undefined;
+};
 
 type PickerTriggerProps = PickerAria & {
   empty: boolean;
@@ -210,18 +216,28 @@ export function ClearRow({ onClear }: { onClear: () => void }) {
 type CalendarProps = ComponentProps<typeof Calendar>;
 
 type DatePickerProps = PickerAria & {
+  /** The chosen day, or `null` (or `undefined`) for none, when the trigger reads `placeholder`. */
   value?: Date | null | undefined;
+  /** Told the new day when the reader picks one, and `null` when they clear it. */
   onValueChange: (value: Date | null) => void;
   /** Adds a time box under the calendar and keeps the clock through a day change. */
   showTime?: boolean | undefined;
+  /** What the trigger reads with no date chosen. */
   placeholder?: string | undefined;
   /** How the chosen date reads on the trigger. Defaults to `PPP`, or `PPP p` with a time. */
   format?: string | undefined;
   /** Which days cannot be chosen — a `DateMatcher`, so `{ before: new Date() }` works. */
   disabledDates?: CalendarProps["disabled"] | undefined;
+  /**
+   * A Clear row under the calendar while a date is chosen, which sets the value to `null`. Turn it
+   * off for a date the field cannot be without.
+   */
   clearable?: boolean | undefined;
+  /** The trigger cannot be pressed, and the field reads as unavailable. */
   disabled?: boolean | undefined;
+  /** On the trigger, the field-shaped button that opens the calendar. */
   className?: string | undefined;
+  /** On the popover the calendar is drawn in. */
   contentClassName?: string | undefined;
   /** Anything else the calendar takes: `startMonth`, `numberOfMonths`, `weekStartsOn`. */
   calendarProps?: Omit<CalendarProps, "mode" | "selected" | "onSelect" | "disabled"> | undefined;
@@ -318,10 +334,19 @@ type DateRangePickerProps = Omit<
   DatePickerProps,
   "value" | "onValueChange" | "showTime" | "calendarProps"
 > & {
+  /**
+   * The chosen range, or `null` (or `undefined`) for none. `to` is unset while only the start is
+   * picked.
+   */
   value?: DateRange | null | undefined;
+  /**
+   * Told the range on every pick, so first with only `from` set, and `null` when the reader clears
+   * it.
+   */
   onValueChange: (value: DateRange | null) => void;
   /** Months side by side. Two, because a range usually crosses one. */
   numberOfMonths?: number | undefined;
+  /** Anything else the calendar takes: `startMonth`, `weekStartsOn`. */
   calendarProps?: Omit<CalendarProps, "mode" | "selected" | "onSelect" | "disabled"> | undefined;
 };
 

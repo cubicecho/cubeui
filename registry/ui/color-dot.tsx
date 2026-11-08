@@ -8,8 +8,17 @@ const SIZES = {
 } as const;
 
 type ColorDotProps = {
+  /**
+   * The colour to draw, as a CSS colour string: a tag's or a category's own, which the palette does
+   * not hold.
+   */
   color: string;
+  /**
+   * `sm` for a dot inside a line of text or a chip, `md` for one that stands beside a label on its
+   * own.
+   */
   size?: keyof typeof SIZES;
+  /** On the dot itself. */
   className?: string | undefined;
   /**
    * What the colour stands for: the accessible name, and on the web the tooltip under the pointer.

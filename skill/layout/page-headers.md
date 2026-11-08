@@ -35,11 +35,11 @@ It is not a page.
 | `backSlot` | `SlotNode` |  | The way back, on the line above the title: a back link, or a breadcrumb trail, which is a back link with more steps. |
 | `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
 | `loading` | `boolean` | `false` | Whether the title is still being fetched. On, a bar of the title's own height stands in for it — and for the description, when one was passed — so the page beneath does not jump when the name lands. |
-| `level` | `PageHeaderLevel` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. The size follows it unless `size` says otherwise. |
-| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the header follows `level`, not this. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
+| `level` | `1 \| 2 \| 3` | `1` | Which heading this is. `1` names a page; `2` names a section, a pane in a split, or a card that already sits under a page title; `3` goes a level below that. The size follows it unless `size` says otherwise. |
+| `size` | `"lg" \| "md" \| "sm"` |  | How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the header follows `level`, not this. |
+| `className` | `string` |  | On the header's own box, which draws the rule under it: `border-b-0` takes the rule away. |
+| `titleClassName` | `string` |  | On the title's own `Text`. Its size comes from `size`; this is for anything else. |
+| `contentClassName` | `string` |  | On the box that holds `contentSlot`, under the title row. |
 <!-- /props -->
 
 - **The header brings its own inset, and the shell around it knows.** `HeaderContentFooter` leaves its

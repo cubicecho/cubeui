@@ -103,8 +103,11 @@ export type SidebarProps = {
   contentRef?: HeaderContentFooterProps["contentRef"];
   /** On the root. A different width is a `w-*` here. */
   className?: string | undefined;
+  /** On the header, above the scrolling nav: the brand, a switcher. */
   headerClassName?: string | undefined;
+  /** On the body that scrolls, which holds the sections. */
   contentClassName?: string | undefined;
+  /** On the footer, below the scrolling nav: the account, a collapse button. */
   footerClassName?: string | undefined;
 };
 
@@ -220,6 +223,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  /** On the whole section, the title row and its list together. */
   className?: string | undefined;
   /** On the list the rows are items of. */
   contentClassName?: string | undefined;
@@ -381,6 +385,7 @@ type SidebarItemBaseProps = Omit<PressableProps, "children" | "className" | "sty
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the row: the link or button the reader presses. */
   className?: string | undefined;
 };
 
@@ -735,6 +740,7 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the bar's item: the link or button the reader presses. */
   className?: string | undefined;
 };
 

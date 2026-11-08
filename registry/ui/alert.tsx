@@ -35,6 +35,7 @@ export type AlertProps = {
   description?: ReactNode | undefined;
   /** The far end: one button that deals with it — "Change the embedder", "Retry". */
   actionSlot?: SlotNode | undefined;
+  /** On the alert's box, the tinted surface around the icon, the words and the action. */
   className?: string | undefined;
   /**
    * shadcn's compound form: `AlertTitle`, `AlertDescription`, and an icon. See the header for how

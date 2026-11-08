@@ -29,11 +29,11 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
 | --- | --- | --- | --- |
 | `value` | `TValue` |  | The current pill's `value`. With it, a `SegmentedButton value="week"` works out whether it is current, so no pill needs `active={x === value}`. |
 | `onValueChange` | `((value: TValue) => void)` |  | Called with a pill's `value` when it is pressed. Typed as the group's `value` is, so a group over a closed set hands back a member of the set and the caller neither looks it up again nor asserts it. |
-| `ref` | `React.Ref<React.ElementRef<typeof View>>` |  |  |
+| `ref` | `React.Ref<React.ElementRef<typeof View>>` |  | The row's element, for a caller that has to measure it. |
 | `variant` | `"framed" \| "plain"` | `"framed"` | `framed` (the default) draws the input-height box; `plain` draws the row alone. |
 | `labelHideBelow` | `"always" \| "sm" \| "md" \| "lg" \| "xl"` |  | Under this width a pill with an `iconSlot` draws the icon alone; `always` is a row of icons at every width. Said here and not on each pill because the pills in a row should agree. The label is still the pill's name, read by a screen reader, and a pill with no `iconSlot` keeps its label. |
-| `className` | `string` |  |  |
-| `children` (required) | `ReactNode` |  |  |
+| `className` | `string` |  | On the row the pills sit in, after the variant's classes. |
+| `children` (required) | `ReactNode` |  | The `SegmentedButton` pills, one per choice. |
 <!-- /props -->
 
 With an icon on each pill, and the labels dropped on a narrow screen:
@@ -88,12 +88,12 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `className` | `string` |  |  |
-| `disabled` | `boolean` |  |  |
-| `options` (required) | `readonly SelectEntry[]` |  |  |
+| `className` | `string` |  | On the trigger, the field-shaped button that opens the menu. The menu's own is `contentClassName`. |
+| `disabled` | `boolean` |  | The trigger cannot be pressed, and the field reads as unavailable. |
+| `options` (required) | `readonly SelectEntry[]` |  | What can be chosen: options, and the separators and notes between them, in the order they are listed. Each option's `value` is what `value` holds. |
 | `placeholder` | `string` |  | What the trigger says with nothing chosen. |
 | `open` | `boolean` |  | Whether the menu is open, and being told when that changes. The same controlled pair as everywhere else in the set; pass `onOpenChange` on its own to be told without taking over. |
-| `onOpenChange` | `((open: boolean) => void)` |  |  |
+| `onOpenChange` | `((open: boolean) => void)` |  | Told when the menu opens or closes. Pass it with `open` to hold that state, or alone to listen. |
 | `contentClassName` | `string` |  | The dropdown's class. `className` still goes to the trigger, which is the control. |
 | `searchable` | `boolean` |  | A box to type in above the list. It matches the label, the group heading and an option's `keywords`, every typed word in any order. |
 | `searchPlaceholder` | `string` |  | The search box's placeholder. Read only when `searchable`. |
@@ -105,9 +105,9 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 | `freeText` | `boolean` |  | Hold what was typed, not only what is listed: the options are suggestions, not a closed set. The create row writes the typed text as the value itself, so no `onCreateOption` is needed (and one passed beside it is not called), and a held value no option covers is drawn as its own text. With `multiple` it is a tag input: each typed value is a chip, and one already held (ignoring case) is refused, with the reason said in the menu. |
 | `duplicateMessage` | `((text: string) => string)` |  | What the menu says when the text typed into a `freeText` `multiple` combobox is already held. |
 | `onRefusalChange` | `((message: string \| undefined) => void)` |  | Told the refusal's message when the menu starts refusing what was typed, and `undefined` when it stops. What `ComboboxField` puts on the field as its error. |
-| `multiple` | `boolean` |  |  |
-| `value` | `string \| readonly string[]` |  |  |
-| `onValueChange` (required) | `((value: string) => void) \| ((value: string[]) => void)` |  |  |
+| `multiple` | `boolean` |  | Leave it out for a combobox that holds one value. `true` holds several, drawn as chips on the trigger, and makes `value` an array. |
+| `value` | `string \| readonly string[]` |  | The chosen option's `value`, or `undefined` for none. With `multiple`, every chosen value. |
+| `onValueChange` (required) | `((value: string) => void) \| ((value: string[]) => void)` |  | Told the new value when the reader picks a row. One value closes the menu on a pick; with `multiple` it is handed the whole new array and the menu stays open. |
 | `maxDisplay` (with `multiple`) | `number` |  | Chips to draw before collapsing to a count. `0` always shows the count. |
 | `clearable` (with `multiple`) | `boolean` |  | A Clear button at the foot of the menu, while anything is chosen. |
 

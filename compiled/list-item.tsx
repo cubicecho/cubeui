@@ -63,7 +63,9 @@ type ListItemProps = {
    * pointer, and a pressable row says so with `aria-current`.
    */
   selected?: boolean | undefined;
+  /** On the row, the box around its leading slot, words, meta and action. */
   className?: string | undefined;
+  /** On the title's own `Text`, as `CardLayout`'s is: a `line-through`, a weight. */
   titleClassName?: string | undefined;
 };
 

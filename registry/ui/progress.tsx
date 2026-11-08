@@ -12,6 +12,7 @@ import { Platform, View } from "react-native";
 import { cn } from "@/lib/utils";
 
 type ViewProps = Omit<React.ComponentProps<typeof View>, "className" | "children"> & {
+  /** On the track, the full-width bar the fill is drawn in. A different height is an `h-*` here. */
   className?: string | undefined;
 };
 
