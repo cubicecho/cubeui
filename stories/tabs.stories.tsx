@@ -471,3 +471,128 @@ export const TabsAcrossAPage: Story = {
     }
   },
 };
+
+/** Three tabs in a column much wider than they are, on each half, with one disabled. */
+function FewTabs({ half }: { half: "native" | "compiled" }) {
+  const [Root, List, Trigger, Content] =
+    half === "native"
+      ? [Tabs, TabsList, TabsTrigger, TabsContent]
+      : [CompiledTabs, CompiledTabsList, CompiledTabsTrigger, CompiledTabsContent];
+  const views = ["List", "Board", "Calendar", "Timeline"];
+  return (
+    <div data-testid={`${half}-column`} className="flex w-[32rem] flex-col">
+      <button type="button" className="sr-only">
+        Before {half}
+      </button>
+      <Root defaultValue="List">
+        <List aria-label={`${half} layout`}>
+          {views.map((view) => (
+            <Trigger key={view} value={view} disabled={view === "Calendar"}>
+              {view}
+            </Trigger>
+          ))}
+        </List>
+        {views.map((view) => (
+          <Content key={view} value={view}>
+            {half === "native" ? <Text className="text-foreground">{view} pane</Text> : view}
+          </Content>
+        ))}
+      </Root>
+    </div>
+  );
+}
+
+/**
+ * A list as wide as its tabs, on both halves (#472). The device list filled its column and centred
+ * its tabs in it, where the web's `inline-flex` list hugged them. A caller who wants it across
+ * passes `self-stretch` or a width, as `FewTabsStayCentred` does.
+ */
+export const ListIsAsWideAsItsTabs: Story = {
+  render: () => (
+    <SideBySide native={<FewTabs half="native" />} compiled={<FewTabs half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      const column = within(canvasElement).getByTestId(`${half}-column`);
+      const list = within(column).getByRole("tablist").getBoundingClientRect();
+      const tabs = within(column)
+        .getAllByRole("tab")
+        .map((tab) => tab.getBoundingClientRect());
+      const first = tabs[0];
+      const last = tabs.at(-1);
+      if (!first || !last) {
+        throw new Error("expected tabs");
+      }
+      // Started at the column's start, and no wider than the tabs and the list's own `p-1` and
+      // border.
+      await expect({
+        half,
+        start: Math.round(list.left - column.getBoundingClientRect().left),
+      }).toEqual({ half, start: 0 });
+      await expect({
+        half,
+        slack: Math.round(list.width - (last.right - first.left)) <= 10,
+      }).toEqual({ half, slack: true });
+    }
+  },
+};
+
+/**
+ * ARIA's tabs pattern on both halves (#472): the list is one tab stop, on the selected tab, and
+ * Left and Right move to the next enabled tab and show it, wrapping, with Home and End. The device
+ * half had a stop per tab and no arrows; that is only felt in an Expo web app, since a phone has no
+ * Tab key, and the stops are set on the web only so a screen reader there still walks every tab.
+ */
+export const OneTabStop: Story = {
+  render: () => (
+    <SideBySide native={<FewTabs half="native" />} compiled={<FewTabs half="compiled" />} />
+  ),
+  play: async ({ canvasElement, step }) => {
+    for (const half of ["native", "compiled"] as const) {
+      await step(half, async () => {
+        const column = within(within(canvasElement).getByTestId(`${half}-column`));
+        const tab = (name: string) => column.getByRole("tab", { name });
+        const onATab = () => document.activeElement?.getAttribute("role") === "tab";
+
+        // Tab lands on the selected tab, and the next Tab leaves the list.
+        column.getByRole("button", { name: `Before ${half}` }).focus();
+        await userEvent.tab();
+        await waitFor(() => expect(tab("List")).toHaveFocus());
+        await userEvent.tab();
+        await expect({ half, onATab: onATab() }).toEqual({ half, onATab: false });
+        await userEvent.tab({ shift: true });
+        await waitFor(() => expect(tab("List")).toHaveFocus());
+
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(tab("Board")).toHaveAttribute("aria-selected", "true"));
+        await expect(tab("Board")).toHaveFocus();
+        // The stop moved with it: from before the list, Tab lands on Board now.
+        column.getByRole("button", { name: `Before ${half}` }).focus();
+        await userEvent.tab();
+        await waitFor(() => expect(tab("Board")).toHaveFocus());
+
+        // The disabled tab is stepped over.
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(tab("Timeline")).toHaveAttribute("aria-selected", "true"));
+        await expect(tab("Timeline")).toHaveFocus();
+        await expect(column.getByRole("tabpanel")).toHaveTextContent(/Timeline/);
+
+        // Round from the last to the first, and back with Left; Home and End reach the ends.
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(tab("List")).toHaveFocus());
+        await userEvent.keyboard("{ArrowLeft}");
+        await waitFor(() => expect(tab("Timeline")).toHaveFocus());
+        await userEvent.keyboard("{Home}");
+        await waitFor(() => expect(tab("List")).toHaveFocus());
+        await userEvent.keyboard("{End}");
+        await waitFor(() => expect(tab("Timeline")).toHaveFocus());
+
+        // Up and Down are left to the page.
+        await userEvent.keyboard("{ArrowDown}");
+        await expect(tab("Timeline")).toHaveFocus();
+        await userEvent.keyboard("{Home}");
+        await waitFor(() => expect(tab("List")).toHaveAttribute("aria-selected", "true"));
+      });
+    }
+  },
+};

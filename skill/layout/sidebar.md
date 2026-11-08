@@ -266,7 +266,9 @@ is the copy this replaces.
   app's list of places is one array, mapped once into `SidebarSection` with `SidebarItem` and
   once into `navSlot` with `AppBarItem`. A count on a sidebar row is then on the bar too.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
-  (hover or focus on the web, a long press on device), followed there by the status and count. **`iconSlot` is required** too — it is all that
+  (hover or focus on the web, a long press on device), followed there by the status and count. The
+  tooltip opens below the item in a bar at the top, and above it in `SidebarLayout`'s bar along the
+  bottom. **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
 - **`active`** fills it with the `active` colour and sets `aria-current="page"`; hover is grey. Compute it
   from the route, as for the row.

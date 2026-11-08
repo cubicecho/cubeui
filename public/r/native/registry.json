@@ -141,6 +141,18 @@
       ]
     },
     {
+      "name": "roving-focus",
+      "type": "registry:lib",
+      "title": "Roving focus",
+      "description": "One tab stop for a set of options, with the arrow keys, Home and End moving between them: ARIA's roving tab stop, as RadioGroup, ColorPicker's swatches and the device half of Tabs share it. A hook, `useRovingFocus`, and `useRovingItem` for each option. Not a component.",
+      "files": [
+        {
+          "path": "registry/lib/roving-focus.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "select-options",
       "type": "registry:lib",
       "title": "Select options",
@@ -564,7 +576,12 @@
       "title": "Tabs",
       "description": "Radix on web; a row of Pressables over a context on device. Controlled (value/onValueChange) or uncontrolled (defaultValue) on both. A trigger can carry an icon beside its label, in the tab's active or inactive colour, and a dot or a count at its far end as `trailingSlot`. A list with more tabs than fit scrolls sideways and keeps the selected tab in view.",
       "dependencies": ["@radix-ui/react-slot@^1.5.0", "radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/reduced-motion"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/reduced-motion",
+        "@cubeui/roving-focus"
+      ],
       "files": [
         {
           "path": "registry/ui/tabs-base.ts",
@@ -607,7 +624,12 @@
       "type": "registry:ui",
       "title": "Radio Group",
       "description": "An exclusive choice, one source for both platforms: `row` (circle, label, description), `card` (a tile with an icon) or `segmented` (a full-width framed row, icon-only segments allowed), with one tab stop and arrow keys that move and select handled inside.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/tooltip",
+        "@cubeui/roving-focus"
+      ],
       "files": [
         {
           "path": "registry/ui/radio-group.tsx",
@@ -1382,6 +1404,7 @@
       "description": "Swatches plus a hex field, replacing `<input type=\"color\">` — which has no native counterpart.",
       "registryDependencies": [
         "@cubeui/utils",
+        "@cubeui/roving-focus",
         "@cubeui/button",
         "@cubeui/input",
         "@cubeui/label",

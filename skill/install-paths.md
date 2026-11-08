@@ -140,6 +140,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `reduced-motion` | web | `components/ui/reduced-motion.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
 | `reduced-motion` | native | `components/ui/reduced-motion.tsx`; also `reduced-motion.web.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
 | `route-error` | both | `components/route-error.tsx` | `import { RouteError } from "@/components/route-error"` |
+| `roving-focus` | both | `lib/roving-focus.ts` | `import { useRovingFocus, useRovingItem } from "@/lib/roving-focus"` |
 | `search-input` | web | `components/ui/search-input.tsx`; also `search-input-base.ts` | `import { SearchInput } from "@/components/ui/search-input"` |
 | `search-input` | native | `components/ui/search-input.tsx`; also `search-input-base.ts`, `search-input.web.tsx` | `import { SearchInput } from "@/components/ui/search-input"` |
 | `section` | both | `components/section.tsx` | `import { Section } from "@/components/section"` |
@@ -159,7 +160,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `skeleton` | native | `components/ui/skeleton.tsx`; also `skeleton-base.ts`, `skeleton.web.tsx` | `import { Skeleton } from "@/components/ui/skeleton"` |
 | `spinner` | web | `components/ui/spinner.tsx`; also `spinner-base.ts` | `import { Spinner } from "@/components/ui/spinner"` |
 | `spinner` | native | `components/ui/spinner.tsx`; also `spinner-base.ts`, `spinner.web.tsx` | `import { Spinner } from "@/components/ui/spinner"` |
-| `split-layout` | both | `components/split-layout.tsx` | `import { SplitLayout, SidebarPositionContext, SidebarLayout } from "@/components/split-layout"` |
+| `split-layout` | both | `components/split-layout.tsx` | `import { SplitLayout, SidebarPositionContext, AppBarEdgeContext, SidebarLayout } from "@/components/split-layout"` |
 | `stat-tile` | both | `components/stat-tile.tsx` | `import { StatTile } from "@/components/stat-tile"` |
 | `switch` | web | `components/ui/switch.tsx`; also `switch-base.ts` | `import { Switch } from "@/components/ui/switch"` |
 | `switch` | native | `components/ui/switch.tsx`; also `switch-base.ts`, `switch.web.tsx` | `import { Switch } from "@/components/ui/switch"` |

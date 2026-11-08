@@ -109,6 +109,7 @@ test that finds them by name needs changing:
 | `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
 | `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
 | `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
+| `RadioGroupItem` | `hint` is a `Tooltip` and the option's description, on both halves, where it was the web's `title` attribute ([#472](https://github.com/cubicecho/cubeui/issues/472)). A test that read the `title` reads the description instead. `radio-group` now installs `tooltip`. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
@@ -131,7 +132,8 @@ A reinstall can write files the app has never had: `components/section-heading.t
 `section` and `sidebar`), `lib/frame-focus-guard.ts` (from `dialog`, `menu`, `popover`, `select`
 and `alert-dialog`), `lib/readable-text-color.ts` (from `color`, and so from `card` and
 `color-bar`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
-and `table`; an Expo app also gets `overflows.web.tsx`), and every new item it pulls in as a dependency, such as `card-layout`,
+and `table`; an Expo app also gets `overflows.web.tsx`), `lib/roving-focus.ts` (from
+`radio-group`, `color-picker` and `tabs`), and every new item it pulls in as a dependency, such as `card-layout`,
 `app-bar`, `grid-layout` or `list`. Run `git status` after the reinstall to see them. An app
 that lists cubeui's files one by one, in its Biome or lint config or in a coverage exclude, has
 to add them.
@@ -359,6 +361,24 @@ to add them.
   ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
   `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
   you put on it, or on a `span` inside it, to undo the grey can go.
+- **The two halves agree** ([#472](https://github.com/cubicecho/cubeui/issues/472)).
+  - A `Button`'s icon is 14px at `xs` (it was 16px on the web) and 20px at `icon-lg` (it was
+    16px), on both halves. On device every size now sizes its icon: it was lucide's own 24px. A
+    `className="size-4"` you put on an icon in a button to fix that can go.
+  - A segmented `RadioGroup`'s icons take the segment's ink and size on device, as
+    `SegmentedButton`'s do. A `text-foreground` or `text-foreground/60` you put on them can go.
+  - A `TabsList` on device is as wide as its tabs, at the start of its column, as on the web. It
+    used to fill the column with its tabs centred: pass `className="self-stretch"` for that. In an
+    Expo web app it is one tab stop with the arrow keys between tabs, as on the web.
+  - `ColorPicker`'s swatch row is one tab stop, with the arrow keys between swatches, as
+    `RadioGroup` is. A test that tabbed from swatch to swatch uses the arrows.
+  - `AlertDialog size="sm"` stacks its buttons full width below `sm`, the answer on top, as every
+    dialog footer does. On the web it set them side by side in two columns at every width.
+  - A dialog keeps 16px from each side of the screen on device, where it kept 24px, and a `full`
+    `DialogLayout` on the web keeps 16px past `sm`, where it kept 32px.
+  - `AppBarItem`'s tooltip opens above it in `SidebarLayout`'s bar along the bottom.
+  - On device a tooltip stays longer for a longer hint, counted from when the finger lifts. It
+    closed 2.5s after it opened, whatever it said.
 - **Marks that were faint, or shown only by colour, are clearer**
   ([#471](https://github.com/cubicecho/cubeui/issues/471)).
   - `MarkdownCodeEditor` shades the line the cursor is on in `hover`, not the `active` tint. A

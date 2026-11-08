@@ -67,6 +67,9 @@ set (see [native.md](../native.md)).
   and the button heights, `h-9` and `h-7` at `size="sm"`.
 - **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
   is why those sizes require `aria-label` (below).
+- **The button sizes its icon**, on both halves: 14px at `xs` and `icon-xs`, 20px at `icon-lg`, and
+  16px at every other size. Pass a bare glyph, `iconSlot={<Plus />}`; a `className="size-5"` on it
+  is only for an icon that has to differ from its button.
 - **`trailingSlot`** is the far end: a trigger's chevron, a count.
 - **`linkSlot`** is the link the button is, as an element with no children: `<a href="…" />` or a
   router's `<Link to="…" />`. This replaces shadcn's `asChild`. On the web the link is drawn as the
@@ -148,8 +151,9 @@ device, `onClick` on the web.
 />
 ```
 
-- On device the tooltip, the name or the `hint`, opens on a **long press**, and a `disabled` one
-  with a `hint` still hears it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
+- On device the tooltip, the name or the `hint`, opens on a **long press**, and stays longer for a
+  longer hint, counted again from when the finger lifts. A `disabled` one with a `hint` still hears
+  it — that is the same reason `disabled` is `aria-disabled` on the web. TalkBack and VoiceOver
   announce the button as unavailable.
 - The tooltip draws no element around the button, on device or on the web, so `className`
   places the button in its parent: `ml-auto`, `self-end`, `flex-1`.

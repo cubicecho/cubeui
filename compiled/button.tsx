@@ -77,10 +77,12 @@ const buttonVariants = cva(
           "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground active:bg-hover active:text-foreground",
         link: "text-info underline-offset-4 hover:underline focus-visible:underline active:underline",
       },
+      // The glyph's size is `BUTTON_ICON_SIZES`'s too, written out here as `[&_svg]:` for the web,
+      // where the icon is an `<svg>` inside the button.
       size: {
         default: "h-10 px-4 py-2",
         /** Small enough to sit inline in a list row without setting its height. */
-        xs: "h-7 px-3",
+        xs: "h-7 px-3 [&_svg]:size-3.5",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
@@ -88,7 +90,7 @@ const buttonVariants = cva(
         // text size it is named after, so an icon button sits flush in a row of text buttons.
         "icon-xs": "h-7 w-7 [&_svg]:size-3.5",
         "icon-sm": "h-9 w-9",
-        "icon-lg": "h-11 w-11",
+        "icon-lg": "h-11 w-11 [&_svg]:size-5",
       },
     },
     defaultVariants: {
@@ -134,6 +136,24 @@ const buttonTextVariants = cva("font-semibold", {
   },
   defaultVariants: { variant: "default", size: "default" },
 });
+
+/**
+ * The glyph's size in each button size, for a device, where an icon is sized by the class
+ * `IconClassContext` hands it and was otherwise lucide's own 24px. The `[&_svg]:` classes in
+ * `buttonVariants` are the same sizes for the web. 14px beside `xs`'s 12px label and in its square;
+ * 20px in `icon-lg`, where 16px sat lost in a 44px square; 16px everywhere else. `lg` keeps 16px
+ * because its label is still `text-sm`.
+ */
+const BUTTON_ICON_SIZES = {
+  default: "size-4",
+  xs: "size-3.5",
+  sm: "size-4",
+  lg: "size-4",
+  icon: "size-4",
+  "icon-xs": "size-3.5",
+  "icon-sm": "size-4",
+  "icon-lg": "size-5",
+} as const;
 
 /** The button itself, before the name rule and the tooltip are added to it. */
 type ButtonBodyProps = Omit<
@@ -320,13 +340,17 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
     // already inherit it, so `icons.web.tsx` ignores this; native has no
     // inheritance and this is where the colour comes from.
     const labelClass = buttonTextVariants({ variant, size });
+    // What an icon is handed: the label's ink, and the glyph's size, which a label has no use for.
+    const iconSize = BUTTON_ICON_SIZES[size ?? "default"];
+    const iconClass = cn(labelClass, iconSize, "shrink-0");
 
     const label = loading && loadingLabel !== undefined ? loadingLabel : content;
     const leading = loading ? (
       // Hidden: `aria-busy` is what says the button is working, and a spinner with a name of
       // its own would be read into the button's — "Loading Save".
       <div aria-hidden className="cube-rn-view">
-        <Spinner />
+        {/* The icon's size, which the spinner's own class would otherwise beat on device. */}
+        <Spinner className={iconSize} />
       </div>
     ) : (
       iconSlot
@@ -349,7 +373,7 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
         {...(props as React.ComponentPropsWithoutRef<"button">)}
         onClick={pressThenClick(onPress, (props as MergedClick).onClick)}
       >
-        <IconClassContext.Provider value={labelClass}>
+        <IconClassContext.Provider value={iconClass}>
           {leading}
           {labelled}
           {trailingSlot}
@@ -379,7 +403,7 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
       // one child. Inside, the provider was the child: `Slot` merged the classes and
       // the press onto it, it dropped them, and the caller's `<a>` rendered unstyled (#156).
-      <IconClassContext.Provider value={labelClass}>
+      <IconClassContext.Provider value={iconClass}>
         {/* `Slot` is declared over `HTMLAttributes<HTMLElement>` because radix ships
             for the DOM, but it renders nothing itself — it clones its child with these
             props merged in. The element that receives them is the caller's, so the DOM

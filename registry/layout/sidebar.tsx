@@ -15,7 +15,7 @@ import {
   type HeaderContentFooterProps,
 } from "@/components/header-content-footer";
 import { SectionHeading } from "@/components/section-heading";
-import { SidebarPositionContext } from "@/components/split-layout";
+import { AppBarEdgeContext, SidebarPositionContext } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -775,6 +775,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
     const text = active ? "text-foreground" : "text-foreground/60";
     const name = rowName(label, status, count);
+    const edge = React.useContext(AppBarEdgeContext);
 
     return (
       <TooltipProvider>
@@ -811,7 +812,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
               <IconMarkers count={count} status={status} ring="border-background" />
             </Pressable>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{name}</TooltipContent>
+          <TooltipContent side={edge === "bottom" ? "top" : "bottom"}>{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
