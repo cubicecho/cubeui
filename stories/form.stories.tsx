@@ -149,6 +149,11 @@ export const Errors: Story = {
       await waitFor(() => expect(half.getByRole("alert")).toHaveTextContent("Title is required"));
       await expect(title).toHaveAttribute("aria-invalid", "true");
       await expect(half.getByRole("button", { name: "Save" })).toBeDisabled();
+      // Two lines of the field's text, 4px apart as in the heading rhythm, where they were the 8px
+      // the control keeps from them (#485).
+      const description = half.getByText("What needs to be done.").getBoundingClientRect();
+      const alert = half.getByRole("alert").getBoundingClientRect();
+      await expect(alert.top - description.bottom).toBeCloseTo(4, 0);
 
       await userEvent.type(title, "Buy milk");
       await waitFor(() => expect(half.queryByRole("alert")).toBeNull());

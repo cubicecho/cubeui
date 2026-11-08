@@ -31,6 +31,7 @@ import {
   HEADING_GAP,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
+  hasSlot,
   type SlotNode,
 } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
@@ -283,11 +284,11 @@ export function HeadingRow({
         "cube-rn-view",
         HEADING_ROW,
         ROW_WRAP[actionPlacement],
-        textSlot ? undefined : "justify-end",
+        hasSlot(textSlot) ? undefined : "justify-end",
         className,
       )}
     >
-      {textSlot ? (
+      {hasSlot(textSlot) ? (
         <div
           className={cn(
             "cube-rn-view",
@@ -299,7 +300,7 @@ export function HeadingRow({
           {textSlot}
         </div>
       ) : null}
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <div
           data-slot={actionTestID}
           className={cn("cube-rn-view", HEADING_ACTION, actionGap(actionSlot))}
@@ -404,17 +405,18 @@ export function CardLayout({
 }: CardLayoutProps) {
   const surface = useContext(FloatingSurfaceContext);
   const isEmpty = isEmptyBody(contentSlot);
-  const settled = isEmpty && emptySlot ? emptySlot : contentSlot;
+  const settled = isEmpty && hasSlot(emptySlot) ? emptySlot : contentSlot;
   const body = loading ? <CardLayoutSkeleton /> : settled;
 
-  const hasText = Boolean(title || description);
-  const hasHeader = Boolean(hasText || actionSlot);
-  const hasFooter = Boolean(footerSlot || footerActionsSlot);
+  const hasText = hasSlot(title) || hasSlot(description);
+  const hasHeader = hasText || hasSlot(actionSlot);
+  const hasFooter = hasSlot(footerSlot) || hasSlot(footerActionsSlot);
+  const hasBody = hasSlot(body);
 
   // A card that is only its title and description keeps the description: folded, it would be a
   // heading on an empty card.
   const folded =
-    foldsDescription(title, description, descriptionPlacement) && Boolean(body || hasFooter);
+    foldsDescription(title, description, descriptionPlacement) && (hasBody || hasFooter);
   const oneLineTitle = actionPlacement === "inline" ? ONE_LINE_TITLE : undefined;
 
   const titleSlot = title ? (
@@ -444,7 +446,7 @@ export function CardLayout({
       titleSlot={titleSlot}
       label={title}
       leadingSlot={
-        iconSlot ? (
+        hasSlot(iconSlot) ? (
           // Sized here rather than by the caller, so an icon passed as `<Plus />` and one passed
           // as `<Plus className="size-4" />` land at the same size.
           <div className={cn("cube-rn-view", "shrink-0 text-foreground/60", ICON)}>{iconSlot}</div>
@@ -468,15 +470,17 @@ export function CardLayout({
   // buttons with the main one on top. In a row of their own they kept their labels' width (#465).
   const footerParts = surface ? (
     <>
-      {footerSlot ? (
+      {hasSlot(footerSlot) ? (
         <div className={cn("cube-rn-view", FLOATING_FOOTER_START)}>{footerSlot}</div>
       ) : null}
       {footerActionsSlot}
     </>
   ) : (
     <>
-      {footerSlot ? <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div> : null}
-      {footerActionsSlot ? (
+      {hasSlot(footerSlot) ? (
+        <div className={cn("cube-rn-view", FOOTER_START)}>{footerSlot}</div>
+      ) : null}
+      {hasSlot(footerActionsSlot) ? (
         <div className={cn("cube-rn-view", ACTIONS)}>{footerActionsSlot}</div>
       ) : null}
     </>
@@ -517,7 +521,7 @@ export function CardLayout({
       ) : null}
 
       {/* The header keeps its real title while loading: only the part that is waiting waits. */}
-      {body ? (
+      {hasBody ? (
         // `CardContent` is `pt-0` because a header above it brings the top padding. With no
         // header the body is the first thing in the card and sat on its top edge.
         // `gap-4` spaces what the body holds, as `Section`'s body does: rows handed to a card
@@ -532,10 +536,10 @@ export function CardLayout({
       {hasFooter ? (
         <CardFooter
           className={cn(
-            footerSlot && footerActionsSlot && "justify-between",
-            !footerSlot && "justify-end",
+            hasSlot(footerSlot) && hasSlot(footerActionsSlot) && "justify-between",
+            hasSlot(footerSlot) === false && "justify-end",
             // The same, for a footer with neither a header nor a body over it.
-            hasHeader === false && !body && "pt-4",
+            hasHeader === false && hasBody === false && "pt-4",
             footerClassName,
           )}
         >

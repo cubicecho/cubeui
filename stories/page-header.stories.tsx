@@ -247,3 +247,25 @@ export const TabsAtTheirOwnWidth: Story = {
     }
   },
 };
+
+/**
+ * Slots of no elements are no slots (#483): `filters.map(…)` over no filters is `[]`, which drew
+ * an empty row under the title and took the rule away with it. Here every optional slot is `[]`,
+ * and the header is the title alone, ruled, on both halves.
+ */
+export const EmptyArraySlots: Story = {
+  args: { title: "Servers", contentSlot: [], actionSlot: [], iconSlot: [], backSlot: [] },
+  render: (args) => <SideBySide native={<Native {...args} />} compiled={<Compiled {...args} />} />,
+  play: async ({ canvasElement }) => {
+    for (const attribute of ["data-testid", "data-slot"]) {
+      const header = canvasElement.querySelector(`[${attribute}=page-header]`);
+      if (header === null) {
+        throw new Error(`No header matches ${attribute}.`);
+      }
+      await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");
+      for (const part of ["page-header-content", "page-header-action", "page-header-breadcrumbs"]) {
+        await expect(header.querySelector(`[${attribute}=${part}]`)).toBeNull();
+      }
+    }
+  },
+};

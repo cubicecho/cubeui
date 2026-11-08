@@ -15,7 +15,7 @@ import type { DeepKeys } from "@tanstack/react-form";
 import { createFormHook, createFormHookContexts, useStore } from "@tanstack/react-form";
 import type { ComponentType, ReactNode } from "react";
 import * as React from "react";
-import { Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 import {
   PasswordInput,
   type PasswordInputProps,
@@ -72,7 +72,7 @@ import {
   storedValueOf,
   withEmptyOption,
 } from "@/lib/select-options";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_GAP, type SlotNode } from "@/lib/utils";
 
 /** TanStack Form's contexts, which the bound fields read their field and form from. */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
@@ -371,6 +371,12 @@ function splitProps<T>(props: BoundFieldProps & T): [BoundFieldProps, T] {
 
 type FieldWrapperProps = BoundFieldProps & {
   controlSlot: SlotNode;
+  /**
+   * What a press on the label does on device: a checkbox's or a switch's toggle, so the caption is
+   * a target as well as the small control beside it (#470). A device has no `htmlFor` to do that.
+   * The web's `<label htmlFor>` already does, so there it is not used.
+   */
+  onLabelPress?: (() => void) | undefined;
 };
 
 /**
@@ -391,8 +397,11 @@ function FieldWrapper({
   labelClassName,
   descriptionClassName,
   errorClassName,
+  // web: biome-ignore lint/correctness/noUnusedFunctionParameters: a `<label htmlFor>` presses it there
+  onLabelPress,
 }: FieldWrapperProps) {
   const folded = Boolean(description) && descriptionPlacement === "popover";
+  const hasError = useFieldError() !== undefined;
   // A control handed in `disabled` already fades the field too, as `FormField` reads it on the web.
   const fades =
     disabled === true ||
@@ -409,11 +418,25 @@ function FieldWrapper({
       ) : null}
     </FieldLabel>
   );
+  // The caption presses the control on device, as a `<label htmlFor>` does on the web.
+  const captionNode =
+    Platform.OS !== "web" && onLabelPress !== undefined ? (
+      <Pressable
+        testID="field-label-press"
+        onPress={onLabelPress}
+        disabled={fades}
+        className="min-w-0 shrink self-start"
+      >
+        {labelNode}
+      </Pressable>
+    ) : (
+      labelNode
+    );
   // Beside the label and not inside it: the label is a `Text`, a button in a `Text` is not
   // something the device lays out, and on the web it would be a button inside a `<label>`.
   const title = folded ? (
     <View testID="field-label-row" className="min-w-0 flex-row items-center gap-2">
-      {labelNode}
+      {captionNode}
       <DescriptionHint
         testID="field-description-trigger"
         label={label}
@@ -423,20 +446,28 @@ function FieldWrapper({
       />
     </View>
   ) : (
-    labelNode
+    captionNode
   );
   const wired = (
     <FieldControl aria-required={required || undefined} disabled={disabled}>
       {controlSlot}
     </FieldControl>
   );
+  const shownDescription = Boolean(description) && folded === false;
+  // One column, so two lines of the field's text are the heading rhythm's 4px apart in both
+  // orientations, as the web `FormField` has them. Drawn only when there is a line in it: an
+  // empty box is still a gap in the field's column.
   const rest = (
     <>
-      {description && folded === false ? (
-        <FieldDescription className={descriptionClassName}>{description}</FieldDescription>
+      {shownDescription || hasError ? (
+        <View testID="field-messages" className={cn("min-w-0", HEADING_GAP)}>
+          {shownDescription ? (
+            <FieldDescription className={descriptionClassName}>{description}</FieldDescription>
+          ) : null}
+          <FieldError className={errorClassName} />
+        </View>
       ) : null}
       {folded ? <FieldDescriptionText>{description}</FieldDescriptionText> : null}
-      <FieldError className={errorClassName} />
     </>
   );
 
@@ -714,23 +745,26 @@ type CheckboxFieldProps = Omit<BoundFieldProps, "label"> & {
 function CheckboxField(props: CheckboxFieldProps) {
   const [fieldProps, checkbox] = splitProps(props);
   const field = useFieldContext<boolean>();
+  const toggle = (checked: boolean) => {
+    field.handleChange(checked);
+    // A press is the whole interaction, and a `Pressable` on device is never blurred — so nothing
+    // else would mark the field touched.
+    field.handleBlur();
+  };
 
   return (
     <FieldWrapper
       orientation="horizontal"
       {...fieldProps}
+      // The 16pt box is too small to be the only target on device: its caption presses it too.
+      onLabelPress={() => toggle((field.state.value ?? false) === false)}
       controlSlot={
         <Checkbox
           {...checkbox}
           accessibilityLabel={props.label}
           checked={field.state.value ?? false}
           onBlur={field.handleBlur}
-          onCheckedChange={(checked) => {
-            field.handleChange(checked === true);
-            // A press is the whole interaction, and a `Pressable` on device is never blurred —
-            // so nothing else would mark the field touched.
-            field.handleBlur();
-          }}
+          onCheckedChange={(checked) => toggle(checked === true)}
         />
       }
     />
@@ -752,21 +786,24 @@ type SwitchFieldProps = Omit<BoundFieldProps, "label"> & {
 function SwitchField(props: SwitchFieldProps) {
   const [fieldProps, control] = splitProps(props);
   const field = useFieldContext<boolean>();
+  const toggle = (checked: boolean) => {
+    field.handleChange(checked);
+    field.handleBlur();
+  };
 
   return (
     <FieldWrapper
       orientation="horizontal"
       {...fieldProps}
+      // The caption presses the switch on device, as the unbound `SwitchField`'s does.
+      onLabelPress={() => toggle((field.state.value ?? false) === false)}
       controlSlot={
         <Switch
           {...control}
           accessibilityLabel={props.label}
           checked={field.state.value ?? false}
           onBlur={field.handleBlur}
-          onCheckedChange={(checked) => {
-            field.handleChange(checked);
-            field.handleBlur();
-          }}
+          onCheckedChange={toggle}
         />
       }
     />

@@ -53,3 +53,44 @@ export const OneCellPerElement: Story = {
     await expect(canvas.queryByText("Hidden")).toBeNull();
   },
 };
+
+const LONG = "a-run-of-text-with-no-room-to-break-in-it-".repeat(6);
+
+const longCells = [tile("Inbox"), tile(LONG), tile("Review"), tile("Archive")];
+
+/**
+ * A cell that holds one long unbroken string keeps its share of the row. Every cell is floored at
+ * `min-w-0` (conventions rule 4), so what is in it scrolls or wraps inside the cell rather than the
+ * cell growing; and the grid and each cell are reachable from outside by their `data-slot`.
+ */
+export const LongContent: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native contentSlot={longCells} />}
+      compiled={<Compiled contentSlot={longCells} />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    // `data-testid` on the native half, which react-native-web draws; `data-slot` on the compiled.
+    const grids = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        '[data-testid="grid-layout"], [data-slot="grid-layout"]',
+      ),
+    );
+    await expect(grids).toHaveLength(2);
+    for (const grid of grids) {
+      const cellsDrawn = Array.from(
+        grid.querySelectorAll<HTMLElement>(
+          ':scope > [data-testid="grid-layout-cell"], :scope > [data-slot="grid-layout-cell"]',
+        ),
+      );
+      await expect(cellsDrawn).toHaveLength(4);
+      const widths = cellsDrawn.map((cell) => Math.round(cell.getBoundingClientRect().width));
+      for (const cell of cellsDrawn) {
+        await expect(getComputedStyle(cell).minWidth).toBe("0px");
+      }
+      // The long string's cell is as wide as its neighbours.
+      await expect(new Set(widths).size).toBe(1);
+    }
+  },
+};

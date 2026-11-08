@@ -11,7 +11,10 @@ import { useState } from "react";
 import { Platform, Pressable } from "react-native";
 import { CHECKBOX_CLASS, type CheckboxProps } from "@/components/ui/checkbox-base";
 import { Check } from "@/components/ui/icons";
-import { cn, isInvalid } from "@/lib/utils";
+import { cn, isInvalid, touchTarget } from "@/lib/utils";
+
+/** `CHECKBOX_CLASS`'s `h-4 w-4`, grown to a finger's 44pt by a `hitSlop` on device (#470). */
+const DRAWN = { width: 16, height: 16 } as const;
 
 /** A box that is checked or not. */
 function Checkbox({
@@ -42,6 +45,7 @@ function Checkbox({
         onCheckedChange?.(!checked);
       }}
       onBlur={onBlur}
+      {...touchTarget(DRAWN)}
       className={cn(
         CHECKBOX_CLASS,
         // Checked is the chosen tint, edged in `active` because the tint is not 3:1 from the

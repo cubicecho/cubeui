@@ -21,7 +21,7 @@ import { type ElementRef, type Ref, useImperativeHandle, useRef } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { useOverflows } from "@/components/ui/overflows";
 import { useReducedMotion } from "@/components/ui/reduced-motion";
-import { cn, INSET_FOCUS_EDGE, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, INSET_FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /**
  * The column a page's chrome and its content share.
@@ -129,6 +129,13 @@ export type HeaderContentFooterProps = {
    */
   headerWidth?: HeaderContentFooterWidth | undefined;
   /**
+   * The footer's own column, when it is not the body's: `full` lets the rule over the footer run
+   * the full width under a body held to `page` or `prose`, as `headerWidth` does for the header.
+   * What in the footer should still sit under the body's column holds itself to it, with
+   * `COLUMNS[width]` and the body's `px-4`. Absent, the footer shares `width`.
+   */
+  footerWidth?: HeaderContentFooterWidth | undefined;
+  /**
    * The scrolling body, for a caller that has to reach it — restoring a scroll position. A
    * `<div>` on the web and, while `scroll` is on, the `ScrollView` on device.
    */
@@ -157,7 +164,10 @@ export type HeaderContentFooterProps = {
    * device, while `scroll` is on, it is the `ScrollView`'s content. Otherwise the body is one box.
    */
   contentClassName?: string | undefined;
-  /** On the footer, in its column. A bar's own rule and padding go here. */
+  /**
+   * On the footer, in its column: the one `footerWidth`, or else `width`, sets. A bar's own rule
+   * and padding go here.
+   */
   footerClassName?: string | undefined;
 };
 
@@ -208,8 +218,10 @@ const BODY = cn(
 
 /**
  * A column with the body's inset, matching a page header's `px-4`, for the body and the footer.
+ * Exported for a shell whose footer runs the full width while what is in it keeps the body's
+ * column, as `PageLayout`'s does.
  */
-function insetColumn(width: HeaderContentFooterWidth) {
+export function insetColumn(width: HeaderContentFooterWidth) {
   return COLUMNS[width] && cn(COLUMNS[width], "px-4");
 }
 
@@ -376,6 +388,7 @@ export function HeaderContentFooter({
   scroll = false,
   width = "full",
   headerWidth,
+  footerWidth,
   contentRef,
   scrollRef,
   onScroll,
@@ -393,7 +406,7 @@ export function HeaderContentFooter({
       testID="header-content-footer"
       className={cn("min-h-0 min-w-0 shrink flex-col", className)}
     >
-      {headerSlot ? (
+      {hasSlot(headerSlot) ? (
         <View
           testID="header-content-footer-header"
           className={cn("min-w-0 shrink-0", COLUMNS[headerWidth ?? width], headerClassName)}
@@ -412,10 +425,10 @@ export function HeaderContentFooter({
         className={contentClassName}
       />
 
-      {footerSlot ? (
+      {hasSlot(footerSlot) ? (
         <View
           testID="header-content-footer-footer"
-          className={cn("min-w-0 shrink-0", insetColumn(width), footerClassName)}
+          className={cn("min-w-0 shrink-0", insetColumn(footerWidth ?? width), footerClassName)}
         >
           {footerSlot}
         </View>

@@ -64,7 +64,9 @@ set (see [native.md](../native.md)).
   it is, so a trigger can pass a `<Text>` of its own with the chosen value in it.
 - **Every size has the same corner**, `rounded-md`, `xs` and `icon-xs` included: a smaller button
   is not a rounder one. A `ToggleChip` beside them is drawn as a control too — a `/50` edge at rest
-  and the button heights, `h-9` and `h-7` at `size="sm"`.
+  and the button heights, `h-9` and `h-7` at `size="sm"`. Disabled, it fades and keeps no hover
+  fill, and the web pointer is "not allowed". Its `backgroundColor` replaces the fill whether it is
+  chosen or not; the edge still says which.
 - **`iconSlot`** goes before the label. Alone, in an `icon*` size, it needs an accessible name, which
   is why those sizes require `aria-label` (below).
 - **The button sizes its icon**, on both halves: 14px at `xs` and `icon-xs`, 20px at `icon-lg`, and

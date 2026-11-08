@@ -110,15 +110,22 @@ test that finds them by name needs changing:
 | `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
 | `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
 | `CodeBlock` | New: `jumpLabel`, the words of the "Jump to latest" button on a `follow` block, for your translation. That button is now an outline `Button`, so `code` installs `button` ([#469](https://github.com/cubicecho/cubeui/issues/469)). |
+| `FieldWrapper` (`form`) | New: `onLabelPress`, what a press on the caption does on device. `CheckboxField` and `SwitchField` pass it, so a toggle of your own built on `FieldWrapper` can too ([#470](https://github.com/cubicecho/cubeui/issues/470)). |
 | `RadioGroupItem` | `hint` is a `Tooltip` and the option's description, on both halves, where it was the web's `title` attribute ([#472](https://github.com/cubicecho/cubeui/issues/472)). A test that read the `title` reads the description instead. `radio-group` now installs `tooltip`. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
 | `tree`, `FileTree` | `buildTree` sorts `file2` before `file10`, and drops empty path segments, so an object store's `docs/` key is the folder `docs` and not an unnamed folder inside it. A file that shares its path with a folder is kept as its own row, after the folders, and the folder is drawn too; before, nothing under the folder was drawn ([#468](https://github.com/cubicecho/cubeui/issues/468)). Tell a file from a folder by `type`, not `path`. |
+| `tree`, `FileTree` | `onSelect` hands back the file's key as `entries` listed it, `a//b.md`, where it handed back the cleaned `a/b.md`, and the row's node as a second argument. `selected` matches that key or the cleaned path. `onMove` gets the dragged node as a third argument: its `type` says whether the file or the folder of a shared name moved. The file `logs` can now be dragged into the folder `logs`, and only the row being moved is muted. `isValidMove` takes the moved row's `type` as a third argument; left out, it answers for a folder, as before ([#496](https://github.com/cubicecho/cubeui/issues/496)). Keys with no doubled or edge `/` come back as before. |
+| `HeaderContentFooter` | New: `footerWidth`, the footer's own column, as `headerWidth` is the header's ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
+| `PageLayout` | `footerClassName` lands on the footer bar, which now runs the full width; `footerSlot` sits in the body's column inside it ([#483](https://github.com/cubicecho/cubeui/issues/483)). Classes there that laid out the footer's own parts, such as `flex-row justify-between`, go on the node you pass. |
+| `SidebarSection` | `level` takes `1 \| 2 \| 3`, as every `level` in the set does. A `level` of 4 to 6 is a type error ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
+| `lib/utils` | New: `hasSlot(node)`, whether a slot holds anything to draw: `[]`, `false`, `null`, `undefined` and `""` do not ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `ConfirmDialog` | `confirmLabel` defaults to "Delete", as on `ConfirmButton` and `confirm()`. It was "Confirm", which names no act. A `ConfirmDialog` with no `confirmLabel` now says Delete: pass the verb if it does something else, such as Discard or Revoke ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `DownloadButton` | New: `hint`, as on `CopyButton`. With `disabled`, it says why the button is off and keeps it focusable ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `dialog` | New: `holdOpen`, from `@/components/ui/dialog-base`. `onInteractOutside={holdOpen}` keeps a dialog open through a press beside it, as a `preventDefault` of your own does, and on device the backdrop is then not read out as a Close button. Swap it in for a handler of yours that only calls `preventDefault` ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `SectionHeading` | Its words are `title` now, as every shell's are: `<SectionHeading>Upcoming</SectionHeading>` becomes `<SectionHeading title="Upcoming" />`. `children` still works, deprecated, and `title` wins over it ([#484](https://github.com/cubicecho/cubeui/issues/484)). |
+| `ColorPicker` | `hexLabel` is the hex box's `aria-label`, on both halves, where it was a hidden `<label>` on the web only. Inside a field it now replaces the field's label as the box's name, so leave it off there. `color-picker` installs `icons` and no longer installs `label` ([#485](https://github.com/cubicecho/cubeui/issues/485)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -130,6 +137,7 @@ test that finds them by name needs changing:
 | `split-layout` | Now installs `app-bar` too. |
 | `item` | Now installs `separator` too. |
 | `list-item` | Now installs `item` too, and so `collapsible-row` does. |
+| `layout` (the set) | Now installs `grid-layout` and `app-bar` too ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 
 ### New files
 
@@ -396,6 +404,11 @@ to add them.
   ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
   `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
   you put on it, or on a `span` inside it, to undo the grey can go.
+- **A `Table` in a card lines up with the card's text**
+  ([#517](https://github.com/cubicecho/cubeui/issues/517)). Inside `CardContent` or a
+  `CardLayout`'s body it reaches 8px into the card's padding, so the first column starts where the
+  card's title does and the last ends where its action does, as a `List` there does. Its rules
+  run nearly edge to edge. A `-mx-2` you put round such a table can go.
 - **The two halves agree** ([#472](https://github.com/cubicecho/cubeui/issues/472)).
   - A `Button`'s icon is 14px at `xs` (it was 16px on the web) and 20px at `icon-lg` (it was
     16px), on both halves. On device every size now sizes its icon: it was lucide's own 24px. A
@@ -475,6 +488,27 @@ to add them.
     and a soft badge's dot is 8px (it was 6px), the size of a bare badge's dot. `ColorDot` moves
     a hex into the lightness band `ColorBar` uses, so a navy tag shows in dark mode and a yellow
     one on white, and it now installs `@cubeui/color`.
+- **The shells line up and draw empty slots as absent** ([#483](https://github.com/cubicecho/cubeui/issues/483)).
+  - An empty array in a slot is no slot, as `null` is. `filters.map(…)` over no filters in a
+    page header's `contentSlot` no longer draws an empty row, and the rule under the title stays.
+    The same holds for every shell's slots.
+  - `Sidebar`'s header is inset 16px, where it was 12px, so a brand starts where the row labels and
+    the section titles do. A header that set its own `px-4` to line up can drop it.
+  - `PageLayout`'s footer rule runs the full width, as the header's does, while what is in the
+    footer keeps the body's column. At `prose` it was clipped to the column.
+  - An `AppBarItem` is 36px, where it was 32px, the size of an `icon-sm` action, and a place that
+    is not the current one is in full ink, where it was faint. The bar's places and actions sit
+    8px apart, where they were 4px, and so do the places in `SidebarLayout`'s bottom bar. A phone
+    fits about four places beside a brand, two actions and a status, where it fitted five. Pass
+    the bar's actions at `icon-sm` or `sm`.
+  - `AppBar`'s `status` wraps onto more lines rather than cutting off with an ellipsis, down to its
+    longest word, and the places scroll past that. A long status makes the bar taller: keep it
+    short. Its actions keep the end and its status lines up against them in a right-to-left page.
+  - A `List` in a card's body reaches into the card's padding by a row's inset, so each row's title
+    starts where the card's title does and its rules run nearly edge to edge. A `-mx-3` you put
+    on such a list can go. A row of your own in it brings `ListItem`'s `px-3`.
+  - `GridLayout`'s cells are `min-w-0`, and the grid and its cells have the `data-slot`s
+    `grid-layout` and `grid-layout-cell`.
 
 - **Overlays and menus** ([#486](https://github.com/cubicecho/cubeui/issues/486)).
   - In a menu where some rows have an icon and some don't, every label starts in one column: a
@@ -501,6 +535,36 @@ to add them.
   - `CardLayout`'s `loading` skeleton is a `role="status"` named "Loading", as `RowSkeleton` is. It
     said nothing to a screen reader. A test that found the skeleton by `aria-hidden` finds it by
     its role, or by `data-slot="card-layout-skeleton"`.
+
+- **On device, a finger's 44pt** ([#470](https://github.com/cubicecho/cubeui/issues/470)). Nothing
+  changes on the web, except that a pressable row's padding now opens it too.
+  - A pressable `ListItem` and a `CollapsibleRow` open from anywhere on the row that lights up, its
+    padding included. The row looks as it did.
+  - `ListItem`'s middle, `CollapsibleRow`, `Collapsible`'s header, `FileTree` rows, `SidebarItem`,
+    menu rows, a select's options and a `RadioGroup` row are at least 44pt tall on device. A
+    `Collapsible` with no description centres its title in that height.
+  - `Checkbox`, `Switch`, the bare radio, a toast's ✕, a badge's ✕, `ToggleChip`,
+    `SegmentedButton`, a radio segment and every `Button` size reach 44pt with a `hitSlop` and look
+    as they did. `icon-xs` reaches 36 by 44. A `hitSlop` you added to one of these can go.
+  - `AppBarItem` is a 44pt box on device with its 36pt look inside (36px since #483), and the
+    top bar puts no gap between the boxes there, so the looks sit 8pt apart, as on the web. Along
+    the bottom bar each place takes its share of the bar.
+  - A bound `CheckboxField` or `SwitchField` toggles when its caption is pressed.
+  - A pressed `Collapsible` header, `SidebarItem`, `AppBarItem`, `SegmentedButton` and select
+    option look hovered, as other rows and controls already did.
+  - New in `@/lib/utils`: `touchTarget` and `touchRowClass`, for a pressable of your own. See the
+    skill's `native.md`, "Touch targets".
+
+- **Form controls** ([#485](https://github.com/cubicecho/cubeui/issues/485)).
+  - `Combobox`'s trigger ends in `ChevronDown`, as `Select`'s does, where it was `ChevronsUpDown`.
+  - A `SelectLabel` over a group starts where the options' labels do, 32px in, where it was 8px.
+  - A field's description and its error are 4px apart, as the label and the description beside a
+    checkbox already were. Stacked fields drew them 8px apart. On `FormField`, every bound field
+    and `RadioGroupField`, on both halves.
+  - `FormField`'s loading box is 40px tall, the height of the input, select and date trigger it
+    stands in for. It was 36px, so the field jumped 4px when the value landed.
+  - A disabled `ToggleChip` keeps no hover fill, and on the web its pointer is "not allowed".
+  - `ColorPicker`'s tick is `Checkbox`'s `Check` icon, where it was a "✓" character.
 
 ## Checking the result
 

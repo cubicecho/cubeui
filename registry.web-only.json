@@ -125,6 +125,7 @@
       "title": "Layout Set",
       "description": "Every cubeui layout shell in one install.",
       "registryDependencies": [
+        "@cubeui/app-bar",
         "@cubeui/card-layout",
         "@cubeui/centered-card-layout",
         "@cubeui/collapsible",
@@ -133,6 +134,7 @@
         "@cubeui/empty-state",
         "@cubeui/error-page",
         "@cubeui/file-tree",
+        "@cubeui/grid-layout",
         "@cubeui/header-content-footer",
         "@cubeui/list",
         "@cubeui/list-item",

@@ -29,7 +29,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import type { TooltipSide } from "@/components/ui/tooltip-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode, touchTarget } from "@/lib/utils";
 import { Spinner } from "./spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
@@ -155,6 +155,25 @@ const BUTTON_ICON_SIZES = {
   "icon-xs": "size-3.5",
   "icon-sm": "size-4",
   "icon-lg": "size-5",
+} as const;
+
+/**
+ * How much of a finger's 44pt each size takes from a `hitSlop` on device (#470), as the size it
+ * hands `touchTarget`. All the height, from each size's own. The width only on an icon square and
+ * only by 4px a side: buttons sit side by side 4px apart (`ICON_ACTION_GAP`), and of two
+ * overlapping targets the later takes the press, so a wider reach would hand the edge of Edit to the
+ * Delete beside it. So `icon-sm` and `icon` are 44pt square, `icon-xs` is 36 by 44, and a text
+ * button is as wide as its label.
+ */
+const BUTTON_TOUCH_SIZES = {
+  default: { height: 40 },
+  xs: { height: 28 },
+  sm: { height: 36 },
+  lg: { height: 44 },
+  icon: { width: 40, height: 40 },
+  "icon-xs": { width: 36, height: 28 },
+  "icon-sm": { width: 36, height: 36 },
+  "icon-lg": { width: 44, height: 44 },
 } as const;
 
 /** The button itself, before the name rule and the tooltip are added to it. */
@@ -372,6 +391,8 @@ const ButtonBody = React.forwardRef<HTMLButtonElement, ButtonBodyProps>(
         disabled={disabled}
         className={cn("cube-rn-view cube-rn-pressable", styling)}
         {...(busy as React.ComponentPropsWithoutRef<"button">)}
+        // Before `props`, so a caller's own `hitSlop` still wins.
+        {...touchTarget(BUTTON_TOUCH_SIZES[size ?? "default"])}
         {...(props as React.ComponentPropsWithoutRef<"button">)}
         onClick={pressThenClick(onPress, (props as MergedClick).onClick)}
       >

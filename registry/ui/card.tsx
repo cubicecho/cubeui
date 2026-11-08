@@ -14,7 +14,7 @@
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { ColorBar } from "@/components/ui/color-bar";
-import { cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
+import { CardBodyContext, cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
 
 // `className` is re-declared rather than inherited: nativewind types it as
 // `className?: string`, which under `exactOptionalPropertyTypes` rejects the
@@ -161,10 +161,15 @@ const CardDescription = React.forwardRef<React.ElementRef<typeof Text>, TextProp
 );
 CardDescription.displayName = "CardDescription";
 
-/** The card's body. */
+/**
+ * The card's body. A `List` or a `Table` inside it reaches into its padding, so the rows line up
+ * with the card's title: see `CardBodyContext`.
+ */
 const CardContent = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
   ({ className, ...props }, ref) => (
-    <View ref={ref} className={cn("p-4 pt-0", className)} {...props} />
+    <CardBodyContext.Provider value={true}>
+      <View ref={ref} className={cn("p-4 pt-0", className)} {...props} />
+    </CardBodyContext.Provider>
   ),
 );
 CardContent.displayName = "CardContent";

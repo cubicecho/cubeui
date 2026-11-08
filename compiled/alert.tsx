@@ -27,7 +27,7 @@
  */
 import { Children, isValidElement, type ReactNode } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { CircleAlert, Info, TriangleAlert } from "./icons";
 
 /** The kinds of callout, which pick its tint, icon and role. */
@@ -171,7 +171,7 @@ export function Alert({
   const glyph = iconSlot !== undefined ? iconSlot : ownIcon;
   const ink = ALERT_ICON_INK[variant];
   // Held empty only when nothing chose otherwise: `null`, or children of the compound form, do.
-  const drawn = Boolean(glyph) || iconParts.length > 0;
+  const drawn = hasSlot(glyph) || iconParts.length > 0;
   const column = drawn || (iconSlot === undefined && parts.length === 0);
 
   return (
@@ -207,7 +207,7 @@ export function Alert({
         {description ? <AlertDescription>{description}</AlertDescription> : null}
         {textParts}
       </div>
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <div data-slot="alert-action" className="cube-rn-view shrink-0 self-center">
           {actionSlot}
         </div>

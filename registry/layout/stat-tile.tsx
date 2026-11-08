@@ -11,7 +11,7 @@ import { Platform, Text, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 type StatTileProps = {
   /** What the figure is called: "Turns", "Daily average". Drawn above it, muted. */
@@ -124,7 +124,7 @@ export function StatTile({
   const body = (
     <>
       <View testID="stat-tile-label-row" className="min-w-0 flex-row items-center gap-2">
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <View testID="stat-tile-icon" aria-hidden className={cn(ICON_BOX, ink)}>
             <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
               {iconSlot}

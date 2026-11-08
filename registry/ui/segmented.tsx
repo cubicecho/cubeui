@@ -20,7 +20,14 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchTarget } from "@/lib/utils";
+
+/**
+ * A pill's drawn height, its label's 20px line and its padding: 28px in the frame and 32px out of
+ * it. Grown to a finger's 44pt by a `hitSlop` on device (#470), and only the height: pills sit
+ * side by side, where a wider target would take a neighbour's.
+ */
+const DRAWN = { framed: { height: 28 }, bare: { height: 32 } } as const;
 
 /**
  * The container class, for a pill the caller renders itself.
@@ -268,7 +275,7 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
     // The pill's own ink, for the container and the icon.
     const ink = current ? "text-foreground" : "text-foreground/60";
     // Only a pill with an icon has something left to draw once its label is gone.
-    const labelHideBelow = iconSlot ? group?.labelHideBelow : undefined;
+    const labelHideBelow = hasSlot(iconSlot) ? group?.labelHideBelow : undefined;
     const iconOnlyHeight = group?.framed ? "min-h-7" : "min-h-8";
     return (
       <Pressable
@@ -301,28 +308,29 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
           // box instead of spilling past its padding.
           // Inside the frame, `rounded-sm`: the radius nested in the frame's, as a tab's is.
           group?.framed ? "rounded-sm px-3 py-1" : "rounded-md px-3 py-1.5",
-          // The current pill is the chosen tint, a step further under the pointer and focused;
-          // another looks hovered when focused, as `RadioGroup`'s segments do. Neither draws a ring.
+          // The current pill is the chosen tint, a step further under the pointer, focused and
+          // pressed; another looks hovered then, as `RadioGroup`'s segments do. Neither draws a ring.
           "focus-visible:outline-none",
           current
-            ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60"
-            : "group hover:bg-hover focus-visible:bg-hover",
+            ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+            : "group hover:bg-hover focus-visible:bg-hover active:bg-hover",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
           // colour can only come from inheriting it here.
           ink,
           current ? undefined : CONTAINER_HOVER_INK,
-          iconSlot ? WITH_ICON : undefined,
+          hasSlot(iconSlot) ? WITH_ICON : undefined,
           // The label's line is what gives a pill its height, and an icon is
           // shorter than it: with the label hidden the pill would shrink, so it
           // is held at the height a labelled pill beside it has.
-          iconSlot ? iconOnlyHeight : undefined,
+          hasSlot(iconSlot) ? iconOnlyHeight : undefined,
           className,
         )}
+        {...touchTarget(group?.framed ? DRAWN.framed : DRAWN.bare)}
         {...props}
       >
         {/* Colour does not inherit on device, so the icon is handed the label's. */}
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <IconClassContext.Provider
             value={cn("size-4 shrink-0", ink, current ? undefined : HOVER_INK)}
           >

@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
  * How blocks follow one another: a column with one gap, in the document and again inside a
@@ -943,7 +943,7 @@ export function Markdown({
 
   if (content.trim() === "") {
     // Rule 5 — an absent slot draws nothing, and that includes the root.
-    return emptySlot ? (
+    return hasSlot(emptySlot) ? (
       <div data-slot="markdown" className={cn(DOCUMENT, className)}>
         {emptySlot}
       </div>

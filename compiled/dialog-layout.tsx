@@ -29,7 +29,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { holdOpen } from "@/components/ui/dialog-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import {
   type ActionPlacement,
   CardLayout,
@@ -115,7 +115,9 @@ const DIALOG_SURFACE: FloatingSurface = {
         contentClassName={cn("-mx-1 min-w-0 px-1", contentClassName)}
         contentSlot={contentSlot}
         footerSlot={
-          footerSlot ? <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter> : null
+          hasSlot(footerSlot) ? (
+            <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter>
+          ) : null
         }
       />
     );

@@ -18,7 +18,9 @@ import {
   HEADING_TITLE,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
+  hasSlot,
   type SlotNode,
+  touchRowClass,
 } from "@/lib/utils";
 import { ChevronRight } from "./icons";
 
@@ -163,7 +165,7 @@ export function Collapsible({
   const [ownOpen, setOwnOpen] = React.useState(defaultOpen);
   const open = openProp ?? ownOpen;
   const contentId = React.useId();
-  const shown = open && contentSlot !== undefined && contentSlot !== null && contentSlot !== false;
+  const shown = open && hasSlot(contentSlot);
 
   const toggle = () => {
     if (openProp === undefined) {
@@ -171,6 +173,10 @@ export function Collapsible({
     }
     onOpenChange?.(!open);
   };
+
+  // On device the button is a finger's 44pt tall (#470). A title alone is one line, which sits in
+  // the middle of that, and the action with it; a title over a description already fills it.
+  const centred = false;
 
   return (
     <div data-slot="collapsible" className={cn("cube-rn-view", "min-w-0 gap-2", className)}>
@@ -181,13 +187,14 @@ export function Collapsible({
         className={cn(
           "cube-rn-view",
           "min-w-0 flex-row flex-wrap items-start gap-x-2",
+          centred && "items-center",
           HEADING_WRAP_GAP,
           headerClassName,
         )}
       >
         <CollapsibleTrigger
           data-slot="collapsible-trigger"
-          className={HEADING_WRAP_FLOOR}
+          className={cn(HEADING_WRAP_FLOOR, touchRowClass(), centred && "items-center")}
           open={open}
           onClick={toggle}
           controls={shown ? contentId : undefined}
@@ -200,7 +207,7 @@ export function Collapsible({
             </div>
           }
         />
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <div
             data-slot="collapsible-action"
             className={cn("cube-rn-view", "shrink-0 flex-row items-center", actionGap(actionSlot))}

@@ -8,7 +8,7 @@ import {
   type DescriptionPlacement,
   foldsDescription,
 } from "@/components/ui/description-hint";
-import { cn, HEADING_DESCRIPTION, HEADING_TITLE, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_DESCRIPTION, HEADING_TITLE, hasSlot, type SlotNode } from "@/lib/utils";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
@@ -104,8 +104,8 @@ export function Section({
       )}
     />
   ) : null;
-  const hasText = Boolean(title || description);
-  const hasHeading = Boolean(hasText || actionSlot);
+  const hasText = hasSlot(title) || hasSlot(description);
+  const hasHeading = hasText || hasSlot(actionSlot);
 
   return (
     <View
@@ -148,7 +148,7 @@ export function Section({
         />
       ) : null}
 
-      {contentSlot ? (
+      {hasSlot(contentSlot) ? (
         <View testID="section-content" className={cn("min-w-0 gap-4", contentClassName)}>
           {contentSlot}
         </View>

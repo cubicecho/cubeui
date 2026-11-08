@@ -37,7 +37,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { holdOpen } from "@/components/ui/dialog-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
 const SIZES = {
@@ -119,7 +119,9 @@ const DIALOG_SURFACE: FloatingSurface = {
         contentClassName={cn("-mx-1 min-w-0 px-1", contentClassName)}
         contentSlot={contentSlot}
         footerSlot={
-          footerSlot ? <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter> : null
+          hasSlot(footerSlot) ? (
+            <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter>
+          ) : null
         }
       />
     );

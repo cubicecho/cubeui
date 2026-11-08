@@ -80,3 +80,31 @@ export const OneTabStop: Story = {
     }
   },
 };
+
+/**
+ * The chosen swatch's tick is `Checkbox`'s `Check` glyph in the swatch's readable ink, not a "✓"
+ * character in the font (#485), and the hex box is named by `hexLabel` on both halves: it is the
+ * box's `aria-label` now, where it was a hidden `<label>` the web alone drew.
+ */
+export const TheTickIsTheCheckIcon: Story = {
+  render: () => (
+    <SideBySide native={<Harness half="native" />} compiled={<Harness half="compiled" />} />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["native", "compiled"] as const) {
+      await step(half, async () => {
+        const row = within(canvas.getByRole("radiogroup", { name: `${half} tag colour` }));
+        const swatch = row.getByRole("radio", { name: "#f59e0b" });
+        await expect(swatch.querySelector("svg")).toBeNull();
+        await userEvent.click(swatch);
+        await waitFor(() => expect(swatch).toHaveAttribute("aria-checked", "true"));
+        await expect(swatch.querySelector("svg")).not.toBeNull();
+        await expect(swatch).not.toHaveTextContent("✓");
+        await expect(
+          within(canvas.getByTestId(half)).getByRole("textbox", { name: `${half} hex` }),
+        ).toBeInTheDocument();
+      });
+    }
+  },
+};
