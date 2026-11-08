@@ -29,7 +29,7 @@ The shells for the shape every list route is: a ladder of states, then a list of
     onOpenChange={(next) => setOpen(next ? role.id : null)}
     badgesSlot={<Badge>{role.contract}</Badge>}
     title={role.name}
-    meta={<span className="text-foreground/60 text-xs">{role.lanes} lanes</span>}
+    meta={`${role.lanes} lanes`}
     description={role.prompt}
     actionSlot={<Button aria-label="Delete" size="icon" … />}
     contentSlot={<RolePrompt role={role} />}

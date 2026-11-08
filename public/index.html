@@ -513,7 +513,7 @@
         <tr>
           <th scope="row"><code>@cubeui/item</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.</td>
+          <td>shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names and props. `size="default"` is shadcn's row; `size="sm"` is `ListItem`'s, which is built from these parts. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/label</code></th>
@@ -533,7 +533,7 @@
         <tr>
           <th scope="row"><code>@cubeui/list-item</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
-          <td>One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it.</td>
+          <td>One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it. Built from `Item`'s parts at `size="sm"`.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/load-state</code></th>
