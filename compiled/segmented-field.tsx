@@ -47,12 +47,15 @@ type SegmentedFieldProps = FieldProps &
     disabled?: boolean | undefined;
   };
 
-/** The row, as one element for `FieldControl` to hand the `id` and the `aria-*` props to. */
+/**
+ * The row, as one element for `FieldControl` to hand the `id`, the `aria-*` props and the field's
+ * `disabled` to.
+ */
 function SegmentedFieldControl({
   options,
   disabled = false,
   ...group
-}: Omit<SegmentedFieldProps, keyof FieldProps>) {
+}: Omit<SegmentedFieldProps, keyof FieldProps> & Pick<FieldProps, "disabled">) {
   const field = useFieldContext<string | null>();
   return (
     <SegmentedGroup

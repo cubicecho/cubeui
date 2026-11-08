@@ -28,7 +28,7 @@ import {
   type SwitchFieldProps,
   switchFieldIds,
 } from "@/components/ui/switch-field-base";
-import { cn } from "@/lib/utils";
+import { cn, FIELD_DISABLED_CLASS } from "@/lib/utils";
 import { Label } from "./label";
 import { Switch } from "./switch";
 
@@ -45,7 +45,9 @@ export function SwitchField({
   labelClassName,
 }: SwitchFieldProps) {
   const { labelId, descriptionId } = switchFieldIds(id);
-  const caption = cn(SWITCH_FIELD_LABEL_CLASS, disabled && "opacity-50", labelClassName);
+  // Faded as a `Field` fades its parts: the caption and the line under it go with the switch.
+  const fade = disabled && FIELD_DISABLED_CLASS;
+  const caption = cn(SWITCH_FIELD_LABEL_CLASS, fade, labelClassName);
   return (
     <Label
       htmlFor={id}
@@ -75,7 +77,7 @@ export function SwitchField({
           <span id={labelId} className={caption}>
             {label}
           </span>
-          <span id={descriptionId} className={SWITCH_FIELD_DESCRIPTION_CLASS}>
+          <span id={descriptionId} className={cn(SWITCH_FIELD_DESCRIPTION_CLASS, fade)}>
             {description}
           </span>
         </span>
