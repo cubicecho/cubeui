@@ -104,8 +104,9 @@ never appears on a touch device.
 **The name is also the tooltip**, on hover and focus, and on a long press on device: an icon on
 its own does not tell a sighted user what it does. A screen reader hears the name once, because
 the tooltip is not also the button's description. Pass `tooltip={false}` where the icon already
-explains itself. A text button has no tooltip unless it has a `hint`: its label is already on
-screen.
+explains itself, as `PasswordInput`'s eye, `SearchInput`'s ✕ and the
+`descriptionPlacement="popover"` button do. A text button has no tooltip unless it has a `hint`:
+its label is already on screen.
 
 **A `hint` takes the name's place in the tooltip**, on any button, icon or text. The accessible
 name stays what it was, and the hint is read after it whether or not the tooltip is open. It is

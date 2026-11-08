@@ -85,10 +85,11 @@ The title is `text-base` on both halves, never larger than the page's own title.
 
 `descriptionPlacement="popover"` takes the description out from under the title and puts it behind
 a small button after the title, named "About <title>" — for a page of cards whose descriptions
-are each a paragraph. `descriptionIconSlot` is the button's glyph, a question mark by default. On
-the web a screen reader still reads the sentence under the title. It stays inline on a card with
-no `title`, and on a card with no body and no footer, where the description is all the card says —
-so pass the prop on every card of a page and leave that case alone. `Section`, `SettingRow`,
+are each a paragraph. The button shows no tooltip on hover: a press opens the sentence.
+`descriptionIconSlot` is the button's glyph, a question mark by default. On the web a screen
+reader still reads the sentence under the title. It stays inline on a card with no `title`, and
+on a card with no body and no footer, where the description is all the card says — so pass the
+prop on every card of a page and leave that case alone. `Section`, `SettingRow`,
 `DialogLayout` and the form fields take the same two props. Do not wrap the title in a `Popover` of your own.
 
 The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the

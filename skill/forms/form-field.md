@@ -90,7 +90,8 @@ stays the character it is. Anything more is a markdown renderer and belongs behi
 
 A schema writes a paragraph per field, and fifteen paragraphs down a form bury it.
 **`descriptionPlacement="popover"` puts the sentence behind a small button beside the label**,
-named "About <label>" (and "About this field" when the label is not a string):
+named "About <label>" (and "About this field" when the label is not a string). It shows no
+tooltip on hover, since a press opens the sentence itself:
 
 ```tsx
 <FormField label="Tool discovery" description={…} descriptionPlacement="popover" … />
