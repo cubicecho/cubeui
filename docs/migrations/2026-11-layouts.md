@@ -160,7 +160,9 @@ to add them.
   as `ActionButton` did. A `hint` still replaces it. Pass `tooltip={false}` to a `Button`,
   `ConfirmButton`, `CopyButton` or `DownloadButton` to turn it off
   ([#424](https://github.com/cubicecho/cubeui/issues/424)), and remove any `Tooltip` you wrapped
-  around an icon button by hand, or it shows two.
+  around an icon button by hand, or it shows two. `PasswordInput`'s eye, `SearchInput`'s ✕ and
+  the button `descriptionPlacement="popover"` draws show none
+  ([#425](https://github.com/cubicecho/cubeui/issues/425)).
 - **On device a tooltip no longer wraps its trigger in a `View`**
   ([#423](https://github.com/cubicecho/cubeui/issues/423)). The classes on a button, switch or
   row with a tooltip place it in its parent again: `absolute top-2 right-2`, `ml-auto`,
