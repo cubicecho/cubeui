@@ -11,6 +11,7 @@ import {
   SegmentedButton as Compiled,
   SegmentedGroup as CompiledGroup,
 } from "../compiled/segmented";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import {
   Clock as NativeClock,
   Eye as NativeEye,

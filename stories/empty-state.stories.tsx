@@ -5,6 +5,7 @@ import { EmptyState as Compiled } from "../compiled/empty-state";
 import { Search as CompiledSearch } from "../compiled/icons";
 import { EmptyState as Native } from "../registry/layout/empty-state";
 import { Button as NativeButton } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 

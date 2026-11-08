@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Progress as Compiled } from "../compiled/progress";
-import { Progress as Native } from "../registry/ui/progress";
+import { Progress as Native } from "../registry/ui/progress.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -136,6 +136,9 @@ function offsetOf(bar: Element): number {
 
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/** `Indeterminate` draws two bars on each half, the native ones first. */
+const NATIVE_BARS = 2;
+
 /**
  * With no value, a third of the track sweeps across it, so waiting never looks like 0% (#487).
  * Under reduced motion it holds still in the middle third, off the start, where it cannot be read
@@ -176,7 +179,9 @@ export const Indeterminate: Story = {
       if (reduced) {
         await expect(after[index]).toBeCloseTo(1 / 3, 2);
         await expect(after[index]).toBe(before[index]);
-      } else {
+      } else if (index >= NATIVE_BARS) {
+        // Only the compiled bars are watched moving: react-native-web swaps in `AnimatedMock`
+        // under a test runner (`Platform.isTesting`), which never runs the native sweep's loop.
         await expect(after[index]).not.toBe(before[index]);
       }
     }

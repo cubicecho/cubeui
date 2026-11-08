@@ -11,6 +11,7 @@ import { ErrorPage as Native } from "../registry/layout/error-page";
 import { LoadError as NativeLoadError } from "../registry/layout/load-state";
 import { RouteError as NativeOld } from "../registry/layout/route-error";
 import { Button } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Checkbox as CompiledCheckbox } from "../compiled/checkbox";
 import { Switch as CompiledSwitch } from "../compiled/switch";
-import { Badge } from "../registry/ui/badge";
+import { Badge } from "../registry/ui/badge.tsx";
+// The radix half, as an Expo web build runs it: `CheckboxName` is about that half's name.
 import { Checkbox } from "../registry/ui/checkbox";
 import { ColorPicker } from "../registry/ui/color-picker";
 import { ToggleChip } from "../registry/ui/toggle-chip";

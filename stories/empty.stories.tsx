@@ -21,6 +21,7 @@ import {
   EmptyMedia as NativeMedia,
   EmptyTitle as NativeTitle,
 } from "../registry/ui/empty";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Search as NativeSearch } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 

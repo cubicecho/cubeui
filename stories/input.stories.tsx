@@ -1,11 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useContext } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { Search as CompiledSearch, X as CompiledX } from "../compiled/icons";
 import { Input as Compiled } from "../compiled/input";
 import { Button as NativeButton } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Search as NativeSearch, X as NativeX } from "../registry/ui/icons";
-import { Input as Native } from "../registry/ui/input";
+import { IconClassContext } from "../registry/ui/icons-base";
+import { Input as Native } from "../registry/ui/input.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -191,8 +194,12 @@ export const Slots: Story = {
         }
         const glyph = icon.getBoundingClientRect();
 
-        // The icon is inside the field, at its start, at 16px, and the text starts past it.
-        await expect(glyph.width).toBe(16);
+        // The icon is inside the field, at its start, at 16px, and the text starts past it. The
+        // native column draws the web icon set, which ignores the `IconClassContext` that sizes a
+        // device icon, so its size is `IconSizeOnDevice`'s to hold.
+        if (half === "Compiled") {
+          await expect(glyph.width).toBe(16);
+        }
         await expect(glyph.left).toBeGreaterThan(box.left);
         await expect(glyph.top).toBeGreaterThan(box.top);
         await expect(glyph.bottom).toBeLessThan(box.bottom);
@@ -227,6 +234,31 @@ export const Slots: Story = {
         await expect(plain.parentElement).toBe(search.parentElement?.parentElement);
       });
     }
+  },
+};
+
+/** Stands in for a device icon, which is the only kind that reads the class it is handed. */
+function ProbeIcon() {
+  const inherited = useContext(IconClassContext);
+  return <span data-testid="icon" data-class={inherited ?? ""} />;
+}
+
+/**
+ * The device half of `Slots`' 16px glyph. On the web `[&_svg]:` classes size it; on device an icon
+ * is sized only by the class `IconClassContext` hands it, and the web icon set the native column
+ * draws ignores that, so a probe reads what a device icon would be given.
+ */
+export const IconSizeOnDevice: Story = {
+  render: () => (
+    <div className="w-64 bg-background p-6">
+      <Native aria-label="Probe search" leadingSlot={<ProbeIcon />} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const probe = within(canvasElement).getByTestId("icon");
+    await expect((probe.getAttribute("data-class") ?? "").split(" ")).toEqual(
+      expect.arrayContaining(["size-4", "shrink-0"]),
+    );
   },
 };
 

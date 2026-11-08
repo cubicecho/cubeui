@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Spinner as Compiled } from "../compiled/spinner";
-import { Spinner as Native } from "../registry/ui/spinner";
+import { Spinner as Native } from "../registry/ui/spinner.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
