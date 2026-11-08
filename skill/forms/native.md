@@ -42,6 +42,9 @@ const form = useAppForm({ defaultValues: { title: "", done: false, due: null, co
 | `SegmentedField` | `string` | `@cubeui/segmented-field` |
 | `RadioGroupField` | `string` | `@cubeui/radio-group-field` |
 
+Every field takes `disabled`. It is the field's, as on the web: it reaches the control, and the
+label and the description fade with it. `DateTimeField` passes it to `DateTimeInput`.
+
 `useAppForm` from `@cubeui/form` has the first six. `DateTimeField` and `ColorField` are their
 own items for the weight of the calendar and the picker, as on the web; add them with
 `createAppForm`, or render them inside `form.AppField` as they are. `color-picker-field` is not

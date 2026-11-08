@@ -3,7 +3,7 @@ import { useStore } from "@tanstack/react-form";
 import type { ReactNode } from "react";
 import * as React from "react";
 import { Text, View } from "react-native";
-import { FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldTitle } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { messageOf } from "@/lib/error-message";
@@ -47,6 +47,7 @@ type RadioGroupFieldProps<
   variant?: "row" | "card" | "segmented" | undefined;
   /** How the options are laid out. Defaults to the variant's own. */
   orientation?: "vertical" | "horizontal" | undefined;
+  /** No option can be chosen, and the title and the description fade with the options. */
   disabled?: boolean | undefined;
   loop?: boolean | undefined;
   className?: string | undefined;
@@ -110,7 +111,8 @@ function RadioGroupFieldBody({
   ) : null;
 
   return (
-    <View role="group" testID="radio-group-field" className={cn("w-full min-w-0 gap-2", className)}>
+    // `Field`, so the title and the description fade with the options when it is `disabled`.
+    <Field testID="radio-group-field" disabled={disabled} className={cn("min-w-0", className)}>
       {actionSlot ? (
         <View className="min-w-0 flex-row items-center gap-2">
           {title}
@@ -168,7 +170,7 @@ function RadioGroupFieldBody({
           {error}
         </FieldError>
       ) : null}
-    </View>
+    </Field>
   );
 }
 

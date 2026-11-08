@@ -100,6 +100,9 @@ test that finds them by name needs changing:
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
+| `FormField`, `Field`, the bound fields | New: `disabled` on `FormField` and `Field`, and as a field prop on every bound field on both halves, fades the label and the description with the control ([#466](https://github.com/cubicecho/cubeui/issues/466)). On a bound field it was already passed to the control, and still is. |
+| `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
+| `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -228,6 +231,20 @@ to add them.
   of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
   counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
   `bottomBarClassName` for it.
+- **A disabled field fades its label and its description**
+  ([#466](https://github.com/cubicecho/cubeui/issues/466)). They used to stay at full ink over a faded
+  control. `FormField` reads the control's own `disabled` too, so a
+  `controlSlot={<Input disabled />}` fades its field with no change at the call site.
+  `SwitchField` now fades its description with its caption. A `labelClassName="opacity-50"` you
+  added to get this can go.
+- **The date triggers look like fields**
+  ([#464](https://github.com/cubicecho/cubeui/issues/464)). `DatePicker`, `DateRangePicker` and
+  `DateTimeInput` stay on the page background under the pointer and under focus, where they used
+  to fill grey, and focus turns the edge `active`. A refused one is edged in `negative`, on both
+  halves. A searchable or `multiple` `Combobox` now draws its refused edge on device too.
+- **A refused checkbox or switch is red when checked**
+  ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
+  box's or an on switch's `active` one, and the device halves draw it.
 
 ## Checking the result
 

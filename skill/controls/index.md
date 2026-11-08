@@ -35,11 +35,12 @@ second answer.
 |---|---|---|
 | Under the pointer | `hover:bg-hover` | Grey, on every unchosen control and row. A filled button darkens its own fill instead: `hover:bg-neutral/90`. A chosen thing tints a step further: `hover:bg-active/60`. |
 | Keyboard focus | the hover look: `focus-visible:bg-hover` | No ring. A row whose focus is on a child uses `has-[:focus-visible]:bg-hover`. A filled button looks hovered too: `focus-visible:bg-hover focus-visible:text-foreground`, so its label and icon turn `foreground` with the fill. A chosen thing looks hovered as a chosen thing does: `focus-visible:bg-active/60`, its ink unchanged. |
-| Focus in a field | `focus:border-active` | Input, textarea, select trigger. No ring here either. |
+| Focus in a field | `focus:border-active` | Input, textarea, select trigger, and a trigger drawn as a field: a combobox's, a date picker's (`focus-visible:border-active`, and no fill). No ring here either. |
 | Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A filled button darkens its own fill: `active:bg-neutral/90`; a chosen thing tints further: `active:bg-active/60`. |
 | Chosen | `bg-active/40 text-foreground`, `hover:bg-active/60` | Every chosen, current, checked, on or selected thing: the current sidebar row, the active tab, the pressed segment, an on chip, a picked day, a table row, a `ListItem`, `Item` or `FileTree` file with `selected`, the option a select or a combobox is on, a checked menu row. A tint, so the thing's own text, badges and colour dots still read; its text is `foreground`, the secondary lines and quiet icons included, because the `/60` grey is under 4.5:1 on the tint. |
 | Chosen, with an edge | the tint and `border-active` | A control whose edge is what shows it is there — a checked box, an on switch's track, a chosen radio's circle, an on chip, a radio tile, a selected `StatTile`. The tint is not 3:1 from the surface, and the `active` edge is. The check, the thumb and the dot are `foreground`, 3:1 or more on the tint. |
-| Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. It takes no hover. |
+| Refused | `border-negative` | The edge of a field, a field-like trigger, a checkbox or a switch, from `aria-invalid`. It wins over a checked box's or an on switch's `active` edge. A field's focus still turns its edge `active`; a box or a switch shows focus in its fill and keeps the `negative` edge. |
+| Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. It takes no hover. A field fades as one: `disabled` on `Field`, `FormField` or a bound field fades the label and the description with the control. |
 
 - **Chosen is the active tint, a step stronger under the pointer.** Never the hover grey, and
   hover never `active`: a grey chosen row is a hover that stuck. Never a solid `bg-active` either:

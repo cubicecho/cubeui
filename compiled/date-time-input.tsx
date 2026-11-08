@@ -43,6 +43,11 @@ type DateTimeInputSharedProps = {
   mode?: "datetime" | "date" | undefined;
   /** What the trigger reads while the value is `null`. Only reachable with `clearable`. */
   placeholder?: string | undefined;
+  /**
+   * Neither the date nor the time can be changed. A bound `DateTimeField` passes its own
+   * `disabled` here, and fades its label with it.
+   */
+  disabled?: boolean | undefined;
   className?: string | undefined;
   /**
    * The trigger's id — what a `FieldLabel htmlFor` points at on the web. React Native takes `id`
@@ -67,7 +72,10 @@ type DateTimeInputSharedProps = {
   "aria-labelledby"?: string | undefined;
   /** Web only, on the trigger: native has no description relation. A bound field's hint and error. */
   "aria-describedby"?: string | undefined;
-  /** Web only, on the trigger. */
+  /**
+   * The value was refused: the trigger's edge turns `negative` on both halves, as a field's does.
+   * The attribute itself is web only, on the trigger.
+   */
   "aria-invalid"?: boolean | "true" | "false" | undefined;
   /** Web only, on the trigger. */
   "aria-required"?: boolean | "true" | "false" | undefined;
@@ -99,6 +107,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
   const {
     mode = "datetime",
     placeholder = "Pick a date",
+    disabled,
     className,
     id,
     "aria-label": ariaLabel,
@@ -172,6 +181,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
         <PickerTrigger
           id={id}
           empty={!value}
+          disabled={disabled}
           valueId={valueId}
           // A name on a button replaces its contents, so a bare "Due" would drop the date — the
           // part of the field that changes. Both are in the name instead: an `aria-label` is
@@ -210,7 +220,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${timeId}` : undefined}
           value={value ? format(value, "HH:mm") : ""}
           onChangeText={handleTimeChange}
-          disabled={!value}
+          disabled={disabled === true || !value}
           className="w-28"
         />
       ) : null}

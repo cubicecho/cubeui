@@ -37,6 +37,11 @@ export type SwitchProps = {
    */
   "aria-describedby"?: string | undefined;
   /**
+   * The value was refused: a validator's error. The track's edge turns `negative`, over the
+   * `active` edge of an on switch. A bound field sets it.
+   */
+  "aria-invalid"?: boolean | "true" | "false" | undefined;
+  /**
    * The switch's tooltip, as on `Button`: shown on hover and focus on the web and on a long press on
    * device, and the switch's description. With it, `disabled` keeps the switch focusable and
    * refuses the press (`aria-disabled`), so the reason it cannot be changed can still be read —
