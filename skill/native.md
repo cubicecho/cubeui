@@ -47,12 +47,14 @@ and `<GridLayout contentSlot={cards} />`, where the cards are an array or a frag
 gets a cell.
 
 A screen is `PageLayout`, on the phone as on the web: its title block pinned over a body that
-scrolls. A detail screen for one record puts `LoadState` in front of it, with `record` and
-`notFoundLabel`: placeholder rows (`RowSkeleton`) while it loads, a level-1 `EmptyState` when the
-record is not found (`level={2}` when the guard is inside a screen that has its own title), and
-nothing once it is there — see [layout/lists.md](layout/lists.md#loadstate).
+scrolls. A detail screen for one record is a `PageLayout` that is always drawn, with `loading`
+while the record loads, and `LoadState` in its body with `record`, `notFoundLabel` and
+`level={2}`: the title's bar while it loads (`LoadState` draws no rows of its own there), the
+failure or a not-found block with `description` and a way back in `actionSlot`, and nothing once
+the record is there — see [layout/lists.md](layout/lists.md#detail-pages).
 A detail screen's header is that `PageLayout`'s own: the way back in `backSlot`, a colour dot in
-`iconSlot`, the record's name as `title`, and its badges with the buttons in `actionSlot`.
+`iconSlot`, the record's name as `title` (the kind of thing, "Project", until it is there), and
+its badges with the buttons in `actionSlot`.
 
 | The shape you are building | Use | Item |
 | --- | --- | --- |

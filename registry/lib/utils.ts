@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import {
   cloneElement,
+  createContext,
   createElement,
   isValidElement,
   type ReactElement,
@@ -113,6 +114,15 @@ export function fieldTriggerClass(
  * The type sees one level: text inside a fragment is past it.
  */
 export type SlotNode = ReactElement | readonly SlotNode[] | false | null | undefined;
+
+/**
+ * Whether the page this sits in is showing that it is still loading — `PageLayout`'s `loading`,
+ * provided over its body. `LoadState` reads it and draws no placeholder rows of its own while it
+ * is on, so a detail screen shows its wait once, as the title's bar, rather than a title bar with
+ * a list's rows under it on a page that has no list. Here rather than in either item so neither
+ * has to install the other.
+ */
+export const PageLoadingContext = createContext(false);
 
 /** A handler cloned onto a child: one event of whatever kind its prop hands it, or none. */
 type AddedHandler = (event: never) => void;

@@ -593,13 +593,26 @@ export const States: Story = {
                 <NativeSection
                   title="Projects"
                   status={
-                    <NativeLoadState compact query={pending} what="projects" count={0} rows={2} />
+                    <NativeLoadState
+                      compact
+                      className="px-2"
+                      query={pending}
+                      what="projects"
+                      count={0}
+                      rows={2}
+                    />
                   }
                 />
                 <NativeSection
                   title="Shared"
                   status={
-                    <NativeLoadState compact query={failed} what="shared projects" count={0} />
+                    <NativeLoadState
+                      compact
+                      className="px-2"
+                      query={failed}
+                      what="shared projects"
+                      count={0}
+                    />
                   }
                 />
               </>
@@ -616,13 +629,26 @@ export const States: Story = {
                 <CompiledSection
                   title="Projects"
                   status={
-                    <CompiledLoadState compact query={pending} what="projects" count={0} rows={2} />
+                    <CompiledLoadState
+                      compact
+                      className="px-2"
+                      query={pending}
+                      what="projects"
+                      count={0}
+                      rows={2}
+                    />
                   }
                 />
                 <CompiledSection
                   title="Shared"
                   status={
-                    <CompiledLoadState compact query={failed} what="shared projects" count={0} />
+                    <CompiledLoadState
+                      compact
+                      className="px-2"
+                      query={failed}
+                      what="shared projects"
+                      count={0}
+                    />
                   }
                 />
               </>

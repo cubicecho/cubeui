@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent } from "storybook/test";
-import { LoadState } from "@/components/load-state";
+import { EmptyState } from "@/components/empty-state";
+import { LoadError, LoadState } from "@/components/load-state";
+import { PageLayout } from "@/components/page-layout";
 import { QueryState } from "@/components/query-state";
+import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
 
@@ -261,6 +264,124 @@ export const RecordFound: Story = {
   play: async ({ canvas }) => {
     expect(canvas.queryByRole("heading", { name: "Project not found" })).toBeNull();
     expect(canvas.getByText("Telos")).toBeVisible();
+  },
+};
+
+/**
+ * Not found, with what probably happened and the way back, so the screen is not a dead end.
+ */
+export const NotFoundWithAWayBack: Story = {
+  args: {
+    query: settled,
+    what: "this project",
+    record: null,
+    notFoundLabel: "Project not found",
+    description: "It may have been archived, or the link is old.",
+    actionSlot: <Button variant="outline" content="Back to projects" />,
+    level: 2,
+  },
+  play: async ({ canvas }) => {
+    expect(canvas.getByRole("heading", { level: 2, name: "Project not found" })).toBeVisible();
+    expect(canvas.getByText("It may have been archived, or the link is old.")).toBeVisible();
+    expect(canvas.getByRole("button", { name: "Back to projects" })).toBeVisible();
+  },
+};
+
+/**
+ * The detail recipe: a `PageLayout` whose `loading` is on, and `LoadState` in its body. The
+ * title's bar is the page's only loading state; the body draws no list-row placeholders under it.
+ */
+export const InsideALoadingPage: Story = {
+  args: {
+    query: { ...settled, isPending: true },
+    what: "this project",
+    record: undefined,
+    notFoundLabel: "Project not found",
+    level: 2,
+  },
+  parameters: { layout: "fullscreen" },
+  render: (args) => (
+    <div className="h-96">
+      <PageLayout title="Project" loading contentSlot={<LoadState {...args} />} />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    expect(canvasElement.querySelector('[data-slot="page-header"]')).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    expect(canvas.getByRole("heading", { level: 1, name: "Loading…" })).toBeInTheDocument();
+    expect(canvasElement.querySelector('[data-slot="row-skeleton"]')).toBeNull();
+    expect(canvas.queryByRole("status")).toBeNull();
+  },
+};
+
+/**
+ * A page whose title is not waiting leaves `loading` off, and `LoadState` draws its rows in the
+ * body as it does anywhere else.
+ */
+export const InsideAPageThatIsNotLoading: Story = {
+  args: { query: { ...settled, isPending: true }, what: "the pool's members", count: 0 },
+  parameters: { layout: "fullscreen" },
+  render: (args) => (
+    <div className="h-96">
+      <PageLayout title="Pool settings" contentSlot={<LoadState {...args} />} />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    expect(canvas.getByRole("status")).toHaveAccessibleName("Loading");
+    expect(canvasElement.querySelectorAll('[data-slot="row-skeleton"]')).toHaveLength(3);
+  },
+};
+
+/**
+ * The full failure on a wide page is capped and centred, as the empty and not-found blocks are,
+ * so Try again stays beside the words it answers rather than at the far edge.
+ */
+export const FailedOnAWidePage: Story = {
+  args: {
+    query: { ...settled, isError: true, error: new Error("Failed to fetch") },
+    what: "this project",
+    record: undefined,
+    notFoundLabel: "Project not found",
+  },
+  render: (args) => (
+    <div data-testid="page" className="flex w-[1200px] flex-col">
+      <LoadState {...args} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const page = canvas.getByTestId("page").getBoundingClientRect();
+    const box = canvas.getByRole("alert").getBoundingClientRect();
+    const MAX = 576;
+    expect(box.width).toBeLessThanOrEqual(MAX);
+    // Centred: as much room on each side, to the pixel.
+    expect(Math.abs(box.left - page.left - (page.right - box.right))).toBeLessThan(1);
+  },
+};
+
+/**
+ * The two compact rungs that stand in for a short list inside a card agree: no side inset, so
+ * both keep the card's left edge, and the same type size.
+ */
+export const CompactRungsAgree: Story = {
+  args: { query: settled, what: "the team", count: 0 },
+  render: () => (
+    <div data-testid="card" className="flex w-80 flex-col px-4">
+      <LoadError compact error={new Error("502 Bad Gateway")} onRetry={fn()} what="the team" />
+      <EmptyState compact title="Nobody has closed anything this week." />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const card = canvas.getByTestId("card");
+    const inset = Number.parseFloat(getComputedStyle(card).paddingLeft);
+    const edge = card.getBoundingClientRect().left + inset;
+    const failure = canvas.getByText("502 Bad Gateway");
+    const empty = canvas.getByText("Nobody has closed anything this week.");
+    expect(canvas.getByRole("alert").getBoundingClientRect().left).toBe(edge);
+    expect(empty.getBoundingClientRect().left).toBe(edge);
+    expect(failure.getBoundingClientRect().left).toBe(edge);
+    expect(getComputedStyle(failure).fontSize).toBe(getComputedStyle(empty).fontSize);
   },
 };
 
