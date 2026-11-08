@@ -29,7 +29,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { holdOpen } from "@/components/ui/dialog-base";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { CardBodyContext, cn, hasSlot, type SlotNode } from "@/lib/utils";
 import {
   type ActionPlacement,
   CardLayout,
@@ -110,10 +110,16 @@ const DIALOG_SURFACE: FloatingSurface = {
         scroll
         className={CHASSIS}
         headerSlot={headerSlot}
-        // Four pixels of room either side, given back as padding: a focus ring is drawn outside
-        // the element that owns it, and a scroll container clips at its edge.
-        contentClassName={cn("-mx-1 min-w-0 px-1", contentClassName)}
-        contentSlot={contentSlot}
+        // Room either side, given back as padding: a focus ring is drawn outside the element
+        // that owns it, a `List` or a `Table` reaches out by its rows' inset as it does in a
+        // card's body, and a scroll container clips at its edge. It is a row's 12px, the widest
+        // of the three, so a list here does not scroll sideways.
+        contentClassName={cn("-mx-3 min-w-0 px-3", contentClassName)}
+        contentSlot={
+          // The dialog's content reset it, as every floating surface does; on this panel the
+          // card is the panel, so its body is a card's body again.
+          <CardBodyContext.Provider value={true}>{contentSlot}</CardBodyContext.Provider>
+        }
         footerSlot={
           hasSlot(footerSlot) ? (
             <DialogFooter className={footerClassName}>{footerSlot}</DialogFooter>

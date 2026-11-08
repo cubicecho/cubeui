@@ -42,7 +42,7 @@ import {
   holdOpen,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
-import { addHandlers, cn } from "@/lib/utils";
+import { addHandlers, CardBodyContext, cn } from "@/lib/utils";
 
 /** The open side of the same problem, read by `DialogTrigger`. */
 const DialogOpenContext = createContext<(open: boolean) => void>(() => {});
@@ -232,7 +232,7 @@ function DialogContent({
           className,
         )}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {showCloseButton ? (
           <Pressable
             className={DIALOG_DISMISS_CLASS}

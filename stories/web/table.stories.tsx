@@ -463,6 +463,63 @@ export const LinesUpInACard: Story = {
   },
 };
 
+/**
+ * A table too wide for its card still lines up with the card's title while it scrolls sideways
+ * (#525). Its container is a tab stop then, with `FOCUS_EDGE`'s border round it, and that pixel
+ * moved the first column one off the title: the table reaches one pixel further to give it back.
+ * The line is still a border, and still turns `active` when the table is tabbed to.
+ */
+export const LinesUpWhileItScrolls: Story = {
+  render: () => (
+    <div className="flex w-48 flex-col gap-4">
+      <CardLayout
+        title="Servers"
+        actionSlot={<Button size="sm" variant="info" content="Add" />}
+        contentSlot={<Servers />}
+      />
+      <CardLayout
+        title="Unnamed servers"
+        actionSlot={<Button size="sm" variant="info" content="Add more" />}
+        contentSlot={
+          <Table aria-label="Unnamed servers">
+            <TableBody>
+              {SERVERS.map((server) => (
+                <TableRow key={server.name}>
+                  <TableHead>{server.name}</TableHead>
+                  <TableCell>{server.transport}</TableCell>
+                  <TableCell>{server.status}</TableCell>
+                  <TableCell className="text-right">{server.tools}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        }
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const containers = ["Servers in this workspace", "Unnamed servers"].map(
+      (name) => canvas.getByRole("table", { name }).parentElement as HTMLElement,
+    );
+    for (const container of containers) {
+      await waitFor(() => expect(container).toHaveAttribute("tabindex", "0"));
+    }
+    // Only the start edge is checked: scrolled to its start, the last column is out of view.
+    const textLeft = (cell: Element) =>
+      cell.getBoundingClientRect().left + Number.parseFloat(getComputedStyle(cell).paddingLeft);
+    for (const [index, title] of ["Servers", "Unnamed servers"].entries()) {
+      const container = containers[index] as HTMLElement;
+      const first = container.querySelector("tr > *");
+      if (!first) {
+        throw new Error(`${title} should have a row of cells`);
+      }
+      const heading = canvas.getByRole("heading", { name: title }).getBoundingClientRect();
+      await expect(textLeft(first)).toBeCloseTo(heading.left, 0);
+    }
+    await expectFocusEdge(containers[1] as HTMLElement, canvasElement);
+  },
+};
+
 /** Which rows of a selectable table tint under the pointer. */
 function Selectable() {
   const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set(["github"]));

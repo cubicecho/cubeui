@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Text } from "react-native";
-import { expect, within } from "storybook/test";
+import { expect, screen, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
 import { List as CompiledList } from "../compiled/list";
@@ -11,6 +11,8 @@ import { List as NativeList } from "../registry/layout/list";
 import { ListItem as NativeListItem } from "../registry/layout/list-item";
 import { Section as NativeSection } from "../registry/layout/section";
 import { Button as NativeButton } from "../registry/ui/button";
+import { Dialog as DeviceDialog, DialogContent, DialogTitle } from "../registry/ui/dialog.tsx";
+import { Popover as DevicePopover, PopoverContent } from "../registry/ui/popover.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -645,6 +647,66 @@ export const ListInACard: Story = {
     // A list on its own takes no margin: there is no padding round it to reach into.
     for (const loose of canvas.getAllByRole("list", { name: "Loose members" })) {
       await expect(getComputedStyle(loose).marginLeft).toBe("0px");
+    }
+  },
+};
+
+/** A device list of the members, named for the surface it is drawn on. */
+const deviceMembers = (on: string) => (
+  <NativeList
+    label={`${on} list`}
+    contentSlot={MEMBERS.map((m) => <NativeListItem key={m.email} title={m.name} meta={m.role} />)}
+  />
+);
+
+/**
+ * The device half of `Layout/CardLayout`'s `OverlaysLeaveTheCard` (#525): a dialog and a popover
+ * opened from a card's body are not in the card, so a `List` in either keeps its own inset. A
+ * `Modal` is a portal under react-native-web, and context passes through it as it does through
+ * radix's. The device halves are imported by their full names, as Vite would otherwise resolve
+ * the `.web.tsx` beside each.
+ */
+export const OverlaysLeaveTheCard: Story = {
+  args: {},
+  // react-native-web's `Modal` puts `aria-modal` on a box with no role, and the device card is not
+  // named by its title: both are the device dialog's under a browser, as
+  // `dialog-backdrop.stories.tsx` finds, and not what this story checks.
+  parameters: {
+    a11y: {
+      config: {
+        rules: [
+          { id: "aria-allowed-attr", enabled: false },
+          { id: "aria-dialog-name", enabled: false },
+        ],
+      },
+    },
+  },
+  render: () => (
+    <Native
+      title="Members"
+      contentSlot={
+        <>
+          {deviceMembers("Card")}
+          <DeviceDialog defaultOpen>
+            <DialogContent>
+              <DialogTitle>Members</DialogTitle>
+              {deviceMembers("Dialog")}
+            </DialogContent>
+          </DeviceDialog>
+          <DevicePopover defaultOpen>
+            <PopoverContent>{deviceMembers("Popover")}</PopoverContent>
+          </DevicePopover>
+        </>
+      }
+    />
+  ),
+  play: async () => {
+    // The card's own list reaches out, so the context is there to leak.
+    const inCard = await screen.findByRole("list", { name: "Card list" });
+    await expect(getComputedStyle(inCard).marginLeft).not.toBe("0px");
+    for (const on of ["Dialog", "Popover"]) {
+      const list = await screen.findByRole("list", { name: `${on} list` });
+      await expect(getComputedStyle(list).marginLeft).toBe("0px");
     }
   },
 };

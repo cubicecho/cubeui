@@ -408,6 +408,12 @@ to add them.
   `CardLayout`'s body it reaches 8px into the card's padding, so the first column starts where the
   card's title does and the last ends where its action does, as a `List` there does. Its rules
   run nearly edge to edge. A `-mx-2` you put round such a table can go.
+- **A dialog's body is a card's body, and an overlay is not**
+  ([#525](https://github.com/cubicecho/cubeui/issues/525)). A `List` or a `Table` in a
+  `DialogLayout`'s body now lines up with the dialog's title, as it does in a card. The body has
+  12px of room either side for it, where it had 4px, so its scrollbar sits 8px nearer the edge. A
+  dialog, popover, menu or select opened from inside a card no longer pulls a list in it out to
+  edges it does not have. An overflowing table in a card stays level with the card's title.
 - **The two halves agree** ([#472](https://github.com/cubicecho/cubeui/issues/472)).
   - A `Button`'s icon is 14px at `xs` (it was 16px on the web) and 20px at `icon-lg` (it was
     16px), on both halves. On device every size now sizes its icon: it was lucide's own 24px. A
