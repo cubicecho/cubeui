@@ -190,7 +190,8 @@ export const ToastOverADialog: Story = {
 
     const toast = await screen.findByRole("alert");
     await expect(toast).toHaveTextContent("Could not rename the lane");
-    await expect(toast).toBeVisible();
+    // The dialog's `Modal` fades in, and the toast is drawn inside it, so it fades in with it.
+    await waitFor(() => expect(toast).toBeVisible());
     const box = toast.getBoundingClientRect();
     const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
     await expect(hit !== null && toast.contains(hit)).toBe(true);
