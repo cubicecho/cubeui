@@ -8,7 +8,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode, touchRowClass } from "@/lib/utils";
 
 type ListItemProps = {
   /**
@@ -108,16 +108,49 @@ export function rowFillClass(selected: boolean, pressable: boolean) {
  */
 const MIDDLE_CLASS = cn(HEADING_WRAP_FLOOR, "flex-row items-center gap-3");
 
-/** The pressed part of a row, whichever of a button or a link it is. */
+/**
+ * The pressed part of a row, whichever of a button or a link it is. As tall as the row, so a leading
+ * avatar or an action taller than the words does not leave a strip above and below it unpressed; it
+ * centres its own words, as the row did.
+ */
 const BODY_CLASS = cn(
   MIDDLE_CLASS,
-  "rounded-sm",
+  "self-stretch rounded-md",
   Platform.select({
     web: "text-left focus-visible:outline-none",
     // Pressed looks hovered, as a menu's or a command's row does: not a fade, which reads disabled.
     default: "active:bg-hover",
   }),
 );
+
+/**
+ * The pressed part of a row, out to the row's own edges (#470). The row lights as a whole, and its
+ * padding — `Item`'s `sm`, `px-3 py-2` in `item-base.ts` — was outside the press: a 54px row was a
+ * 38px target. The padding is given back to the pressed part inside a negative margin, so nothing
+ * moves and a press anywhere on the lit row opens it. Not over the leading slot or the action,
+ * which keep presses of their own. What the padding takes from the wrap floor's basis is added back,
+ * so the action wraps at the width it did. On device the pressed part is also 44pt tall.
+ *
+ * For a pressed part inside an `Item size="sm"`, after its own classes: `ListItem`'s middle and
+ * `CollapsibleRow`'s trigger.
+ */
+export function rowPressInsetClass({
+  leading,
+  action,
+}: {
+  leading: boolean;
+  action: boolean;
+}): string {
+  const start = leading === false;
+  const end = action === false;
+  return cn(
+    "-my-2 py-2",
+    start && "-ml-3 pl-3",
+    end && "-mr-3 pr-3",
+    start && end ? "basis-46" : (start || end) && "basis-43",
+    touchRowClass(),
+  );
+}
 
 type RowLinkOptions = {
   /** The pressed part's `testID` on device and `data-slot` on the web: `list-item-body`. */
@@ -271,10 +304,15 @@ export function ListItem({
     />
   );
 
+  const bodyClass = cn(
+    BODY_CLASS,
+    rowPressInsetClass({ leading: Boolean(leadingSlot), action: Boolean(actionSlot) }),
+  );
+
   // The body in the one form its props ask for: the caller's link, a link, a button, or plain.
   const pressableBody = () => {
     if (linkSlot) {
-      return rowLink(linkSlot, { slot: "list-item-body", className: BODY_CLASS, selected }, body);
+      return rowLink(linkSlot, { slot: "list-item-body", className: bodyClass, selected }, body);
     }
     if (href !== undefined) {
       return (
@@ -287,7 +325,7 @@ export function ListItem({
             ? ({ href, "aria-current": selected ? "page" : undefined } as const)
             : {})}
           {...(onPress ? { onPress } : {})}
-          className={BODY_CLASS}
+          className={bodyClass}
         >
           {body}
         </Pressable>
@@ -300,7 +338,7 @@ export function ListItem({
           role="button"
           aria-current={selected ? true : undefined}
           onPress={onPress}
-          className={BODY_CLASS}
+          className={bodyClass}
         >
           {body}
         </Pressable>

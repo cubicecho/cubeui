@@ -186,3 +186,43 @@ web only, and a native call site keeps to the shared contract.
 so on screen, and `FilePickerButton` draws a disabled button that says so as its hint, because picking a file needs `expo-document-picker` and a permission flow that is
 the app's choice. The contract is there, including `multiple`, `read` and `onPickMany`. The
 picking is not, and `directory` is web only.
+
+## Touch targets
+
+On a device everything a finger presses is 44pt or more each way, and cubeui's controls already
+are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24px or more (WCAG
+2.5.8). How each gets there on device:
+
+- **A row pressed as a whole is 44pt tall**: `ListItem`'s middle, `CollapsibleRow`, `Collapsible`'s
+  header, `FileTree` rows, `SidebarItem`, menu rows, a select's options and a `RadioGroup` row. The
+  press covers the whole lit row, its padding included, on both halves.
+- **A small control keeps its look and takes a `hitSlop` to 44pt**: `Checkbox`, `Switch`, the bare
+  radio circle, a toast's ✕ and a badge's ✕.
+- **A control with words in it is 44pt tall and as wide as its label**: `Button`, `ToggleChip`,
+  `SegmentedButton` and a radio segment. They sit side by side, so only the height grows.
+  `icon`, `icon-sm` and `icon-lg` are 44pt square. `icon-xs` is 36 by 44: it sits 4px from the next
+  button, and where two targets overlap the later one takes the press. On a phone, use `icon-sm`
+  for an icon button that stands alone.
+- **`AppBarItem` is a 44pt box with its 32pt look inside**, and along the bottom bar each place
+  takes its whole share of the bar.
+- **A bound `CheckboxField` or `SwitchField`'s caption presses its control** on device too, as a
+  `<label>` does on the web.
+- **A tab is not there yet.** The list scrolls, and a scroller clips a touch to its 40pt frame, so
+  a tab's target is the tab itself.
+
+A pressable of your own takes the same two helpers, from `@/lib/utils`:
+
+```tsx
+// A small control with room around it: a `hitSlop` on device, nothing on the web.
+const DRAWN = { width: 20, height: 20 } as const;
+<Pressable {...touchTarget(DRAWN)} onPress={toggle} className="size-5" />
+
+// A row, or anything stacked against the next one: `min-h-11` on device.
+<Pressable onPress={open} className={cn("flex-row items-center px-3 py-2", touchRowClass())} />
+```
+
+Give `touchTarget` only the sides you know: `{ height: 28 }` grows a text control's height and
+leaves its width alone. A `hitSlop` does not reach past a `ScrollView` or an `overflow-hidden` box,
+nor, on Android, past its parent's edge, and of two overlapping targets the later sibling takes
+the touch. So a row takes `touchRowClass()`, which is real height, and a `hitSlop` is for a control
+with room around it.

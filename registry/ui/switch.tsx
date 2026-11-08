@@ -18,7 +18,10 @@ import {
   type SwitchProps,
 } from "@/components/ui/switch-base";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn, isInvalid } from "@/lib/utils";
+import { cn, isInvalid, touchTarget } from "@/lib/utils";
+
+/** `SWITCH_TRACK_CLASS`'s `h-5 w-9`, grown to a finger's 44pt by a `hitSlop` on device (#470). */
+const DRAWN = { width: 36, height: 20 } as const;
 
 /** A control that is on or off. */
 function Switch({
@@ -81,6 +84,7 @@ function Switch({
         onCheckedChange?.(!checked);
       }}
       onBlur={onBlur}
+      {...touchTarget(DRAWN)}
       className={cn(
         SWITCH_TRACK_CLASS,
         // No ring when focused, for Expo web: each state shows focus as it shows the pointer.

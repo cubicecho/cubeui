@@ -26,7 +26,10 @@ import { Platform, Pressable, Text, View } from "react-native";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { type BottomBarUntil, useBottomBar } from "@/lib/bottom-bar";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode, touchTarget } from "@/lib/utils";
+
+/** The dismiss ✕'s drawn box, a 16px glyph in `p-1`, grown to a finger's 44pt on device (#470). */
+const DISMISS_DRAWN = { width: 24, height: 24 } as const;
 
 /**
  * What kind of message a toast is, which picks its colour, how long it stays and how it is
@@ -319,6 +322,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 onPress={() => dismiss(toast.id)}
                 accessibilityRole="button"
                 accessibilityLabel="Dismiss"
+                {...touchTarget(DISMISS_DRAWN)}
                 // The ink is on the press target too, not only in the context: the glyph draws in
                 // `currentColor`, and a `<button>` resets that to the UA's black.
                 // Under the pointer, the keyboard and a finger it looks the same: hovered.

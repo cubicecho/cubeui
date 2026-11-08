@@ -18,7 +18,13 @@
  */
 import * as React from "react";
 import { Platform, Pressable, Text } from "react-native";
-import { cn } from "@/lib/utils";
+import { cn, touchTarget } from "@/lib/utils";
+
+/**
+ * Each size's drawn height, `h-7` and `h-9`, grown to a finger's 44pt by a `hitSlop` on device
+ * (#470). Only the height: chips sit side by side, where a wider target would take a neighbour's.
+ */
+const DRAWN = { sm: { height: 28 }, default: { height: 36 } } as const;
 
 export type ToggleChipProps = Omit<
   React.ComponentProps<typeof Pressable>,
@@ -96,6 +102,7 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         className,
       )}
       {...(backgroundColor ? { style: { backgroundColor } } : {})}
+      {...touchTarget(DRAWN[size])}
       {...props}
     >
       {typeof children === "string" || typeof children === "number" ? (

@@ -29,7 +29,14 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode, touchTarget } from "@/lib/utils";
+
+/**
+ * A pill's drawn height, its label's 20px line and its padding: 28px in the frame and 32px out of
+ * it. Grown to a finger's 44pt by a `hitSlop` on device (#470), and only the height: pills sit
+ * side by side, where a wider target would take a neighbour's.
+ */
+const DRAWN = { framed: { height: 28 }, bare: { height: 32 } } as const;
 
 /**
  * The container class, for a pill the caller renders itself.
@@ -300,12 +307,12 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
           // Inside the frame, `rounded-sm`: the radius nested in the frame's, as a tab's is.
           "cube-rn-view cube-rn-pressable",
           group?.framed ? "rounded-sm px-3 py-1" : "rounded-md px-3 py-1.5",
-          // The current pill is the chosen tint, a step further under the pointer and focused;
-          // another looks hovered when focused, as `RadioGroup`'s segments do. Neither draws a ring.
+          // The current pill is the chosen tint, a step further under the pointer, focused and
+          // pressed; another looks hovered then, as `RadioGroup`'s segments do. Neither draws a ring.
           "focus-visible:outline-none",
           current
-            ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60"
-            : "group hover:bg-hover focus-visible:bg-hover",
+            ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+            : "group hover:bg-hover focus-visible:bg-hover active:bg-hover",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
           // colour can only come from inheriting it here.
@@ -318,6 +325,7 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
           iconSlot ? iconOnlyHeight : undefined,
           className,
         )}
+        {...touchTarget(group?.framed ? DRAWN.framed : DRAWN.bare)}
         {...(props as React.ComponentPropsWithoutRef<"button">)}
       >
         {/* Colour does not inherit on device, so the icon is handed the label's. */}
