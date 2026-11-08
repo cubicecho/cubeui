@@ -561,3 +561,69 @@ export const SelectedMetaTakesTheRowInk: Story = {
     }
   },
 };
+
+// An object store's keys as listed: a folder marker with its trailing `/`, a doubled `/`, numbered
+// files, and `logs`, a file of its own beside the `logs/` folder.
+const BUCKET: Entry[] = [
+  { path: "logs", type: "file", size: 64 },
+  { path: "logs/run10.log", type: "file", size: 128 },
+  { path: "exports/", type: "dir" },
+  { path: "logs/run2.log", type: "file", size: 128 },
+  { path: "exports//full.csv", type: "file", size: 2048 },
+];
+
+const selectBucketNative = fn();
+const selectBucketCompiled = fn();
+
+/**
+ * A bucket's keys, which a directory walk never hands back: no row has an empty name, `run2`
+ * sorts before `run10`, and the file `logs` is drawn beside the folder `logs` rather than lost
+ * under it.
+ */
+export const ObjectStoreKeys: Story = {
+  args: { label: "Bucket", entries: BUCKET },
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root" style={{ width: 240 }}>
+          <Native label="Bucket" entries={BUCKET} onSelect={selectBucketNative} />
+        </div>
+      }
+      compiled={
+        <div className="compiled-root" style={{ width: 240 }}>
+          <Compiled label="Bucket" entries={BUCKET} onSelect={selectBucketCompiled} />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const cases = [
+      { selector: ".native-root", select: selectBucketNative },
+      { selector: ".compiled-root", select: selectBucketCompiled },
+    ];
+    for (const { selector, select } of cases) {
+      const root = rootOf(canvasElement, selector);
+      const canvas = within(root);
+      select.mockClear();
+
+      await expect(names(root)).toEqual([
+        "exports",
+        "full.csv",
+        "logs",
+        "run2.log",
+        "run10.log",
+        "logs",
+      ]);
+
+      // Two rows called `logs`: the folder folds, and the file opens.
+      const [folder, file] = canvas.getAllByRole("button", { name: "logs" });
+      await expect(folder).toHaveAttribute("aria-expanded", "true");
+      await expect(file).not.toHaveAttribute("aria-expanded");
+      if (!file) {
+        throw new Error("the file `logs` should be drawn");
+      }
+      await userEvent.click(file);
+      await expect(select).toHaveBeenCalledWith("logs");
+    }
+  },
+};
