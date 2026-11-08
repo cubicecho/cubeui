@@ -35,7 +35,7 @@ import {
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { cn } from "@/lib/utils";
+import { cn, hasSlot } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -148,7 +148,7 @@ function MenuItem({
     <>
       {/* The icon quieter than the label, except on a destructive row, where it follows the
           row's `negative` through currentColor. */}
-      {iconSlot ? (
+      {hasSlot(iconSlot) ? (
         <span className={cn("flex shrink-0", destructive === false && "text-foreground/60")}>
           {iconSlot}
         </span>
@@ -233,7 +233,7 @@ function ToggleRowBody({
 }: Pick<MenuCheckboxItemProps, "iconSlot" | "label" | "trailing">) {
   return (
     <>
-      {iconSlot ? (
+      {hasSlot(iconSlot) ? (
         <span className={cn("flex shrink-0 text-foreground/60", ON_CHECKED_INK)}>{iconSlot}</span>
       ) : null}
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>

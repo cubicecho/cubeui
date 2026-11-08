@@ -19,7 +19,7 @@ import {
   useRovingFocus,
   useRovingItem,
 } from "@/lib/roving-focus";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 type Focusable = React.ElementRef<typeof Pressable>;
 
@@ -289,7 +289,7 @@ function RadioGroupItem({
     if (segmented) {
       return (
         <>
-          {iconSlot ? (
+          {hasSlot(iconSlot) ? (
             // Colour does not inherit on device, so the glyph is handed the label's ink, as a
             // `SegmentedButton`'s is; on the web it takes `currentColor` from the segment.
             <IconClassContext.Provider value={cn("size-4 shrink-0", segmentInk)}>
@@ -307,7 +307,9 @@ function RadioGroupItem({
     if (card) {
       return (
         <>
-          {iconSlot ? <View className="items-center justify-center">{iconSlot}</View> : null}
+          {hasSlot(iconSlot) ? (
+            <View className="items-center justify-center">{iconSlot}</View>
+          ) : null}
           {/* The radio's own dot beside the label: a 1px edge in another colour was the only
               thing that said which card was chosen, and colour is not to be the only signal. */}
           <View className="min-w-0 flex-row items-center justify-center gap-2">

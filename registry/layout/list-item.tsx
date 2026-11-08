@@ -8,7 +8,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 
 type ListItemProps = {
   /**
@@ -323,11 +323,15 @@ export function ListItem({
         className,
       )}
     >
-      {leadingSlot ? <ItemMedia testID="list-item-leading">{leadingSlot}</ItemMedia> : null}
+      {hasSlot(leadingSlot) ? (
+        <ItemMedia testID="list-item-leading">{leadingSlot}</ItemMedia>
+      ) : null}
 
       {pressableBody()}
 
-      {actionSlot ? <ItemActions testID="list-item-action">{actionSlot}</ItemActions> : null}
+      {hasSlot(actionSlot) ? (
+        <ItemActions testID="list-item-action">{actionSlot}</ItemActions>
+      ) : null}
     </Item>
   );
 }

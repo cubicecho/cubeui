@@ -26,7 +26,7 @@ import { Platform, Pressable, Text, View } from "react-native";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { type BottomBarUntil, useBottomBar } from "@/lib/bottom-bar";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
  * What kind of message a toast is, which picks its colour, how long it stays and how it is
@@ -230,7 +230,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       const id = nextId.current++;
       const { actionSlot } = options;
       const kind = TONE[tone];
-      const hasAction = actionSlot !== undefined && actionSlot !== null && actionSlot !== false;
+      const hasAction = typeof actionSlot === "function" || hasSlot(actionSlot);
       const duration = hasAction
         ? Math.max(DURATION_MS[kind], ACTION_MIN_DURATION_MS)
         : DURATION_MS[kind];
@@ -307,13 +307,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                     and a link beside the message would squeeze it to a column. */}
               <View className="min-w-0 flex-1 gap-1.5">
                 <Text className="text-sm text-foreground">{toast.message}</Text>
-                {toast.actionSlot === undefined ? null : (
+                {typeof toast.actionSlot === "function" || hasSlot(toast.actionSlot) ? (
                   <View className="flex-row flex-wrap items-center gap-2">
                     {typeof toast.actionSlot === "function"
                       ? toast.actionSlot(() => dismiss(toast.id))
                       : toast.actionSlot}
                   </View>
-                )}
+                ) : null}
               </View>
               <Pressable
                 onPress={() => dismiss(toast.id)}

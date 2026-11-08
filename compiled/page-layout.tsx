@@ -14,11 +14,12 @@
  * differences all live in the chassis and the header.
  */
 import type { ReactNode } from "react";
-import { cn, PageLoadingContext, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, PageLoadingContext, type SlotNode } from "@/lib/utils";
 import {
   COLUMNS,
   HeaderContentFooter,
   type HeaderContentFooterProps,
+  insetColumn,
 } from "./header-content-footer";
 import { PageHeader, type PageHeaderLevel, type PageHeaderSize } from "./page-header";
 
@@ -103,7 +104,11 @@ export type PageLayoutProps = {
    * body's `px-4` comes with `width` and is not here.
    */
   contentClassName?: string | undefined;
-  /** On the footer bar, after its own top rule and `py-3`. */
+  /**
+   * On the footer bar, after its own top rule and `py-3`. The bar runs the full width, as the
+   * header does, and holds `footerSlot` in the body's column: classes that lay out the footer's
+   * own parts go on the node passed, not here.
+   */
   footerClassName?: string | undefined;
 };
 
@@ -141,13 +146,14 @@ export function PageLayout({
 }: PageLayoutProps) {
   // `PageHeader`'s own rule, drawn on the header around it instead, so that the line runs the
   // full width under the bars rather than across the title's column above them.
-  const rule = level === 1 && Boolean(headerContentSlot) === false ? HEADER_RULE : undefined;
+  const rule = level === 1 && hasSlot(headerContentSlot) === false ? HEADER_RULE : undefined;
 
   return (
     // `h-full` because the chassis needs a height to divide, whichever part ends up scrolling.
     <HeaderContentFooter
       width={width}
       headerWidth="full"
+      footerWidth="full"
       scroll={scroll}
       contentRef={contentRef}
       scrollRef={scrollRef}
@@ -157,7 +163,9 @@ export function PageLayout({
       // its rows flush says so with `py-0` or `gap-0`, merged after.
       contentClassName={cn("gap-4 py-4", contentClassName)}
       // A pinned footer over a scrolling body gets the boundary the header has, and room in it:
-      // bare, it read as one more row flush to the bottom edge. The caller's classes after.
+      // bare, it read as one more row flush to the bottom edge. The rule runs the full width, as
+      // the header's does, and what is in the footer keeps the body's column. The caller's
+      // classes after.
       footerClassName={cn("border-t border-foreground/10 py-3", footerClassName)}
       headerClassName={cn(rule, headerClassName)}
       headerSlot={
@@ -181,7 +189,16 @@ export function PageLayout({
       contentSlot={
         <PageLoadingContext.Provider value={loading}>{contentSlot}</PageLoadingContext.Provider>
       }
-      footerSlot={footerSlot}
+      footerSlot={
+        hasSlot(footerSlot) ? (
+          <div
+            data-slot="page-layout-footer"
+            className={cn("cube-rn-view", "min-w-0", insetColumn(width))}
+          >
+            {footerSlot}
+          </div>
+        ) : null
+      }
     />
   );
 }

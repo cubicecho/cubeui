@@ -11,7 +11,7 @@
 
 import type { ReactNode } from "react";
 import { cloneElement, isValidElement, useId } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { DescriptionHint, DescriptionHintText } from "./description-hint";
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel, FieldTitle } from "./field";
 import { Skeleton } from "./skeleton";
@@ -367,11 +367,11 @@ export function FormField({
 
   // Only drawn when there is a second thing on the row. A label on its own is the row.
   const header =
-    help || actionSlot ? (
+    help || hasSlot(actionSlot) ? (
       <div data-slot="form-field-label-row" className="flex min-w-0 items-center gap-2">
         {labelNode}
         {help}
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <div data-slot="form-field-action" className="ml-auto shrink-0">
             {actionSlot}
           </div>

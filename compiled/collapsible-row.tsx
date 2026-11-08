@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 import { CollapsibleTrigger } from "./collapsible";
 import { Item, ItemActions } from "./item";
 import { ListItemText, rowFillClass } from "./list-item";
@@ -67,7 +67,7 @@ export function CollapsibleRow({
   contentClassName,
 }: CollapsibleRowProps) {
   const contentId = React.useId();
-  const isOpen = open && Boolean(contentSlot);
+  const isOpen = open && hasSlot(contentSlot);
 
   const heading = (
     <div className="cube-rn-view min-w-0 flex-row flex-wrap items-center gap-2">
@@ -109,7 +109,7 @@ export function CollapsibleRow({
           controls={isOpen ? contentId : undefined}
           contentSlot={<ListItemText title={heading} description={description} meta={meta} />}
         />
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <ItemActions data-slot="collapsible-row-action">{actionSlot}</ItemActions>
         ) : null}
       </Item>

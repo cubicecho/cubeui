@@ -25,7 +25,7 @@
  * `CardLayout`, `Section` and `SettingRow` fold the same way.
  */
 import type { ReactNode } from "react";
-import type { SlotNode } from "@/lib/utils";
+import { hasSlot, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { CircleQuestionMark } from "./icons";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -171,7 +171,7 @@ function DescribedTitle({
   triggerTestID,
   rowTestID,
 }: DescribedTitleProps) {
-  const hasRow = Boolean(titleSlot) && Boolean(folded || leadingSlot);
+  const hasRow = hasSlot(titleSlot) && (folded || hasSlot(leadingSlot));
   return (
     <>
       {hasRow ? (

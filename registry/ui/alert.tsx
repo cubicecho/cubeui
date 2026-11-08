@@ -19,7 +19,7 @@ import { Children, isValidElement, type ReactNode } from "react";
 import { Text, View } from "react-native";
 import { CircleAlert, Info, TriangleAlert } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** The kinds of callout, which pick its tint, icon and role. */
 export type AlertVariant = "default" | "info" | "warning" | "destructive";
@@ -159,7 +159,7 @@ export function Alert({
   const glyph = iconSlot !== undefined ? iconSlot : ownIcon;
   const ink = ALERT_ICON_INK[variant];
   // Held empty only when nothing chose otherwise: `null`, or children of the compound form, do.
-  const drawn = Boolean(glyph) || iconParts.length > 0;
+  const drawn = hasSlot(glyph) || iconParts.length > 0;
   const column = drawn || (iconSlot === undefined && parts.length === 0);
 
   return (
@@ -193,7 +193,7 @@ export function Alert({
         {description ? <AlertDescription>{description}</AlertDescription> : null}
         {textParts}
       </View>
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <View testID="alert-action" className="shrink-0 self-center">
           {actionSlot}
         </View>

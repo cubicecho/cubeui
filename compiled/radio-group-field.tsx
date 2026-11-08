@@ -20,7 +20,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Field, FieldDescription, FieldError, FieldTitle } from "./field";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Skeleton } from "./skeleton";
@@ -122,7 +122,7 @@ function RadioGroupFieldBody({
   return (
     // `Field`, so the title and the description fade with the options when it is `disabled`.
     <Field data-slot="radio-group-field" disabled={disabled} className={cn("min-w-0", className)}>
-      {actionSlot ? (
+      {hasSlot(actionSlot) ? (
         <div className="cube-rn-view min-w-0 flex-row items-center gap-2">
           {title}
           <div className="cube-rn-view ml-auto shrink-0">{actionSlot}</div>

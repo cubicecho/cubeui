@@ -102,7 +102,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `format` | both | `lib/format.ts` | `import { formatBytes, formatCount, joinStats, formatDuration, formatDate, formatDateTime, … 1 more } from "@/lib/format"` |
 | `frame-focus-guard` | both | `lib/frame-focus-guard.ts` | `import { acquireFrameFocusGuard, useFrameFocusGuard, FrameFocusGuard } from "@/lib/frame-focus-guard"` |
 | `grid-layout` | both | `components/grid-layout.tsx` | `import { GridLayout } from "@/components/grid-layout"` |
-| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, COLUMNS, HeaderContentFooter } from "@/components/header-content-footer"` |
+| `header-content-footer` | both | `components/header-content-footer.tsx` | `import { PAGE_COLUMN, PROSE_COLUMN, COLUMNS, insetColumn, HeaderContentFooter } from "@/components/header-content-footer"` |
 | `icons` | web | `components/ui/icons.tsx`; also `icons-base.ts` | `import { icon, Activity, Archive, ArchiveRestore, ArrowDownWideNarrow, ArrowLeft, … 60 more } from "@/components/ui/icons"` |
 | `icons` | native | `components/ui/icons.tsx`; also `icons-base.ts`, `icons.web.tsx` | `import { icon, Activity, Archive, ArchiveRestore, ArrowDownWideNarrow, ArrowLeft, … 60 more } from "@/components/ui/icons"` |
 | `input` | web | `components/ui/input.tsx`; also `input-base.ts` | `import { Input } from "@/components/ui/input"` |
@@ -111,7 +111,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `item` | native | `components/ui/item.tsx`; also `item-base.ts`, `item.web.tsx` | `import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemGroup, … 4 more } from "@/components/ui/item"` |
 | `label` | web | `components/ui/label.tsx`; also `label-base.ts` | `import { Label } from "@/components/ui/label"` |
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
-| `layout` | web | a set: `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
+| `layout` | web | a set: `app-bar`, `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `grid-layout`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
 | `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, ListItemText, ListItem } from "@/components/list-item"` |
 | `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |
@@ -183,5 +183,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 13 more } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 13 more } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 15 more } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 15 more } from "@/lib/utils"` |

@@ -20,7 +20,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Badge } from "./badge";
 import { HeaderContentFooter, type HeaderContentFooterProps } from "./header-content-footer";
 import { ChevronLeft, ChevronRight } from "./icons";
@@ -177,8 +177,10 @@ export function Sidebar({
           // `flex-1` beside `h-full`, not `h-full` alone: the frame's own border is inside its
           // height, and a percentage height would overflow it by the border's width.
           className="h-full min-h-0 flex-1"
-          // Folded, the header's inset is the rows', so what is in it lines up with their icons.
-          headerClassName={cn("gap-2", collapsed ? "p-2" : "p-3", headerClassName)}
+          // The header's inset is the rows' own: 16px open, the body's `p-2` and a row's `px-2`, so
+          // the brand starts where the row icons and the section titles do. Folded, it is the
+          // body's alone, so what is in it centres over the icons.
+          headerClassName={cn("gap-2", collapsed ? "p-2" : "px-4 py-3", headerClassName)}
           contentClassName={cn("gap-4 p-2", contentClassName)}
           footerClassName={cn("gap-0.5 border-foreground/10 border-t p-2", footerClassName)}
         />
@@ -228,7 +230,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * The title's heading rank. `2` by default — the sidebar sits beside the page, not under its
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
    */
-  level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  level?: 1 | 2 | 3 | undefined;
   /** On the whole section, the title row and its list together. */
   className?: string | undefined;
   /** On the list the rows are items of. */
@@ -275,7 +277,7 @@ export function SidebarSection({
   const sectionClassName = cn("min-w-0 gap-1", className);
 
   // Folded, the action is gone, so only a title is worth a heading row.
-  const headed = Boolean(collapsed ? title : title || actionSlot);
+  const headed = collapsed ? hasSlot(title) : hasSlot(title) || hasSlot(actionSlot);
 
   const body = (
     <>
@@ -289,7 +291,7 @@ export function SidebarSection({
           )}
         >
           <div className="cube-rn-view min-w-0 flex-1">
-            {title ? (
+            {hasSlot(title) ? (
               <SectionHeading
                 data-slot="sidebar-section-title"
                 id={titleId}
@@ -301,7 +303,7 @@ export function SidebarSection({
               </SectionHeading>
             ) : null}
           </div>
-          {actionSlot && collapsed === false ? (
+          {hasSlot(actionSlot) && collapsed === false ? (
             <div data-slot="sidebar-section-action" className="cube-rn-view shrink-0">
               {actionSlot}
             </div>
@@ -314,7 +316,7 @@ export function SidebarSection({
       {rows.length > 0 ? (
         <ul
           data-slot="sidebar-section-list"
-          {...(title ? { "aria-labelledby": titleId } : {})}
+          {...(hasSlot(title) ? { "aria-labelledby": titleId } : {})}
           className={cn("cube-rn-view", "min-w-0 gap-0.5", contentClassName)}
         >
           {rows.map((row, index) => (
@@ -335,7 +337,7 @@ export function SidebarSection({
   // Two roots written out rather than one with a chosen role: the compiler picks the tag from the
   // role, and a role it cannot read is one it refuses.
   if (as === "nav") {
-    const titled = title ? { "aria-labelledby": titleId } : {};
+    const titled = hasSlot(title) ? { "aria-labelledby": titleId } : {};
     return (
       <nav
         data-slot="sidebar-section"
@@ -548,7 +550,7 @@ function SidebarItemBody({
     // it is still something to aim at rather than a gap in the rail.
     return (
       <>
-        {iconSlot ? (
+        {hasSlot(iconSlot) ? (
           <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
             {iconSlot}
           </IconClassContext.Provider>
@@ -568,7 +570,7 @@ function SidebarItemBody({
 
   return (
     <>
-      {iconSlot ? (
+      {hasSlot(iconSlot) ? (
         <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
           {iconSlot}
         </IconClassContext.Provider>
@@ -584,7 +586,7 @@ function SidebarItemBody({
       >
         {label}
       </span>
-      {status?.iconSlot ? (
+      {status !== undefined && hasSlot(status.iconSlot) ? (
         <div data-slot="sidebar-item-status-icon" aria-hidden className="cube-rn-view shrink-0">
           <IconClassContext.Provider value={cn("size-4 shrink-0", muted)}>
             {status.iconSlot}
@@ -595,7 +597,11 @@ function SidebarItemBody({
       {status ? (
         <span
           data-slot="sidebar-item-status"
-          className={cn("cube-rn-text", "shrink-0 text-xs", status.iconSlot ? SR_ONLY : muted)}
+          className={cn(
+            "cube-rn-text",
+            "shrink-0 text-xs",
+            hasSlot(status.iconSlot) ? SR_ONLY : muted,
+          )}
         >
           {status.label}
         </span>
@@ -780,7 +786,8 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
 const AppBarItem = React.forwardRef<HTMLButtonElement, AppBarItemProps>(
   ({ href, label, iconSlot, count, status, active = false, className, ...props }, ref) => {
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
-    const text = active ? "text-foreground" : "text-foreground/60";
+    // Full ink whether current or not, as a sidebar row is: the current place is the tint.
+    const text = "text-foreground";
     const name = rowName(label, status, count);
     const edge = React.useContext(AppBarEdgeContext);
 
@@ -800,13 +807,14 @@ const AppBarItem = React.forwardRef<HTMLButtonElement, AppBarItemProps>(
               href={href}
               aria-current={active ? "page" : undefined}
               className={cn(
+                // 36px, an `icon-sm` button's square, so a place and the bar's actions are one size.
                 "cube-rn-view cube-rn-pressable",
-                "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
+                "relative size-9 shrink-0 items-center justify-center rounded-md transition-colors",
                 "focus-visible:outline-none",
                 "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
                 active
                   ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
+                  : "text-foreground hover:bg-hover focus-visible:bg-hover",
                 className,
               )}
               {...(props as React.ComponentPropsWithoutRef<"a">)}

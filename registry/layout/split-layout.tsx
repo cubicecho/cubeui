@@ -12,7 +12,7 @@ import { ScrollView, View } from "react-native";
 import { AppBar, type AppBarNav } from "@/components/app-bar";
 import { useOverflows } from "@/components/ui/overflows";
 import { useReportBottomBar } from "@/lib/bottom-bar";
-import { cn, INSET_FOCUS_EDGE, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, INSET_FOCUS_EDGE, type SlotNode } from "@/lib/utils";
 
 /**
  * How much of the split one pane claims. The other takes the rest.
@@ -251,9 +251,10 @@ export function SplitLayout({
   // Rule 5 — an absent slot draws nothing. Not an empty cell, and not a gap still spent: with one
   // pane there is one column and it has the whole width. Its box is exactly the split's, as is a
   // row that never stacks, so neither has anything for the scroller to move.
-  const stacks = Boolean(secondSlot) && stackBelow !== "never";
+  const hasSecond = hasSlot(secondSlot);
+  const stacks = hasSecond && stackBelow !== "never";
   const [measured, overflows] = useOverflows();
-  const row = secondSlot
+  const row = hasSecond
     ? cn(STACK_BELOW[stackBelow], DIVIDERS[divider], stacks ? FILL_FROM[stackBelow] : "h-full")
     : "h-full flex-col";
 
@@ -276,11 +277,11 @@ export function SplitLayout({
     >
       <View
         testID="split-layout-first"
-        className={cn(PANE, secondSlot ? (secondWidth ? rest : sized) : undefined, firstClassName)}
+        className={cn(PANE, hasSecond ? (secondWidth ? rest : sized) : undefined, firstClassName)}
       >
         {firstSlot}
       </View>
-      {secondSlot && divider === "line" ? (
+      {hasSecond && divider === "line" ? (
         // The rule is an element of its own rather than a border on a pane, so that when the
         // panes stack it becomes a row between them instead of a line down one side of the screen.
         <View
@@ -289,7 +290,7 @@ export function SplitLayout({
           className={cn("shrink-0 self-stretch bg-foreground/10", DIVIDER_AT[stackBelow])}
         />
       ) : null}
-      {secondSlot ? (
+      {hasSecond ? (
         <View
           testID="split-layout-second"
           className={cn(PANE, secondWidth ? sized : rest, secondClassName)}
@@ -403,10 +404,10 @@ type SidebarLayoutNarrow =
       brandSlot?: SlotNode | undefined;
       /**
        * One line saying what state the app is in — "3/5 servers running" — between the `navSlot`
-       * and the `actionSlot`. It gets the width the rest of the bar leaves and no more, so on a
-       * narrow bar it is the first thing to give way: a string is cut short with an ellipsis, down
-       * to nothing, before the brand, a place or an action loses a pixel. A node is clipped to the
-       * same box and truncates itself.
+       * and the `actionSlot`. It gets the width the rest of the bar leaves, so on a narrow bar it
+       * is the first thing to give way: a string wraps onto a second line, and more, down to its
+       * longest word, and is never cut short. Past that the places scroll. A node is clipped to
+       * the width left over, down to nothing, and truncates itself.
        */
       status?: ReactNode | undefined;
       /** The bar's far end: the theme switch, sign out — the rail's footer, in one row. */
@@ -505,24 +506,27 @@ export function SidebarLayout({
   bottomBarClassName,
 }: SidebarLayoutProps) {
   const navAtBottom = barPosition === "bottom";
+  const hasNav = hasSlot(navSlot);
   const topNavSlot = navAtBottom ? undefined : navSlot;
+  const hasTopBar =
+    hasSlot(brandSlot) || hasSlot(topNavSlot) || hasSlot(status) || hasSlot(actionSlot);
   // Told to the toasts, so one raised on a phone sits above the places rather than over them.
-  useReportBottomBar(navAtBottom && navSlot && sidebarHideBelow ? sidebarHideBelow : undefined);
+  useReportBottomBar(navAtBottom && hasNav && sidebarHideBelow ? sidebarHideBelow : undefined);
   // Rule 5 — the bar, and the column it sits in, are drawn only when there is something in the
   // bar. Without one the content pane holds the caller's node exactly as it always has.
   // Built in an `if`, not a ternary: a ternary of two object literals is widened into one shape
   // with both keys optional, which `AppBar`'s either-or nav props reject under
   // `exactOptionalPropertyTypes`.
   let barNav: AppBarNav = {};
-  if (topNavSlot && navLabel !== undefined) {
+  if (hasSlot(topNavSlot) && navLabel !== undefined) {
     barNav = { navSlot: topNavSlot, navLabel };
   }
   const main =
-    sidebarHideBelow && (brandSlot || navSlot || status || actionSlot) ? (
+    sidebarHideBelow && (hasTopBar || hasNav) ? (
       <View testID="sidebar-layout-main" className={COLUMN}>
         {/* Rule 5 again: with the places along the bottom and nothing else given, there is no
             bar at the top to draw. */}
-        {brandSlot || topNavSlot || status || actionSlot ? (
+        {hasTopBar ? (
           <AppBar
             brandSlot={brandSlot}
             {...barNav}
@@ -534,7 +538,7 @@ export function SidebarLayout({
         <View testID="sidebar-layout-content" className={BELOW_HEADER}>
           {contentSlot}
         </View>
-        {navAtBottom && navSlot ? (
+        {navAtBottom && hasNav ? (
           // The landmark is the bar itself: there is nothing else in it to tell apart from the
           // places. `justify-around` spreads them over the width, each with the same room.
           <View
@@ -542,7 +546,7 @@ export function SidebarLayout({
             aria-label={navLabel}
             testID="sidebar-layout-bottom-bar"
             className={cn(
-              "min-h-14 shrink-0 flex-row items-center justify-around gap-1 border-foreground/10 border-t bg-background px-4 pt-2",
+              "min-h-14 shrink-0 flex-row items-center justify-around gap-2 border-foreground/10 border-t bg-background px-4 pt-2",
               BOTTOM_BAR_INSET,
               HEADER_HIDE_FROM[sidebarHideBelow],
               bottomBarClassName,
@@ -558,7 +562,7 @@ export function SidebarLayout({
 
   // No sidebar is one pane, and `firstSlot` is the one that is there — passing an absent
   // `firstSlot` with a present `secondSlot` would be a hole in the middle of the row.
-  if (!sidebarSlot) {
+  if (hasSlot(sidebarSlot) === false) {
     return <SplitLayout firstSlot={main} firstClassName={contentClassName} className={className} />;
   }
 

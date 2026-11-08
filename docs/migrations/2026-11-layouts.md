@@ -114,6 +114,10 @@ test that finds them by name needs changing:
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
 | `tree`, `FileTree` | `buildTree` sorts `file2` before `file10`, and drops empty path segments, so an object store's `docs/` key is the folder `docs` and not an unnamed folder inside it. A file that shares its path with a folder is kept as its own row, after the folders, and the folder is drawn too; before, nothing under the folder was drawn ([#468](https://github.com/cubicecho/cubeui/issues/468)). Tell a file from a folder by `type`, not `path`. |
+| `HeaderContentFooter` | New: `footerWidth`, the footer's own column, as `headerWidth` is the header's ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
+| `PageLayout` | `footerClassName` lands on the footer bar, which now runs the full width; `footerSlot` sits in the body's column inside it ([#483](https://github.com/cubicecho/cubeui/issues/483)). Classes there that laid out the footer's own parts, such as `flex-row justify-between`, go on the node you pass. |
+| `SidebarSection` | `level` takes `1 \| 2 \| 3`, as every `level` in the set does. A `level` of 4 to 6 is a type error ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
+| `lib/utils` | New: `hasSlot(node)`, whether a slot holds anything to draw: `[]`, `false`, `null`, `undefined` and `""` do not ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -125,6 +129,7 @@ test that finds them by name needs changing:
 | `split-layout` | Now installs `app-bar` too. |
 | `item` | Now installs `separator` too. |
 | `list-item` | Now installs `item` too, and so `collapsible-row` does. |
+| `layout` (the set) | Now installs `grid-layout` and `app-bar` too ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 
 ### New files
 
@@ -443,6 +448,27 @@ to add them.
     and a soft badge's dot is 8px (it was 6px), the size of a bare badge's dot. `ColorDot` moves
     a hex into the lightness band `ColorBar` uses, so a navy tag shows in dark mode and a yellow
     one on white, and it now installs `@cubeui/color`.
+- **The shells line up and draw empty slots as absent** ([#483](https://github.com/cubicecho/cubeui/issues/483)).
+  - An empty array in a slot is no slot, as `null` is. `filters.map(…)` over no filters in a
+    page header's `contentSlot` no longer draws an empty row, and the rule under the title stays.
+    The same holds for every shell's slots.
+  - `Sidebar`'s header is inset 16px, where it was 12px, so a brand starts where the row labels and
+    the section titles do. A header that set its own `px-4` to line up can drop it.
+  - `PageLayout`'s footer rule runs the full width, as the header's does, while what is in the
+    footer keeps the body's column. At `prose` it was clipped to the column.
+  - An `AppBarItem` is 36px, where it was 32px, the size of an `icon-sm` action, and a place that
+    is not the current one is in full ink, where it was faint. The bar's places and actions sit
+    8px apart, where they were 4px, and so do the places in `SidebarLayout`'s bottom bar. A phone
+    fits about four places beside a brand, two actions and a status, where it fitted five. Pass
+    the bar's actions at `icon-sm` or `sm`.
+  - `AppBar`'s `status` wraps onto more lines rather than cutting off with an ellipsis, down to its
+    longest word, and the places scroll past that. A long status makes the bar taller: keep it
+    short. Its actions keep the end and its status lines up against them in a right-to-left page.
+  - A `List` in a card's body reaches into the card's padding by a row's inset, so each row's title
+    starts where the card's title does and its rules run nearly edge to edge. A `-mx-3` you put
+    on such a list can go. A row of your own in it brings `ListItem`'s `px-3`.
+  - `GridLayout`'s cells are `min-w-0`, and the grid and its cells have the `data-slot`s
+    `grid-layout` and `grid-layout-cell`.
 
 ## Checking the result
 

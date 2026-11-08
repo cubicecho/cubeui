@@ -17,7 +17,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { IconClassContext, type IconComponent } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /**
  * The glyph, as an element, as every other shell takes it: `iconSlot={<Plug />}`. `icon`, the
@@ -128,7 +128,7 @@ export function EmptyState({
         testID="empty"
         className={cn("w-full flex-row flex-wrap items-center gap-x-2 gap-y-1 py-2", className)}
       >
-        {glyph == null ? null : (
+        {hasSlot(glyph) === false ? null : (
           // At the text's size and ink: the context on device, the descendant class on the web,
           // where an icon takes `currentColor` and ignores the context.
           <View

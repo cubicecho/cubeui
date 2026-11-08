@@ -18,6 +18,7 @@ import {
   HEADING_TITLE,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
+  hasSlot,
   type SlotNode,
 } from "@/lib/utils";
 import { ChevronRight } from "./icons";
@@ -163,7 +164,7 @@ export function Collapsible({
   const [ownOpen, setOwnOpen] = React.useState(defaultOpen);
   const open = openProp ?? ownOpen;
   const contentId = React.useId();
-  const shown = open && contentSlot !== undefined && contentSlot !== null && contentSlot !== false;
+  const shown = open && hasSlot(contentSlot);
 
   const toggle = () => {
     if (openProp === undefined) {
@@ -200,7 +201,7 @@ export function Collapsible({
             </div>
           }
         />
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <div
             data-slot="collapsible-action"
             className={cn("cube-rn-view", "shrink-0 flex-row items-center", actionGap(actionSlot))}

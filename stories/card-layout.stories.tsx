@@ -4,9 +4,11 @@ import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
 import { List as CompiledList } from "../compiled/list";
+import { ListItem as CompiledListItem } from "../compiled/list-item";
 import { Section as CompiledSection } from "../compiled/section";
 import { CardLayout as Native } from "../registry/layout/card-layout";
 import { List as NativeList } from "../registry/layout/list";
+import { ListItem as NativeListItem } from "../registry/layout/list-item";
 import { Section as NativeSection } from "../registry/layout/section";
 import { Button as NativeButton } from "../registry/ui/button";
 import { SideBySide } from "./side-by-side";
@@ -549,5 +551,100 @@ export const Loading: Story = {
     await expect(skeletons).toHaveLength(2);
     await expect(canvas.getAllByRole("heading", { name: "Members" })).toHaveLength(2);
     await expect(canvas.queryByText("No members yet.")).toBeNull();
+  },
+};
+
+const MEMBERS = [
+  { name: "Ada Lovelace", email: "ada@example.com", role: "Owner" },
+  { name: "Grace Hopper", email: "grace@example.com", role: "Admin" },
+];
+
+/**
+ * A `List` in a card's body reaches into the card's padding by a row's own inset (#483), so a
+ * row's title starts where the card's title does and its far end lines up with the card's action.
+ * Inset twice, the rows' text sat 12px in from every other edge in the card, and the list read as
+ * a box set inside the card rather than as its body. Outside a card the list is where it was put.
+ */
+export const ListInACard: Story = {
+  args: {},
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col gap-4">
+          <Native
+            title="Members"
+            actionSlot={<NativeButton size="sm" variant="info" content="Invite" />}
+            contentSlot={
+              <NativeList
+                label="Members"
+                contentSlot={MEMBERS.map((m) => (
+                  <NativeListItem
+                    key={m.email}
+                    title={m.name}
+                    description={m.email}
+                    meta={m.role}
+                  />
+                ))}
+              />
+            }
+          />
+          <NativeList
+            label="Loose members"
+            contentSlot={MEMBERS.map((m) => (
+              <NativeListItem key={m.email} title={m.name} description={m.email} />
+            ))}
+          />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col gap-4">
+          <Compiled
+            title="Members"
+            actionSlot={<CompiledButton size="sm" variant="info" content="Invite" />}
+            contentSlot={
+              <CompiledList
+                label="Members"
+                contentSlot={MEMBERS.map((m) => (
+                  <CompiledListItem
+                    key={m.email}
+                    title={m.name}
+                    description={m.email}
+                    meta={m.role}
+                  />
+                ))}
+              />
+            }
+          />
+          <CompiledList
+            label="Loose members"
+            contentSlot={MEMBERS.map((m) => (
+              <CompiledListItem key={m.email} title={m.name} description={m.email} />
+            ))}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const titles = canvas.getAllByRole("heading", { name: "Members" });
+    const lists = canvas.getAllByRole("list", { name: "Members" });
+    const invites = canvas.getAllByRole("button", { name: "Invite" });
+    await expect(lists).toHaveLength(2);
+    for (const [index, list] of lists.entries()) {
+      const title = titles[index]?.getBoundingClientRect();
+      const invite = invites[index]?.getBoundingClientRect();
+      if (title === undefined || invite === undefined) {
+        throw new Error("each half should draw a titled card with an action");
+      }
+      const row = within(list).getByText("Ada Lovelace").getBoundingClientRect();
+      const meta = within(list).getByText("Owner").getBoundingClientRect();
+      await expect(row.left).toBeCloseTo(title.left, 0);
+      await expect(meta.right).toBeCloseTo(invite.right, 0);
+    }
+    // A list on its own takes no margin: there is no padding round it to reach into.
+    for (const loose of canvas.getAllByRole("list", { name: "Loose members" })) {
+      await expect(getComputedStyle(loose).marginLeft).toBe("0px");
+    }
   },
 };

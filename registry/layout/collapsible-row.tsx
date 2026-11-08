@@ -4,7 +4,7 @@ import { Platform, Text, View } from "react-native";
 import { CollapsibleTrigger } from "@/components/collapsible";
 import { ListItemText, rowFillClass } from "@/components/list-item";
 import { Item, ItemActions } from "@/components/ui/item";
-import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 
 type CollapsibleRowProps = {
   /**
@@ -58,7 +58,7 @@ export function CollapsibleRow({
   contentClassName,
 }: CollapsibleRowProps) {
   const contentId = React.useId();
-  const isOpen = open && Boolean(contentSlot);
+  const isOpen = open && hasSlot(contentSlot);
 
   const heading = (
     <View className="min-w-0 flex-row flex-wrap items-center gap-2">
@@ -99,7 +99,7 @@ export function CollapsibleRow({
           controls={isOpen ? contentId : undefined}
           contentSlot={<ListItemText title={heading} description={description} meta={meta} />}
         />
-        {actionSlot ? (
+        {hasSlot(actionSlot) ? (
           <ItemActions testID="collapsible-row-action">{actionSlot}</ItemActions>
         ) : null}
       </Item>

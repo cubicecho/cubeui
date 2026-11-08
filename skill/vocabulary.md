@@ -15,6 +15,10 @@ takes words has no `Slot` in its name (`title`, `description`, `label`), and the
 and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSlot`
 (`(parts, { className }) => …`).
 
+An empty array is no slot. `filters.map(…)` over no filters is `[]`, and a shell draws nothing for
+it, as for `null`: no empty row, no gap, and a rule it stands in for stays (`PageHeader`'s under the
+title). An app's own component that asks the same question uses `hasSlot` from `@/lib/utils`.
+
 **Everywhere:**
 
 - **`contentSlot`** — the body. The one slot that grows and the one that scrolls.

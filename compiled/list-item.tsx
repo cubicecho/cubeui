@@ -9,7 +9,7 @@
  */
 
 import { cloneElement, type ReactElement, type ReactNode } from "react";
-import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, hasSlot, type SlotNode } from "@/lib/utils";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "./item";
 
 type ListItemProps = {
@@ -299,11 +299,15 @@ export function ListItem({
         className,
       )}
     >
-      {leadingSlot ? <ItemMedia data-slot="list-item-leading">{leadingSlot}</ItemMedia> : null}
+      {hasSlot(leadingSlot) ? (
+        <ItemMedia data-slot="list-item-leading">{leadingSlot}</ItemMedia>
+      ) : null}
 
       {pressableBody()}
 
-      {actionSlot ? <ItemActions data-slot="list-item-action">{actionSlot}</ItemActions> : null}
+      {hasSlot(actionSlot) ? (
+        <ItemActions data-slot="list-item-action">{actionSlot}</ItemActions>
+      ) : null}
     </Item>
   );
 }

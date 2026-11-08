@@ -53,7 +53,7 @@ route should reach for first.
 | `className` | `string` |  | On the page's root, the box the header, body and footer divide. |
 | `headerClassName` | `string` |  | On the whole header — the title block and `headerBarSlot` — which runs the full width. The rule under it is here: `border-b-0` removes it, and `border-b border-foreground/10` draws it under a `headerContentSlot`, which otherwise has none. |
 | `contentClassName` | `string` |  | Merged after the body's own `gap-4 py-4`, so `py-0` or `gap-6` replaces just that half. The body's `px-4` comes with `width` and is not here. |
-| `footerClassName` | `string` |  | On the footer bar, after its own top rule and `py-3`. |
+| `footerClassName` | `string` |  | On the footer bar, after its own top rule and `py-3`. The bar runs the full width, as the header does, and holds `footerSlot` in the body's column: classes that lay out the footer's own parts go on the node passed, not here. |
 <!-- /props -->
 
 **Do not write the column yourself.** No `mx-auto max-w-3xl`, no `min-h-0 flex-1 overflow-y-auto`,
@@ -106,7 +106,10 @@ header for this:
 
 `footerSlot` is pinned under the body, and is drawn as the header is: a `border-foreground/10` rule
 above it and `py-3` round it, so a count or a "Last saved" line does not read as one more row of
-the list. `footerClassName` is merged after, for the footer that wants no rule (`border-t-0`).
+the list. The rule runs the full width, as the header's does, and what is in the footer keeps the
+body's column, so at `prose` it starts under the title. `footerClassName` is on that full-width
+bar, merged after, for the footer that wants no rule (`border-t-0`); lay out the footer's own parts
+on the node you pass.
 
 Tabs whose list is in the header and whose panels are in the body are one set of tabs with one
 root around the whole page. Give the root `h-full`, so the page still fills what it is in:
@@ -178,13 +181,14 @@ dialog body.
 | `scroll` | `boolean` | `false` | Whether the body scrolls inside the chassis rather than growing it. |
 | `width` | `"full" \| "page" \| "prose"` | `"full"` | - `full` — slots fill whatever box the chassis was given. Print sheets, dialogs, and anything already inside its own column. - `page` — slots share the capped, centred `PAGE_COLUMN`, inset to match the header. Every list page, every board. - `prose` — the narrower `PROSE_COLUMN`. Settings, a detail page, a form. |
 | `headerWidth` | `"full" \| "page" \| "prose"` |  | The header's own column, when it is not the body's: `full` lets a rule under the header, and a bar in it, run the full width over a body held to `page` or `prose`. What in the header should still sit over the body's column holds itself to it, with `COLUMNS[width]`. Absent, the header shares `width`. |
+| `footerWidth` | `"full" \| "page" \| "prose"` |  | The footer's own column, when it is not the body's: `full` lets the rule over the footer run the full width under a body held to `page` or `prose`, as `headerWidth` does for the header. What in the footer should still sit under the body's column holds itself to it, with `COLUMNS[width]` and the body's `px-4`. Absent, the footer shares `width`. |
 | `contentRef` | `Ref<ElementRef<typeof ScrollView>>` |  | The scrolling body, for a caller that has to reach it — restoring a scroll position. A `<div>` on the web and, while `scroll` is on, the `ScrollView` on device. |
 | `scrollRef` | `Ref<ScrollHandle>` |  | A handle that moves the body: `scrollRef.current?.scrollToEnd()`, the same on both halves. It does nothing while `scroll` is off, when there is no scrolling body to move. |
 | `onScroll` | `((position: ScrollPosition) => void)` |  | Called as the body scrolls, with where it now is — the same three numbers on the web and on device, so a list that follows its newest row can tell whether the reader is still at the end. Only a body that scrolls reports: with `scroll` off it is never called. |
 | `className` | `string` |  | On the root, the box the three parts divide. Give it a height (`h-full`, `flex-1`) for `scroll` to have one to divide. |
 | `headerClassName` | `string` |  | On the header, in its column: the one `headerWidth`, or else `width`, sets. |
 | `contentClassName` | `string` |  | On the box that holds `contentSlot`. With `scroll` and a `page` or `prose` width, that is the column inside the scroller, which runs the full width so its scrollbar is at the edge. On device, while `scroll` is on, it is the `ScrollView`'s content. Otherwise the body is one box. |
-| `footerClassName` | `string` |  | On the footer, in its column. A bar's own rule and padding go here. |
+| `footerClassName` | `string` |  | On the footer, in its column: the one `footerWidth`, or else `width`, sets. A bar's own rule and padding go here. |
 <!-- /props -->
 
 - `width="page"` caps and centres every slot on one column, so the title sits above the first
@@ -245,7 +249,10 @@ cards as an array or a fragment; both are opened, and a `null` left by a conditi
 ```
 
 - The cells hold anything of one kind: cards, stat tiles, a gallery of images. The width is on the
-  cell `GridLayout` draws, so a card in it carries no width of its own.
+  cell `GridLayout` draws, so a card in it carries no width of its own. Each cell is `min-w-0`, so
+  a long unbroken string wraps or scrolls inside it rather than widening it.
+- The grid is `data-slot="grid-layout"` and each cell `grid-layout-cell`, for reaching them from
+  outside.
 - It has no empty or loading state. `LoadState` goes above it, as it does above a list.
 - It was `CardGrid` in `@cubeui/page`, an item that is gone; only the import and the name change.
 

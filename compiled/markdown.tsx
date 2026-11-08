@@ -21,7 +21,7 @@ import ReactMarkdown, {
 } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CHECKBOX_CLASS } from "@/components/ui/checkbox-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { Code, CodeBlock } from "./code";
 import { Check, ChevronRight } from "./icons";
 import { Separator } from "./separator";
@@ -947,7 +947,7 @@ export function Markdown({
 
   if (content.trim() === "") {
     // Rule 5 — an absent slot draws nothing, and that includes the root.
-    return emptySlot ? (
+    return hasSlot(emptySlot) ? (
       <div data-slot="markdown" className={cn(DOCUMENT, className)}>
         {emptySlot}
       </div>

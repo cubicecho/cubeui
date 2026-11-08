@@ -1527,7 +1527,8 @@
       "registryDependencies": [
         "@cubeui/header-content-footer",
         "@cubeui/page-header",
-        "@cubeui/utils"
+        "@cubeui/utils",
+        "@cubeui/tokens"
       ],
       "files": [
         {
@@ -1776,6 +1777,7 @@
       "title": "Layout Set",
       "description": "Every cubeui layout shell in one install. Web-only: no React Native half.",
       "registryDependencies": [
+        "@cubeui/app-bar",
         "@cubeui/card-layout",
         "@cubeui/centered-card-layout",
         "@cubeui/collapsible",
@@ -1784,6 +1786,7 @@
         "@cubeui/empty-state",
         "@cubeui/error-page",
         "@cubeui/file-tree",
+        "@cubeui/grid-layout",
         "@cubeui/header-content-footer",
         "@cubeui/list",
         "@cubeui/list-item",

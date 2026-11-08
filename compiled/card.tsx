@@ -22,7 +22,7 @@
  */
 
 import * as React from "react";
-import { cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
+import { CardBodyContext, cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
 import { ColorBar } from "./color-bar";
 
 // `className` is re-declared rather than inherited: nativewind types it as
@@ -166,13 +166,18 @@ const CardDescription = React.forwardRef<HTMLSpanElement, TextProps>(
 );
 CardDescription.displayName = "CardDescription";
 
-/** The card's body. */
+/**
+ * The card's body. A `List` inside it reaches into its padding, so the rows line up with the
+ * card's title: see `CardBodyContext`.
+ */
 const CardContent = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
-  <div
-    ref={ref as React.Ref<HTMLDivElement>}
-    className={cn("cube-rn-view", "p-4 pt-0", className)}
-    {...(props as React.ComponentPropsWithoutRef<"div">)}
-  />
+  <CardBodyContext.Provider value={true}>
+    <div
+      ref={ref as React.Ref<HTMLDivElement>}
+      className={cn("cube-rn-view", "p-4 pt-0", className)}
+      {...(props as React.ComponentPropsWithoutRef<"div">)}
+    />
+  </CardBodyContext.Provider>
 ));
 CardContent.displayName = "CardContent";
 

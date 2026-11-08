@@ -19,7 +19,7 @@ import { Platform, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { CircleQuestionMark } from "@/components/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { SlotNode } from "@/lib/utils";
+import { hasSlot, type SlotNode } from "@/lib/utils";
 
 /** Where a description is drawn: under what it describes, or behind a button beside its title. */
 type DescriptionPlacement = "inline" | "popover";
@@ -165,7 +165,7 @@ function DescribedTitle({
   triggerTestID,
   rowTestID,
 }: DescribedTitleProps) {
-  const hasRow = Boolean(titleSlot) && Boolean(folded || leadingSlot);
+  const hasRow = hasSlot(titleSlot) && (folded || hasSlot(leadingSlot));
   return (
     <>
       {hasRow ? (

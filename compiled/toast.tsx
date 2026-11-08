@@ -33,7 +33,7 @@ import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { type BottomBarUntil, useBottomBar } from "@/lib/bottom-bar";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "./icons";
 
 /**
@@ -228,7 +228,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       const id = nextId.current++;
       const { actionSlot } = options;
       const kind = TONE[tone];
-      const hasAction = actionSlot !== undefined && actionSlot !== null && actionSlot !== false;
+      const hasAction = typeof actionSlot === "function" || hasSlot(actionSlot);
       const duration = hasAction
         ? Math.max(DURATION_MS[kind], ACTION_MIN_DURATION_MS)
         : DURATION_MS[kind];
@@ -307,13 +307,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                     and a link beside the message would squeeze it to a column. */}
               <div className="cube-rn-view min-w-0 flex-1 gap-1.5">
                 <span className="cube-rn-text text-sm text-foreground">{toast.message}</span>
-                {toast.actionSlot === undefined ? null : (
+                {typeof toast.actionSlot === "function" || hasSlot(toast.actionSlot) ? (
                   <div className="cube-rn-view flex-row flex-wrap items-center gap-2">
                     {typeof toast.actionSlot === "function"
                       ? toast.actionSlot(() => dismiss(toast.id))
                       : toast.actionSlot}
                   </div>
-                )}
+                ) : null}
               </div>
               <button
                 type="button"
