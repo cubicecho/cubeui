@@ -1,9 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Plus } from "lucide-react";
-import { expect } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "@/components/card-layout";
+import { DialogLayout } from "@/components/dialog-layout";
 import { EmptyState } from "@/components/empty-state";
+import { List } from "@/components/list";
+import { ListItem } from "@/components/list-item";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
 
 const meta = {
   title: "Layout/CardLayout",
@@ -255,5 +261,103 @@ export const FooterStartOnly: Story = {
     const title = canvas.getByText("Categories").getBoundingClientRect();
     const note = canvas.getByText("Synced an hour ago").getBoundingClientRect();
     expect(Math.round(note.left - title.left)).toBe(0);
+  },
+};
+
+const MEMBERS = [
+  { name: "Ada Lovelace", role: "Owner" },
+  { name: "Grace Hopper", role: "Admin" },
+];
+
+/** A `List` and a `Table` of the members, each named for the surface it is drawn on. */
+const Members = ({ on }: { on: string }) => (
+  <>
+    <List
+      label={`${on} list`}
+      contentSlot={MEMBERS.map((m) => <ListItem key={m.name} title={m.name} meta={m.role} />)}
+    />
+    <Table aria-label={`${on} table`}>
+      <TableBody>
+        {MEMBERS.map((m) => (
+          <TableRow key={m.name}>
+            <TableHead>{m.name}</TableHead>
+            <TableCell>{m.role}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </>
+);
+
+/** A dialog, a popover and a `DialogLayout`, each opened from inside the card's body. */
+const Overlays = () => (
+  <div className="flex flex-wrap gap-2">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" content="Open dialog" />
+      </DialogTrigger>
+      <DialogContent aria-describedby={undefined}>
+        <DialogTitle>Members</DialogTitle>
+        <Members on="Dialog" />
+      </DialogContent>
+    </Dialog>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" content="Open popover" />
+      </PopoverTrigger>
+      <PopoverContent aria-label="Members" className="flex-col gap-2">
+        <Members on="Popover" />
+      </PopoverContent>
+    </Popover>
+    <DialogLayout
+      title="Edit members"
+      triggerSlot={<Button variant="outline" content="Open form" />}
+      contentSlot={
+        <List
+          label="Form list"
+          contentSlot={MEMBERS.map((m) => <ListItem key={m.name} title={m.name} meta={m.role} />)}
+        />
+      }
+    />
+  </div>
+);
+
+/** The `List` and the table's container, each still where it was put: no margin reaching out. */
+async function expectNormalInset(on: string) {
+  const list = await screen.findByRole("list", { name: `${on} list` });
+  const table = screen.getByRole("table", { name: `${on} table` }).parentElement as HTMLElement;
+  await expect(getComputedStyle(list).marginLeft).toBe("0px");
+  await expect(getComputedStyle(table).marginLeft).toBe("0px");
+}
+
+/**
+ * A dialog or a popover opened from a card's body is not in the card (#525). Context passes
+ * through a portal, so the `List` and the `Table` in one used to reach out into padding the
+ * overlay does not have, as they do in the card. Every floating surface now resets it. A
+ * `DialogLayout`'s body is a card's again — the panel is the card — so a list there still lines
+ * its rows' titles up with the dialog's.
+ */
+export const OverlaysLeaveTheCard: Story = {
+  args: { title: "Members", contentSlot: <Overlays /> },
+  play: async ({ canvas }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Open dialog" }));
+    await expectNormalInset("Dialog");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    await userEvent.click(canvas.getByRole("button", { name: "Open popover" }));
+    await expectNormalInset("Popover");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    await userEvent.click(canvas.getByRole("button", { name: "Open form" }));
+    const dialog = await screen.findByRole("dialog", { name: "Edit members" });
+    const list = within(dialog).getByRole("list", { name: "Form list" });
+    const title = within(dialog).getByRole("heading", { name: "Edit members" });
+    const row = within(list).getByText("Ada Lovelace").getBoundingClientRect();
+    await expect(row.left).toBeCloseTo(title.getBoundingClientRect().left, 0);
+    // Reaching out, the list still fits the body: it does not scroll sideways.
+    const body = list.closest("[data-slot=header-content-footer-content]") as HTMLElement;
+    await expect(body.scrollWidth).toBeLessThanOrEqual(body.clientWidth);
   },
 };

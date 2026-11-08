@@ -26,7 +26,7 @@ import {
   POPOVER_HEADER_CLASS,
   POPOVER_TITLE_CLASS,
 } from "@/components/ui/popover-base";
-import { addHandlers, cn } from "@/lib/utils";
+import { addHandlers, CardBodyContext, cn } from "@/lib/utils";
 
 type PopoverState = { open: boolean; setOpen: (open: boolean) => void };
 
@@ -78,7 +78,9 @@ function PopoverContent({ className, children }: PopoverContentProps) {
           role="button"
           aria-label="Close"
         />
-        <View className={cn(POPOVER_CONTENT_CLASS, className)}>{children}</View>
+        <View className={cn(POPOVER_CONTENT_CLASS, className)}>
+          <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
+        </View>
       </View>
     </Modal>
   );

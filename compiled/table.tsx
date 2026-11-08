@@ -91,6 +91,17 @@ const EDGE_FADE =
 const IN_CARD = "-mx-2 w-[calc(100%+1rem)]";
 
 /**
+ * `IN_CARD` one pixel further, for the pixel of `FOCUS_EDGE`'s border an overflowing container
+ * takes, so the first column stays level with the card's title while the table scrolls sideways.
+ * The line stays a border rather than `INSET_FOCUS_EDGE`'s shadow: `EDGE_FADE` masks the inside of
+ * the box at the edge that has more past it, and an inset line there would fade out with the rows.
+ */
+const IN_CARD_EDGED = "-mx-[calc(0.5rem+1px)] w-[calc(100%+1rem+2px)]";
+
+/** The same pixel with a caption, where the frame round the container does the reaching. */
+const EDGED = "-mx-px w-[calc(100%+2px)]";
+
+/**
  * A table inside a container that scrolls sideways when it is too wide, and up and down as well
  * when it is given a `maxHeight`. The edge with more columns past it fades while it does. A
  * `TableCaption` written straight inside it is drawn under the container rather than in it, so it
@@ -120,7 +131,8 @@ function Table({ className, maxHeight, children, ...props }: TableProps) {
       tabIndex={overflows ? 0 : undefined}
       className={cn(
         "relative w-full overflow-x-auto",
-        caption === undefined && inCard && IN_CARD,
+        caption === undefined && inCard && (overflows ? IN_CARD_EDGED : IN_CARD),
+        caption !== undefined && inCard && overflows && EDGED,
         // Not tinted as hovered: a tinted container would hide the row under the pointer.
         overflows && FOCUS_EDGE,
         isCapped && "overflow-y-auto",
