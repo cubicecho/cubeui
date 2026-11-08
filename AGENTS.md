@@ -231,7 +231,13 @@ field still shows where focus is.
 
 **Nothing draws a focus ring: a focused thing looks hovered** — as it looks under the pointer in
 the state it is in. An unchosen row or an outline button turns `bg-hover` under the pointer, and
-does the same under `focus-visible:`. A filled button keeps `hover:bg-neutral/90` (and the rest)
+does the same under `focus-visible:`. An outline button's edge darkens with the fill, as
+`secondary`'s does — `outline` to `border-foreground/60`, a coloured outline from its `/50` rest to
+the full colour — because the fill alone changed 1.1–1.5:1; `palette-contrast.test.mjs` measures
+the change. A row lights only for its own pressed part, `has-[>:focus-visible]:`, the one focusable
+child of the row: a leading checkbox or an action button inside it shows its own look alone, or
+the row and its button were the same `hover` and could not be told apart. An off switch keeps its
+`/50` track, its 3:1, and is edged in `active`. A filled button keeps `hover:bg-neutral/90` (and the rest)
 for the pointer, but focused it takes `focus-visible:bg-hover focus-visible:text-foreground`; a
 label or icon that carries its own ink on a `Text` turns with it through a named group
 (`group/button` and `group-focus-visible/button:text-foreground`). For a filled button the rule is
@@ -240,8 +246,8 @@ the 3:1 change of contrast (WCAG 2.4.13): every solid fill a control rests on is
 `palette-contrast.test.mjs` holds both. A `/90` fill was 1.1–1.3:1 from its rest, which is why
 focus is not drawn that way. A chosen thing — a checked checkbox, an on switch, the active tab,
 segmented pill, toggle chip or sidebar row, a picked day, a chosen row — focused takes the `/60`
-step it has under the pointer (`focus-visible:bg-active/60`, or `has-[:focus-visible]:` on a row
-whose focus is on a child), so it still reads as chosen; its ink is `foreground` already and does
+step it has under the pointer (`focus-visible:bg-active/60`, or `has-[>:focus-visible]:` on a row
+whose focus is on its pressed part), so it still reads as chosen; its ink is `foreground` already and does
 not change. The `/60` step is 1.39–1.57:1 from the `/40` rest, short of 2.4.13's 3:1; it was
 chosen over `bg-hover`, which is no closer to 3:1 and made a focused chosen thing look unchosen.
 A box that is a tab stop only so a keyboard can scroll it — an overflowing `Table`, a `CodeBlock`,
@@ -249,7 +255,11 @@ A box that is a tab stop only so a keyboard can scroll it — an overflowing `Ta
 focus as a field does, with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns
 `active` under `focus-visible:`. The page body and the split draw that line as a 1px inset shadow,
 `INSET_FOCUS_EDGE`, which takes no room. The table, the code block, the body and the split are tab
-stops only while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it.
+stops only while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it. A dialog that
+opens with no field to focus focuses its own panel, which draws no ring and no edge for it:
+otherwise its first button took focus, and a filled primary that looks hovered reads unfilled the
+moment the dialog appears. With a field, the first field takes focus; an `alertdialog` keeps its
+first answer, the safe one.
 
 **A chosen thing is `active`, not `neutral`.** Checkbox, switch, radio, segmented pill, active tab,
 current sidebar row, toggle chip, a calendar's picked day, a selected stat tile, a checked menu row,

@@ -41,6 +41,7 @@ import {
   DIALOG_FOOTER_CLASS,
   DIALOG_HEADER_CLASS,
   DIALOG_TITLE_CLASS,
+  focusOnOpen,
 } from "@/components/ui/dialog-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
 import { bridgePress, cn } from "@/lib/utils";
@@ -143,6 +144,7 @@ function DialogContent({
   showCloseButton = true,
   onEscapeKeyDown,
   onInteractOutside,
+  onOpenAutoFocus,
   role,
   children,
   ...props
@@ -165,6 +167,18 @@ function DialogContent({
           }
           onInteractOutside?.(event);
         }}
+        // Radix focuses the first thing it can tab to, which in a dialog with no field is a button,
+        // and focused a filled button looks hovered: the primary read unfilled on open. So the
+        // first field takes focus, or with none the panel does. A caller's own handler can still
+        // prevent it, and an `alertdialog` keeps radix's, whose first button is the safe answer.
+        onOpenAutoFocus={(event) => {
+          onOpenAutoFocus?.(event);
+          if (event.defaultPrevented || role === "alertdialog") {
+            return;
+          }
+          event.preventDefault();
+          focusOnOpen(event.currentTarget as HTMLElement);
+        }}
         // Spread only when given: radix sets its own `role="dialog"` and an explicit `undefined`
         // would land after it and take the role away.
         {...(role === undefined ? {} : { role })}
@@ -173,6 +187,8 @@ function DialogContent({
           // Native gets its gutter from the backdrop's padding; here the card is fixed in the
           // viewport, so it keeps 1rem clear of each edge until there is room for the full width.
           "max-w-[calc(100%-2rem)] sm:max-w-lg",
+          // The panel takes focus when there is no field, and shows nothing for it.
+          "outline-none",
           "text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] duration-200",
           className,
         )}

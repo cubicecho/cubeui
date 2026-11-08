@@ -5,8 +5,9 @@ import { CodeBlock as Compiled } from "../compiled/code";
 import { CopyButton as CompiledCopyButton } from "../compiled/copy-button";
 import { CodeBlock as Native } from "../registry/ui/code";
 import { CopyButton as NativeCopyButton } from "../registry/ui/copy-button";
-import { expectFocusEdge } from "./focus-edge";
+import { expectFocusEdge, tabTo } from "./focus-edge";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * The code block on both web halves: the React Native source under react-native-web on the left,
@@ -390,6 +391,34 @@ export const Follow: Story = {
       await userEvent.click(append);
       await waitFor(() => expect(content.textContent).toContain("step 43: ok"));
       await expect(belowView(content)).toBeLessThanOrEqual(4);
+    }
+  },
+};
+
+/**
+ * "Jump to latest" is an outline `Button` (#469): it was a hand-drawn `Pressable` with no hover or
+ * focus look, which drew the browser's ring. Tabbed to, it draws none, and its edge darkens with
+ * its fill; its words are the caller's to translate.
+ */
+export const JumpToLatestFocus: Story = {
+  render: () =>
+    both((CodeBlock) => (
+      <CodeBlock content={LOG} wrap maxHeight="sm" follow jumpLabel="Aller à la fin" />
+    )),
+  play: async ({ canvasElement }) => {
+    for (const half of halvesOf(canvasElement)) {
+      const scope = within(half as HTMLElement);
+      const content = part(half, "code-block-content");
+      await waitFor(() => expect(belowView(content)).toBeLessThanOrEqual(4));
+      content.scrollTop = 0;
+      const jump = await scope.findByRole("button", { name: "Aller à la fin" });
+      await tabTo(jump, canvasElement);
+      await waitFor(() => expect(getComputedStyle(jump).backgroundColor).toBe(tokenColor("hover")));
+      await waitFor(() =>
+        expect(getComputedStyle(jump).borderTopColor).toBe(
+          tokenColor("foreground", { opacity: 60 }),
+        ),
+      );
     }
   },
 };

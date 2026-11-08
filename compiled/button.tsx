@@ -57,18 +57,20 @@ const buttonVariants = cva(
           "bg-negative text-negative-foreground hover:bg-negative/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-negative/90",
         /** A destructive action that is not the emphasis of its row. */
         "destructive-outline":
-          "border border-negative/40 bg-transparent text-negative hover:bg-negative/10 focus-visible:bg-negative/10 active:bg-negative/10",
+          "border border-negative/50 bg-transparent text-negative hover:border-negative hover:bg-negative/10 focus-visible:border-negative focus-visible:bg-negative/10 active:border-negative active:bg-negative/10",
         /** The action that keeps the work: save, confirm, create. */
         positive:
           "bg-positive text-positive-foreground hover:bg-positive/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-positive/90",
         "positive-outline":
-          "border border-positive/40 bg-transparent text-positive hover:bg-positive/10 focus-visible:bg-positive/10 active:bg-positive/10",
+          "border border-positive/50 bg-transparent text-positive hover:border-positive hover:bg-positive/10 focus-visible:border-positive focus-visible:bg-positive/10 active:border-positive active:bg-positive/10",
         /** The action that adds something: add, new, create. */
         info: "bg-info text-info-foreground hover:bg-info/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-info/90",
         "info-outline":
-          "border border-info/40 bg-transparent text-info hover:bg-info/10 focus-visible:bg-info/10 active:bg-info/10",
+          "border border-info/50 bg-transparent text-info hover:border-info hover:bg-info/10 focus-visible:border-info focus-visible:bg-info/10 active:border-info active:bg-info/10",
+        // The outline family's edge darkens with its fill, as `secondary`'s does: the fill alone
+        // changed 1.1-1.5:1 when focused, and every Cancel is one of these.
         outline:
-          "border border-foreground/50 bg-background text-foreground hover:bg-hover focus-visible:bg-hover active:bg-hover",
+          "border border-foreground/50 bg-background text-foreground hover:border-foreground/60 hover:bg-hover focus-visible:border-foreground/60 focus-visible:bg-hover active:border-foreground/60 active:bg-hover",
         // Hover and focus draw an edge, not a fill: `bg-hover` is 1.01:1 against this grey, so the
         // icon buttons inside a field (reveal, clear) showed no change when tabbed to.
         secondary:

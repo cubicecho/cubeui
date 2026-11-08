@@ -3,9 +3,17 @@
  * events and cannot put an element in `:hover`, so the rules are read instead: any rule written for
  * `:hover` that sets a background, and that matches the element once `:hover` is taken out of it.
  * Nested rules are followed, with `&` read as the rule around them, whichever form the stylesheet
- * was emitted in.
+ * was emitted in. `property` asks after the edge's colour instead: a `border-color` written with a
+ * `var()` leaves its longhands empty, so the shorthand is read as well.
  */
-export function tintsUnderPointer(element: Element) {
+export function tintsUnderPointer(
+  element: Element,
+  property: "backgroundColor" | "borderColor" = "backgroundColor",
+) {
+  const sets = (style: CSSStyleDeclaration) =>
+    property === "backgroundColor"
+      ? style.backgroundColor !== ""
+      : style.borderTopColor !== "" || style.borderColor !== "";
   const matches = (selector: string) => {
     try {
       return element.matches(selector.replace(/(?<!\\):hover/g, ""));
@@ -30,7 +38,7 @@ export function tintsUnderPointer(element: Element) {
         selector !== undefined &&
         /(?<!\\):hover/.test(selector) &&
         style !== undefined &&
-        style.backgroundColor !== "" &&
+        sets(style) &&
         matches(selector)
       ) {
         return true;
