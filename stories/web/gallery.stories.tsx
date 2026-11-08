@@ -1290,10 +1290,8 @@ function Sections() {
     <Stack
       content={
         <>
-          <SectionHeading level={3}>A section heading</SectionHeading>
-          <SectionHeading level={3} variant="overline">
-            An overline heading
-          </SectionHeading>
+          <SectionHeading level={3} title="A section heading" />
+          <SectionHeading level={3} variant="overline" title="An overline heading" />
           <Section
             level={3}
             title="Members"

@@ -71,7 +71,7 @@ its badges with the buttons in `actionSlot`.
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/centered-pages.md](layout/centered-pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A heading over a group of fields or rows; on a card it is `CardLayout level={2}` | `Section` | `@cubeui/section` |
-| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
+| Just the small muted label, as `title`, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
 | A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#collapsible) | `Collapsible` | `@cubeui/collapsible` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#property-lists) | `PropertyList`, `PropertyRow` | `@cubeui/property-list` |
@@ -147,6 +147,8 @@ take the props the web ones take, with four conversions that are the same everyw
   `SidebarItem` and the rest, and the examples in these files that say `onPress` read as
   `onClick` there. Code shared between the halves has no one name to write; keep the handler and
   pass it under each half's name.
+- **`accessibilityLabel` names a `Checkbox` or a `Switch` on both halves.** The compiled ones take
+  it as well as `aria-label`, so shared code names them once; an `aria-label` wins.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.

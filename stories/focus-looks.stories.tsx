@@ -293,10 +293,12 @@ function Rows({ compiled }: { compiled: boolean }) {
         title="Water the plants"
         // The compiled half takes the DOM's name for a press.
         {...(compiled ? { onClick: () => {} } : { onPress: () => {} })}
-        // `aria-label` on the compiled box: its copy of the device half's `accessibilityLabel`
-        // does not reach the element.
         leadingSlot={
-          compiled ? <CompiledCheckbox aria-label="Done" /> : <Checkbox accessibilityLabel="Done" />
+          compiled ? (
+            <CompiledCheckbox accessibilityLabel="Done" />
+          ) : (
+            <Checkbox accessibilityLabel="Done" />
+          )
         }
         actionSlot={<Action size="xs" variant="outline" content="Delete" />}
       />
@@ -405,8 +407,8 @@ export const OffSwitchAndEmptyBox: Story = {
     both((compiled) =>
       compiled ? (
         <>
-          <CompiledCheckbox aria-label="Email me" />
-          <CompiledSwitch aria-label="Notify" />
+          <CompiledCheckbox accessibilityLabel="Email me" />
+          <CompiledSwitch accessibilityLabel="Notify" />
         </>
       ) : (
         <>
@@ -494,18 +496,9 @@ function Dialogs({ compiled }: { compiled: boolean }) {
  * `Modal`'s own trap focused the backdrop's Close.
  */
 export const DialogOnOpen: Story = {
-  // react-native-web's `Modal` puts `aria-modal` on a box with no role, and its card is not named
-  // by its title: the device dialog's under a browser, as `dialog-gap.stories.tsx` finds.
-  parameters: {
-    a11y: {
-      config: {
-        rules: [
-          { id: "aria-allowed-attr", enabled: false },
-          { id: "aria-dialog-name", enabled: false },
-        ],
-      },
-    },
-  },
+  // react-native-web's `Modal` puts `aria-modal` on a box with no role: the device dialog's under
+  // a browser, as `dialog-gap.stories.tsx` finds.
+  parameters: { a11y: { config: { rules: [{ id: "aria-allowed-attr", enabled: false }] } } },
   render: () => both((compiled) => <Dialogs compiled={compiled} />),
   play: async ({ canvasElement, step }) => {
     for (const half of HALVES) {

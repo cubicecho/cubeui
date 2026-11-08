@@ -123,11 +123,11 @@ export function compileSource({
     }
   }
 
-  renamePublicProps(sourceFile);
+  const handMapped = renamePublicProps(sourceFile);
   pruneRewrittenTypeImports(sourceFile);
   ensureCn(sourceFile);
   checkElementLeaks(sourceFile, elements, diagnostics);
-  checkNativePropLeaks(sourceFile, diagnostics);
+  checkNativePropLeaks(sourceFile, diagnostics, handMapped);
   checkNestedInteractive(sourceFile, diagnostics);
   rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagnostics);
   if (diagnostics.length) {

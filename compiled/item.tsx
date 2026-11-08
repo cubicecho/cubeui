@@ -237,7 +237,10 @@ function ItemDescription({
         // ITEM_SELECTED_DESCRIPTION_CLASS on the chosen row, which says so with `data-selected`:
         // read here rather than through context so the part stays a plain `<p>`.
         "in-data-selected:text-foreground",
-        "text-balance [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-info",
+        // A link is `info` at rest, as every link is, and shown by its underline as well. On the
+        // chosen row it is `foreground`: `info` on the tint is about 3.3:1, under AA.
+        "text-balance [&>a]:text-info [&>a]:underline [&>a]:underline-offset-4",
+        "in-data-selected:[&>a]:text-foreground",
         className,
       )}
       {...props}

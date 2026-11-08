@@ -433,7 +433,7 @@ export function checkElementLeaks(sourceFile, elements, diagnostics) {
  * every other appearance is a reference and is left alone. Comments are outside the syntax tree
  * entirely, which is why the six compiled files explaining `accessibilityState` in prose are fine.
  */
-export function checkNativePropLeaks(sourceFile, diagnostics) {
+export function checkNativePropLeaks(sourceFile, diagnostics, handMapped = new Set()) {
   const leaked = (node, name) =>
     refuse(
       diagnostics,
@@ -464,11 +464,47 @@ export function checkNativePropLeaks(sourceFile, diagnostics) {
         .getNameNode()
         .getText()
         .replace(/^["']|["']$/g, "");
-      if (native(name)) {
-        leaked(node.getNameNode(), name);
+      if (native(name) === false) {
+        continue;
+      }
+      // A hand-mapped prop is declared and destructured by name, so it never reaches an element.
+      if (kind === SyntaxKind.PropertySignature && handMapped.has(name)) {
+        continue;
+      }
+      leaked(node.getNameNode(), name);
+    }
+  }
+}
+
+/**
+ * The React Native prop names a file maps to the DOM by hand, which the rename has to leave alone.
+ *
+ * A hand-written web half that takes the device half's name as well as the DOM's binds both in
+ * one pattern — `{ accessibilityLabel, "aria-label": ariaLabel }` — and writes
+ * `aria-label={ariaLabel ?? accessibilityLabel}` itself. Renamed, that pattern bound
+ * `"aria-label"` twice and its type lost `accessibilityLabel`, so the compiled checkbox and switch
+ * dropped a caller's `accessibilityLabel` into the spread and on to the DOM, unnamed (#516). A
+ * pattern that already binds the mapped name is the author's mapping, not a gap in it.
+ */
+function findHandMapped(sourceFile) {
+  const unquote = (text) => text.replace(/^["']|["']$/g, "");
+  const handMapped = new Set();
+  for (const pattern of sourceFile.getDescendantsOfKind(SyntaxKind.ObjectBindingPattern)) {
+    const bound = new Set(
+      pattern
+        .getElements()
+        .map((element) =>
+          unquote((element.getPropertyNameNode() ?? element.getNameNode()).getText()),
+        ),
+    );
+    for (const name of bound) {
+      const mapped = PROP_MAP[name];
+      if (mapped && bound.has(mapped)) {
+        handMapped.add(name);
       }
     }
   }
+  return handMapped;
 }
 
 /**
@@ -494,10 +530,11 @@ export function renamePublicProps(sourceFile) {
   // `aria-label` and `data-slot` are not identifiers, so as a member name or an object key they
   // have to be quoted. As a JSX attribute they must not be.
   const key = (name) => (/^[A-Za-z_$][\w$]*$/.test(name) ? name : `"${name}"`);
+  const handMapped = findHandMapped(sourceFile);
 
   for (const sig of sourceFile.getDescendantsOfKind(SyntaxKind.PropertySignature)) {
     const mapped = PROP_MAP[sig.getName()];
-    if (mapped) {
+    if (mapped && handMapped.has(sig.getName()) === false) {
       sig.getNameNode().replaceWithText(key(mapped));
     }
   }
@@ -508,7 +545,7 @@ export function renamePublicProps(sourceFile) {
     }
     const name = binding.getNameNode().getText();
     const mapped = PROP_MAP[name];
-    if (mapped) {
+    if (mapped && handMapped.has(name) === false) {
       binding.replaceWithText(`${key(mapped)}: ${name}`);
     }
   }
@@ -556,4 +593,5 @@ export function renamePublicProps(sourceFile) {
     }
     attr.getNameNode().replaceWithText(mapped);
   }
+  return handMapped;
 }

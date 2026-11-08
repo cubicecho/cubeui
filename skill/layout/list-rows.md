@@ -207,3 +207,6 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   beside it; `size="default"` is shadcn's roomier row. On a device a string in a part is
   wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
   hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
+- A link in an `ItemDescription` is `text-info` and underlined on the web, and `foreground` on a
+  `selected` row, where `info` is too faint on the tint. On device, give the link's `Text` the
+  class yourself.

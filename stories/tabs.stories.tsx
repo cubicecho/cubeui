@@ -596,3 +596,26 @@ export const OneTabStop: Story = {
     }
   },
 };
+
+/**
+ * The pane is a tab stop on both halves (#510), as radix's is: the Tab after the list lands on the
+ * pane, so a keyboard reaches its text even when nothing in it takes focus. The device pane was
+ * stepped over under Expo web.
+ */
+export const PaneIsATabStop: Story = {
+  render: () => (
+    <SideBySide native={<FewTabs half="native" />} compiled={<FewTabs half="compiled" />} />
+  ),
+  play: async ({ canvasElement, step }) => {
+    for (const half of ["native", "compiled"] as const) {
+      await step(half, async () => {
+        const column = within(within(canvasElement).getByTestId(`${half}-column`));
+        column.getByRole("button", { name: `Before ${half}` }).focus();
+        await userEvent.tab();
+        await waitFor(() => expect(column.getByRole("tab", { name: "List" })).toHaveFocus());
+        await userEvent.tab();
+        await waitFor(() => expect(column.getByRole("tabpanel")).toHaveFocus());
+      });
+    }
+  },
+};

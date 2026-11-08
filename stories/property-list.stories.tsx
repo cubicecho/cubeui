@@ -178,6 +178,63 @@ export const Stacked: Story = {
   },
 };
 
+/**
+ * A row with a 36px button beside its value keeps the value on its label's line, inline, and
+ * right under its label, stacked; the button is level with the value's top, as every action in
+ * the heading rhythm is. The value cell centred its contents, so the button pushed the value 8px
+ * down (#484).
+ */
+export const ValueBesideAction: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col gap-6">
+          <Native className="native-inline" contentSlot={rows(NativeRow, nativeCopy)} />
+          <Native
+            layout="stacked"
+            className="native-stacked"
+            contentSlot={rows(NativeRow, nativeCopy)}
+          />
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col gap-6">
+          <Compiled className="compiled-inline" contentSlot={rows(CompiledRow, compiledCopy)} />
+          <Compiled
+            layout="stacked"
+            className="compiled-stacked"
+            contentSlot={rows(CompiledRow, compiledCopy)}
+          />
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const LABEL_TO_VALUE = 4;
+    const boxes = (root: string) => {
+      const list = canvasElement.querySelector<HTMLElement>(root);
+      if (!list) {
+        throw new Error(`${root} should render`);
+      }
+      const label = within(list).getByText("Docs folder").getBoundingClientRect();
+      const value = within(list).getByText("/data/notes").getBoundingClientRect();
+      const action = within(list)
+        .getByRole("button", { name: "Copy path" })
+        .getBoundingClientRect();
+      return { label, value, action };
+    };
+    for (const half of ["native", "compiled"]) {
+      const inline = boxes(`.${half}-inline`);
+      await expect(Math.abs(inline.value.top - inline.label.top)).toBeLessThan(1);
+      await expect(Math.abs(inline.action.top - inline.value.top)).toBeLessThan(1);
+
+      const stacked = boxes(`.${half}-stacked`);
+      await expect(stacked.value.top - stacked.label.bottom).toBe(LABEL_TO_VALUE);
+      await expect(Math.abs(stacked.action.top - stacked.value.top)).toBeLessThan(1);
+    }
+  },
+};
+
 const LONG_PATH = "/var/lib/ragdown/workspaces/engineering-handbook/documents/2026/onboarding";
 
 /**

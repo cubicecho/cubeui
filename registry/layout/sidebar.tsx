@@ -286,12 +286,11 @@ export function SidebarSection({
               <SectionHeading
                 testID="sidebar-section-title"
                 id={titleId}
+                title={title}
                 variant="overline"
                 level={level}
                 className="truncate"
-              >
-                {title}
-              </SectionHeading>
+              />
             ) : null}
           </View>
           {hasSlot(actionSlot) && collapsed === false ? (

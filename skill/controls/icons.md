@@ -104,8 +104,9 @@ and whenever it changes, on both halves. Do not wrap `Tabs` in a horizontal `Scr
 phone: the scroller would be outside the tablist, and a tab chosen by a link would stay off screen.
 
 The keyboard is ARIA's tabs pattern on both halves: the list is one tab stop, on the selected tab,
-and Left and Right move to the next enabled tab and show it, with Home and End. On device there is
-no Tab key, and a screen reader walks every tab. Do not add an `onKeyDown`.
+and Left and Right move to the next enabled tab and show it, with Home and End. The next Tab lands
+on the pane, which is a tab stop on both halves. On device there is no Tab key, and a screen reader
+walks every tab. Do not add an `onKeyDown`.
 
 A tab that is a route takes the link as `linkSlot`, as `Button` does: an element with no
 children. Do not navigate from `onValueChange` — such a tab has no `href`, so it cannot be

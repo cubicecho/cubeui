@@ -10,7 +10,7 @@ import { SectionHeading } from "@/components/section-heading";
 const meta = {
   title: "Layout/SectionHeading",
   component: SectionHeading,
-  args: { children: "Upcoming" },
+  args: { title: "Upcoming" },
   decorators: [
     (Story) => (
       <div className="bg-background p-6 text-foreground">
@@ -36,7 +36,7 @@ export const Default: Story = {
 };
 
 export const Overline: Story = {
-  args: { variant: "overline", children: "This week" },
+  args: { variant: "overline", title: "This week" },
   play: async ({ canvasElement }) => {
     const heading = within(canvasElement).getByText("This week");
     await expect(getComputedStyle(heading).textTransform).toBe("uppercase");

@@ -45,19 +45,9 @@ const phone = { viewport: { value: "mobile2", isRotated: false } };
 
 export const OnDevice: Story = {
   globals: phone,
-  // react-native-web's `Modal` puts `aria-modal` on a box with no role, which axe refuses, and the
-  // device card is not named by its title: both are the device dialog's under a browser, as
-  // `as-child-trigger.stories.tsx` finds too, and not what this story measures.
-  parameters: {
-    a11y: {
-      config: {
-        rules: [
-          { id: "aria-allowed-attr", enabled: false },
-          { id: "aria-dialog-name", enabled: false },
-        ],
-      },
-    },
-  },
+  // react-native-web's `Modal` puts `aria-modal` on a box with no role, which axe refuses: the
+  // device dialog's under a browser, and not what this story measures.
+  parameters: { a11y: { config: { rules: [{ id: "aria-allowed-attr", enabled: false }] } } },
   render: () => (
     <DeviceDialog open onOpenChange={() => {}}>
       <DeviceDialogContent>
