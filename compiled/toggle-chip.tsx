@@ -45,12 +45,6 @@ const LIVE = {
   unselected: "hover:bg-hover focus-visible:bg-hover active:bg-hover",
 } as const;
 
-/**
- * A disabled chip's look. The pointer is the platform's "not allowed" on the web, where every
- * compiled pressable is otherwise `cursor: pointer`; a device has no cursor.
- */
-const DISABLED = "cursor-not-allowed opacity-50";
-
 export type ToggleChipProps = Omit<
   React.ComponentPropsWithoutRef<"button">,
   "children" | "className" | "style"
@@ -107,7 +101,7 @@ const ToggleChip = React.forwardRef<HTMLButtonElement, ToggleChipProps>(
         // beside the segmented frame. A chosen chip is the chosen tint, edged in `active` because
         // the tint is not 3:1 from the surface.
         selected ? "border-active bg-active/40" : "border-foreground/50 bg-background",
-        disabled ? DISABLED : LIVE[selected ? "selected" : "unselected"],
+        disabled ? "opacity-50" : LIVE[selected ? "selected" : "unselected"],
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element

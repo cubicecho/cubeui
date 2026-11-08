@@ -147,6 +147,8 @@ take the props the web ones take, with four conversions that are the same everyw
   `SidebarItem` and the rest, and the examples in these files that say `onPress` read as
   `onClick` there. Code shared between the halves has no one name to write; keep the handler and
   pass it under each half's name.
+- **`accessibilityLabel` names a `Checkbox` or a `Switch` on both halves.** The compiled ones take
+  it as well as `aria-label`, so shared code names them once; an `aria-label` wins.
 - **`onChangeText`, not `onChange`.** An RN `TextInput` hands you the string, not an event.
   The compiled web `Input` and `Textarea` take both, so a DOM call site written against shadcn
   still compiles — but shared code should use `onChangeText`, the one that exists on device.

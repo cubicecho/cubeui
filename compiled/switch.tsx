@@ -34,7 +34,7 @@ export type SwitchProps = Omit<ComponentPropsWithRef<typeof SwitchPrimitive.Root
    * The device half's name for the switch, taken so a call site shared across both halves still
    * names it — see `checkbox.web.tsx`. It becomes `aria-label`; an `aria-label` of its own wins.
    */
-  "aria-label"?: string | undefined;
+  accessibilityLabel?: string | undefined;
   /**
    * The switch's tooltip and description, as on `Button`. With it, `disabled` keeps the switch
    * focusable and refuses the press (`aria-disabled`), so the reason can still be read.
@@ -48,7 +48,7 @@ export type SwitchProps = Omit<ComponentPropsWithRef<typeof SwitchPrimitive.Root
 function Switch({
   className,
   size = "default",
-  "aria-label": accessibilityLabel,
+  accessibilityLabel,
   "aria-label": ariaLabel,
   hint,
   side = "top",

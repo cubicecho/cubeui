@@ -18,18 +18,11 @@ const meta = { title: "RN Parity/Dialog backdrop" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-// react-native-web's `Modal` puts `aria-modal` on a box with no role, which axe refuses, and the
-// device card is not named by its title: both are the device dialog's under a browser, as
-// `dialog-gap.stories.tsx` finds too, and not what these stories check.
+// react-native-web's `Modal` puts `aria-modal` on a box with no role, which axe refuses: the
+// device dialog's under a browser, as `dialog-gap.stories.tsx` finds too, and not what these
+// stories check.
 const DEVICE_A11Y = {
-  a11y: {
-    config: {
-      rules: [
-        { id: "aria-allowed-attr", enabled: false },
-        { id: "aria-dialog-name", enabled: false },
-      ],
-    },
-  },
+  a11y: { config: { rules: [{ id: "aria-allowed-attr", enabled: false }] } },
 };
 
 function Question({ refuses }: { refuses: boolean }) {
@@ -53,7 +46,8 @@ export const RefusedIsNotAButton: Story = {
   render: () => <Question refuses />,
   play: async () => {
     await userEvent.click(screen.getByRole("button", { name: "Ask" }));
-    const card = await screen.findByRole("dialog");
+    // Named by its title, as radix's card is (#510).
+    const card = await screen.findByRole("dialog", { name: "Revoke this key?" });
     await expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
     const overlay = card.parentElement;
     if (!overlay) {

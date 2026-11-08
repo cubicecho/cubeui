@@ -38,8 +38,11 @@ function Subject(props: SubjectProps) {
 /** It is still a button: one press, one `onClick`. */
 export const Default: Story = {
   play: async ({ canvas, args }) => {
-    await userEvent.click(canvas.getByRole("button", { name: "Edit workspace" }));
+    const button = canvas.getByRole("button", { name: "Edit workspace" });
+    await userEvent.click(button);
     expect(args.onClick).toHaveBeenCalledOnce();
+    // The pointer offers a press, which the disabled stories below take away.
+    expect(getComputedStyle(button).cursor).toBe("pointer");
   },
 };
 
@@ -117,9 +120,10 @@ export const DisabledButStillReadable: Story = {
     button.focus();
     expect(button).toHaveFocus();
 
-    // And it still refuses.
+    // And it still refuses, and the pointer does not offer the press (#523).
     await userEvent.click(button);
     expect(args.onClick).not.toHaveBeenCalled();
+    expect(getComputedStyle(button).cursor).toBe("not-allowed");
 
     await userEvent.hover(button);
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Empty the lane first");
@@ -138,6 +142,8 @@ export const DisabledWithNoHintIsReallyDisabled: Story = {
     expect(button).toBeDisabled();
     await userEvent.click(button);
     expect(args.onClick).not.toHaveBeenCalled();
+    // It kept the `cursor: pointer` every compiled pressable has (#523).
+    expect(getComputedStyle(button).cursor).toBe("not-allowed");
   },
 };
 

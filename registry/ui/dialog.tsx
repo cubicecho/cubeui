@@ -18,6 +18,7 @@ import {
   isValidElement,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
 } from "react";
@@ -63,6 +64,13 @@ const DialogEscapeContext = createContext<{ current: ((event: Event) => void) | 
  * — which owns both the backdrop and the X — reads it.
  */
 const DialogCloseContext = createContext<() => void>(() => {});
+
+/**
+ * The id `DialogContent` names its card by, which `DialogTitle` takes as its own. Radix wires the
+ * same pair on the web; here a card named by nothing was an unnamed `dialog` to a screen reader,
+ * which reads its role and no title (#510).
+ */
+const DialogTitleIdContext = createContext<string | undefined>(undefined);
 
 /** The root of a dialog: it holds the open state. */
 function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogProps) {
@@ -178,6 +186,7 @@ function DialogContent({
   const escapeRef = useContext(DialogEscapeContext);
   escapeRef.current = onEscapeKeyDown;
   const panel = useRef<View>(null);
+  const titleId = useId();
 
   // Under Expo web the `Modal`'s own trap focuses the first thing it can, which is the backdrop's
   // Close, then a button: a filled one focused looks hovered and read unfilled on open. So the
@@ -224,6 +233,8 @@ function DialogContent({
         // `dialog` unless the caller says `alertdialog`, as radix's content is.
         role={role ?? "dialog"}
         aria-modal
+        // Named by its title: `aria-labelledby` under Expo web, and Android's labelled-by on device.
+        aria-labelledby={titleId}
         // Focusable from script only, so the panel can take focus on open; and no ring when it has.
         {...(Platform.OS === "web" ? { tabIndex: -1 as const } : {})}
         className={cn(
@@ -232,7 +243,7 @@ function DialogContent({
           className,
         )}
       >
-        {children}
+        <DialogTitleIdContext.Provider value={titleId}>{children}</DialogTitleIdContext.Provider>
         {showCloseButton ? (
           <Pressable
             className={DIALOG_DISMISS_CLASS}
@@ -276,8 +287,10 @@ function DialogFooter({ className, showCloseButton = false, children }: DialogFo
 
 /** The dialog's title, and its accessible name. */
 function DialogTitle({ className, children }: DialogSectionProps) {
+  const titleId = useContext(DialogTitleIdContext);
   return (
     <Text
+      {...(titleId === undefined ? {} : { nativeID: titleId })}
       // The `role` is hand-written because an `<h2>` has no native counterpart.
       role="heading"
       aria-level={2}

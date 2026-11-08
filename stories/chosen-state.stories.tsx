@@ -292,10 +292,11 @@ function DisabledChips({ half, compiled }: { half: string; compiled: boolean }) 
 }
 
 /**
- * A disabled chip stays as it is under the pointer, chosen or not, and on the web the pointer says
- * it cannot be pressed (#485). It kept its hover fill and the `cursor: pointer` every compiled
- * pressable has, so it looked pressable and did nothing. A live chip beside it still tints, so the
- * check is not passing because the rule could not be read.
+ * A disabled chip stays as it is under the pointer, chosen or not (#485), and the pointer does not
+ * offer a press: compiled, it is "not allowed", as every disabled compiled pressable is (#523), and
+ * react-native-web gives a disabled `Pressable` no pointer. It kept its hover fill and the
+ * `cursor: pointer` every compiled pressable has, so it looked pressable and did nothing. A live
+ * chip beside it still tints, so the check is not passing because the rule could not be read.
  */
 export const DisabledChipStaysPut: Story = {
   render: () => (
@@ -312,7 +313,10 @@ export const DisabledChipStaysPut: Story = {
         for (const name of ["Off", "On"]) {
           const chip = group.getByRole("button", { name });
           await expect(tintsUnderPointer(chip)).toBe(false);
-          await expect(getComputedStyle(chip).cursor).toBe("not-allowed");
+          await expect(getComputedStyle(chip).cursor).not.toBe("pointer");
+          if (half === "Compiled") {
+            await expect(getComputedStyle(chip).cursor).toBe("not-allowed");
+          }
         }
         await expect(tintsUnderPointer(group.getByRole("button", { name: "Live" }))).toBe(true);
       });
