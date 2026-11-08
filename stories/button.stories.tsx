@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useContext } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { Button as Compiled } from "../compiled/button";
 import {
@@ -14,6 +15,7 @@ import {
   Plus as NativePlus,
   Trash2 as NativeTrash,
 } from "../registry/ui/icons";
+import { IconClassContext } from "../registry/ui/icons-base";
 import {
   Tooltip as NativeTooltip,
   TooltipContent as NativeTooltipContent,
@@ -399,5 +401,163 @@ export const LayoutClassesPlaceTheButton: Story = {
     await expect(tip.bottom).toBeLessThanOrEqual(button.top + FRAME_BORDER);
     const offCentre = Math.abs(tip.left + tip.width / 2 - (button.left + button.width / 2));
     await expect(offCentre).toBeLessThanOrEqual(FRAME_BORDER);
+  },
+};
+
+/** The glyph each size draws, in px: 14 beside `xs`'s small label, 20 in the largest square. */
+const GLYPH = { xs: 14, "icon-xs": 14, icon: 16, default: 16, lg: 16, "icon-lg": 20 } as const;
+const TEXT_SIZES = ["xs", "default", "lg"] as const;
+const ICON_SIZES = ["icon-xs", "icon", "icon-lg"] as const;
+
+function SizedRow({ half }: { half: (typeof halves)[number] }) {
+  if (half === "native") {
+    return (
+      <div data-testid="native" className="flex flex-row flex-wrap items-center gap-2">
+        {TEXT_SIZES.map((size) => (
+          <Native
+            key={size}
+            size={size}
+            variant="outline"
+            content={`native ${size}`}
+            iconSlot={<NativePlus />}
+          />
+        ))}
+        {ICON_SIZES.map((size) => (
+          <Native
+            key={size}
+            size={size}
+            aria-label={`native ${size}`}
+            variant="outline"
+            iconSlot={<NativePencil />}
+          />
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div data-testid="compiled" className="flex flex-row flex-wrap items-center gap-2">
+      {TEXT_SIZES.map((size) => (
+        <Compiled
+          key={size}
+          size={size}
+          variant="outline"
+          content={`compiled ${size}`}
+          iconSlot={<CompiledPlus />}
+        />
+      ))}
+      {ICON_SIZES.map((size) => (
+        <Compiled
+          key={size}
+          size={size}
+          aria-label={`compiled ${size}`}
+          variant="outline"
+          iconSlot={<CompiledPencil />}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The glyph follows the button's size (#472): 14px at `xs` and `icon-xs`, 20px in `icon-lg`, where
+ * 16px sat lost in a 44px square, and 16px everywhere else — the same on both halves.
+ */
+export const IconSizes: Story = {
+  render: () => (
+    <SideBySide native={<SizedRow half="native" />} compiled={<SizedRow half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of halves) {
+      const frame = within(within(canvasElement).getByTestId(half));
+      for (const size of [...TEXT_SIZES, ...ICON_SIZES]) {
+        const button = frame.getByRole("button", { name: `${half} ${size}` });
+        const glyph = button.querySelector("svg")?.getBoundingClientRect();
+        await expect({ half, size, glyph: glyph && [glyph.width, glyph.height] }).toEqual({
+          half,
+          size,
+          glyph: [GLYPH[size], GLYPH[size]],
+        });
+      }
+    }
+  },
+};
+
+/** Stands in for a device icon, which is the only kind that reads the class it is handed. */
+function ProbeIcon({ name }: { name: string }) {
+  const inherited = useContext(IconClassContext);
+  return <span data-testid={`icon-${name}`} data-class={inherited ?? ""} />;
+}
+
+/**
+ * The device half of `IconSizes`. On the web the `[&_svg]:` classes size the glyph; on device an
+ * icon is sized only by the class `IconClassContext` hands it, and was lucide's own 24px. The web
+ * icon set ignores that context, so a probe reads what a device icon would be given.
+ */
+export const IconSizeOnDevice: Story = {
+  render: () => (
+    <div className="flex flex-row gap-2 bg-background p-6">
+      <Native content="Add" iconSlot={<ProbeIcon name="default" />} />
+      <Native size="xs" content="Add" iconSlot={<ProbeIcon name="xs" />} />
+      <Native size="icon-xs" aria-label="Edit" iconSlot={<ProbeIcon name="icon-xs" />} />
+      <Native size="icon-lg" aria-label="Edit" iconSlot={<ProbeIcon name="icon-lg" />} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const classes = (name: string) =>
+      (canvas.getByTestId(`icon-${name}`).getAttribute("data-class") ?? "").split(" ");
+    for (const [name, size] of [
+      ["default", "size-4"],
+      ["xs", "size-3.5"],
+      ["icon-xs", "size-3.5"],
+      ["icon-lg", "size-5"],
+    ] as const) {
+      // Sized, and still in the variant's ink.
+      await expect({ name, classes: classes(name) }).toEqual({
+        name,
+        classes: expect.arrayContaining([size, "shrink-0", "text-neutral-foreground"]),
+      });
+    }
+  },
+};
+
+/** A hint long enough to need more than the 2.5s every bubble used to get: 63 characters. */
+const LONG_HINT = "Empty the lane first: a lane with cards in it cannot be deleted";
+/** Past the moment the bubble used to close, 2.5s after it opened, counted from the release. */
+const PAST_OLD_LIMIT_MS = 2800;
+
+/**
+ * The device tooltip stays longer for a longer hint (#472, WCAG 2.2.1), and its clock starts
+ * again when the finger lifts. It used to close 2.5s after it opened, whatever it said.
+ * `tooltip-base.test.ts` holds the time to the length.
+ */
+export const DeviceTooltipWaitsForTheReader: Story = {
+  render: () => (
+    <div className="bg-background p-16">
+      <NativeTooltip>
+        <NativeTooltipTrigger asChild>
+          <Native
+            aria-label="Delete lane"
+            variant="outline"
+            size="icon"
+            tooltip={false}
+            iconSlot={<NativeTrash />}
+          />
+        </NativeTooltipTrigger>
+        <NativeTooltipContent>{LONG_HINT}</NativeTooltipContent>
+      </NativeTooltip>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "Delete lane" });
+    await userEvent.pointer({ keys: "[MouseLeft>]", target: button });
+    await new Promise((resolve) => setTimeout(resolve, LONG_PRESS_MS));
+    await userEvent.pointer({ keys: "[/MouseLeft]", target: button });
+    await expect(canvas.getByRole("tooltip")).toHaveTextContent(LONG_HINT);
+    await new Promise((resolve) => setTimeout(resolve, PAST_OLD_LIMIT_MS));
+    // Past where the old 2.5s would have closed it: still up.
+    await expect(canvas.getByRole("tooltip")).toBeVisible();
+    await waitFor(() => expect(canvas.queryByRole("tooltip")).toBeNull(), { timeout: 3000 });
   },
 };

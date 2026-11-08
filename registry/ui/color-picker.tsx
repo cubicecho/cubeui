@@ -11,12 +11,19 @@
  * <ColorPicker value={color} onValueChange={setColor} swatches={ACTIVITY_COLORS} clearable />
  * ```
  */
+import type * as React from "react";
 import { useId, useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { readableTextColor } from "@/lib/readable-text-color";
+import {
+  type RovingKeyEvent,
+  type RovingSet,
+  useRovingFocus,
+  useRovingItem,
+} from "@/lib/roving-focus";
 import { cn } from "@/lib/utils";
 
 /**
@@ -89,6 +96,71 @@ function expand(value: string): string {
 /** Whether two strings are the same colour, however each was spelled. */
 function sameColor(a: string, b: string): boolean {
   return isHexColor(a) && isHexColor(b) && expand(a) === expand(b);
+}
+
+type SwatchProps = {
+  color: string;
+  selected: boolean;
+  disabled: boolean;
+  /** The row's roving tab stop: which swatch Tab lands on, and where an arrow key goes. */
+  roving: RovingSet & {
+    tabStop: string | undefined;
+    move: (from: string, event: RovingKeyEvent) => void;
+  };
+  onPress: () => void;
+};
+
+/** One colour in the row: a radio, named by its hex. */
+function Swatch({ color, selected, disabled, roving, onPress }: SwatchProps) {
+  const ref = useRovingItem<React.ElementRef<typeof Pressable>>(roving, color, disabled);
+  return (
+    <Pressable
+      ref={ref}
+      onPress={onPress}
+      disabled={disabled}
+      // A swatch row is a radio group: one of the set is current, and
+      // the label is the colour itself, which nothing else conveys.
+      accessibilityRole="radio"
+      accessibilityState={{ selected, disabled }}
+      // The same fact in the spelling the web understands — react-native-web forwards an
+      // allowlist of `aria-*` props and ignores `accessibilityState` entirely. A radio
+      // says its state with `aria-checked`, not `aria-selected`. One tab stop for the row, with
+      // the arrows between swatches, as `RadioGroup` has: sixteen stops was sixteen presses of
+      // Tab to get past the row to the hex field.
+      {...(Platform.OS === "web"
+        ? ({
+            "aria-checked": selected,
+            tabIndex: roving.tabStop === color ? 0 : -1,
+            onKeyDown: (event: RovingKeyEvent) => roving.move(color, event),
+          } as const)
+        : {})}
+      accessibilityLabel={color}
+      // The chosen ring is `active`, as anything chosen is, and drawn outside the swatch with
+      // a gap (`p-0.5`) so it does not sit on the colour. A border, not `ring-offset`,
+      // which NativeWind has no counterpart for. `gap-1` on the row keeps its width.
+      className={cn(
+        "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5",
+        selected ? "border-active" : "border-transparent",
+      )}
+    >
+      <View
+        className="h-full w-full items-center justify-center rounded-full"
+        style={{ backgroundColor: color }}
+      >
+        {selected ? (
+          // The tick has to be legible on whatever the caller passed, and
+          // a caller's palette is not known here — a hardcoded white one
+          // disappears on `#eab308`.
+          <Text
+            className="text-base leading-none"
+            style={{ color: readableTextColor(color) ?? "#ffffff" }}
+          >
+            ✓
+          </Text>
+        ) : null}
+      </View>
+    </Pressable>
+  );
 }
 
 /**
@@ -199,6 +271,10 @@ export function ColorPicker({
     }
   }
 
+  // The swatch the value is, in the palette's own spelling: `#F80` picks the `#ff8800` swatch.
+  const chosenSwatch = palette.find((color) => sameColor(current, color));
+  const roving = useRovingFocus({ current: chosenSwatch, onMove: emit, disabled });
+
   const onChangeText = (text: string) => {
     setDraft(text);
     const typed = normalizeHex(text);
@@ -231,49 +307,16 @@ export function ColorPicker({
           : {})}
         className={cn("flex-row flex-wrap gap-1", disabled && "opacity-50", contentClassName)}
       >
-        {palette.map((color) => {
-          const selected = sameColor(current, color);
-          return (
-            <Pressable
-              key={color}
-              onPress={() => emit(color)}
-              disabled={disabled}
-              // A swatch row is a radio group: one of the set is current, and
-              // the label is the colour itself, which nothing else conveys.
-              accessibilityRole="radio"
-              accessibilityState={{ selected, disabled }}
-              // The same fact in the spelling the web understands — react-native-web forwards an
-              // allowlist of `aria-*` props and ignores `accessibilityState` entirely. A radio
-              // says its state with `aria-checked`, not `aria-selected`.
-              {...(Platform.OS === "web" ? ({ "aria-checked": selected } as const) : {})}
-              accessibilityLabel={color}
-              // The chosen ring is `active`, as anything chosen is, and drawn outside the swatch with
-              // a gap (`p-0.5`) so it does not sit on the colour. A border, not `ring-offset`,
-              // which NativeWind has no counterpart for. `gap-1` on the row keeps its width.
-              className={cn(
-                "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5",
-                selected ? "border-active" : "border-transparent",
-              )}
-            >
-              <View
-                className="h-full w-full items-center justify-center rounded-full"
-                style={{ backgroundColor: color }}
-              >
-                {selected ? (
-                  // The tick has to be legible on whatever the caller passed, and
-                  // a caller's palette is not known here — a hardcoded white one
-                  // disappears on `#eab308`.
-                  <Text
-                    className="text-base leading-none"
-                    style={{ color: readableTextColor(color) ?? "#ffffff" }}
-                  >
-                    ✓
-                  </Text>
-                ) : null}
-              </View>
-            </Pressable>
-          );
-        })}
+        {palette.map((color) => (
+          <Swatch
+            key={color}
+            color={color}
+            selected={sameColor(current, color)}
+            disabled={disabled}
+            roving={roving}
+            onPress={() => emit(color)}
+          />
+        ))}
       </View>
       {/*
         The hex field's own name, for a screen reader only. It is a `<label>` pointed at the field

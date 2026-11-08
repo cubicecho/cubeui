@@ -8,7 +8,7 @@
  * `<button>` attributes — as shadcn's `tooltip` does, so a DOM call site ports
  * unchanged. Those extras are web only.
  */
-import type { ReactNode } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 
 export type TooltipProviderProps = {
   /** Hover time before a tooltip opens, in ms. Web only — see `tooltip.tsx`. */
@@ -59,3 +59,32 @@ export const TOOLTIP_SIDE_CLASS = {
   left: "right-full mr-1 self-start",
   right: "left-full ml-1 self-start",
 } as const satisfies Record<TooltipSide, string>;
+
+/** The least time a device's bubble stays up after the finger lifts: long enough for a word. */
+const MIN_VISIBLE_MS = 2500;
+/**
+ * The time a character adds: 60ms is about 170 words a minute, a slow reading pace, so a reader who
+ * takes longer than most still reaches the end of a long hint (WCAG 2.2.1).
+ */
+const MS_PER_CHARACTER = 60;
+
+/** How many characters of text a node holds, through any elements it is made of. */
+function textLength(node: ReactNode): number {
+  let length = 0;
+  Children.forEach(node, (child) => {
+    if (typeof child === "string" || typeof child === "number") {
+      length += String(child).length;
+    } else if (isValidElement<{ children?: ReactNode }>(child)) {
+      length += textLength(child.props.children);
+    }
+  });
+  return length;
+}
+
+/**
+ * How long a device's tooltip stays up once the finger lifts: longer for a longer hint, and never
+ * less than {@link MIN_VISIBLE_MS}. The web's stays while it is hovered or focused, and needs none.
+ */
+export function tooltipVisibleMs(content: ReactNode): number {
+  return Math.max(MIN_VISIBLE_MS, textLength(content) * MS_PER_CHARACTER);
+}
