@@ -22,7 +22,7 @@
  */
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
 import { ColorBar } from "./color-bar";
 
 // `className` is re-declared rather than inherited: nativewind types it as
@@ -99,7 +99,7 @@ Card.displayName = "Card";
 const CardHeader = React.forwardRef<HTMLDivElement, ViewProps>(({ className, ...props }, ref) => (
   <div
     ref={ref as React.Ref<HTMLDivElement>}
-    className={cn("cube-rn-view", "flex flex-col gap-1 p-4", className)}
+    className={cn("cube-rn-view", "flex flex-col p-4", HEADING_GAP, className)}
     {...(props as React.ComponentPropsWithoutRef<"div">)}
   />
 ));
@@ -114,9 +114,11 @@ type CardTitleProps = TextProps & {
   level?: 1 | 2 | 3 | undefined;
 };
 
-// shadcn's current card: the page's own text size, so a card under a page header never has a
-// bigger title than the page does (#249).
-const CARD_TITLE = "text-base font-semibold leading-none text-foreground";
+// The heading rhythm's title (#473): the size of the description under it and of a row's title,
+// so a card of rows reads as one type scale, and never bigger than the page's title (#249). It
+// keeps `text-sm`'s 20px line where shadcn's is `leading-none`, which clipped a truncated title's
+// descenders.
+const CARD_TITLE = HEADING_TITLE;
 
 // One arm per level because the compiler emits `<h1>`–`<h3>` from a *literal* `aria-level`; a level
 // held in a variable would be a tag chosen at runtime, which it refuses (see `page-header.tsx`).
@@ -157,7 +159,7 @@ const CardDescription = React.forwardRef<HTMLSpanElement, TextProps>(
   ({ className, ...props }, ref) => (
     <span
       ref={ref as React.Ref<HTMLSpanElement>}
-      className={cn("cube-rn-text", "text-sm text-foreground/60", className)}
+      className={cn("cube-rn-text", HEADING_DESCRIPTION, className)}
       {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
   ),

@@ -2,6 +2,12 @@
 
 Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](index.md) for what every shell here shares.
 
+**Contents**
+
+- [Cards](#cards)
+- [Sections](#sections)
+- [Collapsible](#collapsible)
+
 ## Cards
 
 ```tsx
@@ -40,7 +46,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `className` | `string` |  | On the card itself, the bordered box around every part. |
 | `headerClassName` | `string` |  | On the header: the icon, the title and description, and the action beside them. |
 | `titleClassName` | `string` |  | On the title itself: its size, a `line-through`. |
-| `contentClassName` | `string` |  | On the body, the box that holds `contentSlot`. |
+| `contentClassName` | `string` |  | On the body, the box that holds `contentSlot`. It is a column with `gap-4` between what it holds, as `Section`'s is; a gap here replaces it, and `gap-0` lets the children touch. |
 | `footerClassName` | `string` |  | On the footer: `footerSlot` at its start and `footerActionsSlot` at its end. |
 <!-- /props -->
 
@@ -70,6 +76,11 @@ not first announce that it is empty. Pass the query's pending flag straight in; 
 A card with no `title`, `description` or `actionSlot` draws no header, and its body starts 16px
 down from the card's top edge like its other three sides. Do not add `contentClassName="pt-4"`.
 
+**The body spaces what it holds: `gap-4`**, as `Section`'s does. Rows, fields or blocks handed to
+`contentSlot` as several elements sit 16px apart, so do not add `contentClassName="gap-4"`.
+`contentClassName` replaces the gap: `gap-0` for children that should touch, `gap-2` for a tighter
+stack.
+
 A card in the page pads `p-4`: `Card`, `CardLayout` and `StatTile` share that one inset. A dialog keeps `p-6`, because it is the only thing on the screen. Do not pass
 `className="p-6"` to make a card match a dialog. Neither draws a shadow in the page's flow: only a
 thing that floats does.
@@ -80,8 +91,11 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
-The title is `text-base` on both halves, never larger than the page's own title.
-`titleClassName` is on the title itself, for the card that wants another size or a `line-through`.
+The heading is the rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)):
+the title 14px semibold, the description 14px in the `/60` grey 4px under it, the action level with
+the title's top. The title is the size of its description and of the rows inside the card, and
+leads them by weight and ink. `titleClassName` is on the title itself, for the card that wants
+another size or a `line-through`.
 
 `descriptionPlacement="popover"` takes the description out from under the title and puts it behind
 a small button after the title, named "About <title>" — for a page of cards whose descriptions
@@ -93,9 +107,9 @@ prop on every card of a page and leave that case alone. `Section`, `SettingRow`,
 `DialogLayout` and the form fields take the same two props. Do not wrap the title in a `Popover` of your own.
 
 The header `actionSlot` **is in the header's flow, and wraps**. It sits at the far end, level with the
-title, while the title has room beside it; the title truncates short of it rather than running
-underneath; and when the card is too narrow for both, the action goes on a line of its own under
-the title. One control or a fragment of them — `actionSlot={<><ViewToggle /><Button content="Save" /></>}`
+title's top, while the title keeps 10rem beside it; the title truncates short of it rather than
+running underneath, and the description runs beside it too; and when the card is too narrow for
+both, the action goes on a line of its own under the text. One control or a fragment of them — `actionSlot={<><ViewToggle /><Button content="Save" /></>}`
 is laid out as a row. So a long title with two controls is still a `CardLayout`: do not compose
 `Card` by hand with `CardAction`, which is absolute and reserves no room.
 
@@ -185,7 +199,7 @@ A heading over a group of fields or rows, inside a page or a card.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `contentSlot` | `SlotNode` |  | The body: the fields, the rows, whatever the heading is over. |
-| `title` | `ReactNode` |  | The overline. A short noun phrase — "Pomodoro", "Danger zone", "Notifications". |
+| `title` | `ReactNode` |  | What the group is called: a short noun phrase — "Pomodoro", "Danger zone", "Notifications". Drawn as a card's title is, 14px semibold in full ink. |
 | `description` | `ReactNode` |  | One line under the title, in sentence case, on what the group is for. |
 | `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button beside the title, named "About <title>", and on the web the section is still described by it. A section with no title has nothing to put the button beside, so its description stays inline. |
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
@@ -207,8 +221,10 @@ A heading over a group of fields or rows, inside a page or a card.
   `data-slot="section-title"`, not by `h2`).
 - The root is a `<section>` on the web, named by its title, so a titled section is a `region`
   landmark. There is nothing to add for that — do not wrap it in another `role="region"`.
-- The title is a small uppercase overline in full `foreground`, so it leads the muted, larger
-  description under it by ink and weight rather than size.
+- The title is a card's title: 14px semibold in full `foreground`, over a 14px description in the
+  `/60` grey, the rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)). It
+  is drawn as written, so write it in sentence case. It was a 12px uppercase overline; an
+  overline label of your own is `SectionHeading variant="overline"`.
 - It draws **no surface**: it is a label and a gap. A titled group on a card is a `CardLayout`,
   not a `Section` inside a `Card`. The `surface="card"` prop was removed; move each
   `<Section surface="card" …>` to `<CardLayout level={2} …>` with the same `title`, `description`,
@@ -219,17 +235,17 @@ A heading over a group of fields or rows, inside a page or a card.
   rank, and on the web the region is still described by the sentence. A section with no `title`
   keeps its description inline.
 - The heading row is **`CardLayout`'s**, and **wraps**. An `actionSlot` sits at the far end, level
-  with the top of the title, while the title and description have room beside it, and drops under
-  them — at the start, as `SettingRow`'s does — when they do not; `actionPlacement="inline"` keeps
+  with the top of the title, while the text keeps 10rem beside it, and drops under it — at the
+  start, as `SettingRow`'s does — when it does not; `actionPlacement="inline"` keeps
   it beside the title and truncates the title instead, as on a card. Installing `section` installs
   `card-layout` too, for that row (`HeadingRow`); a section draws no card.
   So a toolbar is an `actionSlot` even on a phone: pass the buttons as a fragment and they are rowed
   and wrap inside the section. Do not move a wide toolbar into the top of `contentSlot` to keep the
   description readable, and do not wrap it in a `flex flex-wrap` `<div>` of your own.
-- It is the smallest thing in the registry and it exists because three projects wrote
-  `text-xs font-semibold uppercase` plus a muted foreground from memory, and each got the sixth
-  token different (`tracking-wider`, `tracking-wide`, `border-b pb-1`). A shared token has no
-  answer for that, because the value being retyped *is* a class list.
+- It is the smallest thing in the registry and it exists because three projects wrote a section
+  heading's class list from memory, and each got the sixth token different (`tracking-wider`,
+  `tracking-wide`, `border-b pb-1`). A shared token has no answer for that, because the value
+  being retyped *is* a class list.
 
 ## Collapsible
 
@@ -284,9 +300,10 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 - Uncontrolled by default, shut: pass `defaultOpen` to start open. Pass `open` and `onOpenChange`
   when the caller needs the state — a title that says Hide once open, a deep link, a "show the
   failure" button elsewhere on the page. `onOpenChange` alone listens without taking over.
-- The look is compact: a muted `text-sm` title after the chevron, `description` a smaller line
-  under it, the body underneath with no inset. `titleClassName="text-foreground"` when the
-  collapsible is the heading of its part of the page; `contentClassName` to indent the body.
-  An element as `title` or `description` is placed as it is and styles itself.
+- The heading is the rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)):
+  a 14px semibold title in full ink after the chevron, `description` 14px in the `/60` grey 4px
+  under it, `actionSlot` level with the title's top, dropping under the title when the title would
+  keep less than 10rem beside it. The body is indented to the title; `contentClassName` changes
+  that. An element as `title` or `description` is placed as it is and styles itself.
 - A row in a list that opens onto its detail is `CollapsibleRow`, which adds the row's `badgesSlot`,
   `meta` and `ListItem`'s box.

@@ -193,6 +193,23 @@ shadow (#342). Its size is the elevation, from a fixed map: `shadow-sm` for a pa
 switch's thumb, a copy button over a code block), `shadow-md` for what floats over the page (a
 popover, a menu, a select's list, a tooltip, a toast), and `shadow-lg` for a dialog alone.
 
+**Blocks and rows share one heading rhythm** (#473). `Card` and `CardLayout`, `Section`,
+`SettingRow`, `Item` at `sm`, `ListItem`, `CollapsibleRow` and `Collapsible` lay out a title, the
+line under it and an action the same way: the title 14px semibold in full ink, the description
+14px at the `/60` step, 4px between them, and the action level with the title's top, never centred
+on the text. Between two actions it is 8px, or 4px between `icon-xs` buttons, which `actionGap`
+reads off the buttons' `size`. Beside an action the text keeps 10rem, or the action wraps under
+it, 8px down: a block's to the start, a row's to the far end, clear of its leading slot. The
+classes are `HEADING_TITLE`, `HEADING_DESCRIPTION`, `HEADING_GAP`, `HEADING_WRAP_FLOOR`,
+`HEADING_WRAP_GAP` and `actionGap` in `registry/lib/utils.ts`; every one of those shells takes them
+from there, and a new block or row with a title does too, rather than spelling
+`text-sm font-semibold` again. The title and its line are the same size on purpose: hierarchy
+comes from weight and ink, so a card of rows reads as one type scale and not three. A block's
+description runs beside its action, not under it, because a button taller than the title's line
+would push it off the title. `Item`'s `default` size is shadcn's and stays outside the rhythm, and
+`SectionHeading`'s overline is a label, not a block's title. `RN Parity/Heading rhythm` holds the
+seven to it on both halves.
+
 **A button looks like a button.** `ghost` and `link` stay as Button variants, for an app porting
 shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
 and an icon inside a field's own border is `secondary`. An action that adds something (Add, New,

@@ -6,7 +6,7 @@ import { rowFillClass, rowLink } from "@/components/list-item";
 import { File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
-import { cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode } from "@/lib/utils";
 
 type FileTreeProps<T extends TreeEntry> = {
   /** What the list is, for a screen reader: "Files", "Notes". Read, not drawn. */
@@ -407,7 +407,9 @@ export function FileTree<T extends TreeEntry>({
           <View
             testID="file-tree-action"
             className={cn(
-              "shrink-0 flex-row items-center gap-0.5 pr-1",
+              "shrink-0 flex-row items-center pr-1",
+              // The rhythm's action gap: 4px between the `icon-xs` buttons a tree row takes.
+              actionGap(actions),
               // Hidden only where a pointer can bring them back. An open menu keeps its trigger on
               // screen after the pointer has left the row for the menu.
               Platform.select({

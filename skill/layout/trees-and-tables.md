@@ -62,6 +62,7 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
   area, so nothing pressable goes there. It is called for folders too — return `null` to skip one.
 - `actionSlot` is the row's far end, **outside** the pressed area: `icon-xs` outline `Button`s with an
   `aria-label`, a `ConfirmButton`, or one `Menu` behind an `Ellipsis` when there are more than two.
+  Return them as one element or a fragment: `icon-xs` buttons sit 4px apart, as in every row.
   Where there is a pointer they show on hover and on keyboard focus; on a touch screen they are
   always drawn. Return `null` for a row that has none (a locked skill, a folder).
 - `pinned` is drawn above the tree, in the order given, by its whole path, and is not nested or

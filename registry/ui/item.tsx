@@ -34,7 +34,7 @@ import {
   itemVariants,
 } from "@/components/ui/item-base";
 import { Separator, type SeparatorProps } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { actionGap, cn } from "@/lib/utils";
 
 // `className` is re-declared rather than inherited: nativewind types it as `className?: string`,
 // which under `exactOptionalPropertyTypes` rejects the conditional a call site passes.
@@ -193,7 +193,13 @@ function ItemActions({ className, children, ...props }: ViewProps) {
   return (
     <View
       testID="item-actions"
-      className={cn(ITEM_ACTIONS_CLASS, ITEM_ACTIONS_SIZES[size], className)}
+      className={cn(
+        ITEM_ACTIONS_CLASS,
+        ITEM_ACTIONS_SIZES[size],
+        // `default` keeps shadcn's gap whatever the buttons are.
+        size === "sm" && actionGap(children),
+        className,
+      )}
       {...props}
     >
       {withText(children, PART_TEXT)}

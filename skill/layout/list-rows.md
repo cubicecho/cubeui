@@ -155,13 +155,20 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   sized the way `iconSlot` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
   area — a `Checkbox` there is its own control (telos' todo row).
 - `title` is one line and truncates; `description` is the muted line under it, two lines at most.
+  They are the heading rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)):
+  a 14px semibold title over a 14px description in the `/60` grey, 4px apart, the same type as a
+  card's heading, so a list on a card reads as one scale.
   `titleClassName` reaches the title (a done todo's `line-through`). Both are for words. An
   element given to either — a name with a badge beside it — is placed as it is, with none of
   that styling or truncation, so it styles its own text; in an Expo app its words need a `Text`.
 - `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
   `text-xs` muted for you. It is inside the pressed area.
 - `actionSlot` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  outline `Button`s; the row adds the gap.
+  outline `Button`s; the row adds the gap — 8px, or 4px when they are all `icon-xs` — and holds them
+  level with the title's top, not centred on the row.
+- **The row wraps rather than squeezing its middle to nothing.** The title truncates first; once
+  the middle would be narrower than 10rem, the actions go to a line of their own, 8px under the
+  words, at the row's far end. `CollapsibleRow` does the same.
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
