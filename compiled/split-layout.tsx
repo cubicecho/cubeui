@@ -332,6 +332,17 @@ const COLUMN = "min-h-0 min-w-0 flex-1";
 /** Under the bar: the caller's node, in the box a pane would have given it (see PANE). */
 const BELOW_HEADER = "min-h-0 min-w-0 flex-1";
 
+/**
+ * The bottom bar's padding under its places: its own 8px on top of the bottom safe-area inset, so
+ * its fill runs under a phone's home indicator, as a tab bar's does, and the places sit above it.
+ *
+ * `env()` rather than `useSafeAreaInsets`, so the shell adds no dependency, and because that hook
+ * reads zero on the web under Expo Router. On device react-native-css fills `env()` from the
+ * `SafeAreaProvider` at the app's root, which expo-router supplies. On the web it is the inset of
+ * a home-screen app with `viewport-fit=cover`, and 0 anywhere else.
+ */
+const BOTTOM_BAR_INSET = "pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]";
+
 /** The bar's navigation is a landmark, and a landmark with no name is one of several `nav`s. */
 type SidebarLayoutNav =
   | {
@@ -400,14 +411,10 @@ type SidebarLayoutNarrow =
        * is where a phone's thumb is and where Android and iOS apps put them. The brand, the
        * `status` and the `actionSlot` stay in the bar at the top.
        *
-       * The bottom safe-area inset is the app's, as the top one is: nothing here measures insets,
-       * and a shell is not the place to add the dependency that does. A `SafeAreaView` that takes
-       * the bottom edge stops the bar above the home indicator and leaves a strip under it in the
-       * `SafeAreaView`'s own fill, not the bar's. For the bar's fill to reach the screen's edge,
-       * leave `"bottom"` out of the app's `edges` and pad the bar by the inset through
-       * `bottomBarClassName`: `pb-safe-offset-2` is NativeWind's (the inset plus the bar's own
-       * `py-2`), and a DOM app with `viewport-fit=cover` writes
-       * `pb-[calc(env(safe-area-inset-bottom)+0.5rem)]`.
+       * The bottom bar takes the bottom safe-area inset itself: it pads its places above the home
+       * indicator and its fill runs under it to the screen's edge, as a tab bar's does. So the
+       * app's `SafeAreaView` leaves the bottom edge out (`edges={["top", "left", "right"]}`), or
+       * the inset is counted twice. The top inset is still the app's.
        */
       barPosition?: "top" | "bottom" | undefined;
     } & SidebarLayoutNav);
@@ -515,7 +522,8 @@ export function SidebarLayout({
             data-slot="sidebar-layout-bottom-bar"
             className={cn(
               "cube-rn-view",
-              "min-h-14 shrink-0 flex-row items-center justify-around gap-1 border-foreground/10 border-t bg-background px-4 py-2",
+              "min-h-14 shrink-0 flex-row items-center justify-around gap-1 border-foreground/10 border-t bg-background px-4 pt-2",
+              BOTTOM_BAR_INSET,
               HEADER_HIDE_FROM[sidebarHideBelow],
               bottomBarClassName,
             )}

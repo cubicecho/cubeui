@@ -329,22 +329,21 @@ there pushes the buttons off the screen.
   />
   ```
 
-  - **The bottom safe-area inset is the app's**, as the top one is; the layout adds no dependency
-    to measure insets. For the bar's fill to run under the home indicator, leave `"bottom"` out of
-    the app's `react-native-safe-area-context` `<SafeAreaView edges={["top"]}>` and pad the bar by
-    the inset through `bottomBarClassName`, which is on the bottom bar itself (its fill, its
-    border, its padding):
+  - **The bottom bar takes the bottom safe-area inset itself.** It pads its places above the
+    home indicator, and its fill runs under the indicator to the screen's edge, as a tab bar's
+    does. So the app's `react-native-safe-area-context` `SafeAreaView` leaves the bottom edge
+    out, or the inset is counted twice:
 
     ```tsx
-    <SafeAreaView edges={["top"]} className="flex-1 bg-background">
-      <SidebarLayout barPosition="bottom" bottomBarClassName="pb-safe-offset-2" … />
+    <SafeAreaView edges={["top", "left", "right"]} className="flex-1 bg-background">
+      <SidebarLayout barPosition="bottom" … />
     </SafeAreaView>
     ```
 
-    `pb-safe-offset-2` is NativeWind's: the inset plus the bar's own 8px. A DOM app (with
-    `viewport-fit=cover`) writes `pb-[calc(env(safe-area-inset-bottom)+0.5rem)]`. Keeping
-    `"bottom"` in `edges` instead stops the bar above the indicator, with a strip under it in the
-    `SafeAreaView`'s fill, not the bar's.
+    On device the inset comes from the `SafeAreaProvider` at the app's root, which expo-router
+    supplies; an app without expo-router puts one there. On the web the bar pads by
+    `env(safe-area-inset-bottom)`, which is the inset in a home-screen app with
+    `viewport-fit=cover` and 0 anywhere else. Pass no inset class in `bottomBarClassName`.
   - **`contentSlot` scrolls between the bars.** Neither bar is fixed or overlaid, so nothing in the
     page is hidden behind one, and the layout needs a height to divide (`h-full`, `flex-1`).
   - **About five places**: each item is 32px, and this bar neither scrolls nor wraps.

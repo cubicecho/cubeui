@@ -221,6 +221,13 @@ to add them.
   short line that does not wrap, is no longer a stop, and has no 1px edge, so it is 2px shorter.
   A log that grows past its cap becomes one. A reinstall of `code` also writes
   `components/ui/overflows.tsx`.
+- **`SidebarLayout`'s bar along the bottom reaches the bottom of the screen**
+  ([#341](https://github.com/cubicecho/cubeui/issues/341)). With `barPosition="bottom"` the bar
+  takes the bottom safe-area inset itself: its places sit above a phone's home indicator and its
+  fill runs under it, so there is no strip of page background below the bar. Take `"bottom"` out
+  of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
+  counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
+  `bottomBarClassName` for it.
 
 ## Checking the result
 

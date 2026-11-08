@@ -358,15 +358,37 @@ export const Phone320: Story = {
   },
 };
 
+/** The bar's own padding above and below its places, `pt-2` and the 8px over the inset. */
+const BAR_PADDING = 8;
+
+/**
+ * The bottom safe-area inset the browser reports, read the way the bar reads it: 0 in the
+ * `storybook` project, and a home indicator's 34px in the `safe-area` one.
+ */
+function bottomInset(canvasElement: HTMLElement) {
+  const probe = canvasElement.ownerDocument.createElement("div");
+  probe.style.paddingBottom = "env(safe-area-inset-bottom, 0px)";
+  canvasElement.append(probe);
+  const inset = Number.parseFloat(getComputedStyle(probe).paddingBottom);
+  probe.remove();
+  return inset;
+}
+
 /**
  * `barPosition="bottom"`: the places leave the bar at the top for one of their own under the page,
  * where a phone's thumb is. The brand, the status and the actions stay where they were.
+ *
+ * Tagged `safe-area`, so it runs twice: with no inset, and again in the `safe-area` test project
+ * as a phone with a home indicator (#341). There the bar takes the inset itself, its places above
+ * the indicator and its fill under it to the bottom edge, and the top bar is as it was.
  */
 export const BottomBar: Story = {
+  tags: ["safe-area"],
   render: () => <Bars width={390} barPosition="bottom" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(window.matchMedia("(min-width: 48rem)").matches).toBe(false);
+    const inset = bottomInset(canvasElement);
 
     const heights: number[] = [];
     for (const [half, phoneName] of [
@@ -412,6 +434,18 @@ export const BottomBar: Story = {
       await expect(edge.bottom).toBeCloseTo(inner.bottom - 1, 0);
       heights.push(edge.height);
 
+      // The bar owns the bottom inset: its padding is the inset plus its own, so the strip under
+      // the places is the bar's fill, down to the edge, and not the page behind it.
+      const barStyle = getComputedStyle(bar);
+      await expect(barStyle.paddingTop).toBe(`${BAR_PADDING}px`);
+      await expect(barStyle.paddingBottom).toBe(`${inset + BAR_PADDING}px`);
+      await expect(barStyle.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+      const strip = canvasElement.ownerDocument.elementFromPoint(edge.left + 1, edge.bottom - 1);
+      await expect(strip === bar || bar.contains(strip)).toBe(true);
+      // The top bar takes no bottom inset of its own: its padding is the same above and below.
+      const headerStyle = getComputedStyle(header);
+      await expect(headerStyle.paddingBottom).toBe(headerStyle.paddingTop);
+
       // The same four places, named and sized as they are at the top, with one current.
       const links = within(bar).getAllByRole("link");
       await expect(links).toHaveLength(4);
@@ -421,6 +455,8 @@ export const BottomBar: Story = {
         await expect([box.width, box.height]).toEqual([32, 32]);
         await expect(box.left).toBeGreaterThanOrEqual(edge.left);
         await expect(box.right).toBeLessThanOrEqual(edge.right);
+        // Above the home indicator, not under it.
+        await expect(box.bottom).toBeLessThanOrEqual(edge.bottom - inset - BAR_PADDING + 0.5);
       }
       const current = within(bar).getAllByRole("link", { current: "page" });
       await expect(current).toHaveLength(1);
