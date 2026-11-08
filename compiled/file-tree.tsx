@@ -284,7 +284,9 @@ export function FileTree<T extends TreeEntry>({
     // On the chosen tint, and inside the folder a drag is over (the same tint), /60 is under 4.5:1.
     const inDrop =
       dropInto !== null &&
-      (dropInto === "" || node.path === dropInto || node.path.startsWith(`${dropInto}/`));
+      (dropInto === "" ||
+        (isFile === false && node.path === dropInto) ||
+        node.path.startsWith(`${dropInto}/`));
     const muted = inDrop || isSelected ? "text-foreground" : "text-foreground/60";
     const indent = { paddingLeft: depth * INDENT + EDGE };
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
@@ -430,12 +432,13 @@ export function FileTree<T extends TreeEntry>({
   const renderItems = (nodes: readonly TreeNode<T>[], depth: number): ReactNode =>
     nodes.map((node) => (
       <li
-        key={node.path}
+        // A file and a folder can share a path (see `buildTree`).
+        key={`${node.type}:${node.path}`}
         data-slot="file-tree-item"
         className={cn(
           "cube-rn-view",
           "min-w-0 gap-0.5",
-          dropInto === node.path && DROP_TARGET_CLASS,
+          node.type === "dir" && dropInto === node.path && DROP_TARGET_CLASS,
         )}
         {...(canDrop && node.type === "dir" ? dropProps(node.path) : {})}
       >

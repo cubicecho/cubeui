@@ -22,6 +22,12 @@ describe("formatBytes", () => {
     expect(formatBytes(1024 ** 3)).toBe("1.0 GB");
   });
 
+  it("chooses the unit after rounding, so a size just under one reads as the one above", () => {
+    expect(formatBytes(1048575)).toBe("1.0 MB");
+    expect(formatBytes(1024 ** 3 - 1)).toBe("1.0 GB");
+    expect(formatBytes(1024 * 1023.94)).toBe("1023.9 KB");
+  });
+
   it("stays in gigabytes past the last unit", () => {
     expect(formatBytes(2048 * 1024 ** 3)).toBe("2048.0 GB");
   });
@@ -121,9 +127,11 @@ describe("formatAgo", () => {
   const ago = (seconds: number) => formatAgo(now - seconds * 1000, now);
   const relative = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
-  it("is just now under a minute", () => {
-    expect(ago(0)).toBe("just now");
-    expect(ago(59)).toBe("just now");
+  it("is the locale's now under a minute", () => {
+    const words = relative.format(0, "second");
+    expect(ago(0)).toBe(words);
+    expect(ago(59)).toBe(words);
+    expect(formatAgo(now + 30 * 1000, now)).toBe(words);
   });
 
   it("counts in the largest whole unit", () => {
@@ -131,6 +139,23 @@ describe("formatAgo", () => {
     expect(ago(3 * 3600)).toBe(relative.format(-3, "hour"));
     expect(ago(3 * 86_400)).toBe(relative.format(-3, "day"));
     expect(ago(14 * 86_400)).toBe(relative.format(-2, "week"));
+  });
+
+  it("writes a count that rounds up to the next unit in that unit", () => {
+    expect(ago(59 * 60 + 40)).toBe(relative.format(-1, "hour"));
+    expect(ago(23.6 * 3600)).toBe(relative.format(-1, "day"));
+    expect(ago(6.6 * 86_400)).toBe(relative.format(-1, "week"));
+    expect(ago(11.6 * 30 * 86_400)).toBe(relative.format(-1, "year"));
+    expect(formatAgo(now + 23.6 * 3600 * 1000, now)).toBe(relative.format(1, "day"));
+  });
+
+  it("keeps the unit for a count that rounds short of the next", () => {
+    expect(ago(100)).toBe(relative.format(-2, "minute"));
+    expect(ago(23.4 * 3600)).toBe(relative.format(-23, "hour"));
+    expect(ago(6.4 * 86_400)).toBe(relative.format(-6, "day"));
+    // A month is not whole weeks: under thirty days is still weeks.
+    expect(ago(29 * 86_400)).toBe(relative.format(-4, "week"));
+    expect(ago(11.4 * 30 * 86_400)).toBe(relative.format(-11, "month"));
   });
 
   it("reads forwards for a moment still to come", () => {
@@ -146,7 +171,7 @@ describe("formatAgo", () => {
     const short = (seconds: number) => formatAgo(now - seconds * 1000, now, { style: "narrow" });
     expect(short(5 * 60)).toBe(narrow.format(-5, "minute"));
     expect(short(3 * 86_400)).toBe(narrow.format(-3, "day"));
-    expect(short(59)).toBe("just now");
+    expect(short(59)).toBe(narrow.format(0, "second"));
     expect(formatAgo(now - 5 * 60 * 1000, now, { style: "long" })).toBe(ago(5 * 60));
     expect(formatAgo(now - 5 * 60 * 1000, now, {})).toBe(ago(5 * 60));
   });
@@ -160,6 +185,8 @@ describe("formatAgo", () => {
       expect(formatAgo(now - 5 * 60 * 1000, now, { style: "narrow" })).toBe("5m ago");
       expect(formatAgo(now - 90 * 86_400 * 1000, now, { style: "narrow" })).toBe("3mo ago");
       expect(formatAgo(now + 2 * 3600 * 1000, now, { style: "narrow" })).toBe("in 2h");
+      expect(ago(30)).toBe("now");
+      expect(ago(23.6 * 3600)).toBe("1 day ago");
     } finally {
       vi.unstubAllGlobals();
     }

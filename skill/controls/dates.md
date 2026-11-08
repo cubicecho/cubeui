@@ -164,7 +164,7 @@ where an app would otherwise write its own `lib/format.ts`.
 | `formatDuration(11520)` | `3h 12m` — also `42s`, `5m`, `2d 4h`; it takes seconds |
 | `formatDate(note.updatedAt)` | `Oct 3, 2026`, in the reader's locale |
 | `formatDateTime(doc.addedAt)` | `Oct 3, 2026, 2:32 PM`, in the reader's locale |
-| `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `just now` under a minute |
+| `formatAgo(note.updatedAt)` | `3 days ago`, `yesterday`, `now` under a minute; 23½ hours is `yesterday` |
 | `formatAgo(call.at, undefined, { style: "narrow" })` | `5m ago`, `3d ago`, `in 2h` — for a dense column |
 | `joinStats(formatCount(1, "file"), formatCount(2, "chunk"), locked && "human-only")` | `1 file · 2 chunks · human-only` |
 
