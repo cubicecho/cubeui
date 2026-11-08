@@ -8,7 +8,7 @@ import { Switch as CompiledSwitch } from "../compiled/switch";
 import type { SettingRowIds } from "../registry/layout/setting-row";
 import { SettingRow as Native } from "../registry/layout/setting-row";
 import { Button as NativeButton } from "../registry/ui/button";
-import { Switch as NativeSwitch } from "../registry/ui/switch";
+import { Switch as NativeSwitch } from "../registry/ui/switch.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**

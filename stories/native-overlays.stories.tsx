@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from "react-native";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "../registry/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../registry/ui/dialog.tsx";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Archive, Pencil, Trash2 } from "../registry/ui/icons";
 import { OverlayLayer } from "../registry/ui/overlay";
 import { ToastProvider, useToast } from "../registry/ui/toast";

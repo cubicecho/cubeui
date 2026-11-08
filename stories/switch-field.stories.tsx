@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { Switch } from "../compiled/switch";
 import { SwitchField } from "../compiled/switch-field";
+// The `.web.tsx` halves, as an Expo web build runs them: this file holds the web half.
 import { Switch as NativeSwitch } from "../registry/ui/switch";
 import { SwitchField as NativeSwitchField } from "../registry/ui/switch-field";
 import { SideBySide } from "./side-by-side";

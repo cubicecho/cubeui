@@ -32,6 +32,7 @@ import {
   SidebarItem as NativeSidebarItem,
   useSidebar as useNativeSidebar,
 } from "../registry/layout/sidebar";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import {
   ArrowRight as NativeArrowRight,
   CircleCheck as NativeCircleCheck,

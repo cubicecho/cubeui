@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { SearchInput as Compiled } from "../compiled/search-input";
+// `search-input.web.tsx`, as an Expo web build runs it; `Device` below is the device source.
 import { SearchInput as Native } from "../registry/ui/search-input";
 import { SearchInput as Device } from "../registry/ui/search-input.tsx";
 import { expectNoTooltipOnHover } from "./no-tooltip";

@@ -6,8 +6,9 @@ import { Button as CompiledButton } from "../compiled/button";
 import { FileTree as Compiled } from "../compiled/file-tree";
 import { Trash2 as CompiledTrash } from "../compiled/icons";
 import { FileTree as Native } from "../registry/layout/file-tree";
-import { Badge as NativeBadge } from "../registry/ui/badge";
+import { Badge as NativeBadge } from "../registry/ui/badge.tsx";
 import { Button as NativeButton } from "../registry/ui/button";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Trash2 as NativeTrash } from "../registry/ui/icons";
 import { isTurned } from "./chevron";
 import { deferredSave } from "./deferred-save";
