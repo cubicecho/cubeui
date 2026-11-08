@@ -5,8 +5,8 @@
   "type": "module",
   "description": "A shadcn registry of React Native components and the tokens they share with the web.",
   "scripts": {
-    "tokens:build": "node scripts/build-tokens.mjs",
-    "tokens:check": "node scripts/build-tokens.mjs --check",
+    "tokens:build": "node scripts/build-tokens.mjs && node scripts/build-token-weights.mjs",
+    "tokens:check": "node scripts/build-tokens.mjs --check && node scripts/build-token-weights.mjs --check",
     "compile": "node scripts/rn2web/index.mjs",
     "compile:check": "node scripts/rn2web/index.mjs --check",
     "registry:build": "shadcn build registry.web.json -o public/r && shadcn build -o public/r/native && node scripts/rn2web/publish-imports.mjs public/r public/r/native",

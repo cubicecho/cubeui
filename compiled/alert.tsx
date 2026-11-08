@@ -13,11 +13,19 @@
  * The parts are props (`iconSlot`, `title`, `description`, `actionSlot`), and shadcn's compound
  * form with `AlertTitle` and `AlertDescription` works too, so a DOM call site ports unchanged.
  *
- * The variant colours only the tint, the border and the icon. The text stays `text-foreground`,
- * because coloured text on a 10% tint of the same colour is under 4.5:1. Only `destructive` is
- * `role="alert"`, which interrupts a screen reader; the other variants are `status`.
+ * The variant colours only the tint, the border and the icon. The text is never the hue, because
+ * coloured text on a 10% tint of the same colour is under 4.5:1. The title is the
+ * foreground and the line under it `/60` in every variant, one hierarchy whatever the tint: `/60`
+ * is 4.8:1 or more on each tint over the page and over a card, in every palette, and
+ * `palette-contrast.test.mjs` holds it. Only `destructive` is `role="alert"`, which interrupts a
+ * screen reader; the other variants are `status`.
+ *
+ * Written with the props, every variant keeps the icon's column, so a stack of alerts starts its
+ * words at one edge. `info` has no glyph of its own (a highlight is not a kind of message, and an ⓘ
+ * would argue with one that says "new" or "tip"), so with nothing passed its column is held empty.
+ * The compound form keeps shadcn's look: with no icon child, the words start at the edge.
  */
-import { Children, createContext, isValidElement, type ReactNode, useContext } from "react";
+import { Children, isValidElement, type ReactNode } from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { CircleAlert, Info, TriangleAlert } from "./icons";
@@ -34,8 +42,8 @@ export type AlertProps = {
   /**
    * Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink.
    * Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except
-   * on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all,
-   * and the text moves to the edge.
+   * on `info`, which has no glyph of its own: its column is held empty, so its words line up with
+   * the alerts around it. `null` draws no icon and no column, and the text moves to the edge.
    */
   iconSlot?: SlotNode | undefined;
   /** What happened, in a few words: "API key generated", "Last error". */
@@ -56,9 +64,6 @@ export type AlertProps = {
 export type AlertTitleProps = { className?: string | undefined; children?: ReactNode };
 export type AlertDescriptionProps = { className?: string | undefined; children?: ReactNode };
 
-/** The variant, for the two parts to take their ink from. */
-const AlertVariantContext = createContext<AlertVariant>("default");
-
 /** The box: the tint and the border that names its colour, per variant. */
 const ALERT_SURFACE = {
   default: "border border-foreground/10 bg-secondary",
@@ -73,14 +78,6 @@ const ALERT_ICON_INK = {
   info: "text-info",
   warning: "text-warning",
   destructive: "text-negative",
-} satisfies Record<AlertVariant, string>;
-
-/** The line under the title. Muted only on the card, where muted is still 4.5:1. */
-const ALERT_DESCRIPTION_INK = {
-  default: "text-foreground/60",
-  info: "text-foreground",
-  warning: "text-foreground",
-  destructive: "text-foreground",
 } satisfies Record<AlertVariant, string>;
 
 /**
@@ -123,15 +120,14 @@ function isInlineText(children: ReactNode): boolean {
 }
 
 /**
- * shadcn's `AlertDescription`: the line under the title, in the variant's ink.
+ * shadcn's `AlertDescription`: the line under the title, in secondary ink on every variant.
  *
  * Text is a text element, as it was. Elements with no loose text around them (a `<ul>` of reasons,
  * a couple of `<p>`s) go in a box instead, because a list inside a `<span>` is invalid HTML (#358).
  * On the web the box hands the ink down; on device each `Text` inside takes its own.
  */
 export function AlertDescription({ className, children }: AlertDescriptionProps) {
-  const variant = useContext(AlertVariantContext);
-  const classes = cn("text-sm", ALERT_DESCRIPTION_INK[variant], className);
+  const classes = cn("text-foreground/60 text-sm", className);
   if (isInlineText(children)) {
     return (
       <span data-slot="alert-description" className={cn("cube-rn-text", classes)}>
@@ -174,6 +170,9 @@ export function Alert({
   const ownIcon = parts.length > 0 ? null : defaultIcon(variant);
   const glyph = iconSlot !== undefined ? iconSlot : ownIcon;
   const ink = ALERT_ICON_INK[variant];
+  // Held empty only when nothing chose otherwise: `null`, or children of the compound form, do.
+  const drawn = Boolean(glyph) || iconParts.length > 0;
+  const column = drawn || (iconSlot === undefined && parts.length === 0);
 
   return (
     <div
@@ -186,13 +185,14 @@ export function Alert({
         className,
       )}
     >
-      {glyph || iconParts.length > 0 ? (
+      {column ? (
         <div
           data-slot="alert-icon"
           aria-hidden
           className={cn(
             "cube-rn-view",
             "mt-0.5 shrink-0 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+            drawn ? undefined : "w-4",
             ink,
           )}
         >
@@ -203,11 +203,9 @@ export function Alert({
         </div>
       ) : null}
       <div className="cube-rn-view min-w-0 flex-1 gap-1">
-        <AlertVariantContext.Provider value={variant}>
-          {title ? <AlertTitle>{title}</AlertTitle> : null}
-          {description ? <AlertDescription>{description}</AlertDescription> : null}
-          {textParts}
-        </AlertVariantContext.Provider>
+        {title ? <AlertTitle>{title}</AlertTitle> : null}
+        {description ? <AlertDescription>{description}</AlertDescription> : null}
+        {textParts}
       </div>
       {actionSlot ? (
         <div data-slot="alert-action" className="cube-rn-view shrink-0 self-center">

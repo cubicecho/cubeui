@@ -113,6 +113,8 @@ its label is already on screen.
 name stays what it was, and the hint is read after it whether or not the tooltip is open. It is
 also an always-mounted `sr-only` node, because a tooltip's text is in the DOM only while it is
 showing. `tooltip={false}` keeps that description and drops the tooltip, and `side` moves it.
+A long hint wraps: the bubble is `max-w-xs` on both halves, and on the web it evens its lines and
+keeps 8px clear of the window's edge. Do not shorten a hint to keep it on one line.
 
 **`disabled` with a `hint` is not the HTML attribute.** It becomes `aria-disabled`, so the control
 keeps its focus ring, its hover and its tooltip and refuses the press in the handler. That is
@@ -199,8 +201,8 @@ that, and it teaches nothing. Say what is lost: *the lane takes its cards with i
 using this key stops working, including the nightly sync*, *the members lose access to every
 server in it*. If you cannot write that sentence, the confirm is probably not warranted.
 
-`confirmLabel` names the verb — Delete (the default), Discard, Revoke, Remove, Reset. The action
-is always destructive; a confirm that is *not* destructive is a question, and a question is
+`confirmLabel` names the verb — Delete (the default, on `ConfirmDialog` and `confirm()` too),
+Discard, Revoke, Remove, Reset. The action is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
 Everything `Button` takes, `ConfirmButton` takes: `content`, `aria-label`, `hint`, `disabled`,

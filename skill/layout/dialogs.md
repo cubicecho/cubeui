@@ -119,6 +119,11 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   takes the function; `footerSlot` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
+- **A `Dialog` of your own that refuses a press beside it passes `holdOpen`**, from
+  `@/components/ui/dialog-base`: `<DialogContent onInteractOutside={holdOpen}>`. It is the
+  `preventDefault` you would write, and on device it also takes the backdrop out of what a screen
+  reader reads, where a handler of your own leaves it announced as a Close button that does not
+  close. `ConfirmDialog`, `AlertDialog` and `dismissible={false}` already pass it.
 - **A form in a dialog puts its `<form>` in `wrapperSlot`**, not in `contentSlot`.
   `wrapperSlot={(parts, { className }) => <FormElement className={className} …>{parts}</FormElement>}`
   wraps the header, body and footer together inside the dialog, so the footer's submit is a

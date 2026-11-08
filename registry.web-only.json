@@ -157,6 +157,7 @@
       "registryDependencies": [
         "@cubeui/checkbox",
         "@cubeui/code",
+        "@cubeui/icons",
         "@cubeui/separator",
         "@cubeui/table",
         "@cubeui/utils"

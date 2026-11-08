@@ -125,6 +125,7 @@ export function DownloadButton({
   size = "icon-sm",
   destination = "ask",
   disabled,
+  hint,
   tooltip,
   onDownloaded,
   onError,
@@ -147,6 +148,7 @@ export function DownloadButton({
       {...(isIconSize(size) ? {} : { content: label })}
       loading={pending}
       disabled={disabled}
+      hint={hint}
       tooltip={tooltip}
       className={className}
       {...(destination === "ask" ? {} : { onPress: () => save(destination) })}

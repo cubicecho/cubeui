@@ -48,6 +48,11 @@ export type DialogContentProps = DialogSectionProps & {
   /** Draw the corner close button. Default `true`. */
   showCloseButton?: boolean | undefined;
   onEscapeKeyDown?: ((event: Event) => void) | undefined;
+  /**
+   * Told of a press beside the card; `preventDefault` keeps the dialog open. Pass `holdOpen` to
+   * refuse every one, so the native backdrop is not announced as a Close button that does not
+   * close.
+   */
   onInteractOutside?: ((event: Event) => void) | undefined;
   /** `undefined` passed explicitly is how "nothing describes this" is said to radix. */
   "aria-describedby"?: string | undefined;
@@ -57,6 +62,18 @@ export type DialogContentProps = DialogSectionProps & {
    */
   role?: "dialog" | "alertdialog" | undefined;
 };
+
+/**
+ * The handler that refuses a close: `onInteractOutside={holdOpen}` keeps the dialog open through a
+ * press beside it, as `ConfirmDialog`, `AlertDialog` and a `dismissible={false}` `DialogLayout` do.
+ *
+ * It is one shared function, not a `preventDefault` each caller writes, because the native
+ * backdrop has to know before the press whether it will close. A backdrop that will is a button
+ * named Close for a screen reader; one passed this is no button at all, where it used to be read
+ * out as Close and then do nothing (#486). A handler of the caller's own still refuses the press,
+ * but native cannot tell it will, and reads the backdrop out as Close.
+ */
+export const holdOpen = (event: Event) => event.preventDefault();
 
 /** Closes the dialog it is inside. `asChild` hands the press to a `Button` rather than wrapping it. */
 export type DialogCloseProps = {

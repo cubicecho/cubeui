@@ -4,6 +4,7 @@ import { Text } from "react-native";
 import { expect, fireEvent, userEvent, waitFor, within } from "storybook/test";
 import { Pencil, Trash2 } from "../compiled/icons";
 import {
+  MenuCheckboxItem as CompiledCheckboxItem,
   MenuContent as CompiledContent,
   MenuItem as CompiledItem,
   Menu as CompiledMenu,
@@ -12,6 +13,7 @@ import {
 } from "../compiled/menu";
 import { IconClassContext } from "../registry/ui/icons-base";
 import {
+  MenuCheckboxItem as NativeCheckboxItem,
   MenuContent as NativeContent,
   MenuItem as NativeItem,
   Menu as NativeMenu,
@@ -19,6 +21,7 @@ import {
   MenuTrigger as NativeTrigger,
 } from "../registry/ui/menu.tsx";
 import type {
+  MenuCheckboxItemProps,
   MenuContentProps,
   MenuItemProps,
   MenuProps,
@@ -344,5 +347,132 @@ export const NativeFocusesElsewhere: Story = {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole("button", { name: "Native lane actions" });
     await expectFieldKeepsFocus(canvasElement, trigger);
+  },
+};
+
+/** A native icon the size the row hands it, so the room it takes can be measured. */
+function SizedProbeIcon() {
+  const inherited = useContext(IconClassContext);
+  return <span className={inherited ?? ""} />;
+}
+
+/**
+ * Rows with an icon and rows without, in one menu: every label starts in one column, the iconless
+ * rows keeping the icon's room (#486), toggle rows included. A menu with no icon at all keeps none.
+ */
+function MixedMenu({
+  parts: { Menu, Trigger, Content, Item },
+  CheckboxItem,
+  name,
+  trigger,
+  icon,
+  withIcons,
+}: {
+  parts: Parts;
+  CheckboxItem: ComponentType<MenuCheckboxItemProps>;
+  name: string;
+  trigger: (name: string) => ReactNode;
+  icon: () => ReactElement;
+  withIcons: boolean;
+}) {
+  const iconSlot = withIcons ? icon() : undefined;
+  return (
+    <Menu>
+      <Trigger>{trigger(name)}</Trigger>
+      <Content aria-label={name}>
+        <Item iconSlot={iconSlot} label="Rename" onSelect={() => {}} />
+        <Item label="Move right" onSelect={() => {}} />
+        <CheckboxItem label="Pinned" checked={false} onCheckedChange={() => {}} />
+        <Item iconSlot={iconSlot} label="Delete" destructive onSelect={() => {}} />
+      </Content>
+    </Menu>
+  );
+}
+
+const MIXED = [
+  {
+    name: "Compiled",
+    parts: COMPILED,
+    CheckboxItem: CompiledCheckboxItem,
+    trigger: (name: string) => name,
+    icon: () => <Pencil />,
+  },
+  {
+    name: "Native",
+    parts: NATIVE,
+    CheckboxItem: NativeCheckboxItem,
+    trigger: (name: string) => <Text className="text-foreground">{name}</Text>,
+    icon: () => <SizedProbeIcon />,
+  },
+] as const;
+
+/** The left edge of each label, and of the row it is in, rounded to the pixel. */
+function labelEdges(menu: HTMLElement) {
+  return ["Rename", "Move right", "Pinned", "Delete"].map((label) => {
+    const text = within(menu).getByText(label);
+    const row = text.closest<HTMLElement>('[role^="menuitem"]');
+    if (!row) {
+      throw new Error(`expected a row around ${label}`);
+    }
+    return {
+      label,
+      offset: Math.round(text.getBoundingClientRect().left - row.getBoundingClientRect().left),
+    };
+  });
+}
+
+export const LabelsLineUp: Story = {
+  parameters: {
+    // As `NativeOpen`: under Vite the native half's popover is the radix one, whose unnamed
+    // `role="dialog"` wraps the menu. The menu inside it is named.
+    a11y: { config: { rules: [{ id: "aria-dialog-name", enabled: false }] } },
+  },
+  render: () => (
+    <div className="flex gap-6">
+      {MIXED.flatMap(({ name, parts, CheckboxItem, trigger, icon }) => [
+        <MixedMenu
+          key={`${name} icons`}
+          parts={parts}
+          CheckboxItem={CheckboxItem}
+          name={`${name} with icons`}
+          trigger={trigger}
+          icon={icon}
+          withIcons
+        />,
+        <MixedMenu
+          key={`${name} plain`}
+          parts={parts}
+          CheckboxItem={CheckboxItem}
+          name={`${name} without icons`}
+          trigger={trigger}
+          icon={icon}
+          withIcons={false}
+        />,
+      ])}
+    </div>
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    // The row's `px-2`, and that plus a 16px icon and the row's 8px gap.
+    const PLAIN = 8;
+    const ROOM = 32;
+    for (const { name } of MIXED) {
+      for (const [kind, offset] of [
+        ["with icons", ROOM],
+        ["without icons", PLAIN],
+      ] as const) {
+        await step(`${name} ${kind}: every label starts ${offset}px into its row`, async () => {
+          await userEvent.click(canvas.getByRole("button", { name: `${name} ${kind}` }));
+          const menu = await body().findByRole("menu", { name: `${name} ${kind}` });
+          await waitFor(() =>
+            expect(labelEdges(menu)).toEqual(
+              ["Rename", "Move right", "Pinned", "Delete"].map((label) => ({ label, offset })),
+            ),
+          );
+          await userEvent.keyboard("{Escape}");
+          await waitFor(() => expect(body().queryByRole("menu")).toBeNull());
+        });
+      }
+    }
   },
 };

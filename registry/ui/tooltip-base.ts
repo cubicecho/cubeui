@@ -42,9 +42,12 @@ export type TooltipContentProps = {
  * It was `bg-secondary`, a raised surface, which in light is all but the page's own white: with
  * only a `/10` edge it melted into the row under it and read as see-through. `foreground` on
  * `background` is the page's own text contrast, in every palette.
+ *
+ * `max-w-xs`, so a long hint wraps into a short paragraph rather than running the width of the
+ * screen in one line (#486).
  */
 export const TOOLTIP_CONTENT_CLASS =
-  "overflow-hidden rounded-md bg-foreground px-3 py-1.5 shadow-md";
+  "max-w-xs overflow-hidden rounded-md bg-foreground px-3 py-1.5 shadow-md";
 /** The type of the tooltip's text: the page's background colour, on the swapped bubble. */
 export const TOOLTIP_TEXT_CLASS = "text-sm text-background";
 
