@@ -21,8 +21,15 @@
  * <ColorPicker value={color} onValueChange={setColor} swatches={ACTIVITY_COLORS} clearable />
  * ```
  */
+import type * as React from "react";
 import { useId, useState } from "react";
 import { readableTextColor } from "@/lib/readable-text-color";
+import {
+  type RovingKeyEvent,
+  type RovingSet,
+  useRovingFocus,
+  useRovingItem,
+} from "@/lib/roving-focus";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -98,6 +105,68 @@ function expand(value: string): string {
 /** Whether two strings are the same colour, however each was spelled. */
 function sameColor(a: string, b: string): boolean {
   return isHexColor(a) && isHexColor(b) && expand(a) === expand(b);
+}
+
+type SwatchProps = {
+  color: string;
+  selected: boolean;
+  disabled: boolean;
+  /** The row's roving tab stop: which swatch Tab lands on, and where an arrow key goes. */
+  roving: RovingSet & {
+    tabStop: string | undefined;
+    move: (from: string, event: RovingKeyEvent) => void;
+  };
+  onClick: () => void;
+};
+
+/** One colour in the row: a radio, named by its hex. */
+function Swatch({ color, selected, disabled, roving, onClick: onPress }: SwatchProps) {
+  const ref = useRovingItem<HTMLButtonElement>(roving, color, disabled);
+  return (
+    <button
+      type="button"
+      ref={ref as React.Ref<HTMLButtonElement>}
+      onClick={onPress}
+      disabled={disabled}
+      // A swatch row is a radio group: one of the set is current, and
+      // the label is the colour itself, which nothing else conveys.
+      role="radio"
+      // The same fact in the spelling the web understands — react-native-web forwards an
+      // allowlist of `aria-*` props and ignores `accessibilityState` entirely. A radio
+      // says its state with `aria-checked`, not `aria-selected`. One tab stop for the row, with
+      // the arrows between swatches, as `RadioGroup` has: sixteen stops was sixteen presses of
+      // Tab to get past the row to the hex field.
+      aria-checked={selected}
+      tabIndex={roving.tabStop === color ? 0 : -1}
+      onKeyDown={(event: RovingKeyEvent) => roving.move(color, event)}
+      aria-label={color}
+      // The chosen ring is `active`, as anything chosen is, and drawn outside the swatch with
+      // a gap (`p-0.5`) so it does not sit on the colour. A border, not `ring-offset`,
+      // which NativeWind has no counterpart for. `gap-1` on the row keeps its width.
+      className={cn(
+        "cube-rn-view cube-rn-pressable",
+        "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5",
+        selected ? "border-active" : "border-transparent",
+      )}
+    >
+      <div
+        className="cube-rn-view h-full w-full items-center justify-center rounded-full"
+        style={{ backgroundColor: color }}
+      >
+        {selected ? (
+          // The tick has to be legible on whatever the caller passed, and
+          // a caller's palette is not known here — a hardcoded white one
+          // disappears on `#eab308`.
+          <span
+            className="cube-rn-text text-base leading-none"
+            style={{ color: readableTextColor(color) ?? "#ffffff" }}
+          >
+            ✓
+          </span>
+        ) : null}
+      </div>
+    </button>
+  );
 }
 
 /**
@@ -208,6 +277,10 @@ export function ColorPicker({
     }
   }
 
+  // The swatch the value is, in the palette's own spelling: `#F80` picks the `#ff8800` swatch.
+  const chosenSwatch = palette.find((color) => sameColor(current, color));
+  const roving = useRovingFocus({ current: chosenSwatch, onMove: emit, disabled });
+
   const onChangeText = (text: string) => {
     setDraft(text);
     const typed = normalizeHex(text);
@@ -243,50 +316,16 @@ export function ColorPicker({
           contentClassName,
         )}
       >
-        {palette.map((color) => {
-          const selected = sameColor(current, color);
-          return (
-            <button
-              type="button"
-              key={color}
-              onClick={() => emit(color)}
-              disabled={disabled}
-              // A swatch row is a radio group: one of the set is current, and
-              // the label is the colour itself, which nothing else conveys.
-              role="radio"
-              // The same fact in the spelling the web understands — react-native-web forwards an
-              // allowlist of `aria-*` props and ignores `accessibilityState` entirely. A radio
-              // says its state with `aria-checked`, not `aria-selected`.
-              aria-checked={selected}
-              aria-label={color}
-              // The chosen ring is `active`, as anything chosen is, and drawn outside the swatch with
-              // a gap (`p-0.5`) so it does not sit on the colour. A border, not `ring-offset`,
-              // which NativeWind has no counterpart for. `gap-1` on the row keeps its width.
-              className={cn(
-                "cube-rn-view cube-rn-pressable",
-                "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5",
-                selected ? "border-active" : "border-transparent",
-              )}
-            >
-              <div
-                className="cube-rn-view h-full w-full items-center justify-center rounded-full"
-                style={{ backgroundColor: color }}
-              >
-                {selected ? (
-                  // The tick has to be legible on whatever the caller passed, and
-                  // a caller's palette is not known here — a hardcoded white one
-                  // disappears on `#eab308`.
-                  <span
-                    className="cube-rn-text text-base leading-none"
-                    style={{ color: readableTextColor(color) ?? "#ffffff" }}
-                  >
-                    ✓
-                  </span>
-                ) : null}
-              </div>
-            </button>
-          );
-        })}
+        {palette.map((color) => (
+          <Swatch
+            key={color}
+            color={color}
+            selected={sameColor(current, color)}
+            disabled={disabled}
+            roving={roving}
+            onClick={() => emit(color)}
+          />
+        ))}
       </div>
       {/*
         The hex field's own name, for a screen reader only. It is a `<label>` pointed at the field

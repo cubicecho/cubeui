@@ -495,6 +495,14 @@ type SidebarLayoutProps = {
  */
 export const SidebarPositionContext = createContext<"start" | "end" | undefined>(undefined);
 
+/**
+ * Which edge of the screen the bar an `AppBarItem` sits in runs along, so its tooltip opens away
+ * from that edge. `top` outside `SidebarLayout`'s bottom bar. The web's tooltip turns away from an
+ * edge it would cross; a device's is drawn on the side it is told, and off the screen below a
+ * bottom bar.
+ */
+export const AppBarEdgeContext = createContext<"top" | "bottom">("top");
+
 export function SidebarLayout({
   contentSlot,
   sidebarSlot,
@@ -559,7 +567,7 @@ export function SidebarLayout({
               bottomBarClassName,
             )}
           >
-            {navSlot}
+            <AppBarEdgeContext.Provider value="bottom">{navSlot}</AppBarEdgeContext.Provider>
           </nav>
         ) : null}
       </div>

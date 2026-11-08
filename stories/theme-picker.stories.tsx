@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useState } from "react";
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { ThemePicker as CompiledThemePicker } from "../compiled/theme-picker";
 import { migrateThemePreference as migrateCompiled } from "../compiled/theme-preference";
 import { ThemePicker as NativeThemePicker } from "../registry/ui/theme-picker";
@@ -455,7 +455,7 @@ function CompactHarness({ Picker, name }: { Picker: Picker; name: string }) {
   );
 }
 
-async function assertCompact(canvasElement: HTMLElement, name: string, tooltips: boolean) {
+async function assertCompact(canvasElement: HTMLElement, name: string) {
   reset();
   const canvas = within(canvasElement);
   for (const where of ["sidebar", "header"]) {
@@ -469,9 +469,14 @@ async function assertCompact(canvasElement: HTMLElement, name: string, tooltips:
     for (const radio of radios) {
       // Icon-only: the caption is the name, not text on the screen.
       await expect(radio.textContent).toBe("");
-      if (tooltips) {
-        await expect(radio).toHaveAttribute("title", radio.getAttribute("aria-label"));
-      }
+    }
+    // The name is the tooltip, on both halves: a `Tooltip`, not a `title` a touch screen never shows.
+    const [first] = radios;
+    if (first) {
+      await userEvent.hover(first);
+      await expect(await screen.findByRole("tooltip")).toHaveTextContent("Light");
+      await userEvent.unhover(first);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     }
     // It fills the box it is put in, which is how the caller sizes it.
     const box = canvas.getByTestId(`${name} ${where}`);
@@ -511,9 +516,8 @@ export const Compact: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    // react-native-web does not forward `title`; the compiled half is the web item that ships it.
-    await assertCompact(canvasElement, "Native", false);
-    await assertCompact(canvasElement, "Compiled", true);
+    await assertCompact(canvasElement, "Native");
+    await assertCompact(canvasElement, "Compiled");
   },
 };
 

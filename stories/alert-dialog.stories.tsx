@@ -98,3 +98,44 @@ export const Default: Story = {
     }
   },
 };
+
+/**
+ * The narrow card's footer is every dialog's (#472): on a phone its buttons are a column, each the
+ * footer's width, with the answer on top (#465). shadcn's `sm` card set them side by side in two
+ * columns at every width on the web, and the device stacked them.
+ */
+export const SmallOnAPhone: Story = {
+  globals: { viewport: { value: "mobile2", isRotated: false } },
+  render: () => (
+    <C.AlertDialog>
+      <C.AlertDialogTrigger asChild>
+        <CompiledButton variant="outline" content="Revoke" />
+      </C.AlertDialogTrigger>
+      <C.AlertDialogContent size="sm">
+        <C.AlertDialogHeader>
+          <C.AlertDialogTitle>Revoke this key?</C.AlertDialogTitle>
+          <C.AlertDialogDescription>The nightly sync stops working.</C.AlertDialogDescription>
+        </C.AlertDialogHeader>
+        <C.AlertDialogFooter>
+          <C.AlertDialogCancel>Cancel</C.AlertDialogCancel>
+          <C.AlertDialogAction variant="destructive">Revoke key</C.AlertDialogAction>
+        </C.AlertDialogFooter>
+      </C.AlertDialogContent>
+    </C.AlertDialog>
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(window.matchMedia("(min-width: 40rem)").matches).toBe(false);
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Revoke" }));
+    const open = await body().findByRole("alertdialog");
+    const footer = open.querySelector<HTMLElement>('[data-slot="alert-dialog-footer"]');
+    if (!footer) {
+      throw new Error("expected the footer");
+    }
+    const width = footer.getBoundingClientRect().width;
+    const cancel = within(open).getByRole("button", { name: "Cancel" }).getBoundingClientRect();
+    const answer = within(open).getByRole("button", { name: "Revoke key" }).getBoundingClientRect();
+    await expect(Math.round(cancel.width)).toBe(Math.round(width));
+    await expect(Math.round(answer.width)).toBe(Math.round(width));
+    await expect(answer.bottom).toBeLessThanOrEqual(cancel.top);
+  },
+};

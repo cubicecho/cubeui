@@ -6,6 +6,7 @@ import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import {
   DIALOG_CONTENT_CLASS,
   DIALOG_DESCRIPTION_CLASS,
+  DIALOG_FOOTER_CLASS,
   DIALOG_TITLE_CLASS,
 } from "@/components/ui/dialog-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
@@ -102,15 +103,16 @@ function AlertDialogHeader({ className, ...props }: React.ComponentProps<"div">)
   );
 }
 
-/** The row holding the cancel and the action buttons. */
+/**
+ * The row holding the cancel and the action buttons: the dialog's footer, at either size, as on
+ * device. shadcn's `sm` card put its two buttons side by side in two columns at every width, where
+ * every other footer here stacks them full width below `sm`, the main answer on top (#465).
+ */
 function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
-        className,
-      )}
+      className={cn("flex", DIALOG_FOOTER_CLASS, className)}
       {...props}
     />
   );

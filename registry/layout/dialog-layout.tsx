@@ -44,7 +44,8 @@ const SIZES = {
   md: "sm:max-w-lg",
   lg: "sm:max-w-2xl",
   xl: "sm:max-w-4xl",
-  full: Platform.select({ web: "sm:max-w-[calc(100vw-4rem)]", default: "sm:max-w-full" }),
+  // 16px clear of each edge at every width, the gap every size has on a phone, and on device.
+  full: Platform.select({ web: "sm:max-w-[calc(100%-2rem)]", default: "sm:max-w-full" }),
 } as const;
 
 /**
@@ -185,8 +186,8 @@ export type DialogLayoutProps = {
   onOpenChange?: ((open: boolean) => void) | undefined;
   /**
    * How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl`
-   * 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the
-   * screen allows.
+   * 56rem, and `full` the window less 16px a side. Narrower than that, every size is as wide as the
+   * screen less the same 16px a side.
    */
   size?: keyof typeof SIZES | undefined;
   /**

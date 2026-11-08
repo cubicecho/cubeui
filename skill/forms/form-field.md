@@ -229,7 +229,8 @@ option only. The keyboard is done: one tab stop (the checked option, or the firs
 that move and select. Do not add an `onKeyDown`.
 
 `variant="card"` draws the options as tiles across a row, each with an `iconSlot` over its label and a
-`hint` for the hover title — a theme picker, a layout choice:
+`hint` for its tooltip — a theme picker, a layout choice. The `hint` is a `Tooltip` on hover, focus
+and a long press on device, and read after the option's name, as on `Switch`:
 
 ```tsx
 <RadioGroupField
@@ -249,9 +250,8 @@ that move and select. Do not add an `onKeyDown`.
 across the container's width, like `SegmentedGroup` but still radios, with one tab stop and arrow
 keys. A segment shows its `iconSlot`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
-radio's name and, when no `hint` is given, its web tooltip. On device, give the icon its colour
-yourself (`text-foreground` when checked, `text-foreground/60` otherwise), because a
-native icon has no `currentColor` to inherit.
+radio's name and, when no `hint` is given, its tooltip. Pass the icon bare: the segment sizes it
+and gives it the label's ink on both halves, as `SegmentedButton` does.
 
 Outside a form, the same thing is `RadioGroup` and `RadioGroupItem` from `@cubeui/radio-group`,
 controlled with `value` / `onValueChange`.

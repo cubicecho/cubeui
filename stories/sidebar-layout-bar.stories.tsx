@@ -486,6 +486,31 @@ export const BottomBar: Story = {
   },
 };
 
+/**
+ * A place's tooltip opens above it in the bar along the bottom (#472), where below is off the
+ * screen. The web's tooltip turns away from an edge it would cross on its own; a device's is drawn
+ * where it is told, and it was told `bottom`. These phones have room under the bar, so a tooltip
+ * told `bottom` opens there. In the bar at the top it still opens below.
+ */
+export const BottomBarTooltipsOpenUp: Story = {
+  render: () => <Bars width={390} barPosition="bottom" />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Native", "Compiled"] as const) {
+      const bar = canvas.getByRole("navigation", { name: `${half} main` });
+      const link = within(bar).getByRole("link", { name: "Search, 12" });
+      await userEvent.hover(link);
+      const tip = (await screen.findByRole("tooltip")).parentElement as HTMLElement;
+      await expect({
+        half,
+        above: tip.getBoundingClientRect().bottom <= link.getBoundingClientRect().top,
+      }).toEqual({ half, above: true });
+      await userEvent.unhover(link);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+    }
+  },
+};
+
 const CompiledBarLink = createLink(CompiledAppBarItem);
 const NativeBarLink = createLink(NativeAppBarItem);
 
