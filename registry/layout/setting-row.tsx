@@ -41,9 +41,13 @@ type SettingRowProps = {
    * control that names itself — a button whose text is the action.
    */
   actionSlot?: SlotNode | ((ids: SettingRowIds) => SlotNode) | undefined;
+  /** On the row, the words and the action together. */
   className?: string | undefined;
+  /** On the title's own `Text`. */
   titleClassName?: string | undefined;
+  /** On the description's own `Text`. */
   descriptionClassName?: string | undefined;
+  /** On the box that holds `actionSlot`, at the row's far end. */
   actionClassName?: string | undefined;
 };
 

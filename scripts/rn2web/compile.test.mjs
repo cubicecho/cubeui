@@ -241,6 +241,24 @@ test("a web-only lint suppression is switched on in the output", () => {
   assert.doesNotMatch(code, /web: biome-ignore/);
 });
 
+// Issue #497: among JSX children the suppression is a block comment, and Biome reads one only when
+// `biome-ignore` opens its text — `{/* // biome-ignore … */}` is ignored and the rule fires.
+test("a web-only lint suppression among JSX children compiles to the form Biome reads", () => {
+  for (const written of ["web: biome-ignore", "// web: biome-ignore"]) {
+    const code = ok(
+      "export const A = ({ level }: { level: 1 | 2 | 3 }) => (\n" +
+        "  <View>\n" +
+        `    {/* ${written} lint/a11y/useSemanticElements: no heading element on a device */}\n` +
+        '    <Text role="heading" aria-level={level}>a</Text>\n' +
+        "  </View>\n" +
+        ");",
+      "Text, View",
+    );
+    assert.match(code, /^ {4}\{\/\* biome-ignore lint\/a11y\/useSemanticElements: no heading/m);
+    assert.doesNotMatch(code, /web: biome-ignore/);
+  }
+});
+
 test("a heading with no aria-level is still refused", () => {
   const { code, diagnostics } = compile(
     'export const A = () => <Text role="heading">a</Text>;',
@@ -287,4 +305,18 @@ test("a compiled component's alias becomes a sibling import, and a web-only one 
   assert.deepEqual(diagnostics, []);
   assert.match(code, /from "\.\/a"/);
   assert.match(code, /from "@\/components\/b"/);
+});
+
+// Issue #497: `cn` is added to a file that calls it, except the one that declares it.
+test("cn is imported where it is called, and not into the file that declares it", () => {
+  const caller = ok('export const A = ({ c }: { c?: string }) => <View className={cn("a", c)} />;');
+  assert.match(caller, /import \{ cn \} from "@\/lib\/utils";/);
+
+  const utils = ok(
+    "export function cn(...inputs: string[]): string {\n" +
+      '  return inputs.join(" ");\n' +
+      "}\n" +
+      'export const TRIGGER = (bad: boolean): string => cn("a", bad && "b");',
+  );
+  assert.doesNotMatch(utils, /import \{ cn \}/);
 });

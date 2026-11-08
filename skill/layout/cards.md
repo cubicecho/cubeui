@@ -31,17 +31,17 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
 | `iconSlot` | `SlotNode` |  | Sits before the title. On the web it is sized to the text — pass a bare `<Plus />`. On device an icon cannot be sized from outside it, so pass it at the size you want. |
 | `actionSlot` | `SlotNode` |  | The header's far end: an add button, a menu, a switch. |
-| `actionPlacement` | `ActionPlacement` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title once the title would have less than 10rem, so the whole title stays readable. `inline` keeps the action beside the title on every width and cuts the title short with an ellipsis instead: for a narrow card whose action belongs on the title's line, such as a switch that turns the card's subject on. |
+| `actionPlacement` | `"wrap" \| "inline"` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title once the title would have less than 10rem, so the whole title stays readable. `inline` keeps the action beside the title on every width and cuts the title short with an ellipsis instead: for a narrow card whose action belongs on the title's line, such as a switch that turns the card's subject on. |
 | `emptySlot` | `SlotNode` |  | Shown instead of `contentSlot` when there is nothing in it: no element (`[]`, `null`, `false`), or a `List` with no rows. A body of any other element is drawn as it is, even one that turns out to render nothing — pass `emptySlot` the case, or decide it yourself. |
 | `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted — data that has not arrived is not data that came back empty, and a card that says "no members yet" for half a second before showing four of them is worse than one that waits. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A timestamp, a note, a destructive action held away from the rest. Words come in a `<Text>` of the caller's, as in every slot. |
 | `footerActionsSlot` | `SlotNode` |  | The footer's end. The buttons. Given alone, the footer is simply right-aligned. |
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the card. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one, where a `<form>` around the body alone leaves the button outside it. |
-| `className` | `string` |  |  |
-| `headerClassName` | `string` |  |  |
+| `className` | `string` |  | On the card itself, the bordered box around every part. |
+| `headerClassName` | `string` |  | On the header: the icon, the title and description, and the action beside them. |
 | `titleClassName` | `string` |  | On the title itself: its size, a `line-through`. |
-| `contentClassName` | `string` |  |  |
-| `footerClassName` | `string` |  |  |
+| `contentClassName` | `string` |  | On the body, the box that holds `contentSlot`. |
+| `footerClassName` | `string` |  | On the footer: `footerSlot` at its start and `footerActionsSlot` at its end. |
 <!-- /props -->
 
 `emptySlot` replaces the body when `contentSlot` is empty — which is what `items.map(…)` returns for
@@ -193,9 +193,9 @@ A heading over a group of fields or rows, inside a page or a card.
 | `actionPlacement` | `ActionPlacement` | `"wrap"` | Where the action goes when the title and the action do not both fit on one line. `wrap` (the default) moves the action under the title; `inline` keeps it beside the title and cuts the title short with an ellipsis instead. `CardLayout`'s, so a section and a card agree. |
 | `divider` | `boolean` | `false` | A hairline under the heading. Off by default; on, the group reads as one block. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default, because a page's `PageHeader` owns the one `h1` and these are the sections under it. A section nested in a section is `3`; a section in a dialog whose title is the `h2` is `3` as well. Pick it by where the section sits, never by how big the text should look — the text is the same size at every level. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
+| `className` | `string` |  | On the whole section, the heading and its content together. |
+| `titleClassName` | `string` |  | On the title's own `Text`: its size, its colour. |
+| `contentClassName` | `string` |  | On the box that holds `contentSlot`, under the heading. |
 <!-- /props -->
 
 - One source for both platforms: the same item is `@cubeui/section` in `/r/web` and `/r/native`.
@@ -264,10 +264,10 @@ counterpart, and instead of a chevron `<button>` or a `Button` with a `useState`
 | `open` | `boolean` |  | Whether it is open, when the caller holds that — a deep link, a "show the failure" button elsewhere, a title that reads "Hide" once open. Leave it out and the collapsible holds its own. |
 | `onOpenChange` | `((open: boolean) => void)` |  | Told on every toggle, controlled or not. Given alone, it listens without taking over. |
 | `defaultOpen` | `boolean` | `false` | Where an uncontrolled collapsible starts. Shut by default, the way `<details>` is. |
-| `className` | `string` |  |  |
-| `headerClassName` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
+| `className` | `string` |  | On the whole collapsible, the header and what it opens onto together. |
+| `headerClassName` | `string` |  | On the header row: the chevron, the title and description, and the action. |
+| `titleClassName` | `string` |  | On a string title's own `Text`: its size, its colour. |
+| `contentClassName` | `string` |  | On the box that holds `contentSlot`, indented under the title. |
 <!-- /props -->
 
 - One source for both platforms: `@cubeui/collapsible` in `/r` and `/r/native`.

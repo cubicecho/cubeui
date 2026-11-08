@@ -37,7 +37,7 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 | `defaultOpen` | `readonly string[] \| "all"` | `"all"` | Which folders an uncontrolled tree starts with open: their paths, or every one. |
 | `onMove` | `((from: string, into: string) => void \| Promise<void>)` |  | A row was dropped on a folder. `from` is the dragged file's or folder's path; `into` is the folder's path, and `""` for the top level. Given this, rows can be dragged: on the web, with a pointer. The tree reorders nothing itself — move the file and hand back new `entries`. While a returned promise is pending the row is drawn muted; a rejection is the caller's to report. |
 | `canMove` | `((node: TreeNode<T>, into: string) => boolean)` |  | Whether this row may be dropped there. Asked while dragging; a refused folder is not tinted. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the tree's outer list. A dragged row can be dropped on it to move to the top level. |
 <!-- /props -->
 
 - `entries` is flat and in any order: `{ path, type: "file" | "dir" }` plus whatever else your row

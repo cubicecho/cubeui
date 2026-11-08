@@ -102,8 +102,8 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 | `label` | `string` | `"Download"` | What the button says. At a text size (`sm`, `default`, `lg`) it is drawn beside the icon — an "Export" button in a toolbar. At an `icon*` size the square has no room for words, so it is the accessible name alone: say what is downloaded when the screen has more than one thing that could be — "Download note.md". The default is `Download`. |
 | `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"outline"` | The button's variant. The default is `outline`. |
 | `size` | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` | `"icon-sm"` | The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text size draws `label` beside the icon. |
-| `destination` | `DownloadDestination` | `"ask"` | Device only: where the file goes. The default is `ask`, which leaves it to the person pressing. The browser has one answer, its own downloads, and ignores this. |
-| `disabled` | `boolean` |  |  |
+| `destination` | `"ask" \| "share" \| "files"` | `"ask"` | Device only: where the file goes. The default is `ask`, which leaves it to the person pressing. The browser has one answer, its own downloads, and ignores this. |
+| `disabled` | `boolean` |  | The button cannot be pressed. |
 | `tooltip` | `boolean` |  | Whether the tooltip is drawn: at an `icon*` size, `label`. A text size draws its label and has no tooltip. Turn it off where the icon already explains itself. |
 | `onDownloaded` | `(() => void)` |  | Called once the file has been handed over — a toast, an analytics event. |
 | `onError` | `((error: unknown) => void)` |  | Called when `source` or `href` threw or the platform refused the file. The button holds no toasts, so this is where the caller says so. |

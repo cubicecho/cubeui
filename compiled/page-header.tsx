@@ -194,8 +194,11 @@ export type PageHeaderProps = {
    * lower heading to get a smaller title. The rule under the header follows `level`, not this.
    */
   size?: PageHeaderSize | undefined;
+  /** On the header's own box, which draws the rule under it: `border-b-0` takes the rule away. */
   className?: string | undefined;
+  /** On the title's own `Text`. Its size comes from `size`; this is for anything else. */
   titleClassName?: string | undefined;
+  /** On the box that holds `contentSlot`, under the title row. */
   contentClassName?: string | undefined;
 };
 

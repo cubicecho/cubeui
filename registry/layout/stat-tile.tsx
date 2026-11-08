@@ -43,6 +43,7 @@ type StatTileProps = {
    * list. Left out, the tile is a plain button. Without `onPress` it is ignored.
    */
   selected?: boolean | undefined;
+  /** On the tile itself, the bordered box. */
   className?: string | undefined;
   /**
    * The figure's class: the colour a count takes when it is one worth noticing, such as

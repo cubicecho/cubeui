@@ -9,7 +9,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import ts from "typescript";
-import { misleadingRows, propsRows, renderTable } from "./props-tables.mjs";
+import { misleadingRows, propsRows, renderTable, undocumentedRows } from "./props-tables.mjs";
 
 const ROOT = "/fixture";
 const PATH = `${ROOT}/registry/layout/thing.ts`;
@@ -48,6 +48,19 @@ type One = {
 
 export function Thing({ size = "md", label = DEFAULT_LABEL }: Common & (List | One)) {
   return [size, label];
+}
+
+export type Width = "page" | "prose" | "full";
+
+export function Aliased(_props: {
+  /** How wide it is. */
+  width?: Width | undefined;
+  /** cva's spelling of a variant. */
+  tone?: "quiet" | "loud" | null | undefined;
+  /** When it is, or that it is not set. */
+  at?: Date | null | undefined;
+}) {
+  return null;
 }
 
 export function Broken(_props: { title: string; ghost?: never }) {
@@ -100,6 +113,15 @@ test("a constant's name is written as its values, in the order the source gives 
   assert.equal(byName.get("label").fallback, '"Go"');
 });
 
+// Issue #492: an exported alias printed as its name sent the reader off to look it up, and cva's
+// `null` read as a value to pass.
+test("an exported alias of values is written as them, and cva's null is dropped", () => {
+  const { byName } = rowsOf("Aliased");
+  assert.equal(byName.get("width").type, '"page" | "prose" | "full"');
+  assert.equal(byName.get("tone").type, '"quiet" | "loud"');
+  assert.equal(byName.get("at").type, "Date | null");
+});
+
 test("the table marks the condition beside the prop's name", () => {
   const { rows } = rowsOf("Thing");
   const table = renderTable("Thing", PATH, ROOT, rows);
@@ -118,5 +140,14 @@ test("a row typed `never` or naming a constant is reported", () => {
   assert.deepEqual(
     misleadingRows([{ name: "size", type: "keyof typeof SIZES" }]).map((row) => row.name),
     ["size"],
+  );
+});
+
+// Issue #492: a hundred rows said nothing, and nothing failed.
+test("a row with no TSDoc is reported", () => {
+  const { rows } = rowsOf("Thing");
+  assert.deepEqual(
+    undocumentedRows(rows.own).map((row) => row.name),
+    ["mode"],
   );
 });

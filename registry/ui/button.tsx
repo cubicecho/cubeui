@@ -33,6 +33,14 @@ const buttonVariants = cva(
   "group/button inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
+      /**
+       * What the button does, which picks its colours: `default` for the one to press, `positive`
+       * for an action that keeps the work (Save), `info` for one that adds something (Add, New),
+       * `destructive` for one that destroys, and `outline` for a quiet one. Each `-outline` is its
+       * colour without the fill, for an action that is not the emphasis of its row. `secondary`
+       * is an icon inside a field's own border. `ghost` and `link` are kept for shadcn code, and
+       * nothing in the registry uses them.
+       */
       variant: {
         default:
           "bg-neutral text-neutral-foreground hover:bg-neutral/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-neutral/90",
@@ -129,6 +137,7 @@ type ButtonBodyProps = Omit<
     // Re-declared rather than inherited: nativewind types it as
     // `className?: string`, which under `exactOptionalPropertyTypes` rejects the
     // conditional `cond ? 'x' : undefined` that call sites pass.
+    /** On the button's box, after the variant's and the size's classes. */
     className?: string | undefined;
     /**
      * The label. A string is drawn in the variant's ink; anything else is rendered as it is —
@@ -178,11 +187,25 @@ function isIconSize(size: ButtonSize | null | undefined): size is IconSize {
  * An icon alone is announced as "button". A `title` is a hover hint and not a name, so the type
  * asks for `aria-label`, because a type is checked and a review is not.
  */
-type IconButtonName = { size: IconSize; "aria-label": string };
+type IconButtonName = {
+  /**
+   * How big it is. `default`, `xs`, `sm` and `lg` draw the label; `xs` is small enough to sit in
+   * a list row without setting its height. Each `icon*` size is a square as tall as the text
+   * size it is named after, which draws `iconSlot` alone and so needs an `aria-label`.
+   */
+  size: IconSize;
+  /**
+   * The button's accessible name. Required at an `icon*` size, which has no label to be named
+   * by; beside a label, it replaces the label as the name.
+   */
+  "aria-label": string;
+};
 
 /** A button with a label is named by it, and may be given another name. */
 type TextButtonName = {
+  /** How big it is. An `icon*` size draws no label, and needs an `aria-label`. */
   size?: Exclude<ButtonSize, IconSize> | null | undefined;
+  /** A name in place of the label's, for a label that is not enough on its own. */
   "aria-label"?: string | undefined;
 };
 

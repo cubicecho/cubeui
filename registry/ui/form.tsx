@@ -261,7 +261,9 @@ type FieldRowProps = {
   contentSlot?: ReactNode;
   /** How many fit on a line before the row wraps. */
   perRow?: keyof typeof CELL_SIZE | undefined;
+  /** On the row, which wraps its cells. */
   className?: string | undefined;
+  /** On every cell, the box each field is drawn in. Its width comes from `perRow`. */
   cellClassName?: string | undefined;
 };
 

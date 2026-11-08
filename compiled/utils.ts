@@ -95,14 +95,12 @@ export function isInvalid(
  * is tested on.
  *
  * The refusal is read from the trigger's `aria-invalid` prop rather than an `aria-invalid:`
- * variant, which a device does not have, so the two halves draw it the same way. `clsx` and not
- * `cn`: the trigger's own `cn` merges it over the button's outline, and the compiler would import
- * a second `cn` into this file.
+ * variant, which a device does not have, so the two halves draw it the same way.
  */
 export function fieldTriggerClass(
   ariaInvalid: boolean | "true" | "false" | "grammar" | "spelling" | undefined,
 ): string {
-  return clsx(
+  return cn(
     "bg-background font-normal hover:bg-background focus-visible:bg-background focus-visible:border-active",
     "disabled:cursor-not-allowed",
     isInvalid(ariaInvalid) && "border-negative focus-visible:border-active",
