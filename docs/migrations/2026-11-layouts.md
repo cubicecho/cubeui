@@ -500,6 +500,12 @@ to add them.
     and a soft badge's dot is 8px (it was 6px), the size of a bare badge's dot. `ColorDot` moves
     a hex into the lightness band `ColorBar` uses, so a navy tag shows in dark mode and a yellow
     one on white, and it now installs `@cubeui/color`.
+- **Code is set in one type** ([#480](https://github.com/cubicecho/cubeui/issues/480)). `Code`,
+  `CodeBlock`, `MarkdownEditor`'s source and `MarkdownCodeEditor` are 12px in the theme's
+  `--font-mono`, on a 20px line. A code block is 4px taller a line, since it was on a 16px line.
+  The two editors are smaller, since they were 14px. `MarkdownCodeEditor` has no font stack of its
+  own any more, so a `--font-mono` you set reaches it too. The class is `CODE_TEXT` in
+  `@/lib/utils`, for code text of your own.
 - **The shells line up and draw empty slots as absent** ([#483](https://github.com/cubicecho/cubeui/issues/483)).
   - An empty array in a slot is no slot, as `null` is. `filters.map(…)` over no filters in a
     page header's `contentSlot` no longer draws an empty row, and the rule under the title stays.

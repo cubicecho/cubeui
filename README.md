@@ -548,7 +548,7 @@ also fails when the compiler stops writing the gap, which is the sign the patch 
 
 ### Guards
 
-`scripts/check-registry-build.mjs` enforces sixteen rules, numbered in the script's header, and
+`scripts/check-registry-build.mjs` enforces seventeen rules, numbered in the script's header, and
 each one is a failure that otherwise ships silently. The first six:
 
 1. **No two source files claim the same item name.** The shadcn CLI resolves a cross-item import by
@@ -649,6 +649,14 @@ item that installs `cubeui-reset.css`. `toast`, `file-picker`, `card` and 28 mor
 where a flex column was meant (#133). `deriveWebRegistry` adds the dependency to any item whose
 emitted text names a `cube-rn-` class, and the rule asks the built `content` whether it did — run
 over the registry as it stood before the fix, it named all 31.
+
+And that **type and spacing stay on the named scale** (rule 17). The registry had come to six line
+heights and about seventy half-step classes, each chosen on its own screen (#480).
+`scripts/scale-classes.mjs` reads every line height (`leading-*`, and the `/6` of `text-sm/6`) and
+every half-step of padding, margin, gap, offset or size out of the string literals in `registry/`,
+and each has to be one of the steps `AGENTS.md` names. A use that has to stay off the scale is a
+line in `scripts/scale-allow.json`, keyed by file and class, with its reason. A line whose class is
+gone from its file fails too, so the list only shrinks.
 
 Rules 1, 2, 3, 5 and 6 were negative-tested when they landed: breaking one export, duplicating one basename, leaving
 one dependency bare, pointing one at an item that does not exist, and stranding one built file each
@@ -1279,7 +1287,7 @@ npm run tokens:check   # fail if dist/ is stale (CI)
 npm run compile        # registry/ → compiled/, the DOM half
 npm run compile:check  # fail if compiled/ is stale (CI)
 npm run registry:build # shadcn build → public/r (web) and public/r/native, then aliases back in
-npm run registry:check # the sixteen rules under Guards, against both built registries
+npm run registry:check # the seventeen rules under Guards, against both built registries
 npm run install-test   # shadcn add every item into scratch apps and tsc them (network)
 npm run page:build     # public/index.html, from the two registry indexes
 npm run page:check     # fail if the landing page is stale (CI)

@@ -46,6 +46,9 @@ eleven screens and came out with four fills, a border on about half and three pa
 - **`content` is a string**, drawn as written: its newlines and its indentation are kept. It is not
   a node, and there is no syntax highlighting. Build the string first (`JSON.stringify(value, null,
   2)`), then pass it.
+- **Code is set in `CODE_TEXT`** (`@/lib/utils`): 12px in the theme's `--font-mono`, on a 20px
+  line. `Code`, `CodeBlock`, `MarkdownEditor`'s source and `MarkdownCodeEditor` all wear it. Code
+  text of your own takes it too, not `font-mono text-xs`, which is on a 16px line.
 - **`actionSlot`** is the block's far end, at the top: a `CopyButton`. It has a column of its own, so
   the text never runs under it — there is no `pr-12` to remember and nothing to position. What is
   copied is the button's `value`, which need not be `content`: a snippet shown with a placeholder

@@ -5,6 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import type { MarkdownCodeEditorProps } from "@/components/markdown-code-editor";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { monoFamily } from "../mono-family";
 import { tokenColor } from "../token-color";
 
 // The documented way in: CodeMirror is its own chunk, and a skeleton holds the editor's place
@@ -84,6 +85,11 @@ export const Default: Story = {
     const editor = canvasElement.querySelector<HTMLElement>(".cm-editor");
     const themed = getComputedStyle(canvas.getByRole("button", { name: "Open another file" }));
     await expect(editor && getComputedStyle(editor).color).toBe(themed.color);
+    // And its type is `CodeBlock`'s: 12px on a 20px line, in the theme's monospace (#480).
+    const content = canvasElement.querySelector<HTMLElement>(".cm-content");
+    const type = content && getComputedStyle(content);
+    await expect([type?.fontSize, type?.lineHeight]).toEqual(["12px", "20px"]);
+    await expect(type?.fontFamily).toBe(monoFamily());
     // And the heading is drawn as one, which is the highlighting at work.
     const weights = () =>
       [...canvasElement.querySelectorAll<HTMLElement>(".cm-line span")]

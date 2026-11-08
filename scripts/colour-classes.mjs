@@ -57,7 +57,7 @@ function opacityOf(cls) {
 }
 
 /** Every string a file spells, from both plain and template literals — the places a class can be. */
-function stringsIn(source, fileName = "source.tsx") {
+export function stringsIn(source, fileName = "source.tsx") {
   const file = ts.createSourceFile(
     fileName,
     source,
@@ -76,8 +76,8 @@ function stringsIn(source, fileName = "source.tsx") {
   return out;
 }
 
-/** `hover:bg-accent/50` -> `bg-accent`; `[&>a:hover]:text-primary` -> `text-primary`. */
-function utilityOf(cls) {
+/** `hover:bg-accent/50` -> `bg-accent/50`; `[&>a:hover]:!text-primary` -> `text-primary`. */
+export function withoutVariants(cls) {
   let depth = 0;
   let start = 0;
   for (let i = 0; i < cls.length; i++) {
@@ -89,10 +89,12 @@ function utilityOf(cls) {
       start = i + 1;
     }
   }
-  return cls
-    .slice(start)
-    .replace(/^!|!$/g, "")
-    .replace(/\/[\w.[\]%-]+$/, "");
+  return cls.slice(start).replace(/^!|!$/g, "");
+}
+
+/** `hover:bg-accent/50` -> `bg-accent`; `[&>a:hover]:text-primary` -> `text-primary`. */
+function utilityOf(cls) {
+  return withoutVariants(cls).replace(/\/[\w.[\]%-]+$/, "");
 }
 
 /**

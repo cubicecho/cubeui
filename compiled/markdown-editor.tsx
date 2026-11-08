@@ -10,7 +10,7 @@
  */
 
 import { useState } from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { CODE_TEXT, cn, type SlotNode } from "@/lib/utils";
 import { Markdown } from "./markdown";
 import { SegmentedButton, SegmentedGroup } from "./segmented";
 import { SplitLayout } from "./split-layout";
@@ -134,7 +134,8 @@ export function MarkdownEditor({
               className={cn(
                 // `block`, because a textarea is inline and an inline box sits on a text line: the
                 // pane would be the line's descender taller than the field in it.
-                "block font-mono leading-relaxed",
+                "block",
+                CODE_TEXT,
                 PANE_FLOOR,
                 // Beside the preview it is as tall as the preview, so the two panes end together.
                 view === "split" && "lg:h-full",

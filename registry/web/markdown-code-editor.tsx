@@ -11,7 +11,7 @@ import {
 } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { CODE_TEXT, cn } from "@/lib/utils";
 
 /**
  * Tailwind's `shadow-md`, the elevation of everything floating over the page, spelled out: a
@@ -24,16 +24,13 @@ const FLOATING_SHADOW = "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0
  * and the palette with the rest of the page, and there is no CodeMirror theme to keep in step.
  *
  * The selection is the browser's own, so it is drawn by the same `::selection` rule as the text
- * around the editor.
+ * around the editor. The type is inherited from the host's `CODE_TEXT`: CodeMirror's base theme
+ * sets a face and a line of its own, which `inherit` undoes.
  */
 const theme = EditorView.theme({
-  "&": { color: "var(--foreground)", backgroundColor: "transparent", fontSize: "0.875rem" },
+  "&": { color: "var(--foreground)", backgroundColor: "transparent" },
   "&.cm-focused": { outline: "none" },
-  ".cm-scroller": {
-    fontFamily:
-      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
-    lineHeight: "1.6",
-  },
+  ".cm-scroller": { fontFamily: "inherit", lineHeight: "inherit" },
   ".cm-content": { caretColor: "var(--foreground)", padding: "0.5rem 0" },
   ".cm-line": { padding: "0 0.75rem" },
   // The caret's line is drawn in `hover`, as a focused thing is, and only while the editor has
@@ -282,6 +279,7 @@ export function MarkdownCodeEditor({
       data-slot="markdown-code-editor"
       className={cn(
         "min-h-64 w-full min-w-0 overflow-hidden rounded-md border border-foreground/50 bg-background text-foreground focus-within:border-active",
+        CODE_TEXT,
         // The view fills the box, so a click below the last line still lands in the editor.
         "[&>.cm-editor]:h-full [&>.cm-editor]:min-h-[inherit]",
         className,
