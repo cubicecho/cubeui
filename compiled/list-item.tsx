@@ -85,14 +85,19 @@ function asText(node: ReactNode, className: string) {
 }
 
 /**
- * A row's fill for its state, for `ListItem` and `FileTree`. Chosen is the `active` tint, and the
- * pointer over a pressable row is `hover`, or over a chosen one the tint a step further. Focused,
- * a row looks hovered: `hover` if it is not chosen, the `/60` step if it is.
+ * A row's fill for its state, for `ListItem`, `CollapsibleRow` and `FileTree`. Chosen is the
+ * `active` tint, and the pointer over a pressable row is `hover`, or over a chosen one the tint a
+ * step further. Focused, a row looks hovered: `hover` if it is not chosen, the `/60` step if it is.
+ *
+ * Only the row's own pressed part lights it: the one focusable child of the row itself. A
+ * leading checkbox or a Delete button sits inside a box of its own, and focused it shows its own
+ * look and nothing more. `has-[:focus-visible]` lit the row for those too, in the same `hover` as
+ * the button's own, so a row and its action could not be told apart (WCAG 2.4.7).
  */
 export function rowFillClass(selected: boolean, pressable: boolean) {
   const pointer = selected
-    ? "transition-colors hover:bg-active/60 has-[:focus-visible]:bg-active/60"
-    : "transition-colors hover:bg-hover has-[:focus-visible]:bg-hover";
+    ? "transition-colors hover:bg-active/60 has-[>:focus-visible]:bg-active/60"
+    : "transition-colors hover:bg-hover has-[>:focus-visible]:bg-hover";
   return cn(selected && "bg-active/40", pressable && pointer);
 }
 

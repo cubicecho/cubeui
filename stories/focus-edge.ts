@@ -20,8 +20,23 @@ function edgeOf(pane: HTMLElement, edge: Edge) {
   return edge === "border" ? style.borderTopColor : style.boxShadow;
 }
 
-/** More than any story here puts between the top of the canvas and the pane. */
-const MAX_TABS = 20;
+/** More than any story here puts between the top of the canvas and what it tabs to. */
+const MAX_TABS = 40;
+
+/**
+ * Tabs from the top of the canvas until `target` has focus, as a keyboard reaches it, and holds
+ * that it is focus-visible and draws no ring: nothing in the registry does, and a focused thing
+ * shows it in its own look, which the caller checks.
+ */
+export async function tabTo(target: HTMLElement, canvasElement: HTMLElement) {
+  await userEvent.click(canvasElement);
+  for (let tabs = 0; tabs < MAX_TABS && document.activeElement !== target; tabs++) {
+    await userEvent.tab();
+  }
+  await expect(target).toHaveFocus();
+  await expect(target.matches(":focus-visible")).toBe(true);
+  await expect(getComputedStyle(target).outlineStyle).toBe("none");
+}
 
 /**
  * Holds a pane that is a tab stop so a keyboard can scroll it to `FOCUS_EDGE`: focused as a
@@ -46,13 +61,7 @@ export async function expectFocusEdge(
   await expect(getComputedStyle(pane).outlineStyle).toBe("none");
   await expect(edgeOf(pane, edge)).toBe(rest);
 
-  await userEvent.click(canvasElement);
-  for (let tabs = 0; tabs < MAX_TABS && document.activeElement !== pane; tabs++) {
-    await userEvent.tab();
-  }
-  await expect(pane).toHaveFocus();
-  await expect(pane.matches(":focus-visible")).toBe(true);
-  await expect(getComputedStyle(pane).outlineStyle).toBe("none");
+  await tabTo(pane, canvasElement);
   await expect(edgeOf(pane, edge)).not.toBe(rest);
   if (edge === "border") {
     await expect(getComputedStyle(pane).borderTopWidth).not.toBe("0px");

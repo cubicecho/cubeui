@@ -92,6 +92,10 @@ settings panel with nothing above it — pass `level={1}`, so the page's only he
 The title is the same size at every level; the rank says where the card sits, not how it looks.
 `CardTitle` takes the same `level` if you are composing `Card` by hand.
 
+`onPress` (`onClick` on the web) makes a hand-composed `Card` one button. It turns the hover grey
+under the pointer, focused and pressed, and draws no ring, as `StatTile` does: add no `hover:` or
+`focus-visible:` class of your own, and no button inside it, which would be a button in a button.
+
 The heading is the rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)):
 the title 14px semibold, the description 14px in the `/60` grey 4px under it, the action level with
 the title's top. The title is the size of its description and of the rows inside the card, and

@@ -32,6 +32,7 @@
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { cn, FOCUS_EDGE, type SlotNode } from "@/lib/utils";
+import { Button } from "./button";
 import { useOverflows } from "./overflows";
 import { useReducedMotion } from "./reduced-motion";
 
@@ -120,6 +121,11 @@ export type CodeBlockProps = {
    * live region: a log read aloud line by line drowns out everything else.
    */
   follow?: boolean | undefined;
+  /**
+   * The button's words that bring a reader who scrolled up back to the end of a `follow` block.
+   * The default is "Jump to latest"; pass the app's own translation.
+   */
+  jumpLabel?: string | undefined;
   /** The block's root: its width, its margin. */
   className?: string | undefined;
 };
@@ -244,6 +250,7 @@ export function CodeBlock({
   title,
   language,
   follow = false,
+  jumpLabel = "Jump to latest",
   className,
 }: CodeBlockProps) {
   const scroller = useRef<unknown>(null);
@@ -290,19 +297,20 @@ export function CodeBlock({
   );
   const jump =
     follow && atEnd === false ? (
-      <button
-        type="button"
+      // A button laid over the text, so the smallest shadow, as a copy button over a block has.
+      <Button
         data-slot="code-block-jump"
+        size="sm"
+        variant="outline"
+        content={jumpLabel}
         onClick={() => {
           setAtEnd(true);
           if (scroller.current) {
             toEnd(scroller.current, reducedMotion === false);
           }
         }}
-        className="cube-rn-view cube-rn-pressable absolute right-2 bottom-2 rounded-md border border-foreground/10 bg-background px-2 py-1 shadow-sm"
-      >
-        <span className="cube-rn-text text-xs text-foreground">Jump to latest</span>
-      </button>
+        className="absolute right-2 bottom-2 shadow-sm"
+      />
     ) : null;
 
   if (title === undefined) {

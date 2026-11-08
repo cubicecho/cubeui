@@ -45,10 +45,12 @@ function Checkbox({
       className={cn(
         CHECKBOX_CLASS,
         // Checked is the chosen tint, edged in `active` because the tint is not 3:1 from the
-        // surface; the check is `foreground`, 3:1 or more on the tint and around it.
+        // surface; the check is `foreground`, 3:1 or more on the tint and around it. Focused, a box
+        // looks as it does under the pointer, for Expo web, and draws no ring.
+        "focus-visible:outline-none",
         checked
-          ? "border-active bg-active/40 hover:bg-active/60"
-          : "border-foreground/50 bg-background",
+          ? "border-active bg-active/40 hover:bg-active/60 focus-visible:bg-active/60"
+          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover",
         // After the checked edge, so a refused box is red whether it is checked or not.
         isInvalid(ariaInvalid) && "border-negative",
         disabled && "opacity-50",
