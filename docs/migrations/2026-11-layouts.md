@@ -318,6 +318,32 @@ to add them.
   ([#482](https://github.com/cubicecho/cubeui/issues/482)). With `level`, its title is an `<h1>`–`<h3>`, where it was a `<span>`
   with `role="heading"`. The compact line now carries `data-slot` `empty`, `empty-icon` and
   `empty-title`, like the block, so a selector of yours on `[data-slot=empty]` finds it too.
+- **Every `Table` looks different: body cells wrap**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableCell`, and a row's own
+  `TableHead` in the body, is no longer `whitespace-nowrap`, so a long message or title wraps at
+  its column's width, and a table on a card that used to scroll sideways now fits it. Its rows get
+  taller instead. The column names in `TableHeader` stay on one line. A cell that must not break —
+  a date, a time, an id, a name — takes `className="whitespace-nowrap"`; a `whitespace-normal` you
+  added to make a cell wrap can go. A URL or a hash still pushes the table wide: give its cells
+  `wrap-anywhere`.
+- **A `Table`'s caption is drawn under the scroll box**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableCaption` written straight
+  inside `Table` stays in view while the rows scroll. It is a `div` now, inside a new wrapper,
+  `data-slot="table-frame"`, and the table is `aria-labelledby` it, so the table's name is
+  unchanged. A test that found the caption as `caption` finds it by `data-slot="table-caption"`.
+  A table with no caption has no wrapper.
+- **A `Table` that scrolls sideways fades the end with more columns past it**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). The far end at first, the near end once
+  scrolled to the last column. Nothing moves. `useOverflows` hands back which ends have more as a
+  third value, `{ start, end }`.
+- **A `Table` row tints under the pointer only when it can be acted on**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A row that holds a checkbox, a link,
+  a button or a field, or has an `onClick`, turns `bg-hover` as before. A row of words alone, the
+  header row and the footer stay still. A selected row is unchanged.
+- **A row's own header is in the data's ink**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
+  `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
+  you put on it, or on a `span` inside it, to undo the grey can go.
 - **Marks that were faint, or shown only by colour, are clearer**
   ([#471](https://github.com/cubicecho/cubeui/issues/471)).
   - `MarkdownCodeEditor` shades the line the cursor is on in `hover`, not the `active` tint. A

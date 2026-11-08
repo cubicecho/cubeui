@@ -180,14 +180,18 @@ function TaskTable({ tasks, caption }: { tasks: readonly Task[]; caption: string
             <TableCell>
               <Badge variant={STATUS_BADGE[task.status]}>{STATUS_LABELS[task.status]}</Badge>
             </TableCell>
-            <TableCell>
+            <TableCell className="whitespace-nowrap">
               <span className="flex items-center gap-2">
                 <Avatar name={personName(task.assignee)} size="sm" />
                 {personName(task.assignee)}
               </span>
             </TableCell>
             <TableCell
-              className={isOverdue(task) ? "text-right text-negative" : "text-right tabular-nums"}
+              className={
+                isOverdue(task)
+                  ? "whitespace-nowrap text-right text-negative"
+                  : "whitespace-nowrap text-right tabular-nums"
+              }
             >
               {task.due ? formatDate(task.due) : "—"}
             </TableCell>
