@@ -7,9 +7,6 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - [List pages](#list-pages)
   - [LoadState](#loadstate)
   - [Empty states](#empty-states)
-  - [CollapsibleRow](#collapsiblerow)
-  - [List](#list)
-  - [ListItem](#listitem)
 
 ## List pages
 
@@ -120,11 +117,11 @@ The shells for the shape every list route is: a ladder of states, then a list of
 | `compact` | `boolean` | `false` | The rungs drawn small enough for a rail: the failure as two lines and a text-sized retry, and the placeholders as bars the height of a nav row rather than cards. For a list that lives in a sidebar, where a card-sized error would be taller than the list it replaced. |
 | `describe` | `((error: unknown) => string)` |  | What the failure means, in the app's words — handed through to `LoadError`. |
 | `className` | `string` |  |  |
-| `count` | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
-| `emptySlot` | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
-| `record` | `never` |  |  |
-| `notFoundLabel` | `never` |  |  |
-| `level` | `never` | `1` |  |
+| `count` (instead of `record`) | `number` |  | How many rows the screen is about to draw. Pass this or `record`. |
+| `emptySlot` (with `count`) | `SlotNode` |  | What to say when there are none — whatever invites the first one. |
+| `record` (instead of `count`) | `unknown` |  | The one record the screen asked for, once the query has answered. `null` or `undefined` is a record that is not there. Pass this or `count`. |
+| `notFoundLabel` (required with `record`) | `string` |  | What the screen says when `record` is not there: "Project not found". It is drawn as the screen's heading — an `EmptyState` with the Search icon, at `level` — because the whole screen is that state. |
+| `level` (with `record`) | `1 \| 2 \| 3` | `1` | Which heading `notFoundLabel` is. `1`, the default, is a guard that is the whole screen. `2` is a guard inside a page that already has its level-1 title — a `PageLayout`'s body — so the page does not have two `h1`s. The size is the same at every level. |
 <!-- /props -->
 ### Empty states
 
@@ -154,14 +151,14 @@ and which one is a question of **where the list is**, not how much there is to s
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `iconSlot` | `SlotNode` |  |  |
-| `icon` | `never` |  | **Deprecated.** Pass the element as `iconSlot={<Plug />}`. |
-| `title` (required) | `string` |  |  |
-| `actionSlot` | `SlotNode` |  |  |
+| `iconSlot` | `SlotNode` |  | The glyph over the title, as an element: `iconSlot={<Inbox />}`. The shell draws it in a muted bubble and sizes and inks it, so pass a bare icon. Required for the centred block; at `compact` it is optional, and drawn inline before the text. |
+| `icon` | `IconComponent` |  | **Deprecated.** Pass the element as `iconSlot={<Plug />}`. |
+| `title` (required) | `string` |  | What there is none of, as the reader would say it: "No agents yet". At `compact` it is the whole line, so it can run on into what to do: "No servers yet. Add one to give the agent some tools." |
+| `actionSlot` | `SlotNode` |  | What makes the first one: a New or an Add button. Under the text in the centred block, and after it on the same line at `compact`. |
 | `className` | `string` |  | The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. |
-| `compact` | `false` |  | The one muted line that stands in for a short list *inside* something else — a card, a sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line inside a region that already has its heading is never what a screen reader lands on. The same word, for the same place, as `LoadState`'s `compact` — whose `emptySlot` it usually is. |
-| `description` | `ReactNode` |  |  |
-| `level` | `1 \| 2 \| 3` |  | Makes the title a heading of this rank. Leave it off for an empty list inside a page that already has its heading. Set it when the empty state *is* the page — a first run, a record that was not found, a link that did not work — so a screen reader has a heading to land on: `1` for a whole screen, `2` or `3` under a title that is already there. The text is the same size at every level, as on `Section`: pick the rank by where it sits, not by how it looks. |
+| `compact` | `boolean` |  | The one muted line that stands in for a short list *inside* something else — a card, a sidebar section, a popover: "No labels yet." Off, it is the centred block that stands in for a whole list or page. On, it keeps the left edge of what it sits in, draws no icon bubble and no padding past a `py-2`, and takes no `description` and no `level`: a line inside a region that already has its heading is never what a screen reader lands on. The same word, for the same place, as `LoadState`'s `compact` — whose `emptySlot` it usually is. |
+| `description` (without `compact`) | `ReactNode` |  | One line under the title on what the list is for, or how it fills: "An agent runs the lanes you give it." |
+| `level` (without `compact`) | `1 \| 2 \| 3` |  | Makes the title a heading of this rank. Leave it off for an empty list inside a page that already has its heading. Set it when the empty state *is* the page — a first run, a record that was not found, a link that did not work — so a screen reader has a heading to land on: `1` for a whole screen, `2` or `3` under a title that is already there. The text is the same size at every level, as on `Section`: pick the rank by where it sits, not by how it looks. |
 <!-- /props -->
 
 - **Default** — an icon in a muted bubble, the `title`, an optional `description`, the `actionSlot`
@@ -191,184 +188,3 @@ and which one is a question of **where the list is**, not how much there is to s
   for the rare empty state that needs a second button or an image where the icon goes.
   `EmptyTitle` is plain text: give it `role="heading"` and `aria-level` yourself when it is the
   screen.
-
-### CollapsibleRow
-
-- **It was `DisclosureRow`.** `DisclosureRow`, and the `@cubeui/disclosure-row` item that
-  re-exports it, stay for one release as deprecated aliases; import `CollapsibleRow` from
-  `@/components/collapsible-row` in new code.
-- The **whole heading is the button**, so a row is never opened by hitting a 16-pixel chevron and
-  is operable with Space. `aria-expanded` is on it, and `aria-controls` while the body is there.
-- **`actionSlot` sits outside that button.** A control nested inside a button is invalid HTML and, in
-  practice, a delete that cannot be clicked.
-- `description` shows whether the row is open or shut; `contentSlot` is what it opens onto.
-- Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
-- It is a `ListItem` that opens: the same box, title, description and hover as the `ListItem`
-  rows beside it, so the two line up down to the padding, and like `ListItem` it draws **no
-  surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
-  frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
-  is `ListItem`, below.
-- One source for both halves: `@cubeui/collapsible-row`. On a device the heading is a
-  `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
-  string `meta` is wrapped in a `Text` for you; pass the badges, the action
-  and the body as native elements, `onPress` where the web takes `onClick`.
-
-
-<!-- props:CollapsibleRow -->
-`CollapsibleRow`'s props, from the TSDoc in `registry/layout/collapsible-row.tsx`:
-
-| Prop | Type | Default | What it is |
-| --- | --- | --- | --- |
-| `open` (required) | `boolean` |  |  |
-| `onOpenChange` (required) | `(open: boolean) => void` |  |  |
-| `title` (required) | `ReactNode` |  |  |
-| `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
-| `meta` | `ReactNode` |  | The grey line of facts beside the title — a name, a time, a count. |
-| `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
-| `actionSlot` | `SlotNode` |  | Buttons, outside the collapsible: a row is opened by its heading and acted on by these. |
-| `contentSlot` | `SlotNode` |  | What the row opens onto. |
-| `className` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-<!-- /props -->
-### List
-
-The list rows sit in: the `<ul>`, the rule between rows and the padding around each, so a page
-writes none of the three. One source for both platforms: `@cubeui/list`.
-
-```tsx
-<List
-  label="People"
-  contentSlot={people.map((p) => (
-    <ListItem key={p.id} title={p.name} description={p.email} />
-  ))}
-/>
-```
-
-<!-- props:List -->
-`List`'s props, from the TSDoc in `registry/layout/list.tsx`:
-
-| Prop | Type | Default | What it is |
-| --- | --- | --- | --- |
-| `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `CollapsibleRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
-| `label` | `string` |  | What the list is a list of, in the reader's words: "Workspaces". Its accessible name. |
-| `divided` | `boolean` | `true` | A rule between rows. On unless turned off, for rows that are cards of their own. |
-| `className` | `string` |  |  |
-<!-- /props -->
-
-- **Each element of `contentSlot` is one row**, and the list writes the `<li>` around it. An array
-  or a fragment is opened first, so `rows.map(...)` beside a fixed last row is that many rows. Give
-  each row its `key` as you would in any `map`. Do **not** write `<li>` or `role="listitem"`
-  yourself.
-- On the web it is a real `<ul>` of `<li>`s; on a device `role="list"` and `role="listitem"`, so a
-  screen reader says "list, 4 items" and "2 of 4" on both.
-- `label` is the list's accessible name, in the reader's words ("Workspaces"). Leave it out when a
-  heading right above already says it.
-- `divided` draws a `border-foreground/10` rule over every row but the first. It is on unless you
-  pass `divided={false}`, for rows that are cards of their own.
-- The padding around a row (`py-1`) is the list's. Do not add a `<div className="py-…">` around a
-  row, or `divide-y` on a parent.
-- It takes any row: `ListItem`, `CollapsibleRow`, composed `Item` parts, a row of your own.
-- **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
-  exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
-  steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge
-  of every nested row, and puts `aria-level` (`depth + 1`) on its item, so a screen reader hears the
-  nesting:
-
-  ```tsx
-  <List
-    label="Steps"
-    contentSlot={steps.map((s) => (
-      <ListRow key={s.id} depth={s.depth}>
-        <ListItem title={s.name} />
-      </ListRow>
-    ))}
-  />
-  ```
-
-  Do **not** write `marginLeft`, `pl-…` or `border-l` on a row yourself. It is still a list, not
-  `role="tree"`: nothing here opens, closes or takes arrow keys, which is what a tree promises. A
-  tree of paths is `FileTree`. A row with no `ListRow` around it is a plain row with no level.
-- **No `emptySlot` and no `loading`.** Those rungs are `LoadState`'s, drawn above the list. With no
-  rows the list draws nothing at all, rather than an empty `<ul>` read as "list, 0 items" — and a
-  `CardLayout` whose `contentSlot` is that list shows its `emptySlot`.
-- It draws no surface. Put it in a `Section` or a `CardLayout` `contentSlot`, or pass a border in
-  `className`.
-
-### ListItem
-
-One row of a list — an avatar or a checkbox, a name over a line, a date and a few buttons at the
-far end — optionally pressable. One source for both platforms: `@cubeui/list-item`.
-
-```tsx
-<List
-  label="People"
-  contentSlot={people.map((p) => (
-    <ListItem
-      key={p.id}
-      leadingSlot={<Avatar person={p} />}
-      title={`${p.firstName} ${p.lastName}`}
-      description={p.email}
-      meta={relativeTime(p.lastContactedAt)}
-      linkSlot={<Link href={`/persons/${p.id}`} />}
-      actionSlot={<Button size="sm" variant="outline" onPress={() => remove(p.id)} content="Delete" />}
-    />
-  ))}
-/>
-```
-
-<!-- props:ListItem -->
-`ListItem`'s props, from the TSDoc in `registry/layout/list-item.tsx`:
-
-| Prop | Type | Default | What it is |
-| --- | --- | --- | --- |
-| `title` (required) | `ReactNode` |  | What the row is: a person's name, a todo's text. A string is one line, truncated when it runs long; an element — a name with a badge beside it — is placed as it is and styles itself. |
-| `description` | `ReactNode` |  | The line under the title — an email, the first line of the notes. A string is two lines at most; an element is placed as it is. |
-| `leadingSlot` | `SlotNode` |  | The start of the row, before the title: an avatar, a checkbox, an icon. Placed as given — not sized or recoloured the way `iconSlot` is, because a checkbox or an avatar is not a glyph. It sits **outside** the pressed area, so a checkbox here stays its own control. |
-| `meta` | `ReactNode` |  | The small grey facts at the row's far end, before `actionSlot`: "2 days ago", "12", a badge. A string is drawn muted and extra small; an element is placed as it is. Inside the pressed area. |
-| `actionSlot` | `SlotNode` |  | The row's far end, **outside** the pressed area: an edit button, a menu, a delete. One control or a fragment of them. A control nested in a button is invalid HTML and, in practice, a click that also opens the row. |
-| `onPress` | `(() => void)` |  | Makes the row something you press — open the person, edit the todo. The title, description and `meta` become one button between `leadingSlot` and `actionSlot`, so neither of those is nested in it. |
-| `href` | `string` |  | Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web, so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On device there is no URL to open, so `onPress` is what navigates. |
-| `linkSlot` | `ReactElement` |  | The router's link the row is, as an element with no children — `<Link href="/people/1" />` — which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`, which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say. |
-| `selected` | `boolean` | `false` | The chosen row: the one open beside the list. Tinted in `active`, a step further under the pointer, and a pressable row says so with `aria-current`. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-<!-- /props -->
-
-- `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not
-  sized the way `iconSlot` is, so size an icon yourself (`size-4`), and it is **outside** the pressed
-  area — a `Checkbox` there is its own control (telos' todo row).
-- `title` is one line and truncates; `description` is the muted line under it, two lines at most.
-  `titleClassName` reaches the title (a done todo's `line-through`). Both are for words. An
-  element given to either — a name with a badge beside it — is placed as it is, with none of
-  that styling or truncation, so it styles its own text; in an Expo app its words need a `Text`.
-- `meta` is the small grey facts at the far end — a date, a count, a badge. A string is drawn
-  `text-xs` muted for you. It is inside the pressed area.
-- `actionSlot` is the far end, **outside** the pressed area: one button or a fragment of them. Pass
-  outline `Button`s; the row adds the gap.
-- `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
-  (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
-  focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
-  `<a>`, which is the button-in-a-button this avoids.
-- **A row that goes somewhere is a link, not an `onPress` that calls the router.** Hand it the
-  router's link as an element with no children, `linkSlot={<Link href={`/persons/${p.id}`} />}`,
-  and the middle is drawn inside it: the router's own `<a href>` on the web — a new tab, a middle
-  click, the URL on hover, "link" to a screen reader — and expo-router's `Link asChild` on device.
-  `href="https://…"` alone is a plain `<a href>` for a URL no router owns; on device it only runs
-  `onPress`. A `selected` link carries `aria-current="page"`. Keep `onPress` on its own for a row
-  that opens something on the page it is on: a dialog, a pane.
-- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, a step
-  further under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
-  there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
-  grey fill: that is a hover that stuck.
-- No surface and no list role: the row is `rounded-md px-3 py-2` and nothing else. Put rows in a
-  `List` (above), which is the `<ul>`, the rule and the row padding; for a bordered card per row pass
-  `divided={false}` to the list and give each row
-  `className="rounded-lg border border-foreground/10 bg-secondary"`.
-- `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
-  line, a whole row that is one link, actions and all — compose shadcn's `Item` parts
-  (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
-  names, props and metrics: `ItemMedia` is `leadingSlot`, `ItemContent` the middle, `ItemTitle` and
-  `ItemDescription` the two lines, `ItemActions` the `actionSlot`. On a device a string in a part is
-  wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
-  hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
-

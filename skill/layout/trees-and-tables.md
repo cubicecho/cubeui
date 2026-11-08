@@ -123,7 +123,7 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `maxHeight` | `keyof typeof MAX_HEIGHTS` |  | The tallest the table may get before it scrolls inside itself, with its header row pinned at the top. Left out, it is as tall as its rows and the page scrolls it. For a long table — a log, an audit trail — that would carry its column names off the screen. `sm` and `md` are twenty and thirty-two rem, `lg` is 70% of the screen's height. |
+| `maxHeight` | `"sm" \| "md" \| "lg"` |  | The tallest the table may get before it scrolls inside itself, with its header row pinned at the top. Left out, it is as tall as its rows and the page scrolls it. For a long table — a log, an audit trail — that would carry its column names off the screen. `sm` and `md` are twenty and thirty-two rem, `lg` is 70% of the screen's height. |
 <!-- /props -->
 
 - It is a primitive, so it takes `children` like shadcn's. The `LoadState` ladder goes above it

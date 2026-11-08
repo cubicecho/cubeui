@@ -105,11 +105,11 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | Read-only facts — a label, a value, a hint under it, a copy button (a settings or "about" page) | `PropertyList`, `PropertyRow` | [layout/facts.md](layout/facts.md#property-lists) |
 | One figure on a card — a dashboard's row of counts, or the filter tiles over a list that toggle what it shows | `StatTile` | [layout/facts.md](layout/facts.md#stat-tiles) |
 | A list page's failed / loading / empty rungs, or a detail page's failed / loading / not found | `LoadState` | [layout/lists.md](layout/lists.md#loadstate) |
-| The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout/lists.md](layout/lists.md#list) |
-| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/lists.md](layout/lists.md#listitem) |
+| The list rows sit in: the `<ul>`, the rule between rows and the padding around each — instead of a `<ul>`, `divide-y` or `role="list"` of your own | `List` | [layout/list-rows.md](layout/list-rows.md#list) |
+| A list row: an avatar or checkbox, a title over a line, a date and buttons at the far end, optionally pressed to open | `ListItem` | [layout/list-rows.md](layout/list-rows.md#listitem) |
 | Files and folders, nested as they are on disk: folders that fold, a selected file, a size after a name, rename and delete beside a row, a row dragged onto a folder | `FileTree` | [layout/trees-and-tables.md](layout/trees-and-tables.md#filetree) |
 | What an empty list says: the centred block for a page, or `compact` — one muted line — inside a card, sidebar or popover | `EmptyState` | [layout/lists.md](layout/lists.md#empty-states) |
-| A list row that opens onto detail | `CollapsibleRow` | [layout/lists.md](layout/lists.md#collapsiblerow) |
+| A list row that opens onto detail | `CollapsibleRow` | [layout/list-rows.md](layout/list-rows.md#collapsiblerow) |
 | A part of a page that shows and hides — "Show completed (3)", a raw payload — instead of `<details>` or a chevron `<button>` | `Collapsible` | [layout/cards.md](layout/cards.md#collapsible) |
 | Rows with columns — the same facts on every row, read down as well as across (web only; on native, `ListItem` rows or a `PropertyList`) | `Table` and its parts | [layout/trees-and-tables.md](layout/trees-and-tables.md#table) |
 | A form of any size | `useAppForm` and the bound fields | [forms/app-form.md](forms/app-form.md#a-form) |
@@ -117,8 +117,8 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | Two or three fields that belong on one line | `FieldRow` | [forms/app-form.md](forms/app-form.md#fields-on-one-row) |
 | A button, with a label, an icon, a link or a `loading` state | `Button` | [controls/buttons.md](controls/buttons.md#button) |
 | An icon-only button | `Button` in an `icon*` size, with `aria-label` | [controls/buttons.md](controls/buttons.md#icon-buttons) |
-| A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls/buttons.md](controls/buttons.md#copy-button) |
-| A button that saves a file — an export, a note, a report — and waits while it is fetched, or a URL the browser downloads itself (`href`) | `DownloadButton` | [controls/buttons.md](controls/buttons.md#download-button) |
+| A button that copies a value — an endpoint, a token, a snippet — and ticks when it has | `CopyButton` | [controls/copy-and-download.md](controls/copy-and-download.md#copy-button) |
+| A button that saves a file — an export, a note, a report — and waits while it is fetched, or a URL the browser downloads itself (`href`) | `DownloadButton` | [controls/copy-and-download.md](controls/copy-and-download.md#download-button) |
 | A block of preformatted text — a config file, a command, a payload, a log — or one value in a box with a copy button, instead of a `<pre>` | `CodeBlock` | [controls/code-and-markdown.md](controls/code-and-markdown.md#code-block) |
 | A Markdown string drawn as a document — a note, a README, a skill, a model's answer — instead of `react-markdown` and an element map of your own (web only) | `Markdown` | [controls/code-and-markdown.md](controls/code-and-markdown.md#markdown) |
 | Links between an app's Markdown documents — `[[wikilinks]]`, relative links, the router's link, a link or image that is pending or broken (web only) | `Markdown` with `wikilinks`, `resolveLink`, `basePath` | [controls/code-and-markdown.md](controls/code-and-markdown.md#markdown) |

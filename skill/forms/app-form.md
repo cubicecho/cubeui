@@ -300,7 +300,7 @@ input-height, which is right. Pass `loadingClassName` only for a control that is
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `contentSlot` | `ReactNode` |  | The fields, as the web `FieldRow` takes them. Each gets a cell of its own, and one that renders nothing (`{isEdit && <field.InputField … />}`) leaves no empty cell behind. |
-| `perRow` | `keyof typeof CELL_SIZE` | `2` | How many fit on a line before the row wraps. |
+| `perRow` | `2 \| 3` | `2` | How many fit on a line before the row wraps. |
 | `className` | `string` |  |  |
 | `cellClassName` | `string` |  |  |
 <!-- /props -->

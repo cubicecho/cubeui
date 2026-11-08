@@ -33,7 +33,7 @@ is what a filter, a search box, or a field in a `useState` form uses.
 | `loading` | `boolean` | `false` | Whether the value is still being fetched. On, a skeleton stands in for the control and `error` is not consulted — a value that has not arrived is not a value that came back wrong. The same ordering `CardLayout` makes between `loading` and `emptySlot`, one level down. |
 | `htmlFor` | `string` |  | The control's `id`, for a caller that already owns one — something else on the page points at this control, or a form library minted it. Left off, the shell generates one, which is what makes the same field safe to render twice on a page. A control the shell cannot reach wants the function form of `controlSlot`, not this: an `htmlFor` alone points the label at the right element and leaves the description and the error pointing at nothing. |
 | `asGroup` | `boolean` | `false` | Whether the control is a *group* of controls rather than one. |
-| `orientation` | `keyof typeof LOADING_BOX` | `"vertical"` | `horizontal` puts the control first and the label beside it, for the controls whose label is part of the hit target: a checkbox, a switch. Stacked, a 16px box sits on a line of its own above its own caption, which is the shape every app that hand-wrote one worked around differently. |
+| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | `horizontal` puts the control first and the label beside it, for the controls whose label is part of the hit target: a checkbox, a switch. Stacked, a 16px box sits on a line of its own above its own caption, which is the shape every app that hand-wrote one worked around differently. |
 | `className` | `string` |  |  |
 | `labelClassName` | `string` |  |  |
 | `descriptionClassName` | `string` |  |  |
