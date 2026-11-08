@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
+import { Checkbox as CompiledCheckbox } from "../compiled/checkbox";
+import { Switch as CompiledSwitch } from "../compiled/switch";
 import { Badge } from "../registry/ui/badge";
 import { Checkbox } from "../registry/ui/checkbox";
 import { ColorPicker } from "../registry/ui/color-picker";
@@ -126,5 +128,33 @@ export const CheckboxName: Story = {
     const done = canvas.getByRole("checkbox", { name: "Done" });
     await expect(done).not.toHaveAttribute("accessibilitylabel");
     await expect(canvas.getByRole("checkbox", { name: "Archived" })).toBeInTheDocument();
+  },
+};
+
+/**
+ * The same name on the compiled halves, the ones a DOM app installs (#516). The compiler renamed
+ * the halves' own `accessibilityLabel` to `aria-label` beside the one they already took, so the
+ * compiled box and switch had no `accessibilityLabel` to read: a caller's went on to the DOM as an
+ * unknown attribute, and the control was unnamed.
+ */
+export const CompiledCheckboxAndSwitchName: Story = {
+  render: () => (
+    <div className="flex flex-row gap-2 bg-background p-6">
+      <CompiledCheckbox accessibilityLabel="Done" />
+      <CompiledCheckbox accessibilityLabel="Ignored" aria-label="Archived" />
+      <CompiledSwitch accessibilityLabel="Notify" />
+      <CompiledSwitch accessibilityLabel="Ignored" aria-label="Sync" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("checkbox", { name: "Done" })).not.toHaveAttribute(
+      "accessibilitylabel",
+    );
+    await expect(canvas.getByRole("switch", { name: "Notify" })).not.toHaveAttribute(
+      "accessibilitylabel",
+    );
+    await expect(canvas.getByRole("checkbox", { name: "Archived" })).toBeInTheDocument();
+    await expect(canvas.getByRole("switch", { name: "Sync" })).toBeInTheDocument();
   },
 };

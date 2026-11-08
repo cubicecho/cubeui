@@ -326,7 +326,17 @@ function TabsContent({ value, className, children }: TabsContentProps) {
     return null;
   }
   return (
-    <View role="tabpanel" className={cn("mt-2", className)}>
+    <View
+      role="tabpanel"
+      // A tab stop under Expo web, as radix's panel is on the web, so Tab reaches the pane from its
+      // tab even when nothing in it takes focus. A device has no Tab key.
+      {...(Platform.OS === "web" ? { tabIndex: 0 as const } : {})}
+      className={cn(
+        "mt-2",
+        Platform.select({ web: "focus-visible:outline-none", default: "" }),
+        className,
+      )}
+    >
       {children}
     </View>
   );

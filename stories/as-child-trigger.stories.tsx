@@ -386,11 +386,6 @@ export const Compiled: Story = {
  * filter shut the pane and applied nothing.
  */
 export const Device: Story = {
-  parameters: {
-    // A Storybook artefact, as in `RN Parity/Menu/Menu`'s `NativeOpen`: under Vite the native menu's
-    // `@/components/ui/popover` resolves to the radix half, whose `role="dialog"` is unnamed here.
-    a11y: { config: { rules: [{ id: "aria-dialog-name", enabled: false }] } },
-  },
   render: () => <All parts={DEVICE} name="Device" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -402,6 +397,8 @@ export const Device: Story = {
     await ranOwnPress(canvasElement, "Device", "done");
 
     await userEvent.click(canvas.getByRole("button", { name: "Device rename" }));
+    // The card is named by its title, as radix's is (#510).
+    await body().findByRole("dialog", { name: "Device rename dialog" });
     await ranOwnPress(canvasElement, "Device", "rename");
     await userEvent.click(await body().findByRole("button", { name: "Device cancel" }));
     await waitFor(() => expect(body().queryByText("Device rename dialog")).toBeNull());

@@ -98,6 +98,32 @@ test("a renamed prop's local name still reaches the body", () => {
 });
 
 /**
+ * A web half that takes the device half's name beside the DOM's maps it itself, and the rename
+ * left it two `"aria-label"` bindings and a type with no `accessibilityLabel` (#516): the compiled
+ * checkbox and switch passed a caller's `accessibilityLabel` on to the DOM and were left unnamed.
+ */
+test("a prop the source maps by hand keeps its name in the pattern and the type", () => {
+  const code = ok(
+    'type P = { accessibilityLabel?: string; "aria-label"?: string };\n' +
+      'export const A = ({ accessibilityLabel, "aria-label": ariaLabel }: P) =>\n' +
+      "  <View aria-label={ariaLabel ?? accessibilityLabel} />;",
+  );
+  assert.match(code, /\{ accessibilityLabel\?: string; "aria-label"\?: string \}/);
+  assert.match(code, /\(\{ accessibilityLabel, "aria-label": ariaLabel \}: P\)/);
+  assert.equal(code.match(/"aria-label": /g)?.length, 1, code);
+});
+
+/** Only where the pattern binds both: a lone `accessibilityLabel` is still renamed. */
+test("a prop the source does not map by hand is still renamed", () => {
+  const code = ok(
+    "type P = { accessibilityLabel?: string };\n" +
+      "export const A = ({ accessibilityLabel }: P) => <View aria-label={accessibilityLabel} />;",
+  );
+  assert.match(code, /\{ "aria-label"\?: string \}/);
+  assert.match(code, /\(\{ "aria-label": accessibilityLabel \}: P\)/);
+});
+
+/**
  * An unmapped React Native prop is refused rather than emitted. React forwards an unknown prop
  * straight to the DOM node, so without this the failure is an invalid attribute and a missing
  * behaviour, with no error at any point between the source and the reader who needs it.

@@ -125,6 +125,7 @@ test that finds them by name needs changing:
 | `dialog` | New: `holdOpen`, from `@/components/ui/dialog-base`. `onInteractOutside={holdOpen}` keeps a dialog open through a press beside it, as a `preventDefault` of your own does, and on device the backdrop is then not read out as a Close button. Swap it in for a handler of yours that only calls `preventDefault` ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `ColorPicker` | `hexLabel` is the hex box's `aria-label`, on both halves, where it was a hidden `<label>` on the web only. Inside a field it now replaces the field's label as the box's name, so leave it off there. `color-picker` installs `icons` and no longer installs `label` ([#485](https://github.com/cubicecho/cubeui/issues/485)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
+| `Checkbox`, `Switch` (web) | They take `accessibilityLabel`, as the device halves do, so code shared with an Expo app names them once. It was dropped onto the DOM, and the control was unnamed. An `aria-label` still wins ([#516](https://github.com/cubicecho/cubeui/issues/516)). |
 
 ## Moved installs
 
@@ -203,6 +204,11 @@ to add them.
   keeps the plain items' bullets. Every task item's box now hangs in the list's indent, where a
   bullet would be, so its text lines up with the other items' text, and a nested task list is
   indented under its item.
+- **On the web a disabled button has no pointer cursor**
+  ([#523](https://github.com/cubicecho/cubeui/issues/523)). Every compiled pressable kept
+  `cursor: pointer` when disabled, `Button` included. It is "not allowed" now, from the reset
+  stylesheet, for `disabled` and for a `Button` with a `hint`, which is `aria-disabled`. A
+  `cursor-not-allowed` you added to one can go.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does

@@ -43,13 +43,13 @@ export type CheckboxProps = Omit<
    * `aria-label`; an `aria-label` of its own wins. Optional, because on the web a
    * `<Label htmlFor={id}>` can name the box instead.
    */
-  "aria-label"?: string | undefined;
+  accessibilityLabel?: string | undefined;
 };
 
 /** A box that is checked, unchecked or indeterminate. */
 function Checkbox({
   className,
-  "aria-label": accessibilityLabel,
+  accessibilityLabel,
   "aria-label": ariaLabel,
   ...props
 }: CheckboxProps) {
