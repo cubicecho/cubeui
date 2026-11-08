@@ -124,6 +124,7 @@ test that finds them by name needs changing:
 | `ConfirmDialog` | `confirmLabel` defaults to "Delete", as on `ConfirmButton` and `confirm()`. It was "Confirm", which names no act. A `ConfirmDialog` with no `confirmLabel` now says Delete: pass the verb if it does something else, such as Discard or Revoke ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `DownloadButton` | New: `hint`, as on `CopyButton`. With `disabled`, it says why the button is off and keeps it focusable ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `dialog` | New: `holdOpen`, from `@/components/ui/dialog-base`. `onInteractOutside={holdOpen}` keeps a dialog open through a press beside it, as a `preventDefault` of your own does, and on device the backdrop is then not read out as a Close button. Swap it in for a handler of yours that only calls `preventDefault` ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
+| `SectionHeading` | Its words are `title` now, as every shell's are: `<SectionHeading>Upcoming</SectionHeading>` becomes `<SectionHeading title="Upcoming" />`. `children` still works, deprecated, and `title` wins over it ([#484](https://github.com/cubicecho/cubeui/issues/484)). |
 | `ColorPicker` | `hexLabel` is the hex box's `aria-label`, on both halves, where it was a hidden `<label>` on the web only. Inside a field it now replaces the field's label as the box's name, so leave it off there. `color-picker` installs `icons` and no longer installs `label` ([#485](https://github.com/cubicecho/cubeui/issues/485)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 | `Checkbox`, `Switch` (web) | They take `accessibilityLabel`, as the device halves do, so code shared with an Expo app names them once. It was dropped onto the DOM, and the control was unnamed. An `aria-label` still wins ([#516](https://github.com/cubicecho/cubeui/issues/516)). |
@@ -433,6 +434,12 @@ to add them.
   `CardLayout`'s body it reaches 8px into the card's padding, so the first column starts where the
   card's title does and the last ends where its action does, as a `List` there does. Its rules
   run nearly edge to edge. A `-mx-2` you put round such a table can go.
+- **A dialog's body is a card's body, and an overlay is not**
+  ([#525](https://github.com/cubicecho/cubeui/issues/525)). A `List` or a `Table` in a
+  `DialogLayout`'s body now lines up with the dialog's title, as it does in a card. The body has
+  12px of room either side for it, where it had 4px, so its scrollbar sits 8px nearer the edge. A
+  dialog, popover, menu or select opened from inside a card no longer pulls a list in it out to
+  edges it does not have. An overflowing table in a card stays level with the card's title.
 - **The two halves agree** ([#472](https://github.com/cubicecho/cubeui/issues/472)).
   - A `Button`'s icon is 14px at `xs` (it was 16px on the web) and 20px at `icon-lg` (it was
     16px), on both halves. On device every size now sizes its icon: it was lucide's own 24px. A
@@ -549,6 +556,16 @@ to add them.
   - On device, the backdrop of a dialog that a press beside it does not close — `ConfirmDialog`,
     `AlertDialog`, `DialogLayout` with `dismissible={false}` — is no longer a button named Close
     for a screen reader.
+
+- **Rows, cards and facts** ([#484](https://github.com/cubicecho/cubeui/issues/484)).
+  - A `PropertyRow` with an action keeps its value on the label's line, or right under the label
+    when stacked. The action is level with the value's top. A 36px button used to push the value
+    8px down. A row with no action is unchanged.
+  - A link in an `ItemDescription` is `text-info` at rest, not only under the pointer. On a
+    `selected` row it is `foreground`. It is underlined either way.
+  - `CardLayout`'s `loading` skeleton is a `role="status"` named "Loading", as `RowSkeleton` is. It
+    said nothing to a screen reader. A test that found the skeleton by `aria-hidden` finds it by
+    its role, or by `data-slot="card-layout-skeleton"`.
 
 - **On device, a finger's 44pt** ([#470](https://github.com/cubicecho/cubeui/issues/470)). Nothing
   changes on the web, except that a pressable row's padding now opens it too.

@@ -18,7 +18,7 @@ import {
   type TooltipProviderProps,
   type TooltipTriggerProps,
 } from "@/components/ui/tooltip-base";
-import { cn } from "@/lib/utils";
+import { CardBodyContext, cn } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -104,7 +104,7 @@ function TooltipContent({
         )}
         {...props}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );

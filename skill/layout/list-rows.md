@@ -90,6 +90,8 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
   the card's title does and its far end lines up with the card's action, and the rules run nearly
   edge to edge. Inset twice, the rows' text sat 12px in from every other edge in the card. Do not
   add a negative margin of your own; a row of your own brings `ListItem`'s `px-3` to line up.
+  A `DialogLayout`'s body counts as a card's, and its rows line up with the dialog's title. A
+  dialog, popover, menu or select opened from inside a card does not: a list there keeps its inset.
 - **Rows that nest** — a run's steps, a decision's arms — go in a `ListRow` with a `depth`, which is
   exported beside `List`. Depth 0 is the top. The list indents each level a `ml-4` step (up to six
   steps; deeper rows stay at the sixth), draws a `border-foreground/10` guide rule down the start edge
@@ -205,3 +207,6 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   beside it; `size="default"` is shadcn's roomier row. On a device a string in a part is
   wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
   hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
+- A link in an `ItemDescription` is `text-info` and underlined on the web, and `foreground` on a
+  `selected` row, where `info` is too faint on the tint. On device, give the link's `Text` the
+  class yourself.

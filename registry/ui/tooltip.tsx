@@ -49,7 +49,7 @@ import {
   type TooltipTriggerProps,
   tooltipVisibleMs,
 } from "@/components/ui/tooltip-base";
-import { addHandlers, cn } from "@/lib/utils";
+import { addHandlers, CardBodyContext, cn } from "@/lib/utils";
 
 type TooltipState = {
   open: boolean;
@@ -299,7 +299,9 @@ function BesideTrigger({
         role="tooltip"
         className={cn("absolute", TOOLTIP_SIDE_CLASS[side], TOOLTIP_CONTENT_CLASS, className)}
       >
-        <Text className={TOOLTIP_TEXT_CLASS}>{children}</Text>
+        <CardBodyContext.Provider value={false}>
+          <Text className={TOOLTIP_TEXT_CLASS}>{children}</Text>
+        </CardBodyContext.Provider>
       </View>
     </View>
   );

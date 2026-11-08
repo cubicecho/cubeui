@@ -91,6 +91,7 @@ export function Section({
       testID="section-title"
       id={titleId}
       level={level}
+      title={title}
       className={cn(
         // The heading rhythm's title, as a card's is (#473): it was a 12px caps overline, a third
         // type scale beside the card's and the rows'. Weight and ink lead the description under
@@ -101,9 +102,7 @@ export function Section({
         actionPlacement === "inline" && ONE_LINE_ON_DEVICE,
         titleClassName,
       )}
-    >
-      {title}
-    </SectionHeading>
+    />
   ) : null;
   const hasText = hasSlot(title) || hasSlot(description);
   const hasHeading = hasText || hasSlot(actionSlot);

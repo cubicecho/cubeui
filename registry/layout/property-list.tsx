@@ -177,7 +177,10 @@ export function PropertyRow({
         webAs="dd"
         testID="property-row-value"
         className={cn(
-          "min-w-0 flex-row items-center gap-2",
+          // `items-start`, so the value keeps to its label and the action sits level with its top,
+          // as the heading rhythm puts every action. Centred, a 36px button pushed the value 8px
+          // down: off its label's line inline, and away from the label over it when stacked.
+          "min-w-0 flex-row items-start gap-2",
           VALUES[layout],
           // A string's class is on its `Text`, below. Left here as well, a `font-mono` would reach
           // the hint and the action on the web, by inheritance, and neither of them on device.

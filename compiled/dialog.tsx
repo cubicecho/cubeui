@@ -45,7 +45,7 @@ import {
   focusOnOpen,
 } from "@/components/ui/dialog-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { bridgePress, cn } from "@/lib/utils";
+import { bridgePress, CardBodyContext, cn } from "@/lib/utils";
 import { Button } from "./button";
 import { X } from "./icons";
 
@@ -220,7 +220,7 @@ function DialogContent({
           className,
         )}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {/* A framed app focusing itself would take the focus, and the typing, out of the dialog. */}
         <FrameFocusGuard />
         <FocusIntoToasts />

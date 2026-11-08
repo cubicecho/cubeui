@@ -46,7 +46,7 @@ import {
   type MenuTriggerProps,
 } from "@/components/ui/menu-base";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { cn, hasSlot } from "@/lib/utils";
+import { CardBodyContext, cn, hasSlot } from "@/lib/utils";
 import { Check } from "./icons";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
@@ -133,7 +133,7 @@ function MenuContent({
           skipReturnRef.current = false;
         }}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {/* A framed app focusing itself would blur the window, which closes a menu at once. */}
         <FrameFocusGuard />
       </MenuPrimitive.Content>

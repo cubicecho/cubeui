@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
 import { FrameFocusGuard } from "@/lib/frame-focus-guard";
-import { bridgePress, cn } from "@/lib/utils";
+import { bridgePress, CardBodyContext, cn } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part (or element) underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -209,7 +209,7 @@ function DialogContent({
           className,
         )}
       >
-        {children}
+        <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {/* A framed app focusing itself would take the focus, and the typing, out of the dialog. */}
         <FrameFocusGuard />
         <FocusIntoToasts />

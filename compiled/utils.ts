@@ -283,6 +283,11 @@ export const PageLoadingContext = createContext(false);
  * row's title starts where the card's title does and its rules run nearly edge to edge, rather
  * than the rows' text sitting 12px inside the card's. `Table` does the same by its cells' inset.
  * Here rather than in any one item so none has to install another.
+ *
+ * Every floating surface — a dialog, a popover, a menu, a select's list, a tooltip — sets it back
+ * to `false` for what it holds. Context passes through a portal, so a dialog opened from a card's
+ * body read `true`, and a list in it reached out past padding it did not have (#525). A
+ * `DialogLayout` sets it `true` again over its body, because on that panel the card is the panel.
  */
 export const CardBodyContext = createContext(false);
 
