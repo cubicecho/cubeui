@@ -116,16 +116,6 @@ export const ClearIsAReachableButton: Story = {
   },
 };
 
-/** `bg-active/<percent>` as the browser reports it: the mix Tailwind compiles the class to. */
-function activeTint(percent: number) {
-  const probe = document.createElement("span");
-  probe.style.backgroundColor = `color-mix(in oklab, var(--active) ${percent}%, transparent)`;
-  document.body.append(probe);
-  const color = getComputedStyle(probe).backgroundColor;
-  probe.remove();
-  return color;
-}
-
 /**
  * react-day-picker's stylesheet ships its accent as `blue`, so the chevrons and the selected ring
  * ignored the theme (#102). The picked day is the chosen tint, ringed in `active`, with its text in
@@ -146,7 +136,7 @@ export const TheCalendarFollowsTheTheme: Story = {
     // the arrows are ink, not the chosen colour, and never the library's own blue.
     const check = async () => {
       await waitFor(() => expect(getComputedStyle(chevron).fill).toBe(tokenColor("foreground")));
-      expect(getComputedStyle(day).backgroundColor).toBe(activeTint(40));
+      expect(getComputedStyle(day).backgroundColor).toBe(tokenColor("active", { opacity: 40 }));
       expect(getComputedStyle(day).borderTopColor).toBe(tokenColor("active"));
       expect(getComputedStyle(day).color).toBe(tokenColor("foreground"));
       expect(getComputedStyle(chevron).fill).not.toBe("rgb(0, 0, 255)");

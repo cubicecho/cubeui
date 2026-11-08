@@ -216,6 +216,11 @@ to add them.
   `PageLayout` body that fits is no longer a stop of its own, so a `DialogLayout` that fits opens
   with focus on its first field or button rather than on its body. A stacked `SplitLayout` taller
   than the screen is a tab stop itself, with the same inset line.
+- **A `CodeBlock` is a tab stop only while its text overflows**
+  ([#455](https://github.com/cubicecho/cubeui/issues/455)). A short block with `maxHeight`, or a
+  short line that does not wrap, is no longer a stop, and has no 1px edge, so it is 2px shorter.
+  A log that grows past its cap becomes one. A reinstall of `code` also writes
+  `components/ui/overflows.tsx`.
 
 ## Checking the result
 
