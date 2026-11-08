@@ -8,12 +8,15 @@ import {
   type DescriptionPlacement,
   foldsDescription,
 } from "@/components/ui/description-hint";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_DESCRIPTION, HEADING_TITLE, type SlotNode } from "@/lib/utils";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
   contentSlot?: SlotNode | undefined;
-  /** The overline. A short noun phrase — "Pomodoro", "Danger zone", "Notifications". */
+  /**
+   * What the group is called: a short noun phrase — "Pomodoro", "Danger zone", "Notifications".
+   * Drawn as a card's title is, 14px semibold in full ink.
+   */
   title?: ReactNode | undefined;
   /** One line under the title, in sentence case, on what the group is for. */
   description?: ReactNode | undefined;
@@ -84,12 +87,13 @@ export function Section({
     <SectionHeading
       testID="section-title"
       id={titleId}
-      variant="overline"
       level={level}
       className={cn(
-        // An overline in full ink: grey, it was outranked by the larger grey description under it.
-        // Weight, caps and ink lead; the size stays small.
-        "truncate text-foreground",
+        // The heading rhythm's title, as a card's is (#473): it was a 12px caps overline, a third
+        // type scale beside the card's and the rows'. Weight and ink lead the description under
+        // it, which is the same size.
+        HEADING_TITLE,
+        "truncate",
         (folded || actionPlacement === "inline") && "min-w-0 shrink",
         actionPlacement === "inline" && ONE_LINE_ON_DEVICE,
         titleClassName,
@@ -124,11 +128,7 @@ export function Section({
                 description={description}
                 descriptionSlot={
                   description ? (
-                    <Text
-                      webAs="p"
-                      testID="section-description"
-                      className="text-foreground/60 text-sm"
-                    >
+                    <Text webAs="p" testID="section-description" className={HEADING_DESCRIPTION}>
                       {description}
                     </Text>
                   ) : null

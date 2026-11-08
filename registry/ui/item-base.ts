@@ -8,11 +8,22 @@
  * `Text` around a string and the ink a `Text` does not inherit there.
  *
  * `default` is shadcn's size, so a DOM app's rows draw as they did. `sm` is `ListItem`'s row, which
- * is built from these parts at that size. A part that changes with the size has a `_SIZES` map,
- * which the native half picks from by the row's size in context, and a `_SM_WEB` string: the same
- * `sm` classes behind the row's `data-size`, for the web half, whose parts stay plain DOM.
+ * is built from these parts at that size, and it takes the heading rhythm every block and row
+ * shares (`HEADING_TITLE` and the rest, in `@/lib/utils`). A part that changes with the size has a
+ * `_SIZES` map, which the native half picks from by the row's size in context, and a `_SM_WEB`
+ * string: the same `sm` classes behind the row's `data-size`, for the web half, whose parts stay
+ * plain DOM. The `_SM_WEB` strings spell the rhythm's classes out, because a variant has to be a
+ * literal for Tailwind to find it; `Heading rhythm` in the stories holds the two halves together.
  */
 import { cva } from "class-variance-authority";
+import {
+  cn,
+  HEADING_DESCRIPTION,
+  HEADING_GAP,
+  HEADING_TITLE,
+  HEADING_WRAP_FLOOR,
+  HEADING_WRAP_GAP,
+} from "@/lib/utils";
 
 /** How an `Item`'s surface is drawn. */
 export type ItemVariant = "default" | "outline" | "muted";
@@ -38,8 +49,8 @@ export const itemVariants = cva(
         default: "gap-4 p-4",
         // `ListItem`'s row: 12px across and 8px down to the content, and no edge, so a border a
         // caller adds (`border border-foreground/10` for a card per row) goes outside that, as it
-        // always did on `ListItem`.
-        sm: "gap-3 border-0 px-3 py-2",
+        // always did on `ListItem`. A line the row wraps onto is the rhythm's 8px under the last.
+        sm: cn("gap-3 border-0 px-3 py-2", HEADING_WRAP_GAP),
       },
     },
     compoundVariants: [
@@ -83,10 +94,16 @@ export const itemMediaVariants = cva("shrink-0 flex-row items-center justify-cen
 /** The middle: the title over the description, taking the row's spare width. */
 export const ITEM_CONTENT_CLASS = "flex-1";
 
-/** At `sm` the two lines sit closer, and the middle gives way to a long title instead of growing. */
-export const ITEM_CONTENT_SIZES = { default: "gap-1", sm: "min-w-0 gap-0.5" } as const;
+/**
+ * At `sm` the two lines are the rhythm's `HEADING_GAP` apart, and the middle gives way to a long
+ * title instead of growing, down to the rhythm's wrap floor: below 10rem the actions go under it.
+ */
+export const ITEM_CONTENT_SIZES = {
+  default: "gap-1",
+  sm: cn(HEADING_WRAP_FLOOR, HEADING_GAP),
+} as const;
 export const ITEM_CONTENT_SM_WEB =
-  "group-data-[size=sm]/item:min-w-0 group-data-[size=sm]/item:gap-0.5";
+  "group-data-[size=sm]/item:min-w-0 group-data-[size=sm]/item:basis-40 group-data-[size=sm]/item:gap-1";
 
 /** The title's line: text, a badge beside it, side by side. */
 export const ITEM_TITLE_CLASS = "flex-row items-center gap-2";
@@ -102,32 +119,47 @@ export const ITEM_TITLE_SM_WEB = "group-data-[size=sm]/item:max-w-full";
 export const ITEM_TITLE_TEXT = "text-sm font-semibold";
 
 /**
- * At `sm` the title keeps `text-sm`'s own 20px line. On the web the line height is the title
- * line's, which a `Text` inside inherits, so that half says `leading-5`, the same 20px, to undo
- * `leading-snug`.
+ * At `sm` the title is the rhythm's `HEADING_TITLE`, on `text-sm`'s own 20px line. On the web the
+ * line height is the title line's, which a `Text` inside inherits, so that half says `leading-5`,
+ * the same 20px, to undo `leading-snug`.
  */
-export const ITEM_TITLE_TEXT_SIZES = { default: "leading-snug", sm: "" } as const;
+export const ITEM_TITLE_TEXT_SIZES = { default: "leading-snug", sm: HEADING_TITLE } as const;
 export const ITEM_TITLE_TEXT_SM_WEB = "group-data-[size=sm]/item:leading-5";
 
 /** The muted line under the title, two lines at most. */
 export const ITEM_DESCRIPTION_CLASS = "line-clamp-2 font-normal text-foreground/60";
 
 /**
- * At `sm` the description is a size under the title. On the web `leading-4` is `text-xs`'s own
- * 16px, said because `leading-normal` would carry over, and the line is filled rather than
- * balanced and keeps a string's newlines, as a native `Text` does.
+ * At `sm` the description is the rhythm's `HEADING_DESCRIPTION`: the title's size, quieter by ink.
+ * On the web `leading-5` is `text-sm`'s own 20px, said because `leading-normal` would carry over,
+ * and the line is filled rather than balanced and keeps a string's newlines, as a native `Text`
+ * does.
  */
-export const ITEM_DESCRIPTION_SIZES = { default: "text-sm leading-normal", sm: "text-xs" } as const;
+export const ITEM_DESCRIPTION_SIZES = {
+  default: "text-sm leading-normal",
+  sm: HEADING_DESCRIPTION,
+} as const;
 export const ITEM_DESCRIPTION_SM_WEB =
-  "group-data-[size=sm]/item:text-xs group-data-[size=sm]/item:leading-4 group-data-[size=sm]/item:text-wrap group-data-[size=sm]/item:whitespace-pre-wrap";
+  "group-data-[size=sm]/item:leading-5 group-data-[size=sm]/item:text-wrap group-data-[size=sm]/item:whitespace-pre-wrap";
 
 /** The far end: buttons, a menu. */
 export const ITEM_ACTIONS_CLASS = "flex-row items-center";
 
-/** At `sm` the buttons sit closer, and never give their width up to a long title. */
-export const ITEM_ACTIONS_SIZES = { default: "gap-2", sm: "shrink-0 gap-1" } as const;
+/**
+ * At `sm` the buttons are level with the title's top rather than centred on the row, and never
+ * give their width up to a long title. On a row that wraps, a wrapped action keeps to the far end,
+ * clear of the row's media. Their gap is the rhythm's, by what they are: `actionGap` in
+ * `@/lib/utils`, 4px between `icon-xs` buttons and 8px otherwise.
+ */
+export const ITEM_ACTIONS_SIZES = { default: "gap-2", sm: "ml-auto shrink-0 self-start" } as const;
 export const ITEM_ACTIONS_SM_WEB =
-  "group-data-[size=sm]/item:shrink-0 group-data-[size=sm]/item:gap-1";
+  "group-data-[size=sm]/item:ml-auto group-data-[size=sm]/item:shrink-0 group-data-[size=sm]/item:self-start";
+
+/**
+ * The web half's gap between `icon-xs` buttons at `sm`, behind the row's `data-size`: the rest
+ * keep the `gap-2` both sizes start from. `default` stays shadcn's whatever the buttons are.
+ */
+export const ITEM_ACTIONS_ICON_GAP_SM_WEB = "group-data-[size=sm]/item:gap-1";
 
 /** A full-width line above the rest of the row. */
 export const ITEM_HEADER_CLASS = "flex-row items-center justify-between gap-2";

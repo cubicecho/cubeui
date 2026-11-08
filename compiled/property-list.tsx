@@ -10,7 +10,7 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode } from "@/lib/utils";
 
 type Layout = "inline" | "stacked";
 
@@ -198,7 +198,7 @@ export function PropertyRow({
         {actionSlot ? (
           <div
             data-slot="property-row-action"
-            className="cube-rn-view shrink-0 flex-row items-center gap-1"
+            className={cn("cube-rn-view", "shrink-0 flex-row items-center", actionGap(actionSlot))}
           >
             {actionSlot}
           </div>

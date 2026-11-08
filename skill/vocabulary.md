@@ -18,7 +18,9 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 **Everywhere:**
 
 - **`contentSlot`** — the body. The one slot that grows and the one that scrolls.
-- **`title`**, **`description`** — what the thing is called and one line on what it is for.
+- **`title`**, **`description`** — what the thing is called and one line on what it is for. On a
+  block or a row they are drawn in the one heading rhythm: a 14px semibold title over a 14px
+  description in the `/60` grey ([layout/index.md](layout/index.md#one-heading-rhythm)).
 - **`iconSlot`** — sits before the title. Pass a bare `<Plus />`; the shell sizes and colors it.
 - **`actionSlot`** — the far end of the *header*. One control, or a fragment of them.
 - **`footerSlot`** — the start of the footer. A note, a timestamp, a destructive action held away

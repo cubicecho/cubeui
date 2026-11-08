@@ -1,8 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import {
+  Children,
   cloneElement,
   createContext,
   createElement,
+  Fragment,
   isValidElement,
   type ReactElement,
   type ReactNode,
@@ -70,6 +72,71 @@ export const FIELD_INVALID_CLASS = "border-negative focus:border-active";
  * applies it to its parts from its own `disabled`.
  */
 export const FIELD_DISABLED_CLASS = "opacity-50";
+
+/*
+ * The heading rhythm (#473): how a block or a row lays out its title, the line under it and its
+ * action. `Card` and `CardLayout`, `Section`, `SettingRow`, `Item` at `sm`, `ListItem`,
+ * `CollapsibleRow` and `Collapsible` all take it from here, on both halves. Each drew its own
+ * once — a 16px card title, a 12px caps section title, rows with a 12px description 2px under the
+ * title, actions centred on some and level with the title on others — and a card of rows read as
+ * three type scales. The title and the line under it are the same size: the title leads by weight
+ * and ink, not by size.
+ */
+
+/** A block's or a row's title: 14px semibold, on `text-sm`'s own 20px line, in full ink. */
+export const HEADING_TITLE = "text-sm font-semibold text-foreground";
+
+/** The line under a title: the title's size, at the `/60` step of ink. */
+export const HEADING_DESCRIPTION = "text-sm text-foreground/60";
+
+/** The room between a title and the line under it. */
+export const HEADING_GAP = "gap-1";
+
+/**
+ * The text beside an action keeps 10rem, or the action goes under it: the one floor a block's or
+ * a row's heading wraps on, as the text's basis in a row that wraps. A title that truncates can
+ * give up more before it stops naming its block, so the floor is low.
+ */
+export const HEADING_WRAP_FLOOR = "min-w-0 flex-1 basis-40";
+
+/**
+ * The room between a wrapped action and the text it dropped under. While the action is beside the
+ * text it is level with the title's top — `items-start` on the row, never centred on the text — so
+ * a second line of description does not move it.
+ */
+export const HEADING_WRAP_GAP = "gap-y-2";
+
+/** The room between two actions at the far end of a heading or a row. */
+export const ACTION_GAP = "gap-2";
+
+/** The same room between `icon-xs` buttons, which are small enough that 8px reads as a gap. */
+export const ICON_ACTION_GAP = "gap-1";
+
+/** An action's elements, with a fragment opened: what a caller passes as one or as several. */
+function actionElements(slot: ReactNode): ReactElement[] {
+  return Children.toArray(slot).flatMap((child) => {
+    if (isValidElement<{ children?: ReactNode }>(child) === false) {
+      return [];
+    }
+    return child.type === Fragment ? actionElements(child.props.children) : [child];
+  });
+}
+
+/**
+ * The gap an action slot's elements sit at: {@link ICON_ACTION_GAP} when every one of them is an
+ * `icon-xs` control, and {@link ACTION_GAP} otherwise. Read off their `size` prop, so it is the
+ * same on both halves: a device has no selector to ask what a row holds.
+ *
+ * @param slot - What the caller passed as the action.
+ * @returns The gap class.
+ */
+export function actionGap(slot: ReactNode): string {
+  const elements = actionElements(slot);
+  const allIconXs =
+    elements.length > 0 &&
+    elements.every((element) => (element.props as { size?: unknown }).size === "icon-xs");
+  return allIconXs ? ICON_ACTION_GAP : ACTION_GAP;
+}
 
 /**
  * Whether an `aria-invalid` value says the field is invalid. `"grammar"` and `"spelling"` are a

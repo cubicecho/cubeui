@@ -50,6 +50,27 @@ lay their children out the same way on both halves, so one class list is right f
 | [list-rows.md](list-rows.md) | `List`, `ListItem`, `CollapsibleRow` |
 | [trees-and-tables.md](trees-and-tables.md) | `FileTree`, `Table` |
 
+## One heading rhythm
+
+Every block and row with a title lays it out one way, on both halves: `CardLayout` (and `Card`'s
+own parts), `Section`, `SettingRow`, `Item` at `size="sm"`, `ListItem`, `CollapsibleRow` and
+`Collapsible`.
+
+- The **title** is 14px semibold in full ink, and the **description** 14px in the `/60` grey,
+  4px under it. They are the same size: the title leads by weight and ink, so a card of rows
+  reads as one type scale. A `meta` line stays 12px.
+- The **action** is level with the title's top, never centred on the text, so a second line of
+  description does not move it. Two actions are 8px apart, or 4px when every one of them is an
+  `icon-xs` button — the shell reads that off their `size`, so pass the buttons straight in, as
+  one element or a fragment.
+- Beside an action the text keeps **10rem**, or the action goes under it, 8px down: a block's to
+  the start of the line, a row's to the far end, clear of its `leadingSlot`.
+
+A block or row of your own takes the same classes from `@/lib/utils` rather than spelling them
+again: `HEADING_TITLE`, `HEADING_DESCRIPTION`, `HEADING_GAP`, `HEADING_WRAP_FLOOR`,
+`HEADING_WRAP_GAP` and `actionGap(actions)`. `Item`'s `default` size is shadcn's and is not part
+of it; nor is `SectionHeading`, which is a small label over a group, not a block's title.
+
 ## What does not belong in a shell
 
 Data fetching, form state, toasts, routing, permission checks. A shell is handed nodes and

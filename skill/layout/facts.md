@@ -145,12 +145,16 @@ that changes it at the end.
   named "About <title>", with `descriptionIconSlot` for its glyph. `descriptionId` is handed to
   `actionSlot` either way and on the web still resolves, so keep the `aria-describedby`. A row
   with no `title` keeps its description inline.
-- It **wraps rather than breaking at a width**: the control sits beside the text while both fit
-  and drops under it, at the start, when they do not — following the width the row is given, not
-  the window. A switch stays beside its title on a phone; a select or a wide button goes under.
-  There is no breakpoint prop.
+- The row is the heading rhythm every block and row shares
+  ([index.md](index.md#one-heading-rhythm)): the title 14px semibold, the description 14px in the
+  `/60` grey 4px under it, and the control level with the title's top, not centred on the text.
+- It **wraps rather than breaking at a width**: the control sits beside the text while the text
+  keeps 10rem, and drops under it, at the start, when it does not — following the width the row
+  is given, not the window. A switch stays beside its title on a phone; a select or a wide button
+  goes under. There is no breakpoint prop.
 - It draws no surface, no border and no heading. Put the rows in a `Section` or `CardLayout`
-  `contentSlot`; the gap between them is the parent's.
+  `contentSlot`, as the example does: both bodies put 16px between what they hold, so the rows need
+  no wrapper and no `contentClassName`.
 - **`SwitchField` or `SettingRow`?** `SwitchField` (`@cubeui/switch-field`) is a lone boolean —
   the switch with its caption beside it, the whole row one hit target. It takes a `description`
   under the caption and `disabled`, so a switch that cannot be changed can say why. Take

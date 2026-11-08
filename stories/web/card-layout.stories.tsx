@@ -167,15 +167,12 @@ export const ActionsOnly: Story = {
  * A title too long for the card truncates rather than wrapping, because a card is one of several
  * on a grid and a two-line title in one of them sets every other card's header height.
  *
- * The assertion is about the other half of that: `truncate` is `overflow: hidden`, and shadcn's
- * `CardTitle` is `leading-none` — a line box exactly 1em tall, which is shorter than the glyphs
- * in it. Left alone the two together shave the tops off the capitals and the tails off the
- * descenders, which reads as a rendering fault rather than as a design. So the title carries its
- * own padding, and this checks the line box is taller than the text in it.
- *
- * On cubeui the padding sat on a span inside `CardTitle`; here the layout is written in React
- * Native, where a view inside a `Text` is not laid out, so `CardTitle` is the truncating element
- * and the padding is on it.
+ * The assertion is about the other half of that: `truncate` is `overflow: hidden`, and a line box
+ * no taller than the glyphs in it shaves the tops off the capitals and the tails off the
+ * descenders, which reads as a rendering fault rather than as a design. shadcn's `CardTitle` is
+ * `leading-none`, a line box exactly 1em tall, and needed padding to undo that; the heading
+ * rhythm's title keeps `text-sm`'s own 20px line (#473), and this checks the line box is still
+ * taller than the text in it.
  */
 export const LongTitleTruncates: Story = {
   args: {
@@ -192,10 +189,6 @@ export const LongTitleTruncates: Story = {
     // the em box is clipping something.
     const fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
     expect(title.clientHeight).toBeGreaterThan(fontSize * 1.2);
-
-    // And it cost the header nothing: the padding is given back as negative margin.
-    const style = getComputedStyle(title);
-    expect(style.marginTop).toBe(`-${style.paddingTop}`);
   },
 };
 

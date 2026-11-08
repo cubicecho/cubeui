@@ -4,7 +4,7 @@ import { Platform, Text, View } from "react-native";
 import { CollapsibleTrigger } from "@/components/collapsible";
 import { ListItemText, rowFillClass } from "@/components/list-item";
 import { Item, ItemActions } from "@/components/ui/item";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_TITLE, HEADING_WRAP_FLOOR, type SlotNode } from "@/lib/utils";
 
 type CollapsibleRowProps = {
   open: boolean;
@@ -61,7 +61,8 @@ export function CollapsibleRow({
           // Grows from a 6rem floor rather than from its full width, so it keeps the badges' line
           // and truncates there; sized to its text, it wrapped under them as soon as `meta` took
           // the row's far end.
-          "min-w-0 flex-1 basis-24 font-semibold text-foreground text-sm leading-snug",
+          "min-w-0 flex-1 basis-24",
+          HEADING_TITLE,
           // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
           // what `line-clamp-1` becomes and what `truncate` does not.
           Platform.select({ web: "truncate", default: "line-clamp-1" }),
@@ -77,10 +78,12 @@ export function CollapsibleRow({
       <Item
         testID="collapsible-row-heading"
         size="sm"
-        className={cn("min-w-0 flex-nowrap", rowFillClass(false, true))}
+        className={cn("min-w-0", rowFillClass(false, true))}
       >
         <CollapsibleTrigger
           testID="collapsible-row-trigger"
+          // The rhythm's wrap floor, as `ListItem`'s middle has: below it the actions wrap.
+          className={HEADING_WRAP_FLOOR}
           open={open}
           onPress={() => onOpenChange(!open)}
           // Only while it is open: the body is unmounted when closed, which is what keeps a list
