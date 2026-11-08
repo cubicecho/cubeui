@@ -103,6 +103,8 @@ test that finds them by name needs changing:
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
+| `ItemSeparator` | It is `Separator` with shadcn's `my-0`, and takes `Separator`'s props: `orientation`, `decorative` and `className`. Radix's `asChild` is gone ([#475](https://github.com/cubicecho/cubeui/issues/475)). |
+| `list-item` | `LIST_ITEM_CLASS` is gone. A row of your own that used it for `ListItem`'s box is `<Item size="sm">` ([#475](https://github.com/cubicecho/cubeui/issues/475)). |
 | `FormField`, `Field`, the bound fields | New: `disabled` on `FormField` and `Field`, and as a field prop on every bound field on both halves, fades the label and the description with the control ([#466](https://github.com/cubicecho/cubeui/issues/466)). On a bound field it was already passed to the control, and still is. |
 | `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
 | `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
@@ -121,6 +123,8 @@ test that finds them by name needs changing:
 | `radio-group-field` | Installs to `components/ui/radio-group-field.tsx`. Change `@/components/radio-group-field` to `@/components/ui/radio-group-field`, and delete the old `components/radio-group-field.tsx`: a reinstall writes the new file but leaves the old one in place. |
 | `section` | Now installs `card-layout` too. |
 | `split-layout` | Now installs `app-bar` too. |
+| `item` | Now installs `separator` too. |
+| `list-item` | Now installs `item` too, and so `collapsible-row` does. |
 
 ### New files
 
@@ -295,6 +299,17 @@ to add them.
 - **A refused checkbox or switch is red when checked**
   ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
   box's or an on switch's `active` one, and the device halves draw it.
+- **`Item` at `size="sm"` is `ListItem`'s row**
+  ([#475](https://github.com/cubicecho/cubeui/issues/475)). `ListItem` is now built from `Item`'s
+  parts at that size, so the two line up. The row is 12px from its edge across and 8px down, with
+  12px between its parts. The description is 12px, under a title on a 20px line. `ItemMedia` stays
+  centred when there is a description, and `ItemActions` puts 4px between its buttons. The row
+  no longer sets `text-sm` on what is inside it, so give a bare word in `ItemActions` its own
+  size. The `default` size is unchanged.
+- **`CollapsibleRow`'s `meta` is at the far end of the heading**
+  ([#475](https://github.com/cubicecho/cubeui/issues/475)), where `ListItem` puts it, and no
+  longer straight after the title. Its `data-slot` (`testID` on device) is `list-item-meta`, where
+  it was `collapsible-row-meta`.
 - **`ErrorPage` is drawn as an empty state with a red bubble**
   ([#482](https://github.com/cubicecho/cubeui/issues/482)). It is `Empty`'s block now, so it matches an empty or not-found
   screen: a 48px bubble with a 24px icon (it was 60px and 28px), 12px between its parts (16px),
@@ -386,9 +401,10 @@ to add them.
 - Typecheck finds every removed item and prop.
 - Search for `surface="card"`, `StickyHeaderContentFooter`, `breadcrumbsSlot`, `actionsSlot`,
   `stayLabel`, `text-active-foreground`, the renamed `sidebar-layout-header`, `-brand`, `-nav`,
-  `-status` and `-action` slots, and the removed items' names (whole words: `DetailPage`, not
-  `ServerDetailPage`).
+  `-status` and `-action` slots, `collapsible-row-meta`, and the removed items' names (whole words:
+  `DetailPage`, not `ServerDetailPage`).
 - Run `git status` for files the reinstall wrote for the first time.
 - Search for the old names in the renamed items' table, and their old `data-slot` / `testID`
   names; your editor marks each deprecated name that is left.
 - Look at every screen with a chosen row, tab, checkbox or sidebar in both themes.
+- Search for `size="sm"` on `Item`, and look at those rows.

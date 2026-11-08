@@ -672,8 +672,8 @@
       "name": "list-item",
       "type": "registry:component",
       "title": "List Item",
-      "description": "One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "description": "One row of a list: `leadingSlot` (an avatar, a checkbox), a truncating `title` over a `description`, `meta` and `actionSlot` at the far end. With `onPress` the middle is one button and `leadingSlot` and `actionSlot` stay separate controls beside it, never nested in it. Built from `Item`'s parts at `size=\"sm\"`.",
+      "registryDependencies": ["@cubeui/item", "@cubeui/utils", "@cubeui/tokens"],
       "files": [
         {
           "path": "compiled/list-item.tsx",
@@ -759,6 +759,7 @@
       "description": "A list row that opens: a `ListItem` whose whole heading is `Collapsible`'s button (`aria-expanded`, a turning chevron), with the actions outside it and `contentSlot` under it, mounted only while open. The same box and words as the `ListItem` rows beside it, and no surface of its own. Controlled with `open`/`onOpenChange`.",
       "registryDependencies": [
         "@cubeui/list-item",
+        "@cubeui/item",
         "@cubeui/collapsible",
         "@cubeui/utils",
         "@cubeui/tokens"
@@ -1052,8 +1053,8 @@
       "name": "item",
       "type": "registry:ui",
       "title": "Item",
-      "description": "shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names, props and metrics. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.",
-      "registryDependencies": ["@cubeui/utils"],
+      "description": "shadcn's list-row parts — `Item`, `ItemMedia`, `ItemContent`, `ItemTitle`, `ItemDescription`, `ItemActions`, `ItemHeader`, `ItemFooter`, `ItemGroup`, `ItemSeparator` — on both halves, with shadcn's names and props. `size=\"default\"` is shadcn's row; `size=\"sm\"` is `ListItem`'s, which is built from these parts. For a row `ListItem` does not fit: a header or footer line, a badge beside the title.",
+      "registryDependencies": ["@cubeui/separator", "@cubeui/utils"],
       "files": [
         {
           "path": "registry/ui/item-base.ts",

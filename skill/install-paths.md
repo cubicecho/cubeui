@@ -113,7 +113,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
 | `layout` | web | a set: `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
-| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, LIST_ITEM_CLASS, ListItemText, ListItem } from "@/components/list-item"` |
+| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, ListItemText, ListItem } from "@/components/list-item"` |
 | `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |
 | `markdown` | web | `components/markdown.tsx` | `import { Markdown } from "@/components/markdown"` |
 | `markdown-code-editor` | web | `components/markdown-code-editor.tsx` | `import { MarkdownCodeEditor } from "@/components/markdown-code-editor"` |

@@ -120,7 +120,8 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
   reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice.
 - **`selected`** — beside a press handler, the target is a toggle and this is whether it is on:
   `aria-pressed` on the web, `selected` in the accessibility state on device. On `ToggleChip` and
-  `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored.
+  `StatTile`. Left out, the target is a plain button; with nothing to press, it is ignored. On a
+  row it means the current one instead; see the list rows below.
 - **`view`**, **`onViewChange`** — which of a control's named views is showing, and being told
   when its own toggle moves it. On `MarkdownEditor`: `edit`, `split` or `preview`. Pass both to
   hold the view yourself, in the URL or a preference; pass neither and the control holds it.
@@ -133,6 +134,12 @@ and the web `FormField`'s `controlSlot`. A fourth is only a function: `wrapperSl
 **List rows and load states add:**
 
 - **`badgesSlot`** — what a row is wearing: a status, a kind, a state. Drawn before the title.
+- **`selected`** — on a row, the current one: the record open beside the list. Tinted in `active`,
+  and `aria-current` on the row's link or button (`selected` in the accessibility state on
+  device), never `aria-pressed`: a row is current, not on. On `ListItem` and `Item`; on `FileTree`
+  it is the open file's path. A `ListItem` with nothing to press has nothing to carry
+  `aria-current`, so say it in the row's words as well, and on `Item` put `aria-current` on the
+  link yourself.
 - **`status`** — the state a thing is in, said beside it. On `SidebarSection`, a node between the
   title and the rows (a `<LoadState compact />`). On `SidebarItem`, `{ label, iconSlot? }` before
   the count: `label` is read as part of the row's name ("Work, MCP on, 2"), and `iconSlot`, when
