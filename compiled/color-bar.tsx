@@ -22,9 +22,12 @@ type ColorBarProps = {
 /**
  * A full-height accent bar pinned to the left edge of a card.
  *
- * The colour is normalised through `hexToAccent` so it stays visible in both
- * light and dark mode. `label` is the accessible name only — a `title` tooltip
- * has no native counterpart, so it was dropped rather than made web-only.
+ * The colour is normalised through `hexToAccent`, which keeps its hue and moves
+ * its lightness into a band that is 3:1 from the page and from a card in every
+ * theme `@cubeui/tokens` ships, so the stripe stays visible without knowing which
+ * theme is on: a yellow is drawn as an olive, a navy as a mid blue. `label` is
+ * the accessible name only — a `title` tooltip has no native counterpart, so it
+ * was dropped rather than made web-only.
  *
  * Prefer `<Card accentColor accentLabel>`, which owns the positioning this
  * needs. Used directly, the parent must be `relative` and `overflow-hidden` so

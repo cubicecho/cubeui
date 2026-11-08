@@ -308,13 +308,16 @@ export const Phone390: Story = {
       getComputedStyle(within(compiled.nav).getAllByRole("link")[0] as HTMLElement).backgroundColor,
     );
 
-    // The label is not drawn, so it is the tooltip: what a sighted user has for the name.
+    // The label is not drawn, so it is the tooltip: what a sighted user has for the name. The
+    // count and the status are marks with no words, so the tooltip says them too (#471), and
+    // since it says what the name says, it does not also describe the link.
     for (const half of ["Native", "Compiled"]) {
       const nav = canvas.getByRole("navigation", { name: `${half} main` });
       const servers = within(nav).getByRole("link", { name: "Servers, 2 failing, 5" });
       await userEvent.hover(servers);
       const tip = await screen.findByRole("tooltip");
-      await expect(tip).toHaveTextContent("Servers");
+      await expect(tip).toHaveTextContent("Servers, 2 failing, 5");
+      await expect(servers).not.toHaveAttribute("aria-describedby");
       await userEvent.unhover(servers);
       await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     }

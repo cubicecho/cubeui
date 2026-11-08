@@ -3,6 +3,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { defaultUrlTransform } from "react-markdown";
 import { expect, within } from "storybook/test";
 import { Markdown, type MarkdownProps } from "@/components/markdown";
+import { tokenColor } from "../token-color";
 
 const meta = {
   title: "Controls/Markdown",
@@ -60,7 +61,8 @@ npm install
 
 /**
  * Every element, each drawn by the primitive the rest of an app already uses: the fenced block is
- * a `CodeBlock`, the table is the `Table`, the rule a `Separator`, the task boxes `Checkbox`es.
+ * a `CodeBlock`, the table is the `Table`, the rule a `Separator`, and the task boxes look like
+ * `Checkbox`es without being controls.
  */
 export const EveryElement: Story = {
   args: { content: EVERYTHING },
@@ -130,13 +132,36 @@ export const EveryElement: Story = {
 
     await expect(canvas.getByRole("separator")).toBeVisible();
 
-    // Task items: read, not filled in, and each box named by the item it is in.
+    // Task items: read, not filled in, and each box named by the item it is in. A box is
+    // announced as checked or not and as read-only, and is not a control: no tab stop, no button.
     const done = canvas.getByRole("checkbox", { name: "Write the renderer" });
     const todo = canvas.getByRole("checkbox", { name: "Port the apps" });
     await expect(done).toBeChecked();
     await expect(todo).not.toBeChecked();
-    await expect(done).toBeDisabled();
-    await expect(todo).toBeDisabled();
+    for (const box of [done, todo]) {
+      await expect(box).toHaveAttribute("aria-readonly", "true");
+      await expect(box).not.toHaveAttribute("tabindex");
+      await expect(box.tabIndex).toBe(-1);
+      await expect(box.closest("button")).toBeNull();
+    }
+    // Drawn at full strength, in the checkbox's colours (#471): disabled, at half opacity, the tick
+    // was 2.8:1 and a ticked box hard to tell from an empty one. `palette-contrast.test.mjs` holds
+    // these colours at 3:1 or more on the page and a card.
+    await expect(getComputedStyle(done).opacity).toBe("1");
+    await expect(getComputedStyle(todo).opacity).toBe("1");
+    await expect(getComputedStyle(todo).borderTopColor).toBe(
+      tokenColor("foreground", { opacity: 50 }),
+    );
+    await expect(getComputedStyle(done).borderTopColor).toBe(tokenColor("active"));
+    await expect(getComputedStyle(done).backgroundColor).toBe(
+      tokenColor("active", { opacity: 40 }),
+    );
+    await expect(getComputedStyle(done).backgroundColor).not.toBe(
+      getComputedStyle(todo).backgroundColor,
+    );
+    const tick = done.querySelector("svg");
+    await expect(tick && getComputedStyle(tick).color).toBe(tokenColor("foreground"));
+    await expect(todo.querySelector("svg")).toBeNull();
     // The boxes are the markers: a task item draws no bullet, and its box hangs in the list's
     // indent, flush with the document's edge. The quotation is flush too: neither leans on the
     // page's stylesheet to have zeroed a margin.

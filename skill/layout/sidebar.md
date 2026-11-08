@@ -70,7 +70,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `label` | `string` |  | What the sidebar is called — "Main", "Projects". It names the `<aside>` on the web, which is what tells a screen reader's landmark list one complementary region from another. |
 | `side` | `"start" \| "end"` |  | Which edge of the screen the sidebar sits against, which decides the edge its border is on. `start` draws it on the right, facing the content. Inside a `SidebarLayout` it defaults to the layout's `sidebarPosition`, and to `start` anywhere else. |
 | `hideBelow` | `"sm" \| "md" \| "lg" \| "xl"` |  | Under this width the sidebar is not drawn at all; from it up, it is. For a rail that has no room on a phone, where the page puts its furniture in a bar of its own instead. Absent, it is drawn at every width. |
-| `collapsed` | `boolean` | `false` | Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, and a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the choice is remembered is the app's. |
+| `collapsed` | `boolean` | `false` | Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, its status and its count ("Servers, 2 failing, 5"), and a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the choice is remembered is the app's. |
 | `onCollapsedChange` | `((collapsed: boolean) => void)` |  | Called with the state the reader asked for, by a `SidebarCollapseButton` anywhere inside. Left out, that button does nothing. |
 | `contentRef` | `Ref<ScrollView>` |  | The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. |
 | `className` | `string` |  | On the root. A different width is a `w-*` here. |
@@ -201,9 +201,9 @@ function Brand() {
   with nothing passed to the layout. It is controlled and keeps no state; store the choice where
   the app stores preferences.
 - **The rows and sections fold themselves.** Do not pass them anything and do not branch on the
-  state to draw a second set of rows. A `SidebarItem` becomes its icon, with its label as the
-  accessible name and a tooltip, its `count` a badge on the icon and its `status` a dot — all
-  three still in the name. Give every row in a sidebar that folds an `iconSlot`; one without is
+  state to draw a second set of rows. A `SidebarItem` becomes its icon, its `count` a badge on the
+  icon and its `status` a dot, with all three in the accessible name and in the tooltip
+  ("Servers, 2 failing, 5"), so what the dot means is on screen too. Give every row in a sidebar that folds an `iconSlot`; one without is
   drawn as its first letter. A `SidebarSection` keeps its `title` for screen readers and draws
   neither it, its `actionSlot` nor its `status`.
 - **`SidebarCollapseButton`** is the fold button, drawn as a row: put it in `footerSlot` or
@@ -249,7 +249,7 @@ const BarLink = createLink(AppBarItem);         // beside createLink(SidebarItem
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `label` (required) | `string` |  | What the place is called. Nothing draws it, so it is the link's accessible name — an icon with no name is announced as "link" — and the tooltip a pointer or a long press brings up. |
+| `label` (required) | `string` |  | What the place is called. Nothing draws it, so it is the link's accessible name — an icon with no name is announced as "link" — and the tooltip a pointer or a long press brings up, with the status and the count after it. |
 | `iconSlot` (required) | `SlotNode` |  | The whole of what is drawn. Pass a bare `<Folder />`; the item sizes and colours it. |
 | `href` | `string` |  | Where it goes — the `<a href>` on the web. Left out when a router's link names it: TanStack's `createLink`, or expo-router's `<Link href asChild>`, both of which hand it the `href`. |
 | `active` | `boolean` | `false` | The item for the page on screen — tinted, and `aria-current="page"`. |
@@ -266,12 +266,12 @@ is the copy this replaces.
   app's list of places is one array, mapped once into `SidebarSection` with `SidebarItem` and
   once into `navSlot` with `AppBarItem`. A count on a sidebar row is then on the bar too.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
-  (hover or focus on the web, a long press on device). **`iconSlot` is required** too — it is all that
+  (hover or focus on the web, a long press on device), followed there by the status and count. **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
 - **`active`** fills it with the `active` colour and sets `aria-current="page"`; hover is grey. Compute it
   from the route, as for the row.
 - **`count`** is a small badge on the icon's corner and **`status={{ label }}`** a dot on the other;
-  both are in the name the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
+  both are in the name and the tooltip the way the row builds it — "Skills, MCP on, 12". The badge has a corner to
   fit in, so pass a long count already capped (`"99+"`). The status's `iconSlot` is not drawn here.
 - **It binds to a router as the row does**: `createLink(AppBarItem)`, `<Link href asChild>` around
   it with `href` left off, or `href` with react-router's `useLinkClickHandler` as `onClick`.
