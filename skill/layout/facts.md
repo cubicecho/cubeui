@@ -64,6 +64,9 @@ Read-only facts — a label, a value, a line under the value — which is most o
   as a `Badge`), optional `hint` (one muted line under the value, on where it comes
   from) and optional `actionSlot` (the far end: a copy button, an edit link). `labelClassName` and
   `valueClassName` reach the two halves of the row.
+- The value keeps to its label: beside it on the label's line, or right under it when stacked.
+  The action is level with the value's top, as every action in the heading rhythm is, so a 36px
+  button runs below the value's line rather than pushing the value down.
 - **A path, a version, a port or an id is a string with `valueClassName="font-mono"`.**
   When the value is a string or a number, `valueClassName` is the class of its text — a font, a
   size, a colour — and of nothing else, so the hint and the action keep the page font and it reads

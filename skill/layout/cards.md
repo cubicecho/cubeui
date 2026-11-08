@@ -69,7 +69,8 @@ What goes in `emptySlot` inside a card is one muted line, `<EmptyState compact �
 [Empty states](lists.md#empty-states) — not a hand-written `<p className="text-sm text-foreground/60">`.
 
 `loading` replaces it with a skeleton and outranks `emptySlot`, so a card that is still fetching does
-not first announce that it is empty. Pass the query's pending flag straight in; do not write
+not first announce that it is empty. The skeleton is a `role="status"` named "Loading", as
+`RowSkeleton`'s is, so a screen reader hears that the body is on its way; add no status of your own. Pass the query's pending flag straight in; do not write
 `{isPending ? <Skeleton /> : …}`. A caller that wants its own placeholder passes that as
 `contentSlot` and leaves `loading` off.
 
@@ -246,6 +247,11 @@ A heading over a group of fields or rows, inside a page or a card.
   heading's class list from memory, and each got the sixth token different (`tracking-wider`,
   `tracking-wide`, `border-b pb-1`). A shared token has no answer for that, because the value
   being retyped *is* a class list.
+- **`SectionHeading` is the label on its own**, with no section round it:
+  `<SectionHeading title="This week" variant="overline" level={3} />`. Its words are `title`;
+  `children` is the old name, still drawn for one release, and `title` wins over it. It is grey,
+  the `/60` step, in both variants, because it labels a group and stays quieter than the
+  full-ink titles of the rows under it. `Section` draws its title through it, in full ink.
 
 ## Collapsible
 

@@ -71,7 +71,7 @@ its badges with the buttons in `actionSlot`.
 | A sign-in or token screen: one card centred on the screen, scrolling above the keyboard — see [layout/centered-pages.md](layout/centered-pages.md#centered-pages) | `CenteredCardLayout` | `@cubeui/centered-card-layout` |
 | A dialog with a scrolling body and a discard guard | `DialogLayout` | `@cubeui/dialog-layout` |
 | A heading over a group of fields or rows; on a card it is `CardLayout level={2}` | `Section` | `@cubeui/section` |
-| Just the small muted label, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
+| Just the small muted label, as `title`, with an optional heading `level` | `SectionHeading` | `@cubeui/section-heading` |
 | A settings row: a title and a line on what it does, a switch, select or button at the end — see [layout/facts.md](layout/facts.md#setting-rows). A lone boolean with its caption is `SwitchField` | `SettingRow` | `@cubeui/setting-row` |
 | A part of a screen that shows and hides — "Show completed (3)", a raw payload — see [layout/cards.md](layout/cards.md#collapsible) | `Collapsible` | `@cubeui/collapsible` |
 | Read-only facts: a label, a value, a hint under it, an action beside it — see [layout/facts.md](layout/facts.md#property-lists) | `PropertyList`, `PropertyRow` | `@cubeui/property-list` |
