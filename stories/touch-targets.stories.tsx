@@ -20,6 +20,7 @@ import { FileText, Folder, Library, Server, Settings } from "../registry/ui/icon
 import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
 import { SegmentedButton, SegmentedGroup } from "../registry/ui/segmented";
 import { Switch } from "../registry/ui/switch.tsx";
+import { Tabs, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { ToastProvider, useToast } from "../registry/ui/toast";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 
@@ -141,8 +142,9 @@ const write = () => Promise.resolve();
 
 /**
  * Every small control and every row, drawn as a device draws them. Each pressable reaches 44 by 44
- * with its `hitSlop`; `icon-xs` reaches 36 by 44, its documented exception. The bottom bar's places
- * share the bar, and a bound checkbox's caption presses its box.
+ * with its `hitSlop`; `icon-xs` reaches 36 by 44, its documented exception. A tab is 44pt tall
+ * itself, in a list that grows to hold it. The bottom bar's places share the bar, and a bound
+ * checkbox's caption presses its box.
  */
 export const OnDevice: Story = {
   beforeEach: () => {
@@ -202,6 +204,14 @@ export const OnDevice: Story = {
             Tag
           </Badge>
         </Section>
+        <Section title="Tabs">
+          <Tabs defaultValue="list">
+            <TabsList aria-label="View">
+              <TabsTrigger value="list">List</TabsTrigger>
+              <TabsTrigger value="board">Board</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Section>
         <Section title="Bars">
           <AppBarItem label="Home" iconSlot={<Library />} active />
           <AppBarEdgeContext.Provider value="bottom">
@@ -257,6 +267,18 @@ export const OnDevice: Story = {
       await expectReach(canvas.getByRole("button", { name }), ICON_XS_WIDTH);
     }
     await expectReach(await page.findByRole("button", { name: "Dismiss" }));
+
+    // A tab is 44pt itself, inside its list (#521): the list's scroller clips a touch at its edge,
+    // so a `hitSlop` there would reach nothing, and the list grows to hold the tab instead.
+    const tablist = canvas.getByRole("tablist", { name: "View" }).getBoundingClientRect();
+    for (const name of ["List", "Board"]) {
+      const tab = canvas.getByRole("tab", { name });
+      await expect(hitSlopOf(tab)).toEqual(NONE);
+      await expectReach(tab, null);
+      const box = tab.getBoundingClientRect();
+      await expect(box.top, `${name}: top`).toBeGreaterThanOrEqual(tablist.top);
+      await expect(box.bottom, `${name}: bottom`).toBeLessThanOrEqual(tablist.bottom);
+    }
 
     // The bar's places: 44pt in the top bar, and each its whole share along the bottom.
     await expectReach(canvas.getByRole("link", { name: "Home" }));

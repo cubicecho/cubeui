@@ -192,9 +192,9 @@ scale, each for one job, and no other:
 
 - `0.5` (2px) nudges a 16px icon onto the middle of a 20px line (`mt-0.5`), pads a badge or inline
   code, and packs the rows of a nav list (`gap-0.5`).
-- `1.5` (6px) is the pad above and below a menu, select, command, tab or segment row (`py-1.5`,
-  which with a 20px line makes a 32px row), and the room between a tab's or a segment's icon and
-  its label.
+- `1.5` (6px) is the pad above and below a menu, select, command or segment row (`py-1.5`, which
+  with a 20px line makes a 32px row), and the room between a tab's or a segment's icon and its
+  label. A tab is `h-10`, a field's height.
 
 **Sizes.** A control is 28px (`h-7`, `xs`), 36px (`h-9`, `sm`) or 40px (`h-10`, the default and every
 field), and 44px (`h-11`) where it is pressed on a phone. An icon is 16px (`size-4`), 14px
