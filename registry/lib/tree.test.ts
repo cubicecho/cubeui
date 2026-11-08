@@ -32,6 +32,50 @@ describe("buildTree", () => {
     ]);
   });
 
+  it("reads the digits in a name as a number", () => {
+    const tree = buildTree([
+      { path: "file10.md", type: "file" },
+      { path: "file2.md", type: "file" },
+      { path: "file1.md", type: "file" },
+      { path: "v10", type: "dir" },
+      { path: "v9", type: "dir" },
+    ]);
+    expect(shape(tree)).toEqual([{ v9: [] }, { v10: [] }, "file1.md", "file2.md", "file10.md"]);
+  });
+
+  it("ignores a leading, trailing or doubled slash", () => {
+    const marker = { path: "docs/", type: "dir" as const };
+    const tree = buildTree([
+      marker,
+      { path: "/docs//a.md", type: "file" },
+      { path: "docs/b.md/", type: "file" },
+      { path: "/", type: "dir" },
+      { path: "", type: "file" },
+    ]);
+    expect(shape(tree)).toEqual([{ docs: ["a.md", "b.md"] }]);
+    expect(tree[0]?.path).toBe("docs");
+    expect(tree[0]?.entry).toBe(marker);
+    expect(tree[0]?.children.map((node) => node.path)).toEqual(["docs/a.md", "docs/b.md"]);
+    // The node's path is the cleaned one; the entry keeps the key as listed.
+    expect(tree[0]?.children[0]?.entry?.path).toBe("/docs//a.md");
+  });
+
+  it("keeps a file and a folder that share a path, the folder first", () => {
+    const file = { path: "logs", type: "file" as const };
+    const child = { path: "logs/run.log", type: "file" as const };
+    for (const entries of [
+      [file, child],
+      [child, file],
+    ]) {
+      const tree = buildTree(entries);
+      expect(shape(tree)).toEqual([{ logs: ["run.log"] }, "logs"]);
+      expect(tree[0]).toMatchObject({ path: "logs", type: "dir" });
+      expect(tree[0]?.entry).toBeUndefined();
+      expect(tree[1]).toMatchObject({ path: "logs", type: "file", children: [] });
+      expect(tree[1]?.entry).toBe(file);
+    }
+  });
+
   it("keeps each entry on its node, a listed folder's included", () => {
     const file = { path: "notes/a.md", type: "file" as const, size: 3 };
     const dir = { path: "notes", type: "dir" as const, size: 0 };

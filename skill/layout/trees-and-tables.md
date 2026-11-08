@@ -90,6 +90,11 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 - A view of the same files with nothing to nest — "recently changed", search results — is not a
   tree: draw it as `ListItem`s.
 - For the nodes without the look: `buildTree(entries)` returns the same sorted `TreeNode[]`.
+- An object store's keys go in as listed. A leading, trailing or doubled `/` names no folder, so
+  the `docs/` marker is the folder `docs`; the node's `path` is the cleaned one and `entry.path`
+  the key. A file that shares its path with a folder (`logs` beside `logs/run.log`) is drawn as
+  its own row after the folders, so tell the two apart by `type`, not `path`. Names sort with
+  their digits as numbers: `run2` before `run10`.
 
 ### Table
 
