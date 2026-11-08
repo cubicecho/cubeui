@@ -2,6 +2,7 @@
 
 import * as React from "react";
 
+import { useOverflows } from "@/components/ui/overflows";
 import { cn, FOCUS_EDGE } from "@/lib/utils";
 
 /**
@@ -11,37 +12,6 @@ import { cn, FOCUS_EDGE } from "@/lib/utils";
  * as a `th` — is left to each screen reader's heuristics. Saying it costs one attribute.
  */
 const InTableHeader = React.createContext(false);
-
-/**
- * Upstream's container is `overflow-x-auto` and nothing else, which makes a table wider than its
- * column a region only a mouse wheel can move: axe reports it as `scrollable-region-focusable`,
- * and a keyboard user cannot read the columns past the edge. The container takes a tab stop —
- * the fix that rule asks for, and the one `HeaderContentFooter`'s scrolling body makes — but only
- * while it actually overflows, on either axis, so a table that fits is not a stray stop in every
- * page's tab order.
- */
-function useOverflows() {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [overflows, setOverflows] = React.useState(false);
-  React.useEffect(() => {
-    const node = ref.current;
-    if (!node || typeof ResizeObserver === "undefined") {
-      return;
-    }
-    const measure = () =>
-      setOverflows(node.scrollWidth > node.clientWidth || node.scrollHeight > node.clientHeight);
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    // The container keeps its size when a column grows or a row is added, so the table is
-    // watched as well.
-    if (node.firstElementChild) {
-      observer.observe(node.firstElementChild);
-    }
-    measure();
-    return () => observer.disconnect();
-  }, []);
-  return [ref, overflows] as const;
-}
 
 /** The heights a table may be capped at: twenty and thirty-two rem, and most of the screen. */
 const MAX_HEIGHTS = {
@@ -79,6 +49,8 @@ function Table({ className, maxHeight, ...props }: TableProps) {
       <div
         ref={ref}
         data-slot="table-container"
+        // Upstream's container is `overflow-x-auto` alone: a table wider than its column was a
+        // region only a mouse wheel could move. It is a tab stop while it overflows, either way.
         tabIndex={overflows ? 0 : undefined}
         className={cn(
           "relative w-full overflow-x-auto",

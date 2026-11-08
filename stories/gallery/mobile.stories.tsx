@@ -226,6 +226,8 @@ const NOT_SHOWN: Record<string, string> = {
   tree: "`buildTree` nests a flat list of paths. A function; the file tree is drawn from it.",
   "reduced-motion":
     "A hook: whether the reader asked for reduced motion. The skeleton and the badge's dot hold still by it.",
+  overflows:
+    "A hook: whether a box that scrolls has anything to scroll. Always false on device, which has no tab stops.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",
   "copy-button":

@@ -114,7 +114,8 @@ test that finds them by name needs changing:
 
 A reinstall can write files the app has never had: `components/section-heading.tsx` (from
 `section` and `sidebar`), `lib/frame-focus-guard.ts` (from `dialog`, `menu`, `popover`, `select`
-and `alert-dialog`), and every new item it pulls in as a dependency, such as `card-layout`,
+and `alert-dialog`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
+and `table`; an Expo app also gets `overflows.web.tsx`), and every new item it pulls in as a dependency, such as `card-layout`,
 `app-bar`, `grid-layout` or `list`. Run `git status` after the reinstall to see them. An app
 that lists cubeui's files one by one, in its Biome or lint config or in a coverage exclude, has
 to add them.
@@ -200,6 +201,19 @@ to add them.
   `HeaderContentFooter` with `scroll`, so `PageLayout`, `DialogLayout` and `Sidebar` too. The body's
   line is drawn inside it and takes no room. A block that scrolls has a transparent 1px edge, so
   its text sits 1px further in, and one that does not wrap and has no `maxHeight` is 2px taller.
+- **A page's scrollbar is at the edge of the page**
+  ([#451](https://github.com/cubicecho/cubeui/issues/451)). With `scroll` and `width="page"` or
+  `"prose"`, so on every `PageLayout`, `HeaderContentFooter`'s body runs the full width and the
+  column sits inside it. On a wide screen the scrollbar is at the window's edge and the focus line
+  goes round the whole body, not round the column. Nothing in the column moves. The column is a
+  new part, `data-slot="header-content-footer-column"`, and `contentClassName` lands on it. A
+  selector of yours on `header-content-footer-content` that meant the column, such as its width,
+  now finds the full-width scroller: point it at the column.
+- **A scrolling body, table or stacked split is a tab stop only while it can scroll**
+  ([#451](https://github.com/cubicecho/cubeui/issues/451)). A `HeaderContentFooter` or
+  `PageLayout` body that fits is no longer a stop of its own, so a `DialogLayout` that fits opens
+  with focus on its first field or button rather than on its body. A stacked `SplitLayout` taller
+  than the screen is a tab stop itself, with the same inset line.
 
 ## Checking the result
 

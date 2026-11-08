@@ -201,7 +201,8 @@ export const FullWidthRuleOverAColumn: Story = {
     for (const frame of frames(canvasElement)) {
       const header = part(frame, "header-content-footer-header");
       const title = part(frame, "page-header");
-      const body = part(frame, "header-content-footer-content");
+      const scroller = part(frame, "header-content-footer-content");
+      const body = part(frame, "header-content-footer-column");
       const tabs = part(frame, "tabs");
 
       // The rule is the header's, and the header is the frame's width.
@@ -214,6 +215,9 @@ export const FullWidthRuleOverAColumn: Story = {
       await expect(column.width).toBeCloseTo(PROSE, 0);
       await expect(column.left).toBeCloseTo(body.getBoundingClientRect().left, 0);
       await expect(body.getBoundingClientRect().width).toBeCloseTo(PROSE, 0);
+      // The column is inside the scroller, and the scroller is the frame's width, so a scrollbar
+      // is at the frame's edge rather than the column's (#451).
+      await expect(scroller.getBoundingClientRect().width).toBeCloseTo(FRAME, 0);
       await expect(tabs.getBoundingClientRect().left).toBeCloseTo(
         part(frame, "page-header-title").getBoundingClientRect().left,
         0,

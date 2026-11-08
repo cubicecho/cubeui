@@ -8,6 +8,7 @@ import {
   DateRangePicker,
   setTime,
 } from "@/components/date-picker";
+import { tokenColor } from "../token-color";
 
 /** Fixed, so "the 14th" means the same thing in June as it does in December. */
 const JUNE_10 = new Date(2026, 5, 10, 9, 30);
@@ -114,16 +115,6 @@ export const ClearIsAReachableButton: Story = {
     await waitFor(() => expect(trigger).toHaveTextContent("Pick a date"));
   },
 };
-
-/** What `var(--<token>)` resolves to right now, in the same colour syntax the browser reports. */
-function tokenColor(token: string) {
-  const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
-  document.body.append(probe);
-  const color = getComputedStyle(probe).color;
-  probe.remove();
-  return color;
-}
 
 /** `bg-active/<percent>` as the browser reports it: the mix Tailwind compiles the class to. */
 function activeTint(percent: number) {

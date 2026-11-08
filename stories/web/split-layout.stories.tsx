@@ -489,6 +489,9 @@ const Pane = ({ title }: { title: string }) => (
  * Stacked on a phone, two scrolling `HeaderContentFooter` panes are taller than the screen together.
  * The split scrolls them as one column, so the last row of the second pane can be reached; side
  * by side, from `lg` up, each pane scrolls inside itself and the split has nothing to scroll.
+ *
+ * Stacked, the panes fit their rows and have nothing to scroll, so they are not tab stops, and the
+ * split is: a keyboard reaches the rows that only it moves.
  */
 export const StackedScrolls: Story = {
   globals: { viewport: { value: "mobile2", isRotated: false } },
@@ -516,6 +519,10 @@ export const StackedScrolls: Story = {
       0,
     );
     expect(root.scrollHeight).toBeGreaterThan(root.clientHeight);
+    await waitFor(() => expect(root.getAttribute("tabindex")).toBe("0"));
+    for (const body of root.querySelectorAll("[data-slot=header-content-footer-content]")) {
+      expect(body.hasAttribute("tabindex")).toBe(false);
+    }
 
     root.scrollTop = root.scrollHeight;
     const last = canvas.getByText("Reply 20");

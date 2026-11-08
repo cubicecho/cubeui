@@ -986,6 +986,18 @@
       ]
     },
     {
+      "name": "overflows",
+      "type": "registry:ui",
+      "title": "Overflows",
+      "description": "useOverflows(): whether a box that scrolls has anything to scroll, so it is a tab stop only while it does, and the width its scrollbar takes as `--scrollbar-width`. Measured on the web; on device, which has no tab stops, always false. Table's container, HeaderContentFooter's body and a stacked SplitLayout hold it.",
+      "files": [
+        {
+          "path": "compiled/overflows.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
@@ -1433,7 +1445,12 @@
       "type": "registry:component",
       "title": "Header / Content / Footer",
       "description": "The page chassis: chrome that stays, a body that scrolls, floors that let it. Ships the sticky preset alongside the base.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion", "@cubeui/tokens"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/reduced-motion",
+        "@cubeui/overflows",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/header-content-footer.tsx",
@@ -1493,6 +1510,7 @@
         "@cubeui/utils",
         "@cubeui/bottom-bar",
         "@cubeui/app-bar",
+        "@cubeui/overflows",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1821,7 +1839,7 @@
       "type": "registry:ui",
       "title": "Table",
       "description": "shadcn's data table, re-published from here so the table every admin page draws is edited in one place: row and column headers scoped, and a container a keyboard can scroll when the columns do not fit. Web-only: no React Native half.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/overflows"],
       "files": [
         {
           "path": "compiled/table.tsx",

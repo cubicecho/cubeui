@@ -236,7 +236,7 @@
       "type": "registry:ui",
       "title": "Table",
       "description": "shadcn's data table, re-published from here so the table every admin page draws is edited in one place: row and column headers scoped, and a container a keyboard can scroll when the columns do not fit.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/overflows"],
       "files": [
         {
           "path": "registry/web/ui/table.tsx",

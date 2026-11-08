@@ -179,7 +179,7 @@ dialog body.
 | `onScroll` | `((position: ScrollPosition) => void)` |  | Called as the body scrolls, with where it now is — the same three numbers on the web and on device, so a list that follows its newest row can tell whether the reader is still at the end. Only a body that scrolls reports: with `scroll` off it is never called. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
-| `contentClassName` | `string` |  | On the body. On device, where the scroller and what it scrolls are two boxes, this goes on the scrolled content — padding on the scroller itself would scroll away with nothing. |
+| `contentClassName` | `string` |  | On the box that holds `contentSlot`. With `scroll` and a `page` or `prose` width, that is the column inside the scroller, which runs the full width so its scrollbar is at the edge. On device, while `scroll` is on, it is the `ScrollView`'s content. Otherwise the body is one box. |
 | `footerClassName` | `string` |  |  |
 <!-- /props -->
 
@@ -195,9 +195,15 @@ dialog body.
   not stay. `StickyHeaderContentFooter`, the preset that set `scroll` and `h-full`, is gone; write
   the two out.
 - Without `scroll` it is the same three zones with the whole thing scrolling with the page.
-- On the web a scrolling body is a tab stop, so a keyboard can scroll it. Tabbed to, a 1px `active`
-  line is drawn inside its edge, as a focused field's border is, and no ring; a click on it shows
-  nothing. The line takes no room, but something with a fill laid against the edge covers it there.
+- With `scroll` and a `page` or `prose` width, the body that scrolls runs the full width of the
+  chassis and the column is inside it, so the scrollbar is at the edge of the area. The column is
+  `data-slot="header-content-footer-column"`, and `contentClassName` is on it: on the column, as
+  on device, where it is the `ScrollView`'s content. `data-slot="header-content-footer-content"`
+  and `contentRef` are the scroller. Without a column, or without `scroll`, the body is one box.
+- On the web a scrolling body is a tab stop while it has something to scroll, so a keyboard can
+  scroll it, and a body that fits is not a stop of its own. Tabbed to, a 1px `active` line is drawn
+  inside its edge, as a focused field's border is, and no ring; a click on it shows nothing. The
+  line takes no room, but something with a fill laid against the edge covers it there.
 - Scroll position lives on the body, not the window: use `contentRef` to read or restore it.
 - `onScroll` reports where the body is as it moves: `{ offset, contentHeight, viewportHeight }`, in
   pixels, the same on both halves. A list that follows its newest row is at the end when

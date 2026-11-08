@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 112 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 113 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 112 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 113 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  98 on both platforms · 14 web-only · 0 native-only.
+  99 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -564,6 +564,11 @@
           <th scope="row"><code>@cubeui/number-draft</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>What a number box holds while it is typed in: `parseNumber`, which reads `""`, `-` and `1e` as no number yet and never as `0` or `NaN`, and `numberText`, which draws the typed text while it still means the stored number. What the two form bindings' NumberField share.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/overflows</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>useOverflows(): whether a box that scrolls has anything to scroll, so it is a tab stop only while it does, and the width its scrollbar takes as `--scrollbar-width`. Measured on the web; on device, which has no tab stops, always false. Table's container, HeaderContentFooter's body and a stacked SplitLayout hold it.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page-header</code></th>

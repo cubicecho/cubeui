@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 import { Section } from "@/components/section";
 import { SectionHeading } from "@/components/section-heading";
+import { tokenColor } from "../token-color";
 
 /**
  * What `cubeui-reset.css` owes a DOM app: a compiled `<View>` or `<Text>` starts from the same
@@ -57,7 +58,7 @@ export const BareBorderTakesTheAppsColour: Story = {
     }
 
     const holds = async () => {
-      const border = resolved("border", canvasElement);
+      const border = tokenColor("border", canvasElement);
       // Otherwise every assertion below passes with the bug in place.
       await expect(border).not.toBe(getComputedStyle(plain).color);
 
@@ -81,21 +82,6 @@ export const BareBorderTakesTheAppsColour: Story = {
     await expect(getComputedStyle(text).borderTopWidth).toBe("0px");
   },
 };
-
-/**
- * A token as the browser resolves it, in the `rgb()` spelling `getComputedStyle` reports a colour
- * in — so an assertion compares like with like whichever notation the stylesheet emitted.
- */
-function resolved(token: string, inside: Element) {
-  const probe = document.createElement("span");
-  probe.style.color = `var(--${token})`;
-  inside.appendChild(probe);
-  try {
-    return getComputedStyle(probe).color;
-  } finally {
-    probe.remove();
-  }
-}
 
 /** Runs `check` with `<html>` dark, and puts the class back however it went. */
 async function inDark(check: () => Promise<void>) {
