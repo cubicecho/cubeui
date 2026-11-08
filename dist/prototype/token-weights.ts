@@ -21,9 +21,9 @@ export const palettes: TokenWeightsPalette[] = [
     "title": "Default light",
     "tokens": {
       "surface-1": "#ffffff",
-      "surface-2": "#fafafa",
-      "surface-3": "#f0f0f0",
-      "surface-floating": "#fafafa",
+      "surface-2": "#f5f5f5",
+      "surface-3": "#ebebeb",
+      "surface-floating": "#f5f5f5",
       "default": "#0a0a0a",
       "default-lightest": "rgba(10, 10, 10, 0.1)",
       "default-light": "rgba(10, 10, 10, 0.4)",
@@ -34,26 +34,26 @@ export const palettes: TokenWeightsPalette[] = [
       "neutral-light": "rgba(23, 23, 23, 0.4)",
       "neutral-medium": "rgba(23, 23, 23, 0.6)",
       "neutral-heavy": "#3c3c3c",
-      "positive": "#166534",
-      "positive-lightest": "rgba(22, 101, 52, 0.1)",
-      "positive-light": "rgba(22, 101, 52, 0.4)",
-      "positive-medium": "rgba(22, 101, 52, 0.6)",
-      "positive-heavy": "#015225",
-      "warning": "#92400e",
-      "warning-lightest": "rgba(146, 64, 14, 0.1)",
-      "warning-light": "rgba(146, 64, 14, 0.4)",
-      "warning-medium": "rgba(146, 64, 14, 0.6)",
-      "warning-heavy": "#793102",
-      "negative": "#c10007",
-      "negative-lightest": "rgba(193, 0, 7, 0.1)",
-      "negative-light": "rgba(193, 0, 7, 0.4)",
-      "negative-medium": "rgba(193, 0, 7, 0.6)",
-      "negative-heavy": "#a0010c",
-      "info": "#0369a1",
-      "info-lightest": "rgba(3, 105, 161, 0.1)",
-      "info-light": "rgba(3, 105, 161, 0.4)",
-      "info-medium": "rgba(3, 105, 161, 0.6)",
-      "info-heavy": "#015787",
+      "positive": "#196635",
+      "positive-lightest": "rgba(25, 102, 53, 0.1)",
+      "positive-light": "rgba(25, 102, 53, 0.4)",
+      "positive-medium": "rgba(25, 102, 53, 0.6)",
+      "positive-heavy": "#005326",
+      "warning": "#742c02",
+      "warning-lightest": "rgba(116, 44, 2, 0.1)",
+      "warning-light": "rgba(116, 44, 2, 0.4)",
+      "warning-medium": "rgba(116, 44, 2, 0.6)",
+      "warning-heavy": "#581f00",
+      "negative": "#b02b26",
+      "negative-lightest": "rgba(176, 43, 38, 0.1)",
+      "negative-light": "rgba(176, 43, 38, 0.4)",
+      "negative-medium": "rgba(176, 43, 38, 0.6)",
+      "negative-heavy": "#9d050e",
+      "info": "#0863a6",
+      "info-lightest": "rgba(8, 99, 166, 0.1)",
+      "info-light": "rgba(8, 99, 166, 0.4)",
+      "info-medium": "rgba(8, 99, 166, 0.6)",
+      "info-heavy": "#01518a",
       "active": "#2d6d7e",
       "active-lightest": "rgba(45, 109, 126, 0.1)",
       "active-light": "rgba(45, 109, 126, 0.4)",
@@ -66,14 +66,14 @@ export const palettes: TokenWeightsPalette[] = [
       "on-negative": "#ffffff",
       "on-info": "#ffffff",
       "on-active": "#ffffff",
-      "hover": "#d4eaf0",
+      "hover": "#d0e6ec",
       "overlay": "rgba(0, 0, 0, 0.6)",
-      "series-1": "#01447b",
-      "series-2": "#cf7c02",
-      "series-3": "#087b56",
-      "series-4": "#a56c99",
-      "series-5": "#0a92eb",
-      "series-6": "#c03c05"
+      "series-1": "#066ec9",
+      "series-2": "#b77f09",
+      "series-3": "#02985d",
+      "series-4": "#e157aa",
+      "series-5": "#0897d6",
+      "series-6": "#b45b03"
     },
     "checks": [
       {
@@ -103,85 +103,85 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "body text",
         "on": "surface-2",
-        "ratio": 18.97,
+        "ratio": 18.16,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-2",
-        "ratio": 5.18,
+        "ratio": 5.11,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-2",
-        "ratio": 5.18,
+        "ratio": 5.11,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-2 + active-light",
-        "ratio": 10.54,
+        "ratio": 10.21,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-3",
-        "ratio": 17.37,
+        "ratio": 16.61,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-3",
-        "ratio": 5.04,
+        "ratio": 4.96,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-3",
-        "ratio": 5.04,
+        "ratio": 4.96,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-3 + active-light",
-        "ratio": 9.88,
+        "ratio": 9.56,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-floating",
-        "ratio": 18.97,
+        "ratio": 18.16,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-floating",
-        "ratio": 5.18,
+        "ratio": 5.11,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-floating",
-        "ratio": 5.18,
+        "ratio": 5.11,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-floating + active-light",
-        "ratio": 10.54,
+        "ratio": 10.21,
         "floor": 4.5
       },
       {
         "label": "text under the pointer",
         "on": "hover",
-        "ratio": 15.86,
+        "ratio": 15.28,
         "floor": 4.5
       },
       {
         "label": "secondary text under the pointer",
         "on": "hover",
-        "ratio": 4.89,
+        "ratio": 4.83,
         "floor": 4.5
       },
       {
@@ -211,49 +211,49 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "label on positive",
         "on": "positive",
-        "ratio": 7.13,
+        "ratio": 7.02,
         "floor": 4.5
       },
       {
         "label": "label on positive-heavy",
         "on": "positive-heavy",
-        "ratio": 9.4,
+        "ratio": 9.27,
         "floor": 4.5
       },
       {
         "label": "label on warning",
         "on": "warning",
-        "ratio": 7.09,
+        "ratio": 9.98,
         "floor": 4.5
       },
       {
         "label": "label on warning-heavy",
         "on": "warning-heavy",
-        "ratio": 9.32,
+        "ratio": 13.04,
         "floor": 4.5
       },
       {
         "label": "label on negative",
         "on": "negative",
-        "ratio": 6.42,
+        "ratio": 6.52,
         "floor": 4.5
       },
       {
         "label": "label on negative-heavy",
         "on": "negative-heavy",
-        "ratio": 8.39,
+        "ratio": 8.53,
         "floor": 4.5
       },
       {
         "label": "label on info",
         "on": "info",
-        "ratio": 5.93,
+        "ratio": 6.28,
         "floor": 4.5
       },
       {
         "label": "label on info-heavy",
         "on": "info-heavy",
-        "ratio": 7.74,
+        "ratio": 8.25,
         "floor": 4.5
       },
       {
@@ -277,145 +277,145 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "active text",
         "on": "surface-2",
-        "ratio": 5.59,
+        "ratio": 5.35,
         "floor": 4.5
       },
       {
         "label": "active text",
         "on": "surface-3",
-        "ratio": 5.12,
+        "ratio": 4.89,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-1",
-        "ratio": 7.13,
+        "ratio": 7.02,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-2",
-        "ratio": 6.83,
+        "ratio": 6.44,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-3",
-        "ratio": 6.26,
+        "ratio": 5.88,
         "floor": 4.5
       },
       {
         "label": "warning text",
         "on": "surface-1",
-        "ratio": 7.09,
+        "ratio": 9.98,
         "floor": 4.5
       },
       {
         "label": "warning text",
         "on": "surface-2",
-        "ratio": 6.79,
+        "ratio": 9.16,
         "floor": 4.5
       },
       {
         "label": "warning text",
         "on": "surface-3",
-        "ratio": 6.22,
+        "ratio": 8.37,
         "floor": 4.5
       },
       {
         "label": "info text",
         "on": "surface-1",
-        "ratio": 5.93,
+        "ratio": 6.28,
         "floor": 4.5
       },
       {
         "label": "info text",
         "on": "surface-2",
-        "ratio": 5.68,
+        "ratio": 5.76,
         "floor": 4.5
       },
       {
         "label": "info text",
         "on": "surface-3",
-        "ratio": 5.21,
+        "ratio": 5.27,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-1",
-        "ratio": 6.42,
+        "ratio": 6.52,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-2",
-        "ratio": 6.15,
+        "ratio": 5.98,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-3",
-        "ratio": 5.63,
+        "ratio": 5.47,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-1 + positive-lightest",
-        "ratio": 6.12,
+        "ratio": 6.03,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-2 + positive-lightest",
-        "ratio": 5.88,
+        "ratio": 5.56,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-3 + positive-lightest",
-        "ratio": 5.41,
+        "ratio": 5.1,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-1 + warning-lightest",
-        "ratio": 6.07,
+        "ratio": 8.39,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-2 + warning-lightest",
-        "ratio": 5.83,
+        "ratio": 7.72,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-3 + warning-lightest",
-        "ratio": 5.36,
+        "ratio": 7.08,
         "floor": 4.5
       },
       {
         "label": "info text on its tint",
         "on": "surface-1 + info-lightest",
-        "ratio": 5.13,
+        "ratio": 5.41,
         "floor": 4.5
       },
       {
         "label": "info text on its tint",
         "on": "surface-2 + info-lightest",
-        "ratio": 4.92,
+        "ratio": 4.98,
         "floor": 4.5
       },
       {
         "label": "info text on its tint",
         "on": "surface-3 + info-lightest",
-        "ratio": 4.53,
+        "ratio": 4.58,
         "floor": 4.5
       },
       {
         "label": "negative text on its tint",
         "on": "surface-1 + negative-lightest",
-        "ratio": 5.33,
+        "ratio": 5.56,
         "floor": 4.5
       },
       {
@@ -433,7 +433,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "chosen row apart from hovered",
         "on": "surface-1",
-        "ratio": 1.46,
+        "ratio": 1.4,
         "floor": 1.3
       },
       {
@@ -445,7 +445,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "chosen row apart from hovered",
         "on": "surface-3",
-        "ratio": 1.61,
+        "ratio": 1.6,
         "floor": 1.3
       },
       {
@@ -470,19 +470,19 @@ export const palettes: TokenWeightsPalette[] = [
         "label": "warning-heavy apart from warning",
         "on": "surface-1",
         "ratio": 1.31,
-        "floor": 1.25
+        "floor": 1.29
       },
       {
         "label": "negative-heavy apart from negative",
         "on": "surface-1",
         "ratio": 1.31,
-        "floor": 1.1
+        "floor": 1.19
       },
       {
         "label": "info-heavy apart from info",
         "on": "surface-1",
-        "ratio": 1.3,
-        "floor": 1.22
+        "ratio": 1.31,
+        "floor": 1.23
       },
       {
         "label": "active-heavy apart from active",
@@ -493,79 +493,79 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "series-1 mark",
         "on": "surface-1",
-        "ratio": 9.93,
+        "ratio": 5.15,
         "floor": 3
       },
       {
         "label": "series-1 mark",
         "on": "surface-2",
-        "ratio": 9.52,
+        "ratio": 4.72,
         "floor": 3
       },
       {
         "label": "series-2 mark",
         "on": "surface-1",
-        "ratio": 3.21,
+        "ratio": 3.47,
         "floor": 3
       },
       {
         "label": "series-2 mark",
-        "on": "surface-2",
-        "ratio": 3.08,
-        "floor": 3
-      },
-      {
-        "label": "series-3 mark",
-        "on": "surface-1",
-        "ratio": 5.28,
-        "floor": 3
-      },
-      {
-        "label": "series-3 mark",
-        "on": "surface-2",
-        "ratio": 5.06,
-        "floor": 3
-      },
-      {
-        "label": "series-4 mark",
-        "on": "surface-1",
-        "ratio": 4.03,
-        "floor": 3
-      },
-      {
-        "label": "series-4 mark",
-        "on": "surface-2",
-        "ratio": 3.87,
-        "floor": 3
-      },
-      {
-        "label": "series-5 mark",
-        "on": "surface-1",
-        "ratio": 3.32,
-        "floor": 3
-      },
-      {
-        "label": "series-5 mark",
         "on": "surface-2",
         "ratio": 3.18,
         "floor": 3
       },
       {
+        "label": "series-3 mark",
+        "on": "surface-1",
+        "ratio": 3.72,
+        "floor": 3
+      },
+      {
+        "label": "series-3 mark",
+        "on": "surface-2",
+        "ratio": 3.41,
+        "floor": 3
+      },
+      {
+        "label": "series-4 mark",
+        "on": "surface-1",
+        "ratio": 3.42,
+        "floor": 3
+      },
+      {
+        "label": "series-4 mark",
+        "on": "surface-2",
+        "ratio": 3.13,
+        "floor": 3
+      },
+      {
+        "label": "series-5 mark",
+        "on": "surface-1",
+        "ratio": 3.28,
+        "floor": 3
+      },
+      {
+        "label": "series-5 mark",
+        "on": "surface-2",
+        "ratio": 3.01,
+        "floor": 3
+      },
+      {
         "label": "series-6 mark",
         "on": "surface-1",
-        "ratio": 5.4,
+        "ratio": 4.73,
         "floor": 3
       },
       {
         "label": "series-6 mark",
         "on": "surface-2",
-        "ratio": 5.17,
+        "ratio": 4.34,
         "floor": 3
       },
       {
-        "label": "closest series pair, series-2 and series-4 (OKLab distance)",
+        "label": "closest series pair, series-3 and series-5 (OKLab distance)",
         "on": "tritanopia",
-        "ratio": 0.102,
+        "ratio": 0.063,
         "floor": 0.06
       }
     ]
@@ -575,9 +575,9 @@ export const palettes: TokenWeightsPalette[] = [
     "title": "Default dark",
     "tokens": {
       "surface-1": "#0a0a0a",
-      "surface-2": "#262626",
-      "surface-3": "#161616",
-      "surface-floating": "#262626",
+      "surface-2": "#171717",
+      "surface-3": "#080808",
+      "surface-floating": "#171717",
       "default": "#fafafa",
       "default-lightest": "rgba(250, 250, 250, 0.1)",
       "default-light": "rgba(250, 250, 250, 0.4)",
@@ -588,11 +588,11 @@ export const palettes: TokenWeightsPalette[] = [
       "neutral-light": "rgba(229, 229, 229, 0.4)",
       "neutral-medium": "rgba(229, 229, 229, 0.6)",
       "neutral-heavy": "#b6b6b6",
-      "positive": "#22c55e",
-      "positive-lightest": "rgba(34, 197, 94, 0.1)",
-      "positive-light": "rgba(34, 197, 94, 0.4)",
-      "positive-medium": "rgba(34, 197, 94, 0.6)",
-      "positive-heavy": "#08e268",
+      "positive": "#4ade80",
+      "positive-lightest": "rgba(74, 222, 128, 0.1)",
+      "positive-light": "rgba(74, 222, 128, 0.4)",
+      "positive-medium": "rgba(74, 222, 128, 0.6)",
+      "positive-heavy": "#48fd8e",
       "warning": "#f59e0b",
       "warning-lightest": "rgba(245, 158, 11, 0.1)",
       "warning-light": "rgba(245, 158, 11, 0.4)",
@@ -620,14 +620,14 @@ export const palettes: TokenWeightsPalette[] = [
       "on-negative": "#0a0a0a",
       "on-info": "#0a0a0a",
       "on-active": "#0a0a0a",
-      "hover": "#1c3238",
+      "hover": "#142a30",
       "overlay": "rgba(0, 0, 0, 0.6)",
-      "series-1": "#2370cc",
-      "series-2": "#fecd68",
-      "series-3": "#06b366",
-      "series-4": "#dd83ca",
-      "series-5": "#8adeff",
-      "series-6": "#af5703"
+      "series-1": "#047aaf",
+      "series-2": "#feb34c",
+      "series-3": "#0fc88d",
+      "series-4": "#d483bc",
+      "series-5": "#8ad8fe",
+      "series-6": "#d27208"
     },
     "checks": [
       {
@@ -657,85 +657,85 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "body text",
         "on": "surface-2",
-        "ratio": 14.5,
+        "ratio": 17.18,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-2",
-        "ratio": 6.16,
+        "ratio": 6.79,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-2",
-        "ratio": 6.16,
+        "ratio": 6.79,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-2 + active-light",
-        "ratio": 7.27,
+        "ratio": 8.36,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-3",
-        "ratio": 17.34,
+        "ratio": 19.19,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-3",
-        "ratio": 6.82,
+        "ratio": 7.05,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-3",
-        "ratio": 6.82,
+        "ratio": 7.05,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-3 + active-light",
-        "ratio": 8.44,
+        "ratio": 9.62,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-floating",
-        "ratio": 14.5,
+        "ratio": 17.18,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-floating",
-        "ratio": 6.16,
+        "ratio": 6.79,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-floating",
-        "ratio": 6.16,
+        "ratio": 6.79,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-floating + active-light",
-        "ratio": 7.27,
+        "ratio": 8.36,
         "floor": 4.5
       },
       {
         "label": "text under the pointer",
         "on": "hover",
-        "ratio": 12.87,
+        "ratio": 14.33,
         "floor": 4.5
       },
       {
         "label": "secondary text under the pointer",
         "on": "hover",
-        "ratio": 5.67,
+        "ratio": 6.09,
         "floor": 4.5
       },
       {
@@ -765,13 +765,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "label on positive",
         "on": "positive",
-        "ratio": 8.69,
+        "ratio": 11.36,
         "floor": 4.5
       },
       {
         "label": "label on positive-heavy",
         "on": "positive-heavy",
-        "ratio": 11.4,
+        "ratio": 14.82,
         "floor": 4.5
       },
       {
@@ -831,31 +831,31 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "active text",
         "on": "surface-2",
-        "ratio": 5.35,
+        "ratio": 6.33,
         "floor": 4.5
       },
       {
         "label": "active text",
         "on": "surface-3",
-        "ratio": 6.39,
+        "ratio": 7.08,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-1",
-        "ratio": 8.69,
+        "ratio": 11.36,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-2",
-        "ratio": 6.64,
+        "ratio": 10.29,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-3",
-        "ratio": 7.94,
+        "ratio": 11.49,
         "floor": 4.5
       },
       {
@@ -867,13 +867,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text",
         "on": "surface-2",
-        "ratio": 7.05,
+        "ratio": 8.35,
         "floor": 4.5
       },
       {
         "label": "warning text",
         "on": "surface-3",
-        "ratio": 8.43,
+        "ratio": 9.33,
         "floor": 4.5
       },
       {
@@ -885,13 +885,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text",
         "on": "surface-2",
-        "ratio": 5.46,
+        "ratio": 6.47,
         "floor": 4.5
       },
       {
         "label": "info text",
         "on": "surface-3",
-        "ratio": 6.53,
+        "ratio": 7.23,
         "floor": 4.5
       },
       {
@@ -903,31 +903,31 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text",
         "on": "surface-2",
-        "ratio": 5.24,
+        "ratio": 6.21,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-3",
-        "ratio": 6.27,
+        "ratio": 6.93,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-1 + positive-lightest",
-        "ratio": 7.69,
+        "ratio": 9.78,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-2 + positive-lightest",
-        "ratio": 5.61,
+        "ratio": 8.51,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-3 + positive-lightest",
-        "ratio": 6.82,
+        "ratio": 9.96,
         "floor": 4.5
       },
       {
@@ -939,13 +939,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text on its tint",
         "on": "surface-2 + warning-lightest",
-        "ratio": 5.87,
+        "ratio": 7.07,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-3 + warning-lightest",
-        "ratio": 7.15,
+        "ratio": 8.24,
         "floor": 4.5
       },
       {
@@ -957,13 +957,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text on its tint",
         "on": "surface-2 + info-lightest",
-        "ratio": 4.73,
+        "ratio": 5.66,
         "floor": 4.5
       },
       {
         "label": "info text on its tint",
         "on": "surface-3 + info-lightest",
-        "ratio": 5.73,
+        "ratio": 6.54,
         "floor": 4.5
       },
       {
@@ -975,31 +975,31 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text on its tint",
         "on": "surface-2 + negative-lightest",
-        "ratio": 4.57,
+        "ratio": 5.47,
         "floor": 4.5
       },
       {
         "label": "negative text on its tint",
         "on": "surface-3 + negative-lightest",
-        "ratio": 5.53,
+        "ratio": 6.3,
         "floor": 4.5
       },
       {
         "label": "chosen row apart from hovered",
         "on": "surface-1",
-        "ratio": 1.36,
+        "ratio": 1.52,
         "floor": 1.3
       },
       {
         "label": "chosen row apart from hovered",
         "on": "surface-2",
-        "ratio": 1.77,
+        "ratio": 1.71,
         "floor": 1.3
       },
       {
         "label": "chosen row apart from hovered",
         "on": "surface-3",
-        "ratio": 1.53,
+        "ratio": 1.49,
         "floor": 1.3
       },
       {
@@ -1017,8 +1017,8 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive-heavy apart from positive",
         "on": "surface-1",
-        "ratio": 1.31,
-        "floor": 1.22
+        "ratio": 1.3,
+        "floor": 1.23
       },
       {
         "label": "warning-heavy apart from warning",
@@ -1047,79 +1047,79 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "series-1 mark",
         "on": "surface-1",
-        "ratio": 4.02,
+        "ratio": 4.16,
         "floor": 3
       },
       {
         "label": "series-1 mark",
         "on": "surface-2",
-        "ratio": 3.07,
+        "ratio": 3.76,
         "floor": 3
       },
       {
         "label": "series-2 mark",
         "on": "surface-1",
-        "ratio": 13.34,
+        "ratio": 11.09,
         "floor": 3
       },
       {
         "label": "series-2 mark",
         "on": "surface-2",
-        "ratio": 10.19,
+        "ratio": 10.05,
         "floor": 3
       },
       {
         "label": "series-3 mark",
         "on": "surface-1",
-        "ratio": 7.21,
+        "ratio": 9.11,
         "floor": 3
       },
       {
         "label": "series-3 mark",
         "on": "surface-2",
-        "ratio": 5.51,
+        "ratio": 8.25,
         "floor": 3
       },
       {
         "label": "series-4 mark",
         "on": "surface-1",
-        "ratio": 7.71,
+        "ratio": 7.33,
         "floor": 3
       },
       {
         "label": "series-4 mark",
         "on": "surface-2",
-        "ratio": 5.89,
+        "ratio": 6.64,
         "floor": 3
       },
       {
         "label": "series-5 mark",
         "on": "surface-1",
-        "ratio": 13.17,
+        "ratio": 12.57,
         "floor": 3
       },
       {
         "label": "series-5 mark",
         "on": "surface-2",
-        "ratio": 10.07,
+        "ratio": 11.38,
         "floor": 3
       },
       {
         "label": "series-6 mark",
         "on": "surface-1",
-        "ratio": 3.95,
+        "ratio": 5.8,
         "floor": 3
       },
       {
         "label": "series-6 mark",
         "on": "surface-2",
-        "ratio": 3.02,
+        "ratio": 5.25,
         "floor": 3
       },
       {
-        "label": "closest series pair, series-3 and series-6 (OKLab distance)",
-        "on": "deuteranopia",
-        "ratio": 0.123,
+        "label": "closest series pair, series-2 and series-3 (OKLab distance)",
+        "on": "protanopia",
+        "ratio": 0.074,
         "floor": 0.06
       }
     ]
@@ -1129,9 +1129,9 @@ export const palettes: TokenWeightsPalette[] = [
     "title": "Monokai dark",
     "tokens": {
       "surface-1": "#272822",
-      "surface-2": "#2d2e27",
-      "surface-3": "#1c1d16",
-      "surface-floating": "#2d2e27",
+      "surface-2": "#2e2f28",
+      "surface-3": "#1d1e17",
+      "surface-floating": "#2e2f28",
       "default": "#f8f8f2",
       "default-lightest": "rgba(248, 248, 242, 0.1)",
       "default-light": "rgba(248, 248, 242, 0.4)",
@@ -1142,21 +1142,21 @@ export const palettes: TokenWeightsPalette[] = [
       "neutral-light": "rgba(166, 226, 46, 0.4)",
       "neutral-medium": "rgba(166, 226, 46, 0.6)",
       "neutral-heavy": "#c1ff55",
-      "positive": "#22c55e",
-      "positive-lightest": "rgba(34, 197, 94, 0.1)",
-      "positive-light": "rgba(34, 197, 94, 0.4)",
-      "positive-medium": "rgba(34, 197, 94, 0.6)",
-      "positive-heavy": "#08e268",
-      "warning": "#fd971f",
-      "warning-lightest": "rgba(253, 151, 31, 0.1)",
-      "warning-light": "rgba(253, 151, 31, 0.4)",
-      "warning-medium": "rgba(253, 151, 31, 0.6)",
-      "warning-heavy": "#ffbb7e",
-      "negative": "#ff7398",
-      "negative-lightest": "rgba(255, 115, 152, 0.1)",
-      "negative-light": "rgba(255, 115, 152, 0.4)",
-      "negative-medium": "rgba(255, 115, 152, 0.6)",
-      "negative-heavy": "#fe9daf",
+      "positive": "#2bca63",
+      "positive-lightest": "rgba(43, 202, 99, 0.1)",
+      "positive-light": "rgba(43, 202, 99, 0.4)",
+      "positive-medium": "rgba(43, 202, 99, 0.6)",
+      "positive-heavy": "#1de76d",
+      "warning": "#fd9d16",
+      "warning-lightest": "rgba(253, 157, 22, 0.1)",
+      "warning-light": "rgba(253, 157, 22, 0.4)",
+      "warning-medium": "rgba(253, 157, 22, 0.6)",
+      "warning-heavy": "#ffc080",
+      "negative": "#ff74a0",
+      "negative-lightest": "rgba(255, 116, 160, 0.1)",
+      "negative-light": "rgba(255, 116, 160, 0.4)",
+      "negative-medium": "rgba(255, 116, 160, 0.6)",
+      "negative-heavy": "#ff9eb9",
       "info": "#66d9ef",
       "info-lightest": "rgba(102, 217, 239, 0.1)",
       "info-light": "rgba(102, 217, 239, 0.4)",
@@ -1176,12 +1176,12 @@ export const palettes: TokenWeightsPalette[] = [
       "on-active": "#272822",
       "hover": "#3e3d32",
       "overlay": "rgba(0, 0, 0, 0.6)",
-      "series-1": "#067ec4",
-      "series-2": "#ffce69",
-      "series-3": "#06bb66",
-      "series-4": "#cf91c2",
-      "series-5": "#89d9fd",
-      "series-6": "#b95e08"
+      "series-1": "#04a2f3",
+      "series-2": "#d38904",
+      "series-3": "#04955d",
+      "series-4": "#c06a93",
+      "series-5": "#81bff8",
+      "series-6": "#c65a02"
     },
     "checks": [
       {
@@ -1211,73 +1211,73 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "body text",
         "on": "surface-2",
-        "ratio": 12.86,
+        "ratio": 12.68,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-2",
-        "ratio": 5.68,
+        "ratio": 5.62,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-2",
-        "ratio": 5.68,
+        "ratio": 5.62,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-2 + active-light",
-        "ratio": 6.73,
+        "ratio": 6.67,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-3",
-        "ratio": 15.93,
+        "ratio": 15.76,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-3",
-        "ratio": 6.48,
+        "ratio": 6.44,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-3",
-        "ratio": 6.48,
+        "ratio": 6.44,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-3 + active-light",
-        "ratio": 7.88,
+        "ratio": 7.81,
         "floor": 4.5
       },
       {
         "label": "body text",
         "on": "surface-floating",
-        "ratio": 12.86,
+        "ratio": 12.68,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-floating",
-        "ratio": 5.68,
+        "ratio": 5.62,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-floating",
-        "ratio": 5.68,
+        "ratio": 5.62,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-floating + active-light",
-        "ratio": 6.73,
+        "ratio": 6.67,
         "floor": 4.5
       },
       {
@@ -1319,37 +1319,37 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "label on positive",
         "on": "positive",
-        "ratio": 6.52,
+        "ratio": 6.89,
         "floor": 4.5
       },
       {
         "label": "label on positive-heavy",
         "on": "positive-heavy",
-        "ratio": 8.56,
+        "ratio": 8.99,
         "floor": 4.5
       },
       {
         "label": "label on warning",
         "on": "warning",
-        "ratio": 6.81,
+        "ratio": 7.09,
         "floor": 4.5
       },
       {
         "label": "label on warning-heavy",
         "on": "warning-heavy",
-        "ratio": 8.96,
+        "ratio": 9.27,
         "floor": 4.5
       },
       {
         "label": "label on negative",
         "on": "negative",
-        "ratio": 5.77,
+        "ratio": 5.84,
         "floor": 4.5
       },
       {
         "label": "label on negative-heavy",
         "on": "negative-heavy",
-        "ratio": 7.54,
+        "ratio": 7.67,
         "floor": 4.5
       },
       {
@@ -1385,49 +1385,49 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "active text",
         "on": "surface-2",
-        "ratio": 4.82,
+        "ratio": 4.75,
         "floor": 4.5
       },
       {
         "label": "active text",
         "on": "surface-3",
-        "ratio": 5.97,
+        "ratio": 5.91,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-1",
-        "ratio": 6.52,
+        "ratio": 6.89,
         "floor": 4.5
       },
       {
         "label": "positive text",
         "on": "surface-2",
-        "ratio": 6.02,
+        "ratio": 6.26,
         "floor": 4.5
       },
       {
         "label": "positive text",
-        "on": "surface-3",
-        "ratio": 7.45,
-        "floor": 4.5
-      },
-      {
-        "label": "warning text",
-        "on": "surface-1",
-        "ratio": 6.81,
-        "floor": 4.5
-      },
-      {
-        "label": "warning text",
-        "on": "surface-2",
-        "ratio": 6.28,
-        "floor": 4.5
-      },
-      {
-        "label": "warning text",
         "on": "surface-3",
         "ratio": 7.78,
+        "floor": 4.5
+      },
+      {
+        "label": "warning text",
+        "on": "surface-1",
+        "ratio": 7.09,
+        "floor": 4.5
+      },
+      {
+        "label": "warning text",
+        "on": "surface-2",
+        "ratio": 6.44,
+        "floor": 4.5
+      },
+      {
+        "label": "warning text",
+        "on": "surface-3",
+        "ratio": 8.01,
         "floor": 4.5
       },
       {
@@ -1439,25 +1439,25 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text",
         "on": "surface-2",
-        "ratio": 8.32,
+        "ratio": 8.2,
         "floor": 4.5
       },
       {
         "label": "info text",
         "on": "surface-3",
-        "ratio": 10.3,
+        "ratio": 10.19,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-1",
-        "ratio": 5.77,
+        "ratio": 5.84,
         "floor": 4.5
       },
       {
         "label": "negative text",
         "on": "surface-2",
-        "ratio": 5.33,
+        "ratio": 5.32,
         "floor": 4.5
       },
       {
@@ -1469,37 +1469,37 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive text on its tint",
         "on": "surface-1 + positive-lightest",
-        "ratio": 5.5,
+        "ratio": 5.76,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-2 + positive-lightest",
-        "ratio": 5.08,
+        "ratio": 5.25,
         "floor": 4.5
       },
       {
         "label": "positive text on its tint",
         "on": "surface-3 + positive-lightest",
-        "ratio": 6.33,
+        "ratio": 6.55,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-1 + warning-lightest",
-        "ratio": 5.69,
+        "ratio": 5.88,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-2 + warning-lightest",
-        "ratio": 5.25,
+        "ratio": 5.35,
         "floor": 4.5
       },
       {
         "label": "warning text on its tint",
         "on": "surface-3 + warning-lightest",
-        "ratio": 6.54,
+        "ratio": 6.69,
         "floor": 4.5
       },
       {
@@ -1511,31 +1511,31 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text on its tint",
         "on": "surface-2 + info-lightest",
-        "ratio": 6.65,
+        "ratio": 6.56,
         "floor": 4.5
       },
       {
         "label": "info text on its tint",
         "on": "surface-3 + info-lightest",
-        "ratio": 8.33,
+        "ratio": 8.23,
         "floor": 4.5
       },
       {
         "label": "negative text on its tint",
         "on": "surface-1 + negative-lightest",
-        "ratio": 4.95,
+        "ratio": 5,
         "floor": 4.5
       },
       {
         "label": "negative text on its tint",
         "on": "surface-2 + negative-lightest",
-        "ratio": 4.57,
+        "ratio": 4.55,
         "floor": 4.5
       },
       {
         "label": "negative text on its tint",
         "on": "surface-3 + negative-lightest",
-        "ratio": 5.68,
+        "ratio": 5.67,
         "floor": 4.5
       },
       {
@@ -1547,13 +1547,13 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "chosen row apart from hovered",
         "on": "surface-2",
-        "ratio": 1.53,
+        "ratio": 1.54,
         "floor": 1.3
       },
       {
         "label": "chosen row apart from hovered",
         "on": "surface-3",
-        "ratio": 1.3,
+        "ratio": 1.31,
         "floor": 1.3
       },
       {
@@ -1572,12 +1572,12 @@ export const palettes: TokenWeightsPalette[] = [
         "label": "positive-heavy apart from positive",
         "on": "surface-1",
         "ratio": 1.31,
-        "floor": 1.17
+        "floor": 1.18
       },
       {
         "label": "warning-heavy apart from warning",
         "on": "surface-1",
-        "ratio": 1.32,
+        "ratio": 1.31,
         "floor": 1.18
       },
       {
@@ -1601,79 +1601,79 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "series-1 mark",
         "on": "surface-1",
-        "ratio": 3.39,
+        "ratio": 5.29,
         "floor": 3
       },
       {
         "label": "series-1 mark",
         "on": "surface-2",
+        "ratio": 4.81,
+        "floor": 3
+      },
+      {
+        "label": "series-2 mark",
+        "on": "surface-1",
+        "ratio": 5.2,
+        "floor": 3
+      },
+      {
+        "label": "series-2 mark",
+        "on": "surface-2",
+        "ratio": 4.73,
+        "floor": 3
+      },
+      {
+        "label": "series-3 mark",
+        "on": "surface-1",
+        "ratio": 3.87,
+        "floor": 3
+      },
+      {
+        "label": "series-3 mark",
+        "on": "surface-2",
+        "ratio": 3.52,
+        "floor": 3
+      },
+      {
+        "label": "series-4 mark",
+        "on": "surface-1",
+        "ratio": 4.05,
+        "floor": 3
+      },
+      {
+        "label": "series-4 mark",
+        "on": "surface-2",
+        "ratio": 3.68,
+        "floor": 3
+      },
+      {
+        "label": "series-5 mark",
+        "on": "surface-1",
+        "ratio": 7.6,
+        "floor": 3
+      },
+      {
+        "label": "series-5 mark",
+        "on": "surface-2",
+        "ratio": 6.91,
+        "floor": 3
+      },
+      {
+        "label": "series-6 mark",
+        "on": "surface-1",
+        "ratio": 3.44,
+        "floor": 3
+      },
+      {
+        "label": "series-6 mark",
+        "on": "surface-2",
         "ratio": 3.13,
         "floor": 3
       },
       {
-        "label": "series-2 mark",
-        "on": "surface-1",
-        "ratio": 10.11,
-        "floor": 3
-      },
-      {
-        "label": "series-2 mark",
-        "on": "surface-2",
-        "ratio": 9.33,
-        "floor": 3
-      },
-      {
-        "label": "series-3 mark",
-        "on": "surface-1",
-        "ratio": 5.88,
-        "floor": 3
-      },
-      {
-        "label": "series-3 mark",
-        "on": "surface-2",
-        "ratio": 5.42,
-        "floor": 3
-      },
-      {
-        "label": "series-4 mark",
-        "on": "surface-1",
-        "ratio": 6,
-        "floor": 3
-      },
-      {
-        "label": "series-4 mark",
-        "on": "surface-2",
-        "ratio": 5.54,
-        "floor": 3
-      },
-      {
-        "label": "series-5 mark",
-        "on": "surface-1",
-        "ratio": 9.49,
-        "floor": 3
-      },
-      {
-        "label": "series-5 mark",
-        "on": "surface-2",
-        "ratio": 8.75,
-        "floor": 3
-      },
-      {
-        "label": "series-6 mark",
-        "on": "surface-1",
-        "ratio": 3.3,
-        "floor": 3
-      },
-      {
-        "label": "series-6 mark",
-        "on": "surface-2",
-        "ratio": 3.05,
-        "floor": 3
-      },
-      {
-        "label": "closest series pair, series-3 and series-4 (OKLab distance)",
-        "on": "deuteranopia",
-        "ratio": 0.111,
+        "label": "closest series pair, series-2 and series-4 (OKLab distance)",
+        "on": "tritanopia",
+        "ratio": 0.067,
         "floor": 0.06
       }
     ]
@@ -1685,41 +1685,41 @@ export const nestedCardChoice = [
   {
     "palette": "Default dark",
     "step": 0.03,
-    "apart": 1.1,
-    "worst": 4.17,
+    "apart": 1.08,
+    "worst": 5.05,
     "floor": 4.5,
     "belowPage": false,
-    "card": "#262626",
-    "nested": "#2d2d2d"
+    "card": "#171717",
+    "nested": "#1e1e1e"
   },
   {
     "palette": "Default dark",
     "step": -0.07,
-    "apart": 1.2,
-    "worst": 5.53,
+    "apart": 1.12,
+    "worst": 6.3,
     "floor": 4.5,
-    "belowPage": false,
-    "card": "#262626",
-    "nested": "#161616"
+    "belowPage": true,
+    "card": "#171717",
+    "nested": "#080808"
   },
   {
     "palette": "Monokai dark",
     "step": 0.03,
     "apart": 1.12,
-    "worst": 4.1,
+    "worst": 4.08,
     "floor": 4.5,
     "belowPage": false,
-    "card": "#2d2e27",
-    "nested": "#35362e"
+    "card": "#2e2f28",
+    "nested": "#36372f"
   },
   {
     "palette": "Monokai dark",
     "step": -0.07,
     "apart": 1.24,
-    "worst": 5.68,
+    "worst": 5.67,
     "floor": 4.5,
     "belowPage": true,
-    "card": "#2d2e27",
-    "nested": "#1c1d16"
+    "card": "#2e2f28",
+    "nested": "#1d1e17"
   }
 ];

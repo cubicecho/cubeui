@@ -74,8 +74,8 @@ export type BadgeProps = {
   textColor?: string | undefined;
   className?: string | undefined;
   /**
-   * What the dot stands for, exposed as its accessible name. In the pill form
-   * the text is already the name, so there it only feeds `removeLabel`'s default
+   * What the dot stands for: its accessible name, and on the web its tooltip under the pointer.
+   * In the pill form the text is already the name, so there it only feeds `removeLabel`'s default
    * when the children hold no text of their own.
    */
   label?: string | undefined;

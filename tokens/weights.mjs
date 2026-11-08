@@ -19,7 +19,7 @@
  */
 import { contrastRatio, isOutOfGamut, toRgb } from "../scripts/oklch.mjs";
 import { dark, light, palettes } from "./palette.mjs";
-import { fitSeries } from "./series.mjs";
+import { fitSeries, STATUS_TOKENS } from "./series.mjs";
 
 /** @typedef {import("./palette.mjs").Oklch} Oklch */
 
@@ -59,9 +59,11 @@ const GREY_CHROMA = 0.02;
  * How far `surface-3` moves from `surface-2` in lightness, per mode; positive is away from the page.
  *
  * Each is the most the status colours allow. In light mode a nested card one step darker than a
- * card keeps status text on its tint at 4.5:1 up to 0.03. In dark mode no lighter step does — a card
- * is already as light as that text allows — so a nested card sinks back toward the page instead,
- * which leaves the text 5.5:1 and puts the card 1.2:1 from its parent.
+ * card keeps status text on its tint at 4.5:1 up to 0.03. In Monokai no lighter step does — a card
+ * is already as light as that text allows (4.08:1 at 0.03) — so a nested card sinks back toward the
+ * page instead, which leaves the text 5.7:1 and puts the card 1.24:1 from its parent. Default dark
+ * sinks too, for one rule, though since its card became neutral-900 (#479) a lighter step would
+ * hold 5.05:1, and sunk it now sits below the page.
  */
 export const SURFACE_STEP = { light: 0.03, dark: -0.07 };
 
@@ -137,7 +139,8 @@ export function derive(base, overrides = {}, { heavy = HEAVY, surfaceStep = SURF
 
   out.hover = base.hover;
   out.overlay = { ...base.overlay, a: OVERLAY_ALPHA };
-  fitSeries(page, raised, away > 0).forEach((colour, i) => {
+  const statuses = STATUS_TOKENS.map((name) => base[name]);
+  fitSeries(page, raised, away > 0, statuses).forEach((colour, i) => {
     out[`series-${i + 1}`] = colour;
   });
   return out;
