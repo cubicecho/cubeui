@@ -41,7 +41,7 @@ route should reach for first.
 | `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
 | `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
-| `loading` | `boolean` | `false` | Whether the *title* is still being fetched. The body is the caller's to place. |
+| `loading` | `boolean` | `false` | Whether the *title* is still being fetched: a bar of its height stands in for it. A detail page sets it while the record loads and puts `LoadState` in the body, which then draws no placeholder rows of its own, so the page shows its wait once. The body is otherwise the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
 | `size` | `PageHeaderSize` |  | How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when left out. `size="sm"` is a compact title on a page that is still the `h1`. |
 | `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
@@ -142,7 +142,11 @@ then the height left under the header, and `contentSlot` divides it (`h-full`, o
 device). It is still a `PageLayout` — do not drop to `HeaderContentFooter` for this.
 
 `loading` waits the **title**, not the body. The buttons and the search field stay usable. The
-body's own loading state is the caller's, or `CardLayout`'s.
+body's own loading state is the caller's, or `CardLayout`'s. **A page that shows one record**
+sets `loading` while the record loads and puts `LoadState` (with `record`) in the body, which
+then draws no placeholder rows of its own, so the page shows its wait once. Failed and not found
+are drawn in the body under the page's title. The whole recipe is
+[lists.md](lists.md#detail-pages).
 
 `PageLayout` does not own the sidebar, the theme toggle, or the route. That is an app shell: put
 a [`Sidebar`](sidebar.md#sidebar) and the page side by side in a `SidebarLayout`.
