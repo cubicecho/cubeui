@@ -17,7 +17,13 @@
  *
  * On the web the stack stays reachable while a dialog is open (#477): it is drawn above dialogs,
  * and it is a live region from the first render, which is what keeps radix's `hideOthers` from
- * marking it `aria-hidden` when a modal opens.
+ * marking it `aria-hidden` when a modal opens. F8 moves focus to the newest toast, because Tab
+ * cannot reach it from inside a dialog (#500).
+ *
+ * On device a `Modal` is a window over the app's tree, so the stack is drawn in the top overlay
+ * layer (`@cubeui/overlay`): the open dialog's, popover's, menu's or select's, or with none open
+ * the app's, which this provider draws. iOS has no live regions, so a toast is announced there
+ * as well as drawn.
  */
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -25,6 +31,8 @@ import type { ViewStyle } from "react-native";
 import { Platform, Pressable, Text, View } from "react-native";
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
+import { OverlayHost, OverlayPortal, useTopLayer } from "@/components/ui/overlay";
+import { announceToast } from "@/components/ui/toast-announce";
 import { type BottomBarUntil, useBottomBar } from "@/lib/bottom-bar";
 import { cn, hasSlot, type SlotNode, touchTarget } from "@/lib/utils";
 
@@ -169,6 +177,23 @@ const LIFT: Record<BottomBarUntil, string> = {
   xl: "mb-[calc(env(safe-area-inset-bottom,0px)+3.5rem)] xl:mb-0",
 };
 
+/**
+ * The key that moves focus to the newest toast on the web, radix's toast's. A dialog's focus trap
+ * keeps Tab from reaching the stack, so an Undo raised while one is open could be pressed and not
+ * reached (#500). Sonner's Alt+T is the Tools menu in Firefox on Windows, and F6 is the browser's
+ * own, to the address bar.
+ */
+const FOCUS_KEY = "F8";
+
+/**
+ * The stack is a landmark on the web, named with the key that reaches it, as radix's toast names
+ * its own, so a screen reader can find it and learn how. A device has no landmarks.
+ */
+const VIEWPORT_LANDMARK = { role: "region", "aria-label": `Notifications (${FOCUS_KEY})` } as const;
+
+/** What can take focus in a toast: its action's buttons and links, and its ✕. */
+const FOCUSABLE = 'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+
 /** What holds the timers: a pointer over a toast, or focus inside one. */
 type Holds = { hovered: boolean; focused: boolean };
 
@@ -184,8 +209,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const timers = useRef(new Map<number, Timer>());
   const holds = useRef<Holds>(NO_HOLDS);
   const bottomBar = useBottomBar();
+  const layer = useTopLayer();
+  // The stack's element, and where focus was before it went into the stack: on the web, where a
+  // toast that had focus and goes hands it back, rather than to the page's `<body>`.
+  const viewport = useRef<unknown>(null);
+  const before = useRef<unknown>(null);
 
   const dismiss = useCallback((id: number) => {
+    if (Platform.OS === "web") {
+      giveFocusBack(viewport.current as HTMLElement | null, before.current as HTMLElement | null);
+    }
     const timer = timers.current.get(id);
     if (timer !== undefined) {
       stopTimer(timer);
@@ -241,6 +274,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ...prev,
         { id, message, tone: kind, actionSlot: hasAction ? actionSlot : undefined },
       ]);
+      announceToast(message, ROLE[kind] === "alert");
       const timer: Timer = { remaining: duration, startedAt: Date.now(), handle: null };
       timers.current.set(id, timer);
       if (isHeld(holds.current) === false) {
@@ -249,6 +283,38 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     },
     [startTimer],
   );
+
+  // F8 from anywhere on the page, a dialog included, goes to the newest toast's first button.
+  useEffect(() => {
+    if (Platform.OS !== "web") {
+      return;
+    }
+    const remember = (event: FocusEvent) => {
+      const stack = viewport.current as HTMLElement | null;
+      if (event.target instanceof HTMLElement && stack?.contains(event.target) === false) {
+        before.current = event.target;
+      }
+    };
+    const jump = (event: KeyboardEvent) => {
+      if (event.key !== FOCUS_KEY || event.defaultPrevented) {
+        return;
+      }
+      const stack = viewport.current as HTMLElement | null;
+      const cards = stack?.querySelectorAll<HTMLElement>('[role="status"], [role="alert"]');
+      const target = cards?.[cards.length - 1]?.querySelector<HTMLElement>(FOCUSABLE);
+      if (!target) {
+        return;
+      }
+      event.preventDefault();
+      target.focus();
+    };
+    document.addEventListener("keydown", jump);
+    document.addEventListener("focusin", remember, true);
+    return () => {
+      document.removeEventListener("keydown", jump);
+      document.removeEventListener("focusin", remember, true);
+    };
+  }, []);
 
   // A toast outlives the component that raised it, so the timer has to be
   // cleaned up here rather than at the call site.
@@ -262,82 +328,101 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  /*
+   * Drawn while empty too. radix's `hideOthers` marks everything outside an opening modal
+   * `aria-hidden`, except what is a live region at that moment, so a stack mounted with its
+   * first toast lands inside the hidden tree and is never announced (#477). It is empty and
+   * `box-none`, so it covers nothing.
+   */
+  const stack = (
+    <View
+      testID="toast-viewport"
+      ref={(element) => {
+        viewport.current = element;
+      }}
+      aria-live="polite"
+      {...(Platform.OS === "web" ? VIEWPORT_LANDMARK : {})}
+      pointerEvents="box-none"
+      style={VIEWPORT_STYLE}
+      className={cn("gap-2", bottomBar && LIFT[bottomBar])}
+    >
+      {/*
+       * The announcement and the dismiss target are two elements, not one. They were one — a
+       * `Pressable` with `accessibilityRole="alert"` — and `rn2web` is what showed that to be
+       * wrong: a role replaces an element's semantics rather than adding to them, so that
+       * markup was an alert with a click handler nothing could reach by keyboard. The same
+       * was true on device, where the role told the screen reader it was looking at a
+       * message and not at something to activate.
+       */}
+      {toasts.slice(-MAX_VISIBLE).map((toast) => {
+        const { glyph, ink } = TONE_ICON[toast.tone];
+        return (
+          // web: biome-ignore lint/a11y/noStaticElementInteractions: the role is a status or an alert, from a table Biome cannot read
+          <View
+            key={toast.id}
+            role={ROLE[toast.tone]}
+            onPointerEnter={() => hold("hovered", true)}
+            onPointerLeave={() => hold("hovered", false)}
+            onFocus={() => hold("focused", true)}
+            onBlur={() => hold("focused", false)}
+            className="w-full flex-row items-start gap-3 rounded-md border border-foreground/10 bg-secondary px-4 py-3 shadow-md"
+          >
+            {/* `[&_svg]:size-4` for the web, where an icon does not read the context below and
+                  drew at its own 24px beside 14px text; the context sizes it on a device. */}
+            <View aria-hidden className={cn("mt-0.5 shrink-0 [&_svg]:size-4", ink)}>
+              <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
+                {glyph}
+              </IconClassContext.Provider>
+            </View>
+            {/* The action sits under the words rather than beside them: the toast is a set width,
+                  and a link beside the message would squeeze it to a column. */}
+            <View className="min-w-0 flex-1 gap-1.5">
+              <Text className="text-sm text-foreground">{toast.message}</Text>
+              {typeof toast.actionSlot === "function" || hasSlot(toast.actionSlot) ? (
+                <View className="flex-row flex-wrap items-center gap-2">
+                  {typeof toast.actionSlot === "function"
+                    ? toast.actionSlot(() => dismiss(toast.id))
+                    : toast.actionSlot}
+                </View>
+              ) : null}
+            </View>
+            <Pressable
+              onPress={() => dismiss(toast.id)}
+              accessibilityRole="button"
+              accessibilityLabel="Dismiss"
+              {...touchTarget(DISMISS_DRAWN)}
+              // The ink is on the press target too, not only in the context: the glyph draws in
+              // `currentColor`, and a `<button>` resets that to the UA's black.
+              // Under the pointer, the keyboard and a finger it looks the same: hovered.
+              className="-m-1 shrink-0 rounded-md p-1 text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground focus-visible:outline-none active:bg-hover [&_svg]:size-4"
+            >
+              <IconClassContext.Provider value="size-4 text-foreground/60">
+                <X />
+              </IconClassContext.Provider>
+            </Pressable>
+          </View>
+        );
+      })}
+    </View>
+  );
+
   return (
     <ToastContext.Provider value={show}>
       {children}
-      {/*
-       * Drawn while empty too. radix's `hideOthers` marks everything outside an opening modal
-       * `aria-hidden`, except what is a live region at that moment, so a stack mounted with its
-       * first toast lands inside the hidden tree and is never announced (#477). It is empty and
-       * `box-none`, so it covers nothing.
-       */}
-      <View
-        testID="toast-viewport"
-        aria-live="polite"
-        pointerEvents="box-none"
-        style={VIEWPORT_STYLE}
-        className={cn("gap-2", bottomBar && LIFT[bottomBar])}
-      >
-        {/*
-         * The announcement and the dismiss target are two elements, not one. They were one — a
-         * `Pressable` with `accessibilityRole="alert"` — and `rn2web` is what showed that to be
-         * wrong: a role replaces an element's semantics rather than adding to them, so that
-         * markup was an alert with a click handler nothing could reach by keyboard. The same
-         * was true on device, where the role told the screen reader it was looking at a
-         * message and not at something to activate.
-         */}
-        {toasts.slice(-MAX_VISIBLE).map((toast) => {
-          const { glyph, ink } = TONE_ICON[toast.tone];
-          return (
-            // web: biome-ignore lint/a11y/noStaticElementInteractions: the role is a status or an alert, from a table Biome cannot read
-            <View
-              key={toast.id}
-              role={ROLE[toast.tone]}
-              onPointerEnter={() => hold("hovered", true)}
-              onPointerLeave={() => hold("hovered", false)}
-              onFocus={() => hold("focused", true)}
-              onBlur={() => hold("focused", false)}
-              className="w-full flex-row items-start gap-3 rounded-md border border-foreground/10 bg-secondary px-4 py-3 shadow-md"
-            >
-              {/* `[&_svg]:size-4` for the web, where an icon does not read the context below and
-                    drew at its own 24px beside 14px text; the context sizes it on a device. */}
-              <View aria-hidden className={cn("mt-0.5 shrink-0 [&_svg]:size-4", ink)}>
-                <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
-                  {glyph}
-                </IconClassContext.Provider>
-              </View>
-              {/* The action sits under the words rather than beside them: the toast is a set width,
-                    and a link beside the message would squeeze it to a column. */}
-              <View className="min-w-0 flex-1 gap-1.5">
-                <Text className="text-sm text-foreground">{toast.message}</Text>
-                {typeof toast.actionSlot === "function" || hasSlot(toast.actionSlot) ? (
-                  <View className="flex-row flex-wrap items-center gap-2">
-                    {typeof toast.actionSlot === "function"
-                      ? toast.actionSlot(() => dismiss(toast.id))
-                      : toast.actionSlot}
-                  </View>
-                ) : null}
-              </View>
-              <Pressable
-                onPress={() => dismiss(toast.id)}
-                accessibilityRole="button"
-                accessibilityLabel="Dismiss"
-                {...touchTarget(DISMISS_DRAWN)}
-                // The ink is on the press target too, not only in the context: the glyph draws in
-                // `currentColor`, and a `<button>` resets that to the UA's black.
-                // Under the pointer, the keyboard and a finger it looks the same: hovered.
-                className="-m-1 shrink-0 rounded-md p-1 text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground focus-visible:outline-none active:bg-hover [&_svg]:size-4"
-              >
-                <IconClassContext.Provider value="size-4 text-foreground/60">
-                  <X />
-                </IconClassContext.Provider>
-              </Pressable>
-            </View>
-          );
-        })}
-      </View>
+      {layer === null ? stack : <OverlayPortal layer={layer}>{stack}</OverlayPortal>}
+      <OverlayHost />
     </ToastContext.Provider>
   );
+}
+
+/**
+ * When focus is in the stack, puts it back where it was before, ahead of a toast going: focus on an
+ * element that is taken away falls to the page's `<body>`, out of the dialog it came from.
+ */
+function giveFocusBack(stack: HTMLElement | null, before: HTMLElement | null) {
+  if (stack?.contains(document.activeElement) && before?.isConnected) {
+    before.focus();
+  }
 }
 
 function isHeld(holds: Holds): boolean {

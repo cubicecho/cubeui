@@ -146,6 +146,15 @@ export function touchRowClass(): string {
   return Platform.OS === "web" ? "" : "min-h-11";
 }
 
+/**
+ * Code text, wherever it is drawn: `Code`, `CodeBlock`, `MarkdownEditor`'s source and
+ * `MarkdownCodeEditor`. 12px in `--font-mono` on a 20px line (#480). A monospaced face reads larger
+ * than the sans at the same size, so 12px sits beside 14px prose without shouting; and a line of
+ * code is dense, so it takes the 20px line `text-sm` has rather than `text-xs`'s 16px. The three
+ * had been 12px on 16px, 14px relaxed and 14px on 1.6 in a font stack of their own.
+ */
+export const CODE_TEXT = "font-mono text-xs leading-5";
+
 /** A block's or a row's title: 14px semibold, on `text-sm`'s own 20px line, in full ink. */
 export const HEADING_TITLE = "text-sm font-semibold text-foreground";
 

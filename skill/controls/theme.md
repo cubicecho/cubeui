@@ -156,3 +156,47 @@ import { themePrePaintScript } from "@/components/ui/theme-preference-base";
 const script = themePrePaintScript({ legacyKeys: { theme: ["myapp-theme"] } });
 <script dangerouslySetInnerHTML={{ __html: script }} />
 ```
+
+## Type and spacing
+
+cubeui's tokens hold colour and radius. Type and spacing are Tailwind's own steps, and cubeui uses
+only a few of them, each for one job. Draw your own text and gaps from the same steps, so a screen
+of yours sits beside cubeui's on one scale rather than two. The steps are far enough apart that two
+neighbours always look different, which is what makes picking one quick.
+
+**Type is a size on its line.**
+
+| Class | Size / line | For |
+| --- | --- | --- |
+| `text-xs` | 12px / 16px | The floor, and nothing is smaller: a badge, a caption, a row's `meta`, a menu group's label. |
+| `CODE_TEXT` | 12px / 20px, mono | Code: `Code`, `CodeBlock` and both Markdown editors. In `@/lib/utils`. |
+| `text-sm` | 14px / 20px | The body: every control, field and row, and a block's title and the line under it. |
+| `text-sm leading-relaxed` | 14px / 22.75px | Prose read at length: a Markdown document, a hint's paragraph. |
+| `text-base` | 16px / 24px | The smallest title over a page or a block: `PageHeader` `sm`, `###`, `EmptyTitle`, a fieldset's legend. |
+| `text-lg` | 18px / 28px | `PageHeader` `md`, `##`. A dialog's title is `text-lg leading-tight`, 18px on 22.5px, so it holds together when it wraps at phone width. |
+| `text-xl` | 20px / 28px | A page's title: `PageHeader` `lg`, `#`, `CenteredCardLayout`. |
+| `text-2xl` | 24px / 32px | A `StatTile`'s figure. |
+
+- **Line height follows the size.** Small text takes a tall line for its size, and a large title a
+  short one, so leave the size's own line alone except for three steps: `leading-5` (a 20px line,
+  for code, or to say `text-sm`'s line again where a parent's would carry over), `leading-relaxed`
+  (prose) and `leading-tight` (a title of 18px or more that may wrap).
+- **Two weights.** `font-normal` for text, and `font-semibold` for a title, a label or a button.
+  Hierarchy comes from weight and ink (`text-foreground/60`) before size: a block's title and its
+  description are both 14px. The classes for that are `HEADING_TITLE` and `HEADING_DESCRIPTION` in
+  `@/lib/utils`.
+
+**Spacing is 4px steps.** Padding, margins and gaps are `1` (4px), `2` (8px), `3` (12px), `4`
+(16px), `6` (24px) and `8` (32px), further apart the larger they get. Two half-steps are on the
+scale, each for one job, and no other:
+
+- `0.5` (2px) nudges a 16px icon onto the middle of a 20px line (`mt-0.5`), pads a badge or inline
+  code, and packs the rows of a nav list (`gap-0.5`).
+- `1.5` (6px) is the pad above and below a menu, select, command, tab or segment row (`py-1.5`,
+  which with a 20px line makes a 32px row), and the room between a tab's or a segment's icon and
+  its label.
+
+**Sizes.** A control is 28px (`h-7`, `xs`), 36px (`h-9`, `sm`) or 40px (`h-10`, the default and every
+field), and 44px (`h-11`) where it is pressed on a phone. An icon is 16px (`size-4`), 14px
+(`size-3.5`) in an `xs` control or beside 12px text, and 20px (`size-5`) beside a large title. A dot
+is 8px (`size-2`) inside a row or a chip, and 10px (`size-2.5`) beside its label.

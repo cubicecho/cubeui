@@ -210,6 +210,38 @@ would push it off the title. `Item`'s `default` size is shadcn's and stays outsi
 `SectionHeading`'s overline is a label, not a block's title. `RN Parity/Heading rhythm` holds the
 seven to it on both halves.
 
+**Type and spacing are a named scale** (#480). The tokens hold colour and radius; type and spacing
+are Tailwind's steps, and the registry uses these and no others. A scale is a few steps far enough
+apart that two neighbours always look different (Refactoring UI's rule), so nobody asks "10px or
+12px?" one component at a time. Each step has a job:
+
+| Step | Size / line | Why it exists |
+|---|---|---|
+| `text-xs` | 12px / 16px | The floor: a badge, a caption, `meta`, a menu group's label. Nothing is smaller |
+| `CODE_TEXT` | 12px / 20px | Code, in `--font-mono`: `Code`, `CodeBlock`, `MarkdownEditor`'s source, `MarkdownCodeEditor`. Mono reads larger than the sans, so 12px sits by 14px prose; a dense line needs the 20px |
+| `text-sm` | 14px / 20px | The body of every control, field and row, and the heading rhythm's title and description |
+| `text-sm leading-relaxed` | 14px / 22.75px | Prose read at length: a Markdown document, a hint's paragraph. A long line wants a taller one |
+| `text-base` | 16px / 24px | The smallest title over a page or block: `PageHeader` `sm`, `###`, `EmptyTitle`, a legend |
+| `text-lg` | 18px / 28px | `PageHeader` `md`, `##`; a dialog's title with `leading-tight` (22.5px), so it holds together when it wraps |
+| `text-xl` | 20px / 28px | A page's title: `PageHeader` `lg`, `#` |
+| `text-2xl` | 24px / 32px | A `StatTile`'s figure |
+
+Line height follows the size: small text takes a tall line for its size and a large title a short
+one. So the size's own line stands, and three steps are named beside it: `leading-5` (code, or
+`text-sm`'s 20px said again where a parent's would carry over), `leading-relaxed` (prose) and
+`leading-tight` (a title of 18px or more that may wrap). Weights are two, `font-normal` and
+`font-semibold`, and hierarchy comes from weight and ink before size, as the heading rhythm says.
+
+Spacing is 4px steps — `1`, `2`, `3`, `4`, `6`, `8` for padding, margins and gaps, further apart
+as they grow — and two half-steps: `0.5` (2px), which nudges a 16px icon onto the middle of a 20px
+line, pads a badge or inline code and packs a nav list's rows, and `1.5` (6px), the pad of a menu,
+select, tab or segment row, whose 20px line it makes 32px. As sizes, `3.5` (14px) is the icon in an
+`xs` control or beside 12px text and `2.5` (10px) the dot beside a label (#487). Controls are 28,
+36, 40 and 44px (`h-7`, `h-9`, `h-10`, `h-11`); icons 14, 16 and 20px. `registry:check` rule 17
+fails on any other line height or half-step in a class under `registry/`; a use that has to stay
+off the scale is a line in `scripts/scale-allow.json` with its reason, argued in review.
+`skill/controls/theme.md` is the same scale in the skill's voice.
+
 **A button looks like a button.** `ghost` and `link` stay as Button variants, for an app porting
 shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
 and an icon inside a field's own border is `secondary`. The one exception is `DescriptionHint`,
@@ -329,7 +361,7 @@ docs/component-conventions.md         authoring rules, and the open questions
                                       reads the copy consumers take
 scripts/rn2web/                       the compiler
 scripts/build-tokens.mjs              the token emitter
-scripts/check-registry-build.mjs      `registry:check`: sixteen rules over what ships
+scripts/check-registry-build.mjs      `registry:check`: seventeen rules over what ships
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links

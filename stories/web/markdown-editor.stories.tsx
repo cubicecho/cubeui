@@ -4,6 +4,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { EmptyState } from "@/components/empty-state";
 import { FormField } from "@/components/form-field";
 import { MarkdownEditor, type MarkdownEditorView } from "@/components/markdown-editor";
+import { monoFamily } from "../mono-family";
 
 const meta = {
   title: "Controls/MarkdownEditor",
@@ -94,6 +95,10 @@ export const Default: Story = {
 
     // Split: the source and its rendering on one line, ending together.
     const source = canvas.getByRole("textbox", { name: "Skill body" });
+    // The source is set as code is everywhere: 12px on a 20px line, in the theme's monospace.
+    const type = getComputedStyle(source);
+    await expect([type.fontSize, type.lineHeight]).toEqual(["12px", "20px"]);
+    await expect(type.fontFamily).toBe(monoFamily());
     const first = parts(canvasElement);
     await expect(first.source).toBe(source);
     await expect(shown(first.preview)).toBe(true);

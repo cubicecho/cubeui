@@ -103,3 +103,45 @@ export const AnnouncedAndPressable: Story = {
     await expect(screen.queryByRole("alertdialog")).toBeNull();
   },
 };
+
+/**
+ * F8 reaches the newest toast from inside a dialog (#500). The dialog's focus trap keeps Tab from
+ * ever leaving the card, and sent a focus that did straight back, so an Undo raised while it was
+ * open could be clicked but not reached by keyboard. Focus now stays on the toast it was moved to,
+ * Enter presses it, and when the toast goes focus is back where it was in the dialog.
+ */
+export const ReachedByKeyboard: Story = {
+  render: () => (
+    <ToastProvider>
+      <ArchiveInADialog />
+    </ToastProvider>
+  ),
+  play: async () => {
+    const dialog = await screen.findByRole("dialog", { name: "Edit card" });
+    const archive = within(dialog).getByRole("button", { name: "Archive the checklist" });
+    archive.focus();
+    await userEvent.keyboard("{Enter}");
+    const toast = await screen.findByRole("status");
+    // Named for the key, so a screen reader can find the stack and learn how to reach it.
+    await expect(screen.getByRole("region", { name: "Notifications (F8)" })).toContainElement(
+      toast,
+    );
+
+    await userEvent.keyboard("{F8}");
+    const undo = within(toast).getByRole("button", { name: "Undo" });
+    await expect(undo).toHaveFocus();
+    // Not handed back to the card on the next turn of the trap.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    await expect(undo).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await expect(within(dialog).getByTestId("undone")).toHaveTextContent("1");
+
+    // Tab goes on to the ✕, still in the toast, and pressing it gives focus back to the dialog.
+    await userEvent.tab();
+    await expect(within(toast).getByRole("button", { name: "Dismiss" })).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await waitFor(() => expect(screen.queryByRole("status")).toBeNull());
+    await expect(archive).toHaveFocus();
+    await expect(screen.queryByRole("alertdialog")).toBeNull();
+  },
+};

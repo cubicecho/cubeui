@@ -302,11 +302,12 @@ toast(`Moved ${item.title} to ${page.title}.`, "positive", {
   are a polite `status`. The stack is an `aria-live="polite"` region from the first render.
 - **Three are drawn at most**, the newest. An older one keeps its clock and comes back if the
   newer go first, so a burst of toasts is three on screen and not a column up the page.
-- **On the web the stack is drawn over an open dialog**, outside what the dialog hides from a
-  screen reader, and a press on it does not close the dialog. Put `ToastProvider` near the root,
-  outside any element that starts a stacking context (`isolate`, a `transform`, a `z-*` with a
-  position), which would hold it under the dialog. On device a native `Modal` covers it, so a
-  failure inside a dialog is said in the dialog.
+- **The stack is drawn over an open dialog**, outside what it hides from a screen reader, and a
+  press on it does not close the dialog. On the web put `ToastProvider` near the root, outside
+  any element that starts a stacking context (`isolate`, a `transform`, a `z-*` with a position).
+  On device it is drawn in the open modal's layer, and VoiceOver reads each toast out.
+- **F8 moves focus to the newest toast** on the web, from inside a dialog too: to its first
+  button, and back when it closes. The stack is the "Notifications (F8)" landmark.
 - `"error"` is the old name of `"negative"`. It still works and is deprecated.
 - The tone is a glyph as well as a hue; the box is the raised surface, not a block of the tone's
   colour, with a floating surface's `rounded-md` corners.

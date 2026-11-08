@@ -24,7 +24,7 @@ The native choosing table is [native.md](../native.md).
 | [code-and-markdown.md](code-and-markdown.md) | `CodeBlock`, `Markdown`, `MarkdownEditor`, `MarkdownCodeEditor` |
 | [inputs.md](inputs.md) | icons and fixed text in an input, `SearchInput`, `PasswordInput`, `FilePicker` |
 | [display.md](display.md) | `Progress`, `ColorDot`, `Badge onRemove`, `Alert`, `Spinner`, `Toast`, `Skeleton`, `Separator` |
-| [theme.md](theme.md) | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` |
+| [theme.md](theme.md) | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider`, and the type and spacing scale |
 
 ## Hover, focus, chosen and disabled
 

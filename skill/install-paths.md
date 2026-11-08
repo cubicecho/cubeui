@@ -123,6 +123,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
 | `overflows` | web | `components/ui/overflows.tsx` | `import { useOverflows } from "@/components/ui/overflows"` |
 | `overflows` | native | `components/ui/overflows.tsx`; also `overflows.web.tsx` | `import { useOverflows } from "@/components/ui/overflows"` |
+| `overlay` | both | `components/ui/overlay.tsx` | `import { useTopLayer, OverlayHost, OverlayLayer, OverlayPortal } from "@/components/ui/overlay"` |
 | `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
 | `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
@@ -174,7 +175,8 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `theme-picker` | web | `components/ui/theme-picker.tsx`; also `theme-preference-base.ts`, `theme-preference.tsx` | `import { ThemePicker } from "@/components/ui/theme-picker"` |
 | `theme-picker` | native | `components/ui/theme-picker.tsx`; also `theme-preference-base.ts`, `theme-preference.tsx`, `theme-preference.web.tsx` | `import { ThemePicker } from "@/components/ui/theme-picker"` |
 | `theme-picker-stories` | web | `components/ui/theme-picker.stories.tsx` | — (stories) |
-| `toast` | both | `components/ui/toast.tsx` | `import { ToastProvider, useToast } from "@/components/ui/toast"` |
+| `toast` | web | `components/ui/toast.tsx`; also `toast-announce.tsx` | `import { ToastProvider, useToast } from "@/components/ui/toast"` |
+| `toast` | native | `components/ui/toast.tsx`; also `toast-announce.tsx`, `toast-announce.web.tsx` | `import { ToastProvider, useToast } from "@/components/ui/toast"` |
 | `toggle-chip` | both | `components/ui/toggle-chip.tsx` | `import { ToggleChip } from "@/components/ui/toggle-chip"` |
 | `toggle-chip-stories` | web | `components/ui/toggle-chip.stories.tsx` | — (stories) |
 | `tokens` | web | `cubeui-tokens.css`; also `cubeui-reset.css` | — (a stylesheet: see `tokens` above) |
@@ -183,5 +185,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 19 more } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 19 more } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 20 more } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 20 more } from "@/lib/utils"` |

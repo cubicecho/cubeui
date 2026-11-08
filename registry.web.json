@@ -395,7 +395,8 @@
         "@cubeui/utils",
         "@cubeui/icons",
         "@cubeui/button",
-        "@cubeui/frame-focus-guard"
+        "@cubeui/frame-focus-guard",
+        "@cubeui/overlay"
       ],
       "files": [
         {
@@ -414,7 +415,7 @@
       "title": "Popover",
       "description": "Radix anchored to its trigger on web; a centred native sheet on device, because anchoring is a pointer-era affordance.",
       "dependencies": ["radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/frame-focus-guard"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/frame-focus-guard", "@cubeui/overlay"],
       "files": [
         {
           "path": "registry/ui/popover-base.ts",
@@ -492,7 +493,12 @@
       "title": "Select",
       "description": "A radix listbox under its trigger on web; the options in a Modal sheet on device, which is what every native platform does.",
       "dependencies": ["radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/frame-focus-guard"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/frame-focus-guard",
+        "@cubeui/overlay"
+      ],
       "files": [
         {
           "path": "registry/ui/select-base.ts",
@@ -551,7 +557,7 @@
       "title": "Tooltip",
       "description": "Radix on hover and focus on web; long-press on device, which is the platform's own way to ask what a control does.",
       "dependencies": ["radix-ui@^1.6.7"],
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/overlay"],
       "files": [
         {
           "path": "registry/ui/tooltip-base.ts",
@@ -1019,6 +1025,19 @@
       ]
     },
     {
+      "name": "overlay",
+      "type": "registry:ui",
+      "title": "Overlay",
+      "description": "Where a tooltip or a toast is drawn on device: a layer over the app (OverlayHost, which ToastProvider draws) and one inside each Modal (OverlayLayer, which the dialog, popover, menu and select draw), so a ScrollView does not clip it and an open dialog does not cover it. Nothing on the web draws one: radix portals to <body> there.",
+      "files": [
+        {
+          "path": "compiled/overlay.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": ["@cubeui/tokens"]
+    },
+    {
       "name": "reduced-motion",
       "type": "registry:ui",
       "title": "Reduced Motion",
@@ -1230,11 +1249,16 @@
         "@cubeui/utils",
         "@cubeui/icons",
         "@cubeui/bottom-bar",
+        "@cubeui/overlay",
         "@cubeui/tokens"
       ],
       "files": [
         {
           "path": "compiled/toast.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "compiled/toast-announce.tsx",
           "type": "registry:ui"
         }
       ]

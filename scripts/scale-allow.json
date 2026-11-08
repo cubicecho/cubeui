@@ -1,0 +1,11 @@
+{
+  "registry/layout/sidebar.tsx": {
+    "leading-3": "The count hung off a rail icon's corner: 12px digits on a 12px line, to fit the 8px the icon leaves above it. Digits have nothing hanging below them."
+  },
+  "registry/ui/item-base.ts": {
+    "px-2.75": "An outlined `sm` row takes its 1px border out of its padding (12px less 1px), so it is the same size as a plain one.",
+    "py-1.75": "An outlined `sm` row takes its 1px border out of its padding (8px less 1px), so it is the same size as a plain one.",
+    "leading-snug": "`Item`'s `default` size is shadcn's, kept as shadcn draws it for a DOM app porting its rows. `sm` is the one on the scale.",
+    "leading-normal": "`Item`'s `default` size is shadcn's, kept as shadcn draws it for a DOM app porting its rows. `sm` is the one on the scale."
+  }
+}

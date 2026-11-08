@@ -25,7 +25,7 @@ import { Platform, ScrollView, Text, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { useOverflows } from "@/components/ui/overflows";
 import { useReducedMotion } from "@/components/ui/reduced-motion";
-import { cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
+import { CODE_TEXT, cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** Monospaced text inline in a sentence. */
 export function Code({
@@ -38,7 +38,8 @@ export function Code({
   return (
     <Text
       className={cn(
-        "rounded-sm bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
+        CODE_TEXT,
+        "rounded-sm bg-foreground/10 px-1 py-0.5 text-foreground",
         className,
       )}
     >
@@ -62,7 +63,7 @@ const MAX_HEIGHTS = {
 export const CodeBlockTitleContext = createContext<string | undefined>(undefined);
 
 /** The block's type, which is `Code`'s: the two are one family and should not drift apart. */
-const TEXT = "font-mono text-xs text-foreground";
+const TEXT = cn(CODE_TEXT, "text-foreground");
 
 /**
  * One line, with an ellipsis: `truncate` on the web, `line-clamp-1` on device, which is what

@@ -161,6 +161,10 @@ device, `onClick` on the web.
   announce the button as unavailable.
 - The tooltip draws no element around the button, on device or on the web, so `className`
   places the button in its parent: `ml-auto`, `self-end`, `flex-1`.
+- On device the bubble is drawn over the screen, so a `ScrollView` does not clip it: its own width
+  up to 320px, centred on the button, 8px inside the screen, on the other side when `side` has
+  no room. That takes a layer at the app's root — see
+  [native.md](../native.md#a-layer-at-the-root).
 - A string `hint` is the button's accessibility hint, read after the name. A `hint` that is a node
   is only the tooltip there; pass a string when it has to be heard.
 - `type` and `aria-describedby` are web only. A device has no form to submit.
