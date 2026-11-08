@@ -11,12 +11,20 @@
  * - its hue within 12° of where it started, its lightness within a band around Okabe-Ito's own,
  *   and at least 80% of its chroma, so blue stays blue and orange does not darken into brown;
  * - the closest two colours as far apart as they can be, under normal vision and the three
- *   deficiencies, measured in OKLab.
+ *   deficiencies, measured in OKLab — and each as far from the palette's status colours, which
+ *   are fixed points in that search, so no chart colour can be taken for a status.
  *
  * The last is found by a seeded random search, so the same palette always gives the same colours,
  * and a palette writes nothing for them.
  */
-import { closestPair, contrastRatio, isOutOfGamut, toRgb } from "../scripts/oklch.mjs";
+import {
+  closestPair,
+  contrastRatio,
+  isOutOfGamut,
+  seenAs,
+  toRgb,
+  VISIONS,
+} from "../scripts/oklch.mjs";
 
 /** @typedef {import("./palette.mjs").Oklch} Oklch */
 
@@ -53,7 +61,16 @@ export const SERIES = {
   },
   /** The closest pair may come no nearer than this, in OKLab, under any vision. */
   apart: 0.06,
+  /**
+   * And no chart colour nearer than this to a status colour. Short of `apart`: with Okabe-Ito's
+   * hues held within `hueDrift`, its sky blue and bluish green sit where `info` and `positive` are
+   * under tritanopia, and 0.05 is what every palette reaches while the six keep 0.06 between them.
+   */
+  apartFromStatus: 0.05,
 };
+
+/** The colours a chart's own may not be mistaken for. */
+export const STATUS_TOKENS = ["positive", "warning", "negative", "info"];
 
 const SEED = 7;
 const ITERATIONS = 20000;
@@ -95,16 +112,34 @@ const drift = (h, from) => Math.abs(((h - from + TURN + HALF_TURN) % TURN) - HAL
 
 const cache = new Map();
 
+/** The nearest any of `rgbs` comes to any of `fixed`, under any vision, as an OKLab distance. */
+export function closestToFixed(rgbs, fixed) {
+  let closest = Number.POSITIVE_INFINITY;
+  for (const vision of VISIONS) {
+    const seen = fixed.map((rgb) => seenAs(rgb, vision));
+    for (const rgb of rgbs) {
+      const [l, a, b] = seenAs(rgb, vision);
+      for (const [fl, fa, fb] of seen) {
+        closest = Math.min(closest, Math.hypot(l - fl, a - fa, b - fb));
+      }
+    }
+  }
+  return closest;
+}
+
 /**
- * Six chart colours for a page and a card.
+ * Six chart colours for a page and a card, kept apart from each other and from `fixed`.
  *
  * @param {Oklch} page
  * @param {Oklch} card
  * @param {boolean} dark Whether the page is the dark end, which picks the lightness band.
+ * @param {Oklch[]} [fixed] The palette's status colours: the search keeps away from them as it
+ *   keeps the six apart, and never moves them.
  * @returns {Oklch[]}
  */
-export function fitSeries(page, card, dark) {
-  const key = JSON.stringify([page, card, dark]);
+export function fitSeries(page, card, dark, fixed = []) {
+  const key = JSON.stringify([page, card, dark, fixed]);
+  const fixedRgb = fixed.map(toRgb);
   const known = cache.get(key);
   if (known) {
     return known;
@@ -146,7 +181,12 @@ export function fitSeries(page, card, dark) {
     if (colours.every(legal) === false) {
       continue;
     }
-    const { distance } = closestPair(colours.map(toRgb));
+    const rgbs = colours.map(toRgb);
+    // Each distance as a share of its floor, so neither is bought with the other.
+    const distance = Math.min(
+      closestPair(rgbs).distance / SERIES.apart,
+      closestToFixed(rgbs, fixedRgb) / SERIES.apartFromStatus,
+    );
     if (distance > bestDistance) {
       bestDistance = distance;
       best = candidate;

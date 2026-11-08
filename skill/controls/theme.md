@@ -112,6 +112,12 @@ says.
   press. The active tab and the sidebar's current row are the tint too. Hover is grey and never
   `active`. The whole rule, state by state, is in
   [Hover, focus, chosen and disabled](index.md#hover-focus-chosen-and-disabled).
+- **Every palette draws the same steps.** A card or popover (`secondary`) is about 1.1:1 off the
+  page and `hover` about 1.2:1 beyond it, in light, dark and Monokai alike. The four status colours
+  differ in lightness as well as hue, so they stay apart for a reader with a colour-vision
+  deficiency. Colour alone still says nothing to some readers, so a dot that means something gets
+  a `label`, which the web shows as a tooltip. App chrome, a sidebar or a bar, is `bg-background`,
+  and shadcn's `sidebar` alias is too.
 - The colours are in `palettes` in `@/lib/cubeui-theme`; `paletteFor(scheme, palette)` gives the
   set a screen is painted with, for a chart or anything else that takes a colour as a prop.
 

@@ -65,7 +65,7 @@ with a filled `div` and a `style.width` inside it.
 | `color` (required) | `string` |  |  |
 | `size` | `"sm" \| "md"` | `"md"` |  |
 | `className` | `string` |  |  |
-| `label` | `string` |  | What the colour stands for, exposed as the accessible name. |
+| `label` | `string` |  | What the colour stands for: the accessible name, and on the web the tooltip under the pointer. Without it the dot is decoration. |
 <!-- /props -->
 
 - It is drawn inline, not in a popover: a row of swatches over a hex field, one source for both
@@ -95,7 +95,8 @@ Showing a colour the user picked is three small items, all on both halves:
 
 - **`ColorDot`** (`@cubeui/color-dot`) — a round swatch standing in for a category, status or
   tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
-  assistive tech; with one, the label is its accessible name.
+  assistive tech; with one, the label is its accessible name, and on the web its tooltip under
+  the pointer. Do not wrap a labelled dot in a `Tooltip` of your own: that draws a second one.
 - **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), normalised so it
   stays visible in both themes, and `accentLabel` names it. It takes `#rgb` or `#rrggbb`, with or
   without the `#`; anything else draws no stripe. Pass it on `Card` rather than placing
@@ -128,7 +129,7 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
 | `backgroundColor` | `string` |  | Overrides the variant's background with a literal colour — for a badge standing in for a user-chosen tag or category. Passing it also drops the variant's label colour, since the caller's background is unknown and `text-neutral-foreground` would be a guess. Pair it with `readableTextColor` when the label has to stay legible on an arbitrary hue. |
 | `textColor` | `string` |  | Overrides the label's colour, for the same case as `backgroundColor`: with an arbitrary hue behind it, neither the variant's label colour nor the `text-foreground` fallback is guaranteed to be legible. `readableTextColor` is what computes the value to pass. |
 | `className` | `string` |  |  |
-| `label` | `string` |  | What the dot stands for, exposed as its accessible name. In the pill form the text is already the name, so there it only feeds `removeLabel`'s default when the children hold no text of their own. |
+| `label` | `string` |  | What the dot stands for: its accessible name, and on the web its tooltip under the pointer. In the pill form the text is already the name, so there it only feeds `removeLabel`'s default when the children hold no text of their own. |
 | `onRemove` | `(() => void)` |  | Draws a trailing ✕, a button of its own, that calls this — a tag or a filter chip the user can take off. The ✕ is in the label's colour, and pressing it reaches nothing else on the badge. Ignored by the dot, which has no room for it, and by the web half's `asChild`, whose one child is the whole badge. |
 | `mono` | `boolean` | `false` | Sets the label in monospace at normal weight, for a machine string: an id, a tool name, a cron expression. It is on the label's type, not the container, so it reaches the `Text` on native. `variant` stays free for colour. |
 | `pulse` | `boolean` | `false` | Pulses the dot, for something live: a run in progress, a connection that is up. The dot only; a badge with children ignores it. It stops for a reader who asked for reduced motion. |
@@ -152,6 +153,10 @@ A tag or filter chip the user can take off is `Badge` with `onRemove`, on both h
   `type="button"`, so it never submits a form, and its press stops there: the badge's own
   `onClick` does not fire. The hit area is bigger than the glyph and the pill is no taller.
 - The dot (no children) ignores `onRemove`, and so does the web's `asChild`.
+- A dot with a `label` shows it as a tooltip under the pointer on the web, a soft variant's dot
+  too: its colour is all a sighted reader has, and two status colours can be one colour to a
+  reader with a colour-vision deficiency. Give every dot that means something a `label`. The
+  tooltip is not its description, so the name is read once.
 - `mono` sets the label in monospace at normal weight, for a machine string: a tool name, an id,
   a cron expression. Write `<Badge variant="outline" mono>{name}</Badge>`, not
   `className="font-mono font-normal"`: a class lands on the container, which on native does not

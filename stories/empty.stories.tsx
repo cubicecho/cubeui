@@ -26,7 +26,7 @@ import { SideBySide } from "./side-by-side";
 
 /**
  * shadcn's `Empty` parts on both halves. The play tests say the compound form draws what
- * `EmptyState` draws — the 48-pixel muted bubble with a 24-pixel glyph, a 14-pixel title, a muted
+ * `EmptyState` draws — the 48-pixel muted bubble with a 24-pixel glyph, a 16-pixel title, a muted
  * line — and that `EmptyState` is those parts, box for box.
  */
 const meta = { title: "RN Parity/Empty" } satisfies Meta;
@@ -187,5 +187,77 @@ export const IsEmptyState: Story = {
       await expect(title(shell).top - offset).toBe(title(parts).top);
       await expect(title(shell).left).toBe(title(parts).left);
     }
+  },
+};
+
+const longTitle = "Nothing has been shared with this workspace by anyone on your team yet";
+
+/**
+ * Long words on a narrow column (#482): a title that wraps stays centred over the bubble, the line
+ * under it starts 4px below it rather than touching, and the line is capped at 384px however wide
+ * the page is. A link in the line is `info`, at rest and not only under the pointer.
+ */
+export const LongWords: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div data-testid="native" className="w-[560px] max-w-full">
+          <NativeEmpty>
+            <NativeHeader>
+              <NativeMedia variant="icon">
+                <NativeSearch />
+              </NativeMedia>
+              <NativeTitle>{longTitle}</NativeTitle>
+              <NativeDescription>
+                When someone shares a document, a board or a folder with the whole workspace, it
+                shows up here for everyone to open.
+              </NativeDescription>
+            </NativeHeader>
+          </NativeEmpty>
+        </div>
+      }
+      compiled={
+        <div data-testid="compiled" className="w-[560px] max-w-full">
+          <CompiledEmpty>
+            <CompiledHeader>
+              <CompiledMedia variant="icon">
+                <CompiledSearch />
+              </CompiledMedia>
+              <CompiledTitle>{longTitle}</CompiledTitle>
+              <CompiledDescription>
+                When someone shares a document, a board or a folder with the whole workspace, it
+                shows up here for everyone to open. <a href="#sharing">How sharing works</a>
+              </CompiledDescription>
+            </CompiledHeader>
+          </CompiledEmpty>
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const DESCRIPTION_CAP = 384;
+    const TITLE_TO_LINE = 4;
+    for (const half of ["native", "compiled"]) {
+      const root = canvas.getByTestId(half);
+      const title = within(root).getByText(longTitle);
+      // A `testID` is `data-testid` under react-native-web and `data-slot` once compiled.
+      const slot = half === "native" ? "data-testid" : "data-slot";
+      const line = root.querySelector<HTMLElement>(`[${slot}=empty-description]`);
+      if (!line) {
+        throw new Error("the description should carry its data-slot");
+      }
+      await expect(getComputedStyle(title).textAlign).toBe("center");
+      await expect(line.getBoundingClientRect().width).toBeLessThanOrEqual(DESCRIPTION_CAP);
+      await expect(line.getBoundingClientRect().top - title.getBoundingClientRect().bottom).toBe(
+        TITLE_TO_LINE,
+      );
+    }
+    const link = canvas.getByRole("link", { name: "How sharing works" });
+    const probe = document.createElement("span");
+    probe.className = "text-info";
+    canvasElement.append(probe);
+    await expect(getComputedStyle(link).color).toBe(getComputedStyle(probe).color);
+    probe.remove();
   },
 };

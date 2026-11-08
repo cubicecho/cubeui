@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type * as React from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { Badge } from "@/components/ui/badge";
 
 /**
@@ -49,20 +49,36 @@ export const Variants: Story = {
 
 /**
  * No label collapses the pill to a dot, which is named when it means something and hidden when
- * it does not — never an unnamed node in the accessibility tree.
+ * it does not — never an unnamed node in the accessibility tree. A named dot shows its name under
+ * the pointer, since its colour is all a sighted reader has, and the name is read once: the tooltip
+ * is not also its description.
  */
 export const Dots: Story = {
   render: () => (
     <>
       <Badge variant="warning" label="Paused" />
+      <Badge variant="info-soft" label="Queued" />
       <Badge variant="secondary" />
     </>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("img", { name: "Paused" })).toBeInTheDocument();
-    await expect(canvas.queryAllByRole("img")).toHaveLength(1);
+    await expect(canvas.queryAllByRole("img")).toHaveLength(2);
     await expect(canvasElement.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1);
+
+    // A soft variant's dot is the solid colour, and as colour-only as any other.
+    for (const name of ["Paused", "Queued"]) {
+      const dot = canvas.getByRole("img", { name });
+      await userEvent.hover(dot);
+      const tooltip = await screen.findByRole("tooltip");
+      await expect(tooltip).toHaveTextContent(name);
+      await waitFor(() => expect(tooltip).toBeVisible());
+      await expect(dot).not.toHaveAttribute("aria-describedby");
+      await expect(dot).toHaveAccessibleDescription("");
+      await userEvent.unhover(dot);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+    }
   },
 };
 

@@ -137,14 +137,35 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
   So the first cell of a body row — the thing the row is *about* — is a `TableHead`, not a
   `TableCell`, and a screen reader names the row before reading each cell of it. Pass `scope`
   to override.
-- **The header row is quieter than the data**: `TableHead` in a `TableHeader` is `text-foreground/60`,
-  and the table sets `tabular-nums`, so a right-aligned column of figures lines up digit for digit.
-  Right-align a number column yourself with `className="text-right"` on its head and cells. The row
-  rules collapse into one line, with or without Tailwind's preflight.
+- **The column names are quieter than the data**: `TableHead` in a `TableHeader` is
+  `text-foreground/60`, on one line. A row's own header in the body is in the data's ink, so the
+  row's subject is not its quietest text. The table sets `tabular-nums`, so a right-aligned column
+  of figures lines up digit for digit. Right-align a number column yourself with
+  `className="text-right"` on its head and cells. The row rules collapse into one line, with or
+  without Tailwind's preflight.
+- **Body cells wrap; column names don't.** A message or a title wraps at its column's width, so
+  a table on a card fits the card rather than scrolling. A name stays on one line, and it is also
+  the narrowest its column gets. Give a value that reads wrongly broken — a date, a time, an id, a
+  person's name, a figure with its unit — `className="whitespace-nowrap"` on its cells.
+- **A value with no spaces — a URL, a hash, a path — can't wrap at a word**, so it sets its
+  column's width and pushes the table wide. Put `className="wrap-anywhere"` on that column's
+  cells and it breaks between any two letters instead. Keep it to that column: on every cell, a
+  narrow table breaks ordinary words mid-word rather than scrolling.
+- **A row tints under the pointer only when it can be acted on**: it holds a checkbox, a link, a
+  button or a field, or it has an `onClick`. A row of words alone stays still, and so does the
+  header row. A chosen row is `data-state="selected"`, which tints it `active`, a step further
+  under the pointer.
 - **A `TableCaption` names the table.** Give one to every table that is not already under a
-  heading saying what it is; `className="sr-only"` keeps the name without the line.
+  heading saying what it is; `className="sr-only"` keeps the name without the line. Write it
+  straight inside `Table`, as shadcn does: there it is drawn under the scroll box, so it stays in
+  view however far the rows are scrolled, and the table is `aria-labelledby` it. A caption inside a
+  fragment or a component of yours stays a `<caption>` in the table and scrolls with it. Keep it to
+  words: it is read as the name, not as a line after the rows.
 - Too wide for its column, it scrolls sideways inside its own container rather than widening the
   page, and the container becomes a tab stop while it does so a keyboard can scroll it too.
+  The end with more columns past it fades, so it is plain there is more: the far end at first,
+  both ends partway, the near end once scrolled to the last column. The fade is a mask, so it
+  fades into a card or a dialog as well as the page.
   Tabbed to, its edge turns `active`, as a focused field's border does, and no ring is drawn; a
   click on it shows nothing. It keeps a transparent 1px edge for as long as it is a tab stop.
 - **A long table keeps its column names in view with `maxHeight`.** The table becomes its own

@@ -96,6 +96,8 @@ test that finds them by name needs changing:
 | `PageLayout` | `headerClassName` now lands on the whole header, which runs the full width, not on the `PageHeader` inside it. The rule under the title runs the pane's width. |
 | `Table` | New: `maxHeight` (`"sm" \| "md" \| "lg"`) caps the table's height and pins its header row while the rows scroll inside it ([#415](https://github.com/cubicecho/cubeui/issues/415)). An app whose own `table.tsx` had a `sticky` prop loses it on reinstall: use `maxHeight` instead, and remove the scrolling box and `max-h-*` the app put around the table for it. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
+| `ErrorPage`, `LoadError` | Without `describe`, the line under the title is `describeError`'s, from `@cubeui/error-message`. A `describe` that returns `""` hands the error to it. To add your own failures, answer those and return `describeError(error)` for the rest ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
+| `EmptyTitle` | New: `level` (`1 \| 2 \| 3`) makes it a heading of that rank, at the same size. It replaces passing `role="heading"` and `aria-level` yourself, which still works ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
 | `useToast` | The tone `"error"` is now `"negative"`, the colour token's name (the old name still works, deprecated). It is still the default ([#477](https://github.com/cubicecho/cubeui/issues/477)). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
@@ -279,6 +281,19 @@ to add them.
   `DateTimeInput` stay on the page background under the pointer and under focus, where they used
   to fill grey, and focus turns the edge `active`. A refused one is edged in `negative`, on both
   halves. A searchable or `multiple` `Combobox` now draws its refused edge on device too.
+- **The palettes are retuned** ([#479](https://github.com/cubicecho/cubeui/issues/479)), so each
+  theme draws the same steps and the status colours differ in lightness, not only in hue.
+  - Default light: a card, popover or dialog (`secondary`) is `#F5F5F5`, a step greyer, and
+    `hover` is a step darker. `warning` is a darker burnt orange, `#742C02`. `negative` is
+    `#B02B26`, `info` `#0863A6` and `positive` `#196635`.
+  - Default dark: `secondary` is `#171717`, closer to the page than the `#262626` it was, and
+    `hover` is `#142A30`. `positive` is a lighter green, `#4ADE80`.
+  - Monokai: `secondary` is `#2E2F28`, `positive` `#2BCA63`, `warning` `#FD9D16` and `negative`
+    `#FF74A0`.
+  - shadcn's `sidebar` alias is now `background`, so a copied shadcn sidebar is drawn as the page,
+    as cubeui's own `Sidebar` is, and not as a card.
+  - A `Badge` dot or a `ColorDot` with a `label` shows it as a tooltip on the web. A `Tooltip` you
+    wrapped around one by hand can go.
 - **A refused checkbox or switch is red when checked**
   ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
   box's or an on switch's `active` one, and the device halves draw it.
@@ -293,6 +308,57 @@ to add them.
   ([#475](https://github.com/cubicecho/cubeui/issues/475)), where `ListItem` puts it, and no
   longer straight after the title. Its `data-slot` (`testID` on device) is `list-item-meta`, where
   it was `collapsible-row-meta`.
+- **`ErrorPage` is drawn as an empty state with a red bubble**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). It is `Empty`'s block now, so it matches an empty or not-found
+  screen: a 48px bubble with a 24px icon (it was 60px and 28px), 12px between its parts (16px),
+  `py-10` (`py-20`) and a `px-4` side inset (`px-8`). The title is 16px on both halves, where it was
+  14px on device. The line under it, the details and the buttons are capped at 384px (448px). Its
+  `data-slot`s keep their names, and the parts inside it carry `Empty`'s.
+- **`LoadError` and `ErrorPage` word a failure the same way**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). Both use `describeError`, from `@cubeui/error-message`, unless
+  given a `describe`. A failed fetch now reads "Could not reach the server. Check your connection
+  and try again." on `LoadError` too, where it showed the browser's "Failed to fetch". "Not
+  authenticated" reads "Your session has expired. Please sign in again." A failure with no message
+  reads "An unexpected error occurred.", where `LoadError` said "The server did not answer." A test
+  that expects the raw wording expects the new line. `ErrorPage` now also knows React Native's
+  "Network request failed" and Safari's "Load failed". A reinstall of `load-state` or
+  `error-page` also writes `lib/error-message.ts`.
+- **An empty state's title is centred, with a gap under it**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). A title that wraps stays centred over the bubble. The line under it
+  starts 4px lower and is capped at 384px, so on a wide page it wraps rather than running across
+  it. A link in that line is `text-info` at rest, not only under the pointer. The bubble's 12px is
+  unchanged: `EmptyHeader` has a 4px gap now and `EmptyMedia`'s margin went from 12px to 8px, so
+  an `EmptyMedia` of yours outside an `EmptyHeader` sits 4px closer to what follows.
+- **`EmptyState`'s heading is a real heading element on the web**
+  ([#482](https://github.com/cubicecho/cubeui/issues/482)). With `level`, its title is an `<h1>`–`<h3>`, where it was a `<span>`
+  with `role="heading"`. The compact line now carries `data-slot` `empty`, `empty-icon` and
+  `empty-title`, like the block, so a selector of yours on `[data-slot=empty]` finds it too.
+- **Every `Table` looks different: body cells wrap**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableCell`, and a row's own
+  `TableHead` in the body, is no longer `whitespace-nowrap`, so a long message or title wraps at
+  its column's width, and a table on a card that used to scroll sideways now fits it. Its rows get
+  taller instead. The column names in `TableHeader` stay on one line. A cell that must not break —
+  a date, a time, an id, a name — takes `className="whitespace-nowrap"`; a `whitespace-normal` you
+  added to make a cell wrap can go. A URL or a hash still pushes the table wide: give its cells
+  `wrap-anywhere`.
+- **A `Table`'s caption is drawn under the scroll box**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableCaption` written straight
+  inside `Table` stays in view while the rows scroll. It is a `div` now, inside a new wrapper,
+  `data-slot="table-frame"`, and the table is `aria-labelledby` it, so the table's name is
+  unchanged. A test that found the caption as `caption` finds it by `data-slot="table-caption"`.
+  A table with no caption has no wrapper.
+- **A `Table` that scrolls sideways fades the end with more columns past it**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). The far end at first, the near end once
+  scrolled to the last column. Nothing moves. `useOverflows` hands back which ends have more as a
+  third value, `{ start, end }`.
+- **A `Table` row tints under the pointer only when it can be acted on**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A row that holds a checkbox, a link,
+  a button or a field, or has an `onClick`, turns `bg-hover` as before. A row of words alone, the
+  header row and the footer stay still. A selected row is unchanged.
+- **A row's own header is in the data's ink**
+  ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
+  `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
+  you put on it, or on a `span` inside it, to undo the grey can go.
 
 ## Checking the result
 

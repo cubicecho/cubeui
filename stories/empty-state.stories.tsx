@@ -138,6 +138,13 @@ export const Compact: Story = {
       await expect(getComputedStyle(title).color).toBe(muted);
       await expect(getComputedStyle(title).fontSize).toBe("14px");
       await expect(getComputedStyle(title).fontWeight).toBe("400");
+
+      // The block's part names, so a selector from outside finds either form (#482). A `testID`
+      // is `data-testid` under react-native-web and `data-slot` once compiled.
+      const slot = title === titles[0] ? "data-testid" : "data-slot";
+      await expect(line.getAttribute(slot)).toBe("empty");
+      await expect(title.getAttribute(slot)).toBe("empty-title");
+      await expect(line.querySelector(`[${slot}=empty-icon] svg`)).not.toBeNull();
     }
 
     onAdd.mockClear();

@@ -180,6 +180,12 @@ component cannot invent a seventh:
 
 A floating surface is the exception, and is why `secondary` exists: a popover has to be opaque.
 
+**Every palette takes the same steps.** `secondary` is 1.08–1.15:1 from the page, `hover`
+1.15–1.3:1 beyond it, and the chosen tint 1.7–2.1:1 from what it is drawn on. The status colours
+are held 0.06 apart in OKLab under normal vision and the three colour-vision deficiencies, which
+takes a difference in lightness as well as hue, and the chart colours 0.05 from them.
+`palette-contrast.test.mjs` holds all of it, and the reasons are in `tokens/palette.mjs`.
+
 **A shadow means elevation.** Only something floating over the page draws one: a dialog, a menu, a
 select's list, a popover, a tooltip, a toast, a control laid over content. A surface in the page's
 flow (`Card`, `CardLayout`, `Alert`) is set apart by its border and fill, and never a
@@ -270,7 +276,7 @@ Storybook `storybook/`. The landing page lists every item and which platforms it
 tokens/palette.mjs                    the one colour source; `tokens:build` emits dist/
 registry/ui/                          primitives, React Native, some with a .web.tsx half
 registry/layout/                      the shells, React Native, compiled for the web
-registry/lib/                         `cn`, readableTextColor, the colour helpers, `messageOf`
+registry/lib/                         `cn`, readableTextColor, the colour helpers, `describeError`
 registry/web/                         the web-only tier, hand-written DOM
 registry/web/ui/                      upstream shadcn primitives, re-published from here
 skill/                                the usage skill: SKILL.md, vocabulary.md, native.md, and

@@ -9,7 +9,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { dark, light, palettes } from "../tokens/palette.mjs";
-import { toRgb } from "./oklch.mjs";
+import { closestToFixed, fitSeries, SERIES, STATUS_TOKENS } from "../tokens/series.mjs";
+import { closestPair, toRgb } from "./oklch.mjs";
 
 /** The two surfaces anything is drawn on: the page, and a card or popover raised off it. */
 const SURFACES = ["background", "secondary"];
@@ -257,5 +258,108 @@ for (const [set, map] of sets) {
       }),
     );
     assert.deepEqual(close, []);
+  });
+}
+
+/**
+ * The status colours have to stay apart for a reader with a colour-vision deficiency, which hue
+ * alone does not do: at one lightness red and green, or red and amber, are one colour to many of
+ * them. So each pair is held apart in OKLab, as each of the three deficiencies sees it as well as
+ * normal vision, at the bar the chart colours are held to (`tokens/series.mjs`). 0.02 is about the
+ * smallest step anyone notices.
+ */
+const STATUSES = STATUS_TOKENS;
+const STATUS_APART = SERIES.apart;
+for (const [set, map] of sets) {
+  test(`${set}: the status colours are apart under every colour vision`, () => {
+    const close = [];
+    for (let i = 0; i < STATUSES.length; i++) {
+      for (let j = i + 1; j < STATUSES.length; j++) {
+        const pair = [STATUSES[i], STATUSES[j]];
+        const { distance, vision } = closestPair(pair.map((name) => toRgb(map[name])));
+        if (distance < STATUS_APART) {
+          close.push(
+            `${pair.join(" and ")}: ${distance.toFixed(3)} (${vision}), needs ${STATUS_APART}`,
+          );
+        }
+      }
+    }
+    assert.deepEqual(close, []);
+  });
+}
+
+/**
+ * A chart's colours say nothing, so none of them may be taken for a status colour: the search in
+ * `tokens/series.mjs` holds the status colours fixed and keeps away from them.
+ */
+for (const [set, map] of sets) {
+  test(`${set}: no chart colour is close to a status colour`, () => {
+    const statuses = STATUSES.map((name) => map[name]);
+    const series = fitSeries(map.background, map.secondary, set.endsWith("dark"), statuses);
+    const close = series.flatMap((colour, i) =>
+      STATUSES.flatMap((name) => {
+        const distance = closestToFixed([toRgb(colour)], [toRgb(map[name])]);
+        return distance < SERIES.apartFromStatus
+          ? [`series-${i + 1} and ${name}: ${distance.toFixed(3)}, needs ${SERIES.apartFromStatus}`]
+          : [];
+      }),
+    );
+    assert.deepEqual(close, []);
+  });
+}
+
+/**
+ * The surfaces keep the same hierarchy in every palette: a card or popover the same step off the
+ * page, a highlighted row the same step further on from the card, and a chosen thing's tint the
+ * same weight on what it is drawn on. Not a floor WCAG sets, so each is a band, and the light theme
+ * sets its width: its page is white and a control's edge has to stay 3:1 on `hover`, which leaves
+ * about 1.3:1 from the page to `hover` to share between the two steps.
+ */
+const STEPS = {
+  "raised from the page": [1.08, 1.15],
+  "hover from raised": [1.15, 1.3],
+  "chosen tint from its surface": [1.7, 2.1],
+};
+const between = (label, r) => {
+  const [lo, hi] = STEPS[label];
+  const rounded = Math.round(r * 100) / 100;
+  return rounded < lo || rounded > hi
+    ? [`${label}: ${rounded.toFixed(2)}:1, needs ${lo}–${hi}`]
+    : [];
+};
+for (const [set, map] of sets) {
+  test(`${set}: the surfaces step as every palette's do`, () => {
+    const [page, raised, hover] = ["background", "secondary", "hover"].map((t) => toRgb(map[t]));
+    const contrast = (a, b) => {
+      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    // `hover` goes on past `secondary`, away from the page, or a highlighted row would sink into it.
+    const away = Math.sign(luminance(raised) - luminance(page));
+    const beyond =
+      Math.sign(luminance(hover) - luminance(raised)) === away
+        ? []
+        : ["hover is not further from the page than raised"];
+    const tints = SURFACES.flatMap((surface) =>
+      between(
+        "chosen tint from its surface",
+        contrast(
+          surfaceRgb(map, [
+            [surface, 1],
+            ["active", 0.4],
+          ]),
+          toRgb(map[surface]),
+        ),
+      ),
+    );
+    assert.deepEqual(
+      [
+        ...between("raised from the page", contrast(raised, page)),
+        ...between("hover from raised", contrast(hover, raised)),
+        ...beyond,
+        ...tints,
+      ],
+      [],
+    );
   });
 }
