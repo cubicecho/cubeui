@@ -61,15 +61,6 @@ const ICON_BOX = cn(
 );
 
 /**
- * What a pressable tile adds on the web: a compiled `Pressable` is a `<button>`, which centres its
- * text and draws no focus ring of its own. None of it is a class the device can read.
- */
-const PRESSABLE = Platform.select({
-  web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
-  default: undefined,
-});
-
-/**
  * A wrapper around a caller's node, not layout of its own: a block box on the web, where a compiled
  * view would otherwise be a flex column and lay a dot and a name out as two rows.
  */
@@ -103,9 +94,9 @@ export function StatTile({
   const ink = chosen ? "text-foreground" : "text-foreground/60";
   const classes = cn(
     "min-w-0 gap-1 p-4",
-    onPress !== undefined && PRESSABLE,
     chosen && "border-active bg-active/40",
-    chosen && Platform.select({ web: "hover:bg-active/60 focus-visible:bg-active/60" }),
+    // `Card` draws a pressable tile's hover, focus and press; a chosen one takes the tint's step.
+    chosen && "hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60",
     className,
   );
 

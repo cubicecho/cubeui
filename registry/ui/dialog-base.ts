@@ -84,6 +84,43 @@ export type DialogSectionProps = {
   children?: ReactNode;
 };
 
+/**
+ * What counts as a field when a dialog opens: a control a person fills in. A dialog with one
+ * focuses the first; a dialog with none focuses its own panel rather than its first button, which
+ * then looked hovered — a primary that reads unfilled the moment it appears.
+ */
+const FIELD_SELECTOR = [
+  "input:not([type=hidden])",
+  "textarea",
+  "select",
+  "[contenteditable=true]",
+  ...["textbox", "combobox", "checkbox", "switch", "radio", "slider", "spinbutton"].map(
+    (role) => `[role=${role}]`,
+  ),
+].join(",");
+
+/** Whether a field can take focus now: not disabled, drawn, and a stop in the tab order. */
+function canFocus(element: HTMLElement): boolean {
+  const disabled = element.matches(":disabled") || element.getAttribute("aria-disabled") === "true";
+  return disabled === false && element.tabIndex >= 0 && element.getClientRects().length > 0;
+}
+
+/** Anything else a keyboard can land on, for an `alertdialog`'s first answer. */
+const TABBABLE_SELECTOR = "button, [href], [tabindex]";
+
+/**
+ * Moves focus into a dialog that has just opened: to its first field, or to the panel itself when
+ * it has none. An `alertdialog` with no field focuses its first answer instead, as radix's does,
+ * which is the safe one. Web only, for radix's `onOpenAutoFocus` and for the native half under Expo
+ * web; the panel has to be focusable from script (`tabIndex={-1}`) and draws no ring when focused.
+ */
+export function focusOnOpen(panel: HTMLElement, alert = false): void {
+  const all = (selector: string) =>
+    Array.from(panel.querySelectorAll<HTMLElement>(selector)).filter(canFocus);
+  const target = all(FIELD_SELECTOR)[0] ?? (alert ? all(TABBABLE_SELECTOR)[0] : undefined) ?? panel;
+  target.focus({ preventScroll: true });
+}
+
 /** The dialog's card, on both platforms. `bg-secondary`, as a `Card` is, so it stands off the page behind the overlay. */
 export const DIALOG_CONTENT_CLASS =
   "w-full max-w-lg gap-4 rounded-lg border border-foreground/10 bg-secondary p-6 shadow-lg";

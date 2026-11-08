@@ -110,7 +110,8 @@ export function CollapsibleTrigger({
       className={cn(
         "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
         Platform.select({
-          web: "text-left focus-visible:bg-hover focus-visible:outline-none",
+          // Under the pointer as focused: hovered, and no ring.
+          web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
           default: undefined,
         }),
         className,

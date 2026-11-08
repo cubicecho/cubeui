@@ -39,6 +39,7 @@ eleven screens and came out with four fills, a border on about half and three pa
 | `title` | `string` |  | What the snippet is: a file name, a tool, a shell — ".mcp.json", "Claude Code", "curl". Drawn in a header row of its own, with the `actionSlot` beside it rather than beside the text, and it names a `CopyButton` inside the block "Copy {title}" unless that button has a `label`. |
 | `language` | `string` |  | The snippet's language, drawn muted after the `title` — "json", "bash". Only with a title. |
 | `follow` | `boolean` | `false` | Keep the end of a growing `content` in view — a live log, a run's output. Meaningful with `maxHeight`, since only a capped block scrolls. It follows while the reader is at the end, lets go once they scroll up, and shows "Jump to latest" until they are back. The text is never a live region: a log read aloud line by line drowns out everything else. |
+| `jumpLabel` | `string` | `"Jump to latest"` | The button's words that bring a reader who scrolled up back to the end of a `follow` block. The default is "Jump to latest"; pass the app's own translation. |
 | `className` | `string` |  | The block's root: its width, its margin. |
 <!-- /props -->
 
@@ -66,7 +67,8 @@ eleven screens and came out with four fills, a border on about half and three pa
   ```
 - **`follow`** keeps a growing `content` — a live log, a run's output — at its last line, with
   `maxHeight` so the block scrolls. It follows only while the reader is at the end: scrolled up,
-  they keep their place and a "Jump to latest" button appears until they are back. Do not write a
+  they keep their place and a "Jump to latest" button appears until they are back, an outline
+  `Button` at `sm` whose words are `jumpLabel`, for your translation. Do not write a
   `useEffect` that sets `scrollTop = scrollHeight` on every change; that yanks a reader who
   scrolled up to read. The text is `aria-live="off"`.
 

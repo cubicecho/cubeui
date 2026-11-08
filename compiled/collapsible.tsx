@@ -118,7 +118,7 @@ export function CollapsibleTrigger({
       className={cn(
         "cube-rn-view cube-rn-pressable",
         "min-w-0 flex-1 flex-row items-start gap-2 rounded-sm",
-        "text-left focus-visible:bg-hover focus-visible:outline-none",
+        "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none",
         className,
       )}
       style={style}

@@ -265,6 +265,79 @@ for (const [set, map] of sets) {
 }
 
 /**
+ * An outline button has no solid fill for focus to replace, and its fill alone, `bg-hover` or a
+ * colour's `/10` tint, changed 1.1-1.5:1 when it was tabbed to: every Cancel and every
+ * `ConfirmButton` trigger. So its edge darkens as well, as `secondary`'s does: `outline` from
+ * `foreground/50` to `/60` over `hover`, and a coloured outline from its `/50` rest to the full
+ * colour over its tint. Measured on the edge, where the change is, from rest to focused.
+ *
+ * Neither reaches 2.4.13's 3:1, as the chosen `/60` step does not, so each family is held at the
+ * change it has now rather than at a bar it cannot clear, and against the change the fill alone
+ * made, which the darker edge has to beat. The focused edge itself is 3:1 from the surface.
+ */
+const OUTLINE_FOCUS_FLOOR = { outline: 1.4, coloured: 2.2 };
+const OUTLINE_INKS = ["negative", "positive", "info"];
+const contrastOf = (a, b) => {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+for (const [set, map] of sets) {
+  test(`${set}: an outline button's edge changes when focused`, () => {
+    const short = SURFACES.flatMap((surface) => {
+      const outline = {
+        name: `outline on ${surface}`,
+        floor: OUTLINE_FOCUS_FLOOR.outline,
+        rest: [
+          [surface, 1],
+          ["background", 1],
+          ["foreground", 0.5],
+        ],
+        focused: [
+          [surface, 1],
+          ["hover", 1],
+          ["foreground", 0.6],
+        ],
+        fillOnly: [
+          [surface, 1],
+          ["hover", 1],
+          ["foreground", 0.5],
+        ],
+      };
+      const coloured = OUTLINE_INKS.map((ink) => ({
+        name: `${ink}-outline on ${surface}`,
+        floor: OUTLINE_FOCUS_FLOOR.coloured,
+        rest: [
+          [surface, 1],
+          [ink, 0.5],
+        ],
+        focused: [
+          [surface, 1],
+          [ink, 0.1],
+          [ink, 1],
+        ],
+        fillOnly: [
+          [surface, 1],
+          [ink, 0.1],
+          [ink, 0.5],
+        ],
+      }));
+      return [outline, ...coloured].flatMap(({ name, floor, rest, focused, fillOnly }) => {
+        const [restRgb, focusedRgb] = [rest, focused].map((layers) => surfaceRgb(map, layers));
+        const change = Math.round(contrastOf(restRgb, focusedRgb) * 100) / 100;
+        const alone = Math.round(contrastOf(restRgb, surfaceRgb(map, fillOnly)) * 100) / 100;
+        const edge = Math.round(contrastOf(focusedRgb, toRgb(map[surface])) * 100) / 100;
+        return [
+          ...(change < floor ? [`${name}: ${change.toFixed(2)}:1 from rest, needs ${floor}`] : []),
+          ...(change <= alone ? [`${name}: ${change.toFixed(2)}:1, no more than the fill's`] : []),
+          ...(edge < MARK_APART ? [`${name}: focused edge ${edge.toFixed(2)}:1, needs 3`] : []),
+        ];
+      });
+    });
+    assert.deepEqual(short, []);
+  });
+}
+
+/**
  * The status colours have to stay apart for a reader with a colour-vision deficiency, which hue
  * alone does not do: at one lightness red and green, or red and amber, are one colour to many of
  * them. So each pair is held apart in OKLab, as each of the three deficiencies sees it as well as

@@ -109,6 +109,7 @@ test that finds them by name needs changing:
 | `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
 | `SubmitButton` (`app-form`, `form`) | One API on both halves ([#478](https://github.com/cubicecho/cubeui/issues/478)): `isEdit` picks `createLabel` or `editLabel`, and `loadingLabel` is what it says while it runs. On the web, `content` is now `createLabel` and `pendingLabel` is now `loadingLabel`; in `form`, `savingLabel` is now `loadingLabel`. The old names still work, deprecated. `content={isEdit ? "Save changes" : "Create pool"}` becomes `isEdit={isEdit} createLabel="Create pool"`. In `form` it is now `positive` on a create form too, where it was `info`, and with no `isEdit` and no `createLabel` it says "Save", where it said "Create". The web one already said "Save" and was already `positive`. A web `variant="info"` on a create form's submit can go. |
 | `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
+| `CodeBlock` | New: `jumpLabel`, the words of the "Jump to latest" button on a `follow` block, for your translation. That button is now an outline `Button`, so `code` installs `button` ([#469](https://github.com/cubicecho/cubeui/issues/469)). |
 | `RadioGroupItem` | `hint` is a `Tooltip` and the option's description, on both halves, where it was the web's `title` attribute ([#472](https://github.com/cubicecho/cubeui/issues/472)). A test that read the `title` reads the description instead. `radio-group` now installs `tooltip`. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
@@ -425,6 +426,32 @@ to add them.
     a yellow is drawn olive, a navy mid blue. `hexToAccent` now returns `#rrggbb`, not `hsl()`.
   - A folded sidebar row's tooltip, and an `AppBarItem`'s, shows the whole name: "Servers, 2
     failing, 5", not only "Servers". The count and the status dot are on screen in words too.
+- **Focus shows on everything, and nothing draws the browser's ring**
+  ([#469](https://github.com/cubicecho/cubeui/issues/469)). A focused thing looks as it does under
+  the pointer.
+  - `SegmentedButton`'s pills, `ColorPicker`'s swatches, a pressable `Card`, `Tabs` under Expo web
+    and `CodeBlock`'s "Jump to latest" drew the browser's ring. They draw none now. A pill that is
+    not the current one turns grey when focused; it showed nothing.
+  - A swatch is ringed in grey under the pointer and focused, and the chosen one's ring thickens.
+  - A `Card` with `onPress` turns grey under the pointer, focused and pressed. `StatTile` looks as
+    it did. A `hover:` or `focus-visible:` class you put on a pressable card can go.
+  - A tab on device darkens while it is pressed.
+  - A `ListItem`, `CollapsibleRow` or `FileTree` row lights up only when its own middle is focused.
+    A focused action button or leading checkbox shows its own look and leaves the row alone.
+  - An `outline` button's edge darkens under the pointer, focused and pressed, as its fill turns
+    grey. A `destructive-outline`, `positive-outline` or `info-outline` edge is a little stronger
+    at rest, and turns the full colour.
+  - An off switch keeps its grey track and gets an `active` edge under the pointer and focused. It
+    turned pale when focused. An empty checkbox turns grey under the pointer, as it did focused.
+  - A dialog with nothing to type in focuses its own panel when it opens, not its first button, and
+    the panel shows nothing for it. A dialog with a field focuses the first field. A test that
+    expected the first button to have focus on open should expect the dialog. `ConfirmDialog` and
+    `AlertDialog` still focus Cancel.
+  - A `Collapsible`'s header turns grey under the pointer, as it did focused.
+  - A `RadioGroup` row's grey reaches 8px past the circle and the words, where it sat on the
+    circle's edge, and it shows under the pointer too. The row lines up where it did.
+  - `FilePicker`'s zone darkens its edge and turns grey under the pointer and focused. A file held
+    over `FilePickerButton` tints it as it tints the zone, where it drew a ring.
 
 ## Checking the result
 

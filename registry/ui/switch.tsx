@@ -13,6 +13,7 @@ import { Platform, Pressable, Text, View } from "react-native";
 import {
   SWITCH_THUMB_CLASS,
   SWITCH_TRACK_CLASS,
+  SWITCH_TRACK_OFF_CLASS,
   SWITCH_TRACK_ON_CLASS,
   type SwitchProps,
 } from "@/components/ui/switch-base";
@@ -82,7 +83,9 @@ function Switch({
       onBlur={onBlur}
       className={cn(
         SWITCH_TRACK_CLASS,
-        checked ? SWITCH_TRACK_ON_CLASS : "bg-foreground/50",
+        // No ring when focused, for Expo web: each state shows focus as it shows the pointer.
+        "focus-visible:outline-none",
+        checked ? SWITCH_TRACK_ON_CLASS : SWITCH_TRACK_OFF_CLASS,
         // After the on edge, so a refused switch is red whether it is on or off.
         isInvalid(ariaInvalid) && "border-negative",
         // `disabled:` never applies to a Pressable — apply the state directly.

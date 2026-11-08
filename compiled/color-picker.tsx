@@ -143,10 +143,18 @@ function Swatch({ color, selected, disabled, roving, onClick: onPress }: SwatchP
       // The chosen ring is `active`, as anything chosen is, and drawn outside the swatch with
       // a gap (`p-0.5`) so it does not sit on the colour. A border, not `ring-offset`,
       // which NativeWind has no counterpart for. `gap-1` on the row keeps its width.
+      //
+      // Under the pointer, pressed and focused, another swatch is ringed in the `/60` grey a border
+      // under the pointer takes, and the chosen one fills its gap with the `/60` step of the tint,
+      // so its ring thickens. A fill alone would be hidden behind the colour. No browser ring.
       className={cn(
         "cube-rn-view cube-rn-pressable",
-        "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5",
+        "h-11 w-11 items-center justify-center rounded-full border-2 p-0.5 focus-visible:outline-none",
         selected ? "border-active" : "border-transparent",
+        disabled === false &&
+          (selected
+            ? "hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+            : "hover:border-foreground/60 focus-visible:border-foreground/60 active:border-foreground/60"),
       )}
     >
       <div

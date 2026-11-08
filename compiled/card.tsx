@@ -54,10 +54,22 @@ type CardProps = ViewProps & {
  */
 const CARD_SURFACE_CLASS = "rounded-lg border border-foreground/10 bg-secondary text-foreground";
 
+/**
+ * What a pressable card adds: it looks hovered under the pointer, focused and pressed, and draws
+ * no ring. On the web a compiled `Pressable` is a `<button>`, which centres its text.
+ */
+const CARD_PRESSABLE_CLASS =
+  "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none active:bg-hover";
+
 /** A bordered surface for one thing, pressable when given `onPress`. */
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, accentColor, accentLabel, onClick: onPress, children, ...props }, ref) => {
-    const classes = cn(CARD_SURFACE_CLASS, accentColor && "relative overflow-hidden", className);
+    const classes = cn(
+      CARD_SURFACE_CLASS,
+      onPress && CARD_PRESSABLE_CLASS,
+      accentColor && "relative overflow-hidden",
+      className,
+    );
     const inner = (
       <>
         <ColorBar color={accentColor} label={accentLabel} />
