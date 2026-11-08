@@ -119,6 +119,15 @@ describe("isValidMove", () => {
     expect(isValidMove("ops", "ops-old")).toBe(true);
   });
 
+  it("lets a file go into the folder that shares its path, and not a folder into itself", () => {
+    expect(isValidMove("logs", "logs", "file")).toBe(true);
+    expect(isValidMove("logs", "logs/old", "file")).toBe(true);
+    expect(isValidMove("logs", "logs", "dir")).toBe(false);
+    // Left out, the type is a folder's: the stricter answer, as it was before it could be given.
+    expect(isValidMove("logs", "logs")).toBe(false);
+    expect(isValidMove("logs/run.log", "logs", "file")).toBe(false);
+  });
+
   it("refuses a move into the folder the path is already in", () => {
     expect(isValidMove("ops/pg.md", "ops")).toBe(false);
     expect(isValidMove("readme.md", "")).toBe(false);

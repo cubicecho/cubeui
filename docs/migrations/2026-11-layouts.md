@@ -116,6 +116,7 @@ test that finds them by name needs changing:
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
 | `tree`, `FileTree` | `buildTree` sorts `file2` before `file10`, and drops empty path segments, so an object store's `docs/` key is the folder `docs` and not an unnamed folder inside it. A file that shares its path with a folder is kept as its own row, after the folders, and the folder is drawn too; before, nothing under the folder was drawn ([#468](https://github.com/cubicecho/cubeui/issues/468)). Tell a file from a folder by `type`, not `path`. |
+| `tree`, `FileTree` | `onSelect` hands back the file's key as `entries` listed it, `a//b.md`, where it handed back the cleaned `a/b.md`, and the row's node as a second argument. `selected` matches that key or the cleaned path. `onMove` gets the dragged node as a third argument: its `type` says whether the file or the folder of a shared name moved. The file `logs` can now be dragged into the folder `logs`, and only the row being moved is muted. `isValidMove` takes the moved row's `type` as a third argument; left out, it answers for a folder, as before ([#496](https://github.com/cubicecho/cubeui/issues/496)). Keys with no doubled or edge `/` come back as before. |
 | `HeaderContentFooter` | New: `footerWidth`, the footer's own column, as `headerWidth` is the header's ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `PageLayout` | `footerClassName` lands on the footer bar, which now runs the full width; `footerSlot` sits in the body's column inside it ([#483](https://github.com/cubicecho/cubeui/issues/483)). Classes there that laid out the footer's own parts, such as `flex-row justify-between`, go on the node you pass. |
 | `SidebarSection` | `level` takes `1 \| 2 \| 3`, as every `level` in the set does. A `level` of 4 to 6 is a type error ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
@@ -402,6 +403,11 @@ to add them.
   ([#481](https://github.com/cubicecho/cubeui/issues/481)). A `TableHead` in the body is
   `text-foreground`, where it was `text-foreground/60` like the column names. A `text-foreground`
   you put on it, or on a `span` inside it, to undo the grey can go.
+- **A `Table` in a card lines up with the card's text**
+  ([#517](https://github.com/cubicecho/cubeui/issues/517)). Inside `CardContent` or a
+  `CardLayout`'s body it reaches 8px into the card's padding, so the first column starts where the
+  card's title does and the last ends where its action does, as a `List` there does. Its rules
+  run nearly edge to edge. A `-mx-2` you put round such a table can go.
 - **The two halves agree** ([#472](https://github.com/cubicecho/cubeui/issues/472)).
   - A `Button`'s icon is 14px at `xs` (it was 16px on the web) and 20px at `icon-lg` (it was
     16px), on both halves. On device every size now sizes its icon: it was lucide's own 24px. A

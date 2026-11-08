@@ -162,8 +162,8 @@ const CardDescription = React.forwardRef<React.ElementRef<typeof Text>, TextProp
 CardDescription.displayName = "CardDescription";
 
 /**
- * The card's body. A `List` inside it reaches into its padding, so the rows line up with the
- * card's title: see `CardBodyContext`.
+ * The card's body. A `List` or a `Table` inside it reaches into its padding, so the rows line up
+ * with the card's title: see `CardBodyContext`.
  */
 const CardContent = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
   ({ className, ...props }, ref) => (
