@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 import { Text } from "react-native";
-import { expect, within } from "storybook/test";
+import { expect, waitFor, within } from "storybook/test";
 import { Checkbox as CompiledCheckbox } from "../compiled/checkbox";
 import {
   RadioGroup as CompiledRadioGroup,
@@ -204,9 +204,6 @@ export const TintedAtRest: Story = {
   },
 };
 
-/** Longer than Tailwind's 150ms `transition-colors`. */
-const TRANSITION_MS = 300;
-
 function Refused({ half, compiled }: { half: string; compiled: boolean }) {
   return (
     <section aria-label={half} className="flex flex-col items-start gap-4">
@@ -267,9 +264,11 @@ export const RefusedOverChosen: Story = {
         const rest = style(on).backgroundColor;
         on.focus();
         await expect(on.matches(":focus-visible")).toBe(true);
-        // The track's colours transition; read them once it has settled.
-        await new Promise((resolve) => setTimeout(resolve, TRANSITION_MS));
-        await expect(style(on).backgroundColor).toBe(tokenColor("active", { opacity: 60 }));
+        // The track's colours transition. `tokenColor` inside the callback is what hung the
+        // renderer here before it stopped changing the page (#497).
+        await waitFor(() =>
+          expect(style(on).backgroundColor).toBe(tokenColor("active", { opacity: 60 })),
+        );
         await expect(style(on).backgroundColor).not.toBe(rest);
         await expect(style(on).borderTopColor).toBe(negative);
         on.blur();

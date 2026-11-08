@@ -55,6 +55,10 @@ const settles = (value: unknown): value is PromiseLike<unknown> =>
 
 /** What every screen passes, whether it draws a list or one record. */
 type LoadStateCommon = {
+  /**
+   * The query's state: anything with `isPending`, `isError`, `error` and `refetch`, as TanStack
+   * Query's result has. It picks the rung drawn.
+   */
   query: QueryLike;
   /** What could not be fetched, in the reader's words: "your agents", "the archive". */
   what: string;
@@ -70,6 +74,10 @@ type LoadStateCommon = {
   compact?: boolean | undefined;
   /** What the failure means, in the app's words — handed through to `LoadError`. */
   describe?: ((error: unknown) => string) | undefined;
+  /**
+   * On the rung drawn in place of the content: the failure, the placeholders, the empty state. The
+   * content itself is drawn by the caller, and takes its own.
+   */
   className?: string | undefined;
 };
 

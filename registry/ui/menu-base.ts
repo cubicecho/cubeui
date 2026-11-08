@@ -15,8 +15,13 @@ import type { SlotNode } from "@/lib/utils";
 export type MenuProps = {
   /** Both optional, together, as on `Popover`: pass neither and the menu keeps its own state. */
   open?: boolean | undefined;
+  /**
+   * Told when the menu opens or closes. Pass it with `open` to hold that state, or alone to listen.
+   */
   onOpenChange?: ((open: boolean) => void) | undefined;
+  /** Whether a menu that holds its own state starts open. */
   defaultOpen?: boolean | undefined;
+  /** The `MenuTrigger` and the `MenuContent` with its rows. */
   children: ReactNode;
 };
 
@@ -53,6 +58,7 @@ export type MenuItemProps = {
   trailing?: ReactNode;
   /** Draw the row in the destructive colour, for the action that deletes. */
   destructive?: boolean | undefined;
+  /** The row cannot be chosen, and is drawn faded. */
   disabled?: boolean | undefined;
   /** Runs when the row is chosen. The menu closes itself afterwards; do not close it here. */
   onSelect?: (() => void) | undefined;
@@ -63,6 +69,7 @@ export type MenuItemProps = {
    * causes: Escape, a click outside and every other row still return focus to the trigger.
    */
   focusesElsewhere?: boolean | undefined;
+  /** On the row's own box. */
   className?: string | undefined;
   /**
    * Where the row goes, with no router: on the web the row is an `<a href>`, so it navigates,

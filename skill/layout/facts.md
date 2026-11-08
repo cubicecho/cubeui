@@ -35,7 +35,7 @@ Read-only facts — a label, a value, a line under the value — which is most o
 | --- | --- | --- | --- |
 | `contentSlot` | `SlotNode` |  | The rows: `PropertyRow`s, as an array or a fragment. Nothing else belongs here — on the web this is a `<dl>`, which may hold only term-and-description groups. |
 | `layout` | `"inline" \| "stacked"` | `"inline"` | `inline` (the default) puts each label beside its value, and falls back to `stacked` on its own when the list is too narrow for both. `stacked` puts the label above the value at every width. Not `orientation`: `inline` is not horizontal below the width it wraps at, and a word that is only true on a wide screen is the kind rule 11 renames later. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the list, the `<dl>` on the web. The gap between the rows is here. |
 <!-- /props -->
 
 <!-- props:PropertyRow -->
@@ -47,8 +47,8 @@ Read-only facts — a label, a value, a line under the value — which is most o
 | `value` (required) | `ReactNode` |  | The fact itself: a string, or a node — a `Badge`, a relative time. Not a control: a value the user edits is a form field (`FormField`), and this row has no label for it. |
 | `hint` | `ReactNode` |  | One muted line under the value, on where it comes from or what it means: "Set with `RAGDOWN_EMBEDDER`". Part of the `<dd>`, so it is read with the value rather than as a fact of its own. |
 | `actionSlot` | `SlotNode` |  | The row's far end: a copy button, an edit link. Inside the `<dd>`, after the value, because a `<dl>`'s rows may hold nothing but terms and descriptions — and an action on the value is part of what is said about it. |
-| `className` | `string` |  |  |
-| `labelClassName` | `string` |  |  |
+| `className` | `string` |  | On the row, the label and value together. |
+| `labelClassName` | `string` |  | On the label's own `Text`, the `<dt>` on the web. |
 | `valueClassName` | `string` |  | A string or number value's own `Text`, so a path, a version or an id is `value={path} valueClassName="font-mono"` rather than a node written to carry the font. On the text and not on the wrapper around it, because on device a `Text` inherits nothing: from the wrapper a `font-mono` reached the string on the web, with the hint and the action, and none of them on a phone. |
 <!-- /props -->
 
@@ -126,10 +126,10 @@ that changes it at the end.
 | `descriptionPlacement` | `DescriptionPlacement` | `"inline"` | Where the description is drawn. `inline` (the default) puts it under the title; `popover` puts it behind a small button beside the title, named "About <title>". `descriptionId` is handed to `actionSlot` either way, and on the web still resolves to the text. A row with no title has nothing to put the button beside, so its description stays inline. |
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` button's glyph. A question mark by default. |
 | `actionSlot` | `SlotNode \| ((ids: SettingRowIds) => SlotNode)` |  | The control, at the row's far end: a switch, a select, a button, an input. A function is handed the ids of the title and description so the control can be named by the title: `actionSlot={({ titleId }) => <Switch aria-labelledby={titleId} … />}`. A plain node for a control that names itself — a button whose text is the action. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
-| `descriptionClassName` | `string` |  |  |
-| `actionClassName` | `string` |  |  |
+| `className` | `string` |  | On the row, the words and the action together. |
+| `titleClassName` | `string` |  | On the title's own `Text`. |
+| `descriptionClassName` | `string` |  | On the description's own `Text`. |
+| `actionClassName` | `string` |  | On the box that holds `actionSlot`, at the row's far end. |
 <!-- /props -->
 
 - One source for both platforms: `@cubeui/setting-row` in `/r/web` and `/r/native`.
@@ -200,7 +200,7 @@ import { formatCount, formatDuration } from "@/lib/format";
 | `loading` | `boolean` | `false` | Whether the figure is still being fetched. On, a bar stands in for the value and the label stays — the tile is as tall as it will be, so a row of them does not jump when the data lands. |
 | `onPress` | `(() => void)` |  | Makes the whole tile a button: a filter to toggle, a page to open. The tile's text is its accessible name, so a count and its label are read together. |
 | `selected` | `boolean` |  | With `onPress`, the tile is a toggle and this is whether it is on — the filter tile over a list. Left out, the tile is a plain button. Without `onPress` it is ignored. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the tile itself, the bordered box. |
 | `valueClassName` | `string` |  | The figure's class: the colour a count takes when it is one worth noticing, such as `text-negative`. A chosen filter tile draws its figure in `foreground` whatever this says, because a status colour on the chosen tint is under 3:1, so a count that matters needs an `iconSlot` or a `hint` that says so as well. |
 <!-- /props -->
 

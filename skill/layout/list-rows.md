@@ -36,16 +36,16 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `open` (required) | `boolean` |  |  |
-| `onOpenChange` (required) | `((open: boolean) => void)` |  |  |
-| `title` (required) | `ReactNode` |  |  |
+| `open` (required) | `boolean` |  | Whether the row is open. The caller holds it: a list usually opens one row at a time, or opens the one a link points at. |
+| `onOpenChange` (required) | `((open: boolean) => void)` |  | Told the state the reader asked for when the heading is pressed; set `open` from it. |
+| `title` (required) | `ReactNode` |  | The row's name, and the button that opens it. A string is drawn in the row's title style. |
 | `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
 | `meta` | `ReactNode` |  | The small grey facts at the heading's far end, as on `ListItem`: a name, a time, a count. A string is drawn muted and extra small; an element is placed as it is. Inside the button. |
 | `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
 | `actionSlot` | `SlotNode` |  | Buttons, outside the collapsible: a row is opened by its heading and acted on by these. |
 | `contentSlot` | `SlotNode` |  | What the row opens onto. |
-| `className` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
+| `className` | `string` |  | On the whole row, the heading and what it opens onto together. |
+| `contentClassName` | `string` |  | On the box that holds `contentSlot` while the row is open. |
 <!-- /props -->
 ## List
 
@@ -69,7 +69,7 @@ writes none of the three. One source for both platforms: `@cubeui/list`.
 | `contentSlot` | `SlotNode` |  | The rows: `ListItem`s, `CollapsibleRow`s, an array of them or a fragment. One cell each. Wrap a row in `ListRow` to give it a `depth`. |
 | `label` | `string` |  | What the list is a list of, in the reader's words: "Workspaces". Its accessible name. |
 | `divided` | `boolean` | `true` | A rule between rows. On unless turned off, for rows that are cards of their own. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the list itself, the box its rows are drawn in. |
 <!-- /props -->
 
 - **Each element of `contentSlot` is one row**, and the list writes the `<li>` around it. An array
@@ -147,8 +147,8 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 | `href` | `string` |  | Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web, so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On device there is no URL to open, so `onPress` is what navigates. |
 | `linkSlot` | `ReactElement` |  | The router's link the row is, as an element with no children — `<Link href="/people/1" />` — which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`, which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say. |
 | `selected` | `boolean` | `false` | The chosen row: the one open beside the list, the current one. Tinted in `active`, a step further under the pointer, and a pressable row says so with `aria-current`. A row with nothing to press has no element to carry that, so the tint is all it shows: say it in the row's words as well — a "Current" badge in `meta` — for a reader who cannot see the colour. |
-| `className` | `string` |  |  |
-| `titleClassName` | `string` |  |  |
+| `className` | `string` |  | On the row, the box around its leading slot, words, meta and action. |
+| `titleClassName` | `string` |  | On the title's own `Text`, as `CardLayout`'s is: a `line-through`, a weight. |
 <!-- /props -->
 
 - `leadingSlot` is the start of the row: an avatar, a checkbox, an icon, placed as given. It is not

@@ -32,16 +32,16 @@ set (see [native.md](../native.md)).
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link" \| null` |  |  |
-| `className` | `string` |  |  |
+| `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link"` |  | What the button does, which picks its colours: `default` for the one to press, `positive` for an action that keeps the work (Save), `info` for one that adds something (Add, New), `destructive` for one that destroys, and `outline` for a quiet one. Each `-outline` is its colour without the fill, for an action that is not the emphasis of its row. `secondary` is an icon inside a field's own border. `ghost` and `link` are kept for shadcn code, and nothing in the registry uses them. |
+| `className` | `string` |  | On the button's box, after the variant's and the size's classes. |
 | `content` | `React.ReactNode` |  | The label. A string is drawn in the variant's ink; anything else is rendered as it is — a select's trigger passes the chosen value's own `<Text>`. |
 | `iconSlot` | `SlotNode` |  | Before the label, or alone in an `icon*` size, where `aria-label` is required. |
 | `trailingSlot` | `SlotNode` |  | The far end, after the label: a trigger's chevron, a count. |
 | `linkSlot` | `React.ReactElement` |  | The link this button is, as an element with no children: `<a href="/docs" />`, a router's `<Link to="/docs" />`. It gets the button's look and press, and the icon and label are put inside it. |
 | `loading` | `boolean` |  | Pressed, and the work is still running: disabled, `aria-busy`, and a spinner where the icon is — or before the label when there is none. |
 | `loadingLabel` | `string` |  | The label while `loading`: "Saving…". Without one the label stays as it was. |
-| `size` | `"icon" \| "icon-xs" \| "icon-sm" \| "icon-lg" \| "default" \| "xs" \| "sm" \| "lg" \| null` |  |  |
-| `aria-label` | `string` |  |  |
+| `size` | `"icon" \| "icon-xs" \| "icon-sm" \| "icon-lg" \| "default" \| "xs" \| "sm" \| "lg"` |  | How big it is. `default`, `xs`, `sm` and `lg` draw the label; `xs` is small enough to sit in a list row without setting its height. Each `icon*` size is a square as tall as the text size it is named after, which draws `iconSlot` alone and so needs an `aria-label`. |
+| `aria-label` | `string` |  | The button's accessible name. Required at an `icon*` size, which has no label to be named by; beside a label, it replaces the label as the name. |
 | `hint` | `React.ReactNode` |  | Why it is unavailable, or what it will do: the tooltip, in place of an icon size's name, and read after the name whether or not the tooltip is open. On device only a string is read; a node is shown and not read. |
 | `tooltip` | `boolean` | `true` | Whether the tooltip is drawn: the `hint`, or with none an `icon*` size's `aria-label`. Off, a `hint` is still the button's description. Turn it off where the icon already explains itself. |
 | `side` | `TooltipSide` | `"top"` | Which edge of the button the tooltip sits on. |
@@ -183,10 +183,10 @@ device, `onClick` on the web.
 | `title` (required) | `ReactNode` |  | The question, as a heading. "Delete this workspace?" |
 | `description` (required) | `ReactNode` |  | What is lost if they say yes. Required, and it is the reason the component is worth installing — see the note below. |
 | `confirmLabel` | `ReactNode` | `"Delete"` | The verb on the button that does it. |
-| `cancelLabel` | `ReactNode` | `"Cancel"` |  |
+| `cancelLabel` | `ReactNode` | `"Cancel"` | The button that backs out, closing the question with nothing done. |
 | `requireText` | `string` |  | The text to type before the confirm button unlocks — the name of the folder, the repository, the workspace. Matched exactly. For a delete that is big and cannot be undone; left out, the dialog asks with one click. |
 | `requireTextLabel` | `ReactNode` |  | The input's label. Defaults to "Type **{requireText}** to confirm". |
-| `onConfirm` (required) | `(() => void)` |  |  |
+| `onConfirm` (required) | `(() => void)` |  | Runs once the reader says yes, after the dialog has closed. |
 
 It also takes the props declared in `registry/ui/button.tsx`: `aria-describedby`, `aria-label`, `className`, `content`, `hint`, `iconSlot`, `linkSlot`, `loading`, `loadingLabel`, `side`, `size`, `tooltip`, `trailingSlot`, `variant`.
 <!-- /props -->

@@ -68,6 +68,7 @@ type FileTreeProps<T extends TreeEntry> = {
   onMove?: ((from: string, into: string) => void | Promise<void>) | undefined;
   /** Whether this row may be dropped there. Asked while dragging; a refused folder is not tinted. */
   canMove?: ((node: TreeNode<T>, into: string) => boolean) | undefined;
+  /** On the tree's outer list. A dragged row can be dropped on it to move to the top level. */
   className?: string | undefined;
 };
 

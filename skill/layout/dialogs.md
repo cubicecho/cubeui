@@ -50,10 +50,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away: "Discard". |
 | `keepLabel` | `ReactNode` | `"Keep editing"` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
 | `showCloseButton` | `boolean` | `true` | Whether the ✕ is drawn in the corner. It closes the way Escape does, so `hasUnsavedChanges` still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel. |
-| `className` | `string` |  |  |
-| `headerClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-| `footerClassName` | `string` |  |  |
+| `className` | `string` |  | On the dialog's panel. Its width comes from `size`, so reach for this for anything else. |
+| `headerClassName` | `string` |  | On the header: the title, the description, and the room the ✕ takes. |
+| `contentClassName` | `string` |  | On the body, the part that scrolls between the header and the footer. |
+| `footerClassName` | `string` |  | On the footer, which holds `footerSlot` and the actions. |
 <!-- /props -->
 
 - `title` is **required** — it is what assistive technology announces. A design with no room for

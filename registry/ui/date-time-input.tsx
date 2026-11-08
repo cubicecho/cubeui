@@ -39,6 +39,7 @@ type DateTimeInputSharedProps = {
    * `disabled` here, and fades its label with it.
    */
   disabled?: boolean | undefined;
+  /** On the row that holds the date's trigger and the time box. */
   className?: string | undefined;
   /**
    * The trigger's id — what a `FieldLabel htmlFor` points at on the web. React Native takes `id`
@@ -82,7 +83,15 @@ export type DateTimeInputProps = DateTimeInputSharedProps &
   (
     | {
         clearable?: false | undefined;
+        /**
+         * The date and time shown. Without `clearable` there is always one; with it, `null` is no
+         * date, and the trigger reads `placeholder`.
+         */
         value: Date;
+        /**
+         * Told the new date and time on every change: a day picked, a time typed. With `clearable`
+         * it is handed `null` when the reader clears it.
+         */
         onChange: (next: Date) => void;
       }
     | {

@@ -150,7 +150,12 @@ export type HeaderContentFooterProps = {
    * end. Only a body that scrolls reports: with `scroll` off it is never called.
    */
   onScroll?: ((position: ScrollPosition) => void) | undefined;
+  /**
+   * On the root, the box the three parts divide. Give it a height (`h-full`, `flex-1`) for `scroll`
+   * to have one to divide.
+   */
   className?: string | undefined;
+  /** On the header, in its column: the one `headerWidth`, or else `width`, sets. */
   headerClassName?: string | undefined;
   /**
    * On the box that holds `contentSlot`. With `scroll` and a `page` or `prose` width, that is the
@@ -158,6 +163,7 @@ export type HeaderContentFooterProps = {
    * device, while `scroll` is on, it is the `ScrollView`'s content. Otherwise the body is one box.
    */
   contentClassName?: string | undefined;
+  /** On the footer, in its column. A bar's own rule and padding go here. */
   footerClassName?: string | undefined;
 };
 

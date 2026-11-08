@@ -64,6 +64,7 @@ type ListProps = {
   label?: string;
   /** A rule between rows. On unless turned off, for rows that are cards of their own. */
   divided?: boolean;
+  /** On the list itself, the box its rows are drawn in. */
   className?: string;
 };
 

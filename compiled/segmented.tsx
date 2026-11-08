@@ -129,6 +129,7 @@ export type SegmentedGroupProps<TValue extends string = string> = Omit<
    * and the caller neither looks it up again nor asserts it.
    */
   onValueChange?: ((value: TValue) => void) | undefined;
+  /** The row's element, for a caller that has to measure it. */
   ref?: React.Ref<HTMLDivElement> | undefined;
   /** `framed` (the default) draws the input-height box; `plain` draws the row alone. */
   variant?: keyof typeof SEGMENTED_GROUP_VARIANTS | undefined;
@@ -146,7 +147,9 @@ export type SegmentedGroupProps<TValue extends string = string> = Omit<
   "aria-label"?: string | undefined;
   /** The id of a visible heading that names the group, in place of `aria-label`. */
   "aria-labelledby"?: string | undefined;
+  /** On the row the pills sit in, after the variant's classes. */
   className?: string | undefined;
+  /** The `SegmentedButton` pills, one per choice. */
   children: ReactNode;
 };
 

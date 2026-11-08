@@ -286,9 +286,13 @@ export type DialogLayoutProps = {
    * still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel.
    */
   showCloseButton?: boolean | undefined;
+  /** On the dialog's panel. Its width comes from `size`, so reach for this for anything else. */
   className?: string | undefined;
+  /** On the header: the title, the description, and the room the ✕ takes. */
   headerClassName?: string | undefined;
+  /** On the body, the part that scrolls between the header and the footer. */
   contentClassName?: string | undefined;
+  /** On the footer, which holds `footerSlot` and the actions. */
   footerClassName?: string | undefined;
 };
 

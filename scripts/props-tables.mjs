@@ -61,30 +61,30 @@ function literalsOnly(type) {
 }
 
 /**
- * A type alias the reader cannot import: one its file does not export (`IconSize`), or one of
- * TypeScript's own that computes a type (`Exclude<ButtonSize, IconSize>`).
+ * A type alias the registry writes (`IconSize`, `SplitWidth`), or one of TypeScript's own that
+ * computes a type (`Exclude<ButtonSize, IconSize>`). Not React's or the platform's, whose names a
+ * reader already knows.
  */
-function isUnexportedAlias(node, checker) {
+function isRegistryAlias(node, checker) {
   const symbol = checker.getSymbolAtLocation(node.typeName);
   const decl = symbol?.declarations?.[0];
   if (decl === undefined || ts.isTypeAliasDeclaration(decl) === false) {
     return false;
   }
-  const file = decl.getSourceFile();
-  if (file.isDeclarationFile) {
+  if (decl.getSourceFile().isDeclarationFile) {
     return ["Exclude", "Extract", "NonNullable"].includes(symbol.name);
   }
-  const module = checker.getSymbolAtLocation(file);
-  return module === undefined || checker.getExportsOfModule(module).includes(symbol) === false;
+  return true;
 }
 
 /**
- * Whether a type is written as a name the reader cannot look up, which the checker can spell out.
+ * Whether a type is written as a name that hides its values, which the checker can spell out.
  * `keyof typeof SIZES` names a constant the reader cannot see, and the checker knows it is
  * `"sm" | "md" | "lg"`. The same for an indexed type (`ButtonProps["variant"]`), a constant's type
- * (`typeof DEFAULT_MAX`), and an alias the file keeps to itself. `typeof View` names a component
- * the reader can import, and stays; so does an exported alias such as `SplitWidth`, which the
- * skill can point at.
+ * (`typeof DEFAULT_MAX`), and an alias of values, exported or not: `SplitWidth` in a row told the
+ * reader a name to go and look up, where `"page" | "prose" | "full"` is the answer (#492).
+ * `typeof View` names a component the reader can import, and stays; so does an alias of anything
+ * but values, such as `SlotNode`.
  */
 function namesAConstant(node, checker) {
   if (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword) {
@@ -96,7 +96,7 @@ function namesAConstant(node, checker) {
   if (ts.isTypeQueryNode(node) && /^[A-Z][A-Z0-9_]*$/.test(node.exprName.getText())) {
     return true;
   }
-  if (ts.isTypeReferenceNode(node) && isUnexportedAlias(node, checker)) {
+  if (ts.isTypeReferenceNode(node) && isRegistryAlias(node, checker)) {
     return literalsOnly(checker.getTypeFromTypeNode(node));
   }
   return false;
@@ -188,7 +188,18 @@ function membersOfNode(node, checker) {
   if (ts.isUnionTypeNode(node)) {
     return node.types.flatMap((member) => membersOfNode(member, checker));
   }
-  return namesAConstant(node, checker) ? expanded(node, checker) : [node.getText()];
+  if (namesAConstant(node, checker) === false) {
+    return [node.getText()];
+  }
+  // An alias of the registry's is read where it is written, so its values keep the order its
+  // TSDoc explains them in; the checker lists them in the order it first met each one.
+  const decl = ts.isTypeReferenceNode(node)
+    ? checker.getSymbolAtLocation(node.typeName)?.declarations?.[0]
+    : undefined;
+  if (decl && decl.getSourceFile().isDeclarationFile === false) {
+    return membersOfNode(decl.type, checker).filter((member) => member !== "null");
+  }
+  return expanded(node, checker);
 }
 
 /** What one declaration of a prop allows: the union's members, less `undefined` and `never`. */
@@ -199,9 +210,17 @@ function allowedBy(decl, prop, checker) {
   return members.map(memberText).filter((m) => m !== "undefined" && m !== "never");
 }
 
-/** The union of what several declarations allow, in the order first written. */
+/**
+ * The union of what several declarations allow, in the order first written. A union of strings
+ * and `null` is how cva types a variant (`size`), and `null` there says only that it may be left
+ * out, which the row already says; a `Date | null` keeps it, since there `null` is a value.
+ */
 function unionOf(allowed) {
   let members = [...new Set(allowed.flat())];
+  const values = members.filter((m) => m !== "null");
+  if (values.length < members.length && values.length > 0 && values.every((m) => /^"/.test(m))) {
+    members = values;
+  }
   if (members.includes("true") && members.includes("false")) {
     const at = members.findIndex((m) => m === "true" || m === "false");
     members = members.filter((m) => m !== "true" && m !== "false");
@@ -385,6 +404,8 @@ export function propsRows(program, path, name, root) {
       condition: conditionOf(propName, props, members.length),
       fallback: defaults.get(propName) ?? "",
       doc: docOf(prop, checker),
+      // Where the TSDoc goes, for the message about a row without any.
+      at: `${relative(root, file)}:${decl.getSourceFile().getLineAndCharacterOfPosition(decl.getStart()).line + 1}`,
     });
   }
   own.sort((a, b) => a.pos - b.pos);
@@ -394,6 +415,14 @@ export function propsRows(program, path, name, root) {
 /** The rows a reader would be misled by: a prop typed `never`, or a constant's name for a type. */
 export function misleadingRows(rows) {
   return rows.filter((row) => row.type === "never" || /\bkeyof typeof\b/.test(row.type));
+}
+
+/**
+ * The rows with nothing in "What it is". A blank row reads as a prop nobody thought about, and a
+ * reader choosing between two props learns nothing from it (#492).
+ */
+export function undocumentedRows(rows) {
+  return rows.filter((row) => row.doc === "");
 }
 
 /** The table as the skill shows it. */

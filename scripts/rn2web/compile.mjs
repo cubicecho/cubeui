@@ -67,8 +67,14 @@ const HEADER = {
  * say and a plain `biome-ignore` there is reported as unused — in this repo, and in every Expo app
  * that vendors the source (#286). The `<span role="heading">` it compiles to is where the rule
  * fires, so the comment is written inert in the source and switched on here.
+ *
+ * Among JSX children a line comment is text, so there it is written `{/* web: biome-ignore … *\/}`.
+ * Biome reads a suppression only at the start of a comment's text, so the output drops the `web:`
+ * and any `//` written after the `{/*` by analogy with the line form: `{/* // biome-ignore … *\/}`
+ * is a comment Biome does not read, and the rule fires through it (#497).
  */
-const WEB_ONLY_IGNORE = /^([ \t]*(?:\{\/\*\s*)?)\/\/ web: biome-ignore /gm;
+const WEB_ONLY_IGNORE = /^([ \t]*)\/\/ web: biome-ignore /gm;
+const WEB_ONLY_IGNORE_JSX = /^([ \t]*\{\/\*\s*)(?:\/\/\s*)?web: biome-ignore /gm;
 
 /** Far more passes than any file needs; a loop that reaches it is a transform that never settles. */
 const MAX_PASSES = 12;
@@ -128,7 +134,10 @@ export function compileSource({
     return { code: null, diagnostics };
   }
 
-  const code = sourceFile.getFullText().replace(WEB_ONLY_IGNORE, "$1// biome-ignore ");
+  const code = sourceFile
+    .getFullText()
+    .replace(WEB_ONLY_IGNORE, "$1// biome-ignore ")
+    .replace(WEB_ONLY_IGNORE_JSX, "$1biome-ignore ");
   return { code: `${HEADER[origin](filePath)}\n${code}`, diagnostics };
 }
 
