@@ -1,52 +1,80 @@
 /**
- * Compiled from `registry/ui/progress.tsx` by `scripts/rn2web`.
+ * Copied from `registry/ui/progress.web.tsx` by `scripts/rn2web`.
  * Do not edit — edit the source and re-run `npm run compile`.
  *
- * The prose below is the source's own, carried across untouched, which is the property that makes
- * a compiled registry worth having: this is the same component, not a second one to keep in step
- * by hand. Where a comment names a React Native component it is describing the source; the
- * element map in `scripts/rn2web/tables.mjs` says what that became here.
+ * This is level 4 of the plan: the item has a hand-written web half, so nothing was generated. The
+ * same passes still ran over it, and for a file already written against the DOM they find nothing
+ * to do beyond pointing its sibling imports at the web tree. That is deliberate — running one
+ * pipeline over the whole output tree is what guarantees a hand-written half and a compiled one
+ * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
  */
 
 /**
- * A horizontal bar showing how much of something is done. `value` means what shadcn's means, a
- * number from 0 to `max` (100 unless said otherwise), and it is clamped before it is drawn or
- * announced.
+ * The web progress bar: a `<div role="progressbar">` with every `<div>` prop passed through.
+ * `progress.tsx` is the native counterpart and says why this half is hand-written;
+ * `progress-base.ts` holds what they share.
  *
- * With no `value` the bar is indeterminate: drawn empty, with `aria-valuenow` left off and nothing
- * animated. The indicator's width is a style, since a class built from a number is one Tailwind
- * never generates. `label` names the bar, as an `aria-label` does.
+ * The indeterminate sweep is the Web Animations API rather than a keyframe class, because a
+ * keyframe would have to live in an app's stylesheet and this item would not work without it. It
+ * reads `useReducedMotion()`, as the native half does, and under reduced motion the segment holds
+ * still in the middle third.
  */
 import type * as React from "react";
+import { useEffect, useRef } from "react";
+import {
+  DEFAULT_MAX,
+  type ProgressBaseProps,
+  progressIndicatorClass,
+  progressState,
+  progressTrackClass,
+  SWEEP_DURATION_MS,
+  SWEEP_FROM,
+  SWEEP_REST,
+  SWEEP_TO,
+  SWEEP_WIDTH,
+} from "@/components/ui/progress-base";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "./reduced-motion";
 
-type ViewProps = Omit<React.ComponentPropsWithoutRef<"div">, "className" | "children"> & {
-  /** On the track, the full-width bar the fill is drawn in. A different height is an `h-*` here. */
-  className?: string | undefined;
-};
+export type ProgressProps = Omit<React.ComponentPropsWithoutRef<"div">, "className" | "children"> &
+  ProgressBaseProps;
 
-export type ProgressProps = ViewProps & {
-  /**
-   * How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is
-   * indeterminate: drawn empty and announced with no value, as Radix's is — not animated.
-   */
-  value?: number | null | undefined;
-  /** What `value` is out of. 100 unless given, so a percentage needs nothing. */
-  max?: number | undefined;
-  /** What is progressing — "Re-embedding progress". The bar's accessible name. */
-  label?: string | undefined;
-  /**
-   * The value in words, read instead of the bare number: "1,204 of 5,880 turns". Without it a
-   * screen reader says the percentage, which is right when the number means nothing else.
-   */
-  valueLabel?: string | undefined;
-  /** The filled part: `bg-negative` for a context window nearly full. */
-  indicatorClassName?: string | undefined;
-};
-
-/** What `max` is when nobody gives one, which makes `value` a percentage. */
-const DEFAULT_MAX = 100;
 const PERCENT = 100;
+
+/** A translate of the segment by this many of its own widths. */
+const shift = (widths: number) => `translateX(${widths * PERCENT}%)`;
+
+/** A third of the track, sweeping from before its start to past its end. */
+function Sweep({ className }: { className?: string | undefined }) {
+  const reducedMotion = useReducedMotion();
+  const segment = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = segment.current;
+    // `animate` is missing from a test DOM without the Web Animations API; the segment rests.
+    if (reducedMotion || !element || typeof element.animate !== "function") {
+      return;
+    }
+    const sweep = element.animate(
+      [{ transform: shift(SWEEP_FROM) }, { transform: shift(SWEEP_TO) }],
+      {
+        duration: SWEEP_DURATION_MS,
+        easing: "ease-in-out",
+        iterations: Number.POSITIVE_INFINITY,
+      },
+    );
+    return () => sweep.cancel();
+  }, [reducedMotion]);
+
+  return (
+    <div
+      ref={segment}
+      data-slot="progress-indicator"
+      className={cn(progressIndicatorClass, className)}
+      style={{ width: SWEEP_WIDTH, transform: shift(SWEEP_REST) }}
+    />
+  );
+}
 
 /** A horizontal bar showing how much of something is done. */
 export function Progress({
@@ -58,38 +86,36 @@ export function Progress({
   indicatorClassName,
   ...props
 }: ProgressProps) {
-  // A zero or negative `max` has no fraction to draw; treat it as nothing done rather than NaN.
-  const limit = max > 0 ? max : DEFAULT_MAX;
-  const known = typeof value === "number" && Number.isFinite(value);
-  const now = known ? Math.min(Math.max(value, 0), limit) : undefined;
-  const percent = now === undefined ? 0 : (now / limit) * PERCENT;
+  const { limit, now, percent } = progressState(value, max);
+  // Radix's three states, so a shadcn call site's `data-[state=complete]:` still matches.
+  const state = now === undefined ? "indeterminate" : now === limit ? "complete" : "loading";
 
   return (
     <div
       data-slot="progress"
+      data-state={state}
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={limit}
       {...(now === undefined ? {} : { "aria-valuenow": now })}
       {...(valueLabel ? { "aria-valuetext": valueLabel } : {})}
-      {...(props as React.ComponentPropsWithoutRef<"div">)}
+      {...props}
       {...(label ? { "aria-label": label } : {})}
-      className={cn(
-        "cube-rn-view",
-        "h-2 w-full overflow-hidden rounded-full bg-foreground/10",
-        className,
-      )}
+      className={cn(progressTrackClass, className)}
     >
-      <div
-        data-slot="progress-indicator"
-        className={cn(
-          "cube-rn-view",
-          "h-full bg-neutral",
-          "transition-[width] motion-reduce:transition-none",
-          indicatorClassName,
-        )}
-        style={{ width: `${percent}%` }}
-      />
+      {now === undefined ? (
+        <Sweep className={indicatorClassName} />
+      ) : (
+        <div
+          data-slot="progress-indicator"
+          className={cn(
+            progressIndicatorClass,
+            "transition-[width] motion-reduce:transition-none",
+            indicatorClassName,
+          )}
+          style={{ width: `${percent}%` }}
+        />
+      )}
     </div>
   );
 }

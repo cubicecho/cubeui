@@ -276,8 +276,13 @@
       "name": "color-dot",
       "type": "registry:ui",
       "title": "Color Dot",
-      "description": "A small swatch standing in for a colour-coded thing in a list.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tooltip", "@cubeui/tokens"],
+      "description": "A small swatch standing in for a colour-coded thing in a list, readable in both themes.",
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/tooltip",
+        "@cubeui/color",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/color-dot.tsx",
@@ -880,9 +885,13 @@
       "name": "progress",
       "type": "registry:ui",
       "title": "Progress",
-      "description": "A horizontal bar showing how much of something is done: `role=\"progressbar\"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tokens"],
+      "description": "A horizontal bar showing how much of something is done: `role=\"progressbar\"` with its value announced, `value` from 0 to `max` (100 by default) as shadcn's, clamped. `label` names it; `valueLabel` reads the value in words. With no value, a third of the track sweeps across it, and holds still in the middle under reduced motion.",
+      "registryDependencies": ["@cubeui/utils", "@cubeui/reduced-motion"],
       "files": [
+        {
+          "path": "registry/ui/progress-base.ts",
+          "type": "registry:ui"
+        },
         {
           "path": "compiled/progress.tsx",
           "type": "registry:ui"
@@ -1775,6 +1784,7 @@
       "registryDependencies": [
         "@cubeui/checkbox",
         "@cubeui/code",
+        "@cubeui/icons",
         "@cubeui/separator",
         "@cubeui/table",
         "@cubeui/utils"

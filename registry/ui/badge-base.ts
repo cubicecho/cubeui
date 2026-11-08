@@ -50,9 +50,12 @@ function isSoft(variant: BadgeVariant | null | undefined): variant is SoftVarian
   return variant !== null && variant !== undefined && variant in SOFT_DOT;
 }
 
-/** The soft variants' dot class, `null` for every other variant. */
+/**
+ * The soft variants' dot class, `null` for every other variant. 8px, the size of every dot drawn
+ * inside something, as the bare badge's is: `ColorDot`'s header has the registry's dot scale.
+ */
 export function badgeSoftDotClass(variant: BadgeVariant | null | undefined): string | null {
-  return isSoft(variant) ? `size-1.5 shrink-0 rounded-full ${SOFT_DOT[variant]}` : null;
+  return isSoft(variant) ? `size-2 shrink-0 rounded-full ${SOFT_DOT[variant]}` : null;
 }
 
 export type BadgeProps = {

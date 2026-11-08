@@ -375,6 +375,24 @@ to add them.
     a yellow is drawn olive, a navy mid blue. `hexToAccent` now returns `#rrggbb`, not `hsl()`.
   - A folded sidebar row's tooltip, and an `AppBarItem`'s, shows the whole name: "Servers, 2
     failing, 5", not only "Servers". The count and the status dot are on screen in words too.
+- **Alerts, Markdown headings, progress bars and dots are tidier**
+  ([#487](https://github.com/cubicecho/cubeui/issues/487)).
+  - An `Alert`'s description is `text-foreground/60` in every variant. On `info`, `warning` and
+    `destructive` it was full ink, so the title and the line under it differed only by weight.
+  - An `info` alert with no `iconSlot` keeps an empty icon column, so its words line up with the
+    alerts above and below it. It still draws no ⓘ. Pass an icon that says what the highlight is,
+    or `iconSlot={null}` to put the words at the edge as before.
+  - `Markdown` draws each heading level differently: `#####` is 12px, a step under `####`, and
+    `######` is 12px in secondary ink. Headings at 14px and under are no longer `tracking-tight`.
+    `markdown` now installs `@cubeui/icons`.
+  - A `Progress` with no `value` draws a third of its track sweeping across it, not an empty bar.
+    Under reduced motion it holds still in the middle. Every track has a `border-foreground/50`
+    edge, so its whole length shows; it is still 8px tall, and the fill sits inside the edge.
+    `progress` now has a web half and installs `@cubeui/reduced-motion`.
+  - Dots come in two sizes. `ColorDot` is 8px at `sm` and 10px at `md` (it was 10px and 12px),
+    and a soft badge's dot is 8px (it was 6px), the size of a bare badge's dot. `ColorDot` moves
+    a hex into the lightness band `ColorBar` uses, so a navy tag shows in dark mode and a yellow
+    one on white, and it now installs `@cubeui/color`.
 
 ## Checking the result
 
