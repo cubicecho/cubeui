@@ -783,16 +783,17 @@ const ELEMENTS: Components = {
   tbody: ({ children }) => <TableBody>{children}</TableBody>,
   tr: ({ children }) => <TableRow>{children}</TableRow>,
   // `style` is the column's alignment (`:--`, `:-:`, `--:`), which is the only style Markdown can
-  // write. A data table keeps a cell on one line; a document's cell is prose, so it wraps — at
-  // its words, not anywhere as the document's text does, or a column in a narrow pane shrinks to
-  // a letter wide. A table too wide for the pane scrolls inside `Table`'s own container.
+  // write. A data table keeps a column's name on one line; a document's is prose, so it wraps as
+  // its cells do — at its words, not anywhere as the document's text does, or a column in a
+  // narrow pane shrinks to a letter wide. A table too wide for the pane scrolls inside `Table`'s
+  // own container.
   th: ({ style, children }) => (
     <TableHead style={style} className="wrap-normal whitespace-normal">
       {children}
     </TableHead>
   ),
   td: ({ style, children }) => (
-    <TableCell style={style} className="wrap-normal whitespace-normal">
+    <TableCell style={style} className="wrap-normal">
       {children}
     </TableCell>
   ),
