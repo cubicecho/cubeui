@@ -12,7 +12,12 @@ import { tokenColor } from "./token-color";
  * colour, it is a set width rather than its message's, and the tone is a glyph as well as a hue.
  * The native source is mounted too, so a provider that stops rendering on either half fails here.
  */
-const meta = { title: "RN Parity/Toast" } satisfies Meta;
+const meta = {
+  title: "RN Parity/Toast",
+  // One provider per half, side by side, so two stacks named "Notifications (F8)" on one page,
+  // which axe reads as two landmarks it cannot tell apart. An app has one.
+  parameters: { a11y: { config: { rules: [{ id: "landmark-unique", enabled: false }] } } },
+} satisfies Meta;
 export default meta;
 type Story = StoryObj;
 

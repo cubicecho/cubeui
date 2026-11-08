@@ -43,6 +43,7 @@ import {
   holdOpen,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
+import { OverlayLayer } from "@/components/ui/overlay";
 import { addHandlers, CardBodyContext, cn } from "@/lib/utils";
 
 /** The open side of the same problem, read by `DialogTrigger`. */
@@ -116,6 +117,8 @@ function Dialog({ open, onOpenChange, defaultOpen = false, children }: DialogPro
           <DialogCloseContext.Provider value={() => setOpen(false)}>
             {rest}
           </DialogCloseContext.Provider>
+          {/* Last, so a tooltip or a toast raised while the dialog is open is drawn over it. */}
+          <OverlayLayer />
         </Modal>
       </DialogEscapeContext.Provider>
     </DialogOpenContext.Provider>

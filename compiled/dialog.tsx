@@ -24,6 +24,7 @@
 
 import { Dialog as DialogPrimitive } from "radix-ui";
 import type * as React from "react";
+import { useEffect } from "react";
 import type {
   DialogCloseProps,
   DialogContentProps,
@@ -138,6 +139,32 @@ function isOnToast(event: Event): boolean {
   return event.target instanceof Element && event.target.closest(TOAST_STACK) !== null;
 }
 
+/**
+ * Lets focus into the toast stack while the dialog is open (#500), drawn inside the card so it is
+ * there only then. Radix's trap listens for focus
+ * on the document and sends anything that lands outside the card back into it, so F8, which moves
+ * focus to the newest toast, would be undone at once, and so would a press on its Undo. A focus
+ * into the stack is stopped at `<body>`, after the app's own handlers have had it and before the
+ * trap's. Tab past the stack lands outside the card, and the trap brings it back.
+ */
+function FocusIntoToasts() {
+  useEffect(() => {
+    const keep = (event: FocusEvent) => {
+      const into = event.type === "focusin" ? event.target : event.relatedTarget;
+      if (into instanceof Element && into.closest(TOAST_STACK) !== null) {
+        event.stopPropagation();
+      }
+    };
+    document.body.addEventListener("focusin", keep);
+    document.body.addEventListener("focusout", keep);
+    return () => {
+      document.body.removeEventListener("focusin", keep);
+      document.body.removeEventListener("focusout", keep);
+    };
+  }, []);
+  return null;
+}
+
 /** The dialog's card. */
 function DialogContent({
   className,
@@ -196,6 +223,7 @@ function DialogContent({
         <CardBodyContext.Provider value={false}>{children}</CardBodyContext.Provider>
         {/* A framed app focusing itself would take the focus, and the typing, out of the dialog. */}
         <FrameFocusGuard />
+        <FocusIntoToasts />
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"

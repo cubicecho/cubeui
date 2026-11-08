@@ -90,10 +90,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   under the buttons. Do not centre the header or reverse the buttons yourself, and pass the
   buttons as a fragment, not wrapped in a `View` or `div` of your own, which would hold them at
   their labels' width.
-- **A toast raised while the dialog is open is drawn over it**, announced and pressable: a press on
-  its Undo or ✕ does not close the dialog or ask `hasUnsavedChanges`. That is on the web. On
-  device a toast raised under an open dialog is not seen until the dialog closes, so say a failure
-  inside the dialog, beside what caused it.
+- **A toast raised while the dialog is open is drawn over it**, announced and pressable, on both
+  platforms: a press on its Undo or ✕ does not close the dialog or ask `hasUnsavedChanges`, and
+  on the web F8 reaches it by keyboard. A failure of the dialog's own form still goes beside the
+  field that caused it.
 - **Pass it as a function when the answer is not something you render.** The question is asked
   once, at a click — nothing in the dialog draws the answer — so a boolean makes you keep a value
   in render that only a handler reads, and work held outside the form's fields has to be lifted

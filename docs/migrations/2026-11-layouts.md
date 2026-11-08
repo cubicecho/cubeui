@@ -147,7 +147,9 @@ A reinstall can write files the app has never had: `components/section-heading.t
 and `alert-dialog`), `lib/readable-text-color.ts` (from `color`, and so from `card` and
 `color-bar`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
 and `table`; an Expo app also gets `overflows.web.tsx`), `lib/roving-focus.ts` (from
-`radio-group`, `color-picker` and `tabs`), and every new item it pulls in as a dependency, such as `card-layout`,
+`radio-group`, `color-picker` and `tabs`), `components/ui/overlay.tsx` (from `tooltip`,
+`toast`, `dialog`, `popover`, `menu` and `select`), `components/ui/toast-announce.tsx` (from
+`toast`; an Expo app also gets `toast-announce.web.tsx`), and every new item it pulls in as a dependency, such as `card-layout`,
 `app-bar`, `grid-layout` or `list`. Run `git status` after the reinstall to see them. An app
 that lists cubeui's files one by one, in its Biome or lint config or in a coverage exclude, has
 to add them.
@@ -200,6 +202,13 @@ to add them.
   row with a tooltip place it in its parent again: `absolute top-2 right-2`, `ml-auto`,
   `self-end` and `flex-1` work as they do on the web. A class you moved onto a `View` of your own
   to get round the wrapper can come back to the button.
+- **On device a tooltip is drawn over the screen, not in its trigger's parent**
+  ([#509](https://github.com/cubicecho/cubeui/issues/509)). A `ScrollView` no longer clips it, so
+  the top bar's places and a folded sidebar show the whole bubble. It is its own width, up to
+  320px, centred on the trigger and kept 8px inside the screen, and it opens on the other side
+  when its own has no room. It needs a layer at the app's root: `ToastProvider` draws one. An
+  Expo app with no `ToastProvider` puts `<OverlayHost>` from `@cubeui/overlay` around its root
+  layout, inside the palette's provider. Without either, the bubble is drawn as before.
 - **`Markdown` lines a toggle up with its heading, and keeps a mixed list's bullets**
   ([#412](https://github.com/cubicecho/cubeui/issues/412)). With `collapsible`, a heading's
   chevron is level with its text, not 12px above it. A list with task items and plain items
@@ -288,6 +297,16 @@ to add them.
   ([#477](https://github.com/cubicecho/cubeui/issues/477)). It is announced, its Undo and ✕ can
   be pressed, and pressing them leaves the dialog open. The stack is in the page while it is
   empty, as `data-slot="toast-viewport"`, and is drawn at `z-index` 60, over the dialog's 50.
+- **On device a toast is drawn over an open dialog too, and iOS reads it out**
+  ([#500](https://github.com/cubicecho/cubeui/issues/500)). It is drawn in the top dialog's,
+  popover's, menu's or select's layer, so it is seen while the dialog is open. VoiceOver says each
+  toast as it appears; a failure interrupts, the rest wait. Android already read the stack's live
+  region. A failure you moved into a dialog only so it could be seen can be a toast again.
+- **F8 moves focus to the newest toast on the web**
+  ([#500](https://github.com/cubicecho/cubeui/issues/500)), from inside a dialog as well, whose
+  focus trap no longer sends it back. Focus goes to the toast's first button, its Undo or its ✕,
+  and back to where it was when the toast closes. The stack is a landmark named
+  "Notifications (F8)". A test of yours that found the stack by its `data-slot` still does.
 - **A toast clears a bottom bar on a phone with a home indicator**
   ([#460](https://github.com/cubicecho/cubeui/issues/460)). Over `SidebarLayout`'s
   `barPosition="bottom"` the stack rises by the bottom safe-area inset as well as the bar.
