@@ -173,7 +173,17 @@ export type DialogLayoutProps = {
   triggerSlot?: SlotNode | undefined;
   /** Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. */
   open?: boolean | undefined;
+  /**
+   * Called with `true` when the trigger opens it and `false` when it closes. A close that
+   * `hasUnsavedChanges` asks about is reported only once the answer is Discard. With `open`, this
+   * is where the caller sets it.
+   */
   onOpenChange?: ((open: boolean) => void) | undefined;
+  /**
+   * How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl`
+   * 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the
+   * screen allows.
+   */
   size?: keyof typeof SIZES | undefined;
   /**
    * The footer's start. A destructive action, or a word on why the confirm is refusing. Several
@@ -265,6 +275,10 @@ export type DialogLayoutProps = {
   discardLabel?: ReactNode | undefined;
   /** The verb that goes back to it: "Keep editing". Also what Escape answers. */
   keepLabel?: ReactNode | undefined;
+  /**
+   * Whether the ✕ is drawn in the corner. It closes the way Escape does, so `hasUnsavedChanges`
+   * still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel.
+   */
   showCloseButton?: boolean | undefined;
   className?: string | undefined;
   headerClassName?: string | undefined;

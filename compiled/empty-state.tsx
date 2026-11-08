@@ -28,6 +28,11 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./
  */
 type EmptyStateIcon =
   | {
+      /**
+       * The glyph over the title, as an element: `iconSlot={<Inbox />}`. The shell draws it in a
+       * muted bubble and sizes and inks it, so pass a bare icon. Required for the centred block;
+       * at `compact` it is optional, and drawn inline before the text.
+       */
       iconSlot: SlotNode;
       /** @deprecated Pass the element as `iconSlot={<Plug />}`. */
       icon?: never;
@@ -39,7 +44,16 @@ type EmptyStateIcon =
     };
 
 export type EmptyStateProps = {
+  /**
+   * What there is none of, as the reader would say it: "No agents yet". At `compact` it is the
+   * whole line, so it can run on into what to do: "No servers yet. Add one to give the agent some
+   * tools."
+   */
   title: string;
+  /**
+   * What makes the first one: a New or an Add button. Under the text in the centred block, and
+   * after it on the same line at `compact`.
+   */
   actionSlot?: SlotNode;
   /** The root. Mostly for an inset: `px-2` lines the `compact` line up with a sidebar's rows. */
   className?: string | undefined;
@@ -55,6 +69,10 @@ export type EmptyStateProps = {
        * is.
        */
       compact?: false | undefined;
+      /**
+       * One line under the title on what the list is for, or how it fills: "An agent runs the
+       * lanes you give it."
+       */
       description?: ReactNode;
       /**
        * Makes the title a heading of this rank. Leave it off for an empty list inside a page that

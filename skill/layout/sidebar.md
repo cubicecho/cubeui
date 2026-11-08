@@ -68,10 +68,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `footerSlot` | `SlotNode` |  | Quiet rows — settings, sign out, the account. Drawn over a hairline. |
 | `label` | `string` |  | What the sidebar is called — "Main", "Projects". It names the `<aside>` on the web, which is what tells a screen reader's landmark list one complementary region from another. |
 | `side` | `"start" \| "end"` |  | Which edge of the screen the sidebar sits against, which decides the edge its border is on. `start` draws it on the right, facing the content. Inside a `SidebarLayout` it defaults to the layout's `sidebarPosition`, and to `start` anywhere else. |
-| `hideBelow` | `keyof typeof HIDE_BELOW` |  | Under this width the sidebar is not drawn at all; from it up, it is. For a rail that has no room on a phone, where the page puts its furniture in a bar of its own instead. Absent, it is drawn at every width. |
+| `hideBelow` | `"sm" \| "md" \| "lg" \| "xl"` |  | Under this width the sidebar is not drawn at all; from it up, it is. For a rail that has no room on a phone, where the page puts its furniture in a bar of its own instead. Absent, it is drawn at every width. |
 | `collapsed` | `boolean` | `false` | Folded down to a rail of icons: every row is its icon, named and tooltipped by its label, and a section's title is read but not drawn. Controlled — the sidebar keeps no state, so where the choice is remembered is the app's. |
 | `onCollapsedChange` | `((collapsed: boolean) => void)` |  | Called with the state the reader asked for, by a `SidebarCollapseButton` anywhere inside. Left out, that button does nothing. |
-| `contentRef` | `HeaderContentFooterProps["contentRef"]` |  | The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. |
+| `contentRef` | `Ref<ScrollView>` |  | The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. |
 | `className` | `string` |  | On the root. A different width is a `w-*` here. |
 | `headerClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
@@ -84,7 +84,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `as` | `"nav"` |  | `nav` makes the section a navigation landmark — `<nav>` on the web, `role="navigation"` on device — so a screen reader's landmark jump reaches its rows. For the sections that are the app's navigation; a list of recent items or pinned searches stays out of it. |
-| `label` | `string` |  | What the landmark is called — "Main", "Projects". Absent, the `title` names it; give one when there is no title, or when two navigation sections would otherwise share a name. |
+| `label` (with `as`) | `string` |  | What the landmark is called — "Main", "Projects". Absent, the `title` names it; give one when there is no title, or when two navigation sections would otherwise share a name. |
 | `title` | `ReactNode` |  | The overline over the rows. A short noun — "Projects", "Pinned". |
 | `contentSlot` | `SlotNode` |  | The rows, as an array — `projects.map(…)`, each with its `key`. Each one becomes an item of the list, so pass the rows themselves rather than a fragment or a wrapper around them: a wrapper would be one item holding every row. |
 | `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<LoadState compact … />`, which renders nothing once there are rows. |

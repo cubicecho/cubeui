@@ -175,8 +175,22 @@ const DIVIDERS = { space: "gap-4", line: "gap-0", none: "gap-0" } as const;
  * Neither set is an even split, which is the honest default for two surfaces with no ranking.
  */
 type SplitWidths =
-  | { firstWidth?: SplitWidth; secondWidth?: never }
-  | { firstWidth?: never; secondWidth?: SplitWidth };
+  | {
+      /**
+       * How much of the row the first pane claims, from the `SplitWidth` scale; the second takes
+       * the rest. Pass this or `secondWidth`, not both. With neither, the panes split evenly.
+       */
+      firstWidth?: SplitWidth;
+      secondWidth?: never;
+    }
+  | {
+      firstWidth?: never;
+      /**
+       * How much of the row the second pane claims, from the `SplitWidth` scale; the first takes
+       * the rest. Pass this or `firstWidth`, not both.
+       */
+      secondWidth?: SplitWidth;
+    };
 
 type SplitLayoutProps = {
   /** The leading pane. Alone, it is the whole width, so a caller never special-cases un-split. */
@@ -366,6 +380,11 @@ type SidebarLayoutNarrow =
       sidebarHideBelow?: undefined;
       /** Below this width the two stack rather than sit side by side. See {@link SplitLayout}. */
       stackBelow?: keyof typeof STACK_BELOW | undefined;
+      /**
+       * What separates the panes: `space` is a gap, `line` is flush with a hairline rule between
+       * them, and `none` is flush with nothing drawn, as on `SplitLayout`. With `sidebarHideBelow`,
+       * `line` is out.
+       */
       divider?: keyof typeof DIVIDERS | undefined;
       brandSlot?: never;
       navSlot?: never;

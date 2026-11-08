@@ -20,12 +20,12 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `firstWidth` | `SplitWidth` |  |  |
-| `secondWidth` | `never` |  |  |
+| `firstWidth` (instead of `secondWidth`) | `SplitWidth` |  | How much of the row the first pane claims, from the `SplitWidth` scale; the second takes the rest. Pass this or `secondWidth`, not both. With neither, the panes split evenly. |
+| `secondWidth` (instead of `firstWidth`) | `SplitWidth` |  | How much of the row the second pane claims, from the `SplitWidth` scale; the first takes the rest. Pass this or `firstWidth`, not both. |
 | `firstSlot` (required) | `SlotNode` |  | The leading pane. Alone, it is the whole width, so a caller never special-cases un-split. |
 | `secondSlot` | `SlotNode` |  | The trailing pane. |
-| `stackBelow` | `keyof typeof STACK_BELOW` | `"lg"` | Below this width the two stack rather than sit side by side. `never` keeps them side by side at every width — an icon strip, a kiosk, a pane already inside a media query the caller owns. |
-| `divider` | `keyof typeof DIVIDERS` | `"space"` | What separates the panes: `space` is a gap, `line` is flush with a hairline rule between them, and `none` is flush with nothing drawn. One prop rather than a gap and a border, because a rule with a gap on both sides floats in the middle of nothing. The rule stays between the panes when they stack, which a `border-r` on one pane does not. |
+| `stackBelow` | `"never" \| "md" \| "lg" \| "xl"` | `"lg"` | Below this width the two stack rather than sit side by side. `never` keeps them side by side at every width — an icon strip, a kiosk, a pane already inside a media query the caller owns. |
+| `divider` | `"space" \| "line" \| "none"` | `"space"` | What separates the panes: `space` is a gap, `line` is flush with a hairline rule between them, and `none` is flush with nothing drawn. One prop rather than a gap and a border, because a rule with a gap on both sides floats in the middle of nothing. The rule stays between the panes when they stack, which a `border-r` on one pane does not. |
 | `className` | `string` |  |  |
 | `firstClassName` | `string` |  |  |
 | `secondClassName` | `string` |  |  |
@@ -36,19 +36,19 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `sidebarHideBelow` | `undefined` |  |  |
-| `stackBelow` | `keyof typeof STACK_BELOW` | `"lg"` | Below this width the two stack rather than sit side by side. See {@link SplitLayout}. |
-| `divider` | `keyof typeof DIVIDERS` | `"space"` |  |
-| `brandSlot` | `never` |  |  |
-| `navSlot` | `never` |  |  |
-| `navLabel` | `never` |  |  |
-| `status` | `never` |  |  |
-| `actionSlot` | `never` |  |  |
-| `barPosition` | `never` | `"top"` |  |
+| `sidebarHideBelow` | `"sm" \| "md" \| "lg" \| "xl"` |  | Under this width the sidebar pane is not drawn and an `AppBar` — `brandSlot`, `navSlot`, `status`, `actionSlot` — is drawn over `contentSlot` in its place; from it up, the other way round. For an app's navigation rail, which has no room on a phone and does not stack. |
+| `stackBelow` (without `sidebarHideBelow`) | `"never" \| "md" \| "lg" \| "xl"` | `"lg"` | Below this width the two stack rather than sit side by side. See `SplitLayout`. |
+| `divider` | `"space" \| "line" \| "none"` | `"space"` | What separates the panes: `space` is a gap, `line` is flush with a hairline rule between them, and `none` is flush with nothing drawn, as on `SplitLayout`. With `sidebarHideBelow`, `line` is out. |
+| `brandSlot` (with `sidebarHideBelow`) | `SlotNode` |  | The bar's start: the app's mark and name, as the rail's header shows them. |
+| `navSlot` (with `sidebarHideBelow`) | `SlotNode` |  | The bar's navigation: the app's places, usually as icon links. Drawn inside a `<nav>` — `role="navigation"` on device — named by `navLabel`, which is the landmark every hand-written bar either forgot or spelled differently. |
+| `navLabel` (required with `navSlot`) | `string` |  | What the bar's navigation landmark is called — "Main". Required with `navSlot`. |
+| `status` (with `sidebarHideBelow`) | `ReactNode` |  | One line saying what state the app is in — "3/5 servers running" — between the `navSlot` and the `actionSlot`. It gets the width the rest of the bar leaves and no more, so on a narrow bar it is the first thing to give way: a string is cut short with an ellipsis, down to nothing, before the brand, a place or an action loses a pixel. A node is clipped to the same box and truncates itself. |
+| `actionSlot` (with `sidebarHideBelow`) | `SlotNode` |  | The bar's far end: the theme switch, sign out — the rail's footer, in one row. |
+| `barPosition` (with `sidebarHideBelow`) | `"top" \| "bottom"` | `"top"` | Where the `navSlot` is drawn under the breakpoint. `top`, the default, is in the bar with the rest. `bottom` is a bar of its own under the page, the places spread across it, which is where a phone's thumb is and where Android and iOS apps put them. The brand, the `status` and the `actionSlot` stay in the bar at the top. |
 | `contentSlot` (required) | `SlotNode` |  | The main surface — the one the screen is about. Alone, it is the whole width, so a caller never has to special-case the un-split state. |
 | `sidebarSlot` | `SlotNode` |  | The second surface: a navigation column, an inspector, a note list, an order panel. |
 | `sidebarPosition` | `"start" \| "end"` | `"end"` | Which side the sidebar sits on. Stacked, it keeps this reading order rather than jumping. |
-| `sidebarWidth` | `SplitWidth` | `"sm"` | {@link SplitWidth}. Naming the width is what stops eight call sites each inventing one. |
+| `sidebarWidth` | `SplitWidth` | `"sm"` | `SplitWidth`. Naming the width is what stops eight call sites each inventing one. |
 | `className` | `string` |  |  |
 | `contentClassName` | `string` |  |  |
 | `sidebarClassName` | `string` |  |  |

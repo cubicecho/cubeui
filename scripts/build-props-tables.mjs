@@ -14,19 +14,19 @@
  *
  * The component is found by its export in `registry/` (the native source first, then the
  * web-only tier) and its props are the first parameter of its call signature, resolved by the
- * TypeScript compiler against the tsconfig that file is checked under. A row is a prop declared
- * in the component's own file; props it takes from another registry type (`Button`'s, on
- * `ConfirmButton`) are named in one line under the table, and the platform's own props (a
- * `Pressable`'s, a `<div>`'s) are left out. The text is the first paragraph of the prop's TSDoc,
- * and a `@deprecated` prop's row opens by saying so, with what its tag says replaces it.
+ * TypeScript compiler against the tsconfig that file is checked under. What makes a row is
+ * `props-tables.mjs`.
  *
- * `--check` fails when a committed table is not what this generates.
+ * `--check` fails when a committed table is not what this generates. Both modes fail on a row
+ * typed `never` or `keyof typeof …`: a table that says a prop cannot be passed, or names a
+ * constant the reader cannot see, is what #463 found in five of them.
  */
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { misleadingRows, propsRows, renderTable } from "./props-tables.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILL = join(ROOT, "skill");
@@ -99,137 +99,14 @@ function programFor(config, rootNames) {
   return programs.get(config);
 }
 
-const oneLine = (text) => text.replace(/\s+/g, " ").trim();
-const firstParagraph = (text) => oneLine(text.split(/\n\s*\n/)[0] ?? "");
-const cell = (text) => text.replace(/\|/g, "\\|");
-const dropUndefined = (type) => type.replace(/\s*\|\s*undefined\b/g, "").trim();
-
-/**
- * A prop's row text. A deprecated prop often has no summary of its own, only the tag, and a row
- * with nothing in it reads as a prop nobody documented rather than one to move off.
- */
-function docOf(prop, checker) {
-  const doc = firstParagraph(ts.displayPartsToString(prop.getDocumentationComment(checker)));
-  const tag = prop.getJsDocTags(checker).find((t) => t.name === "deprecated");
-  if (tag === undefined) {
-    return doc;
-  }
-  const replacement = oneLine(ts.displayPartsToString(tag.text ?? []));
-  return ["**Deprecated.**", replacement, doc].filter(Boolean).join(" ");
-}
-
-/** `{ level = 3, loading = false }`: the defaults written in the component's own parameter. */
-function defaultsOf(declaration) {
-  const fn = ts.isVariableDeclaration(declaration) ? declaration.initializer : declaration;
-  const defaults = new Map();
-  const visit = (node) => {
-    if (ts.isFunctionLike(node) && node.parameters?.length > 0) {
-      const [first] = node.parameters;
-      if (ts.isObjectBindingPattern(first.name)) {
-        for (const element of first.name.elements) {
-          const prop = element.propertyName ?? element.name;
-          if (element.initializer && ts.isIdentifier(prop)) {
-            defaults.set(prop.text, element.initializer.getText());
-          }
-        }
-      }
-      return;
-    }
-    ts.forEachChild(node, visit);
-  };
-  if (fn) {
-    visit(fn);
-  }
-  return defaults;
-}
-
+const misleading = [];
 function propsTable(name, roots) {
   const { path, config } = findComponent(name);
-  const program = programFor(config, roots.get(config));
-  const checker = program.getTypeChecker();
-  const source = program.getSourceFile(path);
-  const moduleSymbol = checker.getSymbolAtLocation(source);
-  const exported = checker.getExportsOfModule(moduleSymbol).find((s) => s.name === name);
-  if (exported === undefined) {
-    throw new Error(`${relative(ROOT, path)} does not export ${name}.`);
+  const rows = propsRows(programFor(config, roots.get(config)), path, name, ROOT);
+  for (const row of misleadingRows(rows.own)) {
+    misleading.push(`${name}'s \`${row.name}\` is typed \`${row.type}\``);
   }
-  const symbol =
-    exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported;
-  const declaration = symbol.valueDeclaration ?? symbol.declarations[0];
-  const signature = checker.getTypeOfSymbolAtLocation(symbol, declaration).getCallSignatures()[0];
-  if (signature === undefined || signature.parameters.length === 0) {
-    throw new Error(`${name} in ${relative(ROOT, path)} takes no props.`);
-  }
-  const propsType = checker.getTypeOfSymbolAtLocation(signature.parameters[0], declaration);
-  const members = propsType.isUnion() ? propsType.types : [propsType];
-
-  // A prop is required only when every member of a union requires it.
-  const props = new Map();
-  for (const member of members) {
-    for (const prop of checker.getPropertiesOfType(member)) {
-      const optional = (prop.flags & ts.SymbolFlags.Optional) !== 0;
-      const seen = props.get(prop.name);
-      props.set(prop.name, {
-        symbol: seen?.symbol ?? prop,
-        required: (seen ? seen.required : true) && optional === false,
-        count: (seen?.count ?? 0) + 1,
-      });
-    }
-  }
-
-  // The item's own files: `badge.tsx` and the `badge-base.ts` its props type is written in.
-  const stem = path.replace(/\.tsx?$/, "");
-  const ownFiles = new Set([path, `${stem}-base.ts`]);
-  const own = [];
-  const borrowed = new Map();
-  const defaults = defaultsOf(declaration);
-  for (const [propName, { symbol: prop, required, count }] of props) {
-    const decl = prop.declarations?.find((d) => d.getSourceFile().fileName.startsWith(ROOT));
-    const file = decl?.getSourceFile().fileName ?? "";
-    if (decl === undefined || relative(ROOT, file).startsWith("registry/") === false) {
-      continue;
-    }
-    if (ownFiles.has(file) === false) {
-      const where = `\`${relative(ROOT, file)}\``;
-      borrowed.set(where, [...(borrowed.get(where) ?? []), propName]);
-      continue;
-    }
-    const typeText =
-      decl.type?.getText() ?? checker.typeToString(checker.getTypeOfSymbolAtLocation(prop, decl));
-    own.push({
-      pos: decl.pos + (file === path ? Number.MAX_SAFE_INTEGER / 2 : 0),
-      name: propName,
-      type: dropUndefined(oneLine(typeText)),
-      required: required && count === members.length,
-      fallback: defaults.get(propName) ?? "",
-      doc: docOf(prop, checker),
-    });
-  }
-  own.sort((a, b) => a.pos - b.pos);
-
-  const lines = [
-    `\`${name}\`'s props, from the TSDoc in \`${relative(ROOT, path)}\`:`,
-    "",
-    "| Prop | Type | Default | What it is |",
-    "| --- | --- | --- | --- |",
-    ...own.map(
-      (p) =>
-        `| \`${p.name}\`${p.required ? " (required)" : ""} | \`${cell(p.type)}\` | ${
-          p.fallback ? `\`${cell(p.fallback)}\`` : ""
-        } | ${cell(p.doc)} |`,
-    ),
-  ];
-  for (const [where, names] of borrowed) {
-    lines.push(
-      "",
-      `It also takes the props declared in ${where}: ${names
-        .slice()
-        .sort()
-        .map((n) => `\`${n}\``)
-        .join(", ")}.`,
-    );
-  }
-  return lines.join("\n");
+  return renderTable(name, path, ROOT, rows);
 }
 
 const checking = process.argv.includes("--check");
@@ -258,6 +135,15 @@ for (const { file, text } of files) {
   }
 }
 
+if (misleading.length > 0) {
+  console.error(
+    `${misleading.join(".\n")}.\n` +
+      "A row typed `never` is a prop no member of the props type allows: take it out, or allow\n" +
+      "it in a member. A `keyof typeof` left in a row is one the checker could not spell out:\n" +
+      "write the type as its values.",
+  );
+  process.exit(1);
+}
 if (stale.length > 0) {
   console.error(
     `The props tables in ${stale.join(", ")} are not what the TSDoc generates.\n` +

@@ -35,7 +35,7 @@ eleven screens and came out with four fills, a border on about half and three pa
 | `content` (required) | `string` |  | The text, drawn as written: its newlines and its indentation are kept. A string rather than a node, because whitespace is the one thing a block of code cannot have rearranged, and a node would let a caller pass markup that is not preformatted at all. |
 | `actionSlot` | `SlotNode` |  | The block's far end, at the top: a `CopyButton`. It sits beside the text rather than over it, so the room it needs is the block's to reserve — the hand-written version floated the button over the text and remembered a `pr-12` to keep the first line out from under it. |
 | `wrap` | `boolean` | `false` | What a line too long for the block does. Off, the default, it runs on and the block scrolls sideways, which is right for code and config: a wrapped line of JSON reads as two. On, it wraps, breaking inside a word if it has to, which is right for output, a log, or one long value such as a URL. |
-| `maxHeight` | `keyof typeof MAX_HEIGHTS` |  | The tallest the block may get before it scrolls inside itself. Left out, it is as tall as its text. A named height rather than a class, so the blocks in an app are one of three heights instead of a `max-h-*` each. |
+| `maxHeight` | `"sm" \| "md" \| "lg"` |  | The tallest the block may get before it scrolls inside itself. Left out, it is as tall as its text. A named height rather than a class, so the blocks in an app are one of three heights instead of a `max-h-*` each. |
 | `title` | `string` |  | What the snippet is: a file name, a tool, a shell — ".mcp.json", "Claude Code", "curl". Drawn in a header row of its own, with the `actionSlot` beside it rather than beside the text, and it names a `CopyButton` inside the block "Copy {title}" unless that button has a `label`. |
 | `language` | `string` |  | The snippet's language, drawn muted after the `title` — "json", "bash". Only with a title. |
 | `follow` | `boolean` | `false` | Keep the end of a growing `content` in view — a live log, a run's output. Meaningful with `maxHeight`, since only a capped block scrolls. It follows while the reader is at the end, lets go once they scroll up, and shows "Jump to latest" until they are back. The text is never a live region: a log read aloud line by line drowns out everything else. |
@@ -95,7 +95,7 @@ reads as a field somebody could type in:
 One line of text makes a block one line tall, button included. A value that already has a label
 beside it on a settings page is a `PropertyRow` with the string as its `value`,
 `valueClassName="font-mono"` and the `CopyButton` as its `actionSlot` instead (see
-[Copy button](buttons.md#copy-button)); the block is for the value that stands alone.
+[Copy button](copy-and-download.md#copy-button)); the block is for the value that stands alone.
 
 ## Markdown
 
@@ -117,10 +117,10 @@ scales, two blockquote rules and code blocks that matched nothing else on the pa
 | --- | --- | --- | --- |
 | `content` (required) | `string` |  | The Markdown source, as a string. |
 | `emptySlot` | `SlotNode` |  | What is drawn when `content` is blank: "This file is empty.", "Nothing to preview yet." Left out, a blank document draws nothing. |
-| `headingId` | `((text: string) => string)` |  | An id for each heading, worked out from its text, so a table of contents or a `#fragment` can point at one. Return `undefined` to leave a heading without. Left out, no heading has an id: an id is a promise the page makes about what is unique on it, and only the app knows that. |
+| `headingId` | `((text: string) => string \| undefined)` |  | An id for each heading, worked out from its text, so a table of contents or a `#fragment` can point at one. Return `undefined` to leave a heading without. Left out, no heading has an id: an id is a promise the page makes about what is unique on it, and only the app knows that. |
 | `components` | `Components` |  | Elements to draw differently, by tag — react-markdown's own `components`, laid over this component's map. It is how an app's router `<Link>` becomes `a`, or an image is resolved before it is drawn. A replaced `a` or `img` keeps the document's look, which is worn from the root. |
-| `remarkPlugins` | `Options["remarkPlugins"]` |  | remark plugins to run after remark-gfm — react-markdown's own `remarkPlugins`. A wikilink syntax, a footnote style. There is no `rehypePlugins`: see the note on raw HTML below. |
-| `urlTransform` | `Options["urlTransform"]` |  | What a link's or an image's URL becomes before it is drawn — react-markdown's own `urlTransform`. The default is react-markdown's `defaultUrlTransform`, which keeps `http`, `https`, `mailto` and relative URLs and blanks the rest, `javascript:` among them. Replace it to let a scheme of your own through, and hand everything else back to `defaultUrlTransform`. |
+| `remarkPlugins` | `PluggableList` |  | remark plugins to run after remark-gfm — react-markdown's own `remarkPlugins`. A wikilink syntax, a footnote style. There is no `rehypePlugins`: see the note on raw HTML below. |
+| `urlTransform` | `UrlTransform` |  | What a link's or an image's URL becomes before it is drawn — react-markdown's own `urlTransform`. The default is react-markdown's `defaultUrlTransform`, which keeps `http`, `https`, `mailto` and relative URLs and blanks the rest, `javascript:` among them. Replace it to let a scheme of your own through, and hand everything else back to `defaultUrlTransform`. |
 | `wikilinks` | `boolean` | `false` | Reads `[[Note]]`, `[[Note\|label]]`, `[[Note#Heading]]` and `![[image.png]]`. Off by default: in plain Markdown two brackets are text. Each one is a name, so each goes to `resolveLink`, as a `wikilink` or an `embed`; one that gets no answer is drawn broken. |
 | `resolveLink` | `ResolveLink` |  | Where a link or an image goes, for the app whose documents point at each other. Called with each wikilink and each relative URL — never with a web address or a `#fragment` — and answers `{ href }`, `{ render }` for the router's own link, `{ pending: true }` or `{ broken: true, reason }`. Nothing at all leaves the link as the document wrote it. |
 | `basePath` | `string` |  | The path of the document shown, as a page's address is to its links: `guide/intro.md`, or `guide/` for a directory. With it a relative URL reaches `resolveLink` as a whole path (`../api.md` as `api.md`), and one that climbs out of the root is drawn broken. Without it `resolveLink` gets the URL as written. Wikilinks are names, and are never resolved against it. |
@@ -248,7 +248,7 @@ const [body, setBody] = useState(skill.instructions);
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `value` (required) | `string` |  | The Markdown source. The caller holds it: this component keeps no copy. |
-| `onValueChange` (required) | `(value: string) => void` |  | Called with the whole source on every edit. |
+| `onValueChange` (required) | `((value: string) => void)` |  | Called with the whole source on every edit. |
 | `view` | `MarkdownEditorView` |  | Which view is showing: `edit` is the source alone, `preview` the rendered document alone, `split` the two side by side. Pass it with `onViewChange` to hold the view yourself — to keep it in the URL, or in a preference. Left out, the component holds it. |
 | `onViewChange` | `((view: MarkdownEditorView) => void)` |  | Called with the view the toggle was moved to. |
 | `defaultView` | `MarkdownEditorView` | `"split"` | The view to start in when the component holds it. `split` unless given. |
