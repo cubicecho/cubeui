@@ -3,6 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { SearchInput as Compiled } from "../compiled/search-input";
 import { SearchInput as Native } from "../registry/ui/search-input";
+import { SearchInput as Device } from "../registry/ui/search-input.tsx";
+import { expectNoTooltipOnHover } from "./no-tooltip";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -197,6 +199,39 @@ export const SettledText: Story = {
         await expect(onSettled).toHaveBeenLastCalledWith("");
         // Enter and the ✕ each ended a wait rather than adding to one.
         await expect(onSettled).toHaveBeenCalledTimes(2);
+      });
+    }
+  },
+};
+
+/**
+ * The ✕ shows no tooltip on either half (#425, #432), and is named `clearLabel` on both. The box
+ * already says what it is for, and the ✕ is there only once something is typed.
+ *
+ * The left column is the device source, imported by its full name: everywhere else here
+ * `search-input` resolves to `search-input.web.tsx`, as it does in an Expo web app, so the left
+ * and right would be one file. The device source's ✕ is `Button`, which draws an icon size's name
+ * as its tooltip unless told not to; the web half's is a plain `<button>`, which draws none.
+ */
+export const TheClearButtonHasNoTooltip: Story = {
+  render: () => (
+    <SideBySide
+      native={<Device label="Device servers" defaultValue="mcp" />}
+      compiled={<Compiled label="Compiled servers" defaultValue="mcp" />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Device", "Compiled"]) {
+      await step(`${half}: hovering the ✕ opens nothing`, async () => {
+        const box = canvas.getByRole("searchbox", { name: `${half} servers` });
+        const clear = canvas
+          .getAllByRole("button", { name: "Clear search" })
+          .find((button) => box.parentElement?.contains(button));
+        if (!clear) {
+          throw new Error("a prefilled box should show its ✕");
+        }
+        await expectNoTooltipOnHover(clear);
       });
     }
   },

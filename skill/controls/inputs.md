@@ -128,7 +128,8 @@ It also takes the props declared in `registry/ui/input-base.ts`: `aria-described
   `FormField`) gets no default, so the visible label is what is read.
 - The ✕ shows only while there is text, is a button named `clearLabel` (default "Clear search"),
   empties the box, and puts focus back in it. `clearable={false}` drops it. The browser's own
-  ✕ is hidden, so there is one.
+  ✕ is hidden, so there is one. It shows no tooltip on hover, on either half: the box already
+  says what it is for.
 - It takes the rest of `Input`'s props except `type`, `leadingSlot` and `trailingSlot`: `onChangeText` on
   both halves, and on the web `onChange` too, as a shadcn input does. The ✕ fires both, as if
   the user had cleared the box. Controlled or not, it clears.
@@ -196,7 +197,8 @@ gets right:
   what you typed.
 - Its accessible name changes with its state — "Show password" / "Hide password", or `showLabel` /
   `hideLabel` — rather than being a fixed "Toggle" that tells a screen reader nothing about what
-  will happen.
+  will happen. It is not also shown on hover: an eye in a password box needs no caption, and a
+  tooltip would sit over the field.
 - It swaps the input's real `type`, not a CSS mask, so a password manager and the browser's own
   autofill still see a password field. On device that `type` is `secureTextEntry`.
 

@@ -68,6 +68,9 @@ function DescriptionHint({
           variant="ghost"
           size="icon-xs"
           aria-label={name}
+          // No name on hover (#425): a press opens the same thing, and a tooltip then a pane over
+          // one button is two answers to one question.
+          tooltip={false}
           // The row is as tall as its title, not as tall as a button: the margin gives back what
           // the button's box adds, so a title with a hint and one without sit on the same line.
           className="-my-1 shrink-0 rounded-full text-foreground/60"

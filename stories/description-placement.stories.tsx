@@ -16,6 +16,7 @@ import { SettingRow as NativeSettingRow } from "../registry/layout/setting-row";
 import { Form as NativeForm, createAppForm as nativeCreateAppForm } from "../registry/ui/form";
 import { Info as NativeInfo } from "../registry/ui/icons";
 import { Switch as NativeSwitch } from "../registry/ui/switch";
+import { expectNoTooltipOnHover } from "./no-tooltip";
 import { SideBySide } from "./side-by-side";
 
 /**
@@ -48,7 +49,8 @@ function halves(canvasElement: HTMLElement) {
 
 /**
  * What every story here checks. Both halves have one button named `name`; the sentence is on the
- * page once per half and clipped, not drawn; pressing the button shows it, and the pane shuts.
+ * page once per half and clipped, not drawn; hovering the button opens no tooltip (#425), since a
+ * press shows the sentence itself; pressing it shows it, and the pane shuts.
  */
 async function foldsTheDescription(canvasElement: HTMLElement, name: string) {
   const canvas = within(canvasElement);
@@ -65,6 +67,10 @@ async function foldsTheDescription(canvasElement: HTMLElement, name: string) {
     // `sr-only`: a one-pixel clipped box, which is read and not seen.
     await expect(getComputedStyle(copy).position).toBe("absolute");
     await expect(getComputedStyle(copy).width).toBe("1px");
+  }
+
+  for (const trigger of [nativeTrigger, compiledTrigger]) {
+    await expectNoTooltipOnHover(trigger);
   }
 
   // The pane is radix's on both halves: Vite resolves `popover.web.tsx` for the native source
