@@ -332,6 +332,66 @@ export const Horizontal: Story = {
   },
 };
 
+/** What fades a part: its own `opacity`, which a disabled field sets to the control's step. */
+const opacityOf = (el: Element | null | undefined) => (el ? getComputedStyle(el).opacity : null);
+
+/**
+ * A disabled field fades as one (#466): the label and the description with the control. Said once
+ * on the field, `disabled` reaches the control too; said on the control alone, as an app with an
+ * existing `<Input disabled />` says it, it fades the field just the same. The label's own
+ * `peer-disabled:` could never do this here, where the label comes before the control or beside it.
+ */
+export const Disabled: Story = {
+  args: { label: "Name", controlSlot: <Input /> },
+  render: () => (
+    <div className="grid w-[360px] max-w-full gap-5">
+      <FormField
+        label="Workspace"
+        description="Set by your organisation."
+        disabled
+        controlSlot={<Input defaultValue="cubicecho" />}
+      />
+      <FormField
+        orientation="horizontal"
+        label="Email me about releases"
+        description="About one a month."
+        controlSlot={<Checkbox disabled />}
+      />
+      <FormField
+        orientation="horizontal"
+        label="Sync on save"
+        description="Turn sync on first."
+        disabled
+        controlSlot={<Switch />}
+      />
+      <FormField label="Nickname" description="Shown on your profile." controlSlot={<Input />} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const fields = Array.from(canvasElement.querySelectorAll<HTMLElement>("[data-slot=field]"));
+    expect(fields).toHaveLength(4);
+    const [workspace, email, sync, nickname] = fields;
+    const label = (field: HTMLElement | undefined) =>
+      field?.querySelector("[data-slot=field-label]");
+    const description = (field: HTMLElement | undefined) =>
+      field?.querySelector("[data-slot=field-description]");
+
+    for (const field of [workspace, email, sync]) {
+      expect(opacityOf(label(field))).toBe("0.5");
+      expect(opacityOf(description(field))).toBe("0.5");
+    }
+    // The field's `disabled` is handed to the control, which fades itself.
+    expect(controlFor(canvasElement, "Workspace")).toBeDisabled();
+    expect(controlFor(canvasElement, "Sync on save")).toBeDisabled();
+    expect(controlFor(canvasElement, "Email me about releases")).toBeDisabled();
+
+    // A field that is not disabled is not faded.
+    expect(opacityOf(label(nickname))).toBe("1");
+    expect(opacityOf(description(nickname))).toBe("1");
+    expect(controlFor(canvasElement, "Nickname")).toBeEnabled();
+  },
+};
+
 /**
  * `loading` swaps the control for a box of the same height and keeps the label and description,
  * which are literals the form already knows rather than data it is waiting for.

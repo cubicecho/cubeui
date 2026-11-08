@@ -8,10 +8,10 @@
  */
 
 import { useState } from "react";
-import { Pressable } from "react-native";
+import { Platform, Pressable } from "react-native";
 import { CHECKBOX_CLASS, type CheckboxProps } from "@/components/ui/checkbox-base";
 import { Check } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { cn, isInvalid } from "@/lib/utils";
 
 /** A box that is checked or not. */
 function Checkbox({
@@ -21,6 +21,7 @@ function Checkbox({
   disabled = false,
   onBlur,
   accessibilityLabel,
+  "aria-invalid": ariaInvalid,
   className,
 }: CheckboxProps) {
   // Controlled when `checked` is passed and self-driving otherwise, the way radix's is.
@@ -31,6 +32,10 @@ function Checkbox({
       role="checkbox"
       aria-checked={checked}
       aria-label={accessibilityLabel}
+      // What react-native has no prop for, in the spelling react-native-web reads, as `Input` does.
+      {...(Platform.OS === "web" && ariaInvalid !== undefined
+        ? { "aria-invalid": ariaInvalid }
+        : {})}
       disabled={disabled}
       onPress={() => {
         setCheckedState(!checked);
@@ -44,6 +49,8 @@ function Checkbox({
         checked
           ? "border-active bg-active/40 hover:bg-active/60"
           : "border-foreground/50 bg-background",
+        // After the checked edge, so a refused box is red whether it is checked or not.
+        isInvalid(ariaInvalid) && "border-negative",
         disabled && "opacity-50",
         className,
       )}

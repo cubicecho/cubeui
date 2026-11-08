@@ -29,6 +29,7 @@ is what a filter, a search box, or a field in a `useState` form uses.
 | `descriptionIconSlot` | `SlotNode` |  | The `popover` trigger's glyph. Defaults to a question mark; an `Info` reads as less of a plea. |
 | `error` | `ReactNode` |  | What is wrong with the value, as a node or a string. Falsy — `undefined`, `""`, whatever a validator holds for a field that passed — draws nothing and leaves the control unmarked, so a call site passes `errors.email?.message` straight in rather than branching around it. |
 | `required` | `boolean` | `false` | Whether a value is needed. Draws the asterisk, and says so to assistive technology as `aria-required`; the asterisk itself is decoration and stays out of the accessibility tree, so the label still reads "Email" rather than "Email star". |
+| `disabled` | `boolean` | `false` | The control cannot be changed. The field fades as one: the label and the description with the control, which is handed `disabled` too. A control given `disabled` of its own fades the field just the same, so `controlSlot={<Input disabled />}` needs nothing here. |
 | `actionSlot` | `SlotNode` |  | The label row's far end. "Forgot password?", a character count, a reveal toggle. |
 | `loading` | `boolean` | `false` | Whether the value is still being fetched. On, a skeleton stands in for the control and `error` is not consulted — a value that has not arrived is not a value that came back wrong. The same ordering `CardLayout` makes between `loading` and `emptySlot`, one level down. |
 | `htmlFor` | `string` |  | The control's `id`, for a caller that already owns one — something else on the page points at this control, or a form library minted it. Left off, the shell generates one, which is what makes the same field safe to render twice on a page. A control the shell cannot reach wants the function form of `controlSlot`, not this: an `htmlFor` alone points the label at the right element and leaves the description and the error pointing at nothing. |
@@ -56,6 +57,12 @@ and the error are on screen. Do not write any of that at the call site:
 
 Falsy `error` draws nothing, so write `error={errors.email?.message}` plainly. Never
 `{errors.email && <p …>}`.
+
+**A disabled field fades as one.** `disabled` fades the label and the description with the
+control, and is handed to the control too, so it is said once. A control that is `disabled`
+already (`controlSlot={<Input disabled />}`) fades the field without it. Do not fade the label
+yourself with `labelClassName`: `peer-disabled:` never matches here, which is why it is a prop. A
+field of your own built on `Field` passes `disabled` to `Field` for the same look.
 
 `loading` swaps the control for a skeleton **and keeps the label and the description**, drawn for
 real: they are literals the form already knows, not data it is waiting for, so a field that hides
@@ -125,6 +132,7 @@ the far right — is not this. That is a row, not a field: use `SettingRow`
 caption beside it is `SwitchField` (`@cubeui/switch-field`). It takes a `description` — a line
 under the caption, wired with `aria-describedby` — and `disabled`, which is how a switch that
 cannot be changed says why: `<SwitchField … disabled description="ocrmypdf is not installed." />`.
+The caption and the description fade with the switch, as a disabled field's label does.
 Another control, or the switch at the far end of a row, is `SettingRow`.
 
 `Switch` and `SwitchField` take `hint`, their tooltip, as `Button` does: shown on hover and focus

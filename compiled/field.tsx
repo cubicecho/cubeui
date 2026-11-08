@@ -12,10 +12,13 @@
  * Field chrome — the label/description/error furniture around a control.
  *
  * Shared, with no `.web.tsx`: none of it does anything a `<div>` did that a
- * `View` cannot. The one thing lost in the conversion is the
- * `group-data-[disabled=true]/field:` variant `FieldLabel` used to carry —
- * `data-*` attributes and group variants are DOM-only, and a compiled web build
- * is where that would come back, not a hand-written override.
+ * `View` cannot.
+ *
+ * **A disabled field fades as one.** shadcn's `FieldLabel` faded from a
+ * `group-data-[disabled=true]/field:` variant, which is DOM-only, and the label's own
+ * `peer-disabled:` never matches here, where the label comes before the control or sits in
+ * `FieldContent` beside it. So `Field` takes `disabled` and hands it to its label, title and
+ * description through context, on both platforms (#466).
  *
  * **Every part shadcn's `field` exports is here, and each takes its element's
  * props.** The compiled half installs over a DOM app's shadcn `field.tsx`, so
@@ -30,8 +33,8 @@
  * select on `[data-slot=field-content]`.
  */
 import { cva, type VariantProps } from "class-variance-authority";
-import type * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { cn, FIELD_DISABLED_CLASS } from "@/lib/utils";
 import { Label } from "./label";
 
 // `className` is re-declared rather than inherited — see `card.tsx`: nativewind types it as
@@ -110,36 +113,66 @@ const fieldVariants = cva("w-full gap-2", {
   defaultVariants: { orientation: "vertical" },
 });
 
+/** Whether the field around a part is disabled, so its words fade with its control. */
+const FieldDisabledContext = React.createContext(false);
+
 /** One field's column: its label, control, description and error. */
 function Field({
   className,
   orientation = "vertical",
+  disabled = false,
   ...props
-}: ViewProps & VariantProps<typeof fieldVariants>) {
+}: ViewProps &
+  VariantProps<typeof fieldVariants> & {
+    /**
+     * The control cannot be changed: the label, title and description fade with it, and the group
+     * is `aria-disabled`. The control is not reached from here, so give it `disabled` as well; the
+     * bound fields and `FormField` pass one to both.
+     */
+    disabled?: boolean | undefined;
+  }) {
   return (
-    // The `role` is hand-written because a `<fieldset>` has no native counterpart.
-    <div
-      role="group"
-      data-slot="field"
-      className={cn("cube-rn-view", fieldVariants({ orientation }), className)}
-      {...(props as React.ComponentPropsWithoutRef<"div">)}
-    />
+    <FieldDisabledContext.Provider value={disabled}>
+      {/* The `role` is hand-written because a `<fieldset>` has no native counterpart. */}
+      <div
+        role="group"
+        data-slot="field"
+        // The group is disabled, not only its control. It is also what tells a contrast check
+        // that the faded words belong to an inactive control, which WCAG 1.4.3 exempts.
+        aria-disabled={disabled || undefined}
+        className={cn("cube-rn-view", fieldVariants({ orientation }), className)}
+        {...(props as React.ComponentPropsWithoutRef<"div">)}
+      />
+    </FieldDisabledContext.Provider>
   );
 }
 
 /** The label that names the field's control. */
 function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>) {
+  const disabled = React.useContext(FieldDisabledContext);
   // `data-slot` rather than `testID`: `Label`'s shared contract has no `testID`, the native half
   // ignores an attribute it does not know, and the web half spreads it over its own `label`.
-  return <Label data-slot="field-label" className={className} {...props} />;
+  return (
+    <Label
+      data-slot="field-label"
+      className={cn(disabled && FIELD_DISABLED_CLASS, className)}
+      {...props}
+    />
+  );
 }
 
 /** The muted help text for the field. */
 function FieldDescription({ className, ...props }: TextProps) {
+  const disabled = React.useContext(FieldDisabledContext);
   return (
     <span
       data-slot="field-description"
-      className={cn("cube-rn-text", "text-foreground/60 text-sm", className)}
+      className={cn(
+        "cube-rn-text",
+        "text-foreground/60 text-sm",
+        disabled && FIELD_DISABLED_CLASS,
+        className,
+      )}
       {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
   );
@@ -222,11 +255,17 @@ function FieldContent({ className, ...props }: ViewProps) {
  * `aria-labelledby` pointing at this `id`.
  */
 function FieldTitle({ className, ...props }: TextProps) {
+  const disabled = React.useContext(FieldDisabledContext);
   // `field-label`, as shadcn's does: it is the label of its group, and styled as one.
   return (
     <span
       data-slot="field-label"
-      className={cn("cube-rn-text", "text-foreground text-sm font-semibold", className)}
+      className={cn(
+        "cube-rn-text",
+        "text-foreground text-sm font-semibold",
+        disabled && FIELD_DISABLED_CLASS,
+        className,
+      )}
       {...(props as React.ComponentPropsWithoutRef<"span">)}
     />
   );

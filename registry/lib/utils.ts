@@ -63,9 +63,43 @@ export const INSET_FOCUS_EDGE =
  */
 export const FIELD_INVALID_CLASS = "border-negative focus:border-active";
 
-/** Whether an `aria-invalid` value says the field is invalid. */
-export function isInvalid(value: boolean | "true" | "false" | undefined): boolean {
+/**
+ * A disabled field's words: its label, its description, a switch's caption. The step the control
+ * fades by, so the field fades as one and a full-ink label does not sit over a faded box. `Field`
+ * applies it to its parts from its own `disabled`.
+ */
+export const FIELD_DISABLED_CLASS = "opacity-50";
+
+/**
+ * Whether an `aria-invalid` value says the field is invalid. `"grammar"` and `"spelling"` are a
+ * text checker's words, not a validator's, so they draw nothing.
+ */
+export function isInvalid(
+  value: boolean | "true" | "false" | "grammar" | "spelling" | undefined,
+): boolean {
   return value === true || value === "true";
+}
+
+/**
+ * A button drawn as a field: the trigger of a combobox or a date picker, laid over
+ * `Button variant="outline"`. It looks like a field, so it behaves like one: no hover fill, focus
+ * turns its border `active` as an input's does, and a refused value turns it `negative`, with
+ * focus still winning. It stays on `bg-background`, the surface the `/60` placeholder's contrast
+ * is tested on.
+ *
+ * The refusal is read from the trigger's `aria-invalid` prop rather than an `aria-invalid:`
+ * variant, which a device does not have, so the two halves draw it the same way. `clsx` and not
+ * `cn`: the trigger's own `cn` merges it over the button's outline, and the compiler would import
+ * a second `cn` into this file.
+ */
+export function fieldTriggerClass(
+  ariaInvalid: boolean | "true" | "false" | "grammar" | "spelling" | undefined,
+): string {
+  return clsx(
+    "bg-background font-normal hover:bg-background focus-visible:bg-background focus-visible:border-active",
+    Platform.OS === "web" && "disabled:cursor-not-allowed",
+    isInvalid(ariaInvalid) && "border-negative focus-visible:border-active",
+  );
 }
 
 /**

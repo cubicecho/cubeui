@@ -77,7 +77,8 @@ const compiledChange = fn();
 /**
  * A switch that cannot be changed says why (#270). `description` is the line under the caption
  * and the switch's description, not part of its name; `disabled` reaches the switch, and a press
- * on the caption does not get past it either.
+ * on the caption does not get past it either. The caption and the line fade with the switch, as a
+ * disabled field's label and description do.
  */
 export const DisabledSaysWhy: Story = {
   render: () => (
@@ -120,6 +121,10 @@ export const DisabledSaysWhy: Story = {
       const caption = half.getByText("Run OCR on new uploads").getBoundingClientRect();
       const reason = half.getByText(WHY).getBoundingClientRect();
       await expect(reason.top).toBeGreaterThanOrEqual(caption.bottom);
+
+      // The row fades as a disabled field does: the caption and the reason with the switch (#466).
+      await expect(getComputedStyle(half.getByText("Run OCR on new uploads")).opacity).toBe("0.5");
+      await expect(getComputedStyle(half.getByText(WHY)).opacity).toBe("0.5");
 
       await userEvent.click(half.getByText("Run OCR on new uploads"), { pointerEventsCheck: 0 });
     }

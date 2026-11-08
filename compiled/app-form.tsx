@@ -61,6 +61,8 @@ const FIELD_KEY_RECORD: Record<keyof FieldProps, true> = {
   descriptionPlacement: true,
   descriptionIconSlot: true,
   required: true,
+  // The field's, so the label fades with the control; `FormField` hands it on to the control.
+  disabled: true,
   actionSlot: true,
   loading: true,
   htmlFor: true,

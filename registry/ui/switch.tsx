@@ -17,7 +17,7 @@ import {
   type SwitchProps,
 } from "@/components/ui/switch-base";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, isInvalid } from "@/lib/utils";
 
 /** A control that is on or off. */
 function Switch({
@@ -29,6 +29,7 @@ function Switch({
   accessibilityLabel,
   "aria-labelledby": ariaLabelledBy,
   "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   hint,
   side = "top",
   className,
@@ -64,9 +65,10 @@ function Switch({
       // What react-native has no prop for, in the spelling react-native-web reads — the same
       // arrangement as `Input`'s. A device reads the hint as the accessibility hint instead.
       {...(Platform.OS === "web"
-        ? describedBy === ""
-          ? {}
-          : { "aria-describedby": describedBy }
+        ? {
+            ...(describedBy === "" ? {} : { "aria-describedby": describedBy }),
+            ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
+          }
         : { accessibilityHint: hint })}
       disabled={refuses ? false : disabled}
       {...(refuses ? { "aria-disabled": true } : {})}
@@ -81,6 +83,8 @@ function Switch({
       className={cn(
         SWITCH_TRACK_CLASS,
         checked ? SWITCH_TRACK_ON_CLASS : "bg-foreground/50",
+        // After the on edge, so a refused switch is red whether it is on or off.
+        isInvalid(ariaInvalid) && "border-negative",
         // `disabled:` never applies to a Pressable — apply the state directly.
         disabled && "opacity-50",
         className,

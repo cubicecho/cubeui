@@ -39,7 +39,7 @@ import {
   type SelectSeparatorEntry,
   withOrphanOptions,
 } from "@/lib/select-options";
-import { cn } from "@/lib/utils";
+import { cn, fieldTriggerClass } from "@/lib/utils";
 
 /** Off the screen and still read. `sr-only` is a clip, which the device does not have. */
 const SR_ONLY = Platform.select({
@@ -369,6 +369,7 @@ type SearchMenuProps = Pick<
   | "emptyMessage"
   | "onCreateOption"
   | "createLabel"
+  | "aria-invalid"
 > & {
   searchable: boolean;
   /** The values held: one or none for a single combobox. */
@@ -417,6 +418,7 @@ function SearchMenu({
   duplicateMessage = (text) => `“${text}” is already added.`,
   onRefusalChange,
   trigger,
+  "aria-invalid": ariaInvalid,
 }: SearchMenuProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -476,14 +478,10 @@ function SearchMenu({
           disabled={disabled}
           {...trigger}
           className={cn(
-            "h-auto min-h-10 w-full justify-between gap-2 bg-background px-3 py-1.5 font-normal",
-            // It looks like a field, so it behaves like one: no hover fill, and focus turns its
-            // border `active`, as the select trigger beside it does — not a button's fill.
-            "hover:bg-background focus-visible:bg-background focus-visible:border-active",
-            Platform.select({
-              web: "whitespace-normal aria-invalid:border-negative aria-invalid:focus-visible:border-active disabled:cursor-not-allowed",
-              default: "",
-            }),
+            "h-auto min-h-10 w-full justify-between gap-2 px-3 py-1.5",
+            // It looks like a field, so it behaves like one, as the select trigger beside it does.
+            fieldTriggerClass(ariaInvalid),
+            Platform.select({ web: "whitespace-normal", default: "" }),
             className,
           )}
           content={triggerSlot}
@@ -660,6 +658,7 @@ function SingleCombobox({
           // The select trigger's props are the button's on the web and a subset of them on
           // device, so they are the same wiring on a different element.
           trigger={props as ButtonProps}
+          aria-invalid={props["aria-invalid"]}
           triggerSlot={
             chosen === undefined ? (
               <Text className="min-w-0 flex-1 truncate text-left text-foreground/60 text-sm">
@@ -799,6 +798,7 @@ function MultipleCombobox({
         duplicateMessage={duplicateMessage}
         onRefusalChange={onRefusalChange}
         trigger={props as ButtonProps}
+        aria-invalid={props["aria-invalid"]}
         triggerSlot={
           <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
             {chosen.length === 0 ? (

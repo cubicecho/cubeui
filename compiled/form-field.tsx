@@ -40,6 +40,8 @@ export type ControlProps = {
   "aria-describedby": string | undefined;
   "aria-invalid": true | undefined;
   "aria-required": true | undefined;
+  /** {@link FormFieldProps.disabled}, for the control to take as its own. */
+  disabled: true | undefined;
 };
 
 /**
@@ -132,6 +134,12 @@ type FormFieldProps = {
    * which blocks a submit the caller may have wanted to make.
    */
   required?: boolean | undefined;
+  /**
+   * The control cannot be changed. The field fades as one: the label and the description with the
+   * control, which is handed `disabled` too. A control given `disabled` of its own fades the field
+   * just the same, so `controlSlot={<Input disabled />}` needs nothing here.
+   */
+  disabled?: boolean | undefined;
   /** The label row's far end. "Forgot password?", a character count, a reveal toggle. */
   actionSlot?: SlotNode | undefined;
   /**
@@ -225,6 +233,7 @@ export function FormField({
   descriptionIconSlot,
   error,
   required = false,
+  disabled = false,
   actionSlot,
   loading = false,
   htmlFor,
@@ -245,6 +254,7 @@ export function FormField({
     !renderControl && isValidElement<Record<string, unknown>>(controlSlot) ? controlSlot : null;
   const givenId = typeof element?.props.id === "string" ? element.props.id : undefined;
   const controlId = htmlFor ?? givenId ?? reactId;
+  const shownDisabled = disabled || element?.props.disabled === true;
 
   // Suppressed while loading, so the field does not report a stale rejection of a value that is
   // on its way. It is also what keeps the message rail honest: `error` is the only part of the
@@ -270,6 +280,7 @@ export function FormField({
           "aria-describedby": [descriptionId, errorId].filter(Boolean).join(" ") || undefined,
           "aria-invalid": shownError ? true : undefined,
           "aria-required": required || undefined,
+          disabled: disabled || undefined,
         },
         { labelId },
       )
@@ -287,6 +298,7 @@ export function FormField({
         // marked keeps its mark and this only fills the gap.
         "aria-invalid": element.props["aria-invalid"] ?? (shownError ? true : undefined),
         "aria-required": element.props["aria-required"] ?? (required || undefined),
+        disabled: element.props.disabled ?? (disabled || undefined),
       })
     : rendered;
 
@@ -394,6 +406,8 @@ export function FormField({
   return (
     <Field
       orientation={orientation}
+      // What fades the label and the description with the control.
+      disabled={shownDisabled}
       // `Field` turns the whole field destructive from this attribute, which is the primitive's
       // own error state rather than one invented here.
       data-invalid={shownError ? true : undefined}

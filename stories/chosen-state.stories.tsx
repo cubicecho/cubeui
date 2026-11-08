@@ -203,3 +203,77 @@ export const TintedAtRest: Story = {
     }
   },
 };
+
+/** Longer than Tailwind's 150ms `transition-colors`. */
+const TRANSITION_MS = 300;
+
+function Refused({ half, compiled }: { half: string; compiled: boolean }) {
+  return (
+    <section aria-label={half} className="flex flex-col items-start gap-4">
+      {compiled ? (
+        <>
+          <CompiledCheckbox aria-label="Agree, unchecked" aria-invalid />
+          <CompiledCheckbox aria-label="Agree, checked" aria-invalid checked />
+          <CompiledSwitch aria-label="Notify, off" aria-invalid />
+          <CompiledSwitch aria-label="Notify, on" aria-invalid checked />
+        </>
+      ) : (
+        <>
+          <Checkbox accessibilityLabel="Agree, unchecked" aria-invalid />
+          <Checkbox accessibilityLabel="Agree, checked" aria-invalid checked />
+          <Switch accessibilityLabel="Notify, off" aria-invalid />
+          <Switch accessibilityLabel="Notify, on" aria-invalid checked />
+        </>
+      )}
+    </section>
+  );
+}
+
+/**
+ * A refused box or switch is edged in `negative` whether or not it is chosen (#467). On the web a
+ * checked one's `active` edge used to win, and on device `aria-invalid` was dropped. Focus still
+ * shows, as a chosen thing's does: its fill takes the `/60` step and the edge stays `negative`,
+ * because a box or a switch says it is focused with its fill, not its edge as a field does.
+ */
+export const RefusedOverChosen: Story = {
+  render: () => (
+    <SideBySide
+      native={<Refused half="Native" compiled={false} />}
+      compiled={<Refused half="Compiled" compiled />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const style = (el: Element) => getComputedStyle(el);
+    const negative = tokenColor("negative");
+
+    for (const half of ["Native", "Compiled"]) {
+      const group = within(canvas.getByRole("region", { name: half }));
+      await step(`${half}: every refused box and switch is edged in negative`, async () => {
+        for (const name of ["Agree, unchecked", "Agree, checked"]) {
+          await expect(style(group.getByRole("checkbox", { name })).borderTopColor).toBe(negative);
+        }
+        for (const name of ["Notify, off", "Notify, on"]) {
+          await expect(style(group.getByRole("switch", { name })).borderTopColor).toBe(negative);
+        }
+      });
+    }
+
+    await step(
+      "Compiled: a focused refused switch keeps its edge and shows focus in its fill",
+      async () => {
+        const group = within(canvas.getByRole("region", { name: "Compiled" }));
+        const on = group.getByRole("switch", { name: "Notify, on" });
+        const rest = style(on).backgroundColor;
+        on.focus();
+        await expect(on.matches(":focus-visible")).toBe(true);
+        // The track's colours transition; read them once it has settled.
+        await new Promise((resolve) => setTimeout(resolve, TRANSITION_MS));
+        await expect(style(on).backgroundColor).toBe(tokenColor("active", { opacity: 60 }));
+        await expect(style(on).backgroundColor).not.toBe(rest);
+        await expect(style(on).borderTopColor).toBe(negative);
+        on.blur();
+      },
+    );
+  },
+};

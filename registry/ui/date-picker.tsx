@@ -26,7 +26,7 @@ import type { DateRange } from "@/components/ui/calendar-base";
 import { Calendar as CalendarIcon, X } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, fieldTriggerClass } from "@/lib/utils";
 
 export type { DateRange };
 
@@ -67,9 +67,11 @@ function timeValue(date: Date): string {
  *
  * Three call sites had this as a copied `w-[250px] justify-between bg-input-background pl-2 pr-3
  * text-left font-normal`, and a fourth had it in React Native. The fixed `250px` is dropped —
- * width belongs to the layout the field is in, and `FormField` already gives it one.
+ * width belongs to the layout the field is in, and `FormField` already gives it one. The look is
+ * `fieldTriggerClass`, the combobox trigger's: a field's focus and invalid border, where it was an
+ * outline button's hover fill and no invalid border at all (#464).
  */
-const TRIGGER = "w-full justify-between px-3 text-left font-normal";
+const TRIGGER = "w-full justify-between px-3 text-left";
 
 /**
  * The value's one line. `truncate` is the ellipsis on the web; on device it is `numberOfLines`,
@@ -143,7 +145,7 @@ export function PickerTrigger({
                 ...(ariaInvalid === undefined ? {} : { "aria-invalid": ariaInvalid }),
               }
             : {})}
-          className={cn(TRIGGER, className)}
+          className={cn(TRIGGER, fieldTriggerClass(ariaInvalid), className)}
           content={
             // The colour is on the words, not the button: native has no colour inheritance, so the
             // placeholder's muted class has to be on the `Text` itself.
