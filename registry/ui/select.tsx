@@ -13,6 +13,7 @@
 import { createContext, useContext, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { Check, ChevronDown } from "@/components/ui/icons";
+import { OverlayLayer } from "@/components/ui/overlay";
 import {
   SELECT_CONTENT_CLASS,
   SELECT_ICON_CLASS,
@@ -155,6 +156,8 @@ function SelectContent({ className, children }: SelectContentProps) {
           <ScrollView role="list">{children}</ScrollView>
         </View>
       </View>
+      {/* Last, so a toast raised while the list is open is drawn over it. */}
+      <OverlayLayer />
     </Modal>
   );
 }

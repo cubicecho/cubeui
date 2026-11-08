@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cubeui — components for React Native and the DOM</title>
-<meta name="description" content="A shadcn registry of 114 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
+<meta name="description" content="A shadcn registry of 115 items, authored in React Native and compiled to plain DOM components. One token source, one component vocabulary, two platforms.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
   /* cubeui's default palette, inlined from tokens/palette.mjs. Values, not an import: the page
@@ -85,7 +85,7 @@
 </header>
 
 <p class="tagline">
-  A shadcn registry of 114 items, authored in React Native and compiled to plain DOM
+  A shadcn registry of 115 items, authored in React Native and compiled to plain DOM
   components. One palette, one component vocabulary, two platforms — and no react-native-web in
   the web half.
 </p>
@@ -201,7 +201,7 @@
 <h2>Items</h2>
 
 <p class="counts">
-  100 on both platforms · 14 web-only · 0 native-only.
+  101 on both platforms · 14 web-only · 0 native-only.
   Anything not marked <span class="tag tag-both">both</span> has no half on the other platform.
 </p>
 
@@ -569,6 +569,11 @@
           <th scope="row"><code>@cubeui/overflows</code></th>
           <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
           <td>useOverflows(): whether a box that scrolls has anything to scroll, so it is a tab stop only while it does, and the width its scrollbar takes as `--scrollbar-width`. Measured on the web; on device, which has no tab stops, always false. Table's container, HeaderContentFooter's body and a stacked SplitLayout hold it.</td>
+        </tr>
+        <tr>
+          <th scope="row"><code>@cubeui/overlay</code></th>
+          <td><span class="tag tag-both" title="React Native and the DOM">both</span></td>
+          <td>Where a tooltip or a toast is drawn on device: a layer over the app (OverlayHost, which ToastProvider draws) and one inside each Modal (OverlayLayer, which the dialog, popover, menu and select draw), so a ScrollView does not clip it and an open dialog does not cover it. Nothing on the web draws one: radix portals to &lt;body&gt; there.</td>
         </tr>
         <tr>
           <th scope="row"><code>@cubeui/page-header</code></th>

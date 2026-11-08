@@ -39,6 +39,29 @@ one new native build.
   needs `react-native-css` rc.1, and the patch is written for rc.0. The lockfile holds rc.0 until
   something resolves again without it.
 
+## A layer at the root
+
+A tooltip and a toast are drawn in a layer over the screen, not where they were opened, so a
+`ScrollView` does not clip a tooltip and an open dialog does not hide a toast. The layer goes at
+the root, inside the palette's provider, which what is drawn in it reads:
+
+```tsx
+// app/_layout.tsx
+<PaletteProvider>
+  <ToastProvider>{/* draws the layer itself */}
+    <Stack />
+  </ToastProvider>
+</PaletteProvider>
+```
+
+- **An app with no `ToastProvider`** puts `<OverlayHost>` from `@cubeui/overlay` there instead.
+  Without either, a tooltip is drawn beside its trigger, where a `ScrollView` clips it.
+- **A dialog, a popover, a menu and a select draw their own layer**, so what is raised while one is
+  open is drawn over it. Nothing to add.
+- **A router's own modal screen is not one of them.** On iOS an expo-router screen with
+  `presentation: "modal"` is over the root's layer, so a toast raised on it is not seen until it
+  closes. Say a failure there on the screen itself.
+
 ## Shapes on React Native
 
 The native half is its own set: fewer shells, because a phone screen has fewer shapes in it. They
@@ -111,6 +134,7 @@ its badges with the buttons in `actionSlot`.
 | A loading indicator — see [controls/display.md](controls/display.md#spinner) | `Spinner` | `@cubeui/spinner` |
 | A pulsing placeholder block — see [controls/display.md](controls/display.md#skeleton) | `Skeleton` | `@cubeui/skeleton` |
 | Whether the reader asked for reduced motion, for an `Animated` loop or a scroll of your own — see [controls/index.md](controls/index.md#motion) | `useReducedMotion` | `@cubeui/reduced-motion` |
+| The layer tooltips and toasts are drawn in, for an app with no `ToastProvider` — see [A layer at the root](#a-layer-at-the-root) | `OverlayHost` | `@cubeui/overlay` |
 | A one-pixel rule between groups — see [controls/display.md](controls/display.md#separator) | `Separator` | `@cubeui/separator` |
 | An icon — see [controls/icons.md](controls/icons.md#icons) | the lucide names | `@cubeui/icons` |
 | A form in a modal, with the unsaved-changes guard — see [forms/app-form.md](forms/app-form.md#forms-in-dialogs) | `DialogLayout hasUnsavedChanges` | `@cubeui/dialog-layout` |

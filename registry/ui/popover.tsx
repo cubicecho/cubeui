@@ -12,6 +12,7 @@
 
 import { createContext, isValidElement, useContext, useState } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
+import { OverlayLayer } from "@/components/ui/overlay";
 import type {
   PopoverAnchorProps,
   PopoverCloseProps,
@@ -80,6 +81,8 @@ function PopoverContent({ className, children }: PopoverContentProps) {
         />
         <View className={cn(POPOVER_CONTENT_CLASS, className)}>{children}</View>
       </View>
+      {/* Last, so a tooltip or a toast raised while it is open is drawn over it. */}
+      <OverlayLayer />
     </Modal>
   );
 }

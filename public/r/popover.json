@@ -8,7 +8,8 @@
   ],
   "registryDependencies": [
     "@cubeui/utils",
-    "@cubeui/frame-focus-guard"
+    "@cubeui/frame-focus-guard",
+    "@cubeui/overlay"
   ],
   "files": [
     {
