@@ -56,7 +56,7 @@ set (see [native.md](../native.md)).
   | `info`, `info-outline` | Adds something: Add, New, Create. The button that opens a form |
   | `positive`, `positive-outline` | Keeps the work: Save, Confirm. A form's `SubmitButton`, whatever it says |
   | `destructive`, `destructive-outline` | Destroys; the outline when it is not the emphasis of its row |
-  | `outline` | A quiet action: Cancel, Close, a trigger |
+  | `outline` | A quiet action: Cancel, Close, a trigger. Under the pointer and focused it fills with the hover grey and its edge darkens; each `-outline` fills with its colour's tint and its edge goes from `/50` to the full colour |
   | `secondary` | An icon inside a field's own border. Its hover and focus darken its edge, not its fill: the hover grey is the same as its own |
   | `ghost`, `link` | Kept for porting shadcn code. Do not use them in new code: a button looks like a button |
 
@@ -113,6 +113,8 @@ its label is already on screen.
 name stays what it was, and the hint is read after it whether or not the tooltip is open. It is
 also an always-mounted `sr-only` node, because a tooltip's text is in the DOM only while it is
 showing. `tooltip={false}` keeps that description and drops the tooltip, and `side` moves it.
+A long hint wraps: the bubble is `max-w-xs` on both halves, and on the web it evens its lines and
+keeps 8px clear of the window's edge. Do not shorten a hint to keep it on one line.
 
 **`disabled` with a `hint` is not the HTML attribute.** It becomes `aria-disabled`, so the control
 keeps its focus ring, its hover and its tooltip and refuses the press in the handler. That is
@@ -199,8 +201,8 @@ that, and it teaches nothing. Say what is lost: *the lane takes its cards with i
 using this key stops working, including the nightly sync*, *the members lose access to every
 server in it*. If you cannot write that sentence, the confirm is probably not warranted.
 
-`confirmLabel` names the verb — Delete (the default), Discard, Revoke, Remove, Reset. The action
-is always destructive; a confirm that is *not* destructive is a question, and a question is
+`confirmLabel` names the verb — Delete (the default, on `ConfirmDialog` and `confirm()` too),
+Discard, Revoke, Remove, Reset. The action is always destructive; a confirm that is *not* destructive is a question, and a question is
 `DialogLayout`.
 
 Everything `Button` takes, `ConfirmButton` takes: `content`, `aria-label`, `hint`, `disabled`,

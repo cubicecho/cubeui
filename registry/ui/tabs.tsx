@@ -220,13 +220,17 @@ function TabsTrigger({
           onKeyDown: (event: RovingKeyEvent) => list.move(value, event),
         }
       : {};
-  // A quiet tab lifts to full ink under the pointer, as the web half's does; the colour is on each
-  // `Text`, which only the pressable's `group` reaches. Web only: a device has no pointer.
+  // A quiet tab lifts to full ink under the pointer and focused, as the web half's does; the colour
+  // is on each `Text`, which only the pressable's `group` reaches. Web only: a device has no
+  // pointer, and no keyboard focus to show.
   const color = active
     ? "text-foreground"
     : cn(
         "text-foreground/60",
-        Platform.select({ web: "group-hover:text-foreground", default: "" }),
+        Platform.select({
+          web: "group-hover:text-foreground group-focus-visible:text-foreground",
+          default: "",
+        }),
       );
 
   // Chosen from somewhere other than a press — a link, the caller's own state — the tab may be
@@ -240,8 +244,12 @@ function TabsTrigger({
 
   const styling = cn(
     TABS_TRIGGER_CLASS,
-    // The active tab is the chosen tint, a step further under the pointer and focused.
-    active ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60" : "group hover:bg-hover",
+    // The active tab is the chosen tint, a step further under the pointer, focused and pressed;
+    // another looks hovered then, as the web half's does. Neither draws a ring.
+    "focus-visible:outline-none",
+    active
+      ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+      : "group hover:bg-hover focus-visible:bg-hover active:bg-hover",
     disabled && "opacity-50",
     className,
   );

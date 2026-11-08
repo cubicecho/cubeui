@@ -177,7 +177,8 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `onPress` (`onClick` on the web) makes the middle — `title`, `description`, `meta` — one button
   (a real `<button>` on the web, named by its text) between `leadingSlot` and `actionSlot`. Every control in the row is pressed,
   focused and announced on its own; do **not** wrap the row in a `Pressable`, a `Link` or an
-  `<a>`, which is the button-in-a-button this avoids.
+  `<a>`, which is the button-in-a-button this avoids. The row lights up when its middle is focused,
+  and only then: a focused action or leading checkbox shows its own look alone.
 - **A row that goes somewhere is a link, not an `onPress` that calls the router.** Hand it the
   router's link as an element with no children, `linkSlot={<Link href={`/persons/${p.id}`} />}`,
   and the middle is drawn inside it: the router's own `<a href>` on the web — a new tab, a middle

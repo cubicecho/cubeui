@@ -78,6 +78,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - **`descriptionPlacement="popover"` folds the description behind a button after the title**, as
   on a card, on both halves. On the web the dialog is still described by the sentence, so a screen
   reader reads it as the dialog opens. Pass the same placement your app's cards and fields use.
+- **Opening a dialog focuses its first field, or with none its panel**, on the web and under Expo
+  web. The panel draws no ring and no edge for it, so the primary is not drawn focused, which looks
+  hovered and reads unfilled. Do not `autoFocus` a button to fill the gap. `ConfirmDialog` and
+  `AlertDialog` focus their first answer, Cancel, as an `alertdialog` should.
 - **A dialog keeps 16px clear of each side of the screen**, on both platforms and at every size,
   `full` included. Do not pad the dialog or cap its width to make room at a phone's edge.
 - **The header and footer look the same on both platforms.** The title and description are
@@ -115,6 +119,11 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   takes the function; `footerSlot` is the other end of the row.
 - `dismissible={false}` refuses Escape and outside clicks outright. Prefer `hasUnsavedChanges`,
   which asks on the way out rather than refusing to leave.
+- **A `Dialog` of your own that refuses a press beside it passes `holdOpen`**, from
+  `@/components/ui/dialog-base`: `<DialogContent onInteractOutside={holdOpen}>`. It is the
+  `preventDefault` you would write, and on device it also takes the backdrop out of what a screen
+  reader reads, where a handler of your own leaves it announced as a Close button that does not
+  close. `ConfirmDialog`, `AlertDialog` and `dismissible={false}` already pass it.
 - **A form in a dialog puts its `<form>` in `wrapperSlot`**, not in `contentSlot`.
   `wrapperSlot={(parts, { className }) => <FormElement className={className} …>{parts}</FormElement>}`
   wraps the header, body and footer together inside the dialog, so the footer's submit is a

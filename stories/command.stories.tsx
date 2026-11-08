@@ -243,3 +243,47 @@ export const InADialog: Story = {
     await expect(within(dialog).getByText("Book the venue")).toBeVisible();
   },
 };
+
+function Palette() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}>
+        Find
+      </button>
+      <CompiledDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Find a todo"
+        description="By title or description."
+        label="Search todos"
+      >
+        <CompiledInput placeholder="Search todos" />
+        <CompiledList>
+          <CompiledItem>Write the release notes</CompiledItem>
+        </CompiledList>
+      </CompiledDialog>
+    </>
+  );
+}
+
+/**
+ * The palette's unseen title and description are inside its card, as on the native half (#486).
+ * shadcn puts them beside the card, so on the web they were drawn in the page, under the trigger,
+ * while the palette was shut, and a screen reader walking the page read them out of it.
+ */
+export const DialogTitleIsInsideTheCard: Story = {
+  render: () => <Palette />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    await expect(body.queryByText("Find a todo")).toBeNull();
+    await expect(body.queryByText("By title or description.")).toBeNull();
+
+    await userEvent.click(canvas.getByRole("button", { name: "Find" }));
+    const dialog = await body.findByRole("dialog", { name: "Find a todo" });
+    await expect(dialog).toHaveAccessibleDescription("By title or description.");
+    await expect(within(dialog).getByText("Find a todo")).toBeInTheDocument();
+    await expect(canvas.queryByText("Find a todo")).toBeNull();
+  },
+};

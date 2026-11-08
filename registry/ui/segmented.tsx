@@ -27,13 +27,14 @@ import { cn, hasSlot, type SlotNode } from "@/lib/utils";
  *
  * `hover:` and `transition-colors` are no-ops on device and real on web, which
  * is the intended asymmetry: a pointer exists on one platform and not the other.
+ * Focused, a pill looks as it does under the pointer, and draws no ring.
  */
 export function segmentedItemClass(active: boolean, className?: string) {
   return cn(
-    "rounded-md px-3 py-1.5 text-sm font-semibold transition-colors",
+    "rounded-md px-3 py-1.5 text-sm font-semibold transition-colors focus-visible:outline-none",
     active
-      ? "bg-active/40 text-foreground hover:bg-active/60"
-      : "text-foreground/60 hover:bg-hover hover:text-foreground",
+      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
+      : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
     className,
   );
 }
@@ -53,11 +54,21 @@ export function segmentedTextClass(active: boolean, className?: string) {
 }
 
 /**
- * A quiet label lifted to full ink under the pointer, as the web halves' `hover:text-foreground`
- * does. The colour sits on each `Text`, which a container's `hover:` cannot reach, so it reads the
- * pressable's `group` instead. Web only: a device has no pointer to hover with.
+ * A quiet label lifted to full ink under the pointer and focused, as the web halves'
+ * `hover:text-foreground` does. The colour sits on each `Text`, which a container's `hover:` cannot
+ * reach, so it reads the pressable's `group` instead. Web only: a device has no pointer to hover
+ * with, and no keyboard focus to show.
  */
-const HOVER_INK = Platform.select({ web: "group-hover:text-foreground", default: "" });
+const HOVER_INK = Platform.select({
+  web: "group-hover:text-foreground group-focus-visible:text-foreground",
+  default: "",
+});
+
+/** The same lift on the container, for an element child that takes its colour from there. */
+const CONTAINER_HOVER_INK = Platform.select({
+  web: "hover:text-foreground focus-visible:text-foreground",
+  default: "",
+});
 
 /**
  * Where a pill with an `iconSlot` stops drawing its label: at every width, or under
@@ -290,14 +301,17 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
           // box instead of spilling past its padding.
           // Inside the frame, `rounded-sm`: the radius nested in the frame's, as a tab's is.
           group?.framed ? "rounded-sm px-3 py-1" : "rounded-md px-3 py-1.5",
-          // The current pill is the chosen tint, a step further under the pointer and focused.
+          // The current pill is the chosen tint, a step further under the pointer and focused;
+          // another looks hovered when focused, as `RadioGroup`'s segments do. Neither draws a ring.
+          "focus-visible:outline-none",
           current
             ? "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60"
-            : "group hover:bg-hover",
+            : "group hover:bg-hover focus-visible:bg-hover",
           // The label colour on the container too, which native ignores and web
           // reads: an element child passes through untouched below, so on web its
           // colour can only come from inheriting it here.
           ink,
+          current ? undefined : CONTAINER_HOVER_INK,
           hasSlot(iconSlot) ? WITH_ICON : undefined,
           // The label's line is what gives a pill its height, and an icon is
           // shorter than it: with the label hidden the pill would shrink, so it
@@ -309,7 +323,9 @@ const SegmentedButton = React.forwardRef<React.ElementRef<typeof Pressable>, Seg
       >
         {/* Colour does not inherit on device, so the icon is handed the label's. */}
         {hasSlot(iconSlot) ? (
-          <IconClassContext.Provider value={cn("size-4 shrink-0", ink)}>
+          <IconClassContext.Provider
+            value={cn("size-4 shrink-0", ink, current ? undefined : HOVER_INK)}
+          >
             {iconSlot}
           </IconClassContext.Provider>
         ) : null}

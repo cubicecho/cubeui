@@ -29,6 +29,7 @@ import { cloneElement, createContext, type RefObject, useContext, useRef, useSta
 import { flushSync } from "react-dom";
 import {
   MENU_CONTENT_CLASS,
+  MENU_ICON_ROOM_CLASS,
   MENU_INDICATOR_CLASS,
   MENU_ITEM_CLASS,
   MENU_ITEM_TEXT_CLASS,
@@ -118,7 +119,7 @@ function MenuContent({
         sideOffset={sideOffset}
         className={cn(
           MENU_CONTENT_CLASS,
-          "z-50 max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "group/menu z-50 max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           className,
         )}
         {...props}
@@ -137,6 +138,35 @@ function MenuContent({
         <FrameFocusGuard />
       </MenuPrimitive.Content>
     </MenuPrimitive.Portal>
+  );
+}
+
+/**
+ * A row's icon, or with none the room for one while another row in the menu draws one. The menu
+ * finds that out with `:has()`, so no row has to be told and nothing renders twice.
+ */
+function RowIcon({
+  iconSlot,
+  className,
+}: {
+  iconSlot: MenuItemProps["iconSlot"];
+  className: string;
+}) {
+  if (hasSlot(iconSlot)) {
+    return (
+      <span data-slot="menu-item-icon" className={cn("flex shrink-0", className)}>
+        {iconSlot}
+      </span>
+    );
+  }
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        MENU_ICON_ROOM_CLASS,
+        "hidden group-has-[[data-slot=menu-item-icon]]/menu:block",
+      )}
+    />
   );
 }
 
@@ -159,11 +189,7 @@ function MenuItem({
     <>
       {/* The icon quieter than the label, except on a destructive row, where it follows the
           row's `negative` through currentColor. */}
-      {hasSlot(iconSlot) ? (
-        <span className={cn("flex shrink-0", destructive === false && "text-foreground/60")}>
-          {iconSlot}
-        </span>
-      ) : null}
+      <RowIcon iconSlot={iconSlot} className={cn(destructive === false && "text-foreground/60")} />
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={MENU_TRAILING_CLASS}>{trailing}</span>
@@ -244,9 +270,7 @@ function ToggleRowBody({
 }: Pick<MenuCheckboxItemProps, "iconSlot" | "label" | "trailing">) {
   return (
     <>
-      {hasSlot(iconSlot) ? (
-        <span className={cn("flex shrink-0 text-foreground/60", ON_CHECKED_INK)}>{iconSlot}</span>
-      ) : null}
+      <RowIcon iconSlot={iconSlot} className={cn("text-foreground/60", ON_CHECKED_INK)} />
       <span className={cn(MENU_ITEM_TEXT_CLASS, "truncate")}>{label}</span>
       {typeof trailing === "string" ? (
         <span className={cn(MENU_TRAILING_CLASS, ON_CHECKED_INK)}>{trailing}</span>

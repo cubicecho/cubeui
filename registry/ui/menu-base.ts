@@ -104,6 +104,13 @@ export const MENU_ITEM_CLASS = "w-full flex-row items-center gap-2 rounded-sm px
 export const MENU_ITEM_TEXT_CLASS = "flex-1 text-sm";
 /** What sits at the far end of a menu row, such as a shortcut. */
 export const MENU_TRAILING_CLASS = "ml-auto text-xs tracking-widest text-foreground/60";
+/**
+ * The room an icon takes, kept by a row with none when another row in the menu has one, so every
+ * label starts in one column (#486). It is the menu's to keep, not the caller's: shadcn's `inset`
+ * is a prop on each row that every row without an icon has to remember, and a menu whose rows
+ * come from a list cannot know which will.
+ */
+export const MENU_ICON_ROOM_CLASS = "size-4 shrink-0";
 /** The rule between groups of menu rows. */
 export const MENU_SEPARATOR_CLASS = "-mx-1 my-1 h-px bg-foreground/10";
 

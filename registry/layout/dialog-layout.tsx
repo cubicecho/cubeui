@@ -36,6 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { holdOpen } from "@/components/ui/dialog-base";
 import { cn, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
@@ -211,7 +212,7 @@ export type DialogLayoutProps = {
    * footerActionsSlot={(close) => (
    *   <>
    *     <Button variant="outline" onClick={close} content="Cancel" />
-   *     <Button onClick={save} content="Save" />
+   *     <Button variant="positive" onClick={save} content="Save" />
    *   </>
    * )}
    * ```
@@ -338,7 +339,7 @@ export function DialogLayout({
   contentClassName,
   footerClassName,
 }: DialogLayoutProps) {
-  const stop = dismissible ? undefined : (event: Event) => event.preventDefault();
+  const stop = dismissible ? undefined : holdOpen;
 
   // Radix is handed an `open` either way, so one `requestClose` covers Escape, the overlay and
   // the close button alike. Uncontrolled, the state simply lives here instead of in the
@@ -411,7 +412,7 @@ export function DialogLayout({
   );
 
   // ConfirmDialog holds the overlay click (it does not answer "discard?") and puts the safe
-  // answer first, where focus lands. The labels are passed: its own defaults are Confirm/Cancel.
+  // answer first, where focus lands. The labels are passed: its own defaults are Delete/Cancel.
   const discardQuestion = (
     <ConfirmDialog
       open={askingToDiscard}

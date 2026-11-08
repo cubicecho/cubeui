@@ -12,7 +12,7 @@
  */
 
 import * as React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 import { ColorBar } from "@/components/ui/color-bar";
 import { CardBodyContext, cn, HEADING_DESCRIPTION, HEADING_GAP, HEADING_TITLE } from "@/lib/utils";
 
@@ -45,10 +45,24 @@ type CardProps = ViewProps & {
  */
 const CARD_SURFACE_CLASS = "rounded-lg border border-foreground/10 bg-secondary text-foreground";
 
+/**
+ * What a pressable card adds: it looks hovered under the pointer, focused and pressed, and draws
+ * no ring. On the web a compiled `Pressable` is a `<button>`, which centres its text.
+ */
+const CARD_PRESSABLE_CLASS = Platform.select({
+  web: "text-left transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-none active:bg-hover",
+  default: "active:bg-hover",
+});
+
 /** A bordered surface for one thing, pressable when given `onPress`. */
 const Card = React.forwardRef<React.ElementRef<typeof View>, CardProps>(
   ({ className, accentColor, accentLabel, onPress, children, ...props }, ref) => {
-    const classes = cn(CARD_SURFACE_CLASS, accentColor && "relative overflow-hidden", className);
+    const classes = cn(
+      CARD_SURFACE_CLASS,
+      onPress && CARD_PRESSABLE_CLASS,
+      accentColor && "relative overflow-hidden",
+      className,
+    );
     const inner = (
       <>
         <ColorBar color={accentColor} label={accentLabel} />

@@ -1,4 +1,4 @@
-import { EditorView, keymap } from "@codemirror/view";
+import { EditorView, keymap, showTooltip } from "@codemirror/view";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { lazy, Suspense, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
@@ -203,5 +203,40 @@ export const EmptyWithAnExtension: Story = {
     await expect(line && getComputedStyle(line).backgroundColor).toBe("rgba(0, 0, 0, 0)");
     await userEvent.keyboard("{Control>}{Enter}{/Control}");
     await expect(onSend).toHaveBeenCalledTimes(1);
+  },
+};
+
+/** A tooltip an app's extension shows at the start of the document, as a lint message would be. */
+const LINT_TOOLTIP = [
+  showTooltip.of({
+    pos: 0,
+    above: false,
+    create: () => {
+      const dom = document.createElement("div");
+      dom.textContent = "Heading levels should go up one at a time";
+      return { dom };
+    },
+  }),
+];
+
+/**
+ * What an app's completion or lint extension draws is a floating surface (#486): a popover's
+ * fill, edge and radius, and its `shadow-md`, since it floats over the text. It had no shadow.
+ */
+export const AnExtensionsPopover: Story = {
+  render: () => <Held extensions={LINT_TOOLTIP} />,
+  play: async ({ canvas, canvasElement }) => {
+    await canvas.findByRole("textbox", { name: "Notes" }, { timeout: 10_000 });
+    const tooltip = await waitFor(() => {
+      const found = canvasElement.ownerDocument.querySelector<HTMLElement>(".cm-tooltip");
+      if (!found) {
+        throw new Error("expected the extension's tooltip");
+      }
+      return found;
+    });
+    const style = getComputedStyle(tooltip);
+    await expect(style.boxShadow).not.toBe("none");
+    await expect(style.borderTopWidth).toBe("1px");
+    await expect(style.borderTopLeftRadius).not.toBe("0px");
   },
 };

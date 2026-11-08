@@ -278,7 +278,9 @@ function RadioGroupItem({
         group.invalid && "border-negative",
       );
     }
-    return "flex-row items-start gap-3 rounded-sm focus-visible:bg-hover";
+    // The fill reaches past the circle and the words, by as much as it is drawn out from them
+    // (`-mx-2 -my-1.5`), so the row still lines up with what is above it. Hovered as focused.
+    return "-mx-2 -my-1.5 flex-row items-start gap-3 rounded-sm px-2 py-1.5 hover:bg-hover focus-visible:bg-hover";
   };
 
   // What the box holds, in the same order.

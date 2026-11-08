@@ -21,7 +21,8 @@
  */
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
-import { Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Platform, ScrollView, Text, View } from "react-native";
+import { Button } from "@/components/ui/button";
 import { useOverflows } from "@/components/ui/overflows";
 import { useReducedMotion } from "@/components/ui/reduced-motion";
 import { cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
@@ -110,6 +111,11 @@ export type CodeBlockProps = {
    * live region: a log read aloud line by line drowns out everything else.
    */
   follow?: boolean | undefined;
+  /**
+   * The button's words that bring a reader who scrolled up back to the end of a `follow` block.
+   * The default is "Jump to latest"; pass the app's own translation.
+   */
+  jumpLabel?: string | undefined;
   /** The block's root: its width, its margin. */
   className?: string | undefined;
 };
@@ -287,6 +293,7 @@ export function CodeBlock({
   title,
   language,
   follow = false,
+  jumpLabel = "Jump to latest",
   className,
 }: CodeBlockProps) {
   const scroller = useRef<unknown>(null);
@@ -333,19 +340,20 @@ export function CodeBlock({
   );
   const jump =
     follow && atEnd === false ? (
-      <Pressable
+      // A button laid over the text, so the smallest shadow, as a copy button over a block has.
+      <Button
         testID="code-block-jump"
-        role="button"
+        size="sm"
+        variant="outline"
+        content={jumpLabel}
         onPress={() => {
           setAtEnd(true);
           if (scroller.current) {
             toEnd(scroller.current, reducedMotion === false);
           }
         }}
-        className="absolute right-2 bottom-2 rounded-md border border-foreground/10 bg-background px-2 py-1 shadow-sm"
-      >
-        <Text className="text-xs text-foreground">Jump to latest</Text>
-      </Pressable>
+        className="absolute right-2 bottom-2 shadow-sm"
+      />
     ) : null;
 
   if (title === undefined) {
