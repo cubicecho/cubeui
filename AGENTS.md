@@ -199,9 +199,13 @@ line under it and an action the same way: the title 14px semibold in full ink, t
 14px at the `/60` step, 4px between them, and the action level with the title's top, never centred
 on the text. Between two actions it is 8px, or 4px between `icon-xs` buttons, which `actionGap`
 reads off the buttons' `size`. Beside an action the text keeps 10rem, or the action wraps under
-it, 8px down: a block's to the start, a row's to the far end, clear of its leading slot. The
-classes are `HEADING_TITLE`, `HEADING_DESCRIPTION`, `HEADING_GAP`, `HEADING_WRAP_FLOOR`,
-`HEADING_WRAP_GAP` and `actionGap` in `registry/lib/utils.ts`; every one of those shells takes them
+it, 8px down: a block's to the start, a row's to the far end, clear of its leading slot. A
+block's heading — `CardLayout`, `Section`, `DialogLayout` — stands 24px over its body, a step past
+the 16px between the rows in it (#512): at 16px the heading was drawn exactly like the rows under
+it and read as one more of them, and the space round a group has to be more than the space inside
+it. The classes are `HEADING_TITLE`, `HEADING_DESCRIPTION`, `HEADING_GAP`, `HEADING_BODY_GAP`,
+`HEADING_BODY_PAD`, `HEADING_WRAP_FLOOR`, `HEADING_WRAP_GAP` and `actionGap` in
+`registry/lib/utils.ts`; every one of those shells takes them
 from there, and a new block or row with a title does too, rather than spelling
 `text-sm font-semibold` again. The title and its line are the same size on purpose: hierarchy
 comes from weight and ink, so a card of rows reads as one type scale and not three. A block's
@@ -222,9 +226,9 @@ apart that two neighbours always look different (Refactoring UI's rule), so nobo
 | `text-sm` | 14px / 20px | The body of every control, field and row, and the heading rhythm's title and description |
 | `text-sm leading-relaxed` | 14px / 22.75px | Prose read at length: a Markdown document, a hint's paragraph. A long line wants a taller one |
 | `text-base` | 16px / 24px | The smallest title over a page or block: `PageHeader` `sm`, `###`, `EmptyTitle`, a legend |
-| `text-lg` | 18px / 28px | `PageHeader` `md`, `##`; a dialog's title with `leading-tight` (22.5px), so it holds together when it wraps |
-| `text-xl` | 20px / 28px | A page's title: `PageHeader` `lg`, `#` |
-| `text-2xl` | 24px / 32px | A `StatTile`'s figure |
+| `text-lg` | 18px / 28px | `##`; a dialog's title with `leading-tight` (22.5px), so it holds together when it wraps |
+| `text-xl` | 20px / 28px | `PageHeader` `md`, `#` |
+| `text-2xl` | 24px / 32px | A page's title: `PageHeader` `lg`, `CenteredCardLayout`; a `StatTile`'s figure |
 
 Line height follows the size: small text takes a tall line for its size and a large title a short
 one. So the size's own line stands, and three steps are named beside it: `leading-5` (code, or

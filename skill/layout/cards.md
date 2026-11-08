@@ -44,7 +44,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `footerActionsSlot` | `SlotNode` |  | The footer's end. The buttons. Given alone, the footer is simply right-aligned. |
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the card. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one, where a `<form>` around the body alone leaves the button outside it. |
 | `className` | `string` |  | On the card itself, the bordered box around every part. |
-| `headerClassName` | `string` |  | On the header: the icon, the title and description, and the action beside them. |
+| `headerClassName` | `string` |  | On the header: the icon, the title and description, and the action beside them. Over a body it has 24px under it, past the body's 16px between rows; `pb-4` here closes that up. |
 | `titleClassName` | `string` |  | On the title itself: its size, a `line-through`. |
 | `contentClassName` | `string` |  | On the body, the box that holds `contentSlot`. It is a column with `gap-4` between what it holds, as `Section`'s is; a gap here replaces it, and `gap-0` lets the children touch. |
 | `footerClassName` | `string` |  | On the footer: `footerSlot` at its start and `footerActionsSlot` at its end. |
@@ -78,7 +78,9 @@ A card with no `title`, `description` or `actionSlot` draws no header, and its b
 down from the card's top edge like its other three sides. Do not add `contentClassName="pt-4"`.
 
 **The body spaces what it holds: `gap-4`**, as `Section`'s does. Rows, fields or blocks handed to
-`contentSlot` as several elements sit 16px apart, so do not add `contentClassName="gap-4"`.
+`contentSlot` as several elements sit 16px apart, so do not add `contentClassName="gap-4"`. The
+heading is 24px over the body, a step more, so it reads as the group's heading and not as its
+first row ([index.md](index.md#one-heading-rhythm)).
 `contentClassName` replaces the gap: `gap-0` for children that should touch, `gap-2` for a tighter
 stack.
 
@@ -230,6 +232,8 @@ A heading over a group of fields or rows, inside a page or a card.
   `/60` grey, the rhythm every block and row shares ([index.md](index.md#one-heading-rhythm)). It
   is drawn as written, so write it in sentence case. It was a 12px uppercase overline; an
   overline label of your own is `SectionHeading variant="overline"`.
+- Its heading is 24px over `contentSlot`, as a card's is, and what `contentSlot` holds is 16px
+  apart.
 - It draws **no surface**: it is a label and a gap. A titled group on a card is a `CardLayout`,
   not a `Section` inside a `Card`. The `surface="card"` prop was removed; move each
   `<Section surface="card" …>` to `<CardLayout level={2} …>` with the same `title`, `description`,

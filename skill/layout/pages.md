@@ -40,10 +40,10 @@ route should reach for first.
 | `backSlot` | `SlotNode` |  | The way back, above the title: a back link, or a breadcrumb trail. |
 | `breadcrumbsSlot` | `SlotNode` |  | **Deprecated.** Renamed `backSlot`. Read when `backSlot` is not passed. |
 | `headerContentSlot` | `SlotNode` |  | The row under the title: a search field, a filter row, tabs. It is `PageHeader`'s `contentSlot` slot, named for the part it belongs to because this component's own `contentSlot` is the page. |
-| `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
+| `headerBarSlot` | `SlotNode` |  | Bars under the title that run the full width while the title keeps its column: a second toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order passed, each as wide as the page. A bar draws its own fill on its outer box and holds its content to `titleColumn(width)`, so the content starts under the title at every `width`. Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line up with the title go in `headerContentSlot` instead. |
 | `loading` | `boolean` | `false` | Whether the *title* is still being fetched: a bar of its height stands in for it. A detail page sets it while the record loads and puts `LoadState` in the body, which then draws no placeholder rows of its own, so the page shows its wait once. The body is otherwise the caller's to place. |
 | `level` | `PageHeaderLevel` | `1` | Which heading the title is. `1` unless this page is nested inside another's chrome. |
-| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when left out. `size="sm"` is a compact title on a page that is still the `h1`. |
+| `size` | `PageHeaderSize` |  | How large the title is drawn, apart from `level`: `lg` (24px), `md` (20px) or `sm` (16px), following `level` when left out. `size="sm"` is a compact title on a page that is still the `h1`. |
 | `footerSlot` | `SlotNode` |  | Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. |
 | `width` | `"full" \| "page" \| "prose"` | `"page"` | The column the header and body share. `page` for a list or a board, `prose` for settings, a detail page or a form, `full` for a pane that is already inside someone else's column. |
 | `scroll` | `boolean` | `true` | Whether the body scrolls. On unless the page fills the height and scrolls its own parts: a chat's message list over a pinned composer, a framed app, tab panels that each keep their place. Off, the body is the height left under the header and `contentSlot` divides it. |
@@ -86,18 +86,33 @@ header: `border-b-0` removes the rule, and `border-b border-foreground/10` draws
 
 `headerBarSlot` is for bars under the title that run the full width: a second toolbar, a notice
 pinned with the header, a strip of the page's state. They stack in the order passed, above the
-rule, and each draws its own fill and inset (`px-4`). Like the title, they stay while the body
-scrolls. Do not write the page out as `HeaderContentFooter` with a `PageHeader` and a bar in its
-header for this:
+rule. Like the title, they stay while the body scrolls. Do not write the page out as
+`HeaderContentFooter` with a `PageHeader` and a bar in its header for this.
+
+**A bar's fill runs the full width; its content sits in the title's column.** Draw the fill on
+the bar's outer box and hold what is in it to `titleColumn(width)`, from `@/components/page-layout`,
+with the same `width` the page has. Then its first word starts under the title's at every width,
+and on a phone. Not a bare `px-4`: that lines up with the title only while the window is narrower
+than the column, and at `prose` on a wide window the bar's text sits at the window's edge.
 
 ```tsx
+import { PageLayout, titleColumn } from "@/components/page-layout";
+
 <PageLayout
   title={project.name}
+  width="prose"
   actionSlot={<ProjectMenu />}
   headerBarSlot={
     <>
-      <ProjectBar project={project} />
-      {notice ? <Text className="px-4 pt-3 text-foreground/60 text-sm">{notice}</Text> : null}
+      <View className="border-y border-warning/40 bg-warning/10">
+        <View className={cn(titleColumn("prose"), "flex-row items-center gap-4 py-2")}>
+          <Text className="flex-1 text-foreground text-sm">{notice}</Text>
+          <Button size="sm" variant="outline" content="Update card" />
+        </View>
+      </View>
+      <Text className={cn(titleColumn("prose"), "pt-3 text-foreground/60 text-sm")}>
+        Saved as a template.
+      </Text>
     </>
   }
   contentSlot={board}

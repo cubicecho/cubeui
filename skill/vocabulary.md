@@ -50,7 +50,7 @@ title). An app's own component that asks the same question uses `hasSlot` from `
   `self-stretch`.
 - **`headerBarSlot`** — bars under the title that run the full width of the page while the title
   keeps its column: a second toolbar, a pinned notice. On `PageLayout`; each bar draws its own fill
-  and inset.
+  and holds its content to `titleColumn(width)`, so it starts under the title.
 - **`sidebarSlot`** — the second surface in a `SidebarLayout`. `contentSlot` is still the main one, so the
   pair reads the way it does everywhere else.
 - **`sidebarPosition`**, **`sidebarWidth`**, **`sidebarHideBelow`**, **`sidebarClassName`** — the

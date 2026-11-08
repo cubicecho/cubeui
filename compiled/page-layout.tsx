@@ -19,12 +19,27 @@ import {
   COLUMNS,
   HeaderContentFooter,
   type HeaderContentFooterProps,
+  type HeaderContentFooterWidth,
   insetColumn,
 } from "./header-content-footer";
 import { PageHeader, type PageHeaderLevel, type PageHeaderSize } from "./page-header";
 
 /** The line under a page's header, the colour `PageHeader` draws it in. */
 const HEADER_RULE = "border-b border-foreground/10";
+
+/**
+ * The column a page's title sits in at `width`: the column's cap and `PageHeader`'s own `px-4`,
+ * at every width. A bar in `headerBarSlot` draws its fill on its own box, which runs the full
+ * width, and holds what is in it to this, so its first word starts under the title's (#483). A
+ * plain `px-4` lined up with the title only while the page was narrower than its column: at
+ * `prose` on a wide window the bar's text sat at the window's edge, far left of the title.
+ *
+ * The bar has to do this itself because its fill is its own: the page cannot inset what is inside
+ * a box it did not draw without insetting the fill with it.
+ */
+export function titleColumn(width: HeaderContentFooterWidth = "page"): string {
+  return cn(COLUMNS[width], "px-4");
+}
 
 export type PageLayoutProps = {
   /** The page. The only slot that scrolls, unless `scroll` is off. */
@@ -53,9 +68,10 @@ export type PageLayoutProps = {
   /**
    * Bars under the title that run the full width while the title keeps its column: a second
    * toolbar, a notice pinned with the header, a strip of the page's state. Stacked in the order
-   * passed, each as wide as the page; a bar draws its own fill and inset (`px-4`). Pinned with
-   * the title, so it is there wherever the body has scrolled to. Tabs that should line up with
-   * the title go in `headerContentSlot` instead.
+   * passed, each as wide as the page. A bar draws its own fill on its outer box and holds its
+   * content to `titleColumn(width)`, so the content starts under the title at every `width`.
+   * Pinned with the title, so it is there wherever the body has scrolled to. Tabs that should line
+   * up with the title go in `headerContentSlot` instead.
    */
   headerBarSlot?: SlotNode | undefined;
   /**
@@ -68,8 +84,9 @@ export type PageLayoutProps = {
   /** Which heading the title is. `1` unless this page is nested inside another's chrome. */
   level?: PageHeaderLevel | undefined;
   /**
-   * How large the title is drawn, apart from `level`: `lg`, `md` or `sm`, following `level` when
-   * left out. `size="sm"` is a compact title on a page that is still the `h1`.
+   * How large the title is drawn, apart from `level`: `lg` (24px), `md` (20px) or `sm` (16px),
+   * following `level` when left out. `size="sm"` is a compact title on a page that is still the
+   * `h1`.
    */
   size?: PageHeaderSize | undefined;
   /** Pinned under the body: paging, totals, a save bar. Absent, no row is drawn. */
@@ -180,8 +197,9 @@ export function PageLayout({
             loading={loading}
             level={level}
             size={size}
-            // The title block keeps the body's column, and leaves the rule to the header.
-            className={cn(COLUMNS[width], "border-b-0")}
+            // The title block keeps its column, the one a bar's content takes, and leaves the
+            // rule to the header.
+            className={cn(titleColumn(width), "border-b-0")}
           />
           {headerBarSlot}
         </>
