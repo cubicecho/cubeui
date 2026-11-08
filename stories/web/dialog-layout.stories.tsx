@@ -4,6 +4,7 @@ import { useState } from "react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "@/components/card-layout";
 import { DialogLayout } from "@/components/dialog-layout";
+import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -129,11 +130,34 @@ export const AThunkHoldsAllFourDoors: Story = {
     await userEvent.click(overlay as Element);
     await discardIsUp();
 
-    // And discarding actually leaves.
+    // And discarding actually leaves, and takes the question with it (#489): the focus it handed
+    // back on closing landed outside the closing dialog, which asked again.
     await userEvent.click(await screen.findByRole("button", { name: "Discard" }));
     await waitFor(() => {
       expect(canvas.getByTestId("open")).toHaveTextContent("closed");
     });
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+  },
+};
+
+/**
+ * Discard answered after Escape leaves the dialog and the question both (#489). Asked from the
+ * keyboard, after a "keep editing" first, as a person backing out of a form does.
+ */
+export const DiscardAfterEscapeLeaves: Story = {
+  args: { unsaved: true },
+  play: async ({ canvas }) => {
+    await screen.findByRole("dialog", { name: "Edit card" });
+    await userEvent.keyboard("{Escape}");
+    await discardIsUp();
+    await keepEditing();
+    await userEvent.keyboard("{Escape}");
+    await discardIsUp();
+    await userEvent.click(await screen.findByRole("button", { name: "Discard" }));
+    await waitFor(() => {
+      expect(canvas.getByTestId("open")).toHaveTextContent("closed");
+    });
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
   },
 };
 
@@ -577,7 +601,7 @@ export const Loading: Story = {
       loading
       title="Members"
       contentSlot={<p>Ada, Grace and Edsger.</p>}
-      emptySlot={<p>No members yet.</p>}
+      emptySlot={<EmptyState compact title="No members yet." />}
       footerActionsSlot={<Button variant="positive" content="Save" />}
     />
   ),
@@ -601,7 +625,7 @@ export const Empty: Story = {
       open
       title="Members"
       contentSlot={NO_MEMBERS.map((name) => <p key={name}>{name}</p>)}
-      emptySlot={<p>No members yet.</p>}
+      emptySlot={<EmptyState compact title="No members yet." />}
     />
   ),
   play: async () => {

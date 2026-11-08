@@ -201,7 +201,7 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
             <TableRow key={line.id}>
               <TableHead>{line.time}</TableHead>
               <TableCell>{line.level}</TableCell>
-              <TableCell>{line.message}</TableCell>
+              <TableCell className="whitespace-nowrap">{line.message}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -209,6 +209,9 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
     }
   />
   ```
+
+  Body cells wrap, so a log's message column says `whitespace-nowrap`: one line per entry, and a
+  long one scrolls the table sideways instead of making its row tall.
 
   The pinned header is filled with the page's `background`, so rows don't show through it. On a
   card, give it the card's fill: `<TableHeader className="bg-secondary">`.

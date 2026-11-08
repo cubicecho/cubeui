@@ -294,7 +294,7 @@ export function CalendarCompat() {
       onSelect={setDate}
       captionLayout="dropdown"
       showOutsideDays={false}
-      className="rounded-md border shadow-sm"
+      className="rounded-md border border-foreground/10 shadow-sm"
     />
   );
 }

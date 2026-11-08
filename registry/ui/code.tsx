@@ -5,8 +5,8 @@
  * inline inside a sentence, so this has to be a `Text` — a `View` cannot be
  * nested in one.
  *
- * `CodeBlock` is the box: preformatted text with one fill, one border and one
- * padding, and a place at its far end for a `CopyButton`. Eleven screens in six
+ * `CodeBlock` is the box: preformatted text with one fill and one padding, and
+ * a place at its far end for a `CopyButton`. Eleven screens in six
  * apps drew it as a `<pre>` with a class list retyped from memory, and came out
  * with four fills, a border on about half and three paddings. The two decisions
  * each of them also made by class — does a long line wrap or scroll, and how tall

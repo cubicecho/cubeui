@@ -19,7 +19,7 @@ import {
   type TabsProps,
   type TabsTriggerProps,
 } from "@/components/ui/tabs-base";
-import { cn } from "@/lib/utils";
+import { cn, FOCUS_EDGE } from "@/lib/utils";
 
 /** The shared contract, widened to what the radix part underneath accepts. */
 type Wide<Base, Radix> = Base & Omit<Radix, keyof Base>;
@@ -158,7 +158,10 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("mt-2 focus-visible:outline-none", className)}
+      // radix makes the pane a tab stop and nothing in it looks hovered, so it shows focus as a
+      // scroll box does: its edge turns `active`. A border, not the inset line, which a card
+      // filling the pane would cover.
+      className={cn("mt-2 rounded-md", FOCUS_EDGE, className)}
       {...props}
     />
   );

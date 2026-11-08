@@ -167,6 +167,12 @@ const BUTTON_TOUCH_SIZES = {
   "icon-lg": { width: 44, height: 44 },
 } as const;
 
+/**
+ * A link button that cannot be followed keeps the pointer otherwise: the compiled reset gives a
+ * refused `<button>` the not-allowed cursor, and the caller's `<a>` carries none of its classes.
+ */
+const REFUSED_LINK_CURSOR = Platform.select({ web: "cursor-not-allowed", default: undefined });
+
 /** The button itself, before the name rule and the tooltip are added to it. */
 type ButtonBodyProps = Omit<
   React.ComponentProps<typeof Pressable>,
@@ -443,7 +449,7 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
             props merged in. The element that receives them is the caller's, so the DOM
             typing describes neither side, and the cast is the honest way to say so. */}
         <Slot
-          className={styling}
+          className={unavailable ? cn(styling, REFUSED_LINK_CURSOR) : styling}
           {...({
             ...props,
             ...busy,

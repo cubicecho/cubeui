@@ -222,7 +222,8 @@ const Log = () => (
           <TableHead>{line.time}</TableHead>
           <TableCell>{line.level}</TableCell>
           <TableCell>{line.source}</TableCell>
-          <TableCell>{line.message}</TableCell>
+          {/* A log line reads as one line: body cells wrap, so the message says not to (#489). */}
+          <TableCell className="whitespace-nowrap">{line.message}</TableCell>
           <TableCell className="text-right">{line.duration}</TableCell>
         </TableRow>
       ))}
@@ -254,6 +255,15 @@ export const MaxHeight: Story = {
 
     expect(container.scrollHeight).toBeGreaterThan(container.clientHeight);
     expect(container.scrollWidth).toBeGreaterThan(container.clientWidth);
+    // Every line one row tall: the message runs on sideways rather than wrapping.
+    const message = canvas.getByText(LOG[0]?.message ?? "");
+    const cell = getComputedStyle(message);
+    const lineHeight = Number.parseFloat(cell.lineHeight);
+    const text =
+      message.getBoundingClientRect().height -
+      Number.parseFloat(cell.paddingTop) -
+      Number.parseFloat(cell.paddingBottom);
+    expect(text).toBeLessThan(lineHeight * 1.5);
     await waitFor(() => expect(container).toHaveAttribute("tabindex", "0"));
 
     // Down: the rows pass under the header, which stays at the container's top, opaque, with its

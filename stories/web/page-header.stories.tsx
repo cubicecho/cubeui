@@ -25,7 +25,7 @@ const Actions = () => (
 const Search = () => <Input aria-label="Search workspaces" placeholder="Search workspaces" />;
 
 const Rows = ({ count = 6 }: { count?: number }) => (
-  <ul className="divide-y">
+  <ul className="divide-y divide-foreground/10">
     {Array.from({ length: count }, (_, i) => i + 1).map((n) => (
       <li key={n} className="py-3 text-sm">
         Workspace {n}
@@ -261,7 +261,7 @@ export const Loading: StoryObj<typeof PageHeader> = {
  */
 export const NarrowContainer: StoryObj<typeof PageHeader> = {
   render: () => (
-    <div className="w-[360px] border">
+    <div className="w-[360px] border border-foreground/10">
       <PageHeader
         title="Workspaces and every server each one exposes"
         description="Each one exposes the servers you choose."

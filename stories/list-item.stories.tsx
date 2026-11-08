@@ -149,12 +149,12 @@ export const LongTitle: Story = {
   render: () => (
     <SideBySide
       native={
-        <div className="native-root" style={{ width: 260 }}>
+        <div className="native-root" style={{ width: 260, maxWidth: "100%" }}>
           <Native title={LONG} meta="Mar 3" />
         </div>
       }
       compiled={
-        <div className="compiled-root" style={{ width: 260 }}>
+        <div className="compiled-root" style={{ width: 260, maxWidth: "100%" }}>
           <Compiled title={LONG} meta="Mar 3" />
         </div>
       }

@@ -19,7 +19,7 @@ const meta = {
   title: "Forms/FormField",
   component: FormField,
   parameters: { layout: "centered" },
-  args: { className: "w-[360px]" },
+  args: { className: "w-[360px] max-w-full" },
 } satisfies Meta<typeof FormField>;
 
 export default meta;
@@ -104,7 +104,7 @@ const TYPES = [
  * a story says `error="…"` once and the textarea and the checkbox both get it.
  */
 const AllTypes = ({ controlSlot: _control, ...args }: FieldProps) => (
-  <div className="grid w-[420px] gap-5">
+  <div className="grid w-[420px] max-w-full gap-5">
     {TYPES.map(({ key, ...type }) => (
       <FormField key={key} {...args} {...type} />
     ))}
@@ -307,7 +307,7 @@ export const Horizontal: Story = {
     label: "Email me about releases",
     description: "About one a month. Nothing else.",
     controlSlot: <Checkbox />,
-    className: "w-[360px]",
+    className: "w-[360px] max-w-full",
   },
   play: async ({ canvasElement }) => {
     const box = controlFor(canvasElement, "Email me about releases");
@@ -449,7 +449,7 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
   render: (args) => (
     // next's `Textarea` rests at an 80px floor, so the hint is `h-20`. (cubeui's was
     // `field-sizing-content` over `min-h-16`, and the hint there was `h-16`.)
-    <div className="flex w-[720px] items-start gap-6">
+    <div className="flex w-[720px] max-w-full items-start gap-6">
       <FormField {...args} className="flex-1" controlSlot={<Textarea />} loading />
       <FormField
         {...args}
@@ -497,7 +497,7 @@ export const LoadingIsTheHeightOfWhatItReplaces: Story = {
 export const LoadingIsInputHeight: Story = {
   args: { label: "Name", controlSlot: <Input /> },
   render: (args) => (
-    <div className="flex w-[720px] items-start gap-6">
+    <div className="flex w-[720px] max-w-full items-start gap-6">
       <FormField {...args} className="flex-1" loading />
       <FormField {...args} className="flex-1" />
       <FormField
@@ -540,7 +540,7 @@ export const LoadingIsInputHeight: Story = {
 export const TextLinesAreFourPxApart: Story = {
   args: { label: "Email", controlSlot: <Input /> },
   render: (args) => (
-    <div className="flex w-[720px] items-start gap-6">
+    <div className="flex w-[720px] max-w-full items-start gap-6">
       <FormField
         {...args}
         className="flex-1"
@@ -602,7 +602,7 @@ export const TextLinesAreFourPxApart: Story = {
 export const WideControlKeepsItsFloor: Story = {
   args: { label: "Token", controlSlot: <Input /> },
   render: (args) => (
-    <div className="w-[400px] border">
+    <div className="w-[400px] max-w-full border border-foreground/10">
       <FormField
         {...args}
         className="w-auto"
@@ -635,7 +635,7 @@ export const WideControlKeepsItsFloor: Story = {
 export const AForm: Story = {
   args: { label: "Title", controlSlot: <Input /> },
   render: () => (
-    <form className="grid w-[480px] gap-4">
+    <form className="grid w-[480px] max-w-full gap-4">
       <FormField
         label="Title"
         required

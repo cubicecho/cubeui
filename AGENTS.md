@@ -244,7 +244,12 @@ off the scale is a line in `scripts/scale-allow.json` with its reason, argued in
 
 **A button looks like a button.** `ghost` and `link` stay as Button variants, for an app porting
 shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
-and an icon inside a field's own border is `secondary`. An action that adds something (Add, New,
+and an icon inside a field's own border is `secondary`. The one exception is `DescriptionHint`,
+which is `ghost`, round and `icon-xs` beside a title: it is the title's footnote mark, not an
+action, and it sits on the title's line beside every field, card and row that folds a
+description. An outlined box there drew a button on each of them, competing with the real
+actions in `actionSlot`, and a border's height would no longer fit the line. It still turns
+`hover` under the pointer and focused, so it reads as pressable where it is pressed. An action that adds something (Add, New,
 Create) is `info`, one that keeps the work (Save) is `positive`, and one that destroys is
 `destructive` or `destructive-outline`. A form's own submit keeps what was typed, so
 `SubmitButton` is `positive` even when it says Create; `info` is the button that opened the form.
@@ -286,7 +291,8 @@ A box that is a tab stop only so a keyboard can scroll it — an overflowing `Ta
 `HeaderContentFooter`'s scrolling body, a stacked `SplitLayout` — has no hover look, so it shows
 focus as a field does, with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns
 `active` under `focus-visible:`. The page body and the split draw that line as a 1px inset shadow,
-`INSET_FOCUS_EDGE`, which takes no room. The table, the code block, the body and the split are tab
+`INSET_FOCUS_EDGE`, which takes no room. A tab's pane, a tab stop as radix's is, shows focus with
+`FOCUS_EDGE` too, and not the inset line, which a card filling the pane would cover. The table, the code block, the body and the split are tab
 stops only while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it. A dialog that
 opens with no field to focus focuses its own panel, which draws no ring and no edge for it:
 otherwise its first button took focus, and a filled primary that looks hovered reads unfilled the
@@ -298,7 +304,7 @@ current sidebar row, toggle chip, a calendar's picked day, a selected stat tile,
 the option a select or combobox is on: the `active` tint. `neutral` is for the thing to press.
 Keeping the two apart is why a chosen option does not look like a button.
 
-**Hover is grey, chosen is the `active` tint, rest is no fill.** Every interactive thing has these
+**Hover is the pale `hover` fill, chosen is the `active` tint, rest is no fill.** Every interactive thing has these
 three states and no more, and none of them borrows another's colour:
 
 - *Rest* — no fill (or the framed control's `bg-background`).
@@ -359,7 +365,7 @@ scripts/check-registry-build.mjs      `registry:check`: seventeen rules over wha
 scripts/install-test.mjs              `install-test`: `shadcn add` every item into scratch apps, `tsc`
 scripts/check-vocabulary.mjs          `docs:check`: rule 2 and the skill hold the same words
 scripts/check-skill-files.mjs         `docs:check`: each skill file's size, contents and links
-scripts/build-install-table.mjs       skill/install-paths.md, from the two registry indexes
+scripts/build-install-table.mjs       skill/install-paths*.md, from the two registry indexes
 scripts/build-props-tables.mjs        the skill's props tables, from the TSDoc on each props type
 scripts/props-tables.mjs              one table's rows: a union props type merged, constants expanded
 scripts/build-page.mjs                the landing page, public/index.html
@@ -526,7 +532,7 @@ network, so it is not in `check`.
 
 `npm run check` is `tokens:check`, `compile:check`, both typechecks, `registry:check`,
 `page:check`, `skill:check`, `docs:check`, Biome and the tests. It is read-only, so a failure in it is either a
-real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`, `skill/install-paths.md`) that
+real fault or a generated file (`dist/`, `compiled/`, `public/r/`, `public/index.html`, `skill/install-paths*.md`) that
 `npm run build` has not been re-run for. Commit the regenerated files with the change that made
 them.
 
@@ -575,9 +581,11 @@ over 300 lines opens with a contents list, and every link between the files reso
 that exists. `npm run docs:check` fails on each of those. When a file outgrows its budget, split
 it by component group and update the links, not the budget.
 
-**`skill/install-paths.md` is generated** — every item's half, where it lands and its import
-line, from `registry.json`, `registry.web.json` and `components.json`. `npm run build` rewrites
-it and `npm run skill:check` fails CI on a stale one; never edit it by hand.
+**`skill/install-paths.md` and `install-paths-ui.md` are generated** — every item's half, where
+it lands and its import line, from `registry.json`, `registry.web.json` and `components.json`.
+The `registry:ui` items (the primitives and the controls) are the second file, since one table
+of every item passed 25 KB. `npm run build` rewrites both and `npm run skill:check` fails CI on a
+stale one; never edit them by hand.
 
 **The props tables are generated too.** A `<!-- props:CardLayout -->` … `<!-- /props -->` pair in
 a skill file is filled by `scripts/build-props-tables.mjs` from the TSDoc on that component's

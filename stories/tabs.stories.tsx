@@ -15,6 +15,7 @@ import { PageLayout } from "../registry/layout/page-layout";
 import { Badge } from "../registry/ui/badge.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * The device trigger used to put everything it was given inside one `<Text>`, so an icon beside a
@@ -600,7 +601,8 @@ export const OneTabStop: Story = {
 /**
  * The pane is a tab stop on both halves (#510), as radix's is: the Tab after the list lands on the
  * pane, so a keyboard reaches its text even when nothing in it takes focus. The device pane was
- * stepped over under Expo web.
+ * stepped over under Expo web. Focused, its edge turns `active` (#527), as a scroll box's does: it
+ * showed nothing, so a keyboard user could not see where focus had gone.
  */
 export const PaneIsATabStop: Story = {
   render: () => (
@@ -613,8 +615,11 @@ export const PaneIsATabStop: Story = {
         column.getByRole("button", { name: `Before ${half}` }).focus();
         await userEvent.tab();
         await waitFor(() => expect(column.getByRole("tab", { name: "List" })).toHaveFocus());
+        const panel = column.getByRole("tabpanel");
+        await expect(getComputedStyle(panel).borderTopColor).toBe("rgba(0, 0, 0, 0)");
         await userEvent.tab();
-        await waitFor(() => expect(column.getByRole("tabpanel")).toHaveFocus());
+        await waitFor(() => expect(panel).toHaveFocus());
+        await expect(getComputedStyle(panel).borderTopColor).toBe(tokenColor("active"));
       });
     }
   },

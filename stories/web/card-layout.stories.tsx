@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "@/components/card-layout";
 import { DialogLayout } from "@/components/dialog-layout";
+import { EmptyState } from "@/components/empty-state";
 import { List } from "@/components/list";
 import { ListItem } from "@/components/list-item";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const Rows = () => (
-  <ul className="divide-y text-sm">
+  <ul className="divide-y divide-foreground/10 text-sm">
     {["Fabrication", "Assembly", "Packaging"].map((name) => (
       <li key={name} className="py-2">
         {name}
@@ -83,7 +84,7 @@ export const WithIcon: Story = {
 export const Empty: Story = {
   args: {
     title: "Categories",
-    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    emptySlot: <EmptyState compact title="No categories yet." />,
     contentSlot: [].map(() => null),
   },
   play: async ({ canvasElement }) => {
@@ -202,7 +203,7 @@ export const LongTitleTruncates: Story = {
 export const RowsIgnoreTheEmptySlot: Story = {
   args: {
     title: "Categories",
-    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    emptySlot: <EmptyState compact title="No categories yet." />,
     contentSlot: <Rows />,
   },
   play: async ({ canvas }) => {
@@ -240,7 +241,7 @@ export const LoadingIsNotEmpty: Story = {
   args: {
     title: "Categories",
     loading: true,
-    emptySlot: <p className="text-foreground/60 text-sm">No categories yet.</p>,
+    emptySlot: <EmptyState compact title="No categories yet." />,
     contentSlot: [].map(() => null),
   },
   play: async ({ canvas, canvasElement }) => {

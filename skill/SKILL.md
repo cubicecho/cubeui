@@ -38,12 +38,15 @@ and the project is one or the other — a DOM app or an Expo app, never both:
 
 ```bash
 npx shadcn@latest add @cubeui/card-layout   # one item
-npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, control, primitive
+npx shadcn@latest add @cubeui/layout        # or, in a DOM app, a set: layout, form-set, control, primitive
 ```
 
+The sets are web-only: an Expo app adds its items one by one.
+
 Install from the registry, do not copy by hand. Where each item lands and the line that imports
-it are in [install-paths.md](install-paths.md), generated from the registry: look there rather
-than guess a path.
+it are in [install-paths.md](install-paths.md) (the shells, forms, helpers and sets) and
+[install-paths-ui.md](install-paths-ui.md) (the primitives and controls), generated from the
+registry: look there rather than guess a path.
 
 **On the web, import the stylesheet once.** Any item whose markup needs `@cubeui/tokens` pulls
 it in, landing `cubeui-tokens.css` next to `components.json`, but nothing loads a stylesheet the
@@ -78,7 +81,7 @@ in `native.md`.
 ## Choosing — on the web
 
 In an Expo app the table is [native.md](native.md). The import line for every item is in
-[install-paths.md](install-paths.md).
+[install-paths.md](install-paths.md) and [install-paths-ui.md](install-paths-ui.md).
 
 | The shape you are building | Use | Reference |
 | --- | --- | --- |

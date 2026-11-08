@@ -163,7 +163,7 @@ export const ItDoesNotSubmitTheFormAroundIt: Story = {
       }}
     >
       <label htmlFor="lane">Lane name</label>
-      <input id="lane" defaultValue="Review" className="border px-2 py-1" />
+      <input id="lane" defaultValue="Review" className="border border-foreground/10 px-2 py-1" />
       <ConfirmButton {...args} />
     </form>
   ),

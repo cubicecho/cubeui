@@ -97,6 +97,7 @@ test that finds them by name needs changing:
 | `Table` | New: `maxHeight` (`"sm" \| "md" \| "lg"`) caps the table's height and pins its header row while the rows scroll inside it ([#415](https://github.com/cubicecho/cubeui/issues/415)). An app whose own `table.tsx` had a `sticky` prop loses it on reinstall: use `maxHeight` instead, and remove the scrolling box and `max-h-*` the app put around the table for it. |
 | `RouteError` | `actionsSlot` is now `actionSlot` (the old name still works, deprecated). |
 | `ErrorPage`, `LoadError` | Without `describe`, the line under the title is `describeError`'s, from `@cubeui/error-message`. A `describe` that returns `""` hands the error to it. To add your own failures, answer those and return `describeError(error)` for the rest ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
+| `CopyButton` | At a text size (`sm`, `default`, `lg`) it draws `label` beside the icon, and `Copied` with the tick, as `DownloadButton` does ([#488](https://github.com/cubicecho/cubeui/issues/488)). It was the icon alone at every size. |
 | `EmptyTitle` | New: `level` (`1 \| 2 \| 3`) makes it a heading of that rank, at the same size. It replaces passing `role="heading"` and `aria-level` yourself, which still works ([#482](https://github.com/cubicecho/cubeui/issues/482)). |
 | `useToast` | The tone `"error"` is now `"negative"`, the colour token's name (the old name still works, deprecated). It is still the default ([#477](https://github.com/cubicecho/cubeui/issues/477)). |
 | `UnsavedChangesDialog`, `useUnsavedChangesGuard` | `stayLabel` is now `keepLabel`, and the guard's `stay()` is now `keep()` (old names still work, deprecated). |
@@ -219,7 +220,14 @@ to add them.
   ([#523](https://github.com/cubicecho/cubeui/issues/523)). Every compiled pressable kept
   `cursor: pointer` when disabled, `Button` included. It is "not allowed" now, from the reset
   stylesheet, for `disabled` and for a `Button` with a `hint`, which is `aria-disabled`. A
-  `cursor-not-allowed` you added to one can go.
+  `cursor-not-allowed` you added to one can go. A disabled `Button` with a `linkSlot` is "not
+  allowed" too ([#527](https://github.com/cubicecho/cubeui/issues/527)): its `<a>` carries the
+  class itself, since the reset only reaches a `<button>`.
+- **A tab's pane shows keyboard focus**
+  ([#527](https://github.com/cubicecho/cubeui/issues/527)). `TabsContent` is a tab stop, and it
+  showed nothing when Tab reached it. Its edge now turns `active`, as a scrolling table's or code
+  block's does. The pane has a transparent 1px border and `rounded-md` for it, so what is inside
+  sits 1px further in.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does

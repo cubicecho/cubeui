@@ -1147,7 +1147,7 @@ const sections: GallerySection[] = [
           query={idleQuery}
           what="projects"
           count={0}
-          emptySlot={<Text className="text-foreground/60 text-sm">No projects match.</Text>}
+          emptySlot={<EmptyState compact title="No projects match." />}
         />
         <LoadState query={pendingQuery} what="members" count={0} rows={1} compact />
         <LoadState

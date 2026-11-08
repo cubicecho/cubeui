@@ -35,9 +35,9 @@ type SoftVariant = "destructive-soft" | "positive-soft" | "warning-soft" | "info
 
 /**
  * The dot drawn before a soft badge's words, in the hue. The words themselves are the foreground,
- * not the hue: `text-negative` on `bg-negative/10` is 3.99:1 in the default light palette, and
- * positive and warning are under 4.5:1 too — the reason `Alert` keeps its text the foreground. So
- * the hue is in the tint, the edge and this dot. A literal per hue, so Tailwind finds each class.
+ * not the hue, as on `Alert`: a soft badge is the quiet one beside a row's words, and words in
+ * the hue read as loud as the filled badge it stands in for. So the hue is in the tint, the edge
+ * and this dot. A literal per hue, so Tailwind finds each class.
  */
 const SOFT_DOT = {
   "destructive-soft": "bg-negative",

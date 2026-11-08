@@ -113,9 +113,11 @@ title). An app's own component that asks the same question uses `hasSlot` from `
 - **`leadingSlot`** — inside a field, at its start: an icon, the text padded past it. On `Input`.
   Pass a bare `<Search />`; the input sizes and mutes it, and it takes no press.
 - **`trailing`** — the far end of a row, after its `label`: a shortcut, a count. On `MenuItem` and the menu's checkbox and radio rows. It takes a string as well as an element, so it is not a `Slot`.
-- **`trailingSlot`** — on `Input`, the far end inside the field: one icon-sized control, such as a clear button. On `Button`, the far end after the label: a chevron, a count.
+- **`trailingSlot`** — on `Input`, the far end inside the field: one icon-sized control, such as a clear button. On `Button`, the far end after the label: a chevron, a count. On `TabsTrigger`, the far end of the tab: a dot, a count in a `Badge`, read as part of the tab's name.
 - **`linkSlot`** — the router's link, as an element with no children (`<Link to="/x" />`), which the
   row is drawn inside. On `MenuItem`, so the row is the router's own `<a>` and preloads on hover.
+  On `Button` and `TabsTrigger`, which are drawn *as* the link on the web (the tab keeps
+  `role="tab"`) and inside it on a device, where expo-router's takes it with `asChild`.
 - **`value`**, **`onValueChange`** — every control that holds a value, so one control can be
   swapped for another without rewriting the call site. Never `onChange`, and never a control that
   keeps the value inside itself.

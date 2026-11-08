@@ -178,3 +178,24 @@ export const TheNameTooltipCanBeTurnedOff: Story = {
     }
   },
 };
+
+/**
+ * At a text size the button draws its name beside the glyph (#488), as `DownloadButton` does: a
+ * toolbar's "Copy link". At an `icon*` size the name is the accessible name alone.
+ */
+export const AtATextSize: Story = {
+  render: () => (
+    <SideBySide
+      native={<Native value={URL} label="Copy link" size="sm" />}
+      compiled={<Compiled value={URL} label="Copy link" size="sm" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const buttons = canvas.getAllByRole("button", { name: "Copy link" });
+    await expect(buttons).toHaveLength(2);
+    for (const button of buttons) {
+      await expect(button).toHaveTextContent("Copy link");
+    }
+  },
+};

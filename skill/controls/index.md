@@ -6,10 +6,10 @@ control with a real accessible name, usable on its own or inside a `FormField`. 
 has a bound counterpart in [forms/index.md](../forms/index.md) — reach for that inside a TanStack form, and for
 these in a filter bar, a toolbar, or a plain `useState` screen.
 
-**Web only**, except the icons, the segmented control, `DatePicker`, `DateRangePicker`, `DateTimeInput`, `ColorPicker` and the
-colour display parts, the removable badge, the spinner, the alert, the menu, the combobox, the theme picker, the copy button, the code block, the icon in an input, the search box, the progress bar, and the file picker (its native half only draws the zone), which each say so. Everything else here is a DOM
-component with no React Native half, so it does not install in an Expo project. The native set is
-[native.md](../native.md).
+**On both halves**, except `Markdown`, `MarkdownEditor` and `MarkdownCodeEditor`, which are DOM
+components with no React Native half and do not install in an Expo project; the file picker's
+native half only draws the zone. `@cubeui/control` installs the controls in one go, in a DOM app.
+The native choosing table is [native.md](../native.md).
 
 **The controls files.** Each holds one group; [SKILL.md](../SKILL.md)'s choosing table links straight to the section you need.
 
@@ -34,17 +34,17 @@ second answer.
 
 | State | Draw it with | Notes |
 |---|---|---|
-| Under the pointer | `hover:bg-hover` | Grey, on every unchosen control and row. A filled button darkens its own fill instead: `hover:bg-neutral/90`. A chosen thing tints a step further: `hover:bg-active/60`. |
+| Under the pointer | `hover:bg-hover` | A pale wash of `active`'s hue, all but grey, on every unchosen control and row. A filled button darkens its own fill instead: `hover:bg-neutral/90`. A chosen thing tints a step further: `hover:bg-active/60`. |
 | Keyboard focus | the hover look: `focus-visible:bg-hover` | No ring: `focus-visible:outline-none` on anything you make pressable, a `Pressable` under Expo web included. A row lit by its pressed part uses `has-[>:focus-visible]:bg-hover`, which matches only a focusable child of the row itself, so a checkbox or a button inside the row shows its own look and not the row's. A filled button looks hovered too: `focus-visible:bg-hover focus-visible:text-foreground`, so its label and icon turn `foreground` with the fill. An outline's edge darkens with its fill: `focus-visible:border-foreground/60`, or the full colour on a coloured outline. A chosen thing looks hovered as a chosen thing does: `focus-visible:bg-active/60`, its ink unchanged. |
 | Focus in a field | `focus:border-active` | Input, textarea, select trigger, and a trigger drawn as a field: a combobox's, a date picker's (`focus-visible:border-active`, and no fill). No ring here either. |
-| Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the grey shows. A filled button darkens its own fill: `active:bg-neutral/90`; a chosen thing tints further: `active:bg-active/60`. |
+| Pressed, on a device | `active:bg-hover` | There is no pointer to hover with, so the press is where the hover fill shows. A filled button darkens its own fill: `active:bg-neutral/90`; a chosen thing tints further: `active:bg-active/60`. |
 | Chosen | `bg-active/40 text-foreground`, `hover:bg-active/60` | Every chosen, current, checked, on or selected thing: the current sidebar row, the active tab, the pressed segment, an on chip, a picked day, a table row, a `ListItem`, `Item` or `FileTree` file with `selected`, the option a select or a combobox is on, a checked menu row. A tint, so the thing's own text, badges and colour dots still read; its text is `foreground`, the secondary lines and quiet icons included, because the `/60` grey is under 4.5:1 on the tint. |
 | Chosen, with an edge | the tint and `border-active` | A control whose edge is what shows it is there — a checked box, an on switch's track, a chosen radio's circle, an on chip, a radio tile, a selected `StatTile`. The tint is not 3:1 from the surface, and the `active` edge is. The check, the thumb and the dot are `foreground`, 3:1 or more on the tint. |
 | Refused | `border-negative` | The edge of a field, a field-like trigger, a checkbox or a switch, from `aria-invalid`. It wins over a checked box's or an on switch's `active` edge. A field's focus still turns its edge `active`; a box or an on switch shows focus in its fill and keeps the `negative` edge. An off switch keeps its `/50` track and is edged in `active` under the pointer and focused, which wins over `negative` as a field's focus does. |
-| Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. A compiled pressable has the cursor already, `aria-disabled` included. It takes no hover. A field fades as one: `disabled` on `Field`, `FormField` or a bound field fades the label and the description with the control. |
+| Disabled | `opacity-50` | `disabled:opacity-50 disabled:cursor-not-allowed` on a DOM control. A compiled pressable has the cursor already, `aria-disabled` included, and so does a `Button` drawn as its `linkSlot`'s `<a>`. It takes no hover. A field fades as one: `disabled` on `Field`, `FormField` or a bound field fades the label and the description with the control. |
 
-- **Chosen is the active tint, a step stronger under the pointer.** Never the hover grey, and
-  hover never `active`: a grey chosen row is a hover that stuck. Never a solid `bg-active` either:
+- **Chosen is the active tint, a step stronger under the pointer.** Never the hover fill, and
+  hover never `active`: a chosen row in `hover` is a hover that stuck. Never a solid `bg-active` either:
   coloured content on it is unreadable, and its pointer step was too small to see. Write it
   `selected && "bg-active/40 hover:bg-active/60 focus-visible:bg-active/60"`.
 - **A label's `Text` names its own colour, so a filled button's focus reaches it through a named

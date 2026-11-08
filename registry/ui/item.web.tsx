@@ -78,7 +78,7 @@ function ItemSeparator({ className, testID, ...props }: SeparatorProps & Named) 
   );
 }
 
-/** What only a DOM row has: the hover on a link row, and the focus ring. */
+/** What only a DOM row has: a link row's hover, and the same fill for its keyboard focus. */
 const ITEM_WEB =
   "group/item flex transition-colors duration-100 outline-none [a]:transition-colors [a]:hover:bg-hover [a]:focus-visible:bg-hover";
 

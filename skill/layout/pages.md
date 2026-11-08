@@ -21,7 +21,7 @@ route should reach for first.
   title="Workspaces"
   description="Each one exposes the servers you choose."
   actionSlot={<Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />}
-  headerContentSlot={<Input aria-label="Search workspaces" placeholder="Search workspaces" />}
+  headerContentSlot={<SearchInput label="Search workspaces" value={query} onChangeText={setQuery} />}
   width="page"
   contentSlot={<WorkspaceList />}
 />

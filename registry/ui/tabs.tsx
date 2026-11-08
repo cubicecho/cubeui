@@ -44,7 +44,7 @@ import {
   useRovingFocus,
   useRovingItem,
 } from "@/lib/roving-focus";
-import { cn } from "@/lib/utils";
+import { cn, FOCUS_EDGE } from "@/lib/utils";
 
 type TabsState = { value: string; setValue: (value: string) => void };
 
@@ -331,11 +331,9 @@ function TabsContent({ value, className, children }: TabsContentProps) {
       // A tab stop under Expo web, as radix's panel is on the web, so Tab reaches the pane from its
       // tab even when nothing in it takes focus. A device has no Tab key.
       {...(Platform.OS === "web" ? { tabIndex: 0 as const } : {})}
-      className={cn(
-        "mt-2",
-        Platform.select({ web: "focus-visible:outline-none", default: "" }),
-        className,
-      )}
+      // Nothing in the pane looks hovered, so it shows focus as a scroll box does: its edge turns
+      // `active`. A border, not the inset line, which a card filling the pane would cover.
+      className={cn("mt-2 rounded-md", FOCUS_EDGE, className)}
     >
       {children}
     </View>

@@ -25,8 +25,8 @@
  * - `neutral`, `positive`, `warning`, `negative`, `info`: what a thing says. A button or a badge
  *   with nothing to say is `neutral`, and `info` is the blue for one worth pointing out. Each has
  *   a `-foreground` for the text on its fill.
- * - `hover`: the transient grey under a pointer, a menu's keyboard highlight or keyboard focus.
- *   Its text is `foreground`.
+ * - `hover`: the transient fill under a pointer, a menu's keyboard highlight or keyboard focus:
+ *   `active`'s hue, all but grey. Its text is `foreground`.
  * - `active`: the one colour for chosen and current — the tint of a checked control or the
  *   current row — and a focused field's border. Nothing draws a focus ring: a focused thing looks
  *   hovered.

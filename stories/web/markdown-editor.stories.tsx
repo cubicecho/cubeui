@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent } from "storybook/test";
+import { EmptyState } from "@/components/empty-state";
 import { FormField } from "@/components/form-field";
 import { MarkdownEditor, type MarkdownEditorView } from "@/components/markdown-editor";
 import { monoFamily } from "../mono-family";
@@ -51,7 +52,7 @@ function Held({
     <MarkdownEditor
       aria-label="Skill body"
       placeholder="# My skill"
-      emptySlot={<p className="m-0 text-foreground/60">Nothing to preview yet.</p>}
+      emptySlot={<EmptyState compact title="Nothing to preview yet." />}
       value={value}
       onValueChange={(next) => {
         setValue(next);

@@ -5,9 +5,10 @@ Read [SKILL.md](../SKILL.md) first for the "no children" rule, and
 
 **Both halves, one source.** Pages, page shells, page headers, splits, cards, dialogs,
 sections, disclosures, sidebars and the app bar are written once in React Native and compiled to
-the web, so the same item installs in a Vite app and an Expo app with the same props. The
-list-page parts ([lists.md](lists.md), [list-rows.md](list-rows.md), [trees-and-tables.md](trees-and-tables.md)) are the exception: `Table` is web-only, and `LoadState` is its own
-item on each half; `CollapsibleRow`, `ListItem` and `FileTree` are on both, like the shells. On a device,
+the web, so the same item installs in a Vite app and an Expo app with the same props. So are the
+list-page parts ([lists.md](lists.md), [list-rows.md](list-rows.md), [trees-and-tables.md](trees-and-tables.md)) —
+`LoadState`, `List`, `CollapsibleRow`, `ListItem` and `FileTree` — with one exception: `Table` is
+web-only, and on a device the rows are `ListItem`s. On a device,
 four things differ, and none of them changes a call site:
 
 - `HeaderContentFooter`'s body is a `ScrollView` when it scrolls, so `contentRef` is the
