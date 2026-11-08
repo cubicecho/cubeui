@@ -27,6 +27,11 @@
  * area and a negative margin of the same size takes it back out of the layout,
  * which keeps the pill the height it was; it stays inside the pill's edge
  * because `overflow-hidden` would clip a target that did not.
+ *
+ * A named dot shows its name under the pointer (#479), a soft variant's dot as
+ * much as any: its colour is all a sighted reader has otherwise, and two status
+ * colours can be one to a reader with a colour-vision deficiency. A pill's own
+ * soft dot does not, because the words beside it are the name.
  */
 import { Slot } from "radix-ui";
 import type * as React from "react";
@@ -44,6 +49,7 @@ import {
 } from "@/components/ui/badge-base";
 import { cn } from "@/lib/utils";
 import { X } from "./icons";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 export type { BadgeProps, BadgeVariant };
 
@@ -69,8 +75,10 @@ export function Badge({
   }) {
   const shape = asChild || badgeHasLabel(children) ? "pill" : "dot";
   const Comp = asChild ? Slot.Root : "span";
+  // `aria-describedby` is passed even when empty: radix points its trigger at the open bubble,
+  // `Slot` lets the child's value win, and describing the dot with its own name reads it twice.
   const dotName = label
-    ? ({ role: "img", "aria-label": label } as const)
+    ? ({ role: "img", "aria-label": label, "aria-describedby": undefined } as const)
     : ({ "aria-hidden": true } as const);
 
   const softDot = shape === "pill" && !backgroundColor ? badgeSoftDotClass(variant) : null;
@@ -101,7 +109,7 @@ export function Badge({
       </>
     ) : null;
 
-  return (
+  const badge = (
     <Comp
       data-slot="badge"
       data-variant={variant}
@@ -130,6 +138,16 @@ export function Badge({
           empty under `asChild` — made it throw "failed to slot onto its children" (#152). */}
       {asChild ? children : pill}
     </Comp>
+  );
+
+  if (shape === "pill" || Boolean(label) === false) {
+    return badge;
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{badge}</TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   );
 }
 

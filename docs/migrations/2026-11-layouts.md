@@ -275,6 +275,19 @@ to add them.
   `DateTimeInput` stay on the page background under the pointer and under focus, where they used
   to fill grey, and focus turns the edge `active`. A refused one is edged in `negative`, on both
   halves. A searchable or `multiple` `Combobox` now draws its refused edge on device too.
+- **The palettes are retuned** ([#479](https://github.com/cubicecho/cubeui/issues/479)), so each
+  theme draws the same steps and the status colours differ in lightness, not only in hue.
+  - Default light: a card, popover or dialog (`secondary`) is `#F5F5F5`, a step greyer, and
+    `hover` is a step darker. `warning` is a darker burnt orange, `#742C02`. `negative` is
+    `#B02B26`, `info` `#0863A6` and `positive` `#196635`.
+  - Default dark: `secondary` is `#171717`, closer to the page than the `#262626` it was, and
+    `hover` is `#142A30`. `positive` is a lighter green, `#4ADE80`.
+  - Monokai: `secondary` is `#2E2F28`, `positive` `#2BCA63`, `warning` `#FD9D16` and `negative`
+    `#FF74A0`.
+  - shadcn's `sidebar` alias is now `background`, so a copied shadcn sidebar is drawn as the page,
+    as cubeui's own `Sidebar` is, and not as a card.
+  - A `Badge` dot or a `ColorDot` with a `label` shows it as a tooltip on the web. A `Tooltip` you
+    wrapped around one by hand can go.
 - **A refused checkbox or switch is red when checked**
   ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
   box's or an on switch's `active` one, and the device halves draw it.

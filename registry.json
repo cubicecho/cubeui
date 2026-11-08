@@ -292,7 +292,7 @@
       "type": "registry:ui",
       "title": "Color Dot",
       "description": "A small swatch standing in for a colour-coded thing in a list.",
-      "registryDependencies": ["@cubeui/utils"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/tooltip"],
       "files": [
         {
           "path": "registry/ui/color-dot.tsx",
@@ -978,7 +978,12 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "A pill naming what something is or what state it is in — and, with no label, the dot that says the same thing in a tighter row. `onRemove` adds a trailing ✕ for a tag the user can take off.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/icons", "@cubeui/reduced-motion"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/icons",
+        "@cubeui/reduced-motion",
+        "@cubeui/tooltip"
+      ],
       "files": [
         {
           "path": "registry/ui/badge-base.ts",

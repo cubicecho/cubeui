@@ -4,8 +4,8 @@
  * counterpart and `badge-base.ts` holds the contract and the class maps they share.
  *
  * The variants are shadcn's, with shadcn's meanings, plus `positive` and `warning`, which are
- * tokens of cubeui's own. Their fills are Tailwind's 700s because white text on a lighter shade is
- * under 4.5:1. Each string child is wrapped in a `Text` carrying the label colour, since native
+ * tokens of cubeui's own. On a light page their fills are dark, about Tailwind's 800s, because
+ * white text on a lighter shade is under 4.5:1. Each string child is wrapped in a `Text` carrying the label colour, since native
  * does not inherit it. `onRemove` adds a trailing ✕ in its own `Pressable`.
  */
 import { Children, useEffect, useRef } from "react";
