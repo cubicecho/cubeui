@@ -37,6 +37,9 @@ const PAIRS = [
   ["foreground", "hover"],
   // A link in a row under the pointer.
   ["info", "hover"],
+  // `MarkdownCodeEditor`'s syntax on the caret's line, which is `hover`: a link and code are
+  // `info` (above), a string `positive`, and markup and comments `/60` (above) (#471).
+  ["positive", "hover"],
   ...FILLS.flatMap((fill) => [
     [`${fill}-foreground`, fill],
     // `hover:bg-neutral/90` and the rest: the fill under the pointer, and a focused one.

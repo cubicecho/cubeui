@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
 import { Text } from "react-native";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   ArrowRight as CompiledArrowRight,
   CircleCheck as CompiledCircleCheck,
@@ -874,6 +874,14 @@ export const Collapsed: Story = {
       const work = side.getByRole("link", { name: "Work, MCP on, 2" });
       await expect(work).toHaveAttribute("aria-current", "page");
       await expect(within(work).queryByText("Work")).toBeNull();
+      // And its tooltip says all of it: the count and the status dot are marks with no words, so
+      // the name is what a sighted reader has for them (#471). It is not also the description.
+      await userEvent.hover(work);
+      const tip = await screen.findByRole("tooltip");
+      await expect(tip).toHaveTextContent("Work, MCP on, 2");
+      await expect(work).not.toHaveAttribute("aria-describedby");
+      await userEvent.unhover(work);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
       await expect(side.getByRole("link", { name: "Garden" })).toHaveTextContent("G");
 
       // The title still names the list, from off the screen.

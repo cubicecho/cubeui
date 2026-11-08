@@ -11,18 +11,42 @@
  * colours they spell here too.
  */
 
-import { hexChannels } from "@/lib/readable-text-color";
+import { hexChannels, luminance } from "@/lib/readable-text-color";
 
 /** The colour wheel is six sectors of sixty degrees, and each channel leads two of them. */
 const HUE_SECTORS = 6;
 const GREEN_SECTOR = 2;
 const BLUE_SECTOR = 4;
 const FULL_TURN = 360;
-const PERCENT = 100;
 
-/** The lightest and darkest an accent may be and still show on both a light and a dark card. */
-const ACCENT_MIN_LIGHTNESS = 0.38;
-const ACCENT_MAX_LIGHTNESS = 0.62;
+/**
+ * The darkest and lightest an accent may be, as WCAG relative luminance: the band that is 3:1
+ * (WCAG 1.4.11, a mark someone has to see) from the page and from a card in every palette
+ * `@cubeui/tokens` ships, so a stripe shows in whichever theme is on without knowing which. The
+ * light card (0.91) caps the band at 0.27 and Monokai's card (0.028) floors it at 0.18; these sit
+ * inside that, with room for rounding to a hex. `color.test.ts` holds them to every palette.
+ *
+ * It was HSL lightness 0.38–0.62, which is not how light a colour looks: a yellow at 0.5 was
+ * 1.07:1 on the light page and a navy 1.68:1 on the dark one (#471).
+ */
+const ACCENT_MIN_LUMINANCE = 0.19;
+const ACCENT_MAX_LUMINANCE = 0.26;
+/** Halvings of the lightness search: far finer than a hex can say. */
+const SEARCH_STEPS = 24;
+const HALF = 0.5;
+const CHANNEL_MAX = 255;
+const HEX_RADIX = 16;
+const HEX_DIGITS = 2;
+
+/** Red, green and blue in each sixty-degree sector of the wheel, from the chroma and the second. */
+const SECTORS: readonly ((c: number, x: number) => [number, number, number])[] = [
+  (c, x) => [c, x, 0],
+  (c, x) => [x, c, 0],
+  (c, x) => [0, c, x],
+  (c, x) => [0, x, c],
+  (c, x) => [x, 0, c],
+  (c, x) => [c, 0, x],
+];
 
 /**
  * Hue (0–360), saturation and lightness (0–1) of a hex colour.
@@ -58,18 +82,58 @@ export function hexToHsl(hex: string): { h: number; s: number; l: number } | und
   return { h: Math.round(h * FULL_TURN), s, l };
 }
 
+/** Red, green and blue as 0–1 from hue (0–360), saturation and lightness (0–1). */
+function hslChannels(h: number, s: number, l: number): [number, number, number] {
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const sector = (h / (FULL_TURN / HUE_SECTORS)) % HUE_SECTORS;
+  const second = chroma * (1 - Math.abs((sector % 2) - 1));
+  const base = l - chroma * HALF;
+  const [r, g, b] = SECTORS[Math.floor(sector)]?.(chroma, second) ?? [0, 0, 0];
+  return [r + base, g + base, b + base];
+}
+
+function toHex(channels: [number, number, number]): string {
+  return `#${channels
+    .map((c) =>
+      Math.round(c * CHANNEL_MAX)
+        .toString(HEX_RADIX)
+        .padStart(HEX_DIGITS, "0"),
+    )
+    .join("")}`;
+}
+
 /**
- * Keeps the hue but clamps lightness to a mid range, so a near-white or
- * near-black pick cannot disappear against either the light or the dark card.
+ * Keeps the hue and saturation of a pick but moves its lightness into the band that shows on the
+ * page and on a card in every theme, so a near-white, a near-black, a yellow or a navy cannot
+ * disappear against either. A pick already in the band is returned as it is.
  *
  * @param hex - `#rgb` or `#rrggbb`, with or without the `#`.
- * @returns An `hsl()` colour, or `undefined` for anything that is not a hex colour.
+ * @returns A `#rrggbb` colour, or `undefined` for anything that is not a hex colour.
  */
 export function hexToAccent(hex: string): string | undefined {
+  const rgb = hexChannels(hex);
   const hsl = hexToHsl(hex);
-  if (!hsl) {
+  if (!rgb || !hsl) {
     return undefined;
   }
-  const clampedL = Math.min(ACCENT_MAX_LIGHTNESS, Math.max(ACCENT_MIN_LIGHTNESS, hsl.l));
-  return `hsl(${hsl.h}, ${Math.round(hsl.s * PERCENT)}%, ${Math.round(clampedL * PERCENT)}%)`;
+  const at = (l: number) => luminance(hslChannels(hsl.h, hsl.s, l));
+  const now = luminance(rgb);
+  if (now >= ACCENT_MIN_LUMINANCE && now <= ACCENT_MAX_LUMINANCE) {
+    return toHex(rgb);
+  }
+  // Luminance rises with HSL lightness at a fixed hue and saturation, so the band's edge is found
+  // by halving: lighter up to its floor, or darker down to its ceiling.
+  const tooDark = now < ACCENT_MIN_LUMINANCE;
+  let low = tooDark ? hsl.l : 0;
+  let high = tooDark ? 1 : hsl.l;
+  for (let step = 0; step < SEARCH_STEPS; step++) {
+    const mid = (low + high) * HALF;
+    const lit = at(mid);
+    if (tooDark ? lit >= ACCENT_MIN_LUMINANCE : lit > ACCENT_MAX_LUMINANCE) {
+      high = mid;
+    } else {
+      low = mid;
+    }
+  }
+  return toHex(hslChannels(hsl.h, hsl.s, tooDark ? high : low));
 }
