@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { defaultUrlTransform } from "react-markdown";
 import { expect, within } from "storybook/test";
+import { EmptyState } from "@/components/empty-state";
 import { Markdown, type MarkdownProps } from "@/components/markdown";
 import { tokenColor } from "../token-color";
 
@@ -66,7 +67,7 @@ npm install
  */
 export const EveryElement: Story = {
   args: { content: EVERYTHING },
-  decorators: [(Story) => <div className="w-[640px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[640px] max-w-full">{Story()}</div>],
   play: async ({ canvas, canvasElement }) => {
     // The outline: six levels, in order, each a real heading.
     const names = [
@@ -230,7 +231,7 @@ export const MixedTaskList: Story = {
 - Another plain note
 `,
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     const items = canvas.getAllByRole("listitem");
     const plain = items.filter((item) => item.querySelector("[role=checkbox]") === null);
@@ -280,7 +281,7 @@ export const UntrustedContent: Story = {
 [a safe one](/docs/setup) and [a mail one](mailto:someone@example.com).
 `,
   },
-  decorators: [(Story) => <div className="w-[640px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[640px] max-w-full">{Story()}</div>],
   play: async ({ canvas, canvasElement }) => {
     const document = root(canvasElement);
     await expect(document).not.toBeNull();
@@ -322,12 +323,9 @@ export const UntrustedContent: Story = {
 export const Empty: Story = {
   args: { content: "" },
   render: () => (
-    <div className="flex w-[480px] flex-col gap-4">
+    <div className="flex w-[480px] max-w-full flex-col gap-4">
       <div data-testid="with">
-        <Markdown
-          content={"  \n"}
-          emptySlot={<p className="text-foreground/60">This file is empty.</p>}
-        />
+        <Markdown content={"  \n"} emptySlot={<EmptyState compact title="This file is empty." />} />
       </div>
       <div data-testid="without">
         <Markdown content="" />
@@ -356,7 +354,7 @@ export const HeadingIds: Story = {
     content: "# Getting started\n\nFirst.\n\n## The `content` prop\n\nSecond.\n",
     headingId: slug,
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     await expect(canvas.getByRole("heading", { name: "Getting started" })).toHaveAttribute(
       "id",
@@ -399,7 +397,7 @@ Use the package.
  */
 export const Collapsible: Story = {
   args: { content: SECTIONS, collapsible: true },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas, userEvent }) => {
     await expect(canvas.getByRole("heading", { name: "Install" })).toBeVisible();
     const toggles = canvas.getAllByRole("button");
@@ -442,7 +440,7 @@ const EVERY_LEVEL = [1, 2, 3, 4, 5, 6]
  */
 export const CollapsibleEveryLevel: Story = {
   args: { content: `Before any heading.\n\n${EVERY_LEVEL}`, collapsible: true },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     for (const level of [1, 2, 3, 4, 5, 6]) {
       const name = `Level ${level}`;
@@ -486,7 +484,7 @@ export const CallerOverrides: Story = {
     components: { a: AppLink },
     urlTransform: (url) => (url.startsWith("data:image/") ? url : defaultUrlTransform(url)),
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     const external = canvas.getByRole("link", { name: "the guide" });
     await expect(external).toHaveAttribute("data-app-link");
@@ -541,7 +539,7 @@ export const ResolvedLinks: Story = {
     basePath: "guide/intro.md",
     resolveLink: resolveDocument,
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     const named = canvas.getByRole("link", { name: "intro" });
     await expect(named).toHaveAttribute("href", "/docs/guide/intro.md");
@@ -579,7 +577,7 @@ export const PendingLinks: Story = {
     basePath: "guide/intro.md",
     resolveLink: () => ({ pending: true }),
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas, canvasElement }) => {
     // Only the web address is a link yet.
     await expect(canvas.getAllByRole("link")).toHaveLength(1);
@@ -602,7 +600,7 @@ export const ResolvesLater: Story = {
     wikilinks: true,
     resolveLink: resolveLater,
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas }) => {
     await expect(canvas.getByText("intro")).toHaveAttribute("aria-busy", "true");
     await expect(await canvas.findByRole("link", { name: "intro" })).toHaveAttribute(
@@ -626,7 +624,7 @@ export const BrokenLinks: Story = {
     basePath: "guide/intro.md",
     resolveLink: resolveDocument,
   },
-  decorators: [(Story) => <div className="w-[480px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[480px] max-w-full">{Story()}</div>],
   play: async ({ canvas, canvasElement }) => {
     await expect(canvas.queryAllByRole("link")).toHaveLength(0);
     const missing = canvas.getByTitle("No document named “missing”.");
@@ -659,7 +657,7 @@ const one = "a line of code that is a good deal longer than the column it has be
 \`\`\`
 `,
   },
-  decorators: [(Story) => <div className="w-[280px]">{Story()}</div>],
+  decorators: [(Story) => <div className="w-[280px] max-w-full">{Story()}</div>],
   play: async ({ canvasElement }) => {
     const document = root(canvasElement);
     await expect(document).not.toBeNull();

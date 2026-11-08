@@ -4,8 +4,20 @@ import { Text, View } from "react-native";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { PageLayout as CompiledPageLayout } from "../compiled/page-layout";
+import {
+  Tabs as CompiledTabs,
+  TabsContent as CompiledTabsContent,
+  TabsList as CompiledTabsList,
+  TabsTrigger as CompiledTabsTrigger,
+} from "../compiled/tabs";
 import { PageLayout as NativePageLayout } from "../registry/layout/page-layout";
 import { Button as NativeButton } from "../registry/ui/button";
+import {
+  Tabs as NativeTabs,
+  TabsContent as NativeTabsContent,
+  TabsList as NativeTabsList,
+  TabsTrigger as NativeTabsTrigger,
+} from "../registry/ui/tabs.tsx";
 
 /**
  * `PageLayout`'s header runs the full width of the page while its title keeps the body's column.
@@ -151,49 +163,66 @@ export const BarsUnderTheTitle: Story = {
   },
 };
 
-/** A row of tabs, standing in for the `Tabs` a settings page holds. */
+/** The settings page's sections, as real tabs with the first one chosen (#489). */
 const TABS = ["Agent", "Servers", "Device"];
 
 /**
  * min-agent's settings: the title and its tabs in the reading column, over panels in the same
- * column, and the rule under them the width of the screen.
+ * column, and the rule under them the width of the screen. One `Tabs` root around the page, as
+ * the skill writes it.
  */
 export const FullWidthRuleOverAColumn: Story = {
   render: () => (
     <div>
       <Frame name="native">
-        <NativePageLayout
-          title="Settings"
-          width="prose"
-          headerClassName="border-b border-foreground/10"
-          headerContentSlot={
-            <View testID="tabs" className="flex-row gap-2">
-              {TABS.map((tab) => (
-                <Text key={tab} className="rounded-md px-3 py-1 text-foreground text-sm">
-                  {tab}
-                </Text>
-              ))}
-            </View>
-          }
-          contentSlot={<Text className="text-foreground">The agent panel.</Text>}
-        />
+        <NativeTabs defaultValue="Agent" className="h-full">
+          <NativePageLayout
+            title="Settings"
+            width="prose"
+            headerClassName="border-b border-foreground/10"
+            headerContentSlot={
+              <View testID="tab-row">
+                <NativeTabsList aria-label="Native settings">
+                  {TABS.map((tab) => (
+                    <NativeTabsTrigger key={tab} value={tab}>
+                      {tab}
+                    </NativeTabsTrigger>
+                  ))}
+                </NativeTabsList>
+              </View>
+            }
+            contentSlot={
+              <NativeTabsContent value="Agent">
+                <Text className="text-foreground">The agent panel.</Text>
+              </NativeTabsContent>
+            }
+          />
+        </NativeTabs>
       </Frame>
       <Frame name="compiled">
-        <CompiledPageLayout
-          title="Settings"
-          width="prose"
-          headerClassName="border-b border-foreground/10"
-          headerContentSlot={
-            <div data-testid="tabs" className="flex gap-2">
-              {TABS.map((tab) => (
-                <span key={tab} className="rounded-md px-3 py-1 text-foreground text-sm">
-                  {tab}
-                </span>
-              ))}
-            </div>
-          }
-          contentSlot={<p className="text-foreground">The agent panel.</p>}
-        />
+        <CompiledTabs defaultValue="Agent" className="h-full">
+          <CompiledPageLayout
+            title="Settings"
+            width="prose"
+            headerClassName="border-b border-foreground/10"
+            headerContentSlot={
+              <div data-testid="tab-row">
+                <CompiledTabsList aria-label="Compiled settings">
+                  {TABS.map((tab) => (
+                    <CompiledTabsTrigger key={tab} value={tab}>
+                      {tab}
+                    </CompiledTabsTrigger>
+                  ))}
+                </CompiledTabsList>
+              </div>
+            }
+            contentSlot={
+              <CompiledTabsContent value="Agent">
+                <p className="text-foreground">The agent panel.</p>
+              </CompiledTabsContent>
+            }
+          />
+        </CompiledTabs>
       </Frame>
     </div>
   ),
@@ -203,7 +232,11 @@ export const FullWidthRuleOverAColumn: Story = {
       const title = part(frame, "page-header");
       const scroller = part(frame, "header-content-footer-content");
       const body = part(frame, "header-content-footer-column");
-      const tabs = part(frame, "tabs");
+      const tabs = part(frame, "tab-row");
+      await expect(within(frame).getByRole("tab", { name: "Agent" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
 
       // The rule is the header's, and the header is the frame's width.
       await expect(getComputedStyle(header).borderBottomWidth).toBe("1px");

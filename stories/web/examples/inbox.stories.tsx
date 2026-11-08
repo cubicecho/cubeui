@@ -29,8 +29,9 @@ import { TODAY } from "./fixtures";
 /**
  * An inbox as two panes: the messages as list rows, the chosen one tinted, and the message open
  * beside them with its header, its body, an attachment and a reply box. The detail pane is a
- * `PageLayout` that is always drawn, with a `LoadState` in its body: the title's bar while the
- * message loads, and the not-found block under the pane's title when it is gone.
+ * `PageLayout` with a `LoadState` in its body: the title's bar while the message loads, and the
+ * not-found block under the pane's title when it is gone. With no message chosen, the pane says
+ * so instead. The list's "Inbox" is the page's `h1`, so the message's subject is an `h2` (#489).
  */
 type Args = { detail: "ready" | "loading" | "missing" };
 
@@ -239,100 +240,120 @@ function Inbox({ detail }: Args) {
         />
       }
       secondSlot={
-        <PageLayout
-          width="prose"
-          backSlot={
-            <Button
-              variant="outline"
-              size="icon-sm"
-              aria-label="Back to the inbox"
-              iconSlot={<ArrowLeft />}
-              onClick={() => setOpenId(null)}
-            />
-          }
-          title={message?.subject ?? "Message"}
-          loading={detail === "loading"}
-          description={message ? `${message.from} · ${formatAgo(message.at, TODAY)}` : undefined}
-          actionSlot={
-            message ? (
-              <div className="flex items-center gap-2">
-                {message.label ? (
-                  <Badge variant={LABEL_BADGE[message.label]}>{message.label}</Badge>
-                ) : null}
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  aria-label="Archive"
-                  hint="Archive: out of the inbox, still searchable"
-                  iconSlot={<Archive />}
-                  onClick={() => {
-                    remove(message.id);
-                    toast("Archived.", "info");
-                  }}
-                />
-                <ConfirmButton
-                  variant="destructive-outline"
-                  size="icon-sm"
-                  aria-label="Delete"
-                  iconSlot={<Trash2 />}
-                  title="Delete this message?"
-                  description={`“${message.subject}” is deleted for you. ${message.from} still has their copy.`}
-                  onConfirm={() => remove(message.id)}
-                />
-              </div>
-            ) : null
-          }
-          contentSlot={
-            <>
-              <LoadState
-                query={{
-                  isPending: detail === "loading",
-                  isError: false,
-                  error: null,
-                  refetch: () => {},
-                }}
-                what="this message"
-                record={message}
-                notFoundLabel="Message not found"
-                description="It was moved or deleted. The rest of the inbox is beside it."
-                level={2}
+        openId === null && detail !== "missing" ? (
+          <EmptyState
+            iconSlot={<InboxIcon />}
+            title="No message open"
+            description="Choose one from the list."
+          />
+        ) : (
+          <PageLayout
+            level={2}
+            width="prose"
+            backSlot={
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label="Back to the inbox"
+                iconSlot={<ArrowLeft />}
+                onClick={() => setOpenId(null)}
               />
-              {message ? (
-                <>
-                  {message.body.split("\n\n").map((paragraph) => (
-                    <p key={paragraph} className="text-foreground text-sm leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
-                  {message.attachment ? (
-                    <CodeBlock
-                      content={message.attachment}
-                      wrap
-                      actionSlot={
-                        <CopyButton value={message.attachment} label="Copy the webhook URL" />
-                      }
-                    />
+            }
+            title={message?.subject ?? "Message"}
+            loading={detail === "loading"}
+            description={message ? `${message.from} · ${formatAgo(message.at, TODAY)}` : undefined}
+            actionSlot={
+              message ? (
+                <div className="flex items-center gap-2">
+                  {message.label ? (
+                    <Badge variant={LABEL_BADGE[message.label]}>{message.label}</Badge>
                   ) : null}
-                  <Separator />
-                  <Reply to={message.from} />
-                </>
-              ) : null}
-            </>
-          }
-        />
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Archive"
+                    hint="Archive: out of the inbox, still searchable"
+                    iconSlot={<Archive />}
+                    onClick={() => {
+                      remove(message.id);
+                      toast("Archived.", "info");
+                    }}
+                  />
+                  <ConfirmButton
+                    variant="destructive-outline"
+                    size="icon-sm"
+                    aria-label="Delete"
+                    iconSlot={<Trash2 />}
+                    title="Delete this message?"
+                    description={`“${message.subject}” is deleted for you. ${message.from} still has their copy.`}
+                    onConfirm={() => remove(message.id)}
+                  />
+                </div>
+              ) : null
+            }
+            contentSlot={
+              <>
+                <LoadState
+                  query={{
+                    isPending: detail === "loading",
+                    isError: false,
+                    error: null,
+                    refetch: () => {},
+                  }}
+                  what="this message"
+                  record={message}
+                  notFoundLabel="Message not found"
+                  description="It was moved or deleted. The rest of the inbox is beside it."
+                  level={3}
+                />
+                {message ? (
+                  <>
+                    {message.body.split("\n\n").map((paragraph) => (
+                      <p key={paragraph} className="text-foreground text-sm leading-relaxed">
+                        {paragraph}
+                      </p>
+                    ))}
+                    {message.attachment ? (
+                      <CodeBlock
+                        content={message.attachment}
+                        wrap
+                        actionSlot={
+                          <CopyButton value={message.attachment} label="Copy the webhook URL" />
+                        }
+                      />
+                    ) : null}
+                    <Separator />
+                    <Reply to={message.from} />
+                  </>
+                ) : null}
+              </>
+            }
+          />
+        )
       }
     />
   );
 }
 
-/** A message open beside the list. Opens another, which marks it read. */
+/**
+ * A message open beside the list. Opens another, which marks it read. One `h1`, the list's; the
+ * message's subject is under it. Back leaves no message open, which is not a message gone missing.
+ */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: /Harbor Coffee Co\./ }));
     await waitFor(() =>
-      expect(canvas.getByRole("heading", { name: "Feedback on the second round" })).toBeVisible(),
+      expect(
+        canvas.getByRole("heading", { level: 2, name: "Feedback on the second round" }),
+      ).toBeVisible(),
     );
+    await expect(canvas.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    await expect(canvas.getByRole("heading", { level: 1, name: "Inbox" })).toBeVisible();
+
+    await userEvent.click(canvas.getByRole("button", { name: "Back to the inbox" }));
+    await expect(await canvas.findByText("No message open")).toBeVisible();
+    await expect(canvas.queryByText("Message not found")).toBeNull();
   },
 };
 
@@ -355,7 +376,7 @@ export const MissingMessage: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("heading", { name: "Message" })).toBeVisible();
     await expect(
-      canvas.getByRole("heading", { level: 2, name: "Message not found" }),
+      canvas.getByRole("heading", { level: 3, name: "Message not found" }),
     ).toBeVisible();
     await expect(canvas.getByText(/moved or deleted/)).toBeVisible();
   },

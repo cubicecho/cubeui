@@ -321,7 +321,7 @@ function InAForm({ onSubmit, ...props }: SubjectProps & { onSubmit?: () => void 
       }}
     >
       <label htmlFor="cron">Schedule</label>
-      <input id="cron" defaultValue="0 9 * * 1" className="border px-2 py-1" />
+      <input id="cron" defaultValue="0 9 * * 1" className="border border-foreground/10 px-2 py-1" />
       <div className="flex gap-2">
         <Subject {...props} />
         <button type="submit">Save</button>

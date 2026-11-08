@@ -78,7 +78,14 @@ test("the published web items pass Biome's recommended preset with only the ui-f
         formatter: { enabled: false },
         assist: { enabled: false },
         css: { parser: { tailwindDirectives: true } },
-        linter: { enabled: true, rules: { preset: "recommended" } },
+        // The React domain named, not left to Biome's reading of package.json: under some
+        // parents (`~/.cache`, as a `TMPDIR`) the detection came up empty, the React rules went
+        // off, and every `biome-ignore` for one of them was reported unused (#489).
+        linter: {
+          enabled: true,
+          domains: { react: "recommended" },
+          rules: { preset: "recommended" },
+        },
         overrides: [
           {
             includes: ["src/components/ui/**"],

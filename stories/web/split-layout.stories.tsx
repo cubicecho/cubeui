@@ -24,7 +24,7 @@ const Surface = ({ label, tall = false }: { label: string; tall?: boolean }) => 
 );
 
 const Nav = () => (
-  <ul className="divide-y text-sm">
+  <ul className="divide-y divide-foreground/10 text-sm">
     {["Servers", "Workspaces", "Members", "Settings"].map((item) => (
       <li key={item} className="px-4 py-2">
         {item}
@@ -262,7 +262,7 @@ export const NoSidebarIsOneColumn: SidebarStory = {
  */
 export const DividedByALine: SidebarStory = {
   render: (args) => (
-    <div className="h-[300px] w-[600px] border">
+    <div className="h-[300px] w-[600px] border border-foreground/10">
       <SidebarLayout {...args} className="h-full" />
     </div>
   ),
@@ -311,7 +311,7 @@ export const DividedByALine: SidebarStory = {
  */
 export const DividerIsNotAControl: SidebarStory = {
   render: (args) => (
-    <div className="h-[300px] w-[600px] border">
+    <div className="h-[300px] w-[600px] border border-foreground/10">
       <SidebarLayout {...args} className="h-full" />
     </div>
   ),
@@ -325,9 +325,13 @@ export const DividerIsNotAControl: SidebarStory = {
       <HeaderContentFooter
         scroll
         className="h-full"
-        headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">Servers</div>}
+        headerSlot={
+          <div className="border-b border-foreground/10 px-4 py-2 font-semibold text-sm">
+            Servers
+          </div>
+        }
         contentSlot={
-          <ul className="divide-y">
+          <ul className="divide-y divide-foreground/10">
             {Array.from({ length: 30 }, (_, i) => i + 1).map((n) => (
               <li key={n} className="px-4 py-3 text-sm">
                 Server {n}
@@ -383,7 +387,7 @@ export const DividerIsNotAControl: SidebarStory = {
  */
 export const WideContentKeepsItsFloor: SidebarStory = {
   render: (args) => (
-    <div className="w-[800px] border">
+    <div className="w-[800px] border border-foreground/10">
       <SidebarLayout {...args} />
     </div>
   ),
@@ -392,7 +396,7 @@ export const WideContentKeepsItsFloor: SidebarStory = {
     stackBelow: "never",
     sidebarSlot: <Surface label="Sidebar stays put" />,
     contentSlot: (
-      <div className="overflow-x-auto rounded border bg-secondary">
+      <div className="overflow-x-auto rounded border border-foreground/10 bg-secondary">
         <div className="w-[2000px] px-4 py-3 text-sm">A single very wide child.</div>
       </div>
     ),
@@ -430,7 +434,7 @@ export const WideContentKeepsItsFloor: SidebarStory = {
  */
 export const StacksWhenNarrow: SidebarStory = {
   render: (args) => (
-    <div className="w-[420px] border">
+    <div className="w-[420px] border border-foreground/10">
       <SidebarLayout {...args} />
     </div>
   ),
@@ -472,9 +476,11 @@ const Pane = ({ title }: { title: string }) => (
   <HeaderContentFooter
     scroll
     className="h-full"
-    headerSlot={<div className="border-b px-4 py-2 font-semibold text-sm">{title}</div>}
+    headerSlot={
+      <div className="border-b border-foreground/10 px-4 py-2 font-semibold text-sm">{title}</div>
+    }
     contentSlot={
-      <ul className="divide-y">
+      <ul className="divide-y divide-foreground/10">
         {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
           <li key={n} className="px-4 py-3 text-sm">
             {title} {n}
@@ -496,7 +502,7 @@ const Pane = ({ title }: { title: string }) => (
 export const StackedScrolls: Story = {
   globals: { viewport: { value: "mobile2", isRotated: false } },
   render: () => (
-    <div className="h-[480px] w-full border">
+    <div className="h-[480px] w-full border border-foreground/10">
       <SplitLayout
         className="h-full"
         divider="line"

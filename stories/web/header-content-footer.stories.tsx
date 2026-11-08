@@ -14,18 +14,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const Header = () => (
-  <div className="border-b px-4 py-3">
+  <div className="border-b border-foreground/10 px-4 py-3">
     <h1 className="font-semibold text-lg">Workspaces</h1>
     <p className="text-foreground/60 text-sm">Each one exposes the servers you choose.</p>
   </div>
 );
 
 const Footer = () => (
-  <div className="border-t px-4 py-3 text-foreground/60 text-sm">Page 1 of 12</div>
+  <div className="border-t border-foreground/10 px-4 py-3 text-foreground/60 text-sm">
+    Page 1 of 12
+  </div>
 );
 
 const Rows = ({ count = 40 }: { count?: number }) => (
-  <ul className="divide-y">
+  <ul className="divide-y divide-foreground/10">
     {Array.from({ length: count }, (_, i) => i + 1).map((n) => (
       <li key={n} className="px-4 py-3 text-sm">
         Row {n}
@@ -57,7 +59,7 @@ export const NoChrome: Story = {
  */
 export const Sticky: StoryObj<typeof HeaderContentFooter> = {
   render: (args) => (
-    <div className="h-[400px] border">
+    <div className="h-[400px] border border-foreground/10">
       <HeaderContentFooter scroll className="h-full" {...args} />
     </div>
   ),
@@ -92,7 +94,7 @@ export const Sticky: StoryObj<typeof HeaderContentFooter> = {
  */
 export const WideContentKeepsItsFloor: StoryObj<typeof HeaderContentFooter> = {
   render: (args) => (
-    <div className="h-[400px] w-[600px] border">
+    <div className="h-[400px] w-[600px] border border-foreground/10">
       <HeaderContentFooter scroll className="h-full" {...args} />
     </div>
   ),
@@ -166,7 +168,10 @@ const SCROLLBAR = 20;
  */
 export const ScrollerRunsTheFullWidth: StoryObj<typeof HeaderContentFooter> = {
   render: (args) => (
-    <div className="h-[400px] border" style={{ width: AREA, boxSizing: "content-box" }}>
+    <div
+      className="h-[400px] border border-foreground/10"
+      style={{ width: AREA, boxSizing: "content-box" }}
+    >
       <HeaderContentFooter scroll className="h-full" {...args} />
     </div>
   ),
@@ -202,12 +207,12 @@ function Growing() {
     <div className="flex flex-col gap-2">
       <button
         type="button"
-        className="self-start rounded-md border px-3 py-1 text-sm"
+        className="self-start rounded-md border border-foreground/10 px-3 py-1 text-sm"
         onClick={() => setCount(40)}
       >
         Add rows
       </button>
-      <div className="h-[300px] border">
+      <div className="h-[300px] border border-foreground/10">
         <HeaderContentFooter
           scroll
           className="h-full"

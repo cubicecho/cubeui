@@ -17,10 +17,10 @@ import {
 } from "../compiled/tabs";
 import { ToggleChip as CompiledToggleChip } from "../compiled/toggle-chip";
 import { StatTile } from "../registry/layout/stat-tile";
-import { Checkbox } from "../registry/ui/checkbox";
+import { Checkbox } from "../registry/ui/checkbox.tsx";
 import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
-import { Switch } from "../registry/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs";
+import { Switch } from "../registry/ui/switch.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { ToggleChip } from "../registry/ui/toggle-chip";
 import { tintsUnderPointer } from "./pointer-tint";
 import { SideBySide } from "./side-by-side";

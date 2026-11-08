@@ -30,20 +30,39 @@ export const Default: Story = {
   },
 };
 
-/** Every variant with a label, for the contrast pass. */
+const VARIANTS = [
+  ["default", "Default"],
+  ["secondary", "Secondary"],
+  ["outline", "Outline"],
+  ["destructive", "Destructive"],
+  ["positive", "Positive"],
+  ["warning", "Warning"],
+  ["info", "Info"],
+  ["destructive-soft", "Destructive soft"],
+  ["positive-soft", "Positive soft"],
+  ["warning-soft", "Warning soft"],
+  ["info-soft", "Info soft"],
+  // Kept for shadcn code, and drawn here so the contrast pass covers them too.
+  ["ghost", "Ghost"],
+  ["link", "Link"],
+] as const;
+
+/** Every variant with a label, for the contrast pass: the filled, the soft and shadcn's own. */
 export const Variants: Story = {
   render: () => (
     <>
-      <Badge>Default</Badge>
-      <Badge variant="secondary">Secondary</Badge>
-      <Badge variant="destructive">Destructive</Badge>
-      <Badge variant="outline">Outline</Badge>
-      <Badge variant="positive">Positive</Badge>
-      <Badge variant="warning">Warning</Badge>
+      {VARIANTS.map(([variant, label]) => (
+        <Badge key={variant} variant={variant}>
+          {label}
+        </Badge>
+      ))}
     </>
   ),
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText("Warning")).toBeInTheDocument();
+    const canvas = within(canvasElement);
+    for (const [, label] of VARIANTS) {
+      await expect(canvas.getByText(label)).toBeInTheDocument();
+    }
   },
 };
 

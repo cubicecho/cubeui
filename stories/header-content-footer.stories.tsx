@@ -37,7 +37,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
 
   return (
     <div data-testid={`${half}-frame`} className="flex flex-col gap-2">
-      <div style={{ height: 200 }} className="border">
+      <div style={{ height: 200 }} className="border border-foreground/10">
         <Chassis
           scroll
           className="h-full"
@@ -70,7 +70,7 @@ function Following({ half }: { half: "native" | "compiled" }) {
       </output>
       <button
         type="button"
-        className="self-start rounded-md border px-3 py-1 text-sm"
+        className="self-start rounded-md border border-foreground/10 px-3 py-1 text-sm"
         onClick={() => scrollRef.current?.scrollToEnd({ animated: false })}
       >
         Jump to latest on {half}
@@ -125,7 +125,7 @@ export const OnScroll: Story = {
 function Filling({ half }: { half: "native" | "compiled" }) {
   const Chassis = half === "native" ? Native : Compiled;
   return (
-    <div style={{ height: 200 }} className="border">
+    <div style={{ height: 200 }} className="border border-foreground/10">
       <Chassis
         className="h-full"
         contentClassName="gap-4"
@@ -176,7 +176,7 @@ export const SlotIsAFlexColumn: Story = {
 function Scrolling({ half }: { half: "native" | "compiled" }) {
   const Chassis = half === "native" ? Native : Compiled;
   return (
-    <div style={{ height: 200 }} className="border">
+    <div style={{ height: 200 }} className="border border-foreground/10">
       <Chassis
         scroll
         className="h-full"

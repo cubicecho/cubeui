@@ -3,10 +3,12 @@ import { Text } from "react-native";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import { CardLayout as Compiled } from "../compiled/card-layout";
+import { EmptyState as CompiledEmptyState } from "../compiled/empty-state";
 import { List as CompiledList } from "../compiled/list";
 import { ListItem as CompiledListItem } from "../compiled/list-item";
 import { Section as CompiledSection } from "../compiled/section";
 import { CardLayout as Native } from "../registry/layout/card-layout";
+import { EmptyState as NativeEmptyState } from "../registry/layout/empty-state";
 import { List as NativeList } from "../registry/layout/list";
 import { ListItem as NativeListItem } from "../registry/layout/list-item";
 import { Section as NativeSection } from "../registry/layout/section";
@@ -493,7 +495,7 @@ export const EmptyList: Story = {
               contentSlot={NO_ROWS.map((name) => <Text key={name}>{name}</Text>)}
             />
           }
-          emptySlot={<Text className="text-sm text-foreground/60">No members yet.</Text>}
+          emptySlot={<NativeEmptyState compact title="No members yet." />}
         />
       }
       compiled={
@@ -505,7 +507,7 @@ export const EmptyList: Story = {
               contentSlot={NO_ROWS.map((name) => <span key={name}>{name}</span>)}
             />
           }
-          emptySlot={<p className="text-sm text-foreground/60">No members yet.</p>}
+          emptySlot={<CompiledEmptyState compact title="No members yet." />}
         />
       }
     />
@@ -531,7 +533,7 @@ export const Loading: Story = {
           title="Members"
           loading
           contentSlot={NO_ROWS.map((name) => <Text key={name}>{name}</Text>)}
-          emptySlot={<Text className="text-sm text-foreground/60">No members yet.</Text>}
+          emptySlot={<NativeEmptyState compact title="No members yet." />}
         />
       }
       compiled={
@@ -539,7 +541,7 @@ export const Loading: Story = {
           title="Members"
           loading
           contentSlot={NO_ROWS.map((name) => <span key={name}>{name}</span>)}
-          emptySlot={<p className="text-sm text-foreground/60">No members yet.</p>}
+          emptySlot={<CompiledEmptyState compact title="No members yet." />}
         />
       }
     />

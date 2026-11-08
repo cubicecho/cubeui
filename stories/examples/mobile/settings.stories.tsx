@@ -13,16 +13,17 @@ import { createAppForm, Form } from "../../../registry/ui/form";
 import { Pencil } from "../../../registry/ui/icons";
 import { RadioGroup, RadioGroupItem } from "../../../registry/ui/radio-group";
 import { Switch } from "../../../registry/ui/switch.tsx";
-import { SwitchField } from "../../../registry/ui/switch-field.tsx";
 import { ThemePicker } from "../../../registry/ui/theme-picker";
 import type { ThemePreference } from "../../../registry/ui/theme-preference-base";
 import { ToastProvider, useToast } from "../../../registry/ui/toast";
 import { MobileShell, PHONE } from "./shell";
 
 /**
- * A phone's settings screen: the account's facts with a rename through a dialog form, sections of
- * switches and setting rows on cards, the theme as a compact segmented control, a text size as
- * radios, and the account's destructive actions behind confirms.
+ * A phone's settings screen: the account's facts with a rename through a dialog form, setting rows
+ * on cards, each with its switch at the far end, the theme as a compact segmented control, a text
+ * size as radios, and the account's destructive actions behind confirms. One card had a
+ * `SwitchField` beside its `SettingRow`s, which put its switch at the start and theirs at the end
+ * (#489).
  */
 const meta = {
   title: "Examples/Mobile/Settings",
@@ -149,20 +150,30 @@ function Settings() {
             level={2}
             contentSlot={
               <>
-                <SwitchField
-                  id="mobile-reminders"
-                  label="Reminders"
+                <SettingRow
+                  title="Reminders"
                   description="On the morning a task is due."
-                  checked={reminders}
-                  onCheckedChange={setReminders}
+                  actionSlot={({ titleId }) => (
+                    <Switch
+                      checked={reminders}
+                      onCheckedChange={setReminders}
+                      aria-labelledby={titleId}
+                      accessibilityLabel="Reminders"
+                    />
+                  )}
                 />
-                <SwitchField
-                  id="mobile-sounds"
-                  label="Sounds"
+                <SettingRow
+                  title="Sounds"
                   description="Turned off by the system's Focus mode."
-                  checked={sounds}
-                  onCheckedChange={setSounds}
-                  disabled
+                  actionSlot={({ titleId }) => (
+                    <Switch
+                      checked={sounds}
+                      onCheckedChange={setSounds}
+                      disabled
+                      aria-labelledby={titleId}
+                      accessibilityLabel="Sounds"
+                    />
+                  )}
                 />
                 <SettingRow
                   title="Count on the app icon"
@@ -250,10 +261,15 @@ function Settings() {
   );
 }
 
-/** The whole screen. Changes the name through its dialog. */
+/** The whole screen. Changes the name through its dialog. Every switch is at its row's far end. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const ends = canvas
+      .getAllByRole("switch")
+      .map((s) => Math.round(s.getBoundingClientRect().right));
+    await expect(ends).toHaveLength(3);
+    await expect(new Set(ends).size).toBe(1);
     const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(canvas.getByRole("button", { name: "Change your name" }));
     const field = await body.findByLabelText("Name");

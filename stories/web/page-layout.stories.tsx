@@ -31,7 +31,7 @@ const Actions = () => (
 
 const Rows = ({ count = 40 }: { count?: number }) => (
   // A bare `<ul>`: preflight takes the browser's indent and bullets off, as it does in an app.
-  <ul className="divide-y">
+  <ul className="divide-y divide-foreground/10">
     {Array.from({ length: count }, (_, i) => i + 1).map((n) => (
       <li key={n} className="py-3 text-sm">
         Workspace {n}
@@ -206,7 +206,7 @@ export const BodyThatDoesNotScroll: Story = {
 };
 
 const Block = ({ name }: { name: string }) => (
-  <div data-testid="block" className="h-16 rounded-md border">
+  <div data-testid="block" className="h-16 rounded-md border border-foreground/10">
     {name}
   </div>
 );

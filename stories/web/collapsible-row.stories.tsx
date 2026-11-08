@@ -24,7 +24,7 @@ const Controlled = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="w-[560px]">
+    <div className="w-[560px] max-w-full">
       <CollapsibleRow
         {...props}
         open={open}
