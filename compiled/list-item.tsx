@@ -9,7 +9,9 @@
  */
 
 import { cloneElement, type ReactElement, type ReactNode } from "react";
+import { ITEM_TITLE_TEXT } from "@/components/ui/item-base";
 import { cn, type SlotNode } from "@/lib/utils";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "./item";
 
 type ListItemProps = {
   /**
@@ -59,8 +61,10 @@ type ListItemProps = {
    */
   linkSlot?: ReactElement | undefined;
   /**
-   * The chosen row: the one open beside the list. Tinted in `active`, a step further under the
-   * pointer, and a pressable row says so with `aria-current`.
+   * The chosen row: the one open beside the list, the current one. Tinted in `active`, a step
+   * further under the pointer, and a pressable row says so with `aria-current`. A row with nothing
+   * to press has no element to carry that, so the tint is all it shows: say it in the row's words
+   * as well — a "Current" badge in `meta` — for a reader who cannot see the colour.
    */
   selected?: boolean | undefined;
   /** On the row, the box around its leading slot, words, meta and action. */
@@ -73,11 +77,9 @@ type ListItemProps = {
  * A string on its own is a crash on device, so a string gets a `Text` around it. An element does
  * not: a `View` inside a `Text` lays out inline on device and loses most of its own styling.
  */
-function asText(node: ReactNode, className: string, testID?: string) {
+function asText(node: ReactNode, className: string) {
   return typeof node === "string" || typeof node === "number" ? (
-    <span data-slot={testID} className={cn("cube-rn-text", className)}>
-      {node}
-    </span>
+    <span className={cn("cube-rn-text", className)}>{node}</span>
   ) : (
     node
   );
@@ -139,17 +141,15 @@ export function rowLink(
   );
 }
 
-/** A row's box: its padding, its corners and the line its parts sit on. */
-export const LIST_ITEM_CLASS = "min-w-0 flex-row items-center gap-3 rounded-md px-3 py-2";
-
 type ListItemTextProps = Pick<
   ListItemProps,
   "title" | "description" | "meta" | "selected" | "titleClassName"
 >;
 
 /**
- * A row's words as `ListItem` draws them: the title over its description, then `meta`. For a
- * row that is a `ListItem` with a press of its own, as `CollapsibleRow` is.
+ * A row's words as `ListItem` draws them: `Item`'s title over its description, then `meta`. For a
+ * row that is a `ListItem` with a press of its own, as `CollapsibleRow` is; it goes inside an
+ * `Item size="sm"`, which is what sizes the parts.
  */
 export function ListItemText({
   title,
@@ -161,28 +161,46 @@ export function ListItemText({
   // The muted grey is measured against the page. On the selected row's tint it falls short of
   // 4.5:1 at this size, so there the small lines are drawn in the full colour.
   const muted = selected ? "text-foreground" : "text-foreground/60";
+  const words = typeof title === "string" || typeof title === "number";
   return (
     <>
-      <div className="cube-rn-view min-w-0 flex-1 gap-0.5">
-        {asText(
-          title,
-          cn(
-            "font-semibold text-foreground text-sm",
-            // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
-            // what `line-clamp-1` becomes and what `truncate` does not.
-            "truncate",
-            titleClassName,
-          ),
-          "list-item-title",
+      <ItemContent>
+        {words ? (
+          <ItemTitle>
+            {/* The row's own `Text`, not the line's, so it truncates and takes `titleClassName`:
+                on a device a class on the line would not reach the words. */}
+            <span
+              data-slot="list-item-title"
+              className={cn(
+                "cube-rn-text",
+                "min-w-0 shrink text-foreground",
+                ITEM_TITLE_TEXT,
+                // `truncate` is the ellipsis on the web; on device it is `numberOfLines`, which is
+                // what `line-clamp-1` becomes and what `truncate` does not.
+                "truncate",
+                titleClassName,
+              )}
+            >
+              {title}
+            </span>
+          </ItemTitle>
+        ) : (
+          title
         )}
-        {description
-          ? asText(description, cn("line-clamp-2 text-xs", muted), "list-item-description")
-          : null}
-      </div>
+        {description ? (
+          typeof description === "string" || typeof description === "number" ? (
+            <ItemDescription data-slot="list-item-description">{description}</ItemDescription>
+          ) : (
+            description
+          )
+        ) : null}
+      </ItemContent>
       {meta ? (
+        // Centred on the words beside it, even in a press that lines its children up by their
+        // tops, as `CollapsibleRow`'s does.
         <div
           data-slot="list-item-meta"
-          className="cube-rn-view shrink-0 flex-row items-center gap-1"
+          className="cube-rn-view shrink-0 flex-row items-center gap-1 self-center"
         >
           {asText(meta, cn("text-xs tabular-nums", muted))}
         </div>
@@ -194,7 +212,7 @@ export function ListItemText({
 /**
  * One row of a list: something at the start, a title with a line under it, small facts and
  * buttons at the far end. It draws no surface; the list, card or section around it owns the
- * border.
+ * border. It is `Item`'s parts at `size="sm"`, so a row composed from them lines up with it.
  *
  * The pressed area is the middle and only the middle, so the row is three siblings
  * (`leadingSlot`, the middle, `actionSlot`) and no button wraps another. `href` or `linkSlot`
@@ -266,11 +284,13 @@ export function ListItem({
   };
 
   return (
-    <div
+    <Item
       data-slot="list-item"
+      size="sm"
+      selected={selected}
+      // The row never wraps, as `Item` lets a header or footer do: its middle truncates instead.
       className={cn(
-        "cube-rn-view",
-        LIST_ITEM_CLASS,
+        "min-w-0 flex-nowrap",
         rowFillClass(
           selected,
           onPress !== undefined || href !== undefined || linkSlot !== undefined,
@@ -278,22 +298,11 @@ export function ListItem({
         className,
       )}
     >
-      {leadingSlot ? (
-        <div data-slot="list-item-leading" className="cube-rn-view shrink-0 flex-row items-center">
-          {leadingSlot}
-        </div>
-      ) : null}
+      {leadingSlot ? <ItemMedia data-slot="list-item-leading">{leadingSlot}</ItemMedia> : null}
 
       {pressableBody()}
 
-      {actionSlot ? (
-        <div
-          data-slot="list-item-action"
-          className="cube-rn-view shrink-0 flex-row items-center gap-1"
-        >
-          {actionSlot}
-        </div>
-      ) : null}
-    </div>
+      {actionSlot ? <ItemActions data-slot="list-item-action">{actionSlot}</ItemActions> : null}
+    </Item>
   );
 }

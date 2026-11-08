@@ -138,7 +138,7 @@ field — because data that has not arrived is not data that came back empty or 
 | `value`, `onValueChange` | Every control that holds a value, so a control is swappable for another. |
 | `clearable` | The control can be put back to holding nothing. A button that empties it on `Combobox multiple`, `DateTimeInput`, `ColorPicker` and `SearchInput`; on `SelectField` and a single `ComboboxField` a first row for "nothing", which writes `null`. |
 | `emptyLabel` | What a `clearable` select's row for "nothing" says, and so what its trigger reads while nothing is chosen. Not `placeholder`, which is a prompt and not a choice. |
-| `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. |
+| `selected` | Beside a press handler, the target is a toggle and this is whether it is on — `aria-pressed` on the web, `accessibilityState.selected` on device. On `ToggleChip` and `StatTile`. Left out, a plain button. On a row it is the current one, below. |
 | `view`, `onViewChange` | Which of a control's named views is showing, and being told when its own toggle moves it. On `MarkdownEditor` — `edit`, `split`, `preview`. `open`/`onOpenChange` with more than two answers: a display state the caller may hold, in a URL or a preference, or leave to the control. |
 | `defaultView` | The view a control starts in when it holds its own, as `defaultOpen` is for a thing that opens. |
 | `labelHideBelow` | Under this width, or `always`, a control with an `iconSlot` draws the icon alone and its label is only its name. On `SegmentedGroup`, said once for the row. |
@@ -148,6 +148,7 @@ field — because data that has not arrived is not data that came back empty or 
 | Word | Means |
 | --- | --- |
 | `badgesSlot` | What a row is wearing: a status, a kind, a state. Before the title. |
+| `selected` | The current row: the record open beside the list. The `active` tint, and `aria-current` on the row's link or button. On `ListItem` and `Item`; on `FileTree` the open file's path. |
 | `status` | The state a thing is in, said in place. On `SidebarSection` a node between the title and the rows — the `LoadState compact` rungs. On `SidebarItem` a `{ label, iconSlot? }` before the count, whose `label` is part of the row's name and whose `iconSlot` is decoration drawn instead of it. On `AppBarItem` the same object, drawn as a dot on the icon. On `AppBar`, and so `SidebarLayout`'s bar, a node: one line of the app's own state, between `navSlot` and `actionSlot`, and the first part of the bar to give way. |
 | `leadingSlot` | The start of a row, before the title: an avatar, a checkbox, an icon. On `ListItem`, where `iconSlot` would promise sizing and colouring that an avatar or a checkbox cannot take, and where `badgesSlot` would read as status. Outside the row's pressed area, so a checkbox there is its own control. |
 | `meta` | The grey line of facts beside the title: a name, a time, a count. On `ListItem` it is the row's far end, before `actionSlot` — still facts about the title, placed where a list scans them. |
@@ -176,6 +177,13 @@ Notes on why the layering is where it is:
   the fields under it. It hands over a `className`, as `SettingRow`'s `actionSlot` hands over ids,
   because the shell knows the layout the wrapper has to keep — the dialog's scrolling body — and
   the caller cannot.
+- **`selected` means two things, and the target says which.** On a control that toggles —
+  `ToggleChip`, a filtering `StatTile` — it is whether the thing is on, `aria-pressed`. On a row —
+  `ListItem`, `Item`, a `FileTree` file — it is which row is current, `aria-current`, because
+  pressing that row opens it and does not turn it off. Both answer "is this the chosen one", and
+  both draw the `active` tint; a second word would split one look in two. A row with nothing to
+  press has no element to carry `aria-current`, so the tint is all it shows, and the caller says
+  it in the row's words.
 - **`label` means two different things,** and that is deliberate. On a field it is visible text
   pointed at a control; on an icon button it is the accessible name of a control with no visible
   text. Both answer "what is this control called", which is the test the vocabulary applies.

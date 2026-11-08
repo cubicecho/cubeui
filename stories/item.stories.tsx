@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import {
@@ -13,6 +13,8 @@ import {
   ItemSeparator as CompiledItemSeparator,
   ItemTitle as CompiledItemTitle,
 } from "../compiled/item";
+import { ListItem as CompiledListItem } from "../compiled/list-item";
+import { ListItem as NativeListItem } from "../registry/layout/list-item";
 import { Button as NativeButton } from "../registry/ui/button";
 import {
   Item,
@@ -191,8 +193,9 @@ export const AsChild: Story = {
   play: async ({ canvasElement }) => {
     const native = within(rootOf(canvasElement, ".native-root"));
     const target = native.getByRole("button", { name: "Open the run" });
-    // The row's classes reached the child: it is the padded, tinted surface.
-    await expect(getComputedStyle(target).paddingLeft).toBe("16px");
+    // The row's classes reached the child: it is the padded, tinted surface, at `sm` with
+    // `ListItem`'s 12px.
+    await expect(getComputedStyle(target).paddingLeft).toBe("12px");
     await userEvent.click(target);
     await expect(openNative).toHaveBeenCalledTimes(1);
 
@@ -200,7 +203,7 @@ export const AsChild: Story = {
       name: "Open the run",
     });
     await expect(link).toHaveAttribute("data-slot", "item");
-    await expect(getComputedStyle(link).paddingLeft).toBe("16px");
+    await expect(getComputedStyle(link).paddingLeft).toBe("12px");
 
     // `selected` is the `active` tint on both halves, and not the hover grey.
     await expect(link).toHaveAttribute("data-selected");
@@ -270,6 +273,118 @@ export const GroupAndFooter: Story = {
       const rule = slot(root, "item-separator");
       await expect(rule.getBoundingClientRect().height).toBe(1);
       await expect(within(root).queryByRole("separator")).toBeNull();
+    }
+  },
+};
+
+const nativeInitial = (
+  <View className="size-8 items-center justify-center rounded-full bg-foreground/10">
+    <Text className="font-semibold text-foreground text-xs">AL</Text>
+  </View>
+);
+const compiledInitial = (
+  <div className="flex size-8 items-center justify-center rounded-full bg-foreground/10">
+    <span className="font-semibold text-foreground text-xs">AL</span>
+  </div>
+);
+
+/** Where each of a row's parts sits, measured from the row's own corner. */
+function layoutOf(row: HTMLElement) {
+  const box = row.getBoundingClientRect();
+  const at = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return { left: r.left - box.left, top: r.top - box.top, right: box.right - r.right };
+  };
+  const title = within(row).getByText("Ada Lovelace");
+  const description = within(row).getByText("Last contact: 3 days ago");
+  const initial = within(row).getByText("AL").parentElement as Element;
+  const button = within(row).getByRole("button", { name: "Archive" });
+  return {
+    height: box.height,
+    initial: at(initial),
+    title: at(title),
+    description: at(description),
+    button: at(button),
+    titleSize: getComputedStyle(title).fontSize,
+    titleLine: getComputedStyle(title).lineHeight,
+    descriptionSize: getComputedStyle(description).fontSize,
+    descriptionLine: getComputedStyle(description).lineHeight,
+  };
+}
+
+/**
+ * `size="sm"` is `ListItem`'s row (#475): `ListItem` is these parts at that size, so a row
+ * composed from them by hand lines up with a `ListItem` beside it, part for part, on both halves.
+ * `default` stays shadcn's.
+ */
+export const SmallIsListItem: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <div className="native-root flex flex-col gap-2" style={{ width: 360 }}>
+          <div className="list-item-row">
+            <NativeListItem
+              leadingSlot={nativeInitial}
+              title="Ada Lovelace"
+              description="Last contact: 3 days ago"
+              actionSlot={<NativeButton size="sm" variant="outline" content="Archive" />}
+            />
+          </div>
+          <div className="item-row">
+            <Item size="sm">
+              <ItemMedia>{nativeInitial}</ItemMedia>
+              <ItemContent>
+                <ItemTitle>Ada Lovelace</ItemTitle>
+                <ItemDescription>Last contact: 3 days ago</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <NativeButton size="sm" variant="outline" content="Archive" />
+              </ItemActions>
+            </Item>
+          </div>
+        </div>
+      }
+      compiled={
+        <div className="compiled-root flex flex-col gap-2" style={{ width: 360 }}>
+          <div className="list-item-row">
+            <CompiledListItem
+              leadingSlot={compiledInitial}
+              title="Ada Lovelace"
+              description="Last contact: 3 days ago"
+              actionSlot={<CompiledButton size="sm" variant="outline" content="Archive" />}
+            />
+          </div>
+          <div className="item-row">
+            <CompiledItem size="sm">
+              <CompiledItemMedia>{compiledInitial}</CompiledItemMedia>
+              <CompiledItemContent>
+                <CompiledItemTitle>Ada Lovelace</CompiledItemTitle>
+                <CompiledItemDescription>Last contact: 3 days ago</CompiledItemDescription>
+              </CompiledItemContent>
+              <CompiledItemActions>
+                <CompiledButton size="sm" variant="outline" content="Archive" />
+              </CompiledItemActions>
+            </CompiledItem>
+          </div>
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const selector of [".native-root", ".compiled-root"]) {
+      const root = rootOf(canvasElement, selector);
+      const listItem = layoutOf(rootOf(root, ".list-item-row").firstElementChild as HTMLElement);
+      const item = layoutOf(rootOf(root, ".item-row").firstElementChild as HTMLElement);
+      await expect(item.titleSize).toBe(listItem.titleSize);
+      await expect(item.titleLine).toBe(listItem.titleLine);
+      await expect(item.descriptionSize).toBe(listItem.descriptionSize);
+      await expect(item.descriptionLine).toBe(listItem.descriptionLine);
+      await expect(Math.abs(item.height - listItem.height)).toBeLessThan(0.5);
+      for (const part of ["initial", "title", "description", "button"] as const) {
+        await expect(Math.abs(item[part].left - listItem[part].left)).toBeLessThan(0.5);
+        await expect(Math.abs(item[part].top - listItem[part].top)).toBeLessThan(0.5);
+      }
+      await expect(Math.abs(item.button.right - listItem.button.right)).toBeLessThan(0.5);
     }
   },
 };

@@ -592,10 +592,15 @@ Recorded so the next pass does not re-derive them:
   `Item` had no answer for a React Native app either, and five Expo apps drew the row by hand,
   so `ListItem` (`registry/layout/list-item.tsx`) is that row on both halves — `leadingSlot`,
   `title`, `description`, `meta`, `actionSlot`, and an optional pressable middle. `Item` itself now
-  has a native half (`registry/ui/item.tsx`, its parts drawn as `ListItem`'s regions, classes
-  shared through `item-base.ts`). `CollapsibleRow` is a `ListItem` that opens, built on
-  `ListItem`'s box and words and `Collapsible`'s button, so the row that opens is on both halves
-  too and looks like the rows beside it.
+  has a native half (`registry/ui/item.tsx`, classes shared through `item-base.ts`), and the two
+  are one drawing of a row: `ListItem` is `Item`'s parts at `size="sm"` — `Item` the box,
+  `ItemMedia` the `leadingSlot`, `ItemContent`, `ItemTitle` and `ItemDescription` the words,
+  `ItemActions` the `actionSlot` — and adds only what `Item` has no part for, the pressable middle
+  and `meta`. `sm` is `ListItem`'s metrics and `default` stays shadcn's, so a DOM app's rows draw
+  as they did and a row composed from the parts at `sm` lines up with the `ListItem`s beside it.
+  `CollapsibleRow` is a `ListItem` that opens, built on the same `Item` at `sm`, `ListItem`'s words
+  and `Collapsible`'s button, so the row that opens is on both halves too and looks like the rows
+  beside it.
   The list around the rows came last (#325): llm-router wrapped its four lists in a `RowList` of
   its own, and three more apps wrote the `<ul>`, the `divide-y` and the row padding by hand, so
   `List` (`registry/layout/list.tsx`) is that `<ul>` on both halves. It wraps each element of

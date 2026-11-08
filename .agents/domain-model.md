@@ -247,13 +247,14 @@ The sidebar holds no state: the caller stores `collapsed` and passes it back.
 - **`List`:** the container a page's rows sit in, with the rules between them and nesting.
   Owner: `registry/layout/list.tsx`, with `ListRow` and `hasRows`.
 - **`ListItem`:** one row: leading picture or checkbox, title, description, extra info,
-  actions; pressable or a link. Owner: `registry/layout/list-item.tsx`, with the parts the other
-  rows share: `ListItemText`, `rowFillClass` (the chosen tint and the hovered fill) and `rowLink`.
-- **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. Owner:
-  `registry/ui/item.tsx`.
+  actions; pressable or a link. Owner: `registry/layout/list-item.tsx`; composes `Item`'s parts at
+  `size="sm"`, and holds the parts the other rows share: `ListItemText`, `rowFillClass` (the
+  chosen tint and the hovered fill) and `rowLink`.
+- **`Item`:** shadcn's row parts, for a row `ListItem` does not fit. `default` is shadcn's size and
+  `sm` is `ListItem`'s row. Owner: `registry/ui/item.tsx`; `ItemSeparator` composes `Separator`.
 - **`CollapsibleRow`:** a `ListItem` that opens onto more below it, with no surface
-  of its own. Owner: `registry/layout/collapsible-row.tsx`; composes `ListItem`'s `LIST_ITEM_CLASS`
-  and `ListItemText`, and `CollapsibleTrigger`. `DisclosureRow` and the `disclosure-row` item are
+  of its own. Owner: `registry/layout/collapsible-row.tsx`; composes `Item` at `size="sm"`,
+  `ListItemText` and `CollapsibleTrigger`. `DisclosureRow` and the `disclosure-row` item are
   its old names, deprecated for one release.
 - **`FileTree`:** a foldable tree of folders and files built from a list of paths,
   with dragging a row onto a folder on the web. Owner: `registry/layout/file-tree.tsx`.

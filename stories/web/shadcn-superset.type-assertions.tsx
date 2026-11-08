@@ -7,7 +7,7 @@
  * compiling is an app that stops compiling. The `@ts-expect-error` lines are the other direction:
  * they fail if a type is widened to `any` and the positive lines pass for the wrong reason.
  *
- * Covered: alert (every part), empty (every part), input, textarea, checkbox, switch, select (every part), field (every part) and
+ * Covered: alert (every part), empty (every part), input, textarea, checkbox, switch, select (every part), field (every part), item (every part) and
  * `Combobox`'s `<button>` trigger props.
  */
 
@@ -37,6 +37,18 @@ import {
 } from "@/components/ui/field";
 import { CircleAlert } from "@/components/ui/icons";
 import { Input, type InputHandle } from "@/components/ui/input";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from "@/components/ui/item";
 import {
   Select,
   SelectContent,
@@ -166,6 +178,43 @@ export function EmptyAssertions() {
       {/* @ts-expect-error — shadcn's EmptyMedia has `default` and `icon`, and so does this one. */}
       <EmptyMedia variant="avatar" />
     </>
+  );
+}
+
+export function ItemAssertions() {
+  return (
+    <ItemGroup className="gap-4">
+      <Item variant="outline" size="sm" asChild>
+        <a href="#run">
+          <ItemMedia variant="icon">
+            <CircleAlert />
+          </ItemMedia>
+          <ItemContent>
+            <ItemTitle>Run failed</ItemTitle>
+            <ItemDescription>
+              Two checks did not pass. <a href="#log">Read the log</a>.
+            </ItemDescription>
+          </ItemContent>
+          <ItemActions>
+            <button type="button">Retry</button>
+          </ItemActions>
+        </a>
+      </Item>
+      <ItemSeparator />
+      <ItemSeparator orientation="vertical" decorative={false} className="my-2" />
+      <Item variant="muted" role="listitem" onClick={() => undefined}>
+        <ItemHeader>Header</ItemHeader>
+        <ItemMedia variant="image">
+          <img src="/a.png" alt="" />
+        </ItemMedia>
+        <ItemContent className="flex-none">
+          <ItemTitle id="title">Title</ItemTitle>
+        </ItemContent>
+        <ItemFooter>Footer</ItemFooter>
+      </Item>
+      {/* @ts-expect-error — shadcn's Item has `default` and `sm`, and so does this one. */}
+      <Item size="lg" />
+    </ItemGroup>
   );
 }
 

@@ -19,14 +19,15 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   practice, a delete that cannot be clicked.
 - `description` shows whether the row is open or shut; `contentSlot` is what it opens onto.
 - Open is controlled — a row is often opened from elsewhere on the page, or by a deep link.
-- It is a `ListItem` that opens: the same box, title, description and hover as the `ListItem`
-  rows beside it, so the two line up down to the padding, and like `ListItem` it draws **no
-  surface**. Put the rows in a `List` or a `CardLayout`; a row standing on its own that wants a
-  frame takes `className="border border-foreground/10"`. A row that does **not** open onto a body
+- It is a `ListItem` that opens: the same `Item` parts at `size="sm"`, title, description, `meta`
+  at the far end and hover as the `ListItem` rows beside it, so the two line up down to the
+  padding, and like `ListItem` it draws **no surface**. Put the rows in a `List` or a
+  `CardLayout`; a row standing on its own that wants a frame takes
+  `className="border border-foreground/10"`. A row that does **not** open onto a body
   is `ListItem`, below.
 - One source for both halves: `@cubeui/collapsible-row`. On a device the heading is a
   `role="button"` `Pressable` with `aria-expanded`, the title is one line (`numberOfLines`), and a
-  string `meta` is wrapped in a `Text` for you; pass the badges, the action
+  string `meta` is drawn muted and extra small in a `Text` for you; pass the badges, the action
   and the body as native elements, `onPress` where the web takes `onClick`.
 
 
@@ -39,7 +40,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `onOpenChange` (required) | `((open: boolean) => void)` |  | Told the state the reader asked for when the heading is pressed; set `open` from it. |
 | `title` (required) | `ReactNode` |  | The row's name, and the button that opens it. A string is drawn in the row's title style. |
 | `badgesSlot` | `SlotNode` |  | Whatever the row is wearing: a status, a kind, a state. Drawn before the title. |
-| `meta` | `ReactNode` |  | The grey line of facts beside the title — a name, a time, a count. |
+| `meta` | `ReactNode` |  | The small grey facts at the heading's far end, as on `ListItem`: a name, a time, a count. A string is drawn muted and extra small; an element is placed as it is. Inside the button. |
 | `description` | `ReactNode` |  | Two clipped lines of what the thing said, drawn under the title whether open or not. |
 | `actionSlot` | `SlotNode` |  | Buttons, outside the collapsible: a row is opened by its heading and acted on by these. |
 | `contentSlot` | `SlotNode` |  | What the row opens onto. |
@@ -145,7 +146,7 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 | `onPress` | `(() => void)` |  | Makes the row something you press — open the person, edit the todo. The title, description and `meta` become one button between `leadingSlot` and `actionSlot`, so neither of those is nested in it. |
 | `href` | `string` |  | Where the row goes, for a URL no router owns. The middle is a link — an `<a href>` on the web, so it opens in a new tab and shows its URL on hover — and `onPress` still runs beside it. On device there is no URL to open, so `onPress` is what navigates. |
 | `linkSlot` | `ReactElement` |  | The router's link the row is, as an element with no children — `<Link href="/people/1" />` — which the middle is drawn inside, as `Button`'s and `FileTree`'s is. On the web that element *is* the middle, so it stays the router's own `<a>`; on device it is expo-router's `Link`, which takes the middle `asChild`. Given this, `href` and `onPress` are the link's to say. |
-| `selected` | `boolean` | `false` | The chosen row: the one open beside the list. Tinted in `active`, a step further under the pointer, and a pressable row says so with `aria-current`. |
+| `selected` | `boolean` | `false` | The chosen row: the one open beside the list, the current one. Tinted in `active`, a step further under the pointer, and a pressable row says so with `aria-current`. A row with nothing to press has no element to carry that, so the tint is all it shows: say it in the row's words as well — a "Current" badge in `meta` — for a reader who cannot see the colour. |
 | `className` | `string` |  | On the row, the box around its leading slot, words, meta and action. |
 | `titleClassName` | `string` |  | On the title's own `Text`, as `CardLayout`'s is: a `line-through`, a weight. |
 <!-- /props -->
@@ -172,10 +173,12 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
   `href="https://…"` alone is a plain `<a href>` for a URL no router owns; on device it only runs
   `onPress`. A `selected` link carries `aria-current="page"`. Keep `onPress` on its own for a row
   that opens something on the page it is on: a dialog, a pane.
-- `selected` is the chosen row — the one open beside the list. It is tinted in `active`, a step
-  further under the pointer, and a pressable row carries `aria-current`. `Item` takes `selected` too;
-  there, put `aria-current` on the link yourself. **Do not hand-write it** with `bg-hover` or a
-  grey fill: that is a hover that stuck.
+- `selected` is the current row — the one open beside the list. It is tinted in `active`, a step
+  further under the pointer, and a pressable row carries `aria-current` (not `aria-pressed`: a row
+  is current, not on). A row with nothing to press has nothing to carry it, so the tint is all it
+  shows: say it in the row's words too, such as a "Current" badge in `meta`. `Item` takes
+  `selected` too; there, put `aria-current` on the link yourself. **Do not hand-write it** with
+  `bg-hover` or a grey fill: that is a hover that stuck.
 - No surface and no list role: the row is `rounded-md px-3 py-2` and nothing else. Put rows in a
   `List` (above), which is the `<ul>`, the rule and the row padding; for a bordered card per row pass
   `divided={false}` to the list and give each row
@@ -183,7 +186,9 @@ far end — optionally pressable. One source for both platforms: `@cubeui/list-i
 - `ListItem` is the row with its decisions made; prefer it in new code. For one it does not fit — a header or footer
   line, a whole row that is one link, actions and all — compose shadcn's `Item` parts
   (`@cubeui/item`, installed to `components/ui/item`), which are on both halves now with shadcn's
-  names, props and metrics: `ItemMedia` is `leadingSlot`, `ItemContent` the middle, `ItemTitle` and
-  `ItemDescription` the two lines, `ItemActions` the `actionSlot`. On a device a string in a part is
+  names and props. `ListItem` is built from them at `size="sm"`: `Item` is its box, `ItemMedia`
+  its `leadingSlot`, `ItemContent` the middle, `ItemTitle` and `ItemDescription` the two lines,
+  `ItemActions` the `actionSlot`. So a row you compose at `size="sm"` lines up with the `ListItem`s
+  beside it; `size="default"` is shadcn's roomier row. On a device a string in a part is
   wrapped in a `Text` for you, an icon in `ItemMedia` is not sized (pass `size-4`), and `asChild`
   hands the row to a `Pressable` the way it hands it to an `<a>` on the web.
