@@ -55,7 +55,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `code` | both | `components/ui/code.tsx` | `import { Code, CodeBlockTitleContext, CodeBlock } from "@/components/ui/code"` |
 | `collapsible` | both | `components/collapsible.tsx` | `import { CollapsibleTrigger, Collapsible } from "@/components/collapsible"` |
 | `collapsible-row` | both | `components/collapsible-row.tsx` | `import { CollapsibleRow } from "@/components/collapsible-row"` |
-| `color` | both | `lib/color.ts` | `import { hexToHsl, hexToAccent, hexToDesaturated } from "@/lib/color"` |
+| `color` | both | `lib/color.ts` | `import { hexToHsl, hexToAccent } from "@/lib/color"` |
 | `color-bar` | both | `components/ui/color-bar.tsx` | `import { ColorBar } from "@/components/ui/color-bar"` |
 | `color-dot` | both | `components/ui/color-dot.tsx` | `import { ColorDot } from "@/components/ui/color-dot"` |
 | `color-field` | web | `components/color-field.tsx` | `import { ColorField, COLOR_SWATCHES, ColorPicker, isHexColor, normalizeHex } from "@/components/color-field"` |
@@ -135,7 +135,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `query-state` | both | `components/query-state.tsx` | `import { QueryError, QueryState, RowSkeleton } from "@/components/query-state"` |
 | `radio-group` | both | `components/ui/radio-group.tsx` | `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"` |
 | `radio-group-field` | both | `components/ui/radio-group-field.tsx` | `import { RadioGroupField } from "@/components/ui/radio-group-field"` |
-| `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, readableTextColor } from "@/lib/readable-text-color"` |
+| `readable-text-color` | both | `lib/readable-text-color.ts` | `import { INK, hexChannels, readableTextColor } from "@/lib/readable-text-color"` |
 | `reduced-motion` | web | `components/ui/reduced-motion.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
 | `reduced-motion` | native | `components/ui/reduced-motion.tsx`; also `reduced-motion.web.tsx` | `import { useReducedMotion } from "@/components/ui/reduced-motion"` |
 | `route-error` | both | `components/route-error.tsx` | `import { RouteError } from "@/components/route-error"` |

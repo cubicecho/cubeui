@@ -101,6 +101,7 @@ test that finds them by name needs changing:
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
+| `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -115,7 +116,8 @@ test that finds them by name needs changing:
 
 A reinstall can write files the app has never had: `components/section-heading.tsx` (from
 `section` and `sidebar`), `lib/frame-focus-guard.ts` (from `dialog`, `menu`, `popover`, `select`
-and `alert-dialog`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
+and `alert-dialog`), `lib/readable-text-color.ts` (from `color`, and so from `card` and
+`color-bar`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
 and `table`; an Expo app also gets `overflows.web.tsx`), and every new item it pulls in as a dependency, such as `card-layout`,
 `app-bar`, `grid-layout` or `list`. Run `git status` after the reinstall to see them. An app
 that lists cubeui's files one by one, in its Biome or lint config or in a coverage exclude, has

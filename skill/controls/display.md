@@ -97,7 +97,8 @@ Showing a colour the user picked is three small items, all on both halves:
   tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
   assistive tech; with one, the label is its accessible name.
 - **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), normalised so it
-  stays visible in both themes, and `accentLabel` names it. Pass it on `Card` rather than placing
+  stays visible in both themes, and `accentLabel` names it. It takes `#rgb` or `#rrggbb`, with or
+  without the `#`; anything else draws no stripe. Pass it on `Card` rather than placing
   a `ColorBar` yourself — the card owns the `relative overflow-hidden` the stripe needs.
 - **`readableTextColor(color)`** (`@cubeui/readable-text-color`) — black or white ink for text on
   a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop
