@@ -46,8 +46,11 @@ type SectionProps = {
    * the text should look — the text is the same size at every level.
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  /** On the whole section, the heading and its content together. */
   className?: string | undefined;
+  /** On the title's own `Text`: its size, its colour. */
   titleClassName?: string | undefined;
+  /** On the box that holds `contentSlot`, under the heading. */
   contentClassName?: string | undefined;
 };
 

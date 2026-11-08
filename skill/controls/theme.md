@@ -24,12 +24,12 @@ useThemePreference({ storage: AsyncStorage });
 | `variant` | `"card" \| "compact"` |  | `card` (the default): three tiles, icon over caption, for a settings page. `compact`: one row of icon-only segments, the caption as the name and (on the web) the tooltip. |
 | `value` | `ThemePreference` |  | The checked choice, for a controlled picker. Left out, the picker is bound to the hook. |
 | `onValueChange` | `((value: ThemePreference) => void)` |  | Told of every choice — the only way a controlled picker changes; a bound one also stores it. |
-| `disabled` | `boolean` |  |  |
-| `id` | `string` |  |  |
-| `className` | `string` |  |  |
+| `disabled` | `boolean` |  | The choices cannot be changed, and are drawn faded. |
+| `id` | `string` |  | The group's id, for a label or a description elsewhere to point at. |
+| `className` | `string` |  | On the group the choices sit in. |
 | `aria-label` | `string` |  | The group's name. Defaults to "Theme"; pass `aria-labelledby` instead when a heading names it. |
-| `aria-labelledby` | `string` |  |  |
-| `aria-describedby` | `string` |  |  |
+| `aria-labelledby` | `string` |  | The id of a visible heading that names the group, in place of `aria-label`. |
+| `aria-describedby` | `string` |  | The ids of what describes the group, such as a bound field's hint. |
 | `palettes` | `readonly PalettePreference[]` |  | Offer a palette as well, under the theme: these, in this order. Left out, no palette choice. |
 | `palette` | `PalettePreference` |  | The checked palette, for a controlled picker. Left out, the palette is bound to its hook. |
 | `onPaletteChange` | `((value: PalettePreference) => void)` |  | Told of every palette chosen; a bound picker also stores it. |

@@ -1,6 +1,6 @@
 /**
- * The native tooltip: long-press the trigger and the bubble appears above it
- * for a few seconds.
+ * The native tooltip: long-press the trigger and the bubble appears above it,
+ * for a time that grows with its text and starts again when the finger lifts.
  *
  * Hover does not exist on a touch screen, so radix's trigger has no direct
  * equivalent — but dropping the content entirely would lose the only place
@@ -33,6 +33,7 @@ import {
   type TooltipProps,
   type TooltipProviderProps,
   type TooltipTriggerProps,
+  tooltipVisibleMs,
 } from "@/components/ui/tooltip-base";
 import { addHandlers, cn } from "@/lib/utils";
 
@@ -44,12 +45,17 @@ type TooltipState = {
    * tooltip, and a render per button per layout is paid for a bubble that is rarely opened.
    */
   frame: RefObject<LayoutRectangle | null>;
+  /** Counts the releases of an open bubble's trigger, so its clock starts again from each. */
+  released: number;
+  release: () => void;
 };
 
 const TooltipContext = createContext<TooltipState>({
   open: false,
   setOpen: () => {},
   frame: { current: null },
+  released: 0,
+  release: () => {},
 });
 
 /**
@@ -66,49 +72,62 @@ function TooltipProvider({ children }: TooltipProviderProps) {
 /** The root of a tooltip: it holds the open state. */
 function Tooltip({ children }: TooltipProps) {
   const [open, setOpen] = useState(false);
+  const [released, setReleased] = useState(0);
   const frame = useRef<LayoutRectangle | null>(null);
+  const release = () => setReleased((count) => count + 1);
   return (
-    <TooltipContext.Provider value={{ open, setOpen, frame }}>{children}</TooltipContext.Provider>
+    <TooltipContext.Provider value={{ open, setOpen, frame, released, release }}>
+      {children}
+    </TooltipContext.Provider>
   );
 }
 
 /**
  * The element the tooltip describes: hovered or focused on the web, long-pressed on device.
  *
- * With `asChild` the child is handed `onLongPress` and `onLayout`, and has to put both on the
- * element it draws, as a `Pressable` and a `Button` do. Without `onLayout` the bubble has nowhere
- * to go and is not drawn.
+ * With `asChild` the child is handed `onLongPress`, `onPressOut` and `onLayout`, and puts them on
+ * the element it draws, as a `Pressable` and a `Button` do. Without `onLayout` the bubble has
+ * nowhere to go and is not drawn; without `onPressOut` its clock runs from the long press alone.
  */
 function TooltipTrigger({ asChild, className, children }: TooltipTriggerProps) {
-  const { setOpen, frame } = useContext(TooltipContext);
+  const { open, setOpen, frame, release } = useContext(TooltipContext);
   const show = () => setOpen(true);
+  const lift = () => {
+    if (open) {
+      release();
+    }
+  };
   const measure = (event: LayoutChangeEvent) => {
     frame.current = event.nativeEvent.layout;
   };
   if (asChild && isValidElement(children)) {
-    return addHandlers(children, { onLongPress: show, onLayout: measure });
+    return addHandlers(children, { onLongPress: show, onPressOut: lift, onLayout: measure });
   }
   return (
-    <Pressable onLongPress={show} onLayout={measure} className={cn(className)}>
+    <Pressable onLongPress={show} onPressOut={lift} onLayout={measure} className={cn(className)}>
       {children}
     </Pressable>
   );
 }
 
-/** How long the bubble stays up before dismissing itself. */
-const VISIBLE_MS = 2500;
-
 /** The tooltip's bubble and its text. */
 function TooltipContent({ side = "top", className, children }: TooltipContentProps) {
-  const { open, setOpen, frame } = useContext(TooltipContext);
+  const { open, setOpen, frame, released } = useContext(TooltipContext);
+  // A fixed 2.5s took a long hint away mid-sentence (WCAG 2.2.1), so the time grows with the text.
+  // The clock runs from the long press and starts again when the finger lifts. It does not wait
+  // for the lift: a release that never arrives (react-native-web drops one after a hold of a few
+  // seconds) would leave the bubble up for good.
+  const visibleMs = tooltipVisibleMs(children);
 
+  // `released` is what restarts the clock; the effect does not read it.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs again on each release
   useEffect(() => {
     if (open === false) {
       return;
     }
-    const timer = setTimeout(() => setOpen(false), VISIBLE_MS);
+    const timer = setTimeout(() => setOpen(false), visibleMs);
     return () => clearTimeout(timer);
-  }, [open, setOpen]);
+  }, [open, setOpen, visibleMs, released]);
 
   const at = frame.current;
   if (open === false || at === null) {

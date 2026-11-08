@@ -16,8 +16,14 @@ import { Item, ItemActions } from "./item";
 import { ListItemText, rowFillClass } from "./list-item";
 
 type CollapsibleRowProps = {
+  /**
+   * Whether the row is open. The caller holds it: a list usually opens one row at a time, or opens
+   * the one a link points at.
+   */
   open: boolean;
+  /** Told the state the reader asked for when the heading is pressed; set `open` from it. */
   onOpenChange: (open: boolean) => void;
+  /** The row's name, and the button that opens it. A string is drawn in the row's title style. */
   title: ReactNode;
   /** Whatever the row is wearing: a status, a kind, a state. Drawn before the title. */
   badgesSlot?: SlotNode | undefined;
@@ -32,7 +38,9 @@ type CollapsibleRowProps = {
   actionSlot?: SlotNode | undefined;
   /** What the row opens onto. */
   contentSlot?: SlotNode | undefined;
+  /** On the whole row, the heading and what it opens onto together. */
   className?: string | undefined;
+  /** On the box that holds `contentSlot` while the row is open. */
   contentClassName?: string | undefined;
 };
 

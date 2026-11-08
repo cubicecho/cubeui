@@ -74,9 +74,9 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `onCollapsedChange` | `((collapsed: boolean) => void)` |  | Called with the state the reader asked for, by a `SidebarCollapseButton` anywhere inside. Left out, that button does nothing. |
 | `contentRef` | `Ref<ScrollView>` |  | The scrolling body, for restoring a scroll position — see `HeaderContentFooter`. |
 | `className` | `string` |  | On the root. A different width is a `w-*` here. |
-| `headerClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-| `footerClassName` | `string` |  |  |
+| `headerClassName` | `string` |  | On the header, above the scrolling nav: the brand, a switcher. |
+| `contentClassName` | `string` |  | On the body that scrolls, which holds the sections. |
+| `footerClassName` | `string` |  | On the footer, below the scrolling nav: the account, a collapse button. |
 <!-- /props -->
 
 <!-- props:SidebarSection -->
@@ -91,7 +91,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `status` | `ReactNode` |  | What the section says instead of rows, or before them: failed, loading, empty. Drawn between the title and the list, so it is the place for a `<LoadState compact … />`, which renders nothing once there are rows. |
 | `actionSlot` | `SlotNode` |  | The title row's far end: an add button, a filter. |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | The title's heading rank. `2` by default — the sidebar sits beside the page, not under its `h1`. Pick it by structure, never by size; the text is the same at every level. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the whole section, the title row and its list together. |
 | `contentClassName` | `string` |  | On the list the rows are items of. |
 <!-- /props -->
 
@@ -104,7 +104,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `iconSlot` | `SlotNode` |  | Before the label. Pass a bare `<Folder />`; the row sizes and colours it. |
 | `count` | `number \| string` |  | At the far end: how many things are behind the row. |
 | `status` | `SidebarItemStatus` |  | What state the row's thing is in — "MCP on", "offline", "draft" — drawn before the `count`. `label` is required because it is what is read: the row's name becomes "Work, MCP on, 2". With an `iconSlot` the icon is what is seen and the label is read only; without one the label is drawn, small and muted. `SidebarSection`'s `status` is the same word for the section's own state. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the row: the link or button the reader presses. |
 | `href` | `string` |  | Where the row goes. The `<a href>` on the web. |
 | `active` | `boolean` | `false` | The row for the page on screen — tinted, and `aria-current="page"`. |
 <!-- /props -->
@@ -255,7 +255,7 @@ const BarLink = createLink(AppBarItem);         // beside createLink(SidebarItem
 | `active` | `boolean` | `false` | The item for the page on screen — tinted, and `aria-current="page"`. |
 | `count` | `number \| string` |  | How many things are behind the place, as a small badge on the icon's corner and in the name: "Skills, 12". The badge has a corner to fit in, so cap a long one where it is passed — `"99+"`. |
 | `status` | `SidebarItemStatus` |  | What state the place's thing is in, as a dot on the icon's other corner and in the name: "Servers, 2 failing". The same object `SidebarItem` takes, so one array feeds both; the bar has room for neither its words nor its `iconSlot`, so the dot is all that is drawn and the `label` is what is read. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the bar's item: the link or button the reader presses. |
 <!-- /props -->
 
 **`AppBarItem` is the bar's link** — `SidebarItem` with only the icon drawn, from
@@ -266,7 +266,9 @@ is the copy this replaces.
   app's list of places is one array, mapped once into `SidebarSection` with `SidebarItem` and
   once into `navSlot` with `AppBarItem`. A count on a sidebar row is then on the bar too.
 - **`label` is required** and nothing draws it: it is the link's accessible name and its tooltip
-  (hover or focus on the web, a long press on device), followed there by the status and count. **`iconSlot` is required** too — it is all that
+  (hover or focus on the web, a long press on device), followed there by the status and count. The
+  tooltip opens below the item in a bar at the top, and above it in `SidebarLayout`'s bar along the
+  bottom. **`iconSlot` is required** too — it is all that
   is drawn. Pass it bare; the item sizes and colours it.
 - **`active`** fills it with the `active` colour and sets `aria-current="page"`; hover is grey. Compute it
   from the route, as for the row.

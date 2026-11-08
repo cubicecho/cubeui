@@ -9,7 +9,8 @@
   "registryDependencies": [
     "@cubeui/utils",
     "@cubeui/icons",
-    "@cubeui/reduced-motion"
+    "@cubeui/reduced-motion",
+    "@cubeui/roving-focus"
   ],
   "files": [
     {

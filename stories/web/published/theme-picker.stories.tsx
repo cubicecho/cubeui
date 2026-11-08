@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import { ThemePicker } from "@/components/ui/theme-picker";
 import { THEME_STORAGE_KEY } from "@/components/ui/theme-preference-base";
 
@@ -99,8 +99,11 @@ export const Compact: Story = {
     const canvas = within(canvasElement);
     const group = canvas.getByRole("radiogroup", { name: "Theme" });
     const dark = within(group).getByRole("radio", { name: "Dark" });
-    await expect(dark).toHaveAttribute("title", "Dark");
     await expect(dark.textContent).toBe("");
+    await userEvent.hover(dark);
+    await expect(await screen.findByRole("tooltip")).toHaveTextContent("Dark");
+    await userEvent.unhover(dark);
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
 
     await userEvent.click(dark);
     await waitFor(() => expect(dark).toHaveAttribute("aria-checked", "true"));

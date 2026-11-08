@@ -35,10 +35,10 @@ is what a filter, a search box, or a field in a `useState` form uses.
 | `htmlFor` | `string` |  | The control's `id`, for a caller that already owns one — something else on the page points at this control, or a form library minted it. Left off, the shell generates one, which is what makes the same field safe to render twice on a page. A control the shell cannot reach wants the function form of `controlSlot`, not this: an `htmlFor` alone points the label at the right element and leaves the description and the error pointing at nothing. |
 | `asGroup` | `boolean` | `false` | Whether the control is a *group* of controls rather than one. |
 | `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | `horizontal` puts the control first and the label beside it, for the controls whose label is part of the hit target: a checkbox, a switch. Stacked, a 16px box sits on a line of its own above its own caption, which is the shape every app that hand-wrote one worked around differently. |
-| `className` | `string` |  |  |
-| `labelClassName` | `string` |  |  |
-| `descriptionClassName` | `string` |  |  |
-| `errorClassName` | `string` |  |  |
+| `className` | `string` |  | On the field, the box around the label, the control, the description and the error. |
+| `labelClassName` | `string` |  | On the label, the `FieldLabel` (or with `asGroup`, the `FieldTitle`). |
+| `descriptionClassName` | `string` |  | On the description, the `FieldDescription` under the control. |
+| `errorClassName` | `string` |  | On the error, the `FieldError` under the control, drawn while there is one. |
 | `loadingClassName` | `string` |  | Sizes the loading box for a control that is not input-height — a `<Textarea rows={6}>`. |
 <!-- /props -->
 
@@ -229,7 +229,8 @@ option only. The keyboard is done: one tab stop (the checked option, or the firs
 that move and select. Do not add an `onKeyDown`.
 
 `variant="card"` draws the options as tiles across a row, each with an `iconSlot` over its label and a
-`hint` for the hover title — a theme picker, a layout choice:
+`hint` for its tooltip — a theme picker, a layout choice. The `hint` is a `Tooltip` on hover, focus
+and a long press on device, and read after the option's name, as on `Switch`:
 
 ```tsx
 <RadioGroupField
@@ -249,9 +250,8 @@ that move and select. Do not add an `onKeyDown`.
 across the container's width, like `SegmentedGroup` but still radios, with one tab stop and arrow
 keys. A segment shows its `iconSlot`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
-radio's name and, when no `hint` is given, its web tooltip. On device, give the icon its colour
-yourself (`text-foreground` when checked, `text-foreground/60` otherwise), because a
-native icon has no `currentColor` to inherit.
+radio's name and, when no `hint` is given, its tooltip. Pass the icon bare: the segment sizes it
+and gives it the label's ink on both halves, as `SegmentedButton` does.
 
 Outside a form, the same thing is `RadioGroup` and `RadioGroupItem` from `@cubeui/radio-group`,
 controlled with `value` / `onValueChange`.

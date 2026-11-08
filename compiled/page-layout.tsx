@@ -90,6 +90,7 @@ export type PageLayoutProps = {
   scrollRef?: HeaderContentFooterProps["scrollRef"];
   /** Called as the body scrolls, with where it now is. Never called while `scroll` is off. */
   onScroll?: HeaderContentFooterProps["onScroll"];
+  /** On the page's root, the box the header, body and footer divide. */
   className?: string | undefined;
   /**
    * On the whole header — the title block and `headerBarSlot` — which runs the full width. The
@@ -102,6 +103,7 @@ export type PageLayoutProps = {
    * body's `px-4` comes with `width` and is not here.
    */
   contentClassName?: string | undefined;
+  /** On the footer bar, after its own top rule and `py-3`. */
   footerClassName?: string | undefined;
 };
 

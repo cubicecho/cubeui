@@ -1,19 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useForm } from "@tanstack/react-form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Text } from "react-native";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   RadioGroupItem as CompiledItem,
   RadioGroup as CompiledRadioGroup,
 } from "../compiled/radio-group";
 import { RadioGroupField } from "../compiled/radio-group-field";
+import { IconClassContext } from "../registry/ui/icons-base";
 import { RadioGroup as NativeRadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
 import { SideBySide } from "./side-by-side";
 
 /**
  * The radio contract a consumer used to write by hand — one tab stop, arrows that move *and*
- * select, a hover hint — asserted on both halves, because the point of the item is that nobody
+ * select, a hint in a tooltip — asserted on both halves, because the point of the item is that nobody
  * writes it again. The keyboard is web-only by design (a phone has no arrow keys), and both halves
  * here are the web: react-native-web on the left, the compiled DOM on the right.
  */
@@ -117,11 +118,19 @@ export const Card: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const compiled = within(canvas.getByRole("radiogroup", { name: "Compiled theme" }));
-    // The hover hint is the element's own `title`, with no spread at the call site.
-    await expect(compiled.getByRole("radio", { name: "Light" })).toHaveAttribute(
-      "title",
-      "Always light",
-    );
+    // The hint is a tooltip and the option's description, as `Switch`'s is (#472): a `title` was
+    // never shown to a touch screen or a keyboard.
+    for (const name of ["Native theme", "Compiled theme"]) {
+      const light = within(canvas.getByRole("radiogroup", { name })).getByRole("radio", {
+        name: "Light",
+      });
+      await expect(light).not.toHaveAttribute("title");
+      await expect(light).toHaveAccessibleDescription("Always light");
+      await userEvent.hover(light);
+      await expect(await screen.findByRole("tooltip")).toHaveTextContent("Always light");
+      await userEvent.unhover(light);
+      await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+    }
     await assertKeyboard(canvas.getByRole("radiogroup", { name: "Compiled theme" }));
 
     // The tiles share the row: `flex-1` on each, the same width on both halves.
@@ -241,5 +250,47 @@ export const DisabledOption: Story = {
       "aria-checked",
       "false",
     );
+  },
+};
+
+/** Stands in for a device icon, which is the only kind that reads the class it is handed. */
+function ProbeIcon({ name }: { name: string }) {
+  const inherited = useContext(IconClassContext);
+  return <span data-testid={`icon-${name}`} data-class={inherited ?? ""} />;
+}
+
+/**
+ * A segment's icon on device (#472). On the web an `<svg>` takes `currentColor` from the segment;
+ * on device nothing inherits, and an icon left to the caller was the default ink, which vanished on
+ * a dark page. The segment hands it the label's ink and size, as `SegmentedButton` does. The web
+ * icon set ignores the context, so a probe reads what a device icon would be given.
+ */
+export const SegmentIconOnDevice: Story = {
+  render: () => (
+    <div className="bg-background p-6">
+      <NativeRadioGroup aria-label="Probe theme" variant="segmented" defaultValue="light">
+        <RadioGroupItem value="light" aria-label="Light" iconSlot={<ProbeIcon name="light" />} />
+        <RadioGroupItem value="dark" aria-label="Dark" iconSlot={<ProbeIcon name="dark" />} />
+      </NativeRadioGroup>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const classes = (name: string) =>
+      (canvas.getByTestId(`icon-${name}`).getAttribute("data-class") ?? "").split(" ");
+    await expect(classes("light")).toEqual(
+      expect.arrayContaining(["size-4", "shrink-0", "text-foreground"]),
+    );
+    await expect(classes("dark")).toEqual(
+      expect.arrayContaining(["size-4", "shrink-0", "text-foreground/60"]),
+    );
+
+    // An icon-only segment with no hint shows its name as the tooltip, and is not described by it.
+    const dark = canvas.getByRole("radio", { name: "Dark" });
+    await userEvent.hover(dark);
+    await expect(await screen.findByRole("tooltip")).toHaveTextContent("Dark");
+    await expect(dark).not.toHaveAttribute("aria-describedby");
+    await userEvent.unhover(dark);
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
   },
 };

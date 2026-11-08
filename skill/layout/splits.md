@@ -20,15 +20,15 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `firstWidth` (instead of `secondWidth`) | `SplitWidth` |  | How much of the row the first pane claims, from the `SplitWidth` scale; the second takes the rest. Pass this or `secondWidth`, not both. With neither, the panes split evenly. |
-| `secondWidth` (instead of `firstWidth`) | `SplitWidth` |  | How much of the row the second pane claims, from the `SplitWidth` scale; the first takes the rest. Pass this or `firstWidth`, not both. |
+| `firstWidth` (instead of `secondWidth`) | `"auto" \| "sm" \| "md" \| "lg" \| "fifth" \| "two-fifths" \| "half" \| "two-thirds"` |  | How much of the row the first pane claims, from the `SplitWidth` scale; the second takes the rest. Pass this or `secondWidth`, not both. With neither, the panes split evenly. |
+| `secondWidth` (instead of `firstWidth`) | `"auto" \| "sm" \| "md" \| "lg" \| "fifth" \| "two-fifths" \| "half" \| "two-thirds"` |  | How much of the row the second pane claims, from the `SplitWidth` scale; the first takes the rest. Pass this or `firstWidth`, not both. |
 | `firstSlot` (required) | `SlotNode` |  | The leading pane. Alone, it is the whole width, so a caller never special-cases un-split. |
 | `secondSlot` | `SlotNode` |  | The trailing pane. |
 | `stackBelow` | `"never" \| "md" \| "lg" \| "xl"` | `"lg"` | Below this width the two stack rather than sit side by side. `never` keeps them side by side at every width — an icon strip, a kiosk, a pane already inside a media query the caller owns. |
 | `divider` | `"space" \| "line" \| "none"` | `"space"` | What separates the panes: `space` is a gap, `line` is flush with a hairline rule between them, and `none` is flush with nothing drawn. One prop rather than a gap and a border, because a rule with a gap on both sides floats in the middle of nothing. The rule stays between the panes when they stack, which a `border-r` on one pane does not. |
-| `className` | `string` |  |  |
-| `firstClassName` | `string` |  |  |
-| `secondClassName` | `string` |  |  |
+| `className` | `string` |  | On the row (or the column, once the panes stack) that holds both panes. |
+| `firstClassName` | `string` |  | On the first pane's cell. Its width comes from `firstWidth` or `secondWidth`; this is for anything else, such as a pane's own padding. |
+| `secondClassName` | `string` |  | On the second pane's cell, as `firstClassName` is on the first. |
 <!-- /props -->
 
 <!-- props:SidebarLayout -->
@@ -48,10 +48,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `contentSlot` (required) | `SlotNode` |  | The main surface — the one the screen is about. Alone, it is the whole width, so a caller never has to special-case the un-split state. |
 | `sidebarSlot` | `SlotNode` |  | The second surface: a navigation column, an inspector, a note list, an order panel. |
 | `sidebarPosition` | `"start" \| "end"` | `"end"` | Which side the sidebar sits on. Stacked, it keeps this reading order rather than jumping. |
-| `sidebarWidth` | `SplitWidth` | `"sm"` | `SplitWidth`. Naming the width is what stops eight call sites each inventing one. |
-| `className` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-| `sidebarClassName` | `string` |  |  |
+| `sidebarWidth` | `"auto" \| "sm" \| "md" \| "lg" \| "fifth" \| "two-fifths" \| "half" \| "two-thirds"` | `"sm"` | The sidebar's width, from the `SplitWidth` scale. Naming the width is what stops eight call sites each inventing one. |
+| `className` | `string` |  | On the split that holds the content and the sidebar, as `SplitLayout`'s `className`. |
+| `contentClassName` | `string` |  | On the content's pane. |
+| `sidebarClassName` | `string` |  | On the sidebar's pane. Its width comes from `sidebarWidth`. |
 | `headerClassName` | `string` |  | On the `AppBar`, when `sidebarHideBelow` draws one. |
 | `bottomBarClassName` | `string` |  | On the bar along the bottom, when `barPosition="bottom"` draws one. |
 <!-- /props -->

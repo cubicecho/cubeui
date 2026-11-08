@@ -434,7 +434,8 @@ does the same thing itself now that it is native-first.
   loop body, no bare numbers outside a `const NAME = 5`, and `x === false` (not `!x`) for a logic
   check, with `!` left for null guards (`no-negation.grit`). An app that vendors these files lints
   them with those rules, so a file that fails them gets the linter turned off around it (#286).
-  A suppression only the compiled element needs is written `// web: biome-ignore …`
+  A suppression only the compiled element needs is written `// web: biome-ignore …`, or
+  `{/* web: biome-ignore … */}` among JSX children, where a line comment is text
 - Files `kebab-case.tsx`; components `PascalCase`; vars and functions `camelCase`; true
   constants `SCREAMING_SNAKE_CASE`
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error
@@ -493,6 +494,13 @@ with "Browser connection was closed". Where more than one checkout shares the ma
 (`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
 directory, so the tools here never find a second copy of the project.
 
+**A `waitFor` callback only reads.** `waitFor` runs its callback again on every change to the
+document, so a callback that changes it — appends a node, sets an attribute or a style — calls
+itself in a loop of microtasks that `waitFor`'s own timer never gets between. A condition that
+never comes true then hangs the renderer for the whole test timeout instead of failing in a
+second (#497). `tokenColor` is safe there: it spells a colour out in a shadow root, which no
+observer of the document sees. Work out anything else that touches the page before the `waitFor`.
+
 ## Keep the skill in sync
 
 [`skill/SKILL.md`](skill/SKILL.md) is how an agent in a *consuming* project learns these
@@ -539,8 +547,10 @@ example. `skill:check` fails on a table that no longer matches.
 A union props type is one table. A prop is one row, its type what any member allows, and its text
 from the member that allows it — so the TSDoc goes there, not on a `never`. A prop only some
 members allow says which: `notFoundLabel` (required with `record`). A type written as a constant
-(`keyof typeof SIZES`) or as an alias the file keeps to itself is printed as its values. Both
-modes fail on a row typed `never` or still reading `keyof typeof` (#463).
+(`keyof typeof SIZES`) or as an alias of values (`SplitWidth`, exported or not) is printed as its
+values, and cva's `| null` on a variant is left off (#492). Both modes fail on a row typed `never`
+or still reading `keyof typeof` (#463), and on a row with no description: a prop with no TSDoc is
+a prop the reader cannot choose (#492).
 
 A new item goes in its topic file **and** gets a row in the choosing table; a new slot word
 goes in `vocabulary.md` and in rule 2 of the conventions doc, because those two are the

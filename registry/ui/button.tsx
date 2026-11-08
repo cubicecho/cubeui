@@ -33,6 +33,14 @@ const buttonVariants = cva(
   "group/button inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
+      /**
+       * What the button does, which picks its colours: `default` for the one to press, `positive`
+       * for an action that keeps the work (Save), `info` for one that adds something (Add, New),
+       * `destructive` for one that destroys, and `outline` for a quiet one. Each `-outline` is its
+       * colour without the fill, for an action that is not the emphasis of its row. `secondary`
+       * is an icon inside a field's own border. `ghost` and `link` are kept for shadcn code, and
+       * nothing in the registry uses them.
+       */
       variant: {
         default:
           "bg-neutral text-neutral-foreground hover:bg-neutral/90 focus-visible:bg-hover focus-visible:text-foreground active:bg-neutral/90",
@@ -60,10 +68,12 @@ const buttonVariants = cva(
           "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground active:bg-hover active:text-foreground",
         link: "text-info underline-offset-4 hover:underline focus-visible:underline active:underline",
       },
+      // The glyph's size is `BUTTON_ICON_SIZES`'s too, written out here as `[&_svg]:` for the web,
+      // where the icon is an `<svg>` inside the button.
       size: {
         default: "h-10 px-4 py-2",
         /** Small enough to sit inline in a list row without setting its height. */
-        xs: "h-7 px-3",
+        xs: "h-7 px-3 [&_svg]:size-3.5",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
@@ -71,7 +81,7 @@ const buttonVariants = cva(
         // text size it is named after, so an icon button sits flush in a row of text buttons.
         "icon-xs": "h-7 w-7 [&_svg]:size-3.5",
         "icon-sm": "h-9 w-9",
-        "icon-lg": "h-11 w-11",
+        "icon-lg": "h-11 w-11 [&_svg]:size-5",
       },
     },
     defaultVariants: {
@@ -118,6 +128,24 @@ const buttonTextVariants = cva("font-semibold", {
   defaultVariants: { variant: "default", size: "default" },
 });
 
+/**
+ * The glyph's size in each button size, for a device, where an icon is sized by the class
+ * `IconClassContext` hands it and was otherwise lucide's own 24px. The `[&_svg]:` classes in
+ * `buttonVariants` are the same sizes for the web. 14px beside `xs`'s 12px label and in its square;
+ * 20px in `icon-lg`, where 16px sat lost in a 44px square; 16px everywhere else. `lg` keeps 16px
+ * because its label is still `text-sm`.
+ */
+const BUTTON_ICON_SIZES = {
+  default: "size-4",
+  xs: "size-3.5",
+  sm: "size-4",
+  lg: "size-4",
+  icon: "size-4",
+  "icon-xs": "size-3.5",
+  "icon-sm": "size-4",
+  "icon-lg": "size-5",
+} as const;
+
 /** The button itself, before the name rule and the tooltip are added to it. */
 type ButtonBodyProps = Omit<
   React.ComponentProps<typeof Pressable>,
@@ -129,6 +157,7 @@ type ButtonBodyProps = Omit<
     // Re-declared rather than inherited: nativewind types it as
     // `className?: string`, which under `exactOptionalPropertyTypes` rejects the
     // conditional `cond ? 'x' : undefined` that call sites pass.
+    /** On the button's box, after the variant's and the size's classes. */
     className?: string | undefined;
     /**
      * The label. A string is drawn in the variant's ink; anything else is rendered as it is —
@@ -178,11 +207,25 @@ function isIconSize(size: ButtonSize | null | undefined): size is IconSize {
  * An icon alone is announced as "button". A `title` is a hover hint and not a name, so the type
  * asks for `aria-label`, because a type is checked and a review is not.
  */
-type IconButtonName = { size: IconSize; "aria-label": string };
+type IconButtonName = {
+  /**
+   * How big it is. `default`, `xs`, `sm` and `lg` draw the label; `xs` is small enough to sit in
+   * a list row without setting its height. Each `icon*` size is a square as tall as the text
+   * size it is named after, which draws `iconSlot` alone and so needs an `aria-label`.
+   */
+  size: IconSize;
+  /**
+   * The button's accessible name. Required at an `icon*` size, which has no label to be named
+   * by; beside a label, it replaces the label as the name.
+   */
+  "aria-label": string;
+};
 
 /** A button with a label is named by it, and may be given another name. */
 type TextButtonName = {
+  /** How big it is. An `icon*` size draws no label, and needs an `aria-label`. */
   size?: Exclude<ButtonSize, IconSize> | null | undefined;
+  /** A name in place of the label's, for a label that is not enough on its own. */
   "aria-label"?: string | undefined;
 };
 
@@ -288,13 +331,17 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
     // already inherit it, so `icons.web.tsx` ignores this; native has no
     // inheritance and this is where the colour comes from.
     const labelClass = buttonTextVariants({ variant, size });
+    // What an icon is handed: the label's ink, and the glyph's size, which a label has no use for.
+    const iconSize = BUTTON_ICON_SIZES[size ?? "default"];
+    const iconClass = cn(labelClass, iconSize, "shrink-0");
 
     const label = loading && loadingLabel !== undefined ? loadingLabel : content;
     const leading = loading ? (
       // Hidden: `aria-busy` is what says the button is working, and a spinner with a name of
       // its own would be read into the button's — "Loading Save".
       <View aria-hidden>
-        <Spinner />
+        {/* The icon's size, which the spinner's own class would otherwise beat on device. */}
+        <Spinner className={iconSize} />
       </View>
     ) : (
       iconSlot
@@ -322,7 +369,7 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
         {...props}
         onPress={pressThenClick(onPress, (props as MergedClick).onClick)}
       >
-        <IconClassContext.Provider value={labelClass}>
+        <IconClassContext.Provider value={iconClass}>
           {leading}
           {labelled}
           {trailingSlot}
@@ -367,7 +414,7 @@ const ButtonBody = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonBo
       // The provider goes *outside* the `Slot`, and the caller's element is the Slot's
       // one child. Inside, the provider was the child: `Slot` merged the classes and
       // the press onto it, it dropped them, and the caller's `<a>` rendered unstyled (#156).
-      <IconClassContext.Provider value={labelClass}>
+      <IconClassContext.Provider value={iconClass}>
         {/* `Slot` is declared over `HTMLAttributes<HTMLElement>` because radix ships
             for the DOM, but it renders nothing itself — it clones its child with these
             props merged in. The element that receives them is the caller's, so the DOM

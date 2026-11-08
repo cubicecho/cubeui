@@ -335,7 +335,7 @@ directly, so you do not need a dialog around a zone.
 | `onPick` | `((text: string, fileName: string) => void)` |  | Handed the picked file's decoded text, never the `File` object itself. `File` is DOM-only, so a contract carrying one could not be implemented on native. A screen that wants the bytes, the type or the path takes `onPickMany`, whose `PickedFile` has them. With `multiple` and no `onPickMany`, called once per file, in pick order. |
 | `onPickMany` | `((files: PickedFile[]) => void)` |  | Called once per pick with every file in it, in pick order — one file without `multiple`. Given, `onPick` is not called at all. |
 | `iconSlot` | `SlotNode` | `<Upload />` | Drawn before the label, or alone at an `icon*` size, where `label` is only the accessible name. Pass a bare `<Upload />`; the button sizes and colours it. Defaults to the upload icon. |
-| `className` | `string` |  |  |
+| `className` | `string` |  | On the button's box, as `Button`'s `className`. |
 
 It also takes the props declared in `registry/ui/button.tsx`: `size`, `variant`.
 <!-- /props -->

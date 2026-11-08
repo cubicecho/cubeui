@@ -46,9 +46,13 @@ type CollapsibleProps = {
   onOpenChange?: ((open: boolean) => void) | undefined;
   /** Where an uncontrolled collapsible starts. Shut by default, the way `<details>` is. */
   defaultOpen?: boolean | undefined;
+  /** On the whole collapsible, the header and what it opens onto together. */
   className?: string | undefined;
+  /** On the header row: the chevron, the title and description, and the action. */
   headerClassName?: string | undefined;
+  /** On a string title's own `Text`: its size, its colour. */
   titleClassName?: string | undefined;
+  /** On the box that holds `contentSlot`, indented under the title. */
   contentClassName?: string | undefined;
 };
 

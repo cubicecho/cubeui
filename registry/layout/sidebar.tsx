@@ -15,7 +15,7 @@ import {
   type HeaderContentFooterProps,
 } from "@/components/header-content-footer";
 import { SectionHeading } from "@/components/section-heading";
-import { SidebarPositionContext } from "@/components/split-layout";
+import { AppBarEdgeContext, SidebarPositionContext } from "@/components/split-layout";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
@@ -103,8 +103,11 @@ export type SidebarProps = {
   contentRef?: HeaderContentFooterProps["contentRef"];
   /** On the root. A different width is a `w-*` here. */
   className?: string | undefined;
+  /** On the header, above the scrolling nav: the brand, a switcher. */
   headerClassName?: string | undefined;
+  /** On the body that scrolls, which holds the sections. */
   contentClassName?: string | undefined;
+  /** On the footer, below the scrolling nav: the account, a collapse button. */
   footerClassName?: string | undefined;
 };
 
@@ -220,6 +223,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  /** On the whole section, the title row and its list together. */
   className?: string | undefined;
   /** On the list the rows are items of. */
   contentClassName?: string | undefined;
@@ -381,6 +385,7 @@ type SidebarItemBaseProps = Omit<PressableProps, "children" | "className" | "sty
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the row: the link or button the reader presses. */
   className?: string | undefined;
 };
 
@@ -744,6 +749,7 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the bar's item: the link or button the reader presses. */
   className?: string | undefined;
 };
 
@@ -769,6 +775,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
     const text = active ? "text-foreground" : "text-foreground/60";
     const name = rowName(label, status, count);
+    const edge = React.useContext(AppBarEdgeContext);
 
     return (
       <TooltipProvider>
@@ -805,7 +812,7 @@ const AppBarItem = React.forwardRef<React.ElementRef<typeof Pressable>, AppBarIt
               <IconMarkers count={count} status={status} ring="border-background" />
             </Pressable>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{name}</TooltipContent>
+          <TooltipContent side={edge === "bottom" ? "top" : "bottom"}>{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );

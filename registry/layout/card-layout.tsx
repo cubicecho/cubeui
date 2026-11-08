@@ -178,15 +178,18 @@ export type CardLayoutProps = {
    * ```
    */
   wrapperSlot?: ((parts: SlotNode, wrapper: { className: string }) => SlotNode) | undefined;
+  /** On the card itself, the bordered box around every part. */
   className?: string | undefined;
+  /** On the header: the icon, the title and description, and the action beside them. */
   headerClassName?: string | undefined;
   /** On the title itself: its size, a `line-through`. */
   titleClassName?: string | undefined;
   /**
-   * On the body. It is a column with `gap-4` between what it holds, as `Section`'s is; a gap here
-   * replaces it, and `gap-0` lets the children touch.
+   * On the body, the box that holds `contentSlot`. It is a column with `gap-4` between what it
+   * holds, as `Section`'s is; a gap here replaces it, and `gap-0` lets the children touch.
    */
   contentClassName?: string | undefined;
+  /** On the footer: `footerSlot` at its start and `footerActionsSlot` at its end. */
   footerClassName?: string | undefined;
 };
 

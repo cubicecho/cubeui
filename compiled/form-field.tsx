@@ -206,9 +206,13 @@ type FormFieldProps = {
    * shell cannot see is a prop that does nothing most of the time it is passed.
    */
   orientation?: "vertical" | "horizontal" | undefined;
+  /** On the field, the box around the label, the control, the description and the error. */
   className?: string | undefined;
+  /** On the label, the `FieldLabel` (or with `asGroup`, the `FieldTitle`). */
   labelClassName?: string | undefined;
+  /** On the description, the `FieldDescription` under the control. */
   descriptionClassName?: string | undefined;
+  /** On the error, the `FieldError` under the control, drawn while there is one. */
   errorClassName?: string | undefined;
   /** Sizes the loading box for a control that is not input-height — a `<Textarea rows={6}>`. */
   loadingClassName?: string | undefined;

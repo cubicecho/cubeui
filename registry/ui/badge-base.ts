@@ -56,6 +56,12 @@ export function badgeSoftDotClass(variant: BadgeVariant | null | undefined): str
 }
 
 export type BadgeProps = {
+  /**
+   * What the badge says, which picks its colours: `default` for a label with nothing to say;
+   * `positive`, `warning`, `destructive` and `info` for a status, filled; each `-soft` for the same
+   * status as a tint, quieter beside text; `outline` and `secondary` for a quiet tag. `ghost` and
+   * `link` are kept for shadcn code.
+   */
   variant?: BadgeVariant | undefined;
   /**
    * Overrides the variant's background with a literal colour — for a badge
@@ -72,6 +78,7 @@ export type BadgeProps = {
    * is what computes the value to pass.
    */
   textColor?: string | undefined;
+  /** On the badge's box, the pill or the dot. */
   className?: string | undefined;
   /**
    * What the dot stands for: its accessible name, and on the web its tooltip under the pointer.

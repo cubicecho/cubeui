@@ -78,6 +78,7 @@ type PropertyListProps = {
    * only true on a wide screen is the kind rule 11 renames later.
    */
   layout?: Layout | undefined;
+  /** On the list, the `<dl>` on the web. The gap between the rows is here. */
   className?: string | undefined;
 };
 
@@ -125,7 +126,9 @@ type PropertyRowProps = {
    * of what is said about it.
    */
   actionSlot?: SlotNode | undefined;
+  /** On the row, the label and value together. */
   className?: string | undefined;
+  /** On the label's own `Text`, the `<dt>` on the web. */
   labelClassName?: string | undefined;
   /**
    * A string or number value's own `Text`, so a path, a version or an id is `value={path}

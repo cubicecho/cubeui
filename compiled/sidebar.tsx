@@ -25,7 +25,7 @@ import { Badge } from "./badge";
 import { HeaderContentFooter, type HeaderContentFooterProps } from "./header-content-footer";
 import { ChevronLeft, ChevronRight } from "./icons";
 import { SectionHeading } from "./section-heading";
-import { SidebarPositionContext } from "./split-layout";
+import { AppBarEdgeContext, SidebarPositionContext } from "./split-layout";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 /**
@@ -109,8 +109,11 @@ export type SidebarProps = {
   contentRef?: HeaderContentFooterProps["contentRef"];
   /** On the root. A different width is a `w-*` here. */
   className?: string | undefined;
+  /** On the header, above the scrolling nav: the brand, a switcher. */
   headerClassName?: string | undefined;
+  /** On the body that scrolls, which holds the sections. */
   contentClassName?: string | undefined;
+  /** On the footer, below the scrolling nav: the account, a collapse button. */
   footerClassName?: string | undefined;
 };
 
@@ -226,6 +229,7 @@ export type SidebarSectionProps = SidebarSectionLandmarkProps & {
    * `h1`. Pick it by structure, never by size; the text is the same at every level.
    */
   level?: 1 | 2 | 3 | 4 | 5 | 6 | undefined;
+  /** On the whole section, the title row and its list together. */
   className?: string | undefined;
   /** On the list the rows are items of. */
   contentClassName?: string | undefined;
@@ -384,6 +388,7 @@ type SidebarItemBaseProps = Omit<PressableProps, "children" | "className" | "sty
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the row: the link or button the reader presses. */
   className?: string | undefined;
 };
 
@@ -751,6 +756,7 @@ export type AppBarItemProps = Omit<PressableProps, "children" | "className" | "s
    */
   status?: SidebarItemStatus | undefined;
   // Re-declared rather than inherited, for `exactOptionalPropertyTypes` — see `segmented.tsx`.
+  /** On the bar's item: the link or button the reader presses. */
   className?: string | undefined;
 };
 
@@ -776,6 +782,7 @@ const AppBarItem = React.forwardRef<HTMLButtonElement, AppBarItemProps>(
     // Native inherits no colour, so the icon carries its own; the web half's takes the link's.
     const text = active ? "text-foreground" : "text-foreground/60";
     const name = rowName(label, status, count);
+    const edge = React.useContext(AppBarEdgeContext);
 
     return (
       <TooltipProvider>
@@ -810,7 +817,7 @@ const AppBarItem = React.forwardRef<HTMLButtonElement, AppBarItemProps>(
               <IconMarkers count={count} status={status} ring="border-background" />
             </a>
           </TooltipTrigger>
-          <TooltipContent side="bottom">{name}</TooltipContent>
+          <TooltipContent side={edge === "bottom" ? "top" : "bottom"}>{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );

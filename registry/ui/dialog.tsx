@@ -181,7 +181,8 @@ function DialogContent({
     }
   };
   return (
-    <View className="flex-1 items-center justify-center bg-overlay/60 p-6">
+    // `p-4`: 16px clear of the screen's edges, the web half's `max-w-[calc(100%-2rem)]`.
+    <View className="flex-1 items-center justify-center bg-overlay/60 p-4">
       {/* The backdrop is a sibling laid out underneath rather than a parent of
           the card, because `Pressable` has no `stopPropagation` — nesting the
           card inside it would make every press on the card close the dialog. */}

@@ -219,8 +219,14 @@ type SplitLayoutProps = {
    * they stack, which a `border-r` on one pane does not.
    */
   divider?: keyof typeof DIVIDERS | undefined;
+  /** On the row (or the column, once the panes stack) that holds both panes. */
   className?: string | undefined;
+  /**
+   * On the first pane's cell. Its width comes from `firstWidth` or `secondWidth`; this is for
+   * anything else, such as a pane's own padding.
+   */
   firstClassName?: string | undefined;
+  /** On the second pane's cell, as `firstClassName` is on the first. */
   secondClassName?: string | undefined;
 } & SplitWidths;
 
@@ -452,10 +458,16 @@ type SidebarLayoutProps = {
   sidebarSlot?: SlotNode | undefined;
   /** Which side the sidebar sits on. Stacked, it keeps this reading order rather than jumping. */
   sidebarPosition?: "start" | "end" | undefined;
-  /** {@link SplitWidth}. Naming the width is what stops eight call sites each inventing one. */
+  /**
+   * The sidebar's width, from the {@link SplitWidth} scale. Naming the width is what stops eight
+   * call sites each inventing one.
+   */
   sidebarWidth?: SplitWidth | undefined;
+  /** On the split that holds the content and the sidebar, as `SplitLayout`'s `className`. */
   className?: string | undefined;
+  /** On the content's pane. */
   contentClassName?: string | undefined;
+  /** On the sidebar's pane. Its width comes from `sidebarWidth`. */
   sidebarClassName?: string | undefined;
   /** On the `AppBar`, when `sidebarHideBelow` draws one. */
   headerClassName?: string | undefined;
@@ -482,6 +494,14 @@ type SidebarLayoutProps = {
  * `undefined` outside a `SidebarLayout`.
  */
 export const SidebarPositionContext = createContext<"start" | "end" | undefined>(undefined);
+
+/**
+ * Which edge of the screen the bar an `AppBarItem` sits in runs along, so its tooltip opens away
+ * from that edge. `top` outside `SidebarLayout`'s bottom bar. The web's tooltip turns away from an
+ * edge it would cross; a device's is drawn on the side it is told, and off the screen below a
+ * bottom bar.
+ */
+export const AppBarEdgeContext = createContext<"top" | "bottom">("top");
 
 export function SidebarLayout({
   contentSlot,
@@ -547,7 +567,7 @@ export function SidebarLayout({
               bottomBarClassName,
             )}
           >
-            {navSlot}
+            <AppBarEdgeContext.Provider value="bottom">{navSlot}</AppBarEdgeContext.Provider>
           </nav>
         ) : null}
       </div>

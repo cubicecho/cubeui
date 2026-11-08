@@ -39,7 +39,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
 | `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
 | `onOpenChange` | `((open: boolean) => void)` |  | Called with `true` when the trigger opens it and `false` when it closes. A close that `hasUnsavedChanges` asks about is reported only once the answer is Discard. With `open`, this is where the caller sets it. |
-| `size` | `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"md"` | How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl` 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the screen allows. |
+| `size` | `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"md"` | How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl` 56rem, and `full` the window less 16px a side. Narrower than that, every size is as wide as the screen less the same 16px a side. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. Several elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end. |
 | `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm, as a fragment: below `sm` they stack full width, the last on top. Given alone, the footer is simply right-aligned. |
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
@@ -50,10 +50,10 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away: "Discard". |
 | `keepLabel` | `ReactNode` | `"Keep editing"` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
 | `showCloseButton` | `boolean` | `true` | Whether the ✕ is drawn in the corner. It closes the way Escape does, so `hasUnsavedChanges` still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel. |
-| `className` | `string` |  |  |
-| `headerClassName` | `string` |  |  |
-| `contentClassName` | `string` |  |  |
-| `footerClassName` | `string` |  |  |
+| `className` | `string` |  | On the dialog's panel. Its width comes from `size`, so reach for this for anything else. |
+| `headerClassName` | `string` |  | On the header: the title, the description, and the room the ✕ takes. |
+| `contentClassName` | `string` |  | On the body, the part that scrolls between the header and the footer. |
+| `footerClassName` | `string` |  | On the footer, which holds `footerSlot` and the actions. |
 <!-- /props -->
 
 - `title` is **required** — it is what assistive technology announces. A design with no room for
@@ -78,6 +78,8 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - **`descriptionPlacement="popover"` folds the description behind a button after the title**, as
   on a card, on both halves. On the web the dialog is still described by the sentence, so a screen
   reader reads it as the dialog opens. Pass the same placement your app's cards and fields use.
+- **A dialog keeps 16px clear of each side of the screen**, on both platforms and at every size,
+  `full` included. Do not pad the dialog or cap its width to make room at a phone's edge.
 - **The header and footer look the same on both platforms.** The title and description are
   left-aligned; the footer is a right-aligned row that stacks its buttons full width, the main one
   on top, below `sm`, as `ConfirmDialog`'s does. `footerSlot` sits at the row's start and stacks

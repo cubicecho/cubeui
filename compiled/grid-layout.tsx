@@ -24,6 +24,9 @@ export type GridLayoutProps = {
    * a fragment of three cards is three cells and not one.
    */
   contentSlot: SlotNode;
+  /**
+   * On the grid, the row that wraps. The gap between the cells is here; each cell's width is not.
+   */
   className?: string | undefined;
 };
 

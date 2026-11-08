@@ -97,10 +97,15 @@ Name the tablist when no visible heading does: `<TabsList aria-label="Project vi
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.
 
-A `TabsList` with more tabs than fit scrolls sideways inside its own box and brings the selected
-tab into view, at mount and whenever it changes, on both halves. Do not wrap `Tabs` in a
-horizontal `ScrollView` to fit a phone: the scroller would be outside the tablist, and a tab
-chosen by a link would stay off screen. Tabs that fit are centred in the list as before.
+A `TabsList` is as wide as its tabs, at the start of its column, on both halves. To run it across,
+pass `className="self-stretch"` or a width; tabs that fit are then centred in it. A list with more
+tabs than fit scrolls sideways inside its own box and brings the selected tab into view, at mount
+and whenever it changes, on both halves. Do not wrap `Tabs` in a horizontal `ScrollView` to fit a
+phone: the scroller would be outside the tablist, and a tab chosen by a link would stay off screen.
+
+The keyboard is ARIA's tabs pattern on both halves: the list is one tab stop, on the selected tab,
+and Left and Right move to the next enabled tab and show it, with Home and End. On device there is
+no Tab key, and a screen reader walks every tab. Do not add an `onKeyDown`.
 
 A tab that is a route takes the link as `linkSlot`, as `Button` does: an element with no
 children. Do not navigate from `onValueChange` — such a tab has no `href`, so it cannot be

@@ -312,8 +312,8 @@ input-height, which is right. Pass `loadingClassName` only for a control that is
 | --- | --- | --- | --- |
 | `contentSlot` | `ReactNode` |  | The fields, as the web `FieldRow` takes them. Each gets a cell of its own, and one that renders nothing (`{isEdit && <field.InputField … />}`) leaves no empty cell behind. |
 | `perRow` | `2 \| 3` | `2` | How many fit on a line before the row wraps. |
-| `className` | `string` |  |  |
-| `cellClassName` | `string` |  |  |
+| `className` | `string` |  | On the row, which wraps its cells. |
+| `cellClassName` | `string` |  | On every cell, the box each field is drawn in. Its width comes from `perRow`. |
 <!-- /props -->
 
 Do not write `grid grid-cols-2 gap-4` for this. A grid keeps its columns at every width, so the

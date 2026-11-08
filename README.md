@@ -458,7 +458,7 @@ the React Native set.
 | Group | Items |
 |---|---|
 | tokens | `tokens` |
-| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft`, `select-options`, `tree`, `bottom-bar`, `frame-focus-guard` |
+| lib | `utils`, `color`, `readable-text-color`, `format`, `error-message`, `form-binding`, `number-draft`, `select-options`, `tree`, `bottom-bar`, `frame-focus-guard`, `roving-focus` |
 | primitives | `icons`, `button`, `card`, `code`, `input`, `search-input`, `password-input`, `label`, `textarea`, `switch`, `alert`, `empty`, `item`, `separator`, `progress`, `skeleton`, `spinner`, `copy-button`, `download-button` |
 | platform-split | `checkbox`, `dialog`, `alert-dialog`, `popover`, `menu`, `command`, `select`, `tabs`, `tooltip`, `calendar`, `file-picker`, `form-element` |
 | pills and swatches | `segmented`, `toggle-chip`, `badge`, `color-bar`, `color-dot`, `color-picker` |

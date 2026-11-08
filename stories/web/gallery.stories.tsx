@@ -253,6 +253,8 @@ const NOT_SHOWN: Record<string, string> = {
   "number-draft": "Two functions; NumberField reads the text being typed with them.",
   "select-options": "Types and functions; the selects read their options list through them.",
   tree: "`buildTree`, a function; the file tree is drawn from what it returns.",
+  "roving-focus":
+    "A hook; the radio group, the swatches and the device tabs are one tab stop by it.",
   "reduced-motion": "A hook; HeaderContentFooter and CodeBlock jump rather than glide by it.",
   overflows: "A hook; a table and a page body are tab stops only while they can scroll, by it.",
   "unsaved-changes-guard":

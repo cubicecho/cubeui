@@ -75,6 +75,7 @@ export type DownloadButtonProps = (DownloadFromSource | DownloadFromHref) & {
    * pressing. The browser has one answer, its own downloads, and ignores this.
    */
   destination?: DownloadDestination | undefined;
+  /** The button cannot be pressed. */
   disabled?: boolean | undefined;
   /**
    * Whether the tooltip is drawn: at an `icon*` size, `label`. A text size draws its label and

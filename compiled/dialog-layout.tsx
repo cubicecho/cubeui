@@ -53,7 +53,8 @@ const SIZES = {
   md: "sm:max-w-lg",
   lg: "sm:max-w-2xl",
   xl: "sm:max-w-4xl",
-  full: "sm:max-w-[calc(100vw-4rem)]",
+  // 16px clear of each edge at every width, the gap every size has on a phone, and on device.
+  full: "sm:max-w-[calc(100%-2rem)]",
 } as const;
 
 /**
@@ -181,8 +182,8 @@ export type DialogLayoutProps = {
   onOpenChange?: ((open: boolean) => void) | undefined;
   /**
    * How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl`
-   * 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the
-   * screen allows.
+   * 56rem, and `full` the window less 16px a side. Narrower than that, every size is as wide as the
+   * screen less the same 16px a side.
    */
   size?: keyof typeof SIZES | undefined;
   /**
@@ -281,9 +282,13 @@ export type DialogLayoutProps = {
    * still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel.
    */
   showCloseButton?: boolean | undefined;
+  /** On the dialog's panel. Its width comes from `size`, so reach for this for anything else. */
   className?: string | undefined;
+  /** On the header: the title, the description, and the room the ✕ takes. */
   headerClassName?: string | undefined;
+  /** On the body, the part that scrolls between the header and the footer. */
   contentClassName?: string | undefined;
+  /** On the footer, which holds `footerSlot` and the actions. */
   footerClassName?: string | undefined;
 };
 
