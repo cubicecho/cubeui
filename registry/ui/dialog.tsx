@@ -30,6 +30,7 @@ import {
   type DialogProps,
   type DialogSectionProps,
   type DialogTriggerProps,
+  holdOpen,
 } from "@/components/ui/dialog-base";
 import { X } from "@/components/ui/icons";
 import { addHandlers, cn } from "@/lib/utils";
@@ -185,13 +186,18 @@ function DialogContent({
     <View className="flex-1 items-center justify-center bg-overlay/60 p-4">
       {/* The backdrop is a sibling laid out underneath rather than a parent of
           the card, because `Pressable` has no `stopPropagation` — nesting the
-          card inside it would make every press on the card close the dialog. */}
-      <Pressable
-        className="absolute inset-0"
-        onPress={interactOutside}
-        role="button"
-        aria-label="Close"
-      />
+          card inside it would make every press on the card close the dialog.
+          A backdrop that refuses every press is not drawn: a button there would
+          be read out as Close and then not close. The `Modal` is its own
+          window, so a press on the bare overlay reaches nothing behind it. */}
+      {onInteractOutside === holdOpen ? null : (
+        <Pressable
+          className="absolute inset-0"
+          onPress={interactOutside}
+          role="button"
+          aria-label="Close"
+        />
+      )}
       <View
         // `dialog` unless the caller says `alertdialog`, as radix's content is.
         role={role ?? "dialog"}

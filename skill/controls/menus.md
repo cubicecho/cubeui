@@ -60,6 +60,10 @@ on both platforms:
   `onSelect`, and `linkSlot` or `href` for a row that navigates. The icon is drawn quieter than the
   label, `text-foreground/60`, as `Command`'s are — `text-negative` on a destructive row. The menu is
   at least `min-w-48` wide, so a `trailing` shortcut does not crowd its label.
+- **The labels line up by themselves.** When any row in the menu has an icon, a row without one
+  keeps the icon's room, so every label starts in one column; toggle rows included. A menu with
+  no icons keeps none. There is no `inset` prop, as shadcn's rows have, and nothing to pass: do
+  not pad an iconless row (`pl-8`) or give it a blank icon to line it up.
 - **A row that goes somewhere is a link, not an `onSelect` that navigates.** Hand it the router's
   `Link` as an element with no children, `linkSlot`, and the row is drawn inside it — on the web the
   menu item *is* the router's `<a>`, so hovering or arrowing onto it reaches the link's own
@@ -191,7 +195,8 @@ a picker or a palette needs a list that is not a tag picker.
 - `label` on `Command` names the search box, `label` on `CommandList` the list (default
   "Suggestions"). `forceMount` keeps a group or a row drawn through the filter — a "Create …" row.
 - `CommandDialog` is the palette in a `Dialog`, on both halves; `title` and `description` name it
-  and are not drawn. It takes `Command`'s `label`, `filter` and `shouldFilter` and hands them to
+  and are not drawn. They are inside the card on both halves, where shadcn's web file puts them
+  beside it, in the page. It takes `Command`'s `label`, `filter` and `shouldFilter` and hands them to
   the list inside, so a palette over results a server already matched passes
   `shouldFilter={false}`.
 - **A search dialog is `CommandDialog`** — a ⌘K palette, "Find a todo", "Jump to project". Put

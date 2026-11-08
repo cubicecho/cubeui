@@ -561,3 +561,44 @@ export const DeviceTooltipWaitsForTheReader: Story = {
     await waitFor(() => expect(canvas.queryByRole("tooltip")).toBeNull(), { timeout: 3000 });
   },
 };
+
+/** Radix's collision padding on the web bubble, and the most the bubble on either half is wide. */
+const EDGE_GAP = 8;
+const MAX_BUBBLE = 320;
+
+/**
+ * A long hint on a button at the window's edge (#486): the web bubble keeps 8px clear of the edge
+ * rather than sliding flush with it, and wraps at 320px into lines of even length rather than
+ * running the width of the screen.
+ */
+export const TooltipKeepsOffTheEdge: Story = {
+  parameters: { layout: "fullscreen" },
+  render: () => (
+    <div className="flex bg-background pt-24">
+      <Compiled
+        aria-label="Delete lane"
+        variant="outline"
+        size="icon"
+        hint={`${LONG_HINT}, and its archive goes with it once it is empty`}
+        iconSlot={<CompiledTrash />}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await userEvent.hover(within(canvasElement).getByRole("button", { name: "Delete lane" }));
+    const tooltip = await screen.findByRole("tooltip");
+    // The bubble radix positions, not the hidden copy it reads out.
+    const bubble = document.querySelector<HTMLElement>('[data-slot="tooltip-content"]');
+    if (!bubble) {
+      throw new Error("expected the bubble");
+    }
+    await expect(tooltip).toHaveTextContent("Empty the lane first");
+    await waitFor(() => {
+      const box = bubble.getBoundingClientRect();
+      return expect({
+        clear: Math.round(box.left) >= EDGE_GAP,
+        narrow: box.width <= MAX_BUBBLE,
+      }).toEqual({ clear: true, narrow: true });
+    });
+  },
+};

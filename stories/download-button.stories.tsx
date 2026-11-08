@@ -254,3 +254,52 @@ export const TheNameTooltipCanBeTurnedOff: Story = {
     }
   },
 };
+
+const fetchNothing = fn(async () => "");
+
+/**
+ * Off with a reason (#486), as `CopyButton` is: `disabled` with a `hint` keeps the button
+ * reachable (`aria-disabled`), says why, and a press fetches and saves nothing.
+ */
+export const DisabledWithHint: Story = {
+  render: () => (
+    <SideBySide
+      native={
+        <Native
+          filename="note.md"
+          source={fetchNothing}
+          label="Download note.md"
+          disabled
+          hint="Save the note first"
+        />
+      }
+      compiled={
+        <Compiled
+          filename="note.md"
+          source={fetchNothing}
+          label="Download note.md"
+          disabled
+          hint="Save the note first"
+        />
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    fetchNothing.mockClear();
+    const click = spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    try {
+      const buttons = canvas.getAllByRole("button", { name: "Download note.md" });
+      await expect(buttons).toHaveLength(2);
+      for (const button of buttons) {
+        await expect(button).toHaveAttribute("aria-disabled", "true");
+        await expect(button).toHaveAccessibleDescription("Save the note first");
+        await userEvent.click(button);
+      }
+      await expect(fetchNothing).not.toHaveBeenCalled();
+      await expect(click).not.toHaveBeenCalled();
+    } finally {
+      click.mockRestore();
+    }
+  },
+};

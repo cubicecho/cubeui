@@ -91,7 +91,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         className={cn(
           POPOVER_CONTENT_CLASS,
-          "flex z-50 text-foreground outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "flex z-50 origin-(--radix-popover-content-transform-origin) text-foreground outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           className,
         )}
         {...props}

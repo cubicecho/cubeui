@@ -103,8 +103,9 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
 | `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"outline"` | The button's variant. The default is `outline`. |
 | `size` | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` | `"icon-sm"` | The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text size draws `label` beside the icon. |
 | `destination` | `"ask" \| "share" \| "files"` | `"ask"` | Device only: where the file goes. The default is `ask`, which leaves it to the person pressing. The browser has one answer, its own downloads, and ignores this. |
-| `disabled` | `boolean` |  | The button cannot be pressed. |
-| `tooltip` | `boolean` |  | Whether the tooltip is drawn: at an `icon*` size, `label`. A text size draws its label and has no tooltip. Turn it off where the icon already explains itself. |
+| `disabled` | `boolean` |  | Off: a press saves nothing. Say why with `hint`, as on `Button` — "Save the note first". |
+| `hint` | `ReactNode` |  | The button's tooltip, read after its name, as on `Button` and `CopyButton`. With `disabled` it keeps the button focusable and hoverable (`aria-disabled`), so the reason it is off can still be read. |
+| `tooltip` | `boolean` |  | Whether the tooltip is drawn: the `hint`, or with none at an `icon*` size, `label`. A text size with no `hint` draws its label and has no tooltip. Off, a `hint` is still the button's description. Turn it off where the icon already explains itself. |
 | `onDownloaded` | `(() => void)` |  | Called once the file has been handed over — a toast, an analytics event. |
 | `onError` | `((error: unknown) => void)` |  | Called when `source` or `href` threw or the platform refused the file. The button holds no toasts, so this is where the caller says so. |
 | `className` | `string` |  | The button's class. |
@@ -133,7 +134,11 @@ A button that saves a file is `DownloadButton`, on both halves. Do not write the
   glyph was. A `source` or `href` that throws calls `onError` and leaves the button as it was;
   `onDownloaded` runs after a good one.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
-  At an `icon*` size `label` is its tooltip, as on `Button`, and `tooltip={false}` turns it off.
+  At an `icon*` size `label` is its tooltip, as on `Button`. A `hint` takes its place, and
+  `tooltip={false}` turns it off.
+- When there is nothing to save yet, pass `disabled` and a `hint` saying why, as on `CopyButton`:
+  `<DownloadButton filename="note.md" source={note} disabled={!saved} hint="Save the note first" />`.
+  With the hint it stays focusable (`aria-disabled`), and a press fetches and saves nothing.
 - On the web the file goes to the browser's downloads. **On a device there is no downloads
   folder**, so `destination` says where: `"share"` opens the share sheet, `"files"` asks for a
   folder and writes into it, and `"ask"`, the default, puts both in a menu on the button so the

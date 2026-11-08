@@ -28,6 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { holdOpen } from "@/components/ui/dialog-base";
 import { cn } from "@/lib/utils";
 
 /*
@@ -45,9 +46,6 @@ const AlertDialogPortal = DialogPortal;
 const AlertDialogOverlay = DialogOverlay;
 
 const CONTENT_SIZES = { default: "max-w-lg", sm: "max-w-xs" } as const;
-
-/** A press beside the card is not an answer. */
-const holdOpen = (event: Event) => event.preventDefault();
 
 /** The alert dialog's card, with `role="alertdialog"`. */
 function AlertDialogContent({

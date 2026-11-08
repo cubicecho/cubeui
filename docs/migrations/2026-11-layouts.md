@@ -114,6 +114,9 @@ test that finds them by name needs changing:
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
 | `tree`, `FileTree` | `buildTree` sorts `file2` before `file10`, and drops empty path segments, so an object store's `docs/` key is the folder `docs` and not an unnamed folder inside it. A file that shares its path with a folder is kept as its own row, after the folders, and the folder is drawn too; before, nothing under the folder was drawn ([#468](https://github.com/cubicecho/cubeui/issues/468)). Tell a file from a folder by `type`, not `path`. |
+| `ConfirmDialog` | `confirmLabel` defaults to "Delete", as on `ConfirmButton` and `confirm()`. It was "Confirm", which names no act. A `ConfirmDialog` with no `confirmLabel` now says Delete: pass the verb if it does something else, such as Discard or Revoke ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
+| `DownloadButton` | New: `hint`, as on `CopyButton`. With `disabled`, it says why the button is off and keeps it focusable ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
+| `dialog` | New: `holdOpen`, from `@/components/ui/dialog-base`. `onInteractOutside={holdOpen}` keeps a dialog open through a press beside it, as a `preventDefault` of your own does, and on device the backdrop is then not read out as a Close button. Swap it in for a handler of yours that only calls `preventDefault` ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -443,6 +446,22 @@ to add them.
     and a soft badge's dot is 8px (it was 6px), the size of a bare badge's dot. `ColorDot` moves
     a hex into the lightness band `ColorBar` uses, so a navy tag shows in dark mode and a yellow
     one on white, and it now installs `@cubeui/color`.
+
+- **Overlays and menus** ([#486](https://github.com/cubicecho/cubeui/issues/486)).
+  - In a menu where some rows have an icon and some don't, every label starts in one column: a
+    row with no icon keeps the icon's room. A menu with no icons is unchanged. Padding or a blank
+    icon you added to line the labels up can go.
+  - A tooltip wraps at `max-w-xs`, on both halves. On the web its lines are evened out and it
+    keeps 8px from the window's edge.
+  - On the web a `Popover` grows out of its trigger when it opens, as `Menu` does, not out of
+    its own centre.
+  - On the web `CommandDialog`'s hidden title and description are inside its card, as on device.
+    They were in the page beside the dialog, and there even while it was shut. A test that found
+    them in the page finds them inside the dialog.
+  - `MarkdownCodeEditor`'s completion and lint popovers draw a popover's shadow.
+  - On device, the backdrop of a dialog that a press beside it does not close — `ConfirmDialog`,
+    `AlertDialog`, `DialogLayout` with `dismissible={false}` — is no longer a button named Close
+    for a screen reader.
 
 ## Checking the result
 

@@ -10,6 +10,7 @@
 
 import type { ReactNode } from "react";
 import { useId, useState } from "react";
+import { holdOpen } from "@/components/ui/dialog-base";
 import { Button } from "./button";
 import {
   Dialog,
@@ -39,7 +40,10 @@ type ConfirmDialogProps = {
   onOpenChange: (open: boolean) => void;
   title: ReactNode;
   description: ReactNode;
-  /** The verb on the destructive button. A node, so it can carry an icon beside the word. */
+  /**
+   * The verb on the destructive button, naming the act: Delete, Discard, Revoke, Remove. A node,
+   * so it can carry an icon beside the word.
+   */
   confirmLabel?: ReactNode;
   cancelLabel?: ReactNode;
   /**
@@ -79,7 +83,7 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
+  confirmLabel = "Delete",
   cancelLabel = "Cancel",
   requireText,
   requireTextLabel,
@@ -111,9 +115,6 @@ export function ConfirmDialog({
     </Dialog>
   );
 }
-
-/** A press beside the card is not an answer; `preventDefault` is how both halves' `Dialog` hear it. */
-const holdOpen = (event: Event) => event.preventDefault();
 
 type ConfirmDialogBodyProps = {
   title: ReactNode;

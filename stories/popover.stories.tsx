@@ -63,3 +63,25 @@ export const CloseShutsIt: Story = {
     await waitFor(() => expect(body().queryByText("Compiled pane")).toBeNull());
   },
 };
+
+/**
+ * The web pane grows out of its trigger, as the menu does, not out of its own centre (#486):
+ * radix hands it the edge it opened from as `--radix-popover-content-transform-origin`, and the
+ * pane's zoom is drawn from there. Below its trigger, that is the pane's top edge.
+ */
+export const GrowsFromItsTrigger: Story = {
+  render: () => (
+    <CompiledPopover>
+      <CompiledTrigger>Compiled filters</CompiledTrigger>
+      <CompiledContent side="bottom" aria-label="Compiled pane">
+        <p>Compiled pane</p>
+      </CompiledContent>
+    </CompiledPopover>
+  ),
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Compiled filters" }));
+    const pane = await body().findByRole("dialog", { name: "Compiled pane" });
+    await expect(pane).toHaveAttribute("data-side", "bottom");
+    await expect(getComputedStyle(pane).transformOrigin.split(" ")[1]).toBe("0px");
+  },
+};
