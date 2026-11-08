@@ -38,18 +38,18 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `loading` | `boolean` | `false` | Whether the body is still being fetched. On, a skeleton stands in for it and `emptySlot` is not consulted. The title and the footer stay. |
 | `triggerSlot` | `SlotNode` |  | What opens it, wrapped in `DialogTrigger asChild` — pass a `<Button>`, not a bare string. With a trigger and no `open`, the dialog owns its own state and the caller holds none. |
 | `open` | `boolean` |  | Controlled open state. Omit both this and `onOpenChange` to let the trigger drive it. |
-| `onOpenChange` | `((open: boolean) => void)` |  |  |
-| `size` | `keyof typeof SIZES` | `"md"` |  |
+| `onOpenChange` | `((open: boolean) => void)` |  | Called with `true` when the trigger opens it and `false` when it closes. A close that `hasUnsavedChanges` asks about is reported only once the answer is Discard. With `open`, this is where the caller sets it. |
+| `size` | `"sm" \| "md" \| "lg" \| "xl" \| "full"` | `"md"` | How wide the dialog is from the `sm` breakpoint up: `sm` 24rem, `md` 32rem, `lg` 42rem, `xl` 56rem, and `full` the window less a margin. Narrower than that, every size is as wide as the screen allows. |
 | `footerSlot` | `SlotNode` |  | The footer's start. A destructive action, or a word on why the confirm is refusing. Several elements sit together in one row with a small gap; `footerActionsSlot` stays at the far end. |
 | `footerActionsSlot` | `SlotNode \| ((close: () => void) => SlotNode)` |  | The footer's end. Cancel and confirm. Given alone, the footer is simply right-aligned. |
 | `wrapperSlot` | `((parts: SlotNode, wrapper: { className: string }) => SlotNode)` |  | Wraps the header, the body and the footer together, inside the dialog. Its use is a form: with the fields and the submit button under one `<form>`, Enter in a field submits it and the footer's submit button is a real one. A `<form>` around the body alone leaves the button outside it, where the browser does not count it, and Enter in a form of two fields does nothing. |
 | `dismissible` | `boolean` | `true` | Whether Escape and a click on the overlay close it. Off refuses to leave; prefer `hasUnsavedChanges`, which asks on the way out instead. |
 | `hasUnsavedChanges` | `boolean \| (() => boolean)` | `false` | There is work in the body that closing would throw away. Escape, a click on the overlay, the close button and a `footerActionsSlot` Cancel then ask first, and the dialog stays open if the answer is no. |
-| `discardTitle` | `ReactNode` | `DISCARD_QUESTION.title` | The question that asks: "Discard your changes?". Defaulted, because this one really is the same everywhere. |
-| `discardDescription` | `ReactNode` | `DISCARD_QUESTION.description` | The line under it: "What you have typed here will not be saved." |
-| `discardLabel` | `ReactNode` | `DISCARD_QUESTION.discardLabel` | The verb that throws the work away: "Discard". |
-| `keepLabel` | `ReactNode` | `DISCARD_QUESTION.keepLabel` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
-| `showCloseButton` | `boolean` | `true` |  |
+| `discardTitle` | `ReactNode` | `"Discard your changes?"` | The question that asks: "Discard your changes?". Defaulted, because this one really is the same everywhere. |
+| `discardDescription` | `ReactNode` | `"What you have typed here will not be saved."` | The line under it: "What you have typed here will not be saved." |
+| `discardLabel` | `ReactNode` | `"Discard"` | The verb that throws the work away: "Discard". |
+| `keepLabel` | `ReactNode` | `"Keep editing"` | The verb that goes back to it: "Keep editing". Also what Escape answers. |
+| `showCloseButton` | `boolean` | `true` | Whether the ✕ is drawn in the corner. It closes the way Escape does, so `hasUnsavedChanges` still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel. |
 | `className` | `string` |  |  |
 | `headerClassName` | `string` |  |  |
 | `contentClassName` | `string` |  |  |

@@ -27,7 +27,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | --- | --- | --- | --- |
 | `className` | `string` |  |  |
 | `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: drawn empty and announced with no value, as Radix's is — not animated. |
-| `max` | `number` | `DEFAULT_MAX` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
+| `max` | `number` | `100` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
 | `label` | `string` |  | What is progressing — "Re-embedding progress". The bar's accessible name. |
 | `valueLabel` | `string` |  | The value in words, read instead of the bare number: "1,204 of 5,880 turns". Without it a screen reader says the percentage, which is right when the number means nothing else. |
 | `indicatorClassName` | `string` |  | The filled part: `bg-negative` for a context window nearly full. |
@@ -63,7 +63,7 @@ with a filled `div` and a `style.width` inside it.
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `color` (required) | `string` |  |  |
-| `size` | `keyof typeof SIZES` | `"md"` |  |
+| `size` | `"sm" \| "md"` | `"md"` |  |
 | `className` | `string` |  |  |
 | `label` | `string` |  | What the colour stands for, exposed as the accessible name. |
 <!-- /props -->
