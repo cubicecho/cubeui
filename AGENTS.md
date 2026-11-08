@@ -417,7 +417,8 @@ does the same thing itself now that it is native-first.
   loop body, no bare numbers outside a `const NAME = 5`, and `x === false` (not `!x`) for a logic
   check, with `!` left for null guards (`no-negation.grit`). An app that vendors these files lints
   them with those rules, so a file that fails them gets the linter turned off around it (#286).
-  A suppression only the compiled element needs is written `// web: biome-ignore …`
+  A suppression only the compiled element needs is written `// web: biome-ignore …`, or
+  `{/* web: biome-ignore … */}` among JSX children, where a line comment is text
 - Files `kebab-case.tsx`; components `PascalCase`; vars and functions `camelCase`; true
   constants `SCREAMING_SNAKE_CASE`
 - Prefix an unused parameter with `_`; `unknown` over `any`, which is an error
@@ -475,6 +476,13 @@ with "Browser connection was closed". Where more than one checkout shares the ma
 `npm test`, `npm run check` and `npm run install-test` takes the same lock
 (`flock "$HOME/.cache/cubeui-test.lock" npm run check`), and a git worktree is made outside this
 directory, so the tools here never find a second copy of the project.
+
+**A `waitFor` callback only reads.** `waitFor` runs its callback again on every change to the
+document, so a callback that changes it — appends a node, sets an attribute or a style — calls
+itself in a loop of microtasks that `waitFor`'s own timer never gets between. A condition that
+never comes true then hangs the renderer for the whole test timeout instead of failing in a
+second (#497). `tokenColor` is safe there: it spells a colour out in a shadow root, which no
+observer of the document sees. Work out anything else that touches the page before the `waitFor`.
 
 ## Keep the skill in sync
 

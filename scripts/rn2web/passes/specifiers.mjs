@@ -71,8 +71,14 @@ export function rewriteSpecifiers(sourceFile, compiledNames, neutralNames, diagn
  * whenever a `className` is written as something other than a literal or an existing `cn(...)`, and
  * so does a scroll view's content container. A source file with no class merging of its own has no
  * reason to have imported it, so the import is added here rather than assumed.
+ *
+ * The file that declares `cn` (`registry/lib/utils.ts`) is skipped: an import there would collide
+ * with the declaration, which is why `fieldTriggerClass` once had to call `clsx` (#497).
  */
 export function ensureCn(sourceFile) {
+  if (sourceFile.getFunction("cn") || sourceFile.getVariableDeclaration("cn")) {
+    return;
+  }
   const used = sourceFile
     .getDescendantsOfKind(SyntaxKind.CallExpression)
     .some((call) => call.getExpression().getText() === "cn");
