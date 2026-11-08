@@ -9,7 +9,7 @@
  * speak the same prop vocabulary, instead of the two drifting where nobody is looking.
  */
 
-import { Check, ChevronRight, Image as ImageIcon, ImageOff } from "lucide-react";
+import { Image as ImageIcon, ImageOff } from "lucide-react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { createContext, useContext, useEffect, useId, useMemo, useState } from "react";
 import ReactMarkdown, {
@@ -23,6 +23,7 @@ import remarkGfm from "remark-gfm";
 import { CHECKBOX_CLASS } from "@/components/ui/checkbox-base";
 import { cn, type SlotNode } from "@/lib/utils";
 import { Code, CodeBlock } from "./code";
+import { Check, ChevronRight } from "./icons";
 import { Separator } from "./separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
 
@@ -59,14 +60,18 @@ const DOCUMENT = cn(
 /**
  * The heading scale, which is `PageHeader`'s carried on down: a document's `#` is the same size as
  * a page's title, so a rendered file and the page around it are one hierarchy and not two.
+ *
+ * Every level is a step of its own. `####` is the body's size in its weight, `#####` a size below
+ * it, and `######` that size in secondary ink, so no two levels look alike (#487). Only the three
+ * above the body's size are tightened: at 14px and under, `tracking-tight` only crowds the letters.
  */
 const HEADINGS = {
-  1: "text-xl",
-  2: "text-lg",
-  3: "text-base",
+  1: "text-xl tracking-tight",
+  2: "text-lg tracking-tight",
+  3: "text-base tracking-tight",
   4: "text-sm",
-  5: "text-sm",
-  6: "text-sm text-foreground/60",
+  5: "text-xs",
+  6: "text-xs text-foreground/60",
 } as const;
 
 type Level = keyof typeof HEADINGS;
@@ -125,7 +130,7 @@ function Heading({
         // the heading that is a link's target: it lands clear of the edge rather than under it.
         // Beside a toggle the section holds that room instead: the heading is the second child of
         // the toggle's row, where `first:mt-0` never applies, and would sit a margin below it.
-        "mb-0 min-w-0 scroll-mt-4 font-semibold tracking-tight",
+        "mb-0 min-w-0 scroll-mt-4 font-semibold",
         section ? "mt-0" : "mt-3 first:mt-0",
         HEADINGS[level],
       )}

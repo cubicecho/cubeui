@@ -175,6 +175,49 @@ export const EveryElement: Story = {
 };
 
 /**
+ * The six heading levels, one under another. Each is a step of its own: `####` is the body's size,
+ * `#####` a size below it, `######` that size in secondary ink, and only the three above the
+ * body's size are tightened (#487).
+ */
+export const Headings: Story = {
+  args: {
+    content: [
+      "# First level",
+      "## Second level",
+      "### Third level",
+      "#### Fourth level",
+      "##### Fifth level",
+      "###### Sixth level",
+      "Body text, for the size the fourth level shares.",
+    ].join("\n\n"),
+  },
+  play: async ({ canvas }) => {
+    const looks = [1, 2, 3, 4, 5, 6].map((level) => {
+      const style = getComputedStyle(canvas.getByRole("heading", { level }));
+      return {
+        level,
+        size: Number.parseFloat(style.fontSize),
+        look: `${style.fontSize} ${style.color}`,
+        tracking: style.letterSpacing,
+      };
+    });
+    // No two levels look alike, and none is larger than the one above it.
+    await expect(new Set(looks.map(({ look }) => look)).size).toBe(6);
+    for (const [index, { size }] of looks.entries()) {
+      await expect(size).toBeLessThanOrEqual(looks[index - 1]?.size ?? size);
+    }
+    // Tightened only above the body's 14px.
+    for (const { size, tracking } of looks) {
+      if (size <= 14) {
+        await expect(tracking).toBe("normal");
+      } else {
+        await expect(tracking).not.toBe("normal");
+      }
+    }
+  },
+};
+
+/**
  * A list that mixes task items with plain ones, as GitHub draws it: the plain items keep their
  * bullets, each task item's box sits where its bullet would be, and every item's text starts at
  * the same place.

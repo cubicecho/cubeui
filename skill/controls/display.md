@@ -25,11 +25,11 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `className` | `string` |  | On the track, the full-width bar the fill is drawn in. A different height is an `h-*` here. |
-| `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: drawn empty and announced with no value, as Radix's is — not animated. |
+| `value` | `number \| null` |  | How much is done, from 0 to `max`. Clamped to that range. Left out (or `null`), the bar is indeterminate: a third of the track sweeping across it, and announced with no value, as Radix's is. Under reduced motion the sweep holds still in the middle, off the start, so it is never read as an amount. |
 | `max` | `number` | `100` | What `value` is out of. 100 unless given, so a percentage needs nothing. |
 | `label` | `string` |  | What is progressing — "Re-embedding progress". The bar's accessible name. |
 | `valueLabel` | `string` |  | The value in words, read instead of the bare number: "1,204 of 5,880 turns". Without it a screen reader says the percentage, which is right when the number means nothing else. |
+| `className` | `string` |  | On the track, the full-width bar the fill is drawn in. A different height is an `h-*` here. |
 | `indicatorClassName` | `string` |  | The filled part: `bg-negative` for a context window nearly full. |
 <!-- /props -->
 
@@ -44,8 +44,13 @@ with a filled `div` and a `style.width` inside it.
   `aria-label` works too, so a shadcn call site ports unchanged.
 - `valueLabel` is the value in words, read instead of the number ("1,204 of 5,880 turns"). Leave
   it out when the percentage is what the number means.
-- No `value` (or `null`) is indeterminate: drawn empty and announced with no value. It does not
-  animate. A wait with no known end wants a [`Spinner`](#spinner), not an empty bar.
+- No `value` (or `null`) is indeterminate: announced with no value, and drawn as a third of the
+  track sweeping across it, so it never looks like 0%. Under reduced motion the segment holds still
+  in the middle third, on both halves. Use it where the bar will get a value soon, such as an
+  upload before its first progress event; a wait with no bar to fill is a
+  [`Spinner`](#spinner).
+- The track has a `border-foreground/50` edge, a control's, so its whole length is 3:1 from the
+  page or a card in every palette; the fill sits inside it.
 - `className` is the track (`h-1.5` for a thinner one); `indicatorClassName` is the filled part
   (`bg-negative` for a context window nearly full). Colours are tokens, as everywhere.
 - A bar of several coloured segments (a breakdown, a stacked share) is not a progress bar and not
@@ -62,9 +67,9 @@ with a filled `div` and a `style.width` inside it.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `color` (required) | `string` |  | The colour to draw, as a CSS colour string: a tag's or a category's own, which the palette does not hold. |
-| `size` | `"sm" \| "md"` | `"md"` | `sm` for a dot inside a line of text or a chip, `md` for one that stands beside a label on its own. |
-| `className` | `string` |  | On the dot itself. |
+| `color` (required) | `string` |  | The colour a tag or a category was given, which the palette does not hold. A hex is moved into the lightness band that shows on the page and on a card in every theme, as `ColorBar`'s is, so a navy tag does not vanish in dark mode or a yellow one on white; any other CSS colour is drawn as given. |
+| `size` | `"sm" \| "md"` | `"md"` | `sm` (8px) for a dot inside a line of text, a menu row or a chip; `md` (10px), the default, for one standing beside its label in a list or a legend. |
+| `className` | `string` |  | On the dot itself: a margin to line it up with the first line of a label that wraps. |
 | `label` | `string` |  | What the colour stands for: the accessible name, and on the web the tooltip under the pointer. Without it the dot is decoration. |
 <!-- /props -->
 
@@ -96,9 +101,12 @@ Showing a colour the user picked is three small items, all on both halves:
 ```
 
 - **`ColorDot`** (`@cubeui/color-dot`) — a round swatch standing in for a category, status or
-  tag in a list; `size` is `sm` or `md`. Without `label` it is decoration and hidden from
-  assistive tech; with one, the label is its accessible name, and on the web its tooltip under
-  the pointer. Do not wrap a labelled dot in a `Tooltip` of your own: that draws a second one.
+  tag in a list; `size` is `sm` (8px, inside a menu row or a chip, the size of `Badge`'s dots) or
+  `md` (10px, beside its label in a list or a legend). Those are the two dot sizes; do not draw a
+  `size-3 rounded-full` of your own. A hex is moved into the lightness band that shows in every
+  theme, as `accentColor` is (below), so a navy tag shows in dark mode. Without `label` it is
+  decoration and hidden from assistive tech; with one, the label is its accessible name, and on
+  the web its tooltip under the pointer. Do not wrap a labelled dot in a `Tooltip` of your own: that draws a second one.
 - **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), and `accentLabel`
   names it. The colour keeps its hue and is made light or dark enough to be 3:1 from the page and
   the card in every theme at once, so a yellow pick is drawn olive and a navy one mid blue; a
@@ -198,7 +206,7 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `variant` | `"default" \| "info" \| "warning" \| "destructive"` | `"default"` | What kind of notice it is, which sets the tint, the icon and the role. `destructive` is an error the reader has to hear now and is announced as an `alert`; the others are a `status`. |
-| `iconSlot` | `SlotNode` |  | Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink. Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except on `info`, which is a colour and draws nothing it was not given. `null` draws no icon at all, and the text moves to the edge. |
+| `iconSlot` | `SlotNode` |  | Before the title. A bare `<RefreshCw />`; the alert sizes it and gives it the variant's ink. Left out, the variant's own glyph is drawn — `Info`, `TriangleAlert` or `CircleAlert` — except on `info`, which has no glyph of its own: its column is held empty, so its words line up with the alerts around it. `null` draws no icon and no column, and the text moves to the edge. |
 | `title` | `ReactNode` |  | What happened, in a few words: "API key generated", "Last error". |
 | `description` | `ReactNode` |  | The line under the title: what it means, or what to do about it. A link may sit inside it. |
 | `actionSlot` | `SlotNode` |  | The far end: one button that deals with it — "Change the embedder", "Retry". |
@@ -207,16 +215,17 @@ and two `<p>`s, and do not reach for `Badge`, which labels a thing rather than e
 <!-- /props -->
 
 - `variant` is `default` (on the card), `info`, `warning` or `destructive`. It sets the tint, the
-  icon and the role — nothing else is coloured: the title and the line under it stay the
-  foreground on a tint, because the variant's own hue on its own tint is under 4.5:1. Do not pass
+  icon and the role — nothing else is coloured: the title is the foreground and the line under it
+  `/60` in every variant, because the variant's own hue on its own tint is under 4.5:1. Do not pass
   `text-amber-*` to fix that.
 - **Only `destructive` is `role="alert"`**, which interrupts a screen reader. The rest are a polite
   `status`. So a failure the user just caused is `destructive`, and a standing notice — a key shown
   once, a fallback in use, a hint — is `warning` or `info` even when it is urgent-looking.
 - `iconSlot` defaults to the variant's glyph (`Info`, `TriangleAlert`, `CircleAlert`), except on
-  `info`, which is the blue and draws no icon it was not given. Pass a bare
-  `<RefreshCw />` to replace it; the alert sizes it and gives it the variant's ink. `iconSlot={null}`
-  draws none.
+  `info`, which is the blue and has no glyph of its own: its icon column is held empty, so a stack
+  of alerts starts its words at one edge. Pass a bare `<RefreshCw />` to replace it, or to give an
+  `info` alert an icon that names the highlight; the alert sizes it and gives it the variant's ink.
+  `iconSlot={null}` draws no icon and gives up the column, so the words start at the edge.
 - `title` and `description` are nodes, so a link can sit inside the description. A description
   with loose text in it is a text element; one that is only elements, such as a `<ul>` of reasons
   or a few paragraphs, is drawn in a block box instead, so the list is valid HTML. On device each

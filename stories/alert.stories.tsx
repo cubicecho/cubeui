@@ -18,10 +18,11 @@ import { TriangleAlert as NativeTriangle } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 
 /**
- * The alert on both halves, every variant. The play test is what says the role follows the
- * variant — only `destructive` interrupts — that the text on a tint is the foreground rather than
- * the variant's hue, and that the default glyph is the variant's, sized and coloured without the
- * caller's help. The contrast itself is the axe run every story gets.
+ * The alert on both halves, every variant, as a stack. The play test is what says the role follows
+ * the variant — only `destructive` interrupts — that the text on a tint is the foreground and
+ * `/60` rather than the variant's hue, that the default glyph is the variant's, sized and coloured
+ * without the caller's help, and that every title in the stack starts at one edge (#487). The
+ * contrast itself is the axe run every story gets.
  */
 const meta = { title: "RN Parity/Alert" } satisfies Meta;
 export default meta;
@@ -101,14 +102,32 @@ export const Default: Story = {
       await expect(colour(compiled)).toBe(foreground);
     }
 
-    // The line under the title is muted only on the card; on a tint it is the foreground too.
+    // The line under the title is `/60` in every variant, on the card and on each tint alike.
     const [nativeSessions, compiledSessions] = pair("Sessions now last thirty days.");
-    await expect(colour(nativeSessions)).toMatch(/\/ 0\.6\)$/);
-    await expect(colour(compiledSessions)).toBe(colour(nativeSessions));
-    for (const line of ["It will not be shown again.", "spawn npx ENOENT"]) {
+    const muted = colour(nativeSessions);
+    await expect(muted).toMatch(/\/ 0\.6\)$/);
+    for (const line of [
+      "Sessions now last thirty days.",
+      "Recall uses the lexical view for turns with no vector yet.",
+      "It will not be shown again.",
+      "spawn npx ENOENT",
+    ]) {
       const [native, compiled] = pair(line);
-      await expect(colour(native)).toBe(foreground);
-      await expect(colour(compiled)).toBe(foreground);
+      await expect(colour(native)).toBe(muted);
+      await expect(colour(compiled)).toBe(muted);
+    }
+    await expect(colour(compiledSessions)).toBe(muted);
+
+    // One edge for the words of the whole stack, `info`'s empty column included; `null` is the one
+    // that gives its column up.
+    for (const half of [0, 1]) {
+      const left = (text: string) => canvas.getAllByText(text)[half]?.getBoundingClientRect().left;
+      const edge = left("Heads up");
+      for (const title of ["Re-embedding · 1,204 of 5,880 turns", "Store this token securely"]) {
+        await expect(left(title)).toBe(edge);
+      }
+      await expect(left("Last error")).toBe(edge);
+      await expect(left("No icon, just the line.")).toBeLessThan(edge ?? 0);
     }
 
     // The default glyph: 16px, in the variant's ink, the same on both halves; `iconSlot={null}` is
@@ -140,7 +159,7 @@ export const Default: Story = {
 /**
  * shadcn's compound form, as a DOM call site writes it: an icon, `AlertTitle`, `AlertDescription`
  * as children. The icon goes into the icon box and takes the variant's ink and size, the parts go
- * into the column, and the description takes the variant's ink from the context.
+ * into the column, and the description is `/60` as it is in the props form.
  */
 export const ShadcnParts: Story = {
   render: () => (
