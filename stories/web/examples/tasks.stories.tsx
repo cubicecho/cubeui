@@ -277,11 +277,12 @@ function TaskDialog({
         <>
           <Button variant="outline" onClick={close} content="Cancel" />
           <form.AppForm>
-            {isEdit ? (
-              <form.SubmitButton variant="positive" requireChanges content="Save changes" />
-            ) : (
-              <form.SubmitButton variant="info" content="Create task" pendingLabel="Creating…" />
-            )}
+            <form.SubmitButton
+              isEdit={isEdit}
+              requireChanges={isEdit}
+              createLabel="Create task"
+              loadingLabel={isEdit ? "Saving…" : "Creating…"}
+            />
           </form.AppForm>
         </>
       )}

@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ReactNode } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   InputField,
   SelectField,
+  SubmitButton,
   SwitchField,
   TextareaField,
   useAppForm,
@@ -10,6 +12,7 @@ import {
 import { FieldRow } from "@/components/field-row";
 import { Button } from "@/components/ui/button";
 import { FormElement } from "@/components/ui/form-element";
+import { tokenColor } from "../token-color";
 
 const PRIORITIES = [
   { value: "1", label: "Low" },
@@ -147,7 +150,7 @@ function TodoForm({ loading = false, onSubmit, submitDisabled, requireChanges }:
           <form.SubmitButton
             disabled={submitDisabled}
             requireChanges={requireChanges}
-            content="Create Todo"
+            createLabel="Create Todo"
           />
         </form.AppForm>
       </div>
@@ -378,7 +381,7 @@ function OutsideSubmit({
       </FormElement>
       <footer className="flex justify-end">
         <form.AppForm>
-          <form.SubmitButton form={named ? "outside" : undefined} content="Rename" />
+          <form.SubmitButton form={named ? "outside" : undefined} createLabel="Rename" />
         </form.AppForm>
       </footer>
     </div>
@@ -413,6 +416,48 @@ export const OrNameTheFormItSubmits: Story = {
     // Enter in the field is the other path to the same submit.
     await userEvent.type(canvas.getByLabelText(/^Title/), "{Enter}");
     await waitFor(() => expect(args.onSubmit).toHaveBeenCalledTimes(2));
+  },
+};
+
+function OneSubmit({ submitSlot, pending = false }: { submitSlot: ReactNode; pending?: boolean }) {
+  const form = useAppForm({
+    defaultValues: { title: "Buy milk" },
+    // A submit that never settles holds the button mid-flight for as long as the story looks.
+    onSubmit: () => (pending ? new Promise<void>(() => {}) : undefined),
+  });
+  return <form.AppForm>{submitSlot}</form.AppForm>;
+}
+
+/**
+ * One `SubmitButton` API on both halves (#478): `createLabel` and `editLabel` chosen by `isEdit`,
+ * `loadingLabel` while it runs, and `positive` either way. Left without `isEdit` it says "Save",
+ * true of a create form and an edit form alike. `content` and `pendingLabel` still work, for one
+ * release.
+ */
+export const CreateAndEditLabels: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-2">
+      <OneSubmit submitSlot={<SubmitButton />} />
+      <OneSubmit submitSlot={<SubmitButton isEdit={false} />} />
+      <OneSubmit submitSlot={<SubmitButton isEdit />} />
+      <OneSubmit
+        pending
+        submitSlot={<SubmitButton isEdit={false} createLabel="Add task" loadingLabel="Adding…" />}
+      />
+      <OneSubmit pending submitSlot={<SubmitButton content="Rename" pendingLabel="Renaming…" />} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const positive = tokenColor("positive", { inside: canvasElement });
+    for (const name of ["Save", "Create", "Save changes", "Add task", "Rename"]) {
+      expect(getComputedStyle(canvas.getByRole("button", { name })).backgroundColor).toBe(positive);
+    }
+
+    await userEvent.click(canvas.getByRole("button", { name: "Add task" }));
+    await waitFor(() => expect(canvas.getByRole("button", { name: "Adding…" })).toBeDisabled());
+    await userEvent.click(canvas.getByRole("button", { name: "Rename" }));
+    await waitFor(() => expect(canvas.getByRole("button", { name: "Renaming…" })).toBeDisabled());
   },
 };
 

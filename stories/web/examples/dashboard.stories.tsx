@@ -148,7 +148,7 @@ function NewProjectDialog() {
         <>
           <Button variant="outline" onClick={close} content="Cancel" />
           <form.AppForm>
-            <form.SubmitButton variant="info" content="Create project" pendingLabel="Creating…" />
+            <form.SubmitButton createLabel="Create project" loadingLabel="Creating…" />
           </form.AppForm>
         </>
       )}

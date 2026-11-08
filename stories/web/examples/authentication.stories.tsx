@@ -131,7 +131,7 @@ function SignIn({ go }: { go: (screen: Screen) => void }) {
       }
       footerActionsSlot={
         <form.AppForm>
-          <form.SubmitButton form="sign-in" content="Sign in" pendingLabel="Signing in…" />
+          <form.SubmitButton form="sign-in" createLabel="Sign in" loadingLabel="Signing in…" />
         </form.AppForm>
       }
     />
@@ -238,12 +238,7 @@ function SignUp({ go }: { go: (screen: Screen) => void }) {
       }
       footerActionsSlot={
         <form.AppForm>
-          <form.SubmitButton
-            form="sign-up"
-            variant="info"
-            content="Create account"
-            pendingLabel="Creating…"
-          />
+          <form.SubmitButton form="sign-up" createLabel="Create account" loadingLabel="Creating…" />
         </form.AppForm>
       }
     />

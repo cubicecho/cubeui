@@ -269,7 +269,7 @@ function NewEventDialog({
         <>
           <Button variant="outline" onClick={close} content="Cancel" />
           <form.AppForm>
-            <form.SubmitButton variant="info" content="Add event" pendingLabel="Adding…" />
+            <form.SubmitButton createLabel="Add event" loadingLabel="Adding…" />
           </form.AppForm>
         </>
       )}
