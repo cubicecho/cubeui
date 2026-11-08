@@ -312,9 +312,9 @@ export function LoadError({
   }
 
   // Alert's destructive callout rather than a second error box of its own: the hue on the tint,
-  // the edge and the icon, the words in ink (red text on the red tint is under 4.5:1 in light),
-  // and Alert's own `role="alert"`. Capped and centred like the empty and not-found blocks it
-  // stands in for: across a 1280px page, Try again sat about 1100px from the words it answers.
+  // the edge and the icon, the words in ink as on every alert, and Alert's own `role="alert"`.
+  // Capped and centred like the empty and not-found blocks it stands in for: across a 1280px
+  // page, Try again sat about 1100px from the words it answers.
   return (
     <div
       data-slot="load-error"

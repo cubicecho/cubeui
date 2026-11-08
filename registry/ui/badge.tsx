@@ -3,10 +3,12 @@
  * that stands for the same thing in a row too tight for words. `badge.web.tsx` is the web
  * counterpart and `badge-base.ts` holds the contract and the class maps they share.
  *
- * The variants are shadcn's, with shadcn's meanings, plus `positive` and `warning`, which are
- * tokens of cubeui's own. On a light page their fills are dark, about Tailwind's 800s, because
- * white text on a lighter shade is under 4.5:1. Each string child is wrapped in a `Text` carrying the label colour, since native
- * does not inherit it. `onRemove` adds a trailing ✕ in its own `Pressable`.
+ * The variants are shadcn's, with shadcn's meanings, plus `positive`, `warning` and `info`, which
+ * are tokens of cubeui's own, and a `-soft` tint of each status. The status fills are dark under
+ * white text in a light palette and light under near-black text in a dark one, each 4.5:1 or more
+ * from its text; the values and their reasons are in `tokens/palette.mjs`.
+ * Each string child is wrapped in a `Text` carrying the label colour, since native does not
+ * inherit it. `onRemove` adds a trailing ✕ in its own `Pressable`.
  */
 import { Children, useEffect, useRef } from "react";
 import { Animated, Easing, Pressable, Text, View } from "react-native";

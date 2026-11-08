@@ -38,8 +38,10 @@ and the project is one or the other — a DOM app or an Expo app, never both:
 
 ```bash
 npx shadcn@latest add @cubeui/card-layout   # one item
-npx shadcn@latest add @cubeui/layout        # or a set: layout, form-set, control, primitive
+npx shadcn@latest add @cubeui/layout        # or, in a DOM app, a set: layout, form-set, control, primitive
 ```
+
+The sets are web-only: an Expo app adds its items one by one.
 
 Install from the registry, do not copy by hand. Where each item lands and the line that imports
 it are in [install-paths.md](install-paths.md), generated from the registry: look there rather

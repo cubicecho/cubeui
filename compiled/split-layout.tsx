@@ -477,18 +477,6 @@ type SidebarLayoutProps = {
 } & SidebarLayoutNarrow;
 
 /**
- * {@link SplitLayout} with the roles put back: a main surface, and a sidebar beside it. A preset
- * rather than a second implementation; for two comparable panes use `SplitLayout` and its numbered
- * slots.
- *
- * `sidebarHideBelow` is the app shell's narrow width: under it the rail is hidden and an `AppBar`
- * holding the brand, the `navSlot`, the `status` and the `actionSlot` is drawn over the page, both
- * from the one breakpoint. Which of the two is drawn is a media query, not state.
- *
- * `barPosition="bottom"` moves the `navSlot` out of that bar into one along the bottom of the
- * page, still the one navigation landmark named by `navLabel`.
- */
-/**
  * Which edge {@link SidebarLayout} put its sidebar on, for a `Sidebar` inside it: the sidebar draws
  * its border on the edge facing the content, and without this it guessed `start` while the layout's
  * default is `end`, so the rule landed on the frame's outer edge and nothing parted it from the page.
@@ -504,6 +492,18 @@ export const SidebarPositionContext = createContext<"start" | "end" | undefined>
  */
 export const AppBarEdgeContext = createContext<"top" | "bottom">("top");
 
+/**
+ * {@link SplitLayout} with the roles put back: a main surface, and a sidebar beside it. A preset
+ * rather than a second implementation; for two comparable panes use `SplitLayout` and its numbered
+ * slots.
+ *
+ * `sidebarHideBelow` is the app shell's narrow width: under it the rail is hidden and an `AppBar`
+ * holding the brand, the `navSlot`, the `status` and the `actionSlot` is drawn over the page, both
+ * from the one breakpoint. Which of the two is drawn is a media query, not state.
+ *
+ * `barPosition="bottom"` moves the `navSlot` out of that bar into one along the bottom of the
+ * page, still the one navigation landmark named by `navLabel`.
+ */
 export function SidebarLayout({
   contentSlot,
   sidebarSlot,

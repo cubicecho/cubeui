@@ -212,7 +212,12 @@ seven to it on both halves.
 
 **A button looks like a button.** `ghost` and `link` stay as Button variants, for an app porting
 shadcn code, and nothing in this registry or its stories uses them: a quiet action is `outline`,
-and an icon inside a field's own border is `secondary`. An action that adds something (Add, New,
+and an icon inside a field's own border is `secondary`. The one exception is `DescriptionHint`,
+which is `ghost`, round and `icon-xs` beside a title: it is the title's footnote mark, not an
+action, and it sits on the title's line beside every field, card and row that folds a
+description. An outlined box there drew a button on each of them, competing with the real
+actions in `actionSlot`, and a border's height would no longer fit the line. It still turns
+`hover` under the pointer and focused, so it reads as pressable where it is pressed. An action that adds something (Add, New,
 Create) is `info`, one that keeps the work (Save) is `positive`, and one that destroys is
 `destructive` or `destructive-outline`. A form's own submit keeps what was typed, so
 `SubmitButton` is `positive` even when it says Create; `info` is the button that opened the form.
@@ -266,7 +271,7 @@ current sidebar row, toggle chip, a calendar's picked day, a selected stat tile,
 the option a select or combobox is on: the `active` tint. `neutral` is for the thing to press.
 Keeping the two apart is why a chosen option does not look like a button.
 
-**Hover is grey, chosen is the `active` tint, rest is no fill.** Every interactive thing has these
+**Hover is the pale `hover` fill, chosen is the `active` tint, rest is no fill.** Every interactive thing has these
 three states and no more, and none of them borrows another's colour:
 
 - *Rest* — no fill (or the framed control's `bg-background`).

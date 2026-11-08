@@ -5,7 +5,7 @@
  * web one like any other.
  */
 import { useContext } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, isIconSize } from "@/components/ui/button";
 import { CodeBlockTitleContext } from "@/components/ui/code";
 import { type CopyButtonProps, useCopy } from "@/components/ui/copy-button-base";
 import { Check, Copy } from "@/components/ui/icons";
@@ -40,6 +40,7 @@ export function CopyButtonView({
       variant={variant}
       size={size}
       aria-label={copied ? "Copied" : name}
+      {...(isIconSize(size) ? {} : { content: copied ? "Copied" : name })}
       className={className}
       disabled={disabled}
       hint={hint}

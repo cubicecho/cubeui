@@ -68,7 +68,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `confirm` | both | `components/ui/confirm.tsx` | `import { ConfirmProvider, useConfirm } from "@/components/ui/confirm"` |
 | `confirm-button` | both | `components/confirm-button.tsx` | `import { ConfirmButton } from "@/components/confirm-button"` |
 | `confirm-dialog` | both | `components/ui/confirm-dialog.tsx` | `import { DISCARD_QUESTION, ConfirmDialog } from "@/components/ui/confirm-dialog"` |
-| `control` | web | a set: `color-picker`, `confirm-button`, `copy-button`, `date-picker`, `menu`, `combobox`, `password-input` | — (import from each item) |
+| `control` | web | a set: `button`, `calendar`, `checkbox`, `color-picker`, `combobox`, `command`, `confirm-button`, `copy-button`, `date-picker`, `date-time-input`, `download-button`, `file-picker`, `input`, `menu`, `password-input`, `radio-group`, `search-input`, `segmented`, `select`, `switch`, `switch-field`, `tabs`, `textarea`, `theme-picker`, `toggle-chip` | — (import from each item) |
 | `copy-button` | web | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
 | `copy-button` | native | `components/ui/copy-button.tsx`; also `copy-button-base.ts`, `copy-button-view.tsx`, `copy-button.web.tsx` | `import { CopyButton } from "@/components/ui/copy-button"` |
 | `date-field` | web | `components/date-field.tsx` | `import { DateField, DateRangeField, combineDateAndTime, DatePicker, DateRangePicker, setTime } from "@/components/date-field"` |

@@ -109,8 +109,8 @@ says.
   default palette, Monokai's purple in Monokai. It is the tint, `bg-active/40` with
   `text-foreground`, a step stronger (`/60`) under the pointer, and a selected state you draw
   yourself uses the same, so it follows the palette; `primary` stays the colour of a button to
-  press. The active tab and the sidebar's current row are the tint too. Hover is grey and never
-  `active`. The whole rule, state by state, is in
+  press. The active tab and the sidebar's current row are the tint too. Hover is the pale `hover` fill and
+  never `active`. The whole rule, state by state, is in
   [Hover, focus, chosen and disabled](index.md#hover-focus-chosen-and-disabled).
 - **Every palette draws the same steps.** A card or popover (`secondary`) is about 1.1:1 off the
   page and `hover` about 1.2:1 beyond it, in light, dark and Monokai alike. The four status colours

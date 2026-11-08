@@ -38,9 +38,9 @@ A button that puts a string on the clipboard is `CopyButton`, on both halves. Do
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
 | `value` (required) | `string` |  | The text that goes on the clipboard. |
-| `label` | `string` |  | The accessible name before the press: say what is copied when the screen has more than one thing that could be — "Copy endpoint URL". The default is `Copy`. For the moment after a press the name is `Copied`, whatever this says. Inside a `CodeBlock` with a `title`, the default is "Copy {title}". |
+| `label` | `string` |  | The accessible name before the press: say what is copied when the screen has more than one thing that could be — "Copy endpoint URL". The default is `Copy`. For the moment after a press the name is `Copied`, whatever this says. Inside a `CodeBlock` with a `title`, the default is "Copy {title}". At a text size it is also drawn beside the icon. |
 | `variant` | `"default" \| "destructive" \| "destructive-outline" \| "positive" \| "positive-outline" \| "info" \| "info-outline" \| "outline" \| "secondary" \| "ghost" \| "link"` |  | The button's variant. The default is `outline`. |
-| `size` | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` |  | The button's size. The default is `icon-sm`, which sits flush in a row of small text. |
+| `size` | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` |  | The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text size draws `label` beside the icon. |
 | `onCopied` | `(() => void)` |  | Called once the text is on the clipboard — a toast, an analytics event. |
 | `onError` | `((error: unknown) => void)` |  | Called when the clipboard refused the text — an insecure origin, a denied permission. The button does not turn into a tick, so it never claims a copy that did not happen; this is where the caller says so, since a shell holds no toasts. |
 | `disabled` | `boolean` |  | Off: a press copies nothing and calls neither `onCopied` nor `onError`. Say why with `hint`, as on `Button` — "Give the webhook an id first". |
@@ -57,9 +57,8 @@ an `absolute` corner over it.
   one) and `Copied` while the tick shows.
 - `variant` and `size` go to the `Button` underneath; the defaults are `outline` and `icon-sm`.
   At an `icon*` size the button is the glyph alone and `label` is its name. At a text size (`sm`,
-  `default`, `lg`) `label` is drawn beside the glyph — a toolbar's
-  `<DownloadButton label="Export" size="sm" … />`. Do not build that one from a `Button` and
-  `downloadBlob` by hand.
+  `default`, `lg`) `label` is drawn beside the glyph, and turns to `Copied` with the tick — a
+  toolbar's `<CopyButton label="Copy link" size="sm" … />`.
   `className` is the button's, for placing it.
 - The tick appears only if the write happened. A refused write — an insecure origin, a denied
   permission — calls `onError` and leaves the button as it was; `onCopied` runs after a good one.

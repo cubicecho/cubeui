@@ -18,7 +18,7 @@ It is not a page.
       <Button size="sm" variant="info" iconSlot={<Plus />} content="New workspace" />
     </>
   }
-  contentSlot={<SearchInput value={query} onChange={setQuery} />}
+  contentSlot={<SearchInput label="Search workspaces" value={query} onChangeText={setQuery} />}
 />
 ```
 

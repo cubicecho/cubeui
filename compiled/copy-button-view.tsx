@@ -16,7 +16,7 @@
  */
 import { useContext } from "react";
 import { type CopyButtonProps, useCopy } from "@/components/ui/copy-button-base";
-import { Button } from "./button";
+import { Button, isIconSize } from "./button";
 import { CodeBlockTitleContext } from "./code";
 import { Check, Copy } from "./icons";
 
@@ -50,6 +50,7 @@ export function CopyButtonView({
       variant={variant}
       size={size}
       aria-label={copied ? "Copied" : name}
+      {...(isIconSize(size) ? {} : { content: copied ? "Copied" : name })}
       className={className}
       disabled={disabled}
       hint={hint}

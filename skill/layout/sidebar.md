@@ -239,7 +239,7 @@ passed to the layout:
   navLabel="Main"
   status={`${running}/${servers} servers running`}
   actionSlot={<><LockButton /><ThemeToggle /></>}
-  contentSlot={<main className="min-h-0 flex-1 overflow-auto">{page}</main>}
+  contentSlot={page}                             // a PageLayout, which scrolls its own body
 />
 
 const BarLink = createLink(AppBarItem);         // beside createLink(SidebarItem)

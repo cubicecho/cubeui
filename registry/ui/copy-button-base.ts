@@ -18,12 +18,15 @@ export type CopyButtonProps = {
    * The accessible name before the press: say what is copied when the screen has more than one
    * thing that could be — "Copy endpoint URL". The default is `Copy`. For the moment after a
    * press the name is `Copied`, whatever this says. Inside a `CodeBlock` with a `title`, the
-   * default is "Copy {title}".
+   * default is "Copy {title}". At a text size it is also drawn beside the icon.
    */
   label?: string | undefined;
   /** The button's variant. The default is `outline`. */
   variant?: ButtonProps["variant"] | undefined;
-  /** The button's size. The default is `icon-sm`, which sits flush in a row of small text. */
+  /**
+   * The button's size. The default is `icon-sm`, which sits flush in a row of small text; a text
+   * size draws `label` beside the icon.
+   */
   size?: ButtonProps["size"] | undefined;
   /** Called once the text is on the clipboard — a toast, an analytics event. */
   onCopied?: (() => void) | undefined;

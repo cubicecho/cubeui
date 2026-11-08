@@ -3,9 +3,9 @@
  * The parts are props (`iconSlot`, `title`, `description`, `actionSlot`), and shadcn's compound
  * form with `AlertTitle` and `AlertDescription` works too, so a DOM call site ports unchanged.
  *
- * The variant colours only the tint, the border and the icon. The text is never the hue, because
- * coloured text on a 10% tint of the same colour is under 4.5:1. The title is the
- * foreground and the line under it `/60` in every variant, one hierarchy whatever the tint: `/60`
+ * The variant colours only the tint, the border and the icon. The text is never the hue: the
+ * title is the foreground and the line under it `/60` in every variant, one hierarchy whatever
+ * the tint, so a warning does not read louder than a note for its words alone. `/60`
  * is 4.8:1 or more on each tint over the page and over a card, in every palette, and
  * `palette-contrast.test.mjs` holds it. Only `destructive` is `role="alert"`, which interrupts a
  * screen reader; the other variants are `status`.

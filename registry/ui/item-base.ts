@@ -4,8 +4,8 @@
  * `./item` to `item.web.tsx` on web.
  *
  * Each class here is what the two halves agree on; the web half adds what only the DOM has —
- * `group-has-[…]`, `[&_svg]`, `[a]:`, the focus ring, `text-balance` — and the native half adds a
- * `Text` around a string and the ink a `Text` does not inherit there.
+ * `group-has-[…]`, `[&_svg]`, `[a]:`, a link row's hover and focus fill, `text-balance` — and the
+ * native half adds a `Text` around a string and the ink a `Text` does not inherit there.
  *
  * `default` is shadcn's size, so a DOM app's rows draw as they did. `sm` is `ListItem`'s row, which
  * is built from these parts at that size, and it takes the heading rhythm every block and row
