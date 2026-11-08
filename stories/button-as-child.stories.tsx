@@ -212,6 +212,7 @@ function middleClickOpens(link: HTMLElement) {
  * Now it is `aria-disabled`, its click and middle click are cancelled, and it leaves the tab order
  * unless a `hint` keeps it there to be asked why, as a hinted disabled button does. A router's
  * link is handed no `disabled` either, since one that passes its props to its `<a>` would write it.
+ * None of them offers the pointer (#527).
  */
 export const DisabledLinksAreNotFollowed: Story = {
   render: () => (
@@ -232,6 +233,11 @@ export const DisabledLinksAreNotFollowed: Story = {
       await expect(plain).toHaveAttribute("aria-disabled", "true");
       await expect(plain).not.toHaveAttribute("disabled");
       await expect(plain).toHaveAttribute("tabindex", "-1");
+      // An `<a>` offers the pointer by default, so it is told not to (#527).
+      await expect({ name, cursor: getComputedStyle(plain).cursor }).toEqual({
+        name,
+        cursor: "not-allowed",
+      });
       await userEvent.click(plain);
       await expect({ name, hash: window.location.hash }).toEqual({ name, hash: "" });
       await expect(middleClickOpens(plain)).toBe(false);
@@ -239,6 +245,7 @@ export const DisabledLinksAreNotFollowed: Story = {
       const hinted = canvas.getByRole("link", { name: `${name} hinted link` });
       await expect(hinted).toHaveAttribute("aria-disabled", "true");
       await expect(hinted).not.toHaveAttribute("disabled");
+      await expect(getComputedStyle(hinted).cursor).toBe("not-allowed");
       hinted.focus();
       await expect(hinted).toHaveFocus();
       await userEvent.click(hinted);
@@ -248,6 +255,7 @@ export const DisabledLinksAreNotFollowed: Story = {
       await expect(routed).toHaveAttribute("aria-disabled", "true");
       await expect(routed).not.toHaveAttribute("disabled");
       await expect(routed).toHaveAttribute("tabindex", "-1");
+      await expect(getComputedStyle(routed).cursor).toBe("not-allowed");
       await userEvent.click(routed);
       await expect(navigated).not.toHaveBeenCalled();
     }

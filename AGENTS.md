@@ -259,7 +259,8 @@ A box that is a tab stop only so a keyboard can scroll it — an overflowing `Ta
 `HeaderContentFooter`'s scrolling body, a stacked `SplitLayout` — has no hover look, so it shows
 focus as a field does, with `FOCUS_EDGE` (`registry/lib/utils.ts`): a transparent edge that turns
 `active` under `focus-visible:`. The page body and the split draw that line as a 1px inset shadow,
-`INSET_FOCUS_EDGE`, which takes no room. The table, the code block, the body and the split are tab
+`INSET_FOCUS_EDGE`, which takes no room. A tab's pane, a tab stop as radix's is, shows focus with
+`FOCUS_EDGE` too, and not the inset line, which a card filling the pane would cover. The table, the code block, the body and the split are tab
 stops only while they overflow, as `useOverflows` (`@cubeui/overflows`) measures it. A dialog that
 opens with no field to focus focuses its own panel, which draws no ring and no edge for it:
 otherwise its first button took focus, and a filled primary that looks hovered reads unfilled the
