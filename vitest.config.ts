@@ -45,6 +45,10 @@ export default defineConfig({
         // The pure functions. They are maths, not layout, so they have no business paying for a
         // browser session — and this project is where a `registry:lib` item gets tested at all,
         // since a story can only reach one through a component that renders it.
+        //
+        // A lib file imports another by the specifier it installs under, as `lib/color` reads
+        // `@/lib/readable-text-color`, so this resolves it where `tsconfig.json` does.
+        resolve: { alias: { "@/lib": resolve(root, "registry/lib") } },
         test: {
           name: "unit",
           environment: "node",

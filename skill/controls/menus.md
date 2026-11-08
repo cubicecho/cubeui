@@ -138,7 +138,8 @@ on both platforms:
   an Expo web app. On device React Native has no such role, so they are `checkbox` / `radio`,
   which is what makes a screen reader say "checked".
 - A popover that is a small form or a note, not a list of actions, stays a `Popover`. Its Done
-  button is `PopoverClose asChild`, not a handler that sets `open` to `false`.
+  button is `PopoverClose asChild`, not a handler that sets `open` to `false`. The button's own
+  `onPress` still runs, on every half, so Done can apply what was chosen and shut the pane.
 - **A `Button` under `PopoverTrigger asChild` or `DialogTrigger asChild` opens it by itself**, on
   every half, Expo web included — leave the popover uncontrolled. Do not hold `open` only so the
   button can `onPress={() => setOpen(!open)}`; the `Button` hands the trigger's click on from its
