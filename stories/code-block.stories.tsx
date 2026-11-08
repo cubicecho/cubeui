@@ -6,6 +6,7 @@ import { CopyButton as CompiledCopyButton } from "../compiled/copy-button";
 import { CodeBlock as Native } from "../registry/ui/code";
 import { CopyButton as NativeCopyButton } from "../registry/ui/copy-button";
 import { expectFocusEdge, tabTo } from "./focus-edge";
+import { monoFamily } from "./mono-family";
 import { SideBySide } from "./side-by-side";
 import { tokenColor } from "./token-color";
 
@@ -95,8 +96,13 @@ export const Default: Story = {
       await expect(getComputedStyle(text).whiteSpace).toBe("pre");
       await expect(content.scrollWidth).toBeGreaterThan(content.clientWidth);
 
-      // Seven lines of text-xs, so the newlines were kept rather than collapsed.
-      await expect(text.getBoundingClientRect().height).toBeGreaterThanOrEqual(7 * 16);
+      // Code text: 12px on a 20px line, in the theme's monospace (#480).
+      const type = getComputedStyle(text);
+      await expect([type.fontSize, type.lineHeight]).toEqual(["12px", "20px"]);
+      await expect(type.fontFamily).toBe(monoFamily());
+
+      // Seven lines of it, so the newlines were kept rather than collapsed.
+      await expect(text.getBoundingClientRect().height).toBeGreaterThanOrEqual(7 * 20);
 
       // And the block itself stays the width of its column: the long line is inside it.
       const frame = root.parentElement as HTMLElement;

@@ -1,4 +1,4 @@
-// Sixteen things that have to be true before a built registry is installable.
+// Seventeen things that have to be true before a built registry is installable.
 //
 // ## 1. No two source files share an item name
 //
@@ -274,6 +274,18 @@
 // to argue in review, not a file dropped in `registry/web/`. A line whose item is gone from the
 // tier fails too, so porting an item and forgetting its line cannot leave room for the next one.
 //
+// ## 17. Type and spacing stay on the named scale
+//
+// The tokens hold colour and radius, and type and spacing are Tailwind's steps by convention. Held
+// to nothing, the convention drifted: six line heights (`leading-3`, `none`, `snug`, `tight`,
+// `normal`, `relaxed`) and about seventy half-step classes (`gap-1.5`, `py-0.5`, `w-2.5`), which
+// bring back the "10px or 12px?" question a scale exists to answer, one component at a time
+// (#480). `AGENTS.md` names the steps and says what each is for. This holds the two that drifted:
+// a line height, and a half-step of padding, margin, gap, offset or size, is one of the named steps
+// in `scale-classes.mjs`, read from string literals as the colour classes are. A use off the scale
+// is either moved onto it or given a line in `scale-allow.json`, keyed by file and class, with the
+// reason; a line whose class is gone from its file fails too, so the list only shrinks.
+//
 // Run after `npm run registry:build`.
 
 import { readdir, readFile } from "node:fs/promises";
@@ -288,6 +300,7 @@ import {
 } from "./colour-classes.mjs";
 import { isSource, packageName, packagesIn } from "./imports.mjs";
 import { RESET_CLASS, TOKENS } from "./rn2web/registry.mjs";
+import { scaleProblems } from "./scale-classes.mjs";
 
 // Both built registries. `public/r` is the compiled web half and `public/r/native` the React Native
 // one; they hold the same item names on purpose, and the checks below run over each on its own,
@@ -519,6 +532,7 @@ const reexports = [];
 const misplaced = [];
 const inkless = [];
 const resetless = [];
+const offScale = [];
 let checked = 0;
 
 /**
@@ -760,6 +774,20 @@ for (const dir of NATIVE_SOURCES) {
     }
   }
 }
+
+// Rule 17. A line height or a half-step is a named step, or allowed with its reason.
+const scaleSources = new Map();
+for (const file of await readdir(SOURCES, { recursive: true })) {
+  if (/\.(tsx|ts)$/.test(file) && /\.test\.tsx?$/.test(file) === false) {
+    const where = path.join(SOURCES, file);
+    scaleSources.set(where, await readFile(where, "utf8"));
+  }
+}
+const scaleAllowed = JSON.parse(
+  await readFile(new URL("./scale-allow.json", import.meta.url), "utf8"),
+);
+const scales = scaleProblems(scaleSources, scaleAllowed);
+offScale.push(...scales.offScale, ...scales.stale);
 
 for (const built of BUILT) {
   const basenames = new Map();
@@ -1266,8 +1294,22 @@ if (undeclared.length > 0) {
   );
 }
 
+if (offScale.length > 0) {
+  console.error("\nA line height or a half-step is off the type and spacing scale:\n");
+  for (const one of offScale) {
+    console.error(`  ${one}`);
+  }
+  console.error(
+    "\nThe named steps are in `scripts/scale-classes.mjs`, and `AGENTS.md` says what each is for." +
+      "\nMove the class onto one of them. If the step is the point, say why in" +
+      "\n`scripts/scale-allow.json`, under the file and the class, and make that case in review." +
+      "\nA line there whose class has gone from its file is taken out with it.",
+  );
+}
+
 if (
-  undeclared.length +
+  offScale.length +
+    undeclared.length +
     resetless.length +
     inkless.length +
     misplaced.length +
@@ -1304,6 +1346,7 @@ console.log(
     "tree will hold, every layout is on both platforms, nothing re-exports with `export … from`, " +
     "every import between shipped files resolves where the CLI installs them, every " +
     "native source names the colour of the borders and text react-native-web would draw black, " +
-    "every item wearing the reset's classes depends on the item that installs it, and every " +
-    `web-only item is one of the ${Object.keys(WEB_ONLY).length} \`WEB_ONLY\` names, with its reason.`,
+    "every item wearing the reset's classes depends on the item that installs it, every " +
+    `web-only item is one of the ${Object.keys(WEB_ONLY).length} \`WEB_ONLY\` names, with its reason, ` +
+    "and every line height and half-step is on the named scale or allowed with its reason.",
 );

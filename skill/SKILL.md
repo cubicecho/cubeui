@@ -133,6 +133,7 @@ In an Expo app the table is [native.md](native.md). The import line for every it
 | A search dialog — a ⌘K palette, "find a todo", "jump to a project" — rather than `Command` in a `Dialog` of your own | `CommandDialog` | [controls/menus.md](controls/menus.md#command) |
 | A row of pills that switches a view or a period, one current | `SegmentedGroup`, `SegmentedButton` | [controls/combobox.md](controls/combobox.md#segmented-control) |
 | A light / dark / system setting, or a palette such as Monokai, stored and applied | `ThemePicker`, `useThemePreference`, `usePalettePreference`, `PaletteProvider` | [controls/theme.md](controls/theme.md#theme) |
+| Text, padding or a gap of your own beside cubeui's: which size, line, weight or step | `CODE_TEXT`, `HEADING_TITLE`, `HEADING_DESCRIPTION` | [controls/theme.md](controls/theme.md#type-and-spacing) |
 | An animation or a scroll of your own that should stop when the reader asks for reduced motion | `motion-safe:` on the web, `useReducedMotion` on both | [controls/index.md](controls/index.md#motion) |
 | A date and a time as one `Date` on both halves — or, with `clearable mode="date"`, an optional date only | `DateTimeInput` | [controls/dates.md](controls/dates.md#date-and-date-range) |
 | A date, a date with its time in the popover, or a start and an end, behind one full-width trigger, on both halves | `DatePicker`, `DateRangePicker` | [controls/dates.md](controls/dates.md#date-and-date-range) |

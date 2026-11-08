@@ -31,7 +31,7 @@
  */
 
 import { createContext, type ReactNode, useLayoutEffect, useRef, useState } from "react";
-import { cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
+import { CODE_TEXT, cn, FOCUS_EDGE, hasSlot, type SlotNode } from "@/lib/utils";
 import { Button } from "./button";
 import { useOverflows } from "./overflows";
 import { useReducedMotion } from "./reduced-motion";
@@ -48,7 +48,8 @@ export function Code({
     <span
       className={cn(
         "cube-rn-text",
-        "rounded-sm bg-foreground/10 px-1 py-0.5 font-mono text-xs text-foreground",
+        CODE_TEXT,
+        "rounded-sm bg-foreground/10 px-1 py-0.5 text-foreground",
         className,
       )}
     >
@@ -72,7 +73,7 @@ const MAX_HEIGHTS = {
 export const CodeBlockTitleContext = createContext<string | undefined>(undefined);
 
 /** The block's type, which is `Code`'s: the two are one family and should not drift apart. */
-const TEXT = "font-mono text-xs text-foreground";
+const TEXT = cn(CODE_TEXT, "text-foreground");
 
 /**
  * One line, with an ellipsis: `truncate` on the web, `line-clamp-1` on device, which is what
