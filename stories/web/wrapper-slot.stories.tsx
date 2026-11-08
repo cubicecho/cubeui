@@ -64,7 +64,7 @@ function InDialog({ onSubmit, onCancel, tall = false }: FormProps) {
             }}
             content="Cancel"
           />
-          <form.SubmitButton content="Save" />
+          <form.SubmitButton />
         </>
       )}
     />
@@ -90,7 +90,7 @@ function InCard({ onSubmit }: FormProps) {
             <InputField form={form} name="email" label="Email" />
           </div>
         }
-        footerActionsSlot={<form.SubmitButton content="Save" />}
+        footerActionsSlot={<form.SubmitButton />}
       />
     </div>
   );

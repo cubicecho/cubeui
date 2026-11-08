@@ -143,7 +143,7 @@ function Reply({ to }: { to: string }) {
       />
       <div className="flex justify-end gap-2">
         <form.AppForm>
-          <form.SubmitButton content="Send" pendingLabel="Sending…" />
+          <form.SubmitButton createLabel="Send" loadingLabel="Sending…" />
         </form.AppForm>
       </div>
     </FormElement>

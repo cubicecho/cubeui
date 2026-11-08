@@ -597,7 +597,7 @@ export const AForm: Story = {
       />
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" content="Cancel" />
-        <Button type="button" content="Create Todo" />
+        <Button type="button" variant="positive" content="Create Todo" />
       </div>
     </form>
   ),

@@ -53,8 +53,8 @@ set (see [native.md](../native.md)).
   | Variant | For |
   |---|---|
   | `default` | The emphasis of its row, when none of the meanings below fits |
-  | `info`, `info-outline` | Adds something: Add, New, Create |
-  | `positive`, `positive-outline` | Keeps the work: Save, Confirm |
+  | `info`, `info-outline` | Adds something: Add, New, Create. The button that opens a form |
+  | `positive`, `positive-outline` | Keeps the work: Save, Confirm. A form's `SubmitButton`, whatever it says |
   | `destructive`, `destructive-outline` | Destroys; the outline when it is not the emphasis of its row |
   | `outline` | A quiet action: Cancel, Close, a trigger |
   | `secondary` | An icon inside a field's own border. Its hover and focus darken its edge, not its fill: the hover grey is the same as its own |

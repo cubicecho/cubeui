@@ -36,7 +36,7 @@ const form = useAppForm({
   <SelectField form={form} name="list" label="List" options={LISTS} />
 
   <form.AppForm>
-    <form.SubmitButton variant="info" content="Create Todo" />
+    <form.SubmitButton createLabel="Create Todo" />
   </form.AppForm>
 </form>
 ```
@@ -92,6 +92,15 @@ What you do **not** write, at any field, ever:
 - `disabled={!canSubmit || isSubmitting}` on the submit — `SubmitButton` has both
 
 If you find yourself writing one of those, you are rebuilding the layer.
+
+**`SubmitButton`'s words are `createLabel`, `editLabel` and `loadingLabel`, the same on both
+halves.** `isEdit` picks one of the first two: `isEdit` says `editLabel` ("Save changes" unless
+given), and `isEdit={false}` says `createLabel` ("Create" unless given). Without `isEdit` it says
+`createLabel` if given, or "Save", which is true of a create form and an edit form alike.
+`loadingLabel` replaces the label while the submit runs ("Saving…" unless given). `content` and
+`pendingLabel` are the old names for `createLabel` and `loadingLabel`, and still work for one
+release; `content` wins over both labels. The props table is in
+[native.md](native.md#on-react-native).
 
 **A third reason not to submit goes on `SubmitButton`'s own `disabled`.** It is OR-ed with the
 two the store knows, so it only ever tightens — `disabled={false}` says the caller has no
@@ -358,7 +367,7 @@ children and closed without asking, and it was removed. An app that vendored it 
   footerActionsSlot={(close) => (
     <>
       <Button variant="outline" onClick={close} content="Cancel" />
-      <form.SubmitButton requireChanges={isEdit} content={isEdit ? "Save changes" : "Create"} />
+      <form.SubmitButton isEdit={isEdit} requireChanges={isEdit} />
     </>
   )}
 />
@@ -390,9 +399,9 @@ children and closed without asking, and it was removed. An app that vendored it 
   `preventDefault` already in it. It is a `gap-4` column, so the
   fields in it need no spacing of their own; to lay a field and its button in a row, pass
   `className="flex-row items-end gap-3"`.
-- **`SubmitButton` is coloured by what it does.** On the web it is `positive` (it keeps the work:
-  Save) unless you pass `variant="info"` for one that adds something (Create, Add). The native
-  one knows which it is: `positive` when editing, `info` when creating. A `variant` you pass wins.
+- **`SubmitButton` is `positive`**, on both halves, whether it creates or saves: either way it
+  keeps what was typed. `info` is for the button that opens the form (New, Add). A `variant` you
+  pass wins.
 - A submit that has to sit somewhere no wrapper reaches names the form instead:
   `<FormElement id="todo" …>` and `<form.SubmitButton form="todo" … />`. A hand-written
   `<form id="todo">` works the same way.

@@ -772,10 +772,22 @@ function SwitchField(props: SwitchFieldProps) {
 }
 
 type SubmitButtonProps = {
-  isEdit?: boolean;
-  createLabel?: string;
-  editLabel?: string;
-  savingLabel?: string;
+  /**
+   * Whether the form edits something that exists (`editLabel`) or creates one (`createLabel`).
+   * Left out, the form has not said, and the button says "Save", which is true of both.
+   */
+  isEdit?: boolean | undefined;
+  /**
+   * The label on a form that creates: "Add task". Defaults to "Create" when `isEdit` is `false`,
+   * and to "Save" when `isEdit` is left out.
+   */
+  createLabel?: string | undefined;
+  /** The label when `isEdit` is set. */
+  editLabel?: string | undefined;
+  /** The label while the submit runs, in place of the other: "Adding…". "Saving…" if left out. */
+  loadingLabel?: string | undefined;
+  /** @deprecated Use `loadingLabel`, the name `Button` gives it. Kept for one release. */
+  savingLabel?: string | undefined;
   /** Leading glyph, e.g. `<Plus className="mr-1 h-4 w-4" />`. */
   iconSlot?: SlotNode;
   /**
@@ -798,24 +810,27 @@ type SubmitButtonProps = {
  * every form guards against a double submit the same way rather than each one
  * remembering to.
  *
- * Coloured by what it does, which `isEdit` already says: saving changes keeps the work, so it is
- * `positive`; creating adds something, so it is `info`. A `variant` passed in still wins.
+ * `positive` whether it creates or edits: either way it keeps what was typed. The web
+ * `app-form`'s is the same, with the same label props. A `variant` passed in still wins.
  */
 function SubmitButton({
-  isEdit = false,
-  createLabel = "Create",
+  isEdit,
+  createLabel,
   editLabel = "Save changes",
-  savingLabel = "Saving…",
+  loadingLabel,
+  savingLabel,
   iconSlot,
   disabled,
   requireChanges = false,
-  variant,
+  variant = "positive",
   ...props
 }: SubmitButtonProps) {
   const form = useFormContext();
   const canSubmit = useStore(form.store, (s) => s.canSubmit);
   const isSubmitting = useStore(form.store, (s) => s.isSubmitting);
   const untouched = useStore(form.store, (s) => s.isDefaultValue);
+  // "Create" only when the form says it creates: a bare submit is as often an edit form's.
+  const created = createLabel ?? (isEdit === false ? "Create" : "Save");
 
   // A `Pressable` is not a form control, so it never raises the DOM submit event
   // `<Form>` listens for — it has to call `handleSubmit` itself. Enter inside a
@@ -828,13 +843,13 @@ function SubmitButton({
       onPress={() => {
         form.handleSubmit();
       }}
-      variant={variant ?? (isEdit ? "positive" : "info")}
+      variant={variant}
       {...props}
       disabled={disabled === true || canSubmit === false || (requireChanges && untouched)}
       loading={isSubmitting}
-      loadingLabel={savingLabel}
+      loadingLabel={loadingLabel ?? savingLabel ?? "Saving…"}
       iconSlot={iconSlot}
-      content={isEdit ? editLabel : createLabel}
+      content={isEdit === true ? editLabel : created}
     />
   );
 }
