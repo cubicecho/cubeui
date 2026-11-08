@@ -80,12 +80,14 @@ with a filled `div` and a `style.width` inside it.
   field reports what is typed as it is typed, so validating is the caller's.
 - `onValueChange` and `onChange` are the same callback under two names, and `swatches` and
   `colors` the same list; the default is 16 Tailwind 500s. The swatch row is a `radiogroup` of
-  radios, each named by its hex, with a tick drawn in `readableTextColor` of the swatch.
+  radios, each named by its hex, with `Checkbox`'s `Check` tick drawn in `readableTextColor` of the
+  swatch.
 - The swatch row is one tab stop, on the chosen swatch or the first, and the arrow keys, Home and
   End move between swatches and choose, as `RadioGroup`'s options do. Do not add an `onKeyDown`.
 - `clearable` (off by default) draws a Clear button, labelled `clearLabel`, that commits `""`.
-- `placeholder` is the hex field's; `hexLabel` names the hex field for a screen reader (web
-  only); `swatchesLabel` or `aria-label` names the swatch row. `disabled` blocks all of it, and
+- `placeholder` is the hex field's; `hexLabel` names the hex field for a screen reader, on both
+  halves, and replaces the name a field's label gives it, so leave it off inside a field;
+  `swatchesLabel` or `aria-label` names the swatch row. `disabled` blocks all of it, and
   `contentClassName` reaches the swatch row.
 - `popoverLabel` and `customLabel` are accepted from the popover picker's API and ignored —
   there is no popover to name and no colour well to label.

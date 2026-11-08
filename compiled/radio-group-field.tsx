@@ -20,7 +20,7 @@ import {
   type NamesOfType,
   type ValuesOf,
 } from "@/lib/form-binding";
-import { cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { cn, HEADING_GAP, hasSlot, type SlotNode } from "@/lib/utils";
 import { Field, FieldDescription, FieldError, FieldTitle } from "./field";
 import { RadioGroup, RadioGroupItem } from "./radio-group";
 import { Skeleton } from "./skeleton";
@@ -169,15 +169,21 @@ function RadioGroupFieldBody({
           ))}
         </RadioGroup>
       )}
-      {description ? (
-        <FieldDescription id={descriptionId} className={descriptionClassName}>
-          {description}
-        </FieldDescription>
-      ) : null}
-      {error ? (
-        <FieldError id={errorId} className={errorClassName}>
-          {error}
-        </FieldError>
+      {/* One column, so the description and the error are the heading rhythm's 4px apart, as in
+          every other field; only text against the options is `Field`'s 8px. */}
+      {description || error ? (
+        <div className={cn("cube-rn-view", "min-w-0", HEADING_GAP)}>
+          {description ? (
+            <FieldDescription id={descriptionId} className={descriptionClassName}>
+              {description}
+            </FieldDescription>
+          ) : null}
+          {error ? (
+            <FieldError id={errorId} className={errorClassName}>
+              {error}
+            </FieldError>
+          ) : null}
+        </div>
       ) : null}
     </Field>
   );

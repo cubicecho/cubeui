@@ -22,6 +22,7 @@ import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
 import { Switch } from "../registry/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs";
 import { ToggleChip } from "../registry/ui/toggle-chip";
+import { tintsUnderPointer } from "./pointer-tint";
 import { SideBySide } from "./side-by-side";
 import { tokenColor } from "./token-color";
 
@@ -274,5 +275,47 @@ export const RefusedOverChosen: Story = {
         on.blur();
       },
     );
+  },
+};
+
+function DisabledChips({ half, compiled }: { half: string; compiled: boolean }) {
+  const Chip = compiled ? CompiledToggleChip : ToggleChip;
+  return (
+    <section aria-label={half} className="flex flex-row gap-2">
+      <Chip disabled>Off</Chip>
+      <Chip disabled selected>
+        On
+      </Chip>
+      <Chip>Live</Chip>
+    </section>
+  );
+}
+
+/**
+ * A disabled chip stays as it is under the pointer, chosen or not, and on the web the pointer says
+ * it cannot be pressed (#485). It kept its hover fill and the `cursor: pointer` every compiled
+ * pressable has, so it looked pressable and did nothing. A live chip beside it still tints, so the
+ * check is not passing because the rule could not be read.
+ */
+export const DisabledChipStaysPut: Story = {
+  render: () => (
+    <SideBySide
+      native={<DisabledChips half="Native" compiled={false} />}
+      compiled={<DisabledChips half="Compiled" compiled />}
+    />
+  ),
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Native", "Compiled"]) {
+      const group = within(canvas.getByRole("region", { name: half }));
+      await step(`${half}: a disabled chip neither tints nor takes the pointer`, async () => {
+        for (const name of ["Off", "On"]) {
+          const chip = group.getByRole("button", { name });
+          await expect(tintsUnderPointer(chip)).toBe(false);
+          await expect(getComputedStyle(chip).cursor).toBe("not-allowed");
+        }
+        await expect(tintsUnderPointer(group.getByRole("button", { name: "Live" }))).toBe(true);
+      });
+    }
   },
 };

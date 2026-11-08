@@ -123,6 +123,7 @@ test that finds them by name needs changing:
 | `ConfirmDialog` | `confirmLabel` defaults to "Delete", as on `ConfirmButton` and `confirm()`. It was "Confirm", which names no act. A `ConfirmDialog` with no `confirmLabel` now says Delete: pass the verb if it does something else, such as Discard or Revoke ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `DownloadButton` | New: `hint`, as on `CopyButton`. With `disabled`, it says why the button is off and keeps it focusable ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
 | `dialog` | New: `holdOpen`, from `@/components/ui/dialog-base`. `onInteractOutside={holdOpen}` keeps a dialog open through a press beside it, as a `preventDefault` of your own does, and on device the backdrop is then not read out as a Close button. Swap it in for a handler of yours that only calls `preventDefault` ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
+| `ColorPicker` | `hexLabel` is the hex box's `aria-label`, on both halves, where it was a hidden `<label>` on the web only. Inside a field it now replaces the field's label as the box's name, so leave it off there. `color-picker` installs `icons` and no longer installs `label` ([#485](https://github.com/cubicecho/cubeui/issues/485)). |
 | `icons` | New: `Activity`, `ArchiveRestore`, `Bot`, `GitBranch`, `Layers`, `List`, `ListChecks`, `LogOut`, `PlugZap`, `RotateCcwClock`, `Route`, `ScanSearch`, `Server`, `SkipForward`, `Sparkles` and `Zap` ([#418](https://github.com/cubicecho/cubeui/issues/418)). Import them from `@/components/ui/icons` instead of `lucide-react`, and delete their lines from your own `app-icons` files. `History` is `RotateCcwClock`, lucide's current name for it. `Archive` is in the set too ([#435](https://github.com/cubicecho/cubeui/issues/435)). |
 
 ## Moved installs
@@ -536,6 +537,17 @@ to add them.
     option look hovered, as other rows and controls already did.
   - New in `@/lib/utils`: `touchTarget` and `touchRowClass`, for a pressable of your own. See the
     skill's `native.md`, "Touch targets".
+
+- **Form controls** ([#485](https://github.com/cubicecho/cubeui/issues/485)).
+  - `Combobox`'s trigger ends in `ChevronDown`, as `Select`'s does, where it was `ChevronsUpDown`.
+  - A `SelectLabel` over a group starts where the options' labels do, 32px in, where it was 8px.
+  - A field's description and its error are 4px apart, as the label and the description beside a
+    checkbox already were. Stacked fields drew them 8px apart. On `FormField`, every bound field
+    and `RadioGroupField`, on both halves.
+  - `FormField`'s loading box is 40px tall, the height of the input, select and date trigger it
+    stands in for. It was 36px, so the field jumped 4px when the value landed.
+  - A disabled `ToggleChip` keeps no hover fill, and on the web its pointer is "not allowed".
+  - `ColorPicker`'s tick is `Checkbox`'s `Check` icon, where it was a "✓" character.
 
 ## Checking the result
 

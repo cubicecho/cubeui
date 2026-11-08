@@ -26,17 +26,33 @@ import { cn, touchTarget } from "@/lib/utils";
  */
 const DRAWN = { sm: { height: 28 }, default: { height: 36 } } as const;
 
+/**
+ * What the pointer, focus and a press add: a chosen chip a step further into the tint, an unchosen
+ * one the hover fill. Only while the chip can be pressed, or a disabled chip lit up under the
+ * pointer as if it could.
+ */
+const LIVE = {
+  selected: "hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60",
+  unselected: "hover:bg-hover focus-visible:bg-hover active:bg-hover",
+} as const;
+
+/**
+ * A disabled chip's look. The pointer is the platform's "not allowed" on the web, where every
+ * compiled pressable is otherwise `cursor: pointer`; a device has no cursor.
+ */
+const DISABLED = Platform.select({ web: "cursor-not-allowed opacity-50", default: "opacity-50" });
+
 export type ToggleChipProps = Omit<
   React.ComponentProps<typeof Pressable>,
   "children" | "className" | "style"
 > & {
   selected?: boolean | undefined;
   /**
-   * Overrides the selected background with a literal colour — for a chip whose
-   * own colour is the content, such as a palette swatch. The label stays
-   * `text-foreground`, which is measured against the chosen tint and not against
-   * the caller's colour: pair it with `readableTextColor` if the label has to
-   * stay legible on an arbitrary hue.
+   * Replaces the chip's fill with a literal colour, chosen or not — for a chip whose own colour is
+   * the content, such as a palette swatch. The edge still says whether it is chosen; the fill no
+   * longer changes under the pointer or with focus. The label stays `text-foreground`, which is
+   * measured against the chosen tint and not against the caller's colour: pair it with
+   * `readableTextColor` if the label has to stay legible on an arbitrary hue.
    */
   backgroundColor?: string | undefined;
   size?: "sm" | "default" | undefined;
@@ -86,11 +102,9 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         size === "sm" ? "h-7 px-2" : "h-9 px-3",
         // A control's edge is /50, 3:1 on every surface: at /10 an unchosen chip was a faint box
         // beside the segmented frame. A chosen chip is the chosen tint, edged in `active` because
-        // the tint is not 3:1 from the surface, and a step further under the pointer, focused and
-        // pressed. Focused, an unchosen chip looks hovered.
-        selected
-          ? "border-active bg-active/40 hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
-          : "border-foreground/50 bg-background hover:bg-hover focus-visible:bg-hover active:bg-hover",
+        // the tint is not 3:1 from the surface.
+        selected ? "border-active bg-active/40" : "border-foreground/50 bg-background",
+        disabled ? DISABLED : LIVE[selected ? "selected" : "unselected"],
         // The label colour on the container as well as on the `<Text>` below,
         // and that is not a duplicate. The `<Text>` is the only one native
         // reads, and it is only ever reached by a bare string; an element
@@ -98,7 +112,6 @@ const ToggleChip = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleCh
         // through untouched and on web takes its colour by inheriting from
         // here.
         "text-foreground",
-        disabled && "opacity-50",
         className,
       )}
       {...(backgroundColor ? { style: { backgroundColor } } : {})}

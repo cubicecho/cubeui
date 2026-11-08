@@ -156,7 +156,8 @@ only this one does not install theirs, and can have the linter refuse the import
 - **Single and not `searchable`, the menu is the plain `Select` listbox**: radix's listbox under
   the trigger on the web, the `Select` sheet on device. With `searchable`, `onCreateOption` or
   `multiple` it is a `Popover` over a `Command`. Groups, separators, notes, `open` and
-  `onOpenChange` behave the same in both, and the trigger is the same box.
+  `onOpenChange` behave the same in both, and the trigger is the same box: `Input`'s 40px, with
+  `Select`'s `ChevronDown` at its end (a `multiple` trigger grows with its chips).
 - The trigger is what carries the wiring. The `Select` root renders nothing, so an `id` or an
   `aria-invalid` put on it goes nowhere — this takes the rest of the trigger's props (every
   `<button>` prop on the web; `id`, the `aria-*` props and `onBlur` on device) and spreads them on

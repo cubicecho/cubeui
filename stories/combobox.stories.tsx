@@ -268,18 +268,40 @@ export const RowsAreRowsAndTheRuleIsAHairline: Story = {
   },
 };
 
-/** And options sharing a `group` are drawn under it, in the order they were given. */
+/**
+ * And options sharing a `group` are drawn under it, in the order they were given, with the heading
+ * starting where their labels do (#485). It was `px-2` over `pl-8` options, so it sat out over the
+ * ticks' column and read as a heading of the whole list.
+ *
+ * Padding and not position, because the menu is mid-`zoom-in-95` when the listbox resolves.
+ */
 export const AGroupIsAHeadingOverItsOptions: Story = {
   args: {},
   play: async ({ canvas }) => {
     await inTheList(canvas.getByRole("combobox", { name: "On success" }), (list) => {
       const lanes = within(list).getByRole("group", { name: "Lanes" });
-      expect(
-        within(lanes)
-          .getAllByRole("option")
-          .map((row) => row.textContent),
-      ).toEqual(["Review", "QA", "Done"]);
+      const options = within(lanes).getAllByRole("option");
+      expect(options.map((row) => row.textContent)).toEqual(["Review", "QA", "Done"]);
+
+      const heading = lanes.querySelector<HTMLElement>("[data-slot=select-label]");
+      expect(heading).not.toBeNull();
+      expect(getComputedStyle(heading as HTMLElement).paddingLeft).toBe(
+        getComputedStyle(options[0] as HTMLElement).paddingLeft,
+      );
     });
+  },
+};
+
+/**
+ * The trigger ends in `Select`'s chevron (#485). It shares `fieldTriggerClass` with the select's
+ * trigger, so a `ChevronsUpDown` here was the one thing telling two of the same field apart.
+ */
+export const TheTriggerEndsInTheSelectChevron: Story = {
+  args: {},
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("combobox", { name: "On success" });
+    expect(trigger.querySelector("svg.lucide-chevron-down")).not.toBeNull();
+    expect(trigger.querySelector("svg.lucide-chevrons-up-down")).toBeNull();
   },
 };
 
