@@ -58,6 +58,12 @@ type ConfirmDialogProps = {
    */
   requireTextLabel?: ReactNode;
   onConfirm: () => void;
+  /**
+   * Told of an Escape (the back button on Android) before it answers Cancel; `preventDefault`
+   * keeps it from answering. For a caller with a dialog under the question: an Escape pressed while
+   * the question is still fading out reaches the question, and the caller can pass it on.
+   */
+  onEscapeKeyDown?: ((event: Event) => void) | undefined;
 };
 
 /**
@@ -88,6 +94,7 @@ export function ConfirmDialog({
   requireText,
   requireTextLabel,
   onConfirm,
+  onEscapeKeyDown,
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,6 +102,7 @@ export function ConfirmDialog({
         role="alertdialog"
         showCloseButton={false}
         onInteractOutside={holdOpen}
+        onEscapeKeyDown={onEscapeKeyDown}
         className="sm:max-w-sm"
       >
         {/* Keyed by the text, so a prompt raised over an open one for something else starts

@@ -122,10 +122,9 @@ const DIALOG_SURFACE: FloatingSurface = {
         headerSlot={headerSlot}
         headerClassName={HEADING_BODY_PAD}
         footerClassName={FOOTER_GAP}
-        // Room either side, given back as padding: a focus ring is drawn outside the element
-        // that owns it, a `List` or a `Table` reaches out by its rows' inset as it does in a
-        // card's body, and a scroll container clips at its edge. It is a row's 12px, the widest
-        // of the three, so a list here does not scroll sideways.
+        // Room either side, given back as padding: a `List` or a `Table` reaches out by its rows'
+        // inset as it does in a card's body, and a scroll container clips at its edge. It is a
+        // `List` row's 12px, the wider of the two, so a list here does not scroll sideways.
         contentClassName={cn("-mx-3 min-w-0 px-3", contentClassName)}
         contentSlot={
           // The dialog's content reset it, as every floating surface does; on this panel the
@@ -390,6 +389,18 @@ export function DialogLayout({
     setOpenState(false);
   };
 
+  // After "Keep editing" the question fades out for a moment and is still the top layer, so an
+  // Escape pressed then reached it and not the dialog, and a person backing out had to press it
+  // again (#532). Answered already, the question hands that Escape to the dialog, which asks again
+  // while the work is unsaved and closes once it is not.
+  const escapeFromQuestion = (event: Event) => {
+    if (askingToDiscard) {
+      return;
+    }
+    event.preventDefault();
+    requestOpenChange(false);
+  };
+
   // The same close Escape, the overlay and the close button go through, handed to the footer so
   // a Cancel there is guarded by the thing that guards them.
   const actions =
@@ -436,6 +447,7 @@ export function DialogLayout({
       confirmLabel={discardLabel}
       cancelLabel={keepLabel}
       onConfirm={discard}
+      onEscapeKeyDown={escapeFromQuestion}
     />
   );
 

@@ -162,6 +162,33 @@ export const DiscardAfterEscapeLeaves: Story = {
 };
 
 /**
+ * An Escape pressed while the question is still fading out after "Keep editing" is the dialog's
+ * (#532). The closing question was still the top layer and took the key, so the dialog never
+ * asked, and a person backing out quickly had to press Escape a third time. The dialog is still
+ * unsaved, so it asks again.
+ */
+export const EscapeDuringTheQuestionsExitAsksAgain: Story = {
+  args: { unsaved: true },
+  play: async ({ canvas }) => {
+    await screen.findByRole("dialog", { name: "Edit card" });
+    await userEvent.keyboard("{Escape}");
+    await discardIsUp();
+    await userEvent.click(screen.getByRole("button", { name: "Keep editing" }));
+    // Still on the page and closing, so the Escape below lands inside the exit.
+    await expect(screen.getByRole("alertdialog")).toHaveAttribute("data-state", "closed");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => {
+      expect(screen.getByRole("alertdialog", { name: /discard/i })).toHaveAttribute(
+        "data-state",
+        "open",
+      );
+    });
+    expect(canvas.getByTestId("asked")).toHaveTextContent("2");
+    expect(canvas.getByTestId("open")).toHaveTextContent("open");
+  },
+};
+
+/**
  * The reason it is a function: it runs at the click and not in render.
  *
  * A boolean would have the caller maintain a value in render that only the close handler reads.

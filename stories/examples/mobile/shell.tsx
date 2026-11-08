@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import { Text, View } from "react-native";
 import { AppBarItem, Sidebar, SidebarItem, SidebarSection } from "../../../registry/layout/sidebar";
 import { SidebarLayout } from "../../../registry/layout/split-layout";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Calendar, CircleCheck, Folder, Settings } from "../../../registry/ui/icons";
 
 /**

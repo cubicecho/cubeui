@@ -16,6 +16,7 @@ import { Checkbox } from "../registry/ui/checkbox.tsx";
 import { CopyButtonView } from "../registry/ui/copy-button-view";
 import { DescriptionHint } from "../registry/ui/description-hint";
 import { Form, useAppForm } from "../registry/ui/form";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { FileText, Folder, Library, Server, Settings } from "../registry/ui/icons";
 import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
 import { SegmentedButton, SegmentedGroup } from "../registry/ui/segmented";

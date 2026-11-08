@@ -38,6 +38,7 @@ import {
   CardHeader as NativeCardHeader,
   CardTitle as NativeCardTitle,
 } from "../registry/ui/card";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Pencil as NativePencil, Trash2 as NativeTrash } from "../registry/ui/icons";
 import {
   Item as NativeItem,

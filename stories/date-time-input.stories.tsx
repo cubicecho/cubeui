@@ -7,7 +7,7 @@ import {
   type DateTimeInputProps,
   DateTimeInput as NativeDateTimeInput,
 } from "../registry/ui/date-time-input";
-import { Label as NativeLabel } from "../registry/ui/label";
+import { Label as NativeLabel } from "../registry/ui/label.tsx";
 import { SideBySide } from "./side-by-side";
 
 /**

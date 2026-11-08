@@ -139,7 +139,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "../../registry/ui/popover.tsx";
-import { Progress } from "../../registry/ui/progress";
+import { Progress } from "../../registry/ui/progress.tsx";
 import { RadioGroup, RadioGroupItem } from "../../registry/ui/radio-group";
 import { RadioGroupField } from "../../registry/ui/radio-group-field";
 import { SearchInput } from "../../registry/ui/search-input.tsx";

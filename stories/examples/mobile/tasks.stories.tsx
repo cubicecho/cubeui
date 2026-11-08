@@ -15,6 +15,7 @@ import { Checkbox } from "../../../registry/ui/checkbox.tsx";
 import { ComboboxField } from "../../../registry/ui/combobox-field";
 import { DateTimeField } from "../../../registry/ui/date-time-field";
 import { createAppForm, Form } from "../../../registry/ui/form";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { CircleCheck, Plus } from "../../../registry/ui/icons";
 import { SearchInput } from "../../../registry/ui/search-input.tsx";
 import { SegmentedButton, SegmentedGroup } from "../../../registry/ui/segmented";

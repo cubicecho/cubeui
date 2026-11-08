@@ -15,6 +15,7 @@ import { Badge } from "../../../registry/ui/badge.tsx";
 import { Button } from "../../../registry/ui/button";
 import { ColorDot } from "../../../registry/ui/color-dot";
 import { ConfirmProvider, useConfirm } from "../../../registry/ui/confirm";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { ArrowLeft, Ellipsis, Folder, Pencil, Trash2 } from "../../../registry/ui/icons";
 import {
   Menu,
@@ -23,7 +24,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "../../../registry/ui/menu.tsx";
-import { Progress } from "../../../registry/ui/progress";
+import { Progress } from "../../../registry/ui/progress.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../registry/ui/tabs.tsx";
 import { ToastProvider, useToast } from "../../../registry/ui/toast";
 import { Initials, MobileShell, PHONE } from "./shell";

@@ -14,8 +14,9 @@ import { DialogLayout as NativeDialogLayout } from "../registry/layout/dialog-la
 import { Section as NativeSection } from "../registry/layout/section";
 import { SettingRow as NativeSettingRow } from "../registry/layout/setting-row";
 import { Form as NativeForm, createAppForm as nativeCreateAppForm } from "../registry/ui/form";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Info as NativeInfo } from "../registry/ui/icons";
-import { Switch as NativeSwitch } from "../registry/ui/switch";
+import { Switch as NativeSwitch } from "../registry/ui/switch.tsx";
 import { expectNoTooltipOnHover } from "./no-tooltip";
 import { SideBySide } from "./side-by-side";
 

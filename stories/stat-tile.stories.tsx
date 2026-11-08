@@ -4,6 +4,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Clock as CompiledClock } from "../compiled/icons";
 import { StatTile as Compiled } from "../compiled/stat-tile";
 import { StatTile as Native } from "../registry/layout/stat-tile";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Clock as NativeClock } from "../registry/ui/icons";
 import { SideBySide } from "./side-by-side";
 import { tokenColor } from "./token-color";

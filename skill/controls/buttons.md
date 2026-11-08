@@ -222,7 +222,9 @@ so it takes neither `onPress` nor `onClick`; `onConfirm` is the one that acts. T
 `ConfirmDialog`, the one `confirm()` raises, so the three draw the same card: an `alertdialog`
 with Cancel first and the destructive verb last, no corner close, and a press beside it that does
 not answer it. On device the back button is Cancel, and the trigger's tooltip is `Button`'s
-long press.
+long press. A `ConfirmDialog` raised over a dialog of your own takes `onEscapeKeyDown`: an Escape
+pressed while the question fades out after Cancel still reaches the question, so pass it on to
+the dialog under it, as `DialogLayout` does.
 
 ### Upgrading an earlier install
 

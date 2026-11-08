@@ -10,6 +10,7 @@ import { SettingRow } from "../../../registry/layout/setting-row";
 import { Button } from "../../../registry/ui/button";
 import { ConfirmButton } from "../../../registry/ui/confirm-button";
 import { createAppForm, Form } from "../../../registry/ui/form";
+// The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import { Pencil } from "../../../registry/ui/icons";
 import { RadioGroup, RadioGroupItem } from "../../../registry/ui/radio-group";
 import { Switch } from "../../../registry/ui/switch.tsx";
