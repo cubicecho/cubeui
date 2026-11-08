@@ -77,6 +77,7 @@ export function DownloadButton({
   variant = "outline",
   size = "icon-sm",
   disabled,
+  hint,
   tooltip,
   onDownloaded,
   onError,
@@ -93,6 +94,7 @@ export function DownloadButton({
       {...(isIconSize(size) ? {} : { content: label })}
       loading={pending}
       disabled={disabled}
+      hint={hint}
       tooltip={tooltip}
       className={className}
       onClick={() =>

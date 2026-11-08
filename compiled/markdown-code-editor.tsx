@@ -25,6 +25,12 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /**
+ * Tailwind's `shadow-md`, the elevation of everything floating over the page, spelled out: a
+ * CodeMirror theme is a style object and cannot take the class.
+ */
+const FLOATING_SHADOW = "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)";
+
+/**
  * The editor's colours, read from the theme's variables and nothing else: it follows light, dark
  * and the palette with the rest of the page, and there is no CodeMirror theme to keep in step.
  *
@@ -51,12 +57,14 @@ const theme = EditorView.theme({
   // pick out until there is text, and a tinted line under the placeholder looked like a value.
   "&.cm-focused .cm-activeLine:has(.cm-placeholder)": { backgroundColor: "transparent" },
   ".cm-placeholder": { color: "color-mix(in oklab, var(--foreground) 60%, transparent)" },
-  // What an app's own completion or lint extension draws: a popover, in the popover's colours.
+  // What an app's own completion or lint extension draws: a popover, in the popover's colours, and
+  // with its shadow, since it floats over the text as a popover does (#486).
   ".cm-tooltip": {
     backgroundColor: "var(--secondary)",
     color: "var(--foreground)",
     border: "1px solid color-mix(in oklab, var(--foreground) 10%, transparent)",
     borderRadius: "var(--radius-md)",
+    boxShadow: FLOATING_SHADOW,
     overflow: "hidden",
   },
   ".cm-tooltip.cm-tooltip-autocomplete > ul": { fontFamily: "inherit", maxHeight: "16rem" },
