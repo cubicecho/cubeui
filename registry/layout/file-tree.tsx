@@ -6,7 +6,7 @@ import { rowFillClass, rowLink } from "@/components/list-item";
 import { File, Folder } from "@/components/ui/icons";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { buildTree, isValidMove, type TreeEntry, type TreeNode } from "@/lib/tree";
-import { actionGap, cn, type SlotNode } from "@/lib/utils";
+import { actionGap, cn, type SlotNode, touchRowClass } from "@/lib/utils";
 
 type FileTreeProps<T extends TreeEntry> = {
   /** What the list is, for a screen reader: "Files", "Notes". Read, not drawn. */
@@ -285,6 +285,8 @@ export function FileTree<T extends TreeEntry>({
         node.path.startsWith(`${dropInto}/`));
     const muted = inDrop || isSelected ? "text-foreground" : "text-foreground/60";
     const indent = { paddingLeft: depth * INDENT + EDGE };
+    // A finger's 44pt on device, where the web's 32px row is too small to aim at (#470).
+    const rowClass = cn(ROW_CLASS, touchRowClass());
     const pressable = isFile === false || linkSlot !== undefined || onSelect !== undefined;
     const facts = meta?.(node);
     const actions = actionSlot?.(node);
@@ -347,7 +349,7 @@ export function FileTree<T extends TreeEntry>({
           open={expanded}
           onPress={() => toggle(node.path)}
           controls={expanded && node.children.length > 0 ? childrenId(node.path) : undefined}
-          className={ROW_CLASS}
+          className={rowClass}
           // Centred on the row rather than set down to a first line of text, and muted as the
           // folder's icon is.
           chevronClassName={cn("mt-0", muted)}
@@ -362,7 +364,7 @@ export function FileTree<T extends TreeEntry>({
         linkSlot(node),
         {
           slot: "file-tree-file",
-          className: ROW_CLASS,
+          className: rowClass,
           selected: isSelected,
           style: indent,
           webProps: drag,
@@ -376,7 +378,7 @@ export function FileTree<T extends TreeEntry>({
           role="button"
           aria-current={isSelected ? true : undefined}
           onPress={() => onSelect(node.path)}
-          className={ROW_CLASS}
+          className={rowClass}
           style={indent}
           {...drag}
         >
@@ -385,7 +387,7 @@ export function FileTree<T extends TreeEntry>({
       );
     } else {
       row = (
-        <View testID="file-tree-file" className={ROW_CLASS} style={indent} {...drag}>
+        <View testID="file-tree-file" className={rowClass} style={indent} {...drag}>
           {inside}
         </View>
       );

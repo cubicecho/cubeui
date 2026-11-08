@@ -27,8 +27,16 @@ import {
   useRovingFocus,
   useRovingItem,
 } from "@/lib/roving-focus";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode, touchRowClass, touchTarget } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+
+/**
+ * What the small options are drawn at, grown to a finger's 44pt by a `hitSlop` on device (#470): the
+ * bare circle, and a segment, as tall as the frame's 40px less its edge and its padding. A segment
+ * is only grown in height, since segments sit side by side. A row is stacked against the next, so it
+ * is made 44pt tall instead, and a card is bigger already.
+ */
+const DRAWN = { bare: { width: 16, height: 16 }, segment: { height: 30 } } as const;
 
 type Focusable = HTMLButtonElement;
 
@@ -285,8 +293,20 @@ function RadioGroupItem({
       );
     }
     // The fill reaches past the circle and the words, by as much as it is drawn out from them
-    // (`-mx-2 -my-1.5`), so the row still lines up with what is above it. Hovered as focused.
-    return "-mx-2 -my-1.5 flex-row items-start gap-3 rounded-sm px-2 py-1.5 hover:bg-hover focus-visible:bg-hover";
+    // (`-mx-2 -my-1.5`), so the row still lines up with what is above it. Hovered as focused. On
+    // device the row is 44pt tall, and a label alone sits in the middle of it.
+    return cn(
+      "-mx-2 -my-1.5 flex-row items-start gap-3 rounded-sm px-2 py-1.5 hover:bg-hover focus-visible:bg-hover",
+      touchRowClass(),
+      false,
+    );
+  };
+
+  const touch = () => {
+    if (bare) {
+      return touchTarget(DRAWN.bare);
+    }
+    return segmented ? touchTarget(DRAWN.segment) : {};
   };
 
   // What the box holds, in the same order.
@@ -387,6 +407,7 @@ function RadioGroupItem({
         disabled && "opacity-50",
         className,
       )}
+      {...touch()}
     >
       {content()}
     </button>

@@ -113,7 +113,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `label` | native | `components/ui/label.tsx`; also `label-base.ts`, `label.web.tsx` | `import { Label } from "@/components/ui/label"` |
 | `layout` | web | a set: `card-layout`, `centered-card-layout`, `collapsible`, `collapsible-row`, `dialog-layout`, `empty-state`, `error-page`, `file-tree`, `header-content-footer`, `list`, `list-item`, `load-state`, `page-header`, `page-layout`, `property-list`, `section`, `section-heading`, `setting-row`, `sidebar`, `split-layout`, `stat-tile` | — (import from each item) |
 | `list` | both | `components/list.tsx` | `import { hasRows, List, ListRow } from "@/components/list"` |
-| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowLink, ListItemText, ListItem } from "@/components/list-item"` |
+| `list-item` | both | `components/list-item.tsx` | `import { rowFillClass, rowPressInsetClass, rowLink, ListItemText, ListItem } from "@/components/list-item"` |
 | `load-state` | both | `components/load-state.tsx` | `import { LoadState, LoadError, RowSkeleton } from "@/components/load-state"` |
 | `markdown` | web | `components/markdown.tsx` | `import { Markdown } from "@/components/markdown"` |
 | `markdown-code-editor` | web | `components/markdown-code-editor.tsx` | `import { MarkdownCodeEditor } from "@/components/markdown-code-editor"` |
@@ -183,5 +183,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tooltip` | native | `components/ui/tooltip.tsx`; also `tooltip-base.ts`, `tooltip.web.tsx` | `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 13 more } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 13 more } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 17 more } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 17 more } from "@/lib/utils"` |

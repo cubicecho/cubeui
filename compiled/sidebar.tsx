@@ -20,7 +20,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, type SlotNode } from "@/lib/utils";
+import { cn, type SlotNode, touchRowClass } from "@/lib/utils";
 import { Badge } from "./badge";
 import { HeaderContentFooter, type HeaderContentFooterProps } from "./header-content-footer";
 import { ChevronLeft, ChevronRight } from "./icons";
@@ -439,13 +439,15 @@ export type SidebarItemProps = SidebarItemBaseProps &
 function rowClassName(active: boolean, className: string | undefined) {
   return cn(
     "min-h-8 min-w-0 flex-row items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
+    // A finger's 44pt on device, where rows stack too close for a `hitSlop` (#470).
+    touchRowClass(),
     "focus-visible:outline-none",
     // The web half's icons size from here, as a `Button`'s do; device's from the context below.
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-    // The current place is the chosen tint, a step further under the pointer and focused.
+    // The current place is the chosen tint, a step further under the pointer, focused and pressed.
     active
-      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-      : "text-foreground hover:bg-hover focus-visible:bg-hover",
+      ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60 active:bg-active/60"
+      : "text-foreground hover:bg-hover focus-visible:bg-hover active:bg-hover",
     className,
   );
 }
@@ -783,43 +785,48 @@ const AppBarItem = React.forwardRef<HTMLButtonElement, AppBarItemProps>(
     const text = active ? "text-foreground" : "text-foreground/60";
     const name = rowName(label, status, count);
     const edge = React.useContext(AppBarEdgeContext);
-
-    return (
+    const inside = (
+      <>
+        <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
+          {iconSlot}
+        </IconClassContext.Provider>
+        <IconMarkers count={count} status={status} ring="border-background" />
+      </>
+    );
+    const placeTooltip = (place: React.ReactElement) => (
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              ref={ref as React.Ref<HTMLAnchorElement>}
-              data-slot="app-bar-item"
-              // Nothing inside is text, so the name is written out on both platforms — joined the
-              // way the row's is, and before `props`, so a caller's own label still wins. The
-              // tooltip says the same, so it describes nothing: see `withTooltip`.
-              aria-label={name}
-              aria-describedby={undefined}
-              // React Native has no `href` and no `aria-current`; the web has both, and needs both.
-              href={href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "cube-rn-view cube-rn-pressable",
-                "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
-                "focus-visible:outline-none",
-                "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-                active
-                  ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
-                  : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
-                className,
-              )}
-              {...(props as React.ComponentPropsWithoutRef<"a">)}
-            >
-              <IconClassContext.Provider value={cn("size-4 shrink-0", text)}>
-                {iconSlot}
-              </IconClassContext.Provider>
-              <IconMarkers count={count} status={status} ring="border-background" />
-            </a>
-          </TooltipTrigger>
+          <TooltipTrigger asChild>{place}</TooltipTrigger>
           <TooltipContent side={edge === "bottom" ? "top" : "bottom"}>{name}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
+    );
+    return placeTooltip(
+      <a
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        data-slot="app-bar-item"
+        // Nothing inside is text, so the name is written out on both platforms — joined the way
+        // the row's is, and before `props`, so a caller's own label still wins. The tooltip says
+        // the same, so it describes nothing: see `withTooltip`.
+        aria-label={name}
+        aria-describedby={undefined}
+        // React Native has no `href` and no `aria-current`; the web has both, and needs both.
+        href={href}
+        aria-current={active ? "page" : undefined}
+        className={cn(
+          "cube-rn-view cube-rn-pressable",
+          "relative size-8 shrink-0 items-center justify-center rounded-md transition-colors",
+          "focus-visible:outline-none",
+          "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+          active
+            ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
+            : "text-foreground/60 hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground",
+          className,
+        )}
+        {...(props as React.ComponentPropsWithoutRef<"a">)}
+      >
+        {inside}
+      </a>,
     );
   },
 );

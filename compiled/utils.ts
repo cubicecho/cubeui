@@ -89,6 +89,66 @@ export const FIELD_DISABLED_CLASS = "opacity-50";
  * and ink, not by size.
  */
 
+/*
+ * Touch targets (#470): on device, everything a finger presses is 44pt or more each way, Apple's
+ * floor. A row reaches it by being that tall, since it is pressed as a whole and drawn as a whole;
+ * a small control, by a `hitSlop` around the size it is drawn at, so the look does not grow. The
+ * web keeps its drawn sizes, which are all 24px or more (WCAG 2.5.8). Both helpers are functions,
+ * read as the control is drawn, so a story can turn `Platform.OS` to a device's and hold the
+ * device's sizes in a browser.
+ */
+
+/** The smallest a finger's target is on device, each way, in points. */
+export const TOUCH_TARGET = 44;
+
+/** How big a pressable is drawn, in points. A side left out is not grown: a row's width. */
+export type DrawnSize = { width?: number | undefined; height?: number | undefined };
+
+/** How far a `hitSlop` reaches past each edge of the box it is on. */
+export type TouchInsets = { top: number; bottom: number; left: number; right: number };
+
+/** What {@link touchTarget} hands a `Pressable`. */
+export type TouchTargetProps = { hitSlop?: TouchInsets | undefined };
+
+/**
+ * The `hitSlop` that grows a box drawn at `drawn` to {@link TOUCH_TARGET} each way, split evenly
+ * between its two edges. A side already that big, or left out, gets none.
+ */
+export function hitSlopFor({
+  width = TOUCH_TARGET,
+  height = TOUCH_TARGET,
+}: DrawnSize): TouchInsets {
+  const edges = 2;
+  const across = Math.max(0, (TOUCH_TARGET - width) / edges);
+  const down = Math.max(0, (TOUCH_TARGET - height) / edges);
+  return { top: down, bottom: down, left: across, right: across };
+}
+
+/**
+ * A small pressable's touch target on device, spread onto it before the caller's props, so a
+ * caller's own `hitSlop` still wins: `<Pressable {...touchTarget(CHECKBOX_DRAWN)} {...props} />`.
+ * On the web it is nothing, so the compiled `<button>` is handed no prop it does not know.
+ *
+ * A `hitSlop` only reaches as far as the box around it: on Android, and inside a `ScrollView` or an
+ * `overflow-hidden` box anywhere, a touch past the parent's edge is not delivered. It overlaps a
+ * neighbour too, and the later of two overlapping siblings takes the touch. So it is for a control
+ * with room around it — a checkbox, a dismiss ✕ — and a row, or anything stacked against the next
+ * one, takes {@link touchRowClass} instead.
+ */
+// biome-ignore lint/correctness/noUnusedFunctionParameters: the web keeps the drawn size
+export function touchTarget(drawn: DrawnSize): TouchTargetProps {
+  return {};
+}
+
+/**
+ * `min-h-11` on device and nothing on the web: a row pressed as a whole is {@link TOUCH_TARGET} tall
+ * there. For a row, a menu's or a select's option, and anything else stacked against the next one,
+ * where a `hitSlop` would take the neighbour's touches.
+ */
+export function touchRowClass(): string {
+  return "";
+}
+
 /** A block's or a row's title: 14px semibold, on `text-sm`'s own 20px line, in full ink. */
 export const HEADING_TITLE = "text-sm font-semibold text-foreground";
 
