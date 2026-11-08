@@ -187,6 +187,62 @@ export const DisabledFalseCannotEnable: Story = {
   },
 };
 
+function LockedForm({ kit }: { kit: Kit }) {
+  const { useAppForm, Form } = kit;
+  const form = useAppForm({
+    defaultValues: { title: "Buy milk", done: false, notify: true, due: null as Date | null },
+    onSubmit: () => {},
+  });
+  return (
+    <form.AppForm>
+      <Form className="flex flex-col gap-4">
+        <form.AppField name="title">
+          {(field) => <field.InputField label="Title" description="Set by the board." disabled />}
+        </form.AppField>
+        <form.AppField name="done">
+          {(field) => (
+            <field.CheckboxField label="Done" description="Closed tasks only." disabled />
+          )}
+        </form.AppField>
+        <form.AppField name="notify">
+          {(field) => <field.SwitchField label="Notify" description="Ask an admin." disabled />}
+        </form.AppField>
+        <form.AppField name="due">
+          {(field) => (
+            <field.DateTimeField label="Due" description="Fixed." mode="date" clearable disabled />
+          )}
+        </form.AppField>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * A disabled field fades as one (#466): `disabled` on a bound field reaches the control and fades
+ * the label and the description with it, on both halves. The label used to stay at full ink over
+ * a faded control, and `DateTimeField` had no `disabled` to pass.
+ */
+export const DisabledFieldsFadeAsOne: Story = {
+  render: () => (
+    <SideBySide native={<LockedForm kit={NATIVE} />} compiled={<LockedForm kit={COMPILED} />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const opacity = (el: Element) => getComputedStyle(el).opacity;
+    for (const half of halves(canvasElement)) {
+      for (const words of ["Title", "Done", "Notify", "Due"]) {
+        await expect(opacity(half.getByText(words))).toBe("0.5");
+      }
+      for (const words of ["Set by the board.", "Closed tasks only.", "Ask an admin.", "Fixed."]) {
+        await expect(opacity(half.getByText(words))).toBe("0.5");
+      }
+      await expect(half.getByRole("textbox", { name: "Title" })).toBeDisabled();
+      await expect(half.getByRole("checkbox", { name: "Done" })).toBeDisabled();
+      await expect(half.getByRole("switch", { name: "Notify" })).toBeDisabled();
+      await expect(half.getByRole("button", { name: /^Due/ })).toBeDisabled();
+    }
+  },
+};
+
 /**
  * `requireChanges` (#328): Save waits for a change, and a change undone puts it back — the store's
  * `isDefaultValue`, which `isDirty` is not.

@@ -193,16 +193,26 @@ function FieldLabel({ ...props }: React.ComponentProps<typeof Label>) {
  * radix's `Slot` is used on both platforms. It only clones its child with merged
  * props; there is no DOM in it, so it works under React Native unchanged.
  */
-function FieldControl({ ...props }: React.ComponentProps<typeof Slot>) {
+function FieldControl({
+  disabled,
+  ...props
+}: React.ComponentProps<typeof Slot> & {
+  /** The field's `disabled`, handed on to the control. Left off, the control's own stands. */
+  disabled?: boolean | undefined;
+}) {
   const { controlId, labelId, descriptionId, messageId, hasError, asGroup } =
     useFieldComponentContext();
   const describedBy = [descriptionId, hasError ? messageId : null].filter(Boolean).join(" ");
+  // A spread, because `Slot` is typed for an `HTMLElement`, which has no `disabled`; the control
+  // it clones does.
+  const handedOn = disabled === undefined ? {} : { disabled };
   return (
     <Slot
       id={controlId}
       aria-labelledby={asGroup ? labelId : undefined}
       aria-describedby={describedBy || undefined}
       aria-invalid={hasError || undefined}
+      {...handedOn}
       {...props}
     />
   );
@@ -309,6 +319,11 @@ type BoundFieldProps = {
   descriptionIconSlot?: SlotNode | undefined;
   /** Draws the asterisk and sets `aria-required` on the control. */
   required?: boolean | undefined;
+  /**
+   * The control cannot be changed, and the field fades as one: the label and the description
+   * with the control, which is handed `disabled` too.
+   */
+  disabled?: boolean | undefined;
   /** `horizontal` puts the control first and the label beside it: a checkbox, a switch. */
   orientation?: "vertical" | "horizontal" | undefined;
   /** See {@link Field}: the label names the control by `aria-labelledby`. */
@@ -326,6 +341,7 @@ const FIELD_KEYS = new Set<string>([
   "descriptionPlacement",
   "descriptionIconSlot",
   "required",
+  "disabled",
   "orientation",
   "asGroup",
   "className",
@@ -366,6 +382,7 @@ function FieldWrapper({
   descriptionPlacement = "inline",
   descriptionIconSlot,
   required = false,
+  disabled,
   orientation = "vertical",
   asGroup,
   className,
@@ -374,6 +391,11 @@ function FieldWrapper({
   errorClassName,
 }: FieldWrapperProps) {
   const folded = Boolean(description) && descriptionPlacement === "popover";
+  // A control handed in `disabled` already fades the field too, as `FormField` reads it on the web.
+  const fades =
+    disabled === true ||
+    (React.isValidElement<{ disabled?: unknown }>(controlSlot) &&
+      controlSlot.props.disabled === true);
   const labelNode = (
     <FieldLabel className={cn(folded && "min-w-0 shrink", labelClassName)}>
       {label}
@@ -401,7 +423,11 @@ function FieldWrapper({
   ) : (
     labelNode
   );
-  const wired = <FieldControl aria-required={required || undefined}>{controlSlot}</FieldControl>;
+  const wired = (
+    <FieldControl aria-required={required || undefined} disabled={disabled}>
+      {controlSlot}
+    </FieldControl>
+  );
   const rest = (
     <>
       {description && folded === false ? (
@@ -414,7 +440,12 @@ function FieldWrapper({
 
   if (orientation === "horizontal") {
     return (
-      <Field orientation="horizontal" asGroup={asGroup} className={cn("items-start", className)}>
+      <Field
+        orientation="horizontal"
+        asGroup={asGroup}
+        disabled={fades}
+        className={cn("items-start", className)}
+      >
         {wired}
         <FieldContent>
           {title}
@@ -424,7 +455,7 @@ function FieldWrapper({
     );
   }
   return (
-    <Field asGroup={asGroup} className={className}>
+    <Field asGroup={asGroup} disabled={fades} className={className}>
       {title}
       {wired}
       {rest}
@@ -585,8 +616,6 @@ type SelectFieldProps = BoundFieldProps & {
    */
   options: readonly SelectFieldEntry[];
   placeholder?: string;
-  /** The trigger will not open: a list with nothing in it yet, a choice another field decides. */
-  disabled?: boolean | undefined;
   /**
    * Adds a first row for "nothing", which writes `null`. The field then holds `string | null`,
    * and reads `null`, `undefined` and `""` as that row.

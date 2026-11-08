@@ -100,6 +100,9 @@ test that finds them by name needs changing:
 | `LoadState` (was `QueryState`) | New: `record` with `notFoundLabel` for a single record, and `level` for the not-found title. New with `record`: `description` and `actionSlot` on the not-found block, for what happened and the way back ([#476](https://github.com/cubicecho/cubeui/issues/476)). Inside a `PageLayout` whose `loading` is on, the loading rung draws nothing. A detail screen that drew `LoadState` in front of its page moves it into the page's body: see the `DetailPage` row above. |
 | `DialogLayout` | New: `iconSlot`, a header `actionSlot`, `loading` and `emptySlot`, as `CardLayout` has. New: `descriptionPlacement` and `descriptionIconSlot`, as the card and the fields take them ([#417](https://github.com/cubicecho/cubeui/issues/417)), and `actionPlacement`. |
 | `CollapsibleRow` (was `DisclosureRow`) | A string `description` is drawn small and muted, as `ListItem` draws it. An element is drawn as given, so an element that was muted before now isn't: pass a string, or put the classes on the element. |
+| `FormField`, `Field`, the bound fields | New: `disabled` on `FormField` and `Field`, and as a field prop on every bound field on both halves, fades the label and the description with the control ([#466](https://github.com/cubicecho/cubeui/issues/466)). On a bound field it was already passed to the control, and still is. |
+| `DateTimeInput`, `DateTimeField` | New: `disabled`, on the trigger and the time box ([#466](https://github.com/cubicecho/cubeui/issues/466)). |
+| `Checkbox`, `Switch` | The device halves take `aria-invalid`, and draw it ([#467](https://github.com/cubicecho/cubeui/issues/467)). |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
@@ -240,6 +243,20 @@ to add them.
   of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
   counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
   `bottomBarClassName` for it.
+- **A disabled field fades its label and its description**
+  ([#466](https://github.com/cubicecho/cubeui/issues/466)). They used to stay at full ink over a faded
+  control. `FormField` reads the control's own `disabled` too, so a
+  `controlSlot={<Input disabled />}` fades its field with no change at the call site.
+  `SwitchField` now fades its description with its caption. A `labelClassName="opacity-50"` you
+  added to get this can go.
+- **The date triggers look like fields**
+  ([#464](https://github.com/cubicecho/cubeui/issues/464)). `DatePicker`, `DateRangePicker` and
+  `DateTimeInput` stay on the page background under the pointer and under focus, where they used
+  to fill grey, and focus turns the edge `active`. A refused one is edged in `negative`, on both
+  halves. A searchable or `multiple` `Combobox` now draws its refused edge on device too.
+- **A refused checkbox or switch is red when checked**
+  ([#467](https://github.com/cubicecho/cubeui/issues/467)). The `negative` edge wins over a checked
+  box's or an on switch's `active` one, and the device halves draw it.
 
 ## Checking the result
 

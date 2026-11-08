@@ -71,8 +71,9 @@ function Switch({
       className={cn(
         SWITCH_TRACK_CLASS,
         // On, `SWITCH_TRACK_ON_CLASS` under `data-[state=checked]:`, and focused the `/60` step it has
-        // under the pointer.
-        "peer group/switch inline-flex cursor-pointer transition-colors focus-visible:outline-none data-[state=unchecked]:focus-visible:bg-hover data-[state=checked]:border-active data-[state=checked]:bg-active/40 data-[state=checked]:hover:bg-active/60 data-[state=checked]:focus-visible:bg-active/60 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative data-[state=unchecked]:bg-foreground/50 data-[size=sm]:h-4 data-[size=sm]:w-7",
+        // under the pointer. Invalid is stacked on the on state as well: a `data-[state]:` edge is
+        // emitted after an `aria-invalid:` one and would win, hiding a refused on switch.
+        "peer group/switch inline-flex cursor-pointer transition-colors focus-visible:outline-none data-[state=unchecked]:focus-visible:bg-hover data-[state=checked]:border-active data-[state=checked]:bg-active/40 data-[state=checked]:hover:bg-active/60 data-[state=checked]:focus-visible:bg-active/60 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-negative aria-invalid:data-[state=checked]:border-negative data-[state=unchecked]:bg-foreground/50 data-[size=sm]:h-4 data-[size=sm]:w-7",
         refuses && "cursor-not-allowed opacity-50",
         className,
       )}

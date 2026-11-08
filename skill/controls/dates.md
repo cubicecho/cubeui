@@ -54,12 +54,13 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | --- | --- | --- | --- |
 | `mode` | `"datetime" \| "date"` |  | `"datetime"` (default) draws the time field beside the date. `"date"` drops it: a picked day is committed at local midnight, which is what a due date or a birthday is. |
 | `placeholder` | `string` |  | What the trigger reads while the value is `null`. Only reachable with `clearable`. |
+| `disabled` | `boolean` |  | Neither the date nor the time can be changed. A bound `DateTimeField` passes its own `disabled` here, and fades its label with it. |
 | `className` | `string` |  |  |
 | `id` | `string` |  | The trigger's id — what a `FieldLabel htmlFor` points at on the web. React Native takes `id` as its `nativeID`, so on device it is a target for `aria-labelledby` rather than a label's. A `<label for>` names the trigger by the label alone — the date is not in the name — so pass `aria-labelledby` when the field has a label with an id. |
 | `aria-label` | `string` |  | The field's name. The trigger is named by it and the date after it — `"Due"` makes it `"Due, September 15th, 2026"`, or `"Due, Pick a date"` while empty. In `"datetime"` mode the time box is named after it too — `"Due, time"` — so two of these in one form are not both "Time". |
 | `aria-labelledby` | `string` |  | The field's name by reference — the id of the `Label` above it. The trigger takes it followed by a reference to its own date text, so it is named "Due September 15th, 2026". The time box takes it followed by its own id, and its own `aria-label` of "time" is what that second reference reads, so it is named "Due time". |
 | `aria-describedby` | `string` |  | Web only, on the trigger: native has no description relation. A bound field's hint and error. |
-| `aria-invalid` | `boolean \| "true" \| "false"` |  | Web only, on the trigger. |
+| `aria-invalid` | `boolean \| "true" \| "false"` |  | The value was refused: the trigger's edge turns `negative` on both halves, as a field's does. The attribute itself is web only, on the trigger. |
 | `aria-required` | `boolean \| "true" \| "false"` |  | Web only, on the trigger. |
 | `clearable` | `boolean` |  | The value may be empty: the trigger shows `placeholder`, and a Clear row commits `null`. |
 | `value` (required) | `Date \| null` |  |  |
@@ -80,7 +81,10 @@ device the popover is a centred sheet and the months stack.
   rather than ending one. Its value is a `DateRange` (`{ from, to? }`), exported beside it.
 - The trigger is a button, which is labelable, so `htmlFor` works on the web — but the `aria-*`
   props still need the function form of `controlSlot`. `aria-describedby`, `aria-invalid` and
-  `aria-required` are web only.
+  `aria-required` are web only as attributes; `aria-invalid` is drawn on both halves.
+- The trigger looks like a field, as `Combobox`'s does: `bg-background` with no hover fill,
+  focus turns its edge `active`, and `aria-invalid` turns it `negative`, with focus still
+  winning. `DateRangePicker` and `DateTimeInput` draw the same trigger.
 - `combineDateAndTime(day, clock)` and `setTime(day, "14:30")` are exported for the same
   arithmetic at a call site.
 
@@ -107,6 +111,8 @@ Two props turn it into the optional, date-only field an Expo app needs for a due
   Clear row in the popover commits `null`. It is also what puts `null` in the types — without it
   `value` is `Date` and `onChange` is `(next: Date) => void`, so a caller holding `Date | null`
   has to say `clearable`. In `"datetime"` mode the time box waits, disabled, until a date is set.
+- `disabled` locks the trigger and the time box. `DateTimeField` passes the field's own, and its
+  label fades with them.
 - It takes `onChange`, not `onValueChange` — it predates the vocabulary, and renaming it would
   break every caller.
 

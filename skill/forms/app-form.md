@@ -57,9 +57,10 @@ The bound fields:
 | `ColorField` | `string` | `@cubeui/color-field` |
 | `PasswordField` | `string` | `@cubeui/app-form` (also `@cubeui/password-field`, the old path) |
 
-Each one takes everything `FormField` takes — `label`, `description`, `required`, `actionSlot`,
-`loading`, `orientation`, the `*ClassName` props — plus the props of the control it wraps, plus
-`validators`, `listeners` and `asyncDebounceMs`, in one flat list.
+Each one takes everything `FormField` takes — `label`, `description`, `required`, `disabled`,
+`actionSlot`, `loading`, `orientation`, the `*ClassName` props — plus the props of the control it
+wraps, plus `validators`, `listeners` and `asyncDebounceMs`, in one flat list. `disabled` is the
+field's: it reaches the control, and the label and the description fade with it.
 
 `PasswordField` names its reveal button from a string `label`: `label="API key"` gives "Show API
 key" and "Hide API key". Pass `showLabel` and `hideLabel` for other words.
@@ -68,7 +69,8 @@ key" and "Hide API key". Pass `showLabel` and `hideLabel` for other words.
 `FormField`, because it has a React Native half and `FormField` does not. It takes `label`,
 `description`, `required`, `actionSlot`, `loading` and the `*ClassName` props (`labelClassName`,
 `descriptionClassName`, `errorClassName`, `loadingClassName`, `groupClassName`), plus the group's
-own `variant`, `orientation`, `disabled` and `loop`. There is no `descriptionPlacement`,
+own `variant`, `orientation`, `disabled` (which fades its title and description too) and `loop`.
+There is no `descriptionPlacement`,
 `descriptionIconSlot`, `htmlFor` or `asGroup`: the description is always inline under the options, and
 the group is always named by its title.
 
