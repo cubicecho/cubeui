@@ -119,7 +119,8 @@ export type AppBarProps = {
  *
  * **The safe area is the app's.** On device the bar is the top of the screen, and the status bar
  * sits over it unless something insets it: wrap the app in `react-native-safe-area-context`'s
- * `SafeAreaView edges={["top"]}` (Expo ships it). Nothing in this registry measures insets.
+ * `SafeAreaView edges={["top"]}` (Expo ships it). The bar adds no inset of its own; only
+ * `SidebarLayout`'s bar along the bottom takes one, the bottom inset.
  */
 export function AppBar({
   brandSlot,

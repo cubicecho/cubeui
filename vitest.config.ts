@@ -116,6 +116,31 @@ export default defineConfig({
           },
         },
       },
+      {
+        // The stories tagged `safe-area`, again, on a phone with a home indicator: the setup file
+        // has Chromium report a 34px bottom inset, which is what `env(safe-area-inset-bottom)` in
+        // the bar along the bottom reads (#341). A project for the reduced-motion project's reason.
+        plugins: [
+          storybookTest({
+            configDir: resolve(root, ".storybook"),
+            tags: { include: ["safe-area"] },
+          }),
+        ],
+        optimizeDeps: OPTIMIZE_DEPS,
+        test: {
+          name: "safe-area",
+          fileParallelism: false,
+          isolate: false,
+          sequence: { groupOrder: 3 },
+          setupFiles: [resolve(root, ".storybook/home-indicator.ts")],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({ launchOptions: { args: CHROMIUM_ARGS } }),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
     ],
   },
 });

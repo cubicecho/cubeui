@@ -214,6 +214,13 @@ to add them.
   `PageLayout` body that fits is no longer a stop of its own, so a `DialogLayout` that fits opens
   with focus on its first field or button rather than on its body. A stacked `SplitLayout` taller
   than the screen is a tab stop itself, with the same inset line.
+- **`SidebarLayout`'s bar along the bottom reaches the bottom of the screen**
+  ([#341](https://github.com/cubicecho/cubeui/issues/341)). With `barPosition="bottom"` the bar
+  takes the bottom safe-area inset itself: its places sit above a phone's home indicator and its
+  fill runs under it, so there is no strip of page background below the bar. Take `"bottom"` out
+  of the `SafeAreaView` around the layout (`edges={["top", "left", "right"]}`), or the inset is
+  counted twice, and remove a `pb-safe-offset-2` or `env(safe-area-inset-bottom)` class you put in
+  `bottomBarClassName` for it.
 
 ## Checking the result
 
