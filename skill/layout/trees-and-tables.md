@@ -27,15 +27,15 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 | `label` (required) | `string` |  | What the list is, for a screen reader: "Files", "Notes". Read, not drawn. |
 | `entries` (required) | `readonly T[]` |  | The files, and any folders worth listing, flat and in any order. A file's missing parents are added and every level is sorted folders first, then by name — `buildTree` in `@/lib/tree`. |
 | `pinned` | `readonly T[]` |  | Files drawn above the tree, in the order given, never nested or sorted: a folder's README, a skill's own Markdown. Each is called by its whole `path`, and reaches `linkSlot`, `meta` and `actionSlot` as any other file does. |
-| `selected` | `string` |  | The open file's path. Its row is tinted, a step further under the pointer, and its link or button says it is the current one. |
+| `selected` | `string` |  | The open file: its key as `entries` listed it, which `onSelect` hands back. Its row is tinted, a step further under the pointer, and its link or button says it is the current one. The node's cleaned `path` is matched too, so `a/b.md` still finds the file listed as `a//b.md`. |
 | `linkSlot` | `((node: TreeNode<T>) => ReactElement)` |  | The router's link to a file, as an element with no children — `<Link to="/notes/$" />` — which the row is drawn inside. For an app that keeps the open file in the URL, so the row is a real `<a href>` that a middle click opens. Given this, `onSelect` is not called. |
-| `onSelect` | `((path: string) => void)` |  | A file's row was pressed. For an app that holds the open file in state; the row is a button. |
+| `onSelect` | `((path: string, node: TreeNode<T>) => void)` |  | A file's row was pressed. For an app that holds the open file in state; the row is a button. `path` is the file's key exactly as `entries` listed it (`entry.path`), so an object store's `a//b.md` comes back as `a//b.md` and not as the tree's cleaned `a/b.md`. The node is the row's, for the rest of its entry. |
 | `meta` | `((node: TreeNode<T>) => ReactNode)` |  | The small facts after a row's name: a size, a count, a badge. A string is drawn muted and extra small; an element is placed as it is. Inside the pressed area. Called for folders too. |
 | `actionSlot` | `((node: TreeNode<T>) => SlotNode)` |  | A row's far end, **outside** the pressed area: rename and delete buttons, or one `Menu`. Where there is a pointer they are drawn on hover and on focus; on a touch screen, always. |
 | `open` | `readonly string[]` |  | The paths of the open folders, when the caller holds them — to keep them across a reload, or to open the way to a file. Leave it out and the tree holds its own. |
 | `onOpenChange` | `((open: string[]) => void)` |  | Told the open folders on every toggle, controlled or not. |
 | `defaultOpen` | `readonly string[] \| "all"` | `"all"` | Which folders an uncontrolled tree starts with open: their paths, or every one. |
-| `onMove` | `((from: string, into: string) => void \| Promise<void>)` |  | A row was dropped on a folder. `from` is the dragged file's or folder's path; `into` is the folder's path, and `""` for the top level. Given this, rows can be dragged: on the web, with a pointer. The tree reorders nothing itself — move the file and hand back new `entries`. While a returned promise is pending the row is drawn muted; a rejection is the caller's to report. |
+| `onMove` | `((from: string, into: string, node: TreeNode<T>) => void \| Promise<void>)` |  | A row was dropped on a folder. `from` is the dragged file's or folder's path; `into` is the folder's path, and `""` for the top level. Both are the tree's cleaned paths, so `into/name` is where the row lands. `node` is the dragged row: its `type` says whether `from` was the file or the folder when the two share a path, and its `entry.path` is the key as listed. Given this, rows can be dragged: on the web, with a pointer. The tree reorders nothing itself — move the file and hand back new `entries`. While a returned promise is pending the row is drawn muted; a rejection is the caller's to report. |
 | `canMove` | `((node: TreeNode<T>, into: string) => boolean)` |  | Whether this row may be dropped there. Asked while dragging; a refused folder is not tinted. |
 | `className` | `string` |  | On the tree's outer list. A dragged row can be dropped on it to move to the top level. |
 <!-- /props -->
@@ -52,8 +52,10 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
   with no children; the row is drawn inside it, so it is a real `<a href>` and the selected one
   carries `aria-current="page"`. With the open file in state pass `onSelect`, and the row is a
   button. With neither, the row is only a row.
-- `selected` is the open file's **path**. Its row is tinted `active`, a step further under the
-  pointer, as a chosen `ListItem` is; do not hand-write that.
+- `onSelect(path, node)` hands back the file's key **as `entries` listed it** (`entry.path`), so
+  an object store's `a//b.md` comes back as `a//b.md`, which the store finds, and not as the tree's
+  cleaned `a/b.md`. `selected` is that key; the cleaned path matches too. Its row is tinted
+  `active`, a step further under the pointer, as a chosen `ListItem` is; do not hand-write that.
 - `meta` is what follows a name: return a string (a size, a count) and it is drawn muted and
   `text-xs`, or return an element (a `Badge`) and it is placed as given. On the selected row
   everything in it takes the row's `foreground` ink, a string and an element's text alike. On
@@ -70,16 +72,21 @@ for both platforms: `@cubeui/file-tree`, which brings `buildTree` (`@cubeui/tree
 - Every node handed to `meta`, `actionSlot` and `linkSlot` is `{ name, path, type, entry, children }`;
   `entry` is your own object, and is `undefined` on a folder the tree added.
 - **Renaming a file opens a dialog or a form.** There is no rename-in-place on a row.
-- **Moving is a drag onto a folder**, when you pass `onMove={(from, into) => api.move(from, into)}`.
-  Both are paths, and `into` is the folder the row lands in — `""` for the top level — so the new
-  path is yours to join: `into ? `${into}/${node.name}` : node.name`. A file or a folder is dragged
+- **Moving is a drag onto a folder**, when you pass
+  `onMove={(from, into, node) => api.move(from, into)}`. Both are the tree's cleaned paths, and
+  `into` is the folder the row lands in — `""` for the top level — so the new path is yours to
+  join: `into ? `${into}/${node.name}` : node.name`. `node` is the dragged row: its `type` says
+  whether the file `logs` or the folder `logs` moved, and `node.entry?.path` is its key as listed. A file or a folder is dragged
   onto a folder's row, onto anything inside that folder, or onto the tree's own blank space; the
   folder it would land in is tinted, and a shut one opens when the row rests on it. The tree
   refuses a row dropped where it already is, a folder dropped into itself or into what is under
-  it, and a pinned row either way — those show no tint and call nothing.
+  it, and a pinned row either way — those show no tint and call nothing. The file `logs` may go
+  into the folder `logs`, as `logs/logs`. For your own "Move to…" check, `isValidMove(from, into,
+  node.type)` from `@/lib/tree` gives the same answer.
   `canMove={(node, into) => !isLocked(into)}` refuses more: a read-only folder, a row that must
   stay put. It is called while the row is over a target, so it is not somewhere to fetch.
-- `onMove` may return a promise. The row waits where it was, muted, until it settles; then
+- `onMove` may return a promise. The row waits where it was, muted, until it settles (only that
+  row, not a file or folder of the same name); then
   `entries` says where it is. The tree moves nothing itself and shows no error: a move that fails
   rejects in your code, and the `Toast` is yours.
 - **A drag needs a pointer and a browser, so it is never the only way to move a row.** There is
@@ -207,6 +214,10 @@ the list is a table, not a stack of `ListItem`s. `@cubeui/table` is shadcn's `Ta
   card, give it the card's fill: `<TableHeader className="bg-secondary">`.
 
 - No sorting, filtering or pagination: nothing here uses them. Sort the array you map.
+- **In a card it lines up with the card's text.** Inside `CardContent` — `CardLayout`'s body, or a
+  `Card` you compose — the table reaches out by its cells' own `px-2`, so the first column's text
+  starts where the card's title does and the last column ends where the card's action does, as a
+  `List` there does. Its rules run nearly edge to edge. Do not add a negative margin of your own.
 - **Web only — no native twin.** React Native has no table element, and a phone has no width for
   columns. On native, draw the same data as rows: `ListItem`s for many records, and
   `PropertyList` / `PropertyRow` for one record's facts.

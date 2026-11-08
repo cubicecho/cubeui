@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent, waitFor } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 import { CardLayout } from "@/components/card-layout";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -388,6 +389,77 @@ export const WrapsInACard: Story = {
     for (const cell of [...canvas.getAllByRole("columnheader"), canvas.getByText("Kofi Mensah")]) {
       expect(lines(cell)).toBe(1);
     }
+  },
+};
+
+/**
+ * In a card's body the table reaches out by its cells' own inset (#517), so the first column's
+ * text starts where the card's title does and the last column's ends where the card's action
+ * does, as a `List` there lines up (#483). Its rules run nearly edge to edge. A table on its own
+ * is where it was put. With a caption, it is the frame round the container that reaches out.
+ */
+export const LinesUpInACard: Story = {
+  render: () => (
+    <div className="flex max-w-2xl flex-col gap-4">
+      <CardLayout
+        title="Servers"
+        description="What this workspace connects to."
+        actionSlot={<Button size="sm" variant="info" content="Add" />}
+        contentSlot={<Servers />}
+      />
+      <CardLayout
+        title="Unnamed servers"
+        actionSlot={<Button size="sm" variant="info" content="Add more" />}
+        contentSlot={
+          <Table aria-label="Unnamed servers">
+            <TableBody>
+              {SERVERS.map((server) => (
+                <TableRow key={server.name}>
+                  <TableHead>{server.name}</TableHead>
+                  <TableCell className="text-right">{server.tools}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        }
+      />
+      <Table aria-label="Loose servers">
+        <TableBody>
+          <TableRow>
+            <TableCell>filesystem</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const cases = [
+      { table: "Servers in this workspace", title: "Servers", action: "Add" },
+      { table: "Unnamed servers", title: "Unnamed servers", action: "Add more" },
+    ];
+    // Where a cell's text may run: its box inside its own padding.
+    const textBox = (cell: Element) => {
+      const box = cell.getBoundingClientRect();
+      const style = getComputedStyle(cell);
+      return {
+        left: box.left + Number.parseFloat(style.paddingLeft),
+        right: box.right - Number.parseFloat(style.paddingRight),
+      };
+    };
+    for (const { table, title, action } of cases) {
+      const row = within(canvas.getByRole("table", { name: table })).getAllByRole("row")[0];
+      const cells = [...(row?.children ?? [])];
+      const [first, last] = [cells[0], cells.at(-1)];
+      if (!first || !last) {
+        throw new Error(`${table} should have a row of cells`);
+      }
+      const heading = canvas.getByRole("heading", { name: title }).getBoundingClientRect();
+      const button = canvas.getByRole("button", { name: action }).getBoundingClientRect();
+      await expect(textBox(first).left).toBeCloseTo(heading.left, 0);
+      await expect(textBox(last).right).toBeCloseTo(button.right, 0);
+    }
+    const loose = canvas.getByRole("table", { name: "Loose servers" }).parentElement as HTMLElement;
+    await expect(getComputedStyle(loose).marginLeft).toBe("0px");
   },
 };
 

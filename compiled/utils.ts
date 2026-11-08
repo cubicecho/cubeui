@@ -281,8 +281,8 @@ export const PageLoadingContext = createContext(false);
  * Whether this is drawn in a card's body, `CardContent`, which `CardLayout` draws its body in.
  * `List` reads it and reaches its rows out into the card's padding by a row's own inset, so a
  * row's title starts where the card's title does and its rules run nearly edge to edge, rather
- * than the rows' text sitting 12px inside the card's. Here rather than in either item so neither
- * has to install the other.
+ * than the rows' text sitting 12px inside the card's. `Table` does the same by its cells' inset.
+ * Here rather than in any one item so none has to install another.
  */
 export const CardBodyContext = createContext(false);
 

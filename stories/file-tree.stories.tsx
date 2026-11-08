@@ -578,7 +578,8 @@ const selectBucketCompiled = fn();
 /**
  * A bucket's keys, which a directory walk never hands back: no row has an empty name, `run2`
  * sorts before `run10`, and the file `logs` is drawn beside the folder `logs` rather than lost
- * under it.
+ * under it. `selected` and `onSelect` are the key as listed, `exports//full.csv`, not the tree's
+ * cleaned path.
  */
 export const ObjectStoreKeys: Story = {
   args: { label: "Bucket", entries: BUCKET },
@@ -586,12 +587,22 @@ export const ObjectStoreKeys: Story = {
     <SideBySide
       native={
         <div className="native-root" style={{ width: 240 }}>
-          <Native label="Bucket" entries={BUCKET} onSelect={selectBucketNative} />
+          <Native
+            label="Bucket"
+            entries={BUCKET}
+            selected="exports//full.csv"
+            onSelect={selectBucketNative}
+          />
         </div>
       }
       compiled={
         <div className="compiled-root" style={{ width: 240 }}>
-          <Compiled label="Bucket" entries={BUCKET} onSelect={selectBucketCompiled} />
+          <Compiled
+            label="Bucket"
+            entries={BUCKET}
+            selected="exports//full.csv"
+            onSelect={selectBucketCompiled}
+          />
         </div>
       }
     />
@@ -623,7 +634,86 @@ export const ObjectStoreKeys: Story = {
         throw new Error("the file `logs` should be drawn");
       }
       await userEvent.click(file);
-      await expect(select).toHaveBeenCalledWith("logs");
+      await expect(select).toHaveBeenLastCalledWith(
+        "logs",
+        expect.objectContaining({ path: "logs", type: "file" }),
+      );
+
+      // `selected` and `onSelect` are the key as listed, which is what the store finds (#496).
+      const csv = canvas.getByRole("button", { name: /^full\.csv/ });
+      await expect(csv).toHaveAttribute("aria-current", "true");
+      await expect(file).not.toHaveAttribute("aria-current");
+      await userEvent.click(csv);
+      await expect(select).toHaveBeenLastCalledWith(
+        "exports//full.csv",
+        expect.objectContaining({ path: "exports/full.csv" }),
+      );
     }
+  },
+};
+
+const SAME_NAME: Entry[] = [
+  { path: "logs", type: "file" },
+  { path: "logs/run.log", type: "file" },
+];
+
+const sameNameMove = deferredSave<{ from: string; into: string; type: string }>();
+
+/**
+ * Issue #496: the file `logs` and the folder `logs` are two rows, and a move tells them apart.
+ * The file goes into the folder, as `logs/logs`; the folder still cannot go into itself. `onMove`
+ * hears which one moved through the node, and only that row waits muted. The compiled half alone,
+ * as in `Move`.
+ */
+export const MoveBesideAFolderOfTheSameName: Story = {
+  args: { label: "Bucket", entries: SAME_NAME },
+  render: () => (
+    <div className="compiled-root bg-background p-6" style={{ width: 300 }}>
+      <Compiled
+        label="Bucket"
+        entries={SAME_NAME}
+        onSelect={() => {}}
+        onMove={(from, into, node) => sameNameMove.save({ from, into, type: node.type })}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const root = rootOf(canvasElement, ".compiled-root");
+    const canvas = within(root);
+    sameNameMove.calls.mockClear();
+    const [folder, file] = canvas.getAllByRole("button", { name: "logs" });
+    if (!folder || !file) {
+      throw new Error("the folder and the file `logs` should both be drawn");
+    }
+    const rowOf = (pressed: HTMLElement) => {
+      const found = pressed.closest<HTMLElement>(SLOT("file-tree-row"));
+      if (!found) {
+        throw new Error("a pressed part should sit in a row");
+      }
+      return found;
+    };
+
+    // The folder onto itself is no move.
+    const itself = await drag(folder);
+    await expect((await itself.over(folder)).defaultPrevented).toBe(false);
+    await itself.drop(folder);
+    await itself.end();
+    await expect(sameNameMove.calls).not.toHaveBeenCalled();
+
+    // The file into the folder of its name is one.
+    const into = await drag(file);
+    await expect((await into.over(folder)).defaultPrevented).toBe(true);
+    await into.drop(folder);
+    await expect(sameNameMove.calls).toHaveBeenLastCalledWith({
+      from: "logs",
+      into: "logs",
+      type: "file",
+    });
+
+    // Only the row being moved waits muted.
+    await waitFor(() => expect(getComputedStyle(rowOf(file)).opacity).toBe("0.5"));
+    await expect(getComputedStyle(rowOf(folder)).opacity).toBe("1");
+    sameNameMove.settle("resolve");
+    await waitFor(() => expect(getComputedStyle(rowOf(file)).opacity).toBe("1"));
   },
 };
