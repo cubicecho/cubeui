@@ -75,9 +75,10 @@ eleven screens and came out with four fills, a border on about half and three pa
   ```
 - `className` is the root's, for its width or margin. The fill, the border and the padding are
   the block's and are the same on every one; do not restate them.
-- On the web the text is a `<pre>`, and a block that can scroll is a tab stop so a keyboard can
-  read the end of the line. Tabbed to, its edge turns `active` and no ring is drawn; a click shows
-  nothing. On a device it is a `ScrollView` and the text is selectable.
+- On the web the text is a `<pre>`, and a block is a tab stop while its text is longer or taller
+  than it, so a keyboard can read the end of the line. A block whose text fits is not one, and a
+  log that grows past its `maxHeight` becomes one. Tabbed to, its edge turns `active` and no ring
+  is drawn; a click shows nothing. On a device it is a `ScrollView` and the text is selectable.
 
 **A value to copy — an endpoint, a token, one command — is the same block**, with `wrap` and a
 `CopyButton`. There is no second component for it, and it is not a read-only `Input`, which

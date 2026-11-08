@@ -19,6 +19,7 @@ import {
 import { IconClassContext } from "../registry/ui/icons-base";
 import { SegmentedButton as Native, SegmentedGroup as NativeGroup } from "../registry/ui/segmented";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 /**
  * Variants and a selected state — the third of the spike's three, and the one that found a bug.
@@ -245,16 +246,6 @@ function CompiledViews({ labelHideBelow }: { labelHideBelow?: LabelHideBelow }) 
 
 const TRANSPARENT = "rgba(0, 0, 0, 0)";
 
-/** `bg-active/<percent>` as the browser reports it: the mix Tailwind compiles the class to. */
-function activeTint(percent: number) {
-  const probe = document.createElement("span");
-  probe.style.backgroundColor = `color-mix(in oklab, var(--active) ${percent}%, transparent)`;
-  document.body.append(probe);
-  const color = getComputedStyle(probe).backgroundColor;
-  probe.remove();
-  return color;
-}
-
 /** The pill's icon, which is the only `<svg>` in it. */
 function iconOf(pill: HTMLElement) {
   const svg = pill.querySelector("svg");
@@ -344,7 +335,7 @@ export const IconAndLabel: Story = {
 
       await step(`${half}: at rest no fill, hovered grey, chosen the tint`, async () => {
         await expect(background(preview)).toBe(TRANSPARENT);
-        await expect(background(edit)).toBe(activeTint(40));
+        await expect(background(edit)).toBe(tokenColor("active", { opacity: 40 }));
 
         // The hovered fill is the `hover` token, on a pill at rest only: a pointer over the chosen
         // pill tints it a step further rather than turning it grey.
@@ -369,7 +360,7 @@ export const IconAndLabel: Story = {
           // The press leaves the pill focused, and a focused chosen pill looks hovered: the tint
           // a step further, its label and icon in the chosen ink still.
           if (preview.matches(":focus-visible")) {
-            await expect(background(preview)).toBe(activeTint(60));
+            await expect(background(preview)).toBe(tokenColor("active", { opacity: 60 }));
             await expect(color(iconOf(preview))).toBe(chosen);
           }
           preview.blur();

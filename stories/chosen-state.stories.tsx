@@ -37,18 +37,18 @@ const meta = { title: "Tokens/Chosen state" } satisfies Meta;
 export default meta;
 type Story = StoryObj;
 
-/** What a colour resolves to right now, in the syntax the browser reports a computed colour in. */
-function resolved(property: "color" | "backgroundColor", value: string) {
+/**
+ * A colour an icon was handed as an attribute, in the syntax the browser reports a computed colour
+ * in. Not `tokenColor`: the value is whatever the icon was given, not a token's name.
+ */
+function resolved(value: string) {
   const probe = document.createElement("span");
-  probe.style[property] = value;
+  probe.style.color = value;
   document.body.append(probe);
-  const color = getComputedStyle(probe)[property];
+  const color = getComputedStyle(probe).color;
   probe.remove();
   return color;
 }
-/** `bg-active/40`, which Tailwind compiles to this mix. */
-const tint = (percent: number) =>
-  resolved("backgroundColor", `color-mix(in oklab, var(--active) ${percent}%, transparent)`);
 
 function Controls({ half, compiled }: { half: string; compiled: boolean }) {
   const noop = () => {};
@@ -124,7 +124,7 @@ export const TintedAtRest: Story = {
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
     const style = (el: Element) => getComputedStyle(el);
-    const rest = tint(40);
+    const rest = tokenColor("active", { opacity: 40 });
     const active = tokenColor("active");
     const foreground = tokenColor("foreground");
 
@@ -144,7 +144,7 @@ export const TintedAtRest: Story = {
           // Native's icon is handed its colour as a stroke; the DOM's takes `currentColor`.
           const ink = check.getAttribute("stroke");
           await expect(
-            ink === null || ink === "currentColor" ? style(check).color : resolved("color", ink),
+            ink === null || ink === "currentColor" ? style(check).color : resolved(ink),
           ).toBe(foreground);
         },
       );

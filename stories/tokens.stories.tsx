@@ -11,6 +11,7 @@ import { Input } from "../registry/ui/input";
 import { Switch } from "../registry/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "../registry/ui/tabs";
 import { Textarea } from "../registry/ui/textarea";
+import { tokenColor } from "./token-color";
 
 /**
  * What `dist/tokens.native.css` owes an Expo *web* build beyond the palette, asserted on the React
@@ -107,8 +108,10 @@ export const RawButtonsTakeNoBrowserLook: Story = {
     const styled = getComputedStyle(canvas.getByRole("button", { name: "Styled", hidden: true }));
     await expect(styled.borderTopWidth).toBe("2px");
     await expect(styled.paddingLeft).toBe("8px");
-    await expect(styled.borderTopColor).toBe(resolved("foreground", canvasElement, 10));
-    await expect(styled.backgroundColor).toBe(resolved("neutral", canvasElement));
+    await expect(styled.borderTopColor).toBe(
+      tokenColor("foreground", { inside: canvasElement, opacity: 10 }),
+    );
+    await expect(styled.backgroundColor).toBe(tokenColor("neutral", { inside: canvasElement }));
   },
 };
 
@@ -230,9 +233,9 @@ export const FormFieldsTakeThePageFont: Story = {
     ]) {
       const style = getComputedStyle(field);
       await expect(style.fontFamily).toBe(page);
-      await expect(style.color).toBe(resolved("foreground", canvasElement));
+      await expect(style.color).toBe(tokenColor("foreground", { inside: canvasElement }));
       await expect(getComputedStyle(field, "::placeholder").color).toBe(
-        resolved("foreground", canvasElement, 60),
+        tokenColor("foreground", { inside: canvasElement, opacity: 60 }),
       );
     }
 
@@ -250,7 +253,7 @@ export const FormFieldsTakeThePageFont: Story = {
     await expect(styled.fontFamily).not.toBe(page);
     await expect(styled.fontFamily).toContain("monospace");
     await expect(styled.fontSize).toBe("18px");
-    await expect(styled.color).toBe(resolved("neutral", canvasElement));
+    await expect(styled.color).toBe(tokenColor("neutral", { inside: canvasElement }));
   },
 };
 
@@ -295,25 +298,6 @@ export const DestructiveLabel: Story = {
   },
 };
 
-/**
- * A token as the browser resolves it, in the `rgb()` spelling `getComputedStyle` reports a colour
- * in — so an assertion compares like with like whichever notation the stylesheet emitted.
- */
-function resolved(token: string, inside: Element, opacity?: number) {
-  const probe = document.createElement("span");
-  // The opacity form is the one Tailwind writes for `text-foreground/60`.
-  probe.style.color =
-    opacity === undefined
-      ? `var(--${token})`
-      : `color-mix(in oklab, var(--${token}) ${opacity}%, transparent)`;
-  inside.appendChild(probe);
-  try {
-    return getComputedStyle(probe).color;
-  } finally {
-    probe.remove();
-  }
-}
-
 /** Runs `check` with `<html>` dark, and puts the class back however it went. */
 async function inDark(check: () => Promise<void>) {
   const html = document.documentElement;
@@ -351,7 +335,7 @@ export const BordersNameTheirColour: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const border = resolved("foreground", canvasElement, 10);
+    const border = tokenColor("foreground", { inside: canvasElement, opacity: 10 });
     await expect(border).not.toBe("rgb(0, 0, 0)");
 
     const colour = (testId: string, side: "Top" | "Bottom" = "Top") =>
@@ -384,13 +368,15 @@ export const TitlesTakeTheTheme: Story = {
       if (!title || !overridden) {
         throw new Error("both headers should render a title");
       }
-      const foreground = resolved("foreground", canvasElement);
+      const foreground = tokenColor("foreground", { inside: canvasElement });
       // The dark palette's foreground is near-white; the bug was black.
       await expect(foreground).not.toBe("rgb(0, 0, 0)");
       await expect(getComputedStyle(title).color).toBe(foreground);
-      await expect(getComputedStyle(overridden).color).toBe(resolved("negative", canvasElement));
+      await expect(getComputedStyle(overridden).color).toBe(
+        tokenColor("negative", { inside: canvasElement }),
+      );
 
-      const cardInk = resolved("foreground", canvasElement);
+      const cardInk = tokenColor("foreground", { inside: canvasElement });
       await expect(getComputedStyle(canvas.getByText("Members")).color).toBe(cardInk);
     });
   },

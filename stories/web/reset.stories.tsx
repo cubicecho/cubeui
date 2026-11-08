@@ -58,7 +58,7 @@ export const BareBorderTakesTheAppsColour: Story = {
     }
 
     const holds = async () => {
-      const border = tokenColor("border", canvasElement);
+      const border = tokenColor("border", { inside: canvasElement });
       // Otherwise every assertion below passes with the bug in place.
       await expect(border).not.toBe(getComputedStyle(plain).color);
 

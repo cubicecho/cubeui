@@ -4,6 +4,7 @@ import { Button as CompiledButton } from "../compiled/button";
 import { SidebarLayout as CompiledLayout } from "../compiled/split-layout";
 import { ToastProvider as CompiledProvider, useToast as useCompiledToast } from "../compiled/toast";
 import { ToastProvider as NativeProvider, useToast as useNativeToast } from "../registry/ui/toast";
+import { tokenColor } from "./token-color";
 
 /**
  * The toast, raised from the compiled half — the one a DOM app draws. The play test is what says a
@@ -22,18 +23,6 @@ function Raise({ useToast, label }: { useToast: typeof useNativeToast; label: st
       {label}
     </button>
   );
-}
-
-/** A token as the browser resolves it, so an assertion compares like with like. */
-function resolved(token: string, inside: Element) {
-  const probe = document.createElement("span");
-  probe.style.backgroundColor = `var(--${token})`;
-  inside.appendChild(probe);
-  try {
-    return getComputedStyle(probe).backgroundColor;
-  } finally {
-    probe.remove();
-  }
 }
 
 export const NotAButton: Story = {
@@ -59,8 +48,8 @@ export const NotAButton: Story = {
     const toast = await canvas.findByRole("alert");
     const style = getComputedStyle(toast);
 
-    await expect(style.backgroundColor).toBe(resolved("secondary", toast));
-    await expect(style.backgroundColor).not.toBe(resolved("positive", toast));
+    await expect(style.backgroundColor).toBe(tokenColor("secondary", { inside: toast }));
+    await expect(style.backgroundColor).not.toBe(tokenColor("positive", { inside: toast }));
     // "Saved." is a word wide; the toast is not.
     await expect(toast.getBoundingClientRect().width).toBeGreaterThan(300);
     await expect(toast.querySelector("svg")).not.toBeNull();
