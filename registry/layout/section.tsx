@@ -8,7 +8,14 @@ import {
   type DescriptionPlacement,
   foldsDescription,
 } from "@/components/ui/description-hint";
-import { cn, HEADING_DESCRIPTION, HEADING_TITLE, hasSlot, type SlotNode } from "@/lib/utils";
+import {
+  cn,
+  HEADING_BODY_GAP,
+  HEADING_DESCRIPTION,
+  HEADING_TITLE,
+  hasSlot,
+  type SlotNode,
+} from "@/lib/utils";
 
 type SectionProps = {
   /** The body: the fields, the rows, whatever the heading is over. */
@@ -113,7 +120,8 @@ export function Section({
       testID="section"
       {...(title ? { "aria-labelledby": titleId } : {})}
       {...(folded ? { "aria-describedby": descriptionId } : {})}
-      className={cn("min-w-0 gap-3", className)}
+      // The heading's 24px over the body, as a card's, past the 16px between the rows in it.
+      className={cn("min-w-0", HEADING_BODY_GAP, className)}
     >
       {hasHeading ? (
         // `CardLayout`'s heading row, so a section's heading and a card's line up the same way.

@@ -168,6 +168,21 @@ export const HEADING_DESCRIPTION = "text-sm text-foreground/60";
 export const HEADING_GAP = "gap-1";
 
 /**
+ * The room between a block's heading and its body: 24px, a step past the 16px between the rows in
+ * the body (`gap-4`, #474). At 16px a card's heading drew exactly like the rows under it, the same
+ * type at the same spacing, and read as one more row of them; the space round a group has to be
+ * more than the space inside it (#512). `Section` spaces its heading and body with this.
+ */
+export const HEADING_BODY_GAP = "gap-6";
+
+/**
+ * {@link HEADING_BODY_GAP} as the padding under a heading whose body is a box of its own rather
+ * than the next child of a column with a gap: a card's header over its `CardContent`, a dialog's
+ * header over its scrolling body.
+ */
+export const HEADING_BODY_PAD = "pb-6";
+
+/**
  * The text beside an action keeps 10rem, or the action goes under it: the one floor a block's or
  * a row's heading wraps on, as the text's basis in a row that wraps. A title that truncates can
  * give up more before it stops naming its block, so the floor is low.

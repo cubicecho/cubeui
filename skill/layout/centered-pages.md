@@ -7,8 +7,8 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 The sign-in page, the token gate, the "check your email" screen: one card in the middle of a page
 of its own. `CenteredCardLayout` is that page — full height, centred both ways, `p-4` off the edges —
 around a `max-w-sm` `CardLayout`, and it takes every slot the card takes, under the same names.
-The card is the page here, so its title is the page's: an `h1` at `text-xl`, as `PageHeader`'s
-level 1, not a card title. `level` and `titleClassName` still override it.
+The card is the page here, so its title is the page's: an `h1` at `text-2xl` (24px), as
+`PageHeader`'s level 1, not a card title. `level` and `titleClassName` still override it.
 
 ```tsx
 <CenteredCardLayout

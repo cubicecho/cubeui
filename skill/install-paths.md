@@ -74,7 +74,7 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `markdown-editor` | web | `components/markdown-editor.tsx` | `import { MarkdownEditor } from "@/components/markdown-editor"` |
 | `number-draft` | both | `lib/number-draft.ts` | `import { parseNumber, numberText } from "@/lib/number-draft"` |
 | `page-header` | both | `components/page-header.tsx` | `import { PageHeader } from "@/components/page-header"` |
-| `page-layout` | both | `components/page-layout.tsx` | `import { PageLayout } from "@/components/page-layout"` |
+| `page-layout` | both | `components/page-layout.tsx` | `import { titleColumn, PageLayout } from "@/components/page-layout"` |
 | `password-field` | web | `components/password-field.tsx` | `import { PasswordField, PasswordInput } from "@/components/password-field"` |
 | `password-input` | both | `components/password-input.tsx` | `import { revealLabelsFor, PasswordInput } from "@/components/password-input"` |
 | `primitive` | web | a set: `empty`, `item`, `table` | — (import from each item) |
@@ -96,5 +96,5 @@ The paths below are for the stock aliases; the CLI rewrites every import to the 
 | `tokens` | native | `lib/cubeui-theme.ts`; also `cubeui-tokens.css` | `import { light, dark, palettes, paletteFor, cssVariables } from "@/lib/cubeui-theme"` |
 | `tree` | both | `lib/tree.ts` | `import { buildTree, parentPath, isValidMove } from "@/lib/tree"` |
 | `unsaved-changes-guard` | both | `components/unsaved-changes-guard.tsx` | `import { useUnsavedChangesGuard, UnsavedChangesDialog } from "@/components/unsaved-changes-guard"` |
-| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 20 more } from "@/lib/utils"` |
-| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 20 more } from "@/lib/utils"` |
+| `utils` | web | `lib/utils.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 22 more } from "@/lib/utils"` |
+| `utils` | native | `lib/utils.ts`; also `web-as.d.ts` | `import { cn, HOVER_REVEAL, FOCUS_EDGE, INSET_FOCUS_EDGE, FIELD_INVALID_CLASS, FIELD_DISABLED_CLASS, … 22 more } from "@/lib/utils"` |

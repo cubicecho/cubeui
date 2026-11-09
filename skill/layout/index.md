@@ -66,10 +66,15 @@ own parts), `Section`, `SettingRow`, `Item` at `size="sm"`, `ListItem`, `Collaps
   one element or a fragment.
 - Beside an action the text keeps **10rem**, or the action goes under it, 8px down: a block's to
   the start of the line, a row's to the far end, clear of its `leadingSlot`.
+- A block's heading stands **24px** over its body: `CardLayout`, `Section` and `DialogLayout`.
+  The rows in the body stay 16px apart, so the heading reads as the group's and not as one more
+  row of it. Do not close it up with `contentClassName="pt-0"` or a negative margin; a card that
+  really wants 16px passes `headerClassName="pb-4"`.
 
 A block or row of your own takes the same classes from `@/lib/utils` rather than spelling them
 again: `HEADING_TITLE`, `HEADING_DESCRIPTION`, `HEADING_GAP`, `HEADING_WRAP_FLOOR`,
-`HEADING_WRAP_GAP` and `actionGap(actions)`. `Item`'s `default` size is shadcn's and is not part
+`HEADING_WRAP_GAP`, `actionGap(actions)`, and `HEADING_BODY_GAP` (a column's gap) or
+`HEADING_BODY_PAD` (a header's padding) for the 24px over the body. `Item`'s `default` size is shadcn's and is not part
 of it; nor is `SectionHeading`, which is a small label over a group, not a block's title.
 
 ## What does not belong in a shell

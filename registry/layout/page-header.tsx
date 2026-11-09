@@ -22,20 +22,26 @@ import { cn, hasSlot, type SlotNode } from "@/lib/utils";
  * How large a title is drawn. Each heading level has a size it takes unless `size` names another
  * (see {@link LEVEL_SIZE}), so a page can keep its `h1` and still have a compact title.
  *
+ * The three are 24, 20 and 16px, each on its own line of the named scale (#480): 24/32, 20/28 and
+ * 16/24. They were 20, 18 and 16px, and two pixels apart `md` and `sm` read as the same rank
+ * (#483). Four pixels apart each is a step, and `sm` is still a step over a card's 14px title.
+ *
  * `row` is the floor under the title row, so `contentSlot` starts at the same place on every
- * page; under a back row it is {@link FLOOR_UNDER_BACK} instead. `bar` is the height of one line
- * of `title`, so a loading header is as tall as the header it becomes. The tag is not in the map:
- * {@link Heading} spells each one out for the compiler.
+ * page; under a back row it is {@link FLOOR_UNDER_BACK} instead. At `lg` it is the title's 32px
+ * line, the rhythm's 4px and a 20px description, so a page with a description and one without
+ * are one height. `bar` is the height of one line of `title`, so a loading header is as tall as
+ * the header it becomes. The tag is not in the map: {@link Heading} spells each one out for the
+ * compiler.
  */
 const SIZES = {
   lg: {
-    title: "text-xl",
+    title: "text-2xl",
     icon: Platform.select({ web: "[&_svg]:size-5", default: undefined }),
     row: "min-h-14",
-    bar: "h-7",
+    bar: "h-8",
   },
   md: {
-    title: "text-lg",
+    title: "text-xl",
     icon: Platform.select({ web: "[&_svg]:size-5", default: undefined }),
     row: "min-h-12",
     bar: "h-7",
@@ -182,10 +188,11 @@ export type PageHeaderProps = {
    */
   level?: PageHeaderLevel | undefined;
   /**
-   * How large the title is drawn, apart from which heading it is: `lg`, `md` or `sm`. Left out,
-   * it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose header is mostly controls
-   * (a chat with its model picker) keeps `level={1}` and passes `size="sm"`, rather than taking a
-   * lower heading to get a smaller title. The rule under the header follows `level`, not this.
+   * How large the title is drawn, apart from which heading it is: `lg` (24px), `md` (20px) or
+   * `sm` (16px). Left out, it follows `level` — `lg` at 1, `md` at 2, `sm` at 3. A page whose
+   * header is mostly controls (a chat with its model picker) keeps `level={1}` and passes
+   * `size="sm"`, rather than taking a lower heading to get a smaller title. The rule under the
+   * header follows `level`, not this.
    */
   size?: PageHeaderSize | undefined;
   /** On the header's own box, which draws the rule under it: `border-b-0` takes the rule away. */

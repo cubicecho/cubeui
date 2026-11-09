@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentType, ReactNode } from "react";
-import { expect, within } from "storybook/test";
+import { Text } from "react-native";
+import { expect, screen, waitFor, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
 import {
   Card as CompiledCard,
@@ -11,6 +12,7 @@ import {
 import { CardLayout as CompiledCardLayout } from "../compiled/card-layout";
 import { Collapsible as CompiledCollapsible } from "../compiled/collapsible";
 import { CollapsibleRow as CompiledCollapsibleRow } from "../compiled/collapsible-row";
+import { DialogLayout as CompiledDialogLayout } from "../compiled/dialog-layout";
 import { Pencil as CompiledPencil, Trash2 as CompiledTrash } from "../compiled/icons";
 import {
   Item as CompiledItem,
@@ -25,6 +27,7 @@ import { SettingRow as CompiledSettingRow } from "../compiled/setting-row";
 import { CardLayout as NativeCardLayout } from "../registry/layout/card-layout";
 import { Collapsible as NativeCollapsible } from "../registry/layout/collapsible";
 import { CollapsibleRow as NativeCollapsibleRow } from "../registry/layout/collapsible-row";
+import { DialogLayout as NativeDialogLayout } from "../registry/layout/dialog-layout";
 import { ListItem as NativeListItem } from "../registry/layout/list-item";
 import { Section as NativeSection } from "../registry/layout/section";
 import { SettingRow as NativeSettingRow } from "../registry/layout/setting-row";
@@ -298,3 +301,126 @@ export const OneRhythm: Story = {
     }
   },
 };
+
+/** The space under a heading, and between the first two rows of the body under it. */
+function bodySpacing(scope: HTMLElement, rows: [string, string]) {
+  const box = within(scope);
+  const heading = box.getByText("Description").getBoundingClientRect();
+  const first = box.getByText(rows[0]).getBoundingClientRect();
+  const second = box.getByText(rows[1]).getBoundingClientRect();
+  return {
+    underHeading: first.top - heading.bottom,
+    betweenRows: Math.round(second.top - first.bottom),
+  };
+}
+
+/** Two rows of a body, on one half: lines of text, so a row's box is its text's. */
+function BodyRows({ half }: { half: Half }) {
+  if (half === "native") {
+    return (
+      <>
+        <Text className="text-foreground text-sm">First row</Text>
+        <Text className="text-foreground text-sm">Second row</Text>
+      </>
+    );
+  }
+  return (
+    <>
+      <p className="text-foreground text-sm">First row</p>
+      <p className="text-foreground text-sm">Second row</p>
+    </>
+  );
+}
+
+/**
+ * A block's heading stands 24px over its body, past the 16px between the rows in it (#512): on a
+ * card, on a `Section` with no card round it, and in a dialog (below). At 16px a card's 14px
+ * heading over its 16px-apart rows was drawn like one more row.
+ */
+export const HeadingOverItsBody: Story = {
+  render: () => (
+    <SideBySide
+      native={<BodySpecimens half="native" />}
+      compiled={<BodySpecimens half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    for (const half of ["native", "compiled"] as const) {
+      for (const name of ["card-layout", "section"]) {
+        const el = canvasElement.querySelector<HTMLElement>(
+          `.${half}-root [data-specimen="${name}"]`,
+        );
+        if (!el) {
+          throw new Error(`${name} should render on the ${half} half`);
+        }
+        const { underHeading, betweenRows } = bodySpacing(el, ["First row", "Second row"]);
+        await expect({ half, name, underHeading: Math.round(underHeading), betweenRows }).toEqual({
+          half,
+          name,
+          underHeading: 24,
+          betweenRows: 16,
+        });
+      }
+    }
+  },
+};
+
+function BodySpecimens({ half }: { half: Half }) {
+  const P = PARTS[half];
+  return (
+    <div className={`${half}-root flex flex-col gap-6`} style={{ width: 420 }}>
+      <Specimen name="card-layout">
+        <P.CardLayout
+          title="Title"
+          description="Description"
+          contentSlot={<BodyRows half={half} />}
+        />
+      </Specimen>
+      <Specimen name="section">
+        <P.Section title="Title" description="Description" contentSlot={<BodyRows half={half} />} />
+      </Specimen>
+    </div>
+  );
+}
+
+/**
+ * The same 24px in a `DialogLayout`, whose header is over a body that scrolls, and the footer
+ * still 16px under the body. One half per story, as two modal dialogs would hide each other.
+ */
+function dialogSpacing(half: Half): Story {
+  const Dialog = half === "native" ? NativeDialogLayout : CompiledDialogLayout;
+  const P = PARTS[half];
+  return {
+    render: () => (
+      <Dialog
+        open
+        title="Title"
+        description="Description"
+        contentSlot={<BodyRows half={half} />}
+        footerActionsSlot={<P.Button variant="positive" content="Save" />}
+      />
+    ),
+    play: async () => {
+      const dialog = await screen.findByRole("dialog", { name: "Title" });
+      // Measured again until it holds: the web card zooms in as it opens, which scales every
+      // distance in it until the animation ends. The callback only reads.
+      await waitFor(() => {
+        const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
+        const last = within(dialog).getByText("Second row").getBoundingClientRect();
+        const { underHeading } = bodySpacing(dialog, ["First row", "Second row"]);
+        // Within a pixel: the dialog's 22.5px title line leaves its parts on half pixels, and the
+        // browser snaps each box its own way.
+        return expect({
+          underHeading: Math.abs(underHeading - 24) <= 1,
+          overFooter: Math.abs(save.top - last.bottom - 16) <= 1,
+        }).toEqual({ underHeading: true, overFooter: true });
+      });
+    },
+  };
+}
+
+/** `DialogLayout` from the React Native source. */
+export const NativeDialogHeadingOverItsBody: Story = dialogSpacing("native");
+
+/** The compiled `DialogLayout`. */
+export const CompiledDialogHeadingOverItsBody: Story = dialogSpacing("compiled");

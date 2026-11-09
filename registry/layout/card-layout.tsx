@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   actionGap,
   cn,
+  HEADING_BODY_PAD,
   HEADING_GAP,
   HEADING_WRAP_FLOOR,
   HEADING_WRAP_GAP,
@@ -181,7 +182,10 @@ export type CardLayoutProps = {
   wrapperSlot?: ((parts: SlotNode, wrapper: { className: string }) => SlotNode) | undefined;
   /** On the card itself, the bordered box around every part. */
   className?: string | undefined;
-  /** On the header: the icon, the title and description, and the action beside them. */
+  /**
+   * On the header: the icon, the title and description, and the action beside them. Over a body
+   * it has 24px under it, past the body's 16px between rows; `pb-4` here closes that up.
+   */
   headerClassName?: string | undefined;
   /** On the title itself: its size, a `line-through`. */
   titleClassName?: string | undefined;
@@ -499,7 +503,9 @@ export function CardLayout({
   const parts = (
     <>
       {hasHeader ? (
-        <CardHeader className={headerClassName}>
+        // Over a body, 24px stands the heading off the 16px between the rows under it. Over a
+        // footer alone it keeps the header's own 16px: a row of buttons is not a group of rows.
+        <CardHeader className={cn(hasBody && HEADING_BODY_PAD, headerClassName)}>
           <HeadingRow
             textSlot={headingText}
             actionSlot={actionSlot}

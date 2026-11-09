@@ -70,7 +70,8 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
   installs `@cubeui/confirm-dialog`): an `alertdialog` at `sm` width, Keep first and Discard last.
 - **A dialog is a `CardLayout` on the dialog's panel.** The panel draws the border, fill, shadow
   and `p-6` inset, and the card's parts sit on it: the title is the dialog's `text-lg` title and
-  names it, the body is the one part that scrolls, and the footer stacks below `sm`. So a dialog
+  names it, the body is the one part that scrolls, and the footer stacks below `sm`. The header is
+  24px over the body, as a card's is, and the footer 16px under it. So a dialog
   takes the card's `iconSlot` before the title, an `actionSlot` at the header's far end (kept
   clear of the close button), `actionPlacement`, `descriptionPlacement`, `loading` and
   `emptySlot`, with the card's rules for each — see [Cards](cards.md#cards). A `CardLayout` in the

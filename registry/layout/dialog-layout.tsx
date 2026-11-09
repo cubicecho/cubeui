@@ -37,7 +37,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { holdOpen } from "@/components/ui/dialog-base";
-import { CardBodyContext, cn, hasSlot, type SlotNode } from "@/lib/utils";
+import { CardBodyContext, cn, HEADING_BODY_PAD, hasSlot, type SlotNode } from "@/lib/utils";
 
 /** How wide the dialog wants to be, past the phone width every size shares. */
 const SIZES = {
@@ -70,11 +70,17 @@ const SR_ONLY = Platform.select({
  * The chassis on the panel. `flex-1` on the web, where it sizes from content in a box of no set
  * height; Yoga's `flex: 1` starts from nothing, so on device it starts from its content and
  * shrinks under the panel's cap instead.
+ *
+ * No gap: the room above the body and the room under it differ. The header has the heading's 24px
+ * under it, as a card's has (`HEADING_BODY_PAD`, #512), and the footer keeps 16px over it.
  */
 const CHASSIS = Platform.select({
-  web: "min-h-0 flex-1 gap-4",
-  default: "min-h-0 shrink gap-4",
+  web: "min-h-0 flex-1",
+  default: "min-h-0 shrink",
 });
+
+/** The room over the footer: the 16px the chassis's gap was. */
+const FOOTER_GAP = "pt-4";
 
 /**
  * What `wrapperSlot`'s element takes on the panel, so it stands where the chassis stood: the same
@@ -114,6 +120,8 @@ const DIALOG_SURFACE: FloatingSurface = {
         scroll
         className={CHASSIS}
         headerSlot={headerSlot}
+        headerClassName={HEADING_BODY_PAD}
+        footerClassName={FOOTER_GAP}
         // Room either side, given back as padding: a `List` or a `Table` reaches out by its rows'
         // inset as it does in a card's body, and a scroll container clips at its edge. It is a
         // `List` row's 12px, the wider of the two, so a list here does not scroll sideways.

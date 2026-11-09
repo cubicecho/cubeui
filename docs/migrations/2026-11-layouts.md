@@ -120,6 +120,7 @@ test that finds them by name needs changing:
 | `tree`, `FileTree` | `onSelect` hands back the file's key as `entries` listed it, `a//b.md`, where it handed back the cleaned `a/b.md`, and the row's node as a second argument. `selected` matches that key or the cleaned path. `onMove` gets the dragged node as a third argument: its `type` says whether the file or the folder of a shared name moved. The file `logs` can now be dragged into the folder `logs`, and only the row being moved is muted. `isValidMove` takes the moved row's `type` as a third argument; left out, it answers for a folder, as before ([#496](https://github.com/cubicecho/cubeui/issues/496)). Keys with no doubled or edge `/` come back as before. |
 | `HeaderContentFooter` | New: `footerWidth`, the footer's own column, as `headerWidth` is the header's ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `PageLayout` | `footerClassName` lands on the footer bar, which now runs the full width; `footerSlot` sits in the body's column inside it ([#483](https://github.com/cubicecho/cubeui/issues/483)). Classes there that laid out the footer's own parts, such as `flex-row justify-between`, go on the node you pass. |
+| `PageLayout` | New: `titleColumn(width)`, the title's column at a `width`. A bar in `headerBarSlot` draws its fill on its outer box and holds its content to `titleColumn(width)`, where it was told to inset itself `px-4`, so its content starts under the title at every width ([#483](https://github.com/cubicecho/cubeui/issues/483)). A bar left on `px-4` draws as it did: under the title at `page` in a window narrower than 1536px, at the window's edge at `prose`. |
 | `SidebarSection` | `level` takes `1 \| 2 \| 3`, as every `level` in the set does. A `level` of 4 to 6 is a type error ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `lib/utils` | New: `hasSlot(node)`, whether a slot holds anything to draw: `[]`, `false`, `null`, `undefined` and `""` do not ([#483](https://github.com/cubicecho/cubeui/issues/483)). |
 | `ConfirmDialog` | `confirmLabel` defaults to "Delete", as on `ConfirmButton` and `confirm()`. It was "Confirm", which names no act. A `ConfirmDialog` with no `confirmLabel` now says Delete: pass the verb if it does something else, such as Discard or Revoke ([#486](https://github.com/cubicecho/cubeui/issues/486)). |
@@ -369,7 +370,7 @@ to add them.
   with the top of the title. What moves:
   - **Card titles get smaller.** A `CardTitle` and a `CardLayout` title are 14px, where they were
     16px, on a 20px line. A card that should keep a bigger title passes `titleClassName="text-base"`;
-    `CenteredCardLayout`'s title is still 20px. A `-my-1 py-1` you added to stop a truncated title
+    `CenteredCardLayout`'s title is a page's, 24px (below). A `-my-1 py-1` you added to stop a truncated title
     losing its descenders can go.
   - **`Section`'s title is a title, not an overline.** It is 14px and in sentence case, where it
     was 12px in capitals. Write the title as you want it read; one written in capitals stays in
@@ -392,6 +393,22 @@ to add them.
   `Section`'s has, so rows, fields or blocks handed to it sit 16px apart, where they touched.
   `contentClassName="gap-4"` can go. A card whose children should touch passes
   `contentClassName="gap-0"`; a body that is one element (a `List`, a `form`) does not change.
+- **A block's heading stands 24px over its body**
+  ([#512](https://github.com/cubicecho/cubeui/issues/512)). `CardLayout`'s header, `Section`'s
+  heading and `DialogLayout`'s header are 24px over the body, where they were 16px (12px on
+  `Section`). What the body holds is still 16px apart, so a card of rows no longer reads as one
+  more row under its title. A card's footer with no body over it keeps 16px, and a dialog's footer
+  stays 16px under the body. A card with a body is 8px taller, a section 12px. A
+  `headerClassName="pb-6"` or `contentClassName="pt-2"` you added for the same can go; a card that
+  must keep 16px passes `headerClassName="pb-4"`.
+- **Page titles are 24, 20 and 16px** ([#483](https://github.com/cubicecho/cubeui/issues/483)).
+  `PageHeader` and `PageLayout` draw `size="lg"` (a level-1 title) at 24px on a 32px line, `md`
+  (level 2) at 20px on 28px, and `sm` (level 3) at 16px on 24px, unchanged. They were 20, 18 and
+  16px, so `md` and `sm` barely differed. A header is as tall as it was, since the title row's
+  floor already held the taller line, except that each line of an `lg` title is 32px, where it
+  was 28px: a title that wraps, or one with a description under a back button, is taller by 4px a
+  line. `CenteredCardLayout`'s title is 24px, as a page's is, where it was 20px.
+  A `titleClassName="text-2xl"` you added to a page title can go.
 - **`ErrorPage` is drawn as an empty state with a red bubble**
   ([#482](https://github.com/cubicecho/cubeui/issues/482)). It is `Empty`'s block now, so it matches an empty or not-found
   screen: a 48px bubble with a 24px icon (it was 60px and 28px), 12px between its parts (16px),

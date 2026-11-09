@@ -3,14 +3,20 @@ import type { ReactNode } from "react";
 import { Text, View } from "react-native";
 import { expect, within } from "storybook/test";
 import { Button as CompiledButton } from "../compiled/button";
-import { PageLayout as CompiledPageLayout } from "../compiled/page-layout";
+import {
+  PageLayout as CompiledPageLayout,
+  titleColumn as compiledTitleColumn,
+} from "../compiled/page-layout";
 import {
   Tabs as CompiledTabs,
   TabsContent as CompiledTabsContent,
   TabsList as CompiledTabsList,
   TabsTrigger as CompiledTabsTrigger,
 } from "../compiled/tabs";
-import { PageLayout as NativePageLayout } from "../registry/layout/page-layout";
+import {
+  PageLayout as NativePageLayout,
+  titleColumn as nativeTitleColumn,
+} from "../registry/layout/page-layout";
 import { Button as NativeButton } from "../registry/ui/button";
 import {
   Tabs as NativeTabs,
@@ -33,14 +39,22 @@ type Story = StoryObj;
 const FRAME = 900;
 const PROSE = 768;
 
-function Frame({ name, children }: { name: string; children: ReactNode }) {
+function Frame({
+  name,
+  width = FRAME,
+  children,
+}: {
+  name: string;
+  width?: number;
+  children: ReactNode;
+}) {
   return (
     <section className="flex flex-col gap-2 bg-background py-2 text-foreground">
       <p className="px-2 font-semibold text-foreground/60 text-xs uppercase">{name}</p>
       <div
         data-frame={name}
         className="h-80 border border-foreground/10"
-        style={{ width: FRAME, boxSizing: "content-box" }}
+        style={{ width, boxSizing: "content-box" }}
       >
         {children}
       </div>
@@ -83,15 +97,15 @@ export const BarsUnderTheTitle: Story = {
           actionSlot={<NativeButton size="sm" variant="outline" content="Edit" />}
           headerBarSlot={
             <>
-              <View
-                role="region"
-                aria-label="Native AI on this project"
-                className="flex-row items-center justify-between bg-secondary px-4 py-1.5"
-              >
-                <Text className="text-foreground text-sm">AI: auto</Text>
-                <Text className="text-foreground/60 text-sm">2 agents working</Text>
+              <View role="region" aria-label="Native AI on this project" className="bg-secondary">
+                <View
+                  className={`${nativeTitleColumn()} flex-row items-center justify-between py-1.5`}
+                >
+                  <Text className="text-foreground text-sm">AI: auto</Text>
+                  <Text className="text-foreground/60 text-sm">2 agents working</Text>
+                </View>
               </View>
-              <View className="px-4 pt-3">
+              <View className={`${nativeTitleColumn()} pt-3`}>
                 <Text className="text-foreground/60 text-sm">Saved as a template.</Text>
               </View>
             </>
@@ -110,14 +124,17 @@ export const BarsUnderTheTitle: Story = {
           actionSlot={<CompiledButton size="sm" variant="outline" content="Edit" />}
           headerBarSlot={
             <>
-              <section
-                aria-label="Compiled AI on this project"
-                className="flex items-center justify-between bg-secondary px-4 py-1.5"
-              >
-                <span className="text-foreground text-sm">AI: auto</span>
-                <span className="text-foreground/60 text-sm">2 agents working</span>
+              <section aria-label="Compiled AI on this project" className="bg-secondary">
+                <div
+                  className={`${compiledTitleColumn()} flex items-center justify-between py-1.5`}
+                >
+                  <span className="text-foreground text-sm">AI: auto</span>
+                  <span className="text-foreground/60 text-sm">2 agents working</span>
+                </div>
               </section>
-              <p className="px-4 pt-3 text-foreground/60 text-sm">Saved as a template.</p>
+              <p className={`${compiledTitleColumn()} pt-3 text-foreground/60 text-sm`}>
+                Saved as a template.
+              </p>
             </>
           }
           contentSlot={rows("Compiled").map((row) => (
@@ -159,6 +176,109 @@ export const BarsUnderTheTitle: Story = {
         header.getBoundingClientRect().bottom - 0.5,
       );
       await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    }
+  },
+};
+
+/** The page widths a bar's content is held to, and a phone's frame at the reading column. */
+const BAR_CASES = [
+  { width: "prose", frame: FRAME },
+  { width: "page", frame: FRAME },
+  { width: "full", frame: FRAME },
+  { width: "prose", frame: 390 },
+] as const;
+
+type PageWidth = (typeof BAR_CASES)[number]["width"];
+
+/** A billing notice in `headerBarSlot`: its fill on the outer box, its words in the title's column. */
+function NoticeBar({
+  half,
+  width,
+  label,
+}: {
+  half: "native" | "compiled";
+  width: PageWidth;
+  label: string;
+}) {
+  if (half === "native") {
+    return (
+      <View role="region" aria-label={label} className="bg-warning/10">
+        <View className={`${nativeTitleColumn(width)} py-2`}>
+          <Text testID="notice-text" className="text-foreground text-sm">
+            Your card was declined.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+  return (
+    <section aria-label={label} className="bg-warning/10">
+      <div className={`${compiledTitleColumn(width)} py-2`}>
+        <p data-testid="notice-text" className="text-foreground text-sm">
+          Your card was declined.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * A bar's fill runs the width of the page and its words start under the title, at every `width`
+ * and at a phone's (#483). A bar told to inset itself `px-4` lined up only while the page was
+ * narrower than its column: at `prose` in a wide window its text sat at the window's edge, 66px
+ * left of the title.
+ */
+export const BarOnTheTitlesColumn: Story = {
+  render: () => (
+    <div>
+      {BAR_CASES.flatMap(({ width, frame }) =>
+        (["native", "compiled"] as const).map((half) => {
+          const Page = half === "native" ? NativePageLayout : CompiledPageLayout;
+          const name = `${half} ${width} ${frame}`;
+          return (
+            <Frame key={name} name={name} width={frame}>
+              <Page
+                title="Billing"
+                width={width}
+                headerBarSlot={<NoticeBar half={half} width={width} label={`Notice, ${name}`} />}
+                contentSlot={
+                  half === "native" ? (
+                    <Text className="text-foreground">Invoices.</Text>
+                  ) : (
+                    <p className="text-foreground">Invoices.</p>
+                  )
+                }
+              />
+            </Frame>
+          );
+        }),
+      )}
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    for (const { width, frame } of BAR_CASES) {
+      for (const half of ["native", "compiled"]) {
+        const name = `${half} ${width} ${frame}`;
+        const box = canvasElement.querySelector<HTMLElement>(`[data-frame="${name}"]`);
+        if (box === null) {
+          throw new Error(`the ${name} frame should render`);
+        }
+        const edge = box.getBoundingClientRect();
+        const bar = within(box).getByRole("region", { name: `Notice, ${name}` });
+        const fill = bar.getBoundingClientRect();
+        const text = part(box, "notice-text").getBoundingClientRect();
+        const title = part(box, "page-header-title").getBoundingClientRect();
+
+        // The fill is the page's width, inside the frame's 1px border.
+        await expect({ name, left: fill.left - edge.left, right: edge.right - fill.right }).toEqual(
+          { name, left: 1, right: 1 },
+        );
+        // The words start where the title does.
+        await expect({ name, x: Math.round(text.left) }).toEqual({
+          name,
+          x: Math.round(title.left),
+        });
+      }
     }
   },
 };

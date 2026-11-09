@@ -10,7 +10,14 @@
 
 import type { ReactNode } from "react";
 import * as React from "react";
-import { cn, HEADING_DESCRIPTION, HEADING_TITLE, hasSlot, type SlotNode } from "@/lib/utils";
+import {
+  cn,
+  HEADING_BODY_GAP,
+  HEADING_DESCRIPTION,
+  HEADING_TITLE,
+  hasSlot,
+  type SlotNode,
+} from "@/lib/utils";
 import { type ActionPlacement, HeadingRow } from "./card-layout";
 import { DescribedTitle, type DescriptionPlacement, foldsDescription } from "./description-hint";
 import { SectionHeading } from "./section-heading";
@@ -117,7 +124,8 @@ export function Section({
       data-slot="section"
       {...(title ? { "aria-labelledby": titleId } : {})}
       {...(folded ? { "aria-describedby": descriptionId } : {})}
-      className={cn("cube-rn-view", "min-w-0 gap-3", className)}
+      // The heading's 24px over the body, as a card's, past the 16px between the rows in it.
+      className={cn("cube-rn-view", "min-w-0", HEADING_BODY_GAP, className)}
     >
       {hasHeading ? (
         // `CardLayout`'s heading row, so a section's heading and a card's line up the same way.

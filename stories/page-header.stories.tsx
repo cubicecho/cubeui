@@ -106,6 +106,68 @@ export const CompactTitleAtLevelOne: Story = {
 
 const SIZES: PageHeaderSize[] = ["lg", "md", "sm"];
 
+/** Each size's title, as the named type scale has it (#480): its size and its own line. */
+const TITLE_TYPE: Record<PageHeaderSize, { fontSize: string; lineHeight: string }> = {
+  lg: { fontSize: "24px", lineHeight: "32px" },
+  md: { fontSize: "20px", lineHeight: "28px" },
+  sm: { fontSize: "16px", lineHeight: "24px" },
+};
+
+/**
+ * The three sizes are 24, 20 and 16px, four pixels apart (#483). At 20, 18 and 16px `md` and `sm`
+ * were two pixels apart and read as one rank. A loading title's bar is the height of the line it
+ * stands in for, so the header does not move when the name lands.
+ */
+export const ThreeTitleSizes: Story = {
+  args: { title: "Workspaces" },
+  render: () => (
+    <SideBySide
+      native={
+        <div className="flex flex-col">
+          {SIZES.flatMap((size) => [
+            <Native key={size} size={size} title={`Native ${size}`} />,
+            <div key={`${size}-loading`} data-loading={`native ${size}`}>
+              <Native size={size} title="Loading" loading />
+            </div>,
+          ])}
+        </div>
+      }
+      compiled={
+        <div className="flex flex-col">
+          {SIZES.flatMap((size) => [
+            <Compiled key={size} size={size} title={`Compiled ${size}`} />,
+            <div key={`${size}-loading`} data-loading={`compiled ${size}`}>
+              <Compiled size={size} title="Loading" loading />
+            </div>,
+          ])}
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["Native", "Compiled"]) {
+      for (const size of SIZES) {
+        const title = canvas.getByRole("heading", { name: `${half} ${size}` });
+        const { fontSize, lineHeight } = getComputedStyle(title);
+        await expect({ size, fontSize, lineHeight }).toEqual({ size, ...TITLE_TYPE[size] });
+
+        const loading = canvasElement.querySelector<HTMLElement>(
+          `[data-loading="${half.toLowerCase()} ${size}"]`,
+        );
+        const bar = loading?.querySelector<HTMLElement>("[data-slot=skeleton], [aria-hidden=true]");
+        if (!bar) {
+          throw new Error(`the ${half} ${size} loading header should draw a bar`);
+        }
+        await expect({ size, bar: `${bar.getBoundingClientRect().height}px` }).toEqual({
+          size,
+          bar: lineHeight,
+        });
+      }
+    }
+  },
+};
+
 /** A detail page's headers at every size: a lone title, and the same title with a button. */
 function DetailHeaders({ kit }: { kit: "native" | "compiled" }) {
   const [Header, Button] =

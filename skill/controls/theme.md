@@ -173,9 +173,9 @@ neighbours always look different, which is what makes picking one quick.
 | `text-sm` | 14px / 20px | The body: every control, field and row, and a block's title and the line under it. |
 | `text-sm leading-relaxed` | 14px / 22.75px | Prose read at length: a Markdown document, a hint's paragraph. |
 | `text-base` | 16px / 24px | The smallest title over a page or a block: `PageHeader` `sm`, `###`, `EmptyTitle`, a fieldset's legend. |
-| `text-lg` | 18px / 28px | `PageHeader` `md`, `##`. A dialog's title is `text-lg leading-tight`, 18px on 22.5px, so it holds together when it wraps at phone width. |
-| `text-xl` | 20px / 28px | A page's title: `PageHeader` `lg`, `#`, `CenteredCardLayout`. |
-| `text-2xl` | 24px / 32px | A `StatTile`'s figure. |
+| `text-lg` | 18px / 28px | `##`. A dialog's title is `text-lg leading-tight`, 18px on 22.5px, so it holds together when it wraps at phone width. |
+| `text-xl` | 20px / 28px | `PageHeader` `md`, `#`. |
+| `text-2xl` | 24px / 32px | A page's title: `PageHeader` `lg`, `CenteredCardLayout`. A `StatTile`'s figure. |
 
 - **Line height follows the size.** Small text takes a tall line for its size, and a large title a
   short one, so leave the size's own line alone except for three steps: `leading-5` (a 20px line,
