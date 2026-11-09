@@ -34,6 +34,7 @@ export const SPACING_HALF_STEPS = {
 export const SIZE_HALF_STEPS = {
   2.5: "10px: a dot standing beside its label, the cap height of 14px text (`ColorDot`'s `md`, #487)",
   3.5: "14px: an icon in an `xs` control, or beside 12px text, where 16px crowds it",
+  7.5: "30px: a tab or a framed segment on the web, so its frame (`p-1` and a 1px border) is 40px, a control's height",
 };
 
 const FONT_SIZE = /^text-(xs|sm|base|lg|[2-9]?xl)\/(.+)$/;

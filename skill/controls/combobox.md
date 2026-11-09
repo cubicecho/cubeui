@@ -58,8 +58,9 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
   call sites with `active={view === "relative"}` keep working inside a group. A pill's own
   `onPress` (`onClick` on the web) still fires after the group is told.
 - **`variant`**: `framed`, the default, is a frame (a border, `p-1`, `bg-background`) round pills
-  that are 40px on the web, an `Input`'s and a tab's height, and 44pt on device. The frame is 50px,
-  the same as a `TabsList`, so a segmented control and a tab list are one height side by side. Do
+  that are 30px on the web, a tab's height, and 44pt on device. The frame is 40px on the web, an
+  `Input`'s height and the same as a `TabsList`, so a segmented control and a tab list are one
+  height side by side. Do
   not give the group an `h-*`, which would clip the pills. `plain` is the pills alone, 32px, for a
   toolbar or a nav bar.
 - **`iconSlot` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two

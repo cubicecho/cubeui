@@ -235,9 +235,10 @@ are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24p
 - **A bound `CheckboxField` or `SwitchField`'s caption presses its control** on device too, as a
   `<label>` does on the web.
 - **A tab is 44pt tall itself**, and its list grows to hold it. The list scrolls, and a scroller
-  clips a touch at its edge, so a `hitSlop` there would reach nothing. On the web a tab is 40px, a
-  field's height. A framed `SegmentedButton` and a radio segment are the same: 44pt themselves, in
-  a frame that grows round them, so they are one height with a tab list.
+  clips a touch at its edge, so a `hitSlop` there would reach nothing. On the web a tab is 30px, so
+  the list is 40px, a field's height. A framed `SegmentedButton` and a radio segment are the same:
+  44pt themselves on device, in a frame that grows round them, so they are one height with a tab
+  list.
 
 A pressable of your own takes the same two helpers, from `@/lib/utils`:
 

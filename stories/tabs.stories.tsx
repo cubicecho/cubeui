@@ -671,9 +671,9 @@ function TabsBesideControls({ half }: { half: "native" | "compiled" }) {
 }
 
 /**
- * A tab is the height of the controls beside it on the web, 40px (#521). It was 32px inside a 40px
- * frame, the size of an `Input`'s box, so the tabs over a search field were a row of smaller
- * targets than the field. The frame now grows around the tab rather than holding it to 32px.
+ * A tab list is the height of the controls beside it on the web, 40px: a 30px tab inside the
+ * list's `p-1` and border. #521 made the tab itself 40px, which put a 50px strip beside 40px
+ * buttons, a head taller than its row. Device keeps its 44pt tab (`RN Parity/Touch targets`).
  */
 export const TriggersMatchControls: Story = {
   render: () => (
@@ -705,12 +705,12 @@ export const TriggersMatchControls: Story = {
         await expect({ half, name, tab: Math.round(tab.height) }).toEqual({
           half,
           name,
-          tab: CONTROL_HEIGHT,
+          tab: CONTROL_HEIGHT - LIST_FRAME,
         });
       }
       await expect({ half, list: Math.round(list.height) }).toEqual({
         half,
-        list: CONTROL_HEIGHT + LIST_FRAME,
+        list: CONTROL_HEIGHT,
       });
     }
   },
