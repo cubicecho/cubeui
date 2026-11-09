@@ -402,8 +402,9 @@ function FieldWrapper({
   labelClassName,
   descriptionClassName,
   errorClassName,
-  // biome-ignore lint/correctness/noUnusedFunctionParameters: a `<label htmlFor>` presses it there
-  onLabelPress,
+  // Underscored because the web build, where a `<label htmlFor>` presses the control, never reads
+  // it, and an app compiled with `noUnusedParameters` refused it there (TS6133).
+  onLabelPress: _onLabelPress,
 }: FieldWrapperProps) {
   const folded = Boolean(description) && descriptionPlacement === "popover";
   const hasError = useFieldError() !== undefined;
