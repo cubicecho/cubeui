@@ -385,7 +385,8 @@ function BodySpecimens({ half }: { half: Half }) {
 
 /**
  * The same 24px in a `DialogLayout`, whose header is over a body that scrolls, and the footer
- * still 16px under the body. One half per story, as two modal dialogs would hide each other.
+ * still 16px under the body. The rows in the body are 16px apart, as a card's are: they touched
+ * there until #537. One half per story, as two modal dialogs would hide each other.
  */
 function dialogSpacing(half: Half): Story {
   const Dialog = half === "native" ? NativeDialogLayout : CompiledDialogLayout;
@@ -407,13 +408,14 @@ function dialogSpacing(half: Half): Story {
       await waitFor(() => {
         const save = within(dialog).getByRole("button", { name: "Save" }).getBoundingClientRect();
         const last = within(dialog).getByText("Second row").getBoundingClientRect();
-        const { underHeading } = bodySpacing(dialog, ["First row", "Second row"]);
+        const { underHeading, betweenRows } = bodySpacing(dialog, ["First row", "Second row"]);
         // Within a pixel: the dialog's 22.5px title line leaves its parts on half pixels, and the
         // browser snaps each box its own way.
         return expect({
           underHeading: Math.abs(underHeading - 24) <= 1,
+          betweenRows: Math.abs(betweenRows - 16) <= 1,
           overFooter: Math.abs(save.top - last.bottom - 16) <= 1,
-        }).toEqual({ underHeading: true, overFooter: true });
+        }).toEqual({ underHeading: true, betweenRows: true, overFooter: true });
       });
     },
   };

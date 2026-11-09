@@ -117,10 +117,14 @@ export const Focus: Story = {
   },
 };
 
+/** One row of a growing box: a 20px line, `py-2` and the 1px border, each side. */
+const ONE_ROW = 38;
+
 /**
  * `maxRows` makes the box grow with its text, from `rows` to the cap, and shrink again when the
  * text goes: one line, then up to four, then scrolling.
  */
+
 export const Grows: Story = {
   render: () => (
     <SideBySide
@@ -139,13 +143,13 @@ export const Grows: Story = {
     const canvas = within(canvasElement);
     const newLine = "{Shift>}{Enter}{/Shift}";
 
-    // Not "Native" yet: under react-native-web the device source starts an empty `rows={1}` box
-    // two lines tall (58px, not 38), because the `<textarea>` it draws keeps the browser's
-    // default `rows` of 2 and `fitRows` reads that as the text's height (#532).
-    for (const half of ["Compiled"]) {
+    for (const half of ["Native", "Compiled"]) {
       await step(half, async () => {
         const box = canvas.getByPlaceholderText(`${half} composer`);
         const one = box.offsetHeight;
+        // An empty `rows={1}` box is one line tall. Under react-native-web the `<textarea>` kept
+        // the browser's default `rows` of 2, which `fitRows` read as the text's height (#534).
+        await expect({ half, one }).toEqual({ half, one: ONE_ROW });
 
         await userEvent.click(box);
         await userEvent.keyboard(`a${newLine}b${newLine}c`);

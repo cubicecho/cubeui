@@ -29,14 +29,14 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { IconClassContext } from "@/components/ui/icons-base";
-import { cn, hasSlot, type SlotNode, touchTarget } from "@/lib/utils";
+import { cn, hasSlot, type SlotNode, touchRowClass, touchTarget } from "@/lib/utils";
 
 /**
- * A pill's drawn height, its label's 20px line and its padding: 28px in the frame and 32px out of
- * it. Grown to a finger's 44pt by a `hitSlop` on device (#470), and only the height: pills sit
- * side by side, where a wider target would take a neighbour's.
+ * A plain pill's drawn height, its label's 20px line and its `py-1.5`: 32px. Grown to a finger's
+ * 44pt by a `hitSlop` on device (#470), and only the height: pills sit side by side, where a wider
+ * target would take a neighbour's. A framed pill is 44pt itself and takes none.
  */
-const DRAWN = { framed: { height: 28 }, bare: { height: 32 } } as const;
+const DRAWN = { height: 32 } as const;
 
 /**
  * The container class, for a pill the caller renders itself.
@@ -117,12 +117,16 @@ type SegmentedGroupContextValue = {
 const SegmentedGroupContext = React.createContext<SegmentedGroupContextValue | null>(null);
 
 /**
- * The row's two looks. `framed` is an input-height box, so a segmented control
- * beside a select or an input lines up with it; `plain` is the pills on the
- * page with nothing round them, for a toolbar or a nav bar.
+ * The row's two looks. `framed` is a frame around pills as tall as an input, the
+ * same box a `TabsList` draws round its tabs, so the two are one height side by
+ * side; `plain` is the pills on the page with nothing round them, for a toolbar
+ * or a nav bar.
+ *
+ * No height of its own (#537). It was the 40px box an `Input` is, which left a
+ * pill 28px inside it, while a tab had grown to 40px in a frame round it (#535).
  */
 const SEGMENTED_GROUP_VARIANTS = {
-  framed: "h-10 rounded-md border border-foreground/50 bg-background p-1",
+  framed: "rounded-md border border-foreground/50 bg-background p-1",
   plain: "",
 } as const;
 
@@ -143,7 +147,10 @@ export type SegmentedGroupProps<TValue extends string = string> = Omit<
   onValueChange?: ((value: TValue) => void) | undefined;
   /** The row's element, for a caller that has to measure it. */
   ref?: React.Ref<HTMLDivElement> | undefined;
-  /** `framed` (the default) draws the input-height box; `plain` draws the row alone. */
+  /**
+   * `framed` (the default) draws a frame round pills as tall as an input, as a `TabsList` does;
+   * `plain` draws the row alone, its pills 32px.
+   */
   variant?: keyof typeof SEGMENTED_GROUP_VARIANTS | undefined;
   /**
    * Under this width a pill with an `iconSlot` draws the icon alone; `always` is a
@@ -277,7 +284,6 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
     const ink = current ? "text-foreground" : "text-foreground/60";
     // Only a pill with an icon has something left to draw once its label is gone.
     const labelHideBelow = hasSlot(iconSlot) ? group?.labelHideBelow : undefined;
-    const iconOnlyHeight = group?.framed ? "min-h-7" : "min-h-8";
     return (
       <button
         type="button"
@@ -302,11 +308,14 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
           onPress?.(event);
         }}
         className={cn(
-          // Inside the frame a pill is 4px shorter, so it fits the input-height
-          // box instead of spilling past its padding.
-          // Inside the frame, `rounded-sm`: the radius nested in the frame's, as a tab's is.
+          // Inside the frame a pill is a tab: 40px, the height of an `Input` and a default
+          // `Button`, and 44pt on device, with `rounded-sm`, the radius nested in the frame's. It
+          // is that tall itself on device rather than by a `hitSlop`, as a tab is, so a framed
+          // segmented control and a tab list are one height side by side (#537).
           "cube-rn-view cube-rn-pressable",
-          group?.framed ? "rounded-sm px-3 py-1" : "rounded-md px-3 py-1.5",
+          group?.framed
+            ? cn("h-10 justify-center rounded-sm px-3", touchRowClass())
+            : "rounded-md px-3 py-1.5",
           // The current pill is the chosen tint, a step further under the pointer, focused and
           // pressed; another looks hovered then, as `RadioGroup`'s segments do. Neither draws a ring.
           "focus-visible:outline-none",
@@ -319,13 +328,13 @@ const SegmentedButton = React.forwardRef<HTMLButtonElement, SegmentedButtonProps
           ink,
           current ? undefined : CONTAINER_HOVER_INK,
           hasSlot(iconSlot) ? WITH_ICON : undefined,
-          // The label's line is what gives a pill its height, and an icon is
+          // The label's line is what gives a plain pill its height, and an icon is
           // shorter than it: with the label hidden the pill would shrink, so it
           // is held at the height a labelled pill beside it has.
-          hasSlot(iconSlot) ? iconOnlyHeight : undefined,
+          hasSlot(iconSlot) && group?.framed !== true ? "min-h-8" : undefined,
           className,
         )}
-        {...touchTarget(group?.framed ? DRAWN.framed : DRAWN.bare)}
+        {...(group?.framed ? {} : touchTarget(DRAWN))}
         {...(props as React.ComponentPropsWithoutRef<"button">)}
       >
         {/* Colour does not inherit on device, so the icon is handed the label's. */}

@@ -224,8 +224,8 @@ are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24p
   press covers the whole lit row, its padding included, on both halves.
 - **A small control keeps its look and takes a `hitSlop` to 44pt**: `Checkbox`, `Switch`, the bare
   radio circle, a toast's ✕ and a badge's ✕.
-- **A control with words in it is 44pt tall and as wide as its label**: `Button`, `ToggleChip`,
-  `SegmentedButton` and a radio segment. They sit side by side, so only the height grows.
+- **A control with words in it is 44pt tall and as wide as its label**: `Button`, `ToggleChip` and
+  a plain `SegmentedButton`. They sit side by side, so only the height grows.
   `icon`, `icon-sm` and `icon-lg` are 44pt square. `icon-xs` is 36 by 44: it sits 4px from the next
   button, and where two targets overlap the later one takes the press. On a phone, use `icon-sm`
   for an icon button that stands alone.
@@ -236,7 +236,8 @@ are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24p
   `<label>` does on the web.
 - **A tab is 44pt tall itself**, and its list grows to hold it. The list scrolls, and a scroller
   clips a touch at its edge, so a `hitSlop` there would reach nothing. On the web a tab is 40px, a
-  field's height.
+  field's height. A framed `SegmentedButton` and a radio segment are the same: 44pt themselves, in
+  a frame that grows round them, so they are one height with a tab list.
 
 A pressable of your own takes the same two helpers, from `@/lib/utils`:
 

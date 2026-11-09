@@ -235,6 +235,16 @@ to add them.
   on both. The list is no longer a fixed 40px box: it keeps its frame around the tabs, so it is
   50px on the web and 54pt on device. Anything laid out to the list's old height moves down 10px.
   A `className` on `TabsList` or `TabsTrigger` that set a height can go.
+- **Segments are as tall as tabs** ([#537](https://github.com/cubicecho/cubeui/issues/537)). A
+  framed `SegmentedGroup`'s pills and a `RadioGroup variant="segmented"`'s segments are 40px on
+  the web and 44pt on device, where they were 28px and 30px inside a 40px box. The frame grows
+  round them, so it is 50px on the web and 54pt on device, the same as a `TabsList`, and the two
+  line up side by side. `ThemePicker variant="compact"` is that frame too. Anything laid out to
+  the frame's old height moves down 10px. A `plain` group is unchanged.
+- **A growing `Textarea` starts one line tall under Expo web**
+  ([#534](https://github.com/cubicecho/cubeui/issues/534)). A `rows={1} maxRows={…}` composer
+  drawn from the native source under react-native-web started two lines tall, the browser's
+  default. It starts at `rows` now, as it does on device and in a DOM app.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
@@ -393,6 +403,11 @@ to add them.
   `Section`'s has, so rows, fields or blocks handed to it sit 16px apart, where they touched.
   `contentClassName="gap-4"` can go. A card whose children should touch passes
   `contentClassName="gap-0"`; a body that is one element (a `List`, a `form`) does not change.
+- **A dialog's body spaces what it holds**
+  ([#537](https://github.com/cubicecho/cubeui/issues/537)). `DialogLayout`'s body has `gap-4`, as a
+  card's has, so rows handed to it sit 16px apart, where they touched. `contentClassName="gap-4"`
+  can go. A dialog whose children should touch passes `contentClassName="gap-0"`; a body that is
+  one element (a `form`) does not change.
 - **A block's heading stands 24px over its body**
   ([#512](https://github.com/cubicecho/cubeui/issues/512)). `CardLayout`'s header, `Section`'s
   heading and `DialogLayout`'s header are 24px over the body, where they were 16px (12px on

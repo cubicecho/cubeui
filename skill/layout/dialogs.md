@@ -52,7 +52,7 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 | `showCloseButton` | `boolean` | `true` | Whether the ✕ is drawn in the corner. It closes the way Escape does, so `hasUnsavedChanges` still asks first. Turn it off only when the footer has a way out of its own, such as a Cancel. |
 | `className` | `string` |  | On the dialog's panel. Its width comes from `size`, so reach for this for anything else. |
 | `headerClassName` | `string` |  | On the header: the title, the description, and the room the ✕ takes. |
-| `contentClassName` | `string` |  | On the body, the part that scrolls between the header and the footer. |
+| `contentClassName` | `string` |  | On the body, the part that scrolls between the header and the footer. It is a column with `gap-4` between what it holds, as a card's body is; a gap here replaces it, and `gap-0` lets the children touch. |
 | `footerClassName` | `string` |  | On the footer, which holds `footerSlot` and the actions. |
 <!-- /props -->
 
@@ -71,7 +71,8 @@ Part of the cubeui skill. Read [SKILL.md](../SKILL.md) first, and [index.md](ind
 - **A dialog is a `CardLayout` on the dialog's panel.** The panel draws the border, fill, shadow
   and `p-6` inset, and the card's parts sit on it: the title is the dialog's `text-lg` title and
   names it, the body is the one part that scrolls, and the footer stacks below `sm`. The header is
-  24px over the body, as a card's is, and the footer 16px under it. So a dialog
+  24px over the body, as a card's is, and the footer 16px under it. The rows in the body are
+  16px apart (`gap-4`), as a card's are; a gap in `contentClassName` replaces it. So a dialog
   takes the card's `iconSlot` before the title, an `actionSlot` at the header's far end (kept
   clear of the close button), `actionPlacement`, `descriptionPlacement`, `loading` and
   `emptySlot`, with the card's rules for each — see [Cards](cards.md#cards). A `CardLayout` in the

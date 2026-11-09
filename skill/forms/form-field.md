@@ -251,8 +251,9 @@ and a long press on device, and read after the option's name, as on `Switch`:
 />
 ```
 
-`variant="segmented"` draws the options as one framed, input-height row of equal segments
-across the container's width, like `SegmentedGroup` but still radios, with one tab stop and arrow
+`variant="segmented"` draws the options as one framed row of equal segments across the
+container's width, each segment 40px on the web and 44pt on device, a tab's height, in a frame
+that grows round them, like `SegmentedGroup` but still radios, with one tab stop and arrow
 keys. A segment shows its `iconSlot`, its `label` or both, and draws no `description`. For an
 icon-only segment, leave `label` out and pass `aria-label` on `RadioGroupItem`. That becomes the
 radio's name and, when no `hint` is given, its tooltip. Pass the icon bare: the segment sizes it
