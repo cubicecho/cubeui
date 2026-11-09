@@ -97,6 +97,11 @@ Name the tablist when no visible heading does: `<TabsList aria-label="Project vi
 `aria-labelledby` pointed at the heading's id (`nativeID` on device). It is on the shared contract, so one call site names
 it on both halves; a screen reader announces it on entering the tabs.
 
+A tab is 40px tall on the web, the height of an `Input`, a `Select` and a default `Button`, so tabs
+over a search field are the same size as the field. On device it is 44pt, a finger's target. The
+list is a frame around its tabs, its own padding and border outside them, and has no height of its
+own: do not give it an `h-*`, which would clip the tabs.
+
 A `TabsList` is as wide as its tabs, at the start of its column, on both halves. To run it across,
 pass `className="self-stretch"` or a width; tabs that fit are then centred in it. A list with more
 tabs than fit scrolls sideways inside its own box and brings the selected tab into view, at mount

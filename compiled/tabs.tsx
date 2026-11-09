@@ -111,7 +111,7 @@ function TabsList({
       }}
       // `justify-center-safe`: plain centring puts the first tabs of a row that overflows past
       // the start, where no scrolling reaches them. The scrollbar is hidden because the row is
-      // 40px tall and the tabs themselves, by arrow key or by drag, are how it moves.
+      // one tab tall and the tabs themselves, by arrow key or by drag, are how it moves.
       className={cn(
         "inline-flex max-w-full justify-center-safe overflow-x-auto overflow-y-hidden text-foreground/60 [scrollbar-width:none]",
         TABS_LIST_CLASS,

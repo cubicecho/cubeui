@@ -234,8 +234,9 @@ are: do not add a `hitSlop` to one. The web keeps the drawn sizes, which are 24p
   bottom bar each place takes its whole share of the bar.
 - **A bound `CheckboxField` or `SwitchField`'s caption presses its control** on device too, as a
   `<label>` does on the web.
-- **A tab is not there yet.** The list scrolls, and a scroller clips a touch to its 40pt frame, so
-  a tab's target is the tab itself.
+- **A tab is 44pt tall itself**, and its list grows to hold it. The list scrolls, and a scroller
+  clips a touch at its edge, so a `hitSlop` there would reach nothing. On the web a tab is 40px, a
+  field's height.
 
 A pressable of your own takes the same two helpers, from `@/lib/utils`:
 

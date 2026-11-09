@@ -4,6 +4,8 @@ import { Text } from "react-native";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { IconClassContext } from "@/components/ui/icons-base";
 import { Badge as CompiledBadge } from "../compiled/badge";
+import { Button as CompiledButton } from "../compiled/button";
+import { Input as CompiledInput } from "../compiled/input";
 import { PageLayout as CompiledPageLayout } from "../compiled/page-layout";
 import {
   Tabs as CompiledTabs,
@@ -13,6 +15,8 @@ import {
 } from "../compiled/tabs";
 import { PageLayout } from "../registry/layout/page-layout";
 import { Badge } from "../registry/ui/badge.tsx";
+import { Button } from "../registry/ui/button.tsx";
+import { Input } from "../registry/ui/input.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
 import { tokenColor } from "./token-color";
@@ -620,6 +624,93 @@ export const PaneIsATabStop: Story = {
         await userEvent.tab();
         await waitFor(() => expect(panel).toHaveFocus());
         await expect(getComputedStyle(panel).borderTopColor).toBe(tokenColor("active"));
+      });
+    }
+  },
+};
+
+/** A control's height on the web: an `Input`'s, a `Select`'s and a default `Button`'s. */
+const CONTROL_HEIGHT = 40;
+/** The list's frame around a tab: `p-1` and a 1px border, each side. */
+const LIST_FRAME = 10;
+
+/** Tabs beside a search field and a button, as a toolbar of controls lays them out. */
+function TabsBesideControls({ half }: { half: "native" | "compiled" }) {
+  const [Root, List, Trigger, Content, Field, Action] =
+    half === "native"
+      ? [Tabs, TabsList, TabsTrigger, TabsContent, Input, Button]
+      : [
+          CompiledTabs,
+          CompiledTabsList,
+          CompiledTabsTrigger,
+          CompiledTabsContent,
+          CompiledInput as typeof Input,
+          CompiledButton as typeof Button,
+        ];
+  const views = ["Open", "Closed"];
+  return (
+    <div data-testid={`${half}-toolbar`} className="flex flex-col items-start gap-2">
+      <Root defaultValue="open">
+        <List aria-label={`${half} filter`}>
+          {views.map((view) => (
+            <Trigger key={view} value={view.toLowerCase()}>
+              {view}
+            </Trigger>
+          ))}
+        </List>
+        {views.map((view) => (
+          <Content key={view} value={view.toLowerCase()}>
+            {half === "native" ? <Text className="text-foreground">{view} issues</Text> : view}
+          </Content>
+        ))}
+      </Root>
+      <Field aria-label={`${half} search`} placeholder="Search issues" />
+      <Action content="Export" />
+    </div>
+  );
+}
+
+/**
+ * A tab is the height of the controls beside it on the web, 40px (#521). It was 32px inside a 40px
+ * frame, the size of an `Input`'s box, so the tabs over a search field were a row of smaller
+ * targets than the field. The frame now grows around the tab rather than holding it to 32px.
+ */
+export const TriggersMatchControls: Story = {
+  render: () => (
+    <SideBySide
+      native={<TabsBesideControls half="native" />}
+      compiled={<TabsBesideControls half="compiled" />}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    for (const half of ["native", "compiled"] as const) {
+      const field = canvas.getByRole("textbox", { name: `${half} search` });
+      const action = within(canvas.getByTestId(`${half}-toolbar`)).getByRole("button", {
+        name: "Export",
+      });
+      await expect({ half, field: Math.round(field.getBoundingClientRect().height) }).toEqual({
+        half,
+        field: CONTROL_HEIGHT,
+      });
+      await expect({ half, action: Math.round(action.getBoundingClientRect().height) }).toEqual({
+        half,
+        action: CONTROL_HEIGHT,
+      });
+      const list = canvas.getByRole("tablist", { name: `${half} filter` }).getBoundingClientRect();
+      for (const name of ["Open", "Closed"]) {
+        const tab = within(canvas.getByRole("tablist", { name: `${half} filter` }))
+          .getByRole("tab", { name })
+          .getBoundingClientRect();
+        await expect({ half, name, tab: Math.round(tab.height) }).toEqual({
+          half,
+          name,
+          tab: CONTROL_HEIGHT,
+        });
+      }
+      await expect({ half, list: Math.round(list.height) }).toEqual({
+        half,
+        list: CONTROL_HEIGHT + LIST_FRAME,
       });
     }
   },

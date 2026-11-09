@@ -44,7 +44,7 @@ import {
   useRovingFocus,
   useRovingItem,
 } from "@/lib/roving-focus";
-import { cn, FOCUS_EDGE } from "@/lib/utils";
+import { cn, FOCUS_EDGE, touchRowClass } from "@/lib/utils";
 
 type TabsState = { value: string; setValue: (value: string) => void };
 
@@ -244,6 +244,9 @@ function TabsTrigger({
 
   const styling = cn(
     TABS_TRIGGER_CLASS,
+    // 44pt on device, a finger's target, and the list grows to hold it: the scroller clips a touch
+    // at its edge, so the tab has to be that tall itself rather than reach it with a `hitSlop`.
+    touchRowClass(),
     // The active tab is the chosen tint, a step further under the pointer, focused and pressed;
     // another looks hovered then, as the web half's does. Neither draws a ring.
     "focus-visible:outline-none",

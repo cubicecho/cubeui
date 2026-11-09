@@ -235,7 +235,7 @@ one. So the size's own line stands, and three steps are named beside it: `leadin
 Spacing is 4px steps — `1`, `2`, `3`, `4`, `6`, `8` for padding, margins and gaps, further apart
 as they grow — and two half-steps: `0.5` (2px), which nudges a 16px icon onto the middle of a 20px
 line, pads a badge or inline code and packs a nav list's rows, and `1.5` (6px), the pad of a menu,
-select, tab or segment row, whose 20px line it makes 32px. As sizes, `3.5` (14px) is the icon in an
+select or segment row, whose 20px line it makes 32px. As sizes, `3.5` (14px) is the icon in an
 `xs` control or beside 12px text and `2.5` (10px) the dot beside a label (#487). Controls are 28,
 36, 40 and 44px (`h-7`, `h-9`, `h-10`, `h-11`); icons 14, 16 and 20px. `registry:check` rule 17
 fails on any other line height or half-step in a class under `registry/`; a use that has to stay

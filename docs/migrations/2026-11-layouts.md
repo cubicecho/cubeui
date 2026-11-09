@@ -229,6 +229,11 @@ to add them.
   showed nothing when Tab reached it. Its edge now turns `active`, as a scrolling table's or code
   block's does. The pane has a transparent 1px border and `rounded-md` for it, so what is inside
   sits 1px further in.
+- **Tabs are taller** ([#521](https://github.com/cubicecho/cubeui/issues/521)). A tab is 40px on
+  the web, the height of an `Input` and a default `Button`, and 44pt on device, where it was 32px
+  on both. The list is no longer a fixed 40px box: it keeps its frame around the tabs, so it is
+  50px on the web and 54pt on device. Anything laid out to the list's old height moves down 10px.
+  A `className` on `TabsList` or `TabsTrigger` that set a height can go.
 - **A disabled link button is no longer followed**
   ([#410](https://github.com/cubicecho/cubeui/issues/410)). A `Button` with a `linkSlot` and
   `disabled` (or `loading`) is `aria-disabled` and leaves the tab order, and its click does
