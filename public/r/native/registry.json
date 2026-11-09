@@ -296,7 +296,7 @@
       "type": "registry:ui",
       "title": "Color Bar",
       "description": "The left-edge accent stripe a card wears, readable in both themes and labelled for anyone who cannot see it.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/color"],
+      "registryDependencies": ["@cubeui/utils", "@cubeui/color", "@cubeui/surface-colors"],
       "files": [
         {
           "path": "registry/ui/color-bar.tsx",
@@ -309,7 +309,12 @@
       "type": "registry:ui",
       "title": "Color Dot",
       "description": "A small swatch standing in for a colour-coded thing in a list, readable in both themes.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/tooltip", "@cubeui/color"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/tooltip",
+        "@cubeui/color",
+        "@cubeui/surface-colors"
+      ],
       "files": [
         {
           "path": "registry/ui/color-dot.tsx",
@@ -1123,6 +1128,27 @@
         },
         {
           "path": "registry/ui/reduced-motion.web.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "surface-colors",
+      "type": "registry:ui",
+      "title": "Surface Colors",
+      "description": "useSurfaceColors(): the page and card colours of the theme a node is drawn in, as hex, read from the --background and --secondary it resolves: off its computed style on the web, through NativeWind on device. ColorBar and ColorDot hand them to hexToAccent, so a picked colour moves only as far as that theme needs.",
+      "dependencies": [
+        "nativewind@5.0.0-rc.0",
+        "react-native-css@3.1.0-rc.0",
+        "tailwindcss@^4.3.3"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/surface-colors.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/ui/surface-colors.web.tsx",
           "type": "registry:ui"
         }
       ]

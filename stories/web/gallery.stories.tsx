@@ -257,6 +257,7 @@ const NOT_SHOWN: Record<string, string> = {
     "A hook; the radio group, the swatches and the device tabs are one tab stop by it.",
   "reduced-motion": "A hook; HeaderContentFooter and CodeBlock jump rather than glide by it.",
   overlay: "Nothing on the web; on device the tooltips and toasts are drawn in its layers.",
+  "surface-colors": "A hook; the colour bar and dot read the theme's page and card with it.",
   overflows: "A hook; a table and a page body are tab stops only while they can scroll, by it.",
   "unsaved-changes-guard":
     "A hook and a question that stays closed until a page with edits is left. Its own story opens it.",

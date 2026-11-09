@@ -43,6 +43,12 @@ const PICKS: [string, string][] = [
   ["orange", "#ff8800"],
 ];
 
+/** The picks with a hue to keep: white and black have none. */
+const CHROMATIC = PICKS.filter(([name]) => name !== "white" && name !== "black");
+
+/** 3:1 and a hex step over it: as close to the floor as a colour a hex can spell gets. */
+const JUST_OVER = 3.2;
+
 describe("hexToAccent", () => {
   // Every spelling `ColorPicker` can hand `Card accentColor`. `#f80` drew no stripe at all
   // (`hsl(NaN, NaN%, NaN%)`), and `ff8800` came out a degree off, read from the wrong offsets.
@@ -52,24 +58,63 @@ describe("hexToAccent", () => {
   });
 
   // The stripe is a mark someone has to see, so 3:1 (WCAG 1.4.11) from what is either side of it:
-  // the card it is drawn on and the page beyond the card's edge, in every theme at once, since the
-  // stripe does not know which is on.
+  // the card it is drawn on and the page beyond the card's edge. Told the theme, it holds that
+  // theme (#504); not told, it holds every theme at once.
   for (const [theme, colours] of THEMES) {
-    it.each(PICKS)(`keeps %s 3:1 from the page and a card in ${theme}`, (_, hex) => {
-      const accent = hexToAccent(hex) as string;
-      expect(contrast(accent, colours.background)).toBeGreaterThanOrEqual(3);
-      expect(contrast(accent, colours.secondary)).toBeGreaterThanOrEqual(3);
+    const surfaces = { page: colours.background, card: colours.secondary };
+    const nearest = (hex: string) =>
+      Math.min(contrast(hex, colours.background), contrast(hex, colours.secondary));
+
+    it.each(PICKS)(`keeps %s 3:1 from ${theme}'s page and card, told the theme`, (_, hex) => {
+      expect(nearest(hexToAccent(hex, surfaces) as string)).toBeGreaterThanOrEqual(3);
+    });
+
+    it.each(PICKS)(`keeps %s 3:1 from the page and a card in ${theme}, not told`, (_, hex) => {
+      expect(nearest(hexToAccent(hex) as string)).toBeGreaterThanOrEqual(3);
+    });
+
+    it.each(CHROMATIC)(`keeps the hue of %s in ${theme}`, (_, hex) => {
+      const before = hexToHsl(hex)?.h as number;
+      const after = hexToHsl(hexToAccent(hex, surfaces) as string)?.h as number;
+      expect(Math.abs(after - before)).toBeLessThanOrEqual(1);
+    });
+
+    // A pick that shows is drawn as it is, and one that does not is moved only to the edge of
+    // showing: within a hex step of 3:1 from whichever surface held it back.
+    it.each(PICKS)(`moves %s no further than ${theme} needs`, (_, hex) => {
+      const accent = hexToAccent(hex, surfaces) as string;
+      if (nearest(hex) >= 3) {
+        expect(accent).toBe(hex);
+      } else {
+        expect(nearest(accent)).toBeLessThan(JUST_OVER);
+      }
     });
   }
 
-  it.each(PICKS.filter(([name]) => name !== "white" && name !== "black"))(
-    "keeps the hue of %s",
-    (_, hex) => {
-      const before = hexToHsl(hex)?.h as number;
-      const after = hexToHsl(hexToAccent(hex) as string)?.h as number;
-      expect(Math.abs(after - before)).toBeLessThanOrEqual(1);
-    },
-  );
+  // What the preview showed: a light pick keeps its colour on a dark page, and a dark one on a
+  // light page, where the one band for every theme drew them olive and mid blue.
+  it.each(["#ffff00", "#00ffff", "#00ff00"])("draws %s as it is in dark", (hex) => {
+    expect(hexToAccent(hex, { page: dark.background, card: dark.secondary })).toBe(hex);
+    expect(hexToAccent(hex)).not.toBe(hex);
+  });
+
+  it("draws a navy as it is in light", () => {
+    const surfaces = { page: light.background, card: light.secondary };
+    expect(hexToAccent("#000080", surfaces)).toBe("#000080");
+    expect(hexToAccent("#000080")).not.toBe("#000080");
+  });
+
+  it("falls back to the band for every theme when a surface is not a hex", () => {
+    expect(hexToAccent("#ffff00", { page: "oklch(0.1 0 0)", card: dark.secondary })).toBe(
+      hexToAccent("#ffff00"),
+    );
+  });
+
+  it.each(CHROMATIC)("keeps the hue of %s, not told the theme", (_, hex) => {
+    const before = hexToHsl(hex)?.h as number;
+    const after = hexToHsl(hexToAccent(hex) as string)?.h as number;
+    expect(Math.abs(after - before)).toBeLessThanOrEqual(1);
+  });
 
   it("keeps a grey a grey", () => {
     const [r, g, b] = hexChannels(hexToAccent("#fefefe") as string) as [number, number, number];

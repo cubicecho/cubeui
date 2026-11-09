@@ -4,7 +4,9 @@ import { Badge as CompiledBadge } from "../compiled/badge";
 import { ColorDot as Compiled } from "../compiled/color-dot";
 import { Badge as NativeBadge } from "../registry/ui/badge.tsx";
 import { ColorDot as Native } from "../registry/ui/color-dot";
+import { checkPicksInEachTheme, contrast, PICKS } from "./accent-picks";
 import { SideBySide } from "./side-by-side";
+import { tokenColor } from "./token-color";
 
 const meta = { title: "RN Parity/ColorDot" } satisfies Meta;
 export default meta;
@@ -70,25 +72,12 @@ function Scale({ Dot, Badge }: { Dot: typeof Native; Badge: typeof NativeBadge }
   );
 }
 
-/** The red, green and blue of a computed `rgb()` colour, 0–255. */
-function channels(colour: string): number[] {
-  return (colour.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
-}
-
-/** WCAG relative luminance of a computed `rgb()` colour. */
-function luminance(colour: string): number {
-  const [r = 0, g = 0, b = 0] = channels(colour).map((c) => {
-    const v = c / 255;
-    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
 /**
  * The dot scale (#487), in light and dark: every dot is 8px or 10px — `ColorDot`'s `md` beside a
  * label, and the 8px of everything drawn inside something (`ColorDot`'s `sm`, the badge's dot and
- * the soft badge's). A hex is moved into the band that shows in every theme, as `ColorBar`'s is,
- * so the navy is not lost on the dark page and the yellow not on the light one.
+ * the soft badge's). A hex is made 3:1 from the page and card it is drawn on, as `ColorBar`'s is,
+ * so the navy is not lost on a dark page and the yellow not on a light one. `Picks In Each Theme`
+ * puts the page in each theme.
  */
 export const DotScale: Story = {
   render: () => (
@@ -104,10 +93,12 @@ export const DotScale: Story = {
       for (const name of [`Navy ${theme}`, `Yellow ${theme}`]) {
         for (const dot of canvas.getAllByRole("img", { name })) {
           await expect(size(dot)).toBe(10);
-          // In the band `hexToAccent` draws: 3:1 from the page and the card in every palette.
-          const lit = luminance(getComputedStyle(dot).backgroundColor);
-          await expect(lit).toBeGreaterThanOrEqual(0.18);
-          await expect(lit).toBeLessThanOrEqual(0.27);
+          const panel = dot.closest("[data-theme-panel]") ?? document.body;
+          const drawn = getComputedStyle(dot).backgroundColor;
+          for (const surface of ["background", "secondary"]) {
+            const behind = tokenColor(surface, { inside: panel });
+            await expect(contrast(drawn, behind)).toBeGreaterThanOrEqual(3);
+          }
         }
       }
       for (const name of [`Small ${theme}`, `Up ${theme}`]) {
@@ -123,5 +114,30 @@ export const DotScale: Story = {
       await expect(dot).not.toBeNull();
       await expect(size(dot as Element)).toBe(8);
     }
+  },
+};
+
+/**
+ * A picked colour in light, dark and Monokai (#504): each dot is 3:1 from that theme's page and
+ * card, keeps the hue it was picked in, and is drawn as picked wherever the pick already shows. A
+ * yellow, a cyan and a lime are drawn as they are on a dark page, and a navy on a light one.
+ */
+export const PicksInEachTheme: Story = {
+  render: () => {
+    const picks = (Dot: typeof Native) => (
+      <div className="flex flex-row items-center gap-3 rounded-lg bg-background p-3">
+        {PICKS.map(([name, hex]) => (
+          <Dot key={name} color={hex} label={name} />
+        ))}
+      </div>
+    );
+    return <SideBySide native={picks(Native)} compiled={picks(Compiled)} />;
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    for (const [name] of PICKS) {
+      await expect(canvas.getAllByRole("img", { name })).toHaveLength(2);
+    }
+    await checkPicksInEachTheme(step, (name) => canvas.getAllByRole("img", { name }));
   },
 };
