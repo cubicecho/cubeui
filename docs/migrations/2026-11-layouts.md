@@ -233,17 +233,18 @@ to add them.
   showed nothing when Tab reached it. Its edge now turns `active`, as a scrolling table's or code
   block's does. The pane has a transparent 1px border and `rounded-md` for it, so what is inside
   sits 1px further in.
-- **Tabs are taller** ([#521](https://github.com/cubicecho/cubeui/issues/521)). A tab is 40px on
-  the web, the height of an `Input` and a default `Button`, and 44pt on device, where it was 32px
-  on both. The list is no longer a fixed 40px box: it keeps its frame around the tabs, so it is
-  50px on the web and 54pt on device. Anything laid out to the list's old height moves down 10px.
-  A `className` on `TabsList` or `TabsTrigger` that set a height can go.
+- **Tabs are taller on device** ([#521](https://github.com/cubicecho/cubeui/issues/521)). A tab is
+  44pt on device, where it was 32pt, and the list grows round it to 54pt. On the web a tab is
+  30px and the list 40px, the height of an `Input` and a default `Button`. (For a while a web tab
+  was 40px too, which made the strip 50px beside 40px buttons; that was undone.) The list no
+  longer has a fixed height of its own: a `className` on `TabsList` or `TabsTrigger` that set a
+  height can go.
 - **Segments are as tall as tabs** ([#537](https://github.com/cubicecho/cubeui/issues/537)). A
-  framed `SegmentedGroup`'s pills and a `RadioGroup variant="segmented"`'s segments are 40px on
-  the web and 44pt on device, where they were 28px and 30px inside a 40px box. The frame grows
-  round them, so it is 50px on the web and 54pt on device, the same as a `TabsList`, and the two
-  line up side by side. `ThemePicker variant="compact"` is that frame too. Anything laid out to
-  the frame's old height moves down 10px. A `plain` group is unchanged.
+  framed `SegmentedGroup`'s pills and a `RadioGroup variant="segmented"`'s segments are a tab's
+  height: 30px on the web, where a framed pill was 28px, and 44pt on device. The frame grows
+  round them, so it is 40px on the web and 54pt on device, the same as a `TabsList`, and the two
+  line up side by side. `ThemePicker variant="compact"` is that frame too. On device anything
+  laid out to the frame's old height moves down 14pt. A `plain` group is unchanged.
 - **A growing `Textarea` starts one line tall under Expo web**
   ([#534](https://github.com/cubicecho/cubeui/issues/534)). A `rows={1} maxRows={…}` composer
   drawn from the native source under react-native-web started two lines tall, the browser's

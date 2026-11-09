@@ -599,9 +599,8 @@ function FramedRow({ half }: { half: "native" | "compiled" }) {
 
 /**
  * A framed segmented control, a segmented `RadioGroup` and a tab list are one height side by side
- * (#537). After #535 a tab was 40px in a frame round it, while a segment was still 28px inside a
- * 40px box, so the three were two heights in one toolbar. Each segment is now a tab: 40px on the
- * web, 44pt on device (`RN Parity/Touch targets`), in a frame that grows round it.
+ * (#537), and on the web that height is a control's, 40px. Each segment is a tab: 30px on the web
+ * inside its frame, 44pt on device (`RN Parity/Touch targets`), in a frame that grows round it.
  */
 export const FramedMatchesTabs: Story = {
   render: () => (
@@ -620,7 +619,7 @@ export const FramedMatchesTabs: Story = {
         await expect({ half, name, frame: height(frame) }).toEqual({
           half,
           name,
-          frame: CONTROL_HEIGHT + FRAME,
+          frame: CONTROL_HEIGHT,
         });
       }
       const segments = [
@@ -633,7 +632,7 @@ export const FramedMatchesTabs: Story = {
         await expect({ half, name, segment: height(segment) }).toEqual({
           half,
           name,
-          segment: CONTROL_HEIGHT,
+          segment: CONTROL_HEIGHT - FRAME,
         });
       }
     }
