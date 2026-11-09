@@ -277,7 +277,12 @@
       "type": "registry:ui",
       "title": "Color Bar",
       "description": "The left-edge accent stripe a card wears, readable in both themes and labelled for anyone who cannot see it.",
-      "registryDependencies": ["@cubeui/utils", "@cubeui/color", "@cubeui/tokens"],
+      "registryDependencies": [
+        "@cubeui/utils",
+        "@cubeui/color",
+        "@cubeui/surface-colors",
+        "@cubeui/tokens"
+      ],
       "files": [
         {
           "path": "compiled/color-bar.tsx",
@@ -294,6 +299,7 @@
         "@cubeui/utils",
         "@cubeui/tooltip",
         "@cubeui/color",
+        "@cubeui/surface-colors",
         "@cubeui/tokens"
       ],
       "files": [
@@ -1045,6 +1051,18 @@
       "files": [
         {
           "path": "compiled/reduced-motion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "surface-colors",
+      "type": "registry:ui",
+      "title": "Surface Colors",
+      "description": "useSurfaceColors(): the page and card colours of the theme a node is drawn in, as hex, read from the --background and --secondary it resolves: off its computed style on the web, through NativeWind on device. ColorBar and ColorDot hand them to hexToAccent, so a picked colour moves only as far as that theme needs.",
+      "files": [
+        {
+          "path": "compiled/surface-colors.tsx",
           "type": "registry:ui"
         }
       ]

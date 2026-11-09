@@ -115,6 +115,7 @@ test that finds them by name needs changing:
 | `RadioGroupItem` | `hint` is a `Tooltip` and the option's description, on both halves, where it was the web's `title` attribute ([#472](https://github.com/cubicecho/cubeui/issues/472)). A test that read the `title` reads the description instead. `radio-group` now installs `tooltip`. |
 | `PopoverTrigger`, `PopoverClose`, `MenuTrigger` | On device, an `asChild` child's own `onPress` now runs as well as the trigger's, as it does on the web ([#461](https://github.com/cubicecho/cubeui/issues/461)). A Done button under `PopoverClose asChild` can do its work in its own `onPress`: a popover made controlled only to run it can go back to uncontrolled. |
 | `color` | `hexToHsl` and `hexToAccent` read `#rgb` and a hex with no `#`, and return `undefined` for a value that is not hex, where they returned NaN. `hexToDesaturated` is gone; nothing called it ([#462](https://github.com/cubicecho/cubeui/issues/462)). |
+| `color` | New: `hexToAccent(hex, surfaces)` takes the theme's `{ page, card }` as hex and moves the pick only as far as that theme needs. Without them it keeps the band for every theme it drew before ([#504](https://github.com/cubicecho/cubeui/issues/504)). `useSurfaceColors()`, from the new `@cubeui/surface-colors`, reads them where a node is drawn. |
 | `format` | `formatAgo` writes `now` under a minute, in the reader's language, where it wrote `just now`. A count that rounds up to the next unit is written in it: `yesterday`, not `24 hours ago`, and `last week`, not `7 days ago`. `formatBytes` picks the unit after rounding: `1.0 MB`, not `1024.0 KB` ([#468](https://github.com/cubicecho/cubeui/issues/468)). A test that expects `just now` expects `now`. |
 | `tree`, `FileTree` | `buildTree` sorts `file2` before `file10`, and drops empty path segments, so an object store's `docs/` key is the folder `docs` and not an unnamed folder inside it. A file that shares its path with a folder is kept as its own row, after the folders, and the folder is drawn too; before, nothing under the folder was drawn ([#468](https://github.com/cubicecho/cubeui/issues/468)). Tell a file from a folder by `type`, not `path`. |
 | `tree`, `FileTree` | `onSelect` hands back the file's key as `entries` listed it, `a//b.md`, where it handed back the cleaned `a/b.md`, and the row's node as a second argument. `selected` matches that key or the cleaned path. `onMove` gets the dragged node as a third argument: its `type` says whether the file or the folder of a shared name moved. The file `logs` can now be dragged into the folder `logs`, and only the row being moved is muted. `isValidMove` takes the moved row's `type` as a third argument; left out, it answers for a folder, as before ([#496](https://github.com/cubicecho/cubeui/issues/496)). Keys with no doubled or edge `/` come back as before. |
@@ -150,7 +151,9 @@ A reinstall can write files the app has never had: `components/section-heading.t
 and `alert-dialog`), `lib/readable-text-color.ts` (from `color`, and so from `card` and
 `color-bar`), `components/ui/overflows.tsx` (from `header-content-footer`, `split-layout`
 and `table`; an Expo app also gets `overflows.web.tsx`), `lib/roving-focus.ts` (from
-`radio-group`, `color-picker` and `tabs`), `components/ui/overlay.tsx` (from `tooltip`,
+`radio-group`, `color-picker` and `tabs`), `components/ui/surface-colors.tsx` (from
+`color-bar` and `color-dot`, and so from `card`; an Expo app also gets `surface-colors.web.tsx`
+and the item declares `nativewind`), `components/ui/overlay.tsx` (from `tooltip`,
 `toast`, `dialog`, `popover`, `menu` and `select`), `components/ui/toast-announce.tsx` (from
 `toast`; an Expo app also gets `toast-announce.web.tsx`), and every new item it pulls in as a dependency, such as `card-layout`,
 `app-bar`, `grid-layout` or `list`. Run `git status` after the reinstall to see them. An app
@@ -516,8 +519,12 @@ to add them.
     `checkbox` role, out of the tab order, read as checked or not checked. A test that looked for a
     disabled checkbox there should look for `aria-readonly` instead.
   - `Card accentColor` (and `ColorBar`) keeps the hue you pick but makes it light or dark enough to
-    be 3:1 from the page and the card in every theme. Pale picks get darker and deep ones lighter:
-    a yellow is drawn olive, a navy mid blue. `hexToAccent` now returns `#rrggbb`, not `hsl()`.
+    be 3:1 from the page and the card. `hexToAccent` now returns `#rrggbb`, not `hsl()`.
+  - Picked colours stay truer ([#504](https://github.com/cubicecho/cubeui/issues/504)). A stripe or
+    a `ColorDot` reads the theme it is drawn in, and moves a pick only as far as that theme needs.
+    A yellow, cyan or lime is drawn as picked in dark mode and in Monokai, and darker in light. A
+    navy is drawn as picked in light, and lighter in dark. Before, every pick took one band for all
+    themes, so a yellow was olive everywhere.
   - A folded sidebar row's tooltip, and an `AppBarItem`'s, shows the whole name: "Servers, 2
     failing, 5", not only "Servers". The count and the status dot are on screen in words too.
 - **Focus shows on everything, and nothing draws the browser's ring**

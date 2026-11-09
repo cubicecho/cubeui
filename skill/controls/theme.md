@@ -105,6 +105,10 @@ says.
   nothing that draws. It hands the palette's colours to NativeWind's `VariableContextProvider`,
   so they reach a `Modal` too, and a dark-only palette also sets `Appearance` to dark. On the
   web `PaletteProvider` renders its children and nothing more, so one root serves both.
+- **A colour the user picked follows the palette by itself.** `ColorDot` and `Card accentColor`
+  read the page and card they are drawn on (`useSurfaceColors`), so a pick stays as picked where
+  it already shows and moves just far enough where it does not — in Monokai as in light and dark
+  ([Colour](display.md#colour)).
 - **A checked, pressed or current control is drawn in `active`**, not `primary`: a quiet cyan in the
   default palette, Monokai's purple in Monokai. It is the tint, `bg-active/40` with
   `text-foreground`, a step stronger (`/60`) under the pointer, and a selected state you draw

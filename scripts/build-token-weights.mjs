@@ -113,6 +113,8 @@ const DATA = `${HEADER}
 export type TokenWeightsPalette = {
   id: string;
   title: string;
+  /** How far a nested card moves from a card, away from the page (\`SURFACE_STEP\`). */
+  surfaceStep: number;
   tokens: Record<string, string>;
   checks: { label: string; on: string; ratio: number; floor: number }[];
 };
@@ -129,15 +131,16 @@ export const palettes: TokenWeightsPalette[] = ${JSON.stringify(
     Object.entries(modes).map(([mode, map]) => ({
       id: `${palette}-${mode}`,
       title: `${TITLES[palette] ?? palette} ${mode}`,
+      surfaceStep: (SURFACE_STEP[palette] ?? SURFACE_STEP.default)[mode] ?? 0,
       tokens: Object.fromEntries(tokenNames.map((n) => [n, toNativeCss(map[n])])),
-      checks: [...pairs(map), ...states(map), ...series(map)],
+      checks: [...pairs(map).map(({ exact, ...check }) => check), ...states(map), ...series(map)],
     })),
   ),
   null,
   2,
 )};
 
-/** The open dark-mode choice: a nested card lighter or darker than a card. */
+/** The dark-mode choice (#504): a nested card lighter than a card, by each palette's step. */
 export const nestedCardChoice = ${JSON.stringify(
   nestedCardChoice().map(({ card, nested, ...row }) => ({
     ...row,

@@ -9,7 +9,8 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { compile as tailwind } from "@tailwindcss/node";
 import { compile as native } from "react-native-css/compiler";
-import { derived, tokenNames } from "../tokens/weights.mjs";
+import { dark, palettes } from "../tokens/palette.mjs";
+import { derive, derived, SURFACE_STEP, tokenNames } from "../tokens/weights.mjs";
 import { pairs, series, states } from "./weights-contrast.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -103,3 +104,52 @@ for (const [set, map] of sets) {
     assert.deepEqual(short(series(map)), []);
   });
 }
+
+/**
+ * A nested card in dark mode (#504): lighter than its card, or at least not darker, and never under
+ * the page, with every text pair held at 4.5:1 unrounded — 4.496:1 is under the floor, though it
+ * shows as 4.5. A palette whose step is short of default dark's full one could take no more: the
+ * next shade lighter would drop a pair under the floor.
+ */
+const TEXT_FLOOR = 4.5;
+/** A shade lighter than the step: at this lightness, at least one 8-bit sRGB step. */
+const NEXT_SHADE = 0.0025;
+const FULL_STEP = SURFACE_STEP.default.dark;
+const shortText = (map) =>
+  pairs(map)
+    .filter((c) => c.floor === TEXT_FLOOR && c.exact < TEXT_FLOOR)
+    .map((c) => `${c.label} on ${c.on}: ${c.exact.toFixed(3)}:1`);
+
+const darkSets = [
+  ["default", dark],
+  ...Object.entries(palettes).flatMap(([name, modes]) => (modes.dark ? [[name, modes.dark]] : [])),
+];
+
+for (const [name, base] of darkSets) {
+  const step = (SURFACE_STEP[name] ?? SURFACE_STEP.default).dark ?? 0;
+  const map = derived[name].dark;
+
+  test(`${name} dark: a nested card is not darker than its card, nor the page`, () => {
+    assert.ok(step >= 0, `step ${step} sinks the nested card toward the page`);
+    assert.ok(map["surface-3"].l >= map["surface-2"].l);
+    assert.ok(map["surface-3"].l > map["surface-1"].l);
+    if (step > 0) {
+      assert.ok(map["surface-3"].l > map["surface-2"].l);
+    }
+  });
+
+  test(`${name} dark: every text pair holds 4.5:1 on the nested card's step`, () => {
+    assert.deepEqual(shortText(map), []);
+  });
+
+  if (step < FULL_STEP) {
+    test(`${name} dark: its step is the largest raise the text allows`, () => {
+      const lighter = derive(base, {}, { surfaceStep: step + NEXT_SHADE });
+      assert.notDeepEqual(shortText(lighter), [], `${step + NEXT_SHADE} still holds every pair`);
+    });
+  }
+}
+
+test("default dark takes the full step, as light does", () => {
+  assert.equal(SURFACE_STEP.default.dark, SURFACE_STEP.default.light);
+});

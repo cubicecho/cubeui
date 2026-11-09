@@ -82,6 +82,8 @@ shells, forms, helpers and sets are in [install-paths.md](install-paths.md).
 | `skeleton` | native | `components/ui/skeleton.tsx`; also `skeleton-base.ts`, `skeleton.web.tsx` | `import { Skeleton } from "@/components/ui/skeleton"` |
 | `spinner` | web | `components/ui/spinner.tsx`; also `spinner-base.ts` | `import { Spinner } from "@/components/ui/spinner"` |
 | `spinner` | native | `components/ui/spinner.tsx`; also `spinner-base.ts`, `spinner.web.tsx` | `import { Spinner } from "@/components/ui/spinner"` |
+| `surface-colors` | web | `components/ui/surface-colors.tsx` | `import { useSurfaceColors } from "@/components/ui/surface-colors"` |
+| `surface-colors` | native | `components/ui/surface-colors.tsx`; also `surface-colors.web.tsx` | `import { useSurfaceColors } from "@/components/ui/surface-colors"` |
 | `switch` | web | `components/ui/switch.tsx`; also `switch-base.ts` | `import { Switch } from "@/components/ui/switch"` |
 | `switch` | native | `components/ui/switch.tsx`; also `switch-base.ts`, `switch.web.tsx` | `import { Switch } from "@/components/ui/switch"` |
 | `switch-field` | web | `components/ui/switch-field.tsx`; also `switch-field-base.ts` | `import { SwitchField } from "@/components/ui/switch-field"` |

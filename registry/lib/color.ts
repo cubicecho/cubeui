@@ -20,9 +20,9 @@ const BLUE_SECTOR = 4;
 const FULL_TURN = 360;
 
 /**
- * The darkest and lightest an accent may be, as WCAG relative luminance: the band that is 3:1
- * (WCAG 1.4.11, a mark someone has to see) from the page and from a card in every palette
- * `@cubeui/tokens` ships, so a stripe shows in whichever theme is on without knowing which. The
+ * The darkest and lightest an accent may be when the theme is not known, as WCAG relative
+ * luminance: the band that is 3:1 (WCAG 1.4.11, a mark someone has to see) from the page and from
+ * a card in every palette `@cubeui/tokens` ships, so a stripe shows in whichever theme is on. The
  * light card (0.91) caps the band at 0.27 and Monokai's card (0.028) floors it at 0.18; these sit
  * inside that, with room for rounding to a hex. `color.test.ts` holds them to every palette.
  *
@@ -31,6 +31,10 @@ const FULL_TURN = 360;
  */
 const ACCENT_MIN_LUMINANCE = 0.19;
 const ACCENT_MAX_LUMINANCE = 0.26;
+/** WCAG 1.4.11's floor for a mark someone has to see, against what is either side of it. */
+const ACCENT_CONTRAST = 3;
+/** WCAG's allowance for flare, added to both luminances, as `readable-text-color` adds it. */
+const FLARE = 0.05;
 /** Halvings of the lightness search: far finer than a hex can say. */
 const SEARCH_STEPS = 24;
 const HALF = 0.5;
@@ -103,37 +107,116 @@ function toHex(channels: [number, number, number]): string {
 }
 
 /**
- * Keeps the hue and saturation of a pick but moves its lightness into the band that shows on the
- * page and on a card in every theme, so a near-white, a near-black, a yellow or a navy cannot
- * disappear against either. A pick already in the band is returned as it is.
- *
- * @param hex - `#rgb` or `#rrggbb`, with or without the `#`.
- * @returns A `#rrggbb` colour, or `undefined` for anything that is not a hex colour.
+ * The page and the card of the theme an accent is drawn in, as hex: what it has to be seen
+ * against. `useSurfaceColors` (`@cubeui/surface-colors`) reads them where the accent is drawn.
  */
-export function hexToAccent(hex: string): string | undefined {
-  const rgb = hexChannels(hex);
-  const hsl = hexToHsl(hex);
-  if (!rgb || !hsl) {
-    return undefined;
-  }
-  const at = (l: number) => luminance(hslChannels(hsl.h, hsl.s, l));
-  const now = luminance(rgb);
-  if (now >= ACCENT_MIN_LUMINANCE && now <= ACCENT_MAX_LUMINANCE) {
-    return toHex(rgb);
-  }
-  // Luminance rises with HSL lightness at a fixed hue and saturation, so the band's edge is found
-  // by halving: lighter up to its floor, or darker down to its ceiling.
-  const tooDark = now < ACCENT_MIN_LUMINANCE;
-  let low = tooDark ? hsl.l : 0;
-  let high = tooDark ? 1 : hsl.l;
+export type AccentSurfaces = { readonly page: string; readonly card: string };
+
+/** A colour's channels as a hex draws them, so a search measures the colour it will return. */
+function asDrawn(channels: [number, number, number]): [number, number, number] {
+  return channels.map((c) => Math.round(c * CHANNEL_MAX) / CHANNEL_MAX) as [number, number, number];
+}
+
+/**
+ * The HSL lightness where a hue and saturation reach a luminance, found by halving: luminance
+ * rises with lightness at a fixed hue and saturation. `atLeast` is the darkest lightness at or over
+ * `target`, and otherwise the lightest at or under it.
+ */
+function lightnessFor(
+  hsl: { h: number; s: number },
+  target: number,
+  atLeast: boolean,
+  from = 0,
+  to = 1,
+): number {
+  let low = from;
+  let high = to;
   for (let step = 0; step < SEARCH_STEPS; step++) {
     const mid = (low + high) * HALF;
-    const lit = at(mid);
-    if (tooDark ? lit >= ACCENT_MIN_LUMINANCE : lit > ACCENT_MAX_LUMINANCE) {
+    const lit = luminance(asDrawn(hslChannels(hsl.h, hsl.s, mid)));
+    if (atLeast ? lit >= target : lit > target) {
       high = mid;
     } else {
       low = mid;
     }
   }
-  return toHex(hslChannels(hsl.h, hsl.s, tooDark ? high : low));
+  return atLeast ? high : low;
+}
+
+/** The luminance a colour must be at most, or at least, to be 3:1 from one of luminance `y`. */
+const darkerThan = (y: number) => (y + FLARE) / ACCENT_CONTRAST - FLARE;
+const lighterThan = (y: number) => (y + FLARE) * ACCENT_CONTRAST - FLARE;
+
+/**
+ * The luminances that are 3:1 from both surfaces, as ranges: darker than both, lighter than both,
+ * and between them, which only a page and a card far apart leave room for.
+ */
+function visibleRanges(page: number, card: number): { low: number; high: number }[] {
+  const darker = Math.min(page, card);
+  const lighter = Math.max(page, card);
+  return [
+    { low: 0, high: darkerThan(darker) },
+    { low: lighterThan(darker), high: darkerThan(lighter) },
+    { low: lighterThan(lighter), high: 1 },
+  ].filter((range) => range.low <= range.high);
+}
+
+/** The pick moved into the band that shows in every theme: for when the theme is not known. */
+function inBand(rgb: [number, number, number], hsl: { h: number; s: number; l: number }): string {
+  const now = luminance(rgb);
+  if (now >= ACCENT_MIN_LUMINANCE && now <= ACCENT_MAX_LUMINANCE) {
+    return toHex(rgb);
+  }
+  // Lighter up to the band's floor, or darker down to its ceiling.
+  const tooDark = now < ACCENT_MIN_LUMINANCE;
+  const l = tooDark
+    ? lightnessFor(hsl, ACCENT_MIN_LUMINANCE, true, hsl.l, 1)
+    : lightnessFor(hsl, ACCENT_MAX_LUMINANCE, false, 0, hsl.l);
+  return toHex(hslChannels(hsl.h, hsl.s, l));
+}
+
+/**
+ * Keeps the hue and saturation of a pick and moves its lightness only as far as it has to, so a
+ * stripe or a dot is 3:1 (WCAG 1.4.11) from the page and from a card and cannot disappear
+ * against either.
+ *
+ * Given the `surfaces` of the theme it is drawn in, it moves the pick the least that theme needs:
+ * a yellow stays yellow on a dark page and a navy stays navy on a light one, and a pick that
+ * already shows is returned as it is. Without them it does not know the theme, so it moves the
+ * pick into the band that shows in every palette `@cubeui/tokens` ships: a yellow is drawn olive
+ * and a navy mid blue. A surface that is not a hex is the same as none.
+ *
+ * @param hex - `#rgb` or `#rrggbb`, with or without the `#`.
+ * @param surfaces - The theme's page and card, as `useSurfaceColors` reads them.
+ * @returns A `#rrggbb` colour, or `undefined` for anything that is not a hex colour.
+ */
+export function hexToAccent(hex: string, surfaces?: AccentSurfaces): string | undefined {
+  const rgb = hexChannels(hex);
+  const hsl = hexToHsl(hex);
+  if (!rgb || !hsl) {
+    return undefined;
+  }
+  const page = surfaces ? hexChannels(surfaces.page) : undefined;
+  const card = surfaces ? hexChannels(surfaces.card) : undefined;
+  if (!page || !card) {
+    return inBand(rgb, hsl);
+  }
+  const ranges = visibleRanges(luminance(page), luminance(card));
+  if (ranges.length === 0) {
+    // A mid-grey page beside a far darker or lighter card leaves no colour 3:1 from both.
+    return inBand(rgb, hsl);
+  }
+  const now = luminance(rgb);
+  if (ranges.some((range) => now >= range.low && now <= range.high)) {
+    return toHex(rgb);
+  }
+  // The nearest edge of a range that shows, in lightness: up to the floor of one above the pick,
+  // or down to the ceiling of one below it.
+  const edges = ranges.map((range) =>
+    range.low > now ? lightnessFor(hsl, range.low, true) : lightnessFor(hsl, range.high, false),
+  );
+  const nearest = edges.reduce((best, l) =>
+    Math.abs(l - hsl.l) < Math.abs(best - hsl.l) ? l : best,
+  );
+  return toHex(hslChannels(hsl.h, hsl.s, nearest));
 }

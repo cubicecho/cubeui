@@ -381,8 +381,7 @@ function Panel({ palette }: { palette: TokenWeightsPalette }) {
       <p className="m-0 font-mono text-xs" style={{ color: v("default-medium") }}>
         lightest {rules.weights.lightest} · light {rules.weights.light} · medium{" "}
         {rules.weights.medium} · heavy {rules.heavy.apart}:1 from rest ({rules.heavy.greyApart}:1
-        for a grey), chroma ×{rules.heavy.chroma} · surface-3 step {rules.surfaceStep.light} light,{" "}
-        {rules.surfaceStep.dark} dark
+        for a grey), chroma ×{rules.heavy.chroma} · surface-3 step {palette.surfaceStep}
       </p>
       <div
         className="mt-2 grid gap-6"
@@ -463,9 +462,11 @@ export const MonokaiDark: Story = {
 };
 
 /**
- * The open choice. In dark palettes a card is already as light as status text on its tint allows:
- * a lighter nested card drops that text under 4.5:1, and a darker one passes but, in Monokai, goes
- * darker than the page.
+ * The dark-mode choice (#504): a nested card is lighter than its card, by as much as status text on
+ * its tint allows. Default dark takes the full step and holds 5.05:1. Monokai's card is already as
+ * light as that text allows, so its nested card takes no step. The sink toward the page that dark
+ * mode drew before is shown beside them: it held the text, but put default dark's nested card below
+ * the page.
  */
 export const NestedCardChoice: Story = {
   render: () => (
@@ -498,8 +499,9 @@ export const NestedCardChoice: Story = {
               <tr key={`${row.palette} ${row.step}`}>
                 <td className="border-foreground/10 border-b px-2.5 py-2">{row.palette}</td>
                 <td className="border-foreground/10 border-b px-2.5 py-2">
-                  {row.step > 0 ? "Lighter" : "Darker"} ({row.step > 0 ? "+" : ""}
-                  {row.step})
+                  {row.step > 0 ? "Lighter" : row.step < 0 ? "Darker" : "Same"} (
+                  {row.step > 0 ? "+" : ""}
+                  {row.step}){row.chosen ? ", chosen" : ""}
                 </td>
                 <td className="border-foreground/10 border-b px-2.5 py-2">
                   <span className="inline-flex items-center gap-1">

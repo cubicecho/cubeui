@@ -231,6 +231,8 @@ const NOT_SHOWN: Record<string, string> = {
     "A hook: whether the reader asked for reduced motion. The skeleton and the badge's dot hold still by it.",
   overlay:
     "The layer a tooltip and a toast are drawn in, over the app and inside each modal. Nothing of its own to draw.",
+  "surface-colors":
+    "A hook: the page and card colours of the theme a node is in. The colour bar and dot read them.",
   overflows:
     "A hook: whether a box that scrolls has anything to scroll. Always false on device, which has no tab stops.",
   "unsaved-changes-guard":

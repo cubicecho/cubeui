@@ -67,7 +67,7 @@ with a filled `div` and a `style.width` inside it.
 
 | Prop | Type | Default | What it is |
 | --- | --- | --- | --- |
-| `color` (required) | `string` |  | The colour a tag or a category was given, which the palette does not hold. A hex is moved into the lightness band that shows on the page and on a card in every theme, as `ColorBar`'s is, so a navy tag does not vanish in dark mode or a yellow one on white; any other CSS colour is drawn as given. |
+| `color` (required) | `string` |  | The colour a tag or a category was given, which the palette does not hold. A hex is made just light or dark enough to be 3:1 from the page and a card of the theme it is drawn in, as `ColorBar`'s is, so a navy tag does not vanish in dark mode or a yellow one on white, and each keeps its colour where it already shows. Any other CSS colour is drawn as given. |
 | `size` | `"sm" \| "md"` | `"md"` | `sm` (8px) for a dot inside a line of text, a menu row or a chip; `md` (10px), the default, for one standing beside its label in a list or a legend. |
 | `className` | `string` |  | On the dot itself: a margin to line it up with the first line of a label that wraps. |
 | `label` | `string` |  | What the colour stands for: the accessible name, and on the web the tooltip under the pointer. Without it the dot is decoration. |
@@ -105,17 +105,22 @@ Showing a colour the user picked is three small items, all on both halves:
 - **`ColorDot`** (`@cubeui/color-dot`) — a round swatch standing in for a category, status or
   tag in a list; `size` is `sm` (8px, inside a menu row or a chip, the size of `Badge`'s dots) or
   `md` (10px, beside its label in a list or a legend). Those are the two dot sizes; do not draw a
-  `size-3 rounded-full` of your own. A hex is moved into the lightness band that shows in every
-  theme, as `accentColor` is (below), so a navy tag shows in dark mode. Without `label` it is
+  `size-3 rounded-full` of your own. A hex is made light or dark enough to show in the theme
+  it is drawn in, as `accentColor` is (below), so a navy tag shows in dark mode. Without `label` it is
   decoration and hidden from assistive tech; with one, the label is its accessible name, and on
   the web its tooltip under the pointer. Do not wrap a labelled dot in a `Tooltip` of your own: that draws a second one.
 - **`accentColor`** on `Card` draws a left-edge stripe (`@cubeui/color-bar`), and `accentLabel`
-  names it. The colour keeps its hue and is made light or dark enough to be 3:1 from the page and
-  the card in every theme at once, so a yellow pick is drawn olive and a navy one mid blue; a
-  palette of your own holds that only if its page and card are as light, or as dark, as the
-  shipped ones. It takes `#rgb` or `#rrggbb`, with or
-  without the `#`; anything else draws no stripe. Pass it on `Card` rather than placing
-  a `ColorBar` yourself — the card owns the `relative overflow-hidden` the stripe needs.
+  names it. The colour keeps its hue and saturation, and its lightness moves only as far as it
+  must to be 3:1 from the page and the card of the theme it is drawn in. A yellow pick is drawn
+  yellow in dark mode and darker in light; a navy is drawn navy in light and lighter in dark. The
+  theme is the `--background` and `--secondary` the stripe resolves where it is drawn
+  (`useSurfaceColors`, `@cubeui/surface-colors`), so a theme or palette of your own counts with
+  or without `ThemePicker`'s hooks. Where neither can be read as a colour, it falls back to the
+  one band that shows in every shipped theme: a yellow drawn olive, a navy mid blue. It takes
+  `#rgb` or `#rrggbb`, with or without the `#`; anything else draws no stripe. Pass it on `Card`
+  rather than placing a `ColorBar` yourself — the card owns the `relative overflow-hidden` the
+  stripe needs. For a mark of your own, `hexToAccent(hex, surfaces)` (`@cubeui/color`) with the
+  surfaces `useSurfaceColors()` returns does the same.
 - **`readableTextColor(color)`** (`@cubeui/readable-text-color`) — black or white ink for text on
   a user-chosen backdrop, by WCAG contrast. It does not flip with the theme, because the backdrop
   does not. It returns `undefined` for anything that is not hex, so the text falls back to the
