@@ -31,12 +31,11 @@ import { cn, hasSlot, type SlotNode, touchRowClass, touchTarget } from "@/lib/ut
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 /**
- * What the small options are drawn at, grown to a finger's 44pt by a `hitSlop` on device (#470): the
- * bare circle, and a segment, as tall as the frame's 40px less its edge and its padding. A segment
- * is only grown in height, since segments sit side by side. A row is stacked against the next, so it
- * is made 44pt tall instead, and a card is bigger already.
+ * What the bare circle is drawn at, grown to a finger's 44pt by a `hitSlop` on device (#470). A
+ * row is stacked against the next and a segment sits beside one, so each is made 44pt tall itself
+ * instead, and a card is bigger already.
  */
-const DRAWN = { bare: { width: 16, height: 16 }, segment: { height: 30 } } as const;
+const DRAWN = { width: 16, height: 16 } as const;
 
 type Focusable = HTMLButtonElement;
 
@@ -140,7 +139,9 @@ function RadioGroup({
           // `self-stretch`, not `w-full`: in a row that is sized by its content, a browser
           // measures a percentage width as the content's and then resolves it against the total,
           // which pushed the group's neighbours out of the row by their own width.
-          "h-10 self-stretch flex-row gap-1 rounded-md border bg-background p-1",
+          // No height of its own: a frame round segments as tall as an input, as a `TabsList` is
+          // round its tabs, so the two are one height side by side (#537).
+          "self-stretch flex-row gap-1 rounded-md border bg-background p-1",
           ariaInvalid === true ? "border-negative" : "border-foreground/50",
         )
       : stacked;
@@ -274,7 +275,10 @@ function RadioGroupItem({
     }
     if (segmented) {
       return cn(
-        "min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
+        // 40px, the height of an `Input` and of a tab, and 44pt on device, where it is that tall
+        // itself rather than by a `hitSlop`, as a tab is.
+        "h-10 min-w-0 flex-1 flex-row items-center justify-center gap-1.5 rounded-sm px-3",
+        touchRowClass(),
         // The checked segment is the chosen tint, a step further under the pointer and focused.
         checked
           ? "bg-active/40 text-foreground hover:bg-active/60 focus-visible:bg-active/60"
@@ -300,13 +304,6 @@ function RadioGroupItem({
       touchRowClass(),
       false,
     );
-  };
-
-  const touch = () => {
-    if (bare) {
-      return touchTarget(DRAWN.bare);
-    }
-    return segmented ? touchTarget(DRAWN.segment) : {};
   };
 
   // What the box holds, in the same order.
@@ -407,7 +404,7 @@ function RadioGroupItem({
         disabled && "opacity-50",
         className,
       )}
-      {...touch()}
+      {...(bare ? touchTarget(DRAWN) : {})}
     >
       {content()}
     </button>

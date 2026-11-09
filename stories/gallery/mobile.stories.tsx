@@ -109,7 +109,7 @@ import {
   Tag,
   Trash2,
   TriangleAlert,
-} from "../../registry/ui/icons";
+} from "../../registry/ui/icons.tsx";
 import { Input } from "../../registry/ui/input.tsx";
 import {
   Item,
@@ -174,9 +174,10 @@ import { Gallery, type GallerySection, unaccountedItems } from "./gallery";
  * An item with a web half is imported by its full file name, because Vite would otherwise resolve
  * `<name>.web.tsx`. The `@/components/ui/…` imports inside a native source still resolve that way,
  * so a control nested in another item (the input inside a form field) may be its web half here.
- * Two items are left to resolve that way on purpose: `icons`, whose native source asks for an icon
- * file the installed lucide-react-native does not ship, and `calendar`, whose native day cells come
- * out of react-native-web as `aria-selected` on an element with no role.
+ * `calendar` is left to resolve that way on purpose: its native day cells come out of
+ * react-native-web as `aria-selected` on an element with no role. `icons` was too, while its native
+ * source asked for `trash-2`, a file lucide-react-native dropped at 1.41 when it renamed the glyph
+ * `trash` (#534); it has asked for `trash` since, so the page draws the device's icons.
  *
  * `play` fails when a registry item is neither under a section nor in `NOT_SHOWN` with a reason, so
  * the page cannot fall behind the registry without a red test.

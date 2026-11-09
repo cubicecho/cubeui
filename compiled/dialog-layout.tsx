@@ -121,7 +121,9 @@ const DIALOG_SURFACE: FloatingSurface = {
         // Room either side, given back as padding: a `List` or a `Table` reaches out by its rows'
         // inset as it does in a card's body, and a scroll container clips at its edge. It is a
         // `List` row's 12px, the wider of the two, so a list here does not scroll sideways.
-        contentClassName={cn("-mx-3 min-w-0 px-3", contentClassName)}
+        // `gap-4` spaces what the body holds, as a card's body does: rows handed to a dialog
+        // otherwise touched (#537). `contentClassName` replaces it.
+        contentClassName={cn("-mx-3 min-w-0 gap-4 px-3", contentClassName)}
         contentSlot={
           // The dialog's content reset it, as every floating surface does; on this panel the
           // card is the panel, so its body is a card's body again.
@@ -302,7 +304,11 @@ export type DialogLayoutProps = {
   className?: string | undefined;
   /** On the header: the title, the description, and the room the ✕ takes. */
   headerClassName?: string | undefined;
-  /** On the body, the part that scrolls between the header and the footer. */
+  /**
+   * On the body, the part that scrolls between the header and the footer. It is a column with
+   * `gap-4` between what it holds, as a card's body is; a gap here replaces it, and `gap-0` lets
+   * the children touch.
+   */
   contentClassName?: string | undefined;
   /** On the footer, which holds `footerSlot` and the actions. */
   footerClassName?: string | undefined;

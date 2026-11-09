@@ -8,9 +8,19 @@ import {
   Pencil as CompiledPencil,
 } from "../compiled/icons";
 import {
+  RadioGroup as CompiledRadioGroup,
+  RadioGroupItem as CompiledRadioGroupItem,
+} from "../compiled/radio-group";
+import {
   SegmentedButton as Compiled,
   SegmentedGroup as CompiledGroup,
 } from "../compiled/segmented";
+import {
+  Tabs as CompiledTabs,
+  TabsContent as CompiledTabsContent,
+  TabsList as CompiledTabsList,
+  TabsTrigger as CompiledTabsTrigger,
+} from "../compiled/tabs";
 // The web icon set, as an Expo web build draws it, and as the items here draw their own icons.
 import {
   Clock as NativeClock,
@@ -18,7 +28,9 @@ import {
   Pencil as NativePencil,
 } from "../registry/ui/icons";
 import { IconClassContext } from "../registry/ui/icons-base";
+import { RadioGroup, RadioGroupItem } from "../registry/ui/radio-group";
 import { SegmentedButton as Native, SegmentedGroup as NativeGroup } from "../registry/ui/segmented";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../registry/ui/tabs.tsx";
 import { SideBySide } from "./side-by-side";
 import { tokenColor } from "./token-color";
 
@@ -530,5 +542,100 @@ export const IconColourOnDevice: Story = {
     const edit = canvas.getByRole("button", { name: "Edit" });
     await expect(canvas.getByTestId("icon-edit").parentElement).toBe(edit);
     await expect(edit.firstElementChild).toBe(canvas.getByTestId("icon-edit"));
+  },
+};
+
+/** A control's height on the web: an `Input`'s, a default `Button`'s and a tab's. */
+const CONTROL_HEIGHT = 40;
+/** A frame round its segments or tabs: `p-1` and a 1px border, each side. */
+const FRAME = 10;
+
+/** A tab list, a framed segmented control and a segmented `RadioGroup` in one row. */
+function FramedRow({ half }: { half: "native" | "compiled" }) {
+  const [Root, List, Trigger, Content, Group, Pill, Radios, Radio] =
+    half === "native"
+      ? [Tabs, TabsList, TabsTrigger, TabsContent, NativeGroup, Native, RadioGroup, RadioGroupItem]
+      : [
+          CompiledTabs,
+          CompiledTabsList,
+          CompiledTabsTrigger,
+          CompiledTabsContent,
+          CompiledGroup as typeof NativeGroup,
+          Compiled as typeof Native,
+          CompiledRadioGroup as typeof RadioGroup,
+          CompiledRadioGroupItem as typeof RadioGroupItem,
+        ];
+  return (
+    <div className="flex flex-row flex-wrap items-start gap-2">
+      <Root defaultValue="open">
+        <List aria-label={`${half} tabs`}>
+          <Trigger value="open">Open</Trigger>
+          <Trigger value="closed">Closed</Trigger>
+        </List>
+        {["Open", "Closed"].map((view) => (
+          <Content key={view} value={view.toLowerCase()}>
+            {half === "native" ? <Text className="text-foreground">{view} issues</Text> : view}
+          </Content>
+        ))}
+      </Root>
+      <Group aria-label={`${half} segmented`} value="day" onValueChange={() => {}}>
+        <Pill value="day">Day</Pill>
+        <Pill value="week">Week</Pill>
+      </Group>
+      <div className="flex w-48 flex-col">
+        <Radios
+          aria-label={`${half} radios`}
+          variant="segmented"
+          value="light"
+          onValueChange={() => {}}
+        >
+          <Radio value="light" label="Light" />
+          <Radio value="dark" label="Dark" />
+        </Radios>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A framed segmented control, a segmented `RadioGroup` and a tab list are one height side by side
+ * (#537). After #535 a tab was 40px in a frame round it, while a segment was still 28px inside a
+ * 40px box, so the three were two heights in one toolbar. Each segment is now a tab: 40px on the
+ * web, 44pt on device (`RN Parity/Touch targets`), in a frame that grows round it.
+ */
+export const FramedMatchesTabs: Story = {
+  render: () => (
+    <SideBySide native={<FramedRow half="native" />} compiled={<FramedRow half="compiled" />} />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const height = (element: Element) => Math.round(element.getBoundingClientRect().height);
+    for (const half of ["native", "compiled"] as const) {
+      const frames = {
+        tabs: canvas.getByRole("tablist", { name: `${half} tabs` }),
+        segmented: canvas.getByRole("group", { name: `${half} segmented` }),
+        radios: canvas.getByRole("radiogroup", { name: `${half} radios` }),
+      };
+      for (const [name, frame] of Object.entries(frames)) {
+        await expect({ half, name, frame: height(frame) }).toEqual({
+          half,
+          name,
+          frame: CONTROL_HEIGHT + FRAME,
+        });
+      }
+      const segments = [
+        ...within(frames.tabs).getAllByRole("tab"),
+        ...within(frames.segmented).getAllByRole("button"),
+        ...within(frames.radios).getAllByRole("radio"),
+      ];
+      for (const segment of segments) {
+        const name = segment.textContent;
+        await expect({ half, name, segment: height(segment) }).toEqual({
+          half,
+          name,
+          segment: CONTROL_HEIGHT,
+        });
+      }
+    }
   },
 };

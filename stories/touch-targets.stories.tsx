@@ -11,7 +11,7 @@ import { ListItem } from "../registry/layout/list-item";
 import { AppBarItem, SidebarItem } from "../registry/layout/sidebar";
 import { AppBarEdgeContext } from "../registry/layout/split-layout";
 import { Badge } from "../registry/ui/badge.tsx";
-import { Button } from "../registry/ui/button";
+import { Button } from "../registry/ui/button.tsx";
 import { Checkbox } from "../registry/ui/checkbox.tsx";
 import { CopyButtonView } from "../registry/ui/copy-button-view";
 import { DescriptionHint } from "../registry/ui/description-hint";
@@ -252,11 +252,22 @@ export const OnDevice: Story = {
       await expectReach(canvas.getByRole(name === "Box" ? "checkbox" : "radio", { name }));
     }
     await expectReach(canvas.getByRole("switch", { name: "Wi-Fi" }));
-    for (const name of ["Chip", "Small chip", "Day", "Week", "All", "Open"]) {
+    for (const name of ["Chip", "Small chip", "All", "Open"]) {
       await expectReach(canvas.getByRole("button", { name }), null);
     }
-    for (const name of ["Row option", "Other row", "Light", "Dark"]) {
+    for (const name of ["Row option", "Other row"]) {
       await expectReach(canvas.getByRole("radio", { name }));
+    }
+    // A framed segment is 44pt itself, as a tab is (#537), so its frame is one height with a tab
+    // list's and no `hitSlop` reaches past it.
+    for (const segment of [
+      canvas.getByRole("button", { name: "Day" }),
+      canvas.getByRole("button", { name: "Week" }),
+      canvas.getByRole("radio", { name: "Light" }),
+      canvas.getByRole("radio", { name: "Dark" }),
+    ]) {
+      await expect(hitSlopOf(segment)).toEqual(NONE);
+      await expectReach(segment, null);
     }
     for (const name of ["Default", "Small", "Extra small", "Large"]) {
       await expectReach(canvas.getByRole("button", { name }), null);

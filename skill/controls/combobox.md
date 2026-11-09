@@ -30,7 +30,7 @@ panel (that is `Tabs`). `@cubeui/segmented`, on both platforms:
 | `value` | `TValue` |  | The current pill's `value`. With it, a `SegmentedButton value="week"` works out whether it is current, so no pill needs `active={x === value}`. |
 | `onValueChange` | `((value: TValue) => void)` |  | Called with a pill's `value` when it is pressed. Typed as the group's `value` is, so a group over a closed set hands back a member of the set and the caller neither looks it up again nor asserts it. |
 | `ref` | `React.Ref<React.ElementRef<typeof View>>` |  | The row's element, for a caller that has to measure it. |
-| `variant` | `"framed" \| "plain"` | `"framed"` | `framed` (the default) draws the input-height box; `plain` draws the row alone. |
+| `variant` | `"framed" \| "plain"` | `"framed"` | `framed` (the default) draws a frame round pills as tall as an input, as a `TabsList` does; `plain` draws the row alone, its pills 32px. |
 | `labelHideBelow` | `"always" \| "sm" \| "md" \| "lg" \| "xl"` |  | Under this width a pill with an `iconSlot` draws the icon alone; `always` is a row of icons at every width. Said here and not on each pill because the pills in a row should agree. The label is still the pill's name, read by a screen reader, and a pill with no `iconSlot` keeps its label. |
 | `className` | `string` |  | On the row the pills sit in, after the variant's classes. |
 | `children` (required) | `ReactNode` |  | The `SegmentedButton` pills, one per choice. |
@@ -57,9 +57,11 @@ a `FormField`, pass `asGroup`, which does that for you (see [forms/form-field.md
 - **`active` still works.** A pill given `active` uses it instead of the group's `value`, so older
   call sites with `active={view === "relative"}` keep working inside a group. A pill's own
   `onPress` (`onClick` on the web) still fires after the group is told.
-- **`variant`**: `framed`, the default, is an input-height box (`h-10`, a border,
-  `bg-background`), so the control lines up beside a `Select` or an `Input`. `plain` is the pills
-  alone, for a toolbar or a nav bar.
+- **`variant`**: `framed`, the default, is a frame (a border, `p-1`, `bg-background`) round pills
+  that are 40px on the web, an `Input`'s and a tab's height, and 44pt on device. The frame is 50px,
+  the same as a `TabsList`, so a segmented control and a tab list are one height side by side. Do
+  not give the group an `h-*`, which would clip the pills. `plain` is the pills alone, 32px, for a
+  toolbar or a nav bar.
 - **`iconSlot` on a pill** is drawn before the label. Pass a bare `<Pencil />`: the pill lays the two
   out in a row, sizes the icon and gives it the label's colour, chosen or not, on both platforms.
   Do not write the row, the icon's size or a `<span>` for the label yourself, and do not put the
