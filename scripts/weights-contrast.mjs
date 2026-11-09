@@ -19,8 +19,8 @@ const STATE_APART = 1.3;
 /** `hover:bg-<fill>/90`, the step `-heavy` replaces. */
 const NINETY = 0.9;
 const HUNDREDTHS = 100;
-/** A nested card lighter than a card: the other side of the dark-mode choice. */
-const LIGHTER_STEP = 0.03;
+/** Where dark mode drew a nested card before #504: sunk toward the page. */
+const SUNK_STEP = -0.07;
 
 /** A colour as drawn: a stack of token names from the bottom up, each at its own alpha. */
 export const drawn = (map, ...stack) =>
@@ -62,14 +62,12 @@ const PAIRS = [
   ),
 ];
 
-/** Every pair for one mode of one palette, measured. */
+/** Every pair for one mode of one palette, measured: `ratio` to two places, and `exact`. */
 export const pairs = (map) =>
-  PAIRS.map(([label, text, surface, floor]) => ({
-    label,
-    on: surface.join(" + "),
-    ratio: round(contrast(drawn(map, ...surface, ...text), drawn(map, ...surface))),
-    floor,
-  }));
+  PAIRS.map(([label, text, surface, floor]) => {
+    const exact = contrast(drawn(map, ...surface, ...text), drawn(map, ...surface));
+    return { label, on: surface.join(" + "), ratio: round(exact), floor, exact };
+  });
 
 /**
  * State and step checks, which WCAG does not set: a chosen row 1.3:1 from a hovered one (the bar
@@ -129,16 +127,17 @@ export const series = (map) => {
 };
 
 /**
- * The dark-mode choice, measured both ways: a nested card one step lighter than a card, or sunk
- * toward the page (the rule as it stands). For each, how far it sits from a card, the worst status
- * text on its own tint drawn on it, and whether it went darker than the page.
+ * The dark-mode choice (#504), measured: each dark palette's own step, the full step lighter that
+ * default dark takes, and the sink toward the page that dark mode drew before. For each, how far
+ * the nested card sits from a card, the worst status text on its own tint drawn on it, and whether
+ * it went darker than the page.
  */
 export const nestedCardChoice = () =>
   [
-    ["Default dark", dark],
-    ["Monokai dark", palettes.monokai.dark],
-  ].flatMap(([palette, base]) =>
-    [LIGHTER_STEP, SURFACE_STEP.dark].map((step) => {
+    ["Default dark", dark, SURFACE_STEP.default.dark],
+    ["Monokai dark", palettes.monokai.dark, SURFACE_STEP.monokai.dark],
+  ].flatMap(([palette, base, own]) =>
+    [...new Set([own, SURFACE_STEP.default.dark, SUNK_STEP])].map((step) => {
       const map = derive(base, {}, { surfaceStep: step });
       const worst = Math.min(
         ...TINTED.map((ink) =>
@@ -151,6 +150,7 @@ export const nestedCardChoice = () =>
       return {
         palette,
         step,
+        chosen: step === own,
         card: map["surface-2"],
         nested: map["surface-3"],
         apart: round(contrast(drawn(map, "surface-3"), drawn(map, "surface-2"))),

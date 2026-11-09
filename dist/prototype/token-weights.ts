@@ -4,6 +4,8 @@
 export type TokenWeightsPalette = {
   id: string;
   title: string;
+  /** How far a nested card moves from a card, away from the page (`SURFACE_STEP`). */
+  surfaceStep: number;
   tokens: Record<string, string>;
   checks: { label: string; on: string; ratio: number; floor: number }[];
 };
@@ -13,12 +15,13 @@ export const meanings = ["default","neutral","positive","warning","negative","in
 export const fills = ["default","neutral","positive","warning","negative","info","active"] as const;
 /** What each chart colour started as, in Okabe and Ito's set. */
 export const seriesSources = ["blue","orange","bluish green","reddish purple","sky blue","vermillion"] as const;
-export const rules = {"weights":{"lightest":0.1,"light":0.4,"medium":0.6},"heavy":{"apart":1.3,"greyApart":1.6,"chroma":1.15},"surfaceStep":{"light":0.03,"dark":-0.07}} as const;
+export const rules = {"weights":{"lightest":0.1,"light":0.4,"medium":0.6},"heavy":{"apart":1.3,"greyApart":1.6,"chroma":1.15},"surfaceStep":{"default":{"light":0.03,"dark":0.03},"monokai":{"dark":0}}} as const;
 
 export const palettes: TokenWeightsPalette[] = [
   {
     "id": "default-light",
     "title": "Default light",
+    "surfaceStep": 0.03,
     "tokens": {
       "surface-1": "#ffffff",
       "surface-2": "#f5f5f5",
@@ -573,10 +576,11 @@ export const palettes: TokenWeightsPalette[] = [
   {
     "id": "default-dark",
     "title": "Default dark",
+    "surfaceStep": 0.03,
     "tokens": {
       "surface-1": "#0a0a0a",
       "surface-2": "#171717",
-      "surface-3": "#080808",
+      "surface-3": "#1e1e1e",
       "surface-floating": "#171717",
       "default": "#fafafa",
       "default-lightest": "rgba(250, 250, 250, 0.1)",
@@ -681,25 +685,25 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "body text",
         "on": "surface-3",
-        "ratio": 19.19,
+        "ratio": 15.97,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-3",
-        "ratio": 7.05,
+        "ratio": 6.53,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-3",
-        "ratio": 7.05,
+        "ratio": 6.53,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-3 + active-light",
-        "ratio": 9.62,
+        "ratio": 7.83,
         "floor": 4.5
       },
       {
@@ -837,7 +841,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "active text",
         "on": "surface-3",
-        "ratio": 7.08,
+        "ratio": 5.89,
         "floor": 4.5
       },
       {
@@ -855,7 +859,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive text",
         "on": "surface-3",
-        "ratio": 11.49,
+        "ratio": 9.57,
         "floor": 4.5
       },
       {
@@ -873,7 +877,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text",
         "on": "surface-3",
-        "ratio": 9.33,
+        "ratio": 7.76,
         "floor": 4.5
       },
       {
@@ -891,7 +895,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text",
         "on": "surface-3",
-        "ratio": 7.23,
+        "ratio": 6.02,
         "floor": 4.5
       },
       {
@@ -909,7 +913,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text",
         "on": "surface-3",
-        "ratio": 6.93,
+        "ratio": 5.77,
         "floor": 4.5
       },
       {
@@ -927,7 +931,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive text on its tint",
         "on": "surface-3 + positive-lightest",
-        "ratio": 9.96,
+        "ratio": 7.81,
         "floor": 4.5
       },
       {
@@ -945,7 +949,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text on its tint",
         "on": "surface-3 + warning-lightest",
-        "ratio": 8.24,
+        "ratio": 6.51,
         "floor": 4.5
       },
       {
@@ -963,7 +967,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text on its tint",
         "on": "surface-3 + info-lightest",
-        "ratio": 6.54,
+        "ratio": 5.23,
         "floor": 4.5
       },
       {
@@ -981,7 +985,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text on its tint",
         "on": "surface-3 + negative-lightest",
-        "ratio": 6.3,
+        "ratio": 5.05,
         "floor": 4.5
       },
       {
@@ -999,7 +1003,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "chosen row apart from hovered",
         "on": "surface-3",
-        "ratio": 1.49,
+        "ratio": 1.83,
         "floor": 1.3
       },
       {
@@ -1127,10 +1131,11 @@ export const palettes: TokenWeightsPalette[] = [
   {
     "id": "monokai-dark",
     "title": "Monokai dark",
+    "surfaceStep": 0,
     "tokens": {
       "surface-1": "#272822",
       "surface-2": "#2e2f28",
-      "surface-3": "#1d1e17",
+      "surface-3": "#2e2f28",
       "surface-floating": "#2e2f28",
       "default": "#f8f8f2",
       "default-lightest": "rgba(248, 248, 242, 0.1)",
@@ -1235,25 +1240,25 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "body text",
         "on": "surface-3",
-        "ratio": 15.76,
+        "ratio": 12.68,
         "floor": 4.5
       },
       {
         "label": "secondary text",
         "on": "surface-3",
-        "ratio": 6.44,
+        "ratio": 5.62,
         "floor": 4.5
       },
       {
         "label": "control edge",
         "on": "surface-3",
-        "ratio": 6.44,
+        "ratio": 5.62,
         "floor": 3
       },
       {
         "label": "chosen row text",
         "on": "surface-3 + active-light",
-        "ratio": 7.81,
+        "ratio": 6.67,
         "floor": 4.5
       },
       {
@@ -1391,7 +1396,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "active text",
         "on": "surface-3",
-        "ratio": 5.91,
+        "ratio": 4.75,
         "floor": 4.5
       },
       {
@@ -1409,7 +1414,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive text",
         "on": "surface-3",
-        "ratio": 7.78,
+        "ratio": 6.26,
         "floor": 4.5
       },
       {
@@ -1427,7 +1432,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text",
         "on": "surface-3",
-        "ratio": 8.01,
+        "ratio": 6.44,
         "floor": 4.5
       },
       {
@@ -1445,7 +1450,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text",
         "on": "surface-3",
-        "ratio": 10.19,
+        "ratio": 8.2,
         "floor": 4.5
       },
       {
@@ -1463,7 +1468,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text",
         "on": "surface-3",
-        "ratio": 6.6,
+        "ratio": 5.32,
         "floor": 4.5
       },
       {
@@ -1481,7 +1486,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "positive text on its tint",
         "on": "surface-3 + positive-lightest",
-        "ratio": 6.55,
+        "ratio": 5.25,
         "floor": 4.5
       },
       {
@@ -1499,7 +1504,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "warning text on its tint",
         "on": "surface-3 + warning-lightest",
-        "ratio": 6.69,
+        "ratio": 5.35,
         "floor": 4.5
       },
       {
@@ -1517,7 +1522,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "info text on its tint",
         "on": "surface-3 + info-lightest",
-        "ratio": 8.23,
+        "ratio": 6.56,
         "floor": 4.5
       },
       {
@@ -1535,7 +1540,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "negative text on its tint",
         "on": "surface-3 + negative-lightest",
-        "ratio": 5.67,
+        "ratio": 4.55,
         "floor": 4.5
       },
       {
@@ -1553,7 +1558,7 @@ export const palettes: TokenWeightsPalette[] = [
       {
         "label": "chosen row apart from hovered",
         "on": "surface-3",
-        "ratio": 1.31,
+        "ratio": 1.54,
         "floor": 1.3
       },
       {
@@ -1680,11 +1685,12 @@ export const palettes: TokenWeightsPalette[] = [
   }
 ];
 
-/** The open dark-mode choice: a nested card lighter or darker than a card. */
+/** The dark-mode choice (#504): a nested card lighter than a card, by each palette's step. */
 export const nestedCardChoice = [
   {
     "palette": "Default dark",
     "step": 0.03,
+    "chosen": true,
     "apart": 1.08,
     "worst": 5.05,
     "floor": 4.5,
@@ -1695,6 +1701,7 @@ export const nestedCardChoice = [
   {
     "palette": "Default dark",
     "step": -0.07,
+    "chosen": false,
     "apart": 1.12,
     "worst": 6.3,
     "floor": 4.5,
@@ -1704,7 +1711,19 @@ export const nestedCardChoice = [
   },
   {
     "palette": "Monokai dark",
+    "step": 0,
+    "chosen": true,
+    "apart": 1,
+    "worst": 4.55,
+    "floor": 4.5,
+    "belowPage": false,
+    "card": "#2e2f28",
+    "nested": "#2e2f28"
+  },
+  {
+    "palette": "Monokai dark",
     "step": 0.03,
+    "chosen": false,
     "apart": 1.12,
     "worst": 4.08,
     "floor": 4.5,
@@ -1715,6 +1734,7 @@ export const nestedCardChoice = [
   {
     "palette": "Monokai dark",
     "step": -0.07,
+    "chosen": false,
     "apart": 1.24,
     "worst": 5.67,
     "floor": 4.5,

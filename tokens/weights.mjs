@@ -56,16 +56,21 @@ export const HEAVY = { apart: 1.3, greyApart: 1.6, chroma: 1.15 };
 const GREY_CHROMA = 0.02;
 
 /**
- * How far `surface-3` moves from `surface-2` in lightness, per mode; positive is away from the page.
+ * How far `surface-3`, a card nested in a card, moves from `surface-2` in lightness, per palette
+ * and mode. Positive is away from the page: darker in light mode, lighter in dark (#504).
  *
- * Each is the most the status colours allow. In light mode a nested card one step darker than a
- * card keeps status text on its tint at 4.5:1 up to 0.03. In Monokai no lighter step does — a card
- * is already as light as that text allows (4.08:1 at 0.03) — so a nested card sinks back toward the
- * page instead, which leaves the text 5.7:1 and puts the card 1.24:1 from its parent. Default dark
- * sinks too, for one rule, though since its card became neutral-900 (#479) a lighter step would
- * hold 5.05:1, and sunk it now sits below the page.
+ * Light takes 0.03, the most that keeps status text on its tint at 4.5:1 there. Default dark takes
+ * the same step lighter, which leaves that text 5.05:1. Dark used to sink a nested card toward the
+ * page by 0.07 instead, and once its card became neutral-900 (#479) that put it below the page.
+ *
+ * Monokai's is 0. Its card is already as light as its status text allows: `negative` on its `/10`
+ * tint is 4.55:1 on the card and 4.49:1 on the next shade lighter that a hex can draw, so the
+ * largest raise that holds 4.5:1 is none. A nested card there is set apart by its edge alone.
  */
-export const SURFACE_STEP = { light: 0.03, dark: -0.07 };
+export const SURFACE_STEP = {
+  default: { light: 0.03, dark: 0.03 },
+  monokai: { dark: 0 },
+};
 
 /** The dialog backdrop's alpha, which used to be `bg-overlay/60` at every call site. */
 export const OVERLAY_ALPHA = 0.6;
@@ -103,17 +108,22 @@ function walk(colour, direction, heavy) {
  *
  * @param {Record<string, Oklch>} base A palette as `palette.mjs` exports it.
  * @param {{ surface3?: Oklch, surfaceFloating?: Oklch }} [overrides] A palette may tune these.
- * @param {{ heavy?: typeof HEAVY, surfaceStep?: number | typeof SURFACE_STEP }} [tuning] For trying
- *   other rules; a number is the step for either mode.
+ * @param {{ heavy?: typeof HEAVY, surfaceStep?: number | { light?: number, dark?: number } }} [tuning]
+ *   For trying other rules; `surfaceStep` is the palette's entry in `SURFACE_STEP`, or a number
+ *   for either mode.
  * @returns {Record<string, Oklch>}
  */
-export function derive(base, overrides = {}, { heavy = HEAVY, surfaceStep = SURFACE_STEP } = {}) {
+export function derive(
+  base,
+  overrides = {},
+  { heavy = HEAVY, surfaceStep = SURFACE_STEP.default } = {},
+) {
   const page = base.background;
   // Away from the page: lighter on a dark page, darker on a light one.
   const away = base.foreground.l > page.l ? 1 : -1;
   const raised = base.secondary;
   const step =
-    typeof surfaceStep === "number" ? surfaceStep : surfaceStep[away > 0 ? "dark" : "light"];
+    typeof surfaceStep === "number" ? surfaceStep : (surfaceStep[away > 0 ? "dark" : "light"] ?? 0);
 
   /** @type {Record<string, Oklch>} */
   const out = {
@@ -195,7 +205,10 @@ export const derived = {
     Object.entries(palettes).map(([name, modes]) => [
       name,
       Object.fromEntries(
-        Object.entries(modes).map(([mode, map]) => [mode, withAliases(derive(map))]),
+        Object.entries(modes).map(([mode, map]) => [
+          mode,
+          withAliases(derive(map, {}, { surfaceStep: SURFACE_STEP[name] })),
+        ]),
       ),
     ]),
   ),
