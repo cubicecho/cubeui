@@ -11,6 +11,11 @@
     // A DOM consumer's lib, which the React Native base leaves out: the stories here spread a
     // `querySelectorAll` the way any DOM test does.
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    // What an app's own tsconfig often sets, and what the compiled half is installed under. A
+    // device-only branch that rn2web drops can leave a parameter unread on the web, as
+    // `touchTarget`'s and `FieldWrapper`'s were, and that failed every such app's typecheck.
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
     "paths": {
       "@/lib/cubeui-theme": ["./dist/cubeui-theme.ts"],
       "@/lib/*": ["./compiled/*", "./registry/lib/*"],
